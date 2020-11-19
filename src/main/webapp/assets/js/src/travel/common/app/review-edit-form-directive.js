@@ -6,7 +6,7 @@ function reviewEditForm($compile, appProps, modals) {
     return {
         restrict: 'E',
         scope: {
-            app: '<',               // The application being edited.
+            amendment: '<',               // The application being edited.
             title: '@',             // The title
             positiveCallback: '&',  // Callback function called when continuing. Takes a travel app param named 'app'.
             positiveBtnLabel: '@',   // The label to use for the positive button.
@@ -21,32 +21,32 @@ function reviewEditForm($compile, appProps, modals) {
             // Hides the negative button if no callback was provided.
             scope.showNegative = attrs.hasOwnProperty('negativeCallback');
 
-            scope.reviewApp = angular.copy(scope.app);
+            scope.reviewAmendment = angular.copy(scope.amendment);
 
             displayMap();
 
             scope.next = function () {
-                scope.positiveCallback({app: scope.reviewApp});
+                scope.positiveCallback({amendment: scope.reviewAmendment});
             };
 
             scope.back = function () {
-                scope.neutralCallback({app: scope.dirtyApp});
+                scope.neutralCallback({amendment: scope.dirtyApp});
             };
 
             scope.cancel = function () {
-                scope.negativeCallback({app: scope.reviewApp});
+                scope.negativeCallback({amendment: scope.reviewAmendment});
             };
 
             scope.displayLodgingDetails = function () {
-                modals.open('ess-lodging-details-modal', {app: scope.reviewApp}, true);
+                modals.open('ess-lodging-details-modal', {amendment: scope.reviewAmendment}, true);
             };
 
             scope.displayMealDetails = function () {
-                modals.open('ess-meal-details-modal', {app: scope.reviewApp}, true);
+                modals.open('ess-meal-details-modal', {amendment: scope.reviewAmendment}, true);
             };
 
             scope.displayMileageDetails = function () {
-                modals.open('ess-mileage-details-modal', {app: scope.reviewApp}, true);
+                modals.open('ess-mileage-details-modal', {amendment: scope.reviewAmendment}, true);
             };
 
             function displayMap() {
@@ -66,10 +66,10 @@ function reviewEditForm($compile, appProps, modals) {
 
                 // Create map api parameters.
                 // All intermediate destinations should be waypoints, final destination should an address string.
-                var origin = scope.reviewApp.route.origin.formattedAddressWithCounty;
+                var origin = scope.reviewAmendment.route.origin.formattedAddressWithCounty;
 
                 var waypoints = [];
-                scope.reviewApp.route.outboundLegs.forEach(function (leg) {
+                scope.reviewAmendment.route.outboundLegs.forEach(function (leg) {
                     waypoints.push({location: leg.to.address.formattedAddressWithCounty});
                 });
 

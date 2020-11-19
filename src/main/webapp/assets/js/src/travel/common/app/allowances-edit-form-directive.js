@@ -6,7 +6,7 @@ function allowancesEditForm(appProps) {
     return {
         restrict: 'E',
         scope: {
-            app: '<',               // The application being edited.
+            amendment: '<',               // The application being edited.
             title: '@',             // The title
             positiveCallback: '&',   // Callback function called when continuing. Takes a travel app param named 'app'.
             neutralCallback: '&',   // Callback function called when moving back. Takes a travel app param named 'app'.
@@ -17,11 +17,11 @@ function allowancesEditForm(appProps) {
         templateUrl: appProps.ctxPath + '/template/travel/common/app/allowances-edit-form-directive',
         link: function (scope, elem, attrs) {
 
-            scope.dirtyApp = angular.copy(scope.app);
-            console.log(scope.dirtyApp);
+            scope.dirtyAmendment = angular.copy(scope.amendment);
+            console.log(scope.dirtyAmendment);
 
             scope.next = function () {
-                scope.positiveCallback({app: scope.dirtyApp});
+                scope.positiveCallback({amendment: scope.dirtyAmendment});
             };
 
             scope.previousDay = function (date) {
@@ -29,19 +29,19 @@ function allowancesEditForm(appProps) {
             };
 
             scope.tripHasMeals = function () {
-                return scope.dirtyApp.mealPerDiems.allMealPerDiems.length > 0;
+                return scope.dirtyAmendment.mealPerDiems.allMealPerDiems.length > 0;
             };
 
             scope.tripHasLodging = function () {
-                return scope.dirtyApp.lodgingPerDiems.allLodgingPerDiems.length > 0;
+                return scope.dirtyAmendment.lodgingPerDiems.allLodgingPerDiems.length > 0;
             };
 
             scope.back = function () {
-                scope.neutralCallback({app: scope.dirtyApp});
+                scope.neutralCallback({amendment: scope.dirtyAmendment});
             };
 
             scope.cancel = function () {
-                scope.negativeCallback({app: scope.dirtyApp});
+                scope.negativeCallback({amendment: scope.dirtyAmendment});
             }
         }
     }

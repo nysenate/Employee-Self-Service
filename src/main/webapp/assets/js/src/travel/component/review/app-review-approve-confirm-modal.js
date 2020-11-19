@@ -14,7 +14,8 @@ function confirmationCtrl($scope, modals, appReviewApi) {
     $scope.role = modals.params().role;
     $scope.notes = "";
     $scope.isDiscussionRequested = false;
-    $scope.isSingleDayTravel = $scope.appReview.travelApplication.startDate === $scope.appReview.travelApplication.endDate;
+    $scope.isSingleDayTravel = $scope.appReview.travelApplication.activeAmendment.startDate
+        === $scope.appReview.travelApplication.activeAmendment.endDate;
 
     $scope.approve = function () {
         appReviewApi.approve($scope.appReview.appReviewId, $scope.role.name, $scope.notes, $scope.isDiscussionRequested)

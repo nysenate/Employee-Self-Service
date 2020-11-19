@@ -12,7 +12,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr ng-repeat="perDiem in app.mealPerDiems.requestedMealPerDiems">
+      <tr ng-repeat="perDiem in amendment.mealPerDiems.requestedMealPerDiems">
         <td>{{perDiem.date | date: 'shortDate'}}</td>
         <td>{{perDiem.address.formattedAddressWithCounty}}</td>
         <td>{{::(perDiem.mie.breakfast | currency) || NOT_AVAILABLE }}</td>
@@ -24,12 +24,12 @@
         <td class="bold">Total:</td>
         <td></td>
         <td></td>
-        <td class="bold">{{app.mealPerDiems.totalPerDiem | currency}}</td>
+        <td class="bold">{{amendment.mealPerDiems.totalPerDiem | currency}}</td>
       </tr>
       <tr ng-show="isOverridden">
         <td></td>
         <td class="disapproved-text">Meals Overridden to:</td>
-        <td class="disapproved-text" ng-bind="::app.perDiemOverrides.mealsOverride | currency"></td>
+        <td class="disapproved-text" ng-bind="::amendment.perDiemOverrides.mealsOverride | currency"></td>
       </tr>
       </tbody>
     </table>

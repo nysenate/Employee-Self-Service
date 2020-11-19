@@ -20,27 +20,27 @@
         <div class="grid" style="min-width: 0;">
           <div class="col-6-12 padding-bottom-10">
             <label class="travel-allowance-label">Tolls: $</label>
-            <input ng-model="dirtyApp.allowances.tolls" type="number" step="0.01" min="0"
+            <input ng-model="dirtyAmendment.allowances.tolls" type="number" step="0.01" min="0"
                    style="width: 5em;">
           </div>
           <div class="col-6-12 padding-bottom-10">
             <label class="travel-allowance-label">Parking: $</label>
-            <input ng-model="dirtyApp.allowances.parking" type="number" step="0.01" min="0"
+            <input ng-model="dirtyAmendment.allowances.parking" type="number" step="0.01" min="0"
                    style="width: 5em;">
           </div>
           <div class="col-6-12 padding-bottom-10">
             <label class="travel-allowance-label">Taxi/Bus/Subway: $</label>
-            <input ng-model="dirtyApp.allowances.alternateTransportation" type="number" step="0.01"
+            <input ng-model="dirtyAmendment.allowances.alternateTransportation" type="number" step="0.01"
                    min="0" style="width: 5em;">
           </div>
           <div class="col-6-12 padding-bottom-10">
             <label class="travel-allowance-label">Train/Airplane: $</label>
-            <input ng-model="dirtyApp.allowances.trainAndPlane" type="number" step="0.01" min="0"
+            <input ng-model="dirtyAmendment.allowances.trainAndPlane" type="number" step="0.01" min="0"
                    style="width: 5em;">
           </div>
           <div class="col-6-12">
             <label class="travel-allowance-label">Registration Fee: $</label>
-            <input ng-model="dirtyApp.allowances.registration" type="number" step="0.01" min="0"
+            <input ng-model="dirtyAmendment.allowances.registration" type="number" step="0.01" min="0"
                    style="width: 5em;">
           </div>
         </div>
@@ -65,7 +65,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="perDiem in dirtyApp.mealPerDiems.allMealPerDiems">
+        <tr ng-repeat="perDiem in dirtyAmendment.mealPerDiems.allMealPerDiems">
           <td>{{perDiem.address.formattedAddressWithCounty}}</td>
           <td>{{perDiem.date | date: 'shortDate'}}</td>
           <td><label>Request Meals: </label><input type="checkbox" ng-model="perDiem.isReimbursementRequested"></td>
@@ -90,7 +90,7 @@
           </tr>
           </thead>
           <tbody>
-          <tr ng-repeat="perDiem in dirtyApp.lodgingPerDiems.allLodgingPerDiems">
+          <tr ng-repeat="perDiem in dirtyAmendment.lodgingPerDiems.allLodgingPerDiems">
             <td>{{perDiem.address.formattedAddressWithCounty}}</td>
             <td>{{previousDay(perDiem.date) | date: 'shortDate'}} - {{perDiem.date | date: 'shortDate'}}</td>
             <td><label>Request Lodging: </label><input type="checkbox" ng-model="perDiem.isReimbursementRequested"></td>
@@ -100,7 +100,7 @@
       </div>
     </ess-travel-inner-container>
 
-    <ess-travel-inner-container title="Mileage Adjustment (Optional)" ng-show="dirtyApp.route.mileagePerDiems.doesTripQualifyForReimbursement">
+    <ess-travel-inner-container title="Mileage Adjustment (Optional)" ng-show="dirtyAmendment.route.mileagePerDiems.doesTripQualifyForReimbursement">
       <p class="travel-text margin-bottom-20">
         You qualify for the following mileage reimbursements. Uncheck anything you would <span class="bold">not</span>
         like to be reimbursed for.
@@ -115,7 +115,7 @@
           </tr>
           </thead>
           <tbody>
-          <tr ng-repeat="leg in dirtyApp.route.mileagePerDiems.allLegs" ng-if="leg.qualifiesForReimbursement">
+          <tr ng-repeat="leg in dirtyAmendment.route.mileagePerDiems.allLegs" ng-if="leg.qualifiesForReimbursement">
             <td>{{leg.from.address.formattedAddressWithCounty}}</td>
             <td>{{leg.to.address.formattedAddressWithCounty}}</td>
             <td><label>Request Mileage: </label><input type="checkbox" ng-model="leg.isReimbursementRequested"></td>

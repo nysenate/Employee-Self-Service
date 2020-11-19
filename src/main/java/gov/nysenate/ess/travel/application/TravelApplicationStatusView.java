@@ -9,7 +9,6 @@ import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 
 public class TravelApplicationStatusView implements ViewObject {
 
-    private int id;
     @JsonProperty("isPending")
     private boolean isPending;
     @JsonProperty("isApproved")
@@ -17,18 +16,15 @@ public class TravelApplicationStatusView implements ViewObject {
     @JsonProperty("isDisapproved")
     private boolean isDisapproved;
     private String note;
-    private String dateTime;
 
     public TravelApplicationStatusView() {
     }
 
     public TravelApplicationStatusView(TravelApplicationStatus status) {
-        id = status.statusId;
         isPending = status.isPending();
         isApproved = status.isApproved();
         isDisapproved = status.isDisapproved();
         note = status.note();
-        dateTime = status.dateTime().format(ISO_DATE_TIME);
     }
 
     public TravelApplicationStatus toTravelApplicationStatus() {
@@ -41,7 +37,7 @@ public class TravelApplicationStatusView implements ViewObject {
                     " Likely an error in view serialization/deserialization.");
         }
 
-        return new TravelApplicationStatus(id, status, LocalDateTime.parse(dateTime, ISO_DATE_TIME), note);
+        return new TravelApplicationStatus(status, note);
     }
 
     public boolean isPending() {
@@ -58,10 +54,6 @@ public class TravelApplicationStatusView implements ViewObject {
 
     public String getNote() {
         return note;
-    }
-
-    public String getDateTime() {
-        return dateTime;
     }
 
     @Override

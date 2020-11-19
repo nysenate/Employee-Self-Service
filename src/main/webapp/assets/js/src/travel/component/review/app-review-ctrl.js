@@ -59,6 +59,10 @@ function reviewController($scope, $q, modals, locationService, appReviewApi, rol
                 vm.reviews.filtered.push(r);
             }
         });
+        vm.reviews.filtered.sort(function(a, b) {
+            return moment(a.travelApplication.activeAmendment.startDate, ISO_FORMAT).format('x')
+                - moment(b.travelApplication.activeAmendment.startDate, ISO_FORMAT).format('x');
+        })
     }
 
     function openReviewModalIfSearchParamsSet() {

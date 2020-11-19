@@ -16,8 +16,10 @@ function travelAppController($scope, $window, appProps, modals, locationService,
     $scope.stateService = stateService;
     // Common data shared between all child controllers.
     $scope.data = {
-        app: undefined,
-        allowedTravelers: []
+        traveler: undefined,
+        amendment: undefined,
+        allowedTravelers: [],
+        eventTypes: []
     };
 
     this.$onInit = function () {
@@ -34,48 +36,53 @@ function travelAppController($scope, $window, appProps, modals, locationService,
          * would like to continue working on it or start over.
          */
         function initApplication() {
-            unsubmittedAppApi.get({userId: appProps.user.employeeId}, {}, function (response) {
-                $scope.data.app = response.result.app;
+            unsubmittedAppApi.get({}, {}, function (response) {
                 $scope.data.allowedTravelers = response.result.allowedTravelers;
+                $scope.data.eventTypes = response.result.validEventTypes;
+                $scope.data.traveler = response.result.traveler;
+                $scope.data.amendment = response.result.amendment;
                 if (hasUncompleteApplication()) {
                     modals.open('ess-continue-saved-app-modal')
                         .catch(function () { // Restart application on modal rejection.
-                            cancelApplication($scope.data.app) // TODO replace this functionality
+                            cancelApplication()
                         });
                 }
             }, $scope.handleErrorResponse);
 
             function hasUncompleteApplication() {
-                return $scope.data.app.purposeOfTravel.eventType !== null;
+                return $scope.data.amendment.purposeOfTravel && ($scope.data.amendment.purposeOfTravel.eventType !== null);
             }
         }
     };
 
-    $scope.savePurpose = function (app) {
-        console.log(app);
-        unsubmittedAppApi.update({userId: appProps.user.employeeId},
-                                 {purposeOfTravel: JSON.stringify(app.purposeOfTravel), traveler: $scope.data.app.traveler.employeeId},
+    $scope.savePurpose = function (amendment) {
+        unsubmittedAppApi.update({},
+                                 {purposeOfTravel: JSON.stringify(amendment.purposeOfTravel), traveler: $scope.data.traveler.employeeId},
                                  function (response) {
-            $scope.data.app = response.result;
+            $scope.data.traveler = response.result.traveler;
+            $scope.data.amendment = response.result.amendment;
+            console.log(response);
             stateService.setOutboundState();
         }, $scope.handleErrorResponse)
     };
 
-    $scope.saveOutbound = function (app) {
-        unsubmittedAppApi.update({userId: appProps.user.employeeId},
-                                 {outbound: JSON.stringify(app.route), traveler: $scope.data.app.traveler.employeeId},
+    $scope.saveOutbound = function (amendment) {
+        unsubmittedAppApi.update({},
+                                 {outbound: JSON.stringify(amendment.route), traveler: $scope.data.traveler.employeeId},
                                  function (response) {
-            $scope.data.app = response.result;
+            $scope.data.traveler = response.result.traveler;
+            $scope.data.amendment = response.result.amendment;
             stateService.setReturnState();
         }, $scope.handleErrorResponse);
     };
 
-    $scope.saveRoute = function (app) {
+    $scope.saveRoute = function (amendment) {
         $scope.openLoadingModal();
-        unsubmittedAppApi.update({userId: appProps.user.employeeId},
-                                 {route: JSON.stringify(app.route), traveler: $scope.data.app.traveler.employeeId},
+        unsubmittedAppApi.update({},
+                                 {route: JSON.stringify(amendment.route), traveler: $scope.data.traveler.employeeId},
                                  function (response) {
-            $scope.data.app = response.result;
+            $scope.data.traveler = response.result.traveler;
+            $scope.data.amendment = response.result.amendment;
             stateService.setAllowancesState();
             $scope.closeLoadingModal();
         }, function (error) {
@@ -90,27 +97,29 @@ function travelAppController($scope, $window, appProps, modals, locationService,
         });
     };
 
-    $scope.saveAllowances = function (app) {
+    $scope.saveAllowances = function (amendment) {
         var patches = {
-            allowances: JSON.stringify(app.allowances),
-            mealPerDiems: JSON.stringify(app.mealPerDiems),
-            lodgingPerDiems: JSON.stringify(app.lodgingPerDiems),
-            mileagePerDiems: JSON.stringify(app.route.mileagePerDiems),
-            traveler: $scope.data.app.traveler.employeeId
+            allowances: JSON.stringify(amendment.allowances),
+            mealPerDiems: JSON.stringify(amendment.mealPerDiems),
+            lodgingPerDiems: JSON.stringify(amendment.lodgingPerDiems),
+            mileagePerDiems: JSON.stringify(amendment.route.mileagePerDiems),
+            traveler: $scope.data.traveler.employeeId
         };
-        unsubmittedAppApi.update({userId: appProps.user.employeeId}, patches, function (response) {
-            $scope.data.app = response.result;
+        unsubmittedAppApi.update({}, patches, function (response) {
+            $scope.data.traveler = response.result.traveler;
+            $scope.data.amendment = response.result.amendment;
             stateService.setReviewState();
         }, $scope.handleErrorResponse)
     };
 
-    $scope.submitApplication = function (app) {
+    $scope.submitApplication = function () {
         modals.open('submit-confirm')
             .then(function () {
                 modals.open("submit-progress");
-                unsubmittedAppApi.save({userId: appProps.user.employeeId}, {}).$promise
+                unsubmittedAppApi.save().$promise
                     .then(function (response) {
-                        $scope.data.app = response.result;
+                        $scope.data.traveler = response.result.traveler;
+                        $scope.data.amendment = response.result.amendment;
                         modals.resolve({});
                     })
                     .then(function () {
@@ -132,24 +141,24 @@ function travelAppController($scope, $window, appProps, modals, locationService,
         });
     };
 
-    $scope.toPurposeState = function (app) {
+    $scope.toPurposeState = function () {
         $scope.stateService.setPurposeState();
     };
 
-    $scope.toOutboundState = function (app) {
+    $scope.toOutboundState = function () {
         $scope.stateService.setOutboundState();
     };
 
-    $scope.toReturnState = function (app) {
+    $scope.toReturnState = function () {
         $scope.stateService.setReturnState();
     };
 
-    $scope.toAllowancesState = function (app) {
+    $scope.toAllowancesState = function () {
         $scope.stateService.setAllowancesState();
     };
 
-    function cancelApplication(app) {
-        unsubmittedAppApi.remove({userId: appProps.user.employeeId})
+    function cancelApplication() {
+        unsubmittedAppApi.remove()
             .$promise
             .then(reload)
             .catch($scope.handleErrorResponse)

@@ -11,8 +11,8 @@ essTravel.directive('essLodgingDetailsModal', ['appProps', function (appProps) {
 function lodgingDetailsModalCtrl($scope, modals) {
 
     this.$onInit = function () {
-        $scope.app = modals.params().app;
-        $scope.isOverridden = $scope.app.lodgingPerDiems.isOverridden;
+        $scope.amendment = modals.params().amendment;
+        $scope.isOverridden = $scope.amendment.lodgingPerDiems.isOverridden;
     };
 
     $scope.closeModal = function () {

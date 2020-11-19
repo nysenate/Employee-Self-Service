@@ -6,27 +6,28 @@ function purposeEditLink(appProps, attachmentDeleteApi) {
     return {
         restrict: 'E',
         scope: {
-            app: '<',               // The application being edited.
+            amendment: '<',         // The amendment being edited.
             title: '@',             // The title
-            positiveCallback: '&',  // Callback function called when continuing. Takes a travel app param named 'app'.
-            negativeCallback: '&',  // Callback function called when canceling. Takes a travel app param named 'app'.
+            eventTypes: '<',         // Valid Purpose of Travel event types.
+            positiveCallback: '&',  // Callback function called when continuing. Takes a travel app param named 'amendment'.
+            negativeCallback: '&',  // Callback function called when canceling. Takes a travel app param named 'amendment'.
             negativeLabel: '@'      // Text to label the negative button. Defaults to 'Cancel'
         },
         controller: 'AppEditCtrl',
         templateUrl: appProps.ctxPath + '/template/travel/common/app/purpose-edit-form-directive',
         link: function (scope, elem, attrs) {
 
-            scope.dirtyApp = angular.copy(scope.app);
+            scope.dirtyAmendment = angular.copy(scope.amendment);
 
             scope.next = function () {
                 scope.setInvalidFormElementsTouched(scope.purpose.form);
                 if (scope.purpose.form.$valid) {
-                    scope.positiveCallback({app: scope.dirtyApp});
+                    scope.positiveCallback({amendment: scope.dirtyAmendment});
                 }
             };
 
             scope.cancel = function () {
-                scope.negativeCallback({app: scope.dirtyApp});
+                scope.negativeCallback({app: scope.dirtyAmendment});
             };
 
             /**
@@ -51,7 +52,7 @@ function purposeEditLink(appProps, attachmentDeleteApi) {
             //     }
             //
             //     // Use $http instead of $resource because it can handle formData.
-            //     $http.post(appProps.apiPath + '/travel/application/uncompleted/' + $scope.dirtyApp.id + '/attachment', formData, {
+            //     $http.post(appProps.apiPath + '/travel/application/uncompleted/' + $scope.dirtyAmendment.id + '/attachment', formData, {
             //         // Allow $http to choose the correct 'content-type'.
             //         headers: {'Content-Type': undefined},
             //         transformRequest: angular.identity

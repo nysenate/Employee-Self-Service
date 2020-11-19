@@ -73,11 +73,11 @@
           Departure:
         </div>
         <div class="app-form-row-l-col">
-          {{(app.route.origin.formattedAddressWithCounty) || NOT_AVAILABLE}}
+          {{(app.activeAmendment.route.origin.formattedAddressWithCounty) || NOT_AVAILABLE}}
         </div>
       </div>
 
-      <div class="app-form-grid" ng-repeat="dest in app.route.destinations" style="font-weight: normal;">
+      <div class="app-form-grid" ng-repeat="dest in app.activeAmendment.route.destinations" style="font-weight: normal;">
         <div class="app-form-label">
           <span ng-if="$first">Destination:</span>
           <span ng-if="!$first">&nbsp;</span>
@@ -92,8 +92,8 @@
           Dates of Travel:
         </div>
         <div class="app-form-l-col">
-          {{(app.startDate | date:'shortDate') || NOT_AVAILABLE}}
-          to {{(app.endDate | date:'shortDate') || NOT_AVAILABLE}}
+          {{(app.activeAmendment.startDate | date:'shortDate') || NOT_AVAILABLE}}
+          to {{(app.activeAmendment.endDate | date:'shortDate') || NOT_AVAILABLE}}
         </div>
       </div>
 
@@ -102,9 +102,12 @@
           Purpose:
         </div>
         <div class="app-form-l-col">
-          {{app.purposeOfTravel.eventType.displayName || NOT_AVAILABLE}}
-          <span ng-if="app.purposeOfTravel.eventType.requiresName">: {{app.purposeOfTravel.eventName}}</span><br>
-          {{app.purposeOfTravel.additionalPurpose}}
+          {{app.activeAmendment.purposeOfTravel.eventType.displayName || NOT_AVAILABLE}}
+          <span ng-if="app.activeAmendment.purposeOfTravel.eventType.requiresName">
+            : {{app.activeAmendment.purposeOfTravel.eventName}}
+          </span>
+          <br>
+          {{app.activeAmendment.purposeOfTravel.additionalPurpose}}
         </div>
       </div>
 
@@ -112,7 +115,7 @@
         <div class="app-form-mot-box">
           <h4 style="margin: 0px 0px 10px 0px; text-align: center;">Mode of Transportation</h4>
           <div ng-repeat="mode in modeOfTransportations"
-               ng-if="app.route" <%--Only evaluate this once $scope.app has been set by async request--%>
+               ng-if="app.activeAmendment.route" <%--Only evaluate this once $scope.app has been set by async request--%>
                style="display: inline;">
             <label>{{mode.displayName}} </label><input type="checkbox"
                                                        ng-checked="containsMot(mode)"
@@ -123,14 +126,14 @@
 
         <div class="app-form-allowances-box">
           <h4 style="margin: 0px 0px 10px 0px; text-align: center;">Estimated Travel Costs</h4>
-          <label>Transportation</label><span>{{(app.transportationAllowance | currency) || NOT_AVAILABLE}}</span><br/>
-          <label>Food</label><span>{{(app.mealAllowance | currency) || NOT_AVAILABLE}}</span><br/>
-          <label>Lodging</label><span>{{(app.lodgingAllowance | currency) || NOT_AVAILABLE}}</span><br/>
-          <label>Parking/Tolls</label><span>{{(app.tollsAndParkingAllowance | currency) || NOT_AVAILABLE}}</span><br/>
-          <label>Taxi/Bus/Subway</label><span>{{(app.alternateTransportationAllowance | currency) || NOT_AVAILABLE}}</span><br/>
+          <label>Transportation</label><span>{{(app.activeAmendment.transportationAllowance | currency) || NOT_AVAILABLE}}</span><br/>
+          <label>Food</label><span>{{(app.activeAmendment.mealAllowance | currency) || NOT_AVAILABLE}}</span><br/>
+          <label>Lodging</label><span>{{(app.activeAmendment.lodgingAllowance | currency) || NOT_AVAILABLE}}</span><br/>
+          <label>Parking/Tolls</label><span>{{(app.activeAmendment.tollsAndParkingAllowance | currency) || NOT_AVAILABLE}}</span><br/>
+          <label>Taxi/Bus/Subway</label><span>{{(app.activeAmendment.alternateTransportationAllowance | currency) || NOT_AVAILABLE}}</span><br/>
           <label>Registration
-            Fee</label><span>{{(app.registrationAllowance | currency) || NOT_AVAILABLE}}</span><br/>
-          <label>TOTAL</label><span>{{(app.totalAllowance | currency) || NOT_AVAILABLE}}</span><br/>
+            Fee</label><span>{{(app.activeAmendment.registrationAllowance | currency) || NOT_AVAILABLE}}</span><br/>
+          <label>TOTAL</label><span>{{(app.activeAmendment.totalAllowance | currency) || NOT_AVAILABLE}}</span><br/>
         </div>
       </div>
 

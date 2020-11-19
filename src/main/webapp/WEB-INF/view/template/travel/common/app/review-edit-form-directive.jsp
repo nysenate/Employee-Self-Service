@@ -3,32 +3,32 @@
 
   <ess-travel-inner-container title="Purpose of Travel">
     <%--    <div style="white-space:pre-wrap;">--%>
-    <%--      {{reviewApp.purposeOfTravel}}--%>
+    <%--      {{reviewAmendment.purposeOfTravel}}--%>
     <%--    </div>--%>
     <div>
       <div class="purpose-row">
         <label>Your purpose of travel:</label>
-        <span ng-bind="::reviewApp.purposeOfTravel.eventType.displayName" style="width: 150px;"></span>
+        <span ng-bind="::reviewAmendment.purposeOfTravel.eventType.displayName" style="width: 150px;"></span>
       </div>
-      <div ng-if="reviewApp.purposeOfTravel.eventType.requiresName" class="purpose-row">
-        <label>Name of the {{reviewApp.purposeOfTravel.eventType.displayName}}:</label>
-        <span ng-bind="::reviewApp.purposeOfTravel.eventName" style="width: 350px;"></span>
+      <div ng-if="reviewAmendment.purposeOfTravel.eventType.requiresName" class="purpose-row">
+        <label>Name of the {{reviewAmendment.purposeOfTravel.eventType.displayName}}:</label>
+        <span ng-bind="::reviewAmendment.purposeOfTravel.eventName" style="width: 350px;"></span>
       </div>
-      <div ng-if="reviewApp.purposeOfTravel.additionalPurpose !== ''" class="purpose-row">
-        <div ng-if="reviewApp.purposeOfTravel.eventType.requiresAdditionalPurpose">
+      <div ng-if="reviewAmendment.purposeOfTravel.additionalPurpose !== ''" class="purpose-row">
+        <div ng-if="reviewAmendment.purposeOfTravel.eventType.requiresAdditionalPurpose">
           <label style="vertical-align: top;">Description:</label>
-          <span ng-bind="::reviewApp.purposeOfTravel.additionalPurpose" style="width: 400px; display: inline-block;"></span>
+          <span ng-bind="::reviewAmendment.purposeOfTravel.additionalPurpose" style="width: 400px; display: inline-block;"></span>
         </div>
-        <div ng-if="!reviewApp.purposeOfTravel.eventType.requiresAdditionalPurpose">
+        <div ng-if="!reviewAmendment.purposeOfTravel.eventType.requiresAdditionalPurpose">
           <label style="vertical-align: top;">Additional information:</label>
-          <span ng-bind="::reviewApp.purposeOfTravel.additionalPurpose" style="width: 400px; display: inline-block;"></span>
+          <span ng-bind="::reviewAmendment.purposeOfTravel.additionalPurpose" style="width: 400px; display: inline-block;"></span>
         </div>
       </div>
     </div>
   </ess-travel-inner-container>
 
-  <ess-travel-inner-container title="Attachments" ng-if="reviewApp.attachments.length > 0">
-    <div ng-repeat="attachment in reviewApp.attachments" class="travel-attachment-container padding-10">
+  <ess-travel-inner-container title="Attachments" ng-if="reviewAmendment.attachments.length > 0">
+    <div ng-repeat="attachment in reviewAmendment.attachments" class="travel-attachment-container padding-10">
       <div class="travel-attachment-filename">{{attachment.originalName}}</div>
     </div>
   </ess-travel-inner-container>
@@ -39,7 +39,7 @@
     <form name="outboundForm">
       <fieldset disabled="disabled" style="border: none;">
         <div class="travel-container"
-             ng-repeat="leg in reviewApp.route.outboundLegs">
+             ng-repeat="leg in reviewAmendment.route.outboundLegs">
 
           <div class="outbound width-100" style="display: inline-block;">
             <h3 class="float-left">Outbound Segment {{$index + 1}}</h3>
@@ -91,7 +91,7 @@
       <fieldset disabled="disabled" style="border: none;">
 
         <div class="travel-container"
-             ng-repeat="leg in reviewApp.route.returnLegs">
+             ng-repeat="leg in reviewAmendment.route.returnLegs">
 
           <div class="return width-100" style="display: inline-block;">
             <h3 class="float-left">Return Segment {{$index + 1}}</h3>
@@ -147,8 +147,8 @@
           Meals:
         </div>
         <div class="col-6-12 margin-bottom-5">
-          {{reviewApp.mealAllowance | currency}}
-          <span ng-if="reviewApp.mealAllowance > 0"
+          {{reviewAmendment.mealAllowance | currency}}
+          <span ng-if="reviewAmendment.mealAllowance > 0"
                 class="icon-info pointer"
                 ng-click="displayMealDetails()"
                 title="View detailed meal expense info">
@@ -158,8 +158,8 @@
           Lodging:
         </div>
         <div class="col-6-12 margin-bottom-5">
-          {{reviewApp.lodgingAllowance | currency}}
-          <span ng-if="reviewApp.lodgingAllowance > 0"
+          {{reviewAmendment.lodgingAllowance | currency}}
+          <span ng-if="reviewAmendment.lodgingAllowance > 0"
                 class="icon-info pointer"
                 ng-click="displayLodgingDetails()"
                 title="View detailed lodging expense info">
@@ -169,8 +169,8 @@
           Mileage:
         </div>
         <div class="col-6-12 margin-bottom-5">
-          {{reviewApp.mileageAllowance | currency}}
-          <span ng-if="reviewApp.mileageAllowance > 0"
+          {{reviewAmendment.mileageAllowance | currency}}
+          <span ng-if="reviewAmendment.mileageAllowance > 0"
                 class="icon-info pointer"
                 ng-click="displayMileageDetails()"
                 title="View detailed mileage expense info">
@@ -180,37 +180,37 @@
           Tolls:
         </div>
         <div class="col-6-12 margin-bottom-5">
-          {{reviewApp.tollsAllowance | currency}}
+          {{reviewAmendment.tollsAllowance | currency}}
         </div>
         <div class="col-6-12 margin-bottom-5">
           Parking:
         </div>
         <div class="col-6-12 margin-bottom-5">
-          {{reviewApp.parkingAllowance | currency}}
+          {{reviewAmendment.parkingAllowance | currency}}
         </div>
         <div class="col-6-12 margin-bottom-5">
           Taxi/Bus/Subway:
         </div>
         <div class="col-6-12 margin-bottom-5">
-          {{reviewApp.alternateTransportationAllowance | currency}}
+          {{reviewAmendment.alternateTransportationAllowance | currency}}
         </div>
         <div class="col-6-12 margin-bottom-5">
           Train/Airplane:
         </div>
         <div class="col-6-12 margin-bottom-5">
-          {{reviewApp.trainAndPlaneAllowance | currency}}
+          {{reviewAmendment.trainAndPlaneAllowance | currency}}
         </div>
         <div class="col-6-12 margin-bottom-5">
           Registration Fee:
         </div>
         <div class="col-6-12 margin-bottom-5">
-          {{reviewApp.registrationAllowance | currency}}
+          {{reviewAmendment.registrationAllowance | currency}}
         </div>
         <div class="col-6-12 margin-bottom-5">
           <span class="bold">Total:</span>
         </div>
         <div class="col-6-12 margin-bottom-5">
-          {{reviewApp.totalAllowance | currency}}
+          {{reviewAmendment.totalAllowance | currency}}
         </div>
       </div>
     </div>

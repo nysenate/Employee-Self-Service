@@ -4,12 +4,13 @@ import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.client.response.error.ErrorCode;
 import gov.nysenate.ess.core.client.response.error.ErrorResponse;
+import gov.nysenate.ess.core.client.view.DetailedEmployeeView;
+import gov.nysenate.ess.core.client.view.EmployeeView;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.util.OutputUtils;
-import gov.nysenate.ess.time.service.attendance.validation.InvalidTimeRecordException;
 import gov.nysenate.ess.travel.allowedtravelers.AllowedTravelersService;
 import gov.nysenate.ess.travel.application.*;
 import gov.nysenate.ess.travel.application.allowances.AllowancesView;
@@ -27,10 +28,8 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
-import java.util.function.Supplier;
 
-@RestController
+@SuppressWarnings("UnnecessaryBoxing") @RestController
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/travel/unsubmitted")
 public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
 
@@ -39,59 +38,47 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
     @Autowired private UnsubmittedAppDao unsubmittedAppDao;
     @Autowired private TravelApplicationService travelApplicationService;
     @Autowired private RouteService routeService;
-    @Autowired private AmendmentService amendmentService;
     @Autowired private AllowedTravelersService allowedTravelersService;
     @Autowired private RouteViewValidator routeViewValidator;
+    @Autowired private TravelAppUpdateService appUpdateService;
 
     /**
      * Get an unsubmitted app API
      * --------------------------
-     * Get the current unsubmitted app for the user.
+     * Get the current unsubmitted app for the logged in user.
      * <p>
      * Usage:   (GET) /api/v1/travel/unsubmitted
      * <p>
-     * Request Params:
      *
-     * @param userId     Integer - required - the employee id of the logged in user.
-     * @return {@link TravelApplicationView}
      * @throws IOException
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public BaseResponse getUnsubmittedApps(@RequestParam int userId) throws IOException {
-        TravelApplicationView appView;
-        Optional<TravelApplicationView> viewOpt = unsubmittedAppDao.find(userId);
+    public BaseResponse getUnsubmittedApps() {
         Employee user = employeeInfoService.getEmployee(getSubjectEmployeeId());
-        if (viewOpt.isPresent()) {
-            appView = viewOpt.get();
-            checkTravelAppPermission(viewOpt.get().toTravelApplication(), RequestMethod.GET);
-        } else {
-            appView = new TravelApplicationView(new TravelApplication(user, user));
-            checkTravelAppPermission(appView.toTravelApplication(), RequestMethod.GET);
-            unsubmittedAppDao.save(userId, appView);
-        }
-
-        Set<Employee> allowedTravelers = allowedTravelersService.forEmp(user);
-        return new ViewObjectResponse<>(new NewApplicationDto(appView, allowedTravelers));
+        Optional<TravelAppEditDto> dtoOpt = unsubmittedAppDao.find(getSubjectEmployeeId());
+        TravelAppEditDto appEditDto = dtoOpt.orElseGet(() -> {
+            Amendment amd = new Amendment.Builder().build();
+            return new TravelAppEditDto(new DetailedEmployeeView(user), new AmendmentView(amd));
+        });
+        appEditDto.setAllowedTravelers(allowedTravelersService.forEmp(user));
+        unsubmittedAppDao.save(getSubjectEmployeeId(), appEditDto.getTraveler(), appEditDto.getAmendment());
+        return new ViewObjectResponse<>(appEditDto);
     }
 
     /**
      * Delete an unsubmitted app API
      * -----------------------------
-     * Deletes the currently saved unsubmitted app for a given user.
+     * Deletes the currently saved unsubmitted app for the logged in user.
      * This effectively resets the application for starting over.
      * <p>
      * Usage:   (DELETE) /api/v1/travel/unsubmitted
      * <p>
-     * Request Params
      *
-     * @param userId     Integer - required - the employee id of the logged in user.
      * @throws IOException
      */
     @RequestMapping(value = "", method = RequestMethod.DELETE)
-    public void deleteUnsubmittedApp(@RequestParam int userId) throws IOException {
-        TravelApplicationView applicationView = findApp(userId);
-        checkTravelAppPermission(applicationView.toTravelApplication(), RequestMethod.POST);
-        unsubmittedAppDao.delete(userId);
+    public void deleteUnsubmittedApp() {
+        unsubmittedAppDao.delete(getSubjectEmployeeId());
     }
 
     /**
@@ -101,21 +88,16 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
      * <p>
      * Usage:   (PATCH) /api/v1/travel/unsubmitted
      * <p>
-     * Request Params:
      *
-     * @param userId     Integer - required - the employee id of the logged in user.
-     *                   <p>
-     *                   Body:
+     * Body:
      * @param patches    Map of patch keys to patch values. Patch key represents a field to be updated with the patch value.
      * @return {@link TravelApplicationView} updated with patches.
      * @throws IOException
      */
     @RequestMapping(value = "", method = RequestMethod.PATCH)
-    public BaseResponse patchUnsubmittedApp(@RequestParam int userId,
-                                            @RequestBody Map<String, String> patches) throws ProviderException, IOException {
-        TravelApplicationView view = findApp(userId);
-        TravelApplication app = view.toTravelApplication();
-        checkTravelAppPermission(app, RequestMethod.POST);
+    public BaseResponse patchUnsubmittedApp(@RequestBody Map<String, String> patches) throws ProviderException, IOException {
+        TravelAppEditDto dto = findApp(getSubjectEmployeeId());
+        Amendment amendment = dto.getAmendment().toAmendment();
         Employee user = employeeInfoService.getEmployee(getSubjectEmployeeId());
 
         // Perform all updates specified in the patch.
@@ -123,87 +105,74 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
             switch (patch.getKey()) {
                 case "traveler":
                     int travelerEmpId = Integer.valueOf(patch.getValue());
-                    if (travelerEmpId != app.getTraveler().getEmployeeId()) {
-                        app.setTraveler(employeeInfoService.getEmployee(travelerEmpId));
+                    if (travelerEmpId != dto.getTraveler().getEmployeeId()) {
+                        dto.setTraveler(new DetailedEmployeeView(employeeInfoService.getEmployee(travelerEmpId)));
                     }
                     break;
                 case "purposeOfTravel":
                     PurposeOfTravelView potView = OutputUtils.jsonToObject(patch.getValue(), PurposeOfTravelView.class);
-                    app.activeAmendment().setPurposeOfTravel(potView.toPurposeOfTravel());
+                    amendment = appUpdateService.updatePurposeOfTravel(amendment, potView.toPurposeOfTravel());
                     break;
                 case "outbound":
                     RouteView outboundRouteView = OutputUtils.jsonToObject(patch.getValue(), RouteView.class);
-                    Route outboundRoute = outboundRouteView.toRoute();
-                    if (!outboundRoute.equals(app.activeAmendment().route())) {
-                        app.activeAmendment().setOutboundRoute(outboundRoute);
-                    }
+                    amendment = appUpdateService.updateOutboundRoute(amendment, outboundRouteView.toRoute());
                     break;
                 case "route":
                     RouteView routeView = OutputUtils.jsonToObject(patch.getValue(), RouteView.class);
                     routeViewValidator.validateTravelDates(routeView);
-                    Route fullRoute = routeService.createRoute(routeView.toRoute());
-                    amendmentService.setRoute(app.activeAmendment(), fullRoute);
+                    amendment = appUpdateService.updateRoute(amendment, routeView.toRoute());
                     break;
                 case "allowances":
                     AllowancesView allowancesView = OutputUtils.jsonToObject(patch.getValue(), AllowancesView.class);
-                    app.activeAmendment().setAllowances(allowancesView.toAllowances());
+                    amendment = appUpdateService.updateAllowances(amendment, allowancesView.toAllowances());
                     break;
                 case "mealPerDiems":
                     MealPerDiemsView mealPerDiemsView = OutputUtils.jsonToObject(patch.getValue(), MealPerDiemsView.class);
-                    app.activeAmendment().setMealPerDiems(mealPerDiemsView.toMealPerDiems());
+                    amendment = appUpdateService.updateMealPerDiems(amendment, mealPerDiemsView.toMealPerDiems());
                     break;
                 case "lodgingPerDiems":
                     LodgingPerDiemsView lodgingPerDiemsView = OutputUtils.jsonToObject(patch.getValue(), LodgingPerDiemsView.class);
-                    app.activeAmendment().setLodingPerDiems(lodgingPerDiemsView.toLodgingPerDiems());
+                    amendment = appUpdateService.updateLodgingPerDiems(amendment, lodgingPerDiemsView.toLodgingPerDiems());
                     break;
                 case "mileagePerDiems":
                     MileagePerDiemsView mileagePerDiemView = OutputUtils.jsonToObject(patch.getValue(), MileagePerDiemsView.class);
-                    travelApplicationService.updateMileagePerDiems(app, mileagePerDiemView.toMileagePerDiems());
+                    amendment = appUpdateService.updateMileagePerDiems(amendment, mileagePerDiemView.toMileagePerDiems());
                     break;
                 default:
                     logger.info("Call to travel application patch API did not contain a valid patch key. Patches were: " + patches.toString());
             }
         }
 
-        TravelApplicationView appView = new TravelApplicationView(app);
+        AmendmentView amendmentView = new AmendmentView(amendment);
         // Save after all changes are applied.
-        unsubmittedAppDao.save(user.getEmployeeId(), appView);
+        unsubmittedAppDao.save(user.getEmployeeId(), dto.getTraveler(), amendmentView);
 
-        return new ViewObjectResponse<>(appView);
+        dto.setAmendment(amendmentView);
+        return new ViewObjectResponse<>(dto);
     }
 
     /**
      * Submit unsubmitted app API
      * --------------------------
-     * Submit an unsubmitted app.
-     * <p>
-     * Request Params:
      *
-     * @param userId     Integer - required - the employee id of the logged in user.
      * @return {@link TravelApplicationView}
      * @throws IOException
      */
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public BaseResponse submitApp(@RequestParam int userId) throws IOException {
-        TravelApplicationView view = findApp(userId);
-        TravelApplication app = view.toTravelApplication();
-        checkTravelAppPermission(app, RequestMethod.POST);
+    public BaseResponse submitApp() {
         Employee user = employeeInfoService.getEmployee(getSubjectEmployeeId());
+        TravelAppEditDto dto = findApp(getSubjectEmployeeId());
 
-        app = travelApplicationService.submitTravelApplication(app, user);
-        unsubmittedAppDao.delete(userId);
-
+        TravelApplication app = travelApplicationService.submitTravelApplication(
+                dto.getAmendment().toAmendment(), dto.getTraveler().toEmployee(), user);
+        unsubmittedAppDao.delete(user.getEmployeeId());
         return new ViewObjectResponse<>(new TravelApplicationView(app));
     }
 
-    private TravelApplicationView findApp(int userId) throws IOException {
+    private TravelAppEditDto findApp(int userId) {
         return unsubmittedAppDao.find(userId)
-                .orElseThrow(invalidUserIdOrTravelerId(userId));
-    }
-
-    private Supplier<InvalidRequestParamEx> invalidUserIdOrTravelerId(int userId) {
-        return () -> new InvalidRequestParamEx(String.valueOf(userId), "userId", "int",
-                "No Unsubmitted travel app found with provided userId");
+                .orElseThrow(() -> new InvalidRequestParamEx(String.valueOf(userId), "userId", "int",
+                        "No Unsubmitted travel app found with provided userId"));
     }
 
     @ExceptionHandler(InvalidTravelDatesException.class)

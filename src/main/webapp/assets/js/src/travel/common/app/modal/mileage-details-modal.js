@@ -11,7 +11,7 @@ essTravel.directive('essMileageDetailsModal', ['appProps', function (appProps) {
 function mileageDetailsModalCtrl($scope, modals) {
 
     this.$onInit = function () {
-        $scope.app = modals.params().app;
+        $scope.amendment = modals.params().amendment;
         $scope.isOverridden = false; // not implemented.
     };
 

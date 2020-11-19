@@ -12,7 +12,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr ng-repeat="leg in app.route.mileagePerDiems.requestedLegs">
+      <tr ng-repeat="leg in amendment.route.mileagePerDiems.requestedLegs">
         <td>{{leg.from.address.formattedAddressWithCounty}}</td>
         <td>{{leg.to.address.formattedAddressWithCounty}}</td>
         <td>{{leg.miles}}</td>
@@ -24,14 +24,14 @@
         <td class="bold">Total:</td>
         <td></td>
         <td></td>
-        <td class="bold">{{app.route.mileagePerDiems.totalPerDiem | currency}}</td>
+        <td class="bold">{{amendment.route.mileagePerDiems.totalPerDiem | currency}}</td>
       </tr>
       <tr ng-show="isOverridden">
         <td></td>
         <td class="disapproved-text">Mileage Overridden to:</td>
         <td></td>
         <td></td>
-        <td class="disapproved-text" ng-bind="::app.perDiemOverrides.mileageOverride | currency"></td>
+        <td class="disapproved-text" ng-bind="::amendment.perDiemOverrides.mileageOverride | currency"></td>
       </tr>
       </tbody>
     </table>

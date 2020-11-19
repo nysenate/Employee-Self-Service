@@ -7,37 +7,37 @@
           Tolls:
         </div>
         <div class="col-6-12 margin-bottom-5">
-          {{app.tollsAllowance | currency}}
+          {{app.activeAmendment.tollsAllowance | currency}}
         </div>
         <div class="col-6-12 margin-bottom-5">
           Parking:
         </div>
         <div class="col-6-12 margin-bottom-5">
-          {{app.parkingAllowance | currency}}
+          {{app.activeAmendment.parkingAllowance | currency}}
         </div>
         <div class="col-6-12 margin-bottom-5">
           Taxi/Bus/Subway:
         </div>
         <div class="col-6-12 margin-bottom-5">
-          {{app.alternateTransportationAllowance | currency}}
+          {{app.activeAmendment.alternateTransportationAllowance | currency}}
         </div>
         <div class="col-6-12 margin-bottom-5">
           Train/Airplane:
         </div>
         <div class="col-6-12 margin-bottom-5">
-          {{app.trainAndPlaneAllowance | currency}}
+          {{app.activeAmendment.trainAndPlaneAllowance | currency}}
         </div>
         <div class="col-6-12 margin-bottom-5">
           Registration Fee:
         </div>
         <div class="col-6-12 margin-bottom-5">
-          {{app.registrationAllowance | currency}}
+          {{app.activeAmendment.registrationAllowance | currency}}
         </div>
       </div>
     </div>
   </ess-travel-inner-container>
 
-  <ess-travel-inner-container title="Meal Expenses" ng-if="app.mealPerDiems.totalPerDiem > 0">
+  <ess-travel-inner-container title="Meal Expenses" ng-if="app.activeAmendment.mealPerDiems.totalPerDiem > 0">
     <div class="margin-20">
       <table class="travel-table">
         <thead>
@@ -50,7 +50,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="perDiem in app.mealPerDiems.requestedMealPerDiems">
+        <tr ng-repeat="perDiem in app.activeAmendment.mealPerDiems.requestedMealPerDiems">
           <td>{{perDiem.date | date: 'shortDate'}}</td>
           <td>{{perDiem.address.formattedAddressWithCounty}}</td>
           <td>{{::(perDiem.mie.breakfast | currency) || NOT_AVAILABLE }}</td>
@@ -62,14 +62,14 @@
           <td class="bold">Total:</td>
           <td></td>
           <td></td>
-          <td class="bold">{{app.mealPerDiems.totalPerDiem | currency}}</td>
+          <td class="bold">{{app.activeAmendment.mealPerDiems.totalPerDiem | currency}}</td>
         </tr>
         </tbody>
       </table>
     </div>
   </ess-travel-inner-container>
 
-  <ess-travel-inner-container title="Lodging Expenses" ng-if="app.lodgingPerDiems.totalPerDiem > 0">
+  <ess-travel-inner-container title="Lodging Expenses" ng-if="app.activeAmendment.lodgingPerDiems.totalPerDiem > 0">
     <div class="margin-20">
       <table class="travel-table">
         <thead>
@@ -80,7 +80,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="perDiem in app.lodgingPerDiems.requestedLodgingPerDiems">
+        <tr ng-repeat="perDiem in app.activeAmendment.lodgingPerDiems.requestedLodgingPerDiems">
           <td>{{perDiem.date | date: 'shortDate'}}</td>
           <td>{{perDiem.address.formattedAddressWithCounty}}</td>
           <td ng-class="{'line-through': isOverridden}">{{perDiem.rate | currency}}</td>
@@ -88,19 +88,19 @@
         <tr ng-class="{'line-through': isOverridden}">
           <td></td>
           <td class="bold">Total:</td>
-          <td class="bold">{{app.lodgingPerDiems.totalPerDiem | currency}}</td>
+          <td class="bold">{{app.activeAmendment.lodgingPerDiems.totalPerDiem | currency}}</td>
         </tr>
         <tr ng-show="isOverridden">
           <td></td>
           <td class="disapproved-text">Lodging Overridden:</td>
-          <td class="disapproved-text" ng-bind="::app.perDiemOverrides.lodgingOverride | currency"></td>
+          <td class="disapproved-text" ng-bind="::app.activeAmendment.perDiemOverrides.lodgingOverride | currency"></td>
         </tr>
         </tbody>
       </table>
     </div>
   </ess-travel-inner-container>
 
-  <ess-travel-inner-container title="Mileage Expenses" ng-if="app.route.mileagePerDiems.totalPerDiem > 0">
+  <ess-travel-inner-container title="Mileage Expenses" ng-if="app.activeAmendment.route.mileagePerDiems.totalPerDiem > 0">
     <div class="margin-20">
       <table class="travel-table">
         <thead>
@@ -113,7 +113,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="leg in app.route.mileagePerDiems.requestedLegs">
+        <tr ng-repeat="leg in app.activeAmendment.route.mileagePerDiems.requestedLegs">
           <td>{{leg.from.address.formattedAddressWithCounty}}</td>
           <td>{{leg.to.address.formattedAddressWithCounty}}</td>
           <td>{{leg.miles}}</td>
@@ -125,7 +125,7 @@
           <td class="bold">Total:</td>
           <td></td>
           <td></td>
-          <td class="bold">{{app.route.mileagePerDiems.totalPerDiem | currency}}</td>
+          <td class="bold">{{app.activeAmendment.route.mileagePerDiems.totalPerDiem | currency}}</td>
         </tr>
         </tbody>
       </table>

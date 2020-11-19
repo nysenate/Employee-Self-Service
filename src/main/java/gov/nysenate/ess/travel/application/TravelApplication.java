@@ -14,16 +14,22 @@ public class TravelApplication {
 
     protected int appId;
     protected Employee traveler;
+    /**
+     * The Review Status of this application.
+     * null if this application was created before the review process was implemented.
+     */
+    private TravelApplicationStatus status;
     protected SortedSet<Amendment> amendments;
 
-    public TravelApplication(Employee traveler, Employee creator) {
-        this(0, traveler, Lists.newArrayList(new Amendment.Builder().withVersion(Version.A).withCreatedBy(creator).build()));
+    public TravelApplication(Employee traveler, Amendment amendment) {
+        this(0, traveler, new TravelApplicationStatus(), Lists.newArrayList(amendment));
     }
 
-    public TravelApplication(int id, Employee traveler, Collection<Amendment> amendments) {
+    public TravelApplication(int id, Employee traveler, TravelApplicationStatus status, Collection<Amendment> amendments) {
         Preconditions.checkArgument(!amendments.isEmpty());
         this.appId = id;
         this.traveler = Preconditions.checkNotNull(traveler, "Travel Application requires a non null traveler.");
+        this.status = status;
         this.amendments = new TreeSet<>(amendmentComparator);
         this.amendments.addAll(amendments);
     }
@@ -38,8 +44,23 @@ public class TravelApplication {
         return amendments.last(); // FIXME for first implementation, just return most recent amendment.
     }
 
-    protected void addAmendment(Amendment a) {
-        amendments.add(a);
+    public TravelApplicationStatus status() {
+        return status;
+    }
+
+    /**
+     * Mark the TravelApplication as approved.
+     */
+    public void approve() {
+        status().approve();
+    }
+
+    /**
+     * Mark the TravelApplication as disapproved
+     * @param reason The reason for disapproval.
+     */
+    public void disapprove(String reason) {
+        status().disapprove(reason);
     }
 
     public int getAppId() {
@@ -48,10 +69,6 @@ public class TravelApplication {
 
     public Employee getTraveler() {
         return traveler;
-    }
-
-    public void setTraveler(Employee traveler) {
-        this.traveler = traveler;
     }
 
     public LocalDateTime getSubmittedDateTime() {
@@ -68,5 +85,17 @@ public class TravelApplication {
 
     public Employee getModifiedBy() {
         return amendments.last().createdBy();
+    }
+
+    public SortedSet<Amendment> getAmendments() {
+        return amendments;
+    }
+
+    protected void setAppId(int id) {
+        appId = id;
+    }
+
+    protected void addAmendment(Amendment a) {
+        amendments.add(a);
     }
 }

@@ -6,7 +6,7 @@
     <div class="padding-10 text-align-center">
       Travel application on behalf of:
       <span ng-if="!stateService.isReviewState()">
-      <ui-select ng-model="data.app.traveler" style="min-width: 200px;">
+      <ui-select ng-model="data.traveler" style="min-width: 200px;">
         <ui-select-match>
           <span ng-bind="$select.selected.fullName"></span>
         </ui-select-match>
@@ -23,51 +23,53 @@
 
   <ess-new-app-breadcrumbs></ess-new-app-breadcrumbs>
 
-  <div loader-indicator class="loader" ng-show="!data.app"></div>
+  <div loader-indicator class="loader" ng-show="!data.amendment"></div>
 
-  <div ng-if="data.app">
+  <div ng-if="data.amendment">
     <div ng-if="stateService.isPurposeState()">
-      <ess-purpose-edit-form app="data.app"
+      <ess-purpose-edit-form amendment="data.amendment"
                              title="Enter your purpose of travel."
-                             positive-callback="savePurpose(app)"
-                             negative-callback="cancel(app)">
+                             event-types="data.eventTypes"
+                             positive-callback="savePurpose(amendment)"
+                             negative-callback="cancel(amendment)">
       </ess-purpose-edit-form>
     </div>
 
     <div ng-if="stateService.isOutboundState()">
-      <ess-outbound-edit-form app="data.app"
+      <ess-outbound-edit-form amendment="data.amendment"
+                              traveler="data.traveler"
                               title="Enter your outbound route starting from the origin and including all destinations."
-                              positive-callback="saveOutbound(app)"
-                              neutral-callback="toPurposeState(app)"
-                              negative-callback="cancel(app)">
+                              positive-callback="saveOutbound(amendment)"
+                              neutral-callback="toPurposeState(amendment)"
+                              negative-callback="cancel(amendment)">
       </ess-outbound-edit-form>
     </div>
 
     <div ng-if="stateService.isReturnState()">
-      <ess-return-edit-form app="data.app"
+      <ess-return-edit-form amendment="data.amendment"
                             title="Enter your return route from the last destination to the origin."
-                            positive-callback="saveRoute(app)"
-                            neutral-callback="toOutboundState(app)"
-                            negative-callback="cancel(app)">
+                            positive-callback="saveRoute(amendment)"
+                            neutral-callback="toOutboundState(amendment)"
+                            negative-callback="cancel(amendment)">
       </ess-return-edit-form>
     </div>
 
     <div ng-if="stateService.isAllowancesState()">
-      <ess-allowances-edit-form app="data.app"
+      <ess-allowances-edit-form amendment="data.amendment"
                                 title="Enter your estimated expenses for the following categories."
-                                positive-callback="saveAllowances(app)"
-                                neutral-callback="toReturnState(app)"
-                                negative-callback="cancel(app)">
+                                positive-callback="saveAllowances(amendment)"
+                                neutral-callback="toReturnState(amendment)"
+                                negative-callback="cancel(amendment)">
       </ess-allowances-edit-form>
     </div>
 
     <div ng-if="stateService.isReviewState()">
-      <ess-review-edit-form app="data.app"
+      <ess-review-edit-form amendment="data.amendment"
                             title="Please review your application."
                             positive-btn-label="Submit Application"
-                            positive-callback="submitApplication(app)"
-                            neutral-callback="toAllowancesState(app)"
-                            negative-callback="cancel(app)">
+                            positive-callback="submitApplication(amendment)"
+                            neutral-callback="toAllowancesState(amendment)"
+                            negative-callback="cancel(amendment)">
       </ess-review-edit-form>
     </div>
   </div>

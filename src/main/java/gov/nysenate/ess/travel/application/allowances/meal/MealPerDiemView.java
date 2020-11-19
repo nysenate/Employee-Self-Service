@@ -18,8 +18,8 @@ public class MealPerDiemView implements ViewObject {
     private GoogleAddressView address;
     @JsonProperty("isReimbursementRequested")
     private boolean isReimbursementRequested;
-    private String requestedPerDiem;
-    private String maximumPerDiem;
+    private String requestedPerDiem; // TODO can be derived from rate and isReimbursementRequested?
+    private String maximumPerDiem; // TODO Always the same as rate?
 
     public MealPerDiemView() {
     }

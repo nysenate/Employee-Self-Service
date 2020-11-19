@@ -15,20 +15,21 @@ import java.util.List;
 
 /**
  * A set of changes to a Application.
+ * A TravelApplication's first Amendment is created when the application is submitted.
+ * From then on, any edit to the application will be done by adding a new Amendment.
  */
 public class Amendment {
 
     private int amendmentId; // 0 if this amendment has not been saved to the database.
-    private Version version;
-    private PurposeOfTravel purposeOfTravel;
-    private Route route;
-    private Allowances allowances;
-    private TravelApplicationStatus status;
-    private List<TravelAttachment> attachments;
-    private LocalDateTime createdDateTime;
-    private Employee createdBy;
-    private MealPerDiems mealPerDiems;
-    private LodgingPerDiems lodgingPerDiems;
+    private final Version version;
+    private final PurposeOfTravel purposeOfTravel;
+    private final Route route;
+    private final Allowances allowances;
+    private final List<TravelAttachment> attachments;
+    private final LocalDateTime createdDateTime;
+    private final Employee createdBy;
+    private final MealPerDiems mealPerDiems;
+    private final LodgingPerDiems lodgingPerDiems;
 
     public Amendment(Builder builder) {
         amendmentId = builder.amendmentId;
@@ -38,18 +39,9 @@ public class Amendment {
         allowances = builder.allowances;
         mealPerDiems = builder.mealPerDiems;
         lodgingPerDiems = builder.lodgingPerDiems;
-        status = builder.status;
         attachments = builder.attachments;
         createdDateTime = builder.createdDateTime;
         createdBy = builder.createdBy;
-    }
-
-    public void approve() {
-        status().approve();
-    }
-
-    public void disapprove(String reason) {
-        status().disapprove(reason);
     }
 
     public Dollars mileageAllowance() {
@@ -140,58 +132,20 @@ public class Amendment {
         return purposeOfTravel;
     }
 
-    public void setPurposeOfTravel(PurposeOfTravel purposeOfTravel) {
-        this.purposeOfTravel = purposeOfTravel;
-    }
-
     public Route route() {
         return route;
-    }
-
-    /**
-     * Setting of the route should be done with {@link AmendmentService}, Not this setter.
-     * @param route
-     */
-    protected void setRoute(Route route) {
-        this.route = route;
-    }
-
-    /**
-     * This is used to save the outbound portion of the route while a user is filling out the form.
-     * Should not be used for anything else.
-     * See {@link AmendmentService} for updating a full route.
-     * @param route
-     */
-    public void setOutboundRoute(Route route) {
-        this.route = route;
     }
 
     public MealPerDiems mealPerDiems() {
         return this.mealPerDiems;
     }
 
-    public void setMealPerDiems(MealPerDiems mpds) {
-        this.mealPerDiems = mpds;
-    }
-
     public LodgingPerDiems lodgingPerDiems() {
         return this.lodgingPerDiems;
     }
 
-    public void setLodingPerDiems(LodgingPerDiems lpds) {
-        this.lodgingPerDiems = lpds;
-    }
-
     protected Allowances allowances() {
         return allowances;
-    }
-
-    public void setAllowances(Allowances allowances) {
-        this.allowances = allowances;
-    }
-
-    public TravelApplicationStatus status() {
-        return status;
     }
 
     public List<TravelAttachment> attachments() {
@@ -206,15 +160,7 @@ public class Amendment {
         return createdBy;
     }
 
-    public void setCreatedDateTime(LocalDateTime createdDateTime) {
-        this.createdDateTime = createdDateTime;
-    }
-
-    public void setCreatedBy(Employee createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public void setAmendmentId(Integer amendmentId) {
+    protected void setAmendmentId(Integer amendmentId) {
         this.amendmentId = amendmentId;
     }
 
@@ -230,12 +176,27 @@ public class Amendment {
         private Allowances allowances = new Allowances();
         private MealPerDiems mealPerDiems = new MealPerDiems(new HashSet<>());
         private LodgingPerDiems lodgingPerDiems = new LodgingPerDiems(new HashSet<>());
-        private TravelApplicationStatus status = new TravelApplicationStatus();
         private List<TravelAttachment> attachments = new ArrayList<>();
         private LocalDateTime createdDateTime;
         private Employee createdBy;
 
         public Builder() {
+        }
+
+        /**
+         * Initializes a builder as a copy of an existing amendment.
+         * {@code createdDateTime} and {@code createdBy} are not copied to the builder.
+         * @param amd
+         */
+        public Builder(Amendment amd) {
+            withAmendmentId(amd.amendmentId());
+            withVersion(amd.version());
+            withPurposeOfTravel(amd.purposeOfTravel());
+            withRoute(amd.route());
+            withAllowances(amd.allowances());
+            withMealPerDiems(amd.mealPerDiems());
+            withLodgingPerDiems(amd.lodgingPerDiems());
+            withAttachments(amd.attachments());
         }
 
         public Builder withAmendmentId(int id) {
@@ -270,11 +231,6 @@ public class Amendment {
 
         public Builder withLodgingPerDiems(LodgingPerDiems lpds) {
             this.lodgingPerDiems = lpds;
-            return this;
-        }
-
-        public Builder withStatus(TravelApplicationStatus status) {
-            this.status = status;
             return this;
         }
 

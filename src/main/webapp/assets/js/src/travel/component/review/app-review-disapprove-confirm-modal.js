@@ -13,7 +13,8 @@ function disapproveConfirmCtrl($scope, modals, appReviewApi) {
     $scope.appReview = modals.params().review;
     $scope.role = modals.params().role;
     $scope.notes = "";
-    $scope.isSingleDayTravel = $scope.appReview.travelApplication.startDate === $scope.appReview.travelApplication.endDate;
+    $scope.isSingleDayTravel = $scope.appReview.travelApplication.activeAmendment.startDate
+        === $scope.appReview.travelApplication.activeAmendment.endDate;
 
     $scope.disapprove = function () {
         appReviewApi.disapprove($scope.appReview.appReviewId, $scope.role.name, $scope.notes)

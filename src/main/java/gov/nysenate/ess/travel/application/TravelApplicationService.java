@@ -29,21 +29,32 @@ public class TravelApplicationService {
      */
     public TravelApplication saveTravelApplication(TravelApplication app, Employee saver) {
         // FIXME these should update only the amendment being saved.
-        app.activeAmendment().setCreatedDateTime(LocalDateTime.now());
-        app.activeAmendment().setCreatedBy(saver);
-        applicationDao.saveTravelApplication(app);
+//        app.activeAmendment().setCreatedDateTime(LocalDateTime.now());
+//        app.activeAmendment().setCreatedBy(saver);
+//        applicationDao.saveTravelApplication(app);
         return app;
     }
 
     /**
-     * Creates and saves a new ApplicationApproval for this TravelApplication.
+     * Creates and saves a new TravelApplication with one amendment {@code amd}.
+     * This also creates and saves an ApplicationReview.
      *
-     * @param app
-     * @param submitter The employee submitting this application.
+     * @param amd The first amendment to the TravelApplication
+     * @param traveler The employee who will be traveling.
+     * @param submitter The employee who is submitting the application.
      * @return
      */
-    public TravelApplication submitTravelApplication(TravelApplication app, Employee submitter) {
+    public TravelApplication submitTravelApplication(Amendment amd, Employee traveler, Employee submitter) {
+        amd = new Amendment.Builder(amd)
+                .withAmendmentId(0)
+                .withVersion(Version.A)
+                .withCreatedBy(submitter)
+                .withCreatedDateTime(LocalDateTime.now())
+                .build();
+
+        TravelApplication app = new TravelApplication(traveler, amd);
         saveTravelApplication(app, submitter);
+        applicationDao.saveTravelApplication(app);
 
         ApplicationReview appReview = appReviewService.createApplicationReview(app);
         appReviewService.saveApplicationReview(appReview);
@@ -68,17 +79,5 @@ public class TravelApplicationService {
         return applicationDao.selectTravelApplications(userId).stream()
                 .filter(app -> app.getSubmittedDateTime() != null)
                 .collect(Collectors.toList());
-    }
-
-    public void updateMileagePerDiems(TravelApplication app, MileagePerDiems mileagePerDiem) {
-        for (Leg qualifyingLeg : mileagePerDiem.mileageReimbursableLegs()) {
-            for (Leg appLeg : app.activeAmendment().route().getAllLegs()) {
-                if (appLeg.fromAddress().equals(qualifyingLeg.fromAddress())
-                        && appLeg.toAddress().equals(qualifyingLeg.toAddress())
-                        && appLeg.travelDate().equals(qualifyingLeg.travelDate())) {
-                    appLeg.setIsReimbursementRequested(qualifyingLeg.isReimbursementRequested());
-                }
-            }
-        }
     }
 }

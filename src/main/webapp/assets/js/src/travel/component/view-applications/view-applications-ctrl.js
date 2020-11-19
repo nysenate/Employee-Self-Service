@@ -19,10 +19,10 @@ function viewApplicationsCtrl($scope, appProps, modals, travelerAppApi) {
     };
 
     function init() {
-        fetchApplications(appProps.user.employeeId);
+        fetchApplications();
     }
 
-    function fetchApplications(empId) {
+    function fetchApplications() {
         vm.appRequest = travelerAppApi.get(onSuccess, $scope.handleErrorResponse);
 
         function onSuccess (resp) {
@@ -41,9 +41,14 @@ function viewApplicationsCtrl($scope, appProps, modals, travelerAppApi) {
     vm.applyFilters = function () {
         vm.apps.filtered = angular.copy(vm.apps.all);
         vm.apps.filtered = vm.apps.filtered.filter(function (app) {
-            return moment(app.startDate, ISO_FORMAT) >= moment(vm.date.from, DATEPICKER_FORMAT) &&
-                moment(app.startDate, ISO_FORMAT) <= moment(vm.date.to, DATEPICKER_FORMAT);
+            return moment(app.activeAmendment.startDate, ISO_FORMAT) >= moment(vm.date.from, DATEPICKER_FORMAT) &&
+                moment(app.activeAmendment.startDate, ISO_FORMAT) <= moment(vm.date.to, DATEPICKER_FORMAT);
         });
+        // Sort by start date unit timestamp.
+        vm.apps.filtered.sort(function(a, b) {
+            return moment(a.activeAmendment.startDate, ISO_FORMAT).format('x')
+                - moment(b.activeAmendment.startDate, ISO_FORMAT).format('x');
+        })
     };
 
     vm.viewApplicationForm = function(app) {

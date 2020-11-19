@@ -6,9 +6,9 @@ function returnEditForm($q, appProps, modals) {
     return {
         restrict: 'E',
         scope: {
-            app: '<',               // The application being edited.
+            amendment: '<',         // The application being edited.
             title: '@',             // The title
-            positiveCallback: '&',   // Callback function called when continuing. Takes a travel app param named 'app'.
+            positiveCallback: '&',  // Callback function called when continuing. Takes a travel app param named 'app'.
             neutralCallback: '&',   // Callback function called when moving back. Takes a travel app param named 'app'.
             negativeCallback: '&',  // Callback function called when canceling. Takes a travel app param named 'app'.
             negativeLabel: '@'      // Text to label the negative button. Defaults to 'Cancel'
@@ -17,8 +17,8 @@ function returnEditForm($q, appProps, modals) {
         templateUrl: appProps.ctxPath + '/template/travel/common/app/return-edit-form-directive',
         link: function (scope, elem, attrs) {
 
-            scope.dirtyApp = angular.copy(scope.app);
-            scope.route = scope.dirtyApp.route;
+            scope.dirtyAmendment = angular.copy(scope.amendment);
+            scope.route = scope.dirtyAmendment.route;
 
             if (scope.route.returnLegs.length === 0) {
                 // Init return leg
@@ -26,15 +26,15 @@ function returnEditForm($q, appProps, modals) {
                 leg.from = angular.copy(scope.route.outboundLegs[scope.route.outboundLegs.length - 1].to);
                 leg.to = angular.copy(scope.route.outboundLegs[0].from);
                 // If only 1 outbound mode of transportation, initialize to that.
-                if (numDistinctModesOfTransportation(scope.app) === 1) {
+                if (numDistinctModesOfTransportation(scope.amendment) === 1) {
                     leg.methodOfTravelDisplayName = angular.copy(scope.route.outboundLegs[0].methodOfTravelDisplayName);
                     leg.methodOfTravelDescription = angular.copy(scope.route.outboundLegs[0].methodOfTravelDescription);
                 }
                 scope.route.returnLegs.push(leg);
             }
 
-            function numDistinctModesOfTransportation(app) {
-                var mots = (app.route.outboundLegs.concat(app.route.returnLegs)).map(function (leg) {
+            function numDistinctModesOfTransportation(amendment) {
+                var mots = (amendment.route.outboundLegs.concat(amendment.route.returnLegs)).map(function (leg) {
                     return leg.methodOfTravelDisplayName;
                 });
                 var distinct = _.uniq(mots);
@@ -83,23 +83,23 @@ function returnEditForm($q, appProps, modals) {
             scope.next = function () {
                 scope.setInvalidFormElementsTouched(scope.return.form);
                 if (scope.return.form.$valid) {
-                    scope.normalizeTravelDates(scope.dirtyApp.route.returnLegs);
-                    promptUserIfLongTrip(scope.dirtyApp.route)
+                    scope.normalizeTravelDates(scope.dirtyAmendment.route.returnLegs);
+                    promptUserIfLongTrip(scope.dirtyAmendment.route)
                         .then(function () {
-                            scope.checkCounties(scope.dirtyApp.route.returnLegs)
+                            scope.checkCounties(scope.dirtyAmendment.route.returnLegs)
                         })
                         .then(function () {
-                            scope.positiveCallback({app: scope.dirtyApp});
+                            scope.positiveCallback({amendment: scope.dirtyAmendment});
                         });
                 }
             };
 
             scope.back = function () {
-                scope.neutralCallback({app: scope.dirtyApp});
+                scope.neutralCallback({amendment: scope.dirtyAmendment});
             };
 
             scope.cancel = function () {
-                scope.negativeCallback({app: scope.dirtyApp});
+                scope.negativeCallback({amendment: scope.dirtyAmendment});
             };
 
             /**
@@ -110,7 +110,7 @@ function returnEditForm($q, appProps, modals) {
              */
             function promptUserIfLongTrip(route) {
                 var deferred = $q.defer();
-                var startDate = moment(scope.dirtyApp.startDate, "YYYY-MM-DD", true);
+                var startDate = moment(scope.dirtyAmendment.startDate, "YYYY-MM-DD", true);
                 var endDate = moment(route.returnLegs[route.returnLegs.length - 1].travelDate, "MM/DD/YYYY", true);
                 var duration = moment.duration(endDate - startDate);
                 if (duration.asDays() > 7) {

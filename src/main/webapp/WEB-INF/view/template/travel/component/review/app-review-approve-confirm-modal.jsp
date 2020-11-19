@@ -10,11 +10,11 @@
       You are about to approve a Travel Application for
       <span ng-bind="::appReview.travelApplication.traveler.fullName"></span>
       <span ng-show="isSingleDayTravel">
-      on <span ng-bind="::appReview.travelApplication.startDate | date: 'shortDate'"></span>.
+      on <span ng-bind="::appReview.travelApplication.activeAmendment.startDate | date: 'shortDate'"></span>.
       </span>
       <span ng-show="!isSingleDayTravel">
-      from <span ng-bind="::appReview.travelApplication.startDate | date: 'shortDate'"></span>
-      to <span ng-bind="::appReview.travelApplication.endDate | date: 'shortDate'"></span>.
+      from <span ng-bind="::appReview.travelApplication.activeAmendment.startDate | date: 'shortDate'"></span>
+      to <span ng-bind="::appReview.travelApplication.activeAmendment.endDate | date: 'shortDate'"></span>.
       </span>
     </p>
 

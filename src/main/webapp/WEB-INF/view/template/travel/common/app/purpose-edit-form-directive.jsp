@@ -7,7 +7,7 @@
       <ess-notification level="error" title="Purpose of Travel has errors">
         <ul>
           <li ng-if="purpose.form.$error.eventTypeRequired">A purpose of travel is required</li>
-          <li ng-if="purpose.form.$error.eventNameRequired">Name of the {{dirtyApp.purposeOfTravel.eventType.displayName}} is required.</li>
+          <li ng-if="purpose.form.$error.eventNameRequired">Name of the {{dirtyAmendment.purposeOfTravel.eventType.displayName}} is required.</li>
           <li ng-if="purpose.form.$error.additionalPurposeRequired">A description of your purpose of travel is required.</li>
         </ul>
       </ess-notification>
@@ -19,29 +19,29 @@
           <label for="eventTypeSelect">Select your purpose of travel:</label>
           <select id="eventTypeSelect"
                   event-type-validator
-                  ng-options="eventType as eventType.displayName for eventType in dirtyApp.purposeOfTravel.validEventTypes track by eventType.name"
-                  ng-model="dirtyApp.purposeOfTravel.eventType"/>
+                  ng-options="eventType as eventType.displayName for eventType in eventTypes track by eventType.name"
+                  ng-model="dirtyAmendment.purposeOfTravel.eventType"/>
         </div>
-        <div ng-if="dirtyApp.purposeOfTravel.eventType.requiresName" class="purpose-row">
-          <label for="eventNameInput">Name of the {{dirtyApp.purposeOfTravel.eventType.displayName}}:</label>
+        <div ng-if="dirtyAmendment.purposeOfTravel.eventType.requiresName" class="purpose-row">
+          <label for="eventNameInput">Name of the {{dirtyAmendment.purposeOfTravel.eventType.displayName}}:</label>
           <input id="eventNameInput" type="text"
                  event-name-validator
-                 ng-model="dirtyApp.purposeOfTravel.eventName"/>
+                 ng-model="dirtyAmendment.purposeOfTravel.eventName"/>
         </div>
-        <div ng-if="dirtyApp.purposeOfTravel.eventType !== null" class="purpose-row">
-          <div ng-if="dirtyApp.purposeOfTravel.eventType.requiresAdditionalPurpose">
+        <div ng-if="dirtyAmendment.purposeOfTravel.eventType !== null" class="purpose-row">
+          <div ng-if="dirtyAmendment.purposeOfTravel.eventType.requiresAdditionalPurpose">
             <label for="purposeAdditionalTextRequired">
               Enter your purpose of travel:
             </label>
-            <textarea id="purposeAdditionalTextRequired" ng-model="dirtyApp.purposeOfTravel.additionalPurpose"
+            <textarea id="purposeAdditionalTextRequired" ng-model="dirtyAmendment.purposeOfTravel.additionalPurpose"
                       additional-purpose-validator
                       cols="120" rows="3"></textarea>
           </div>
-          <div ng-if="!dirtyApp.purposeOfTravel.eventType.requiresAdditionalPurpose">
+          <div ng-if="!dirtyAmendment.purposeOfTravel.eventType.requiresAdditionalPurpose">
             <label for="purposeAdditionalTextOptional">
               Provide additional information (Optional):
             </label>
-            <textarea id="purposeAdditionalTextOptional" ng-model="dirtyApp.purposeOfTravel.additionalPurpose"
+            <textarea id="purposeAdditionalTextOptional" ng-model="dirtyAmendment.purposeOfTravel.additionalPurpose"
                       cols="120" rows="3"></textarea>
           </div>
         </div>

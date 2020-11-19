@@ -18,7 +18,7 @@
       </ess-notification>
     </div>
 
-    <div class="travel-inner-container" ng-repeat="leg in dirtyApp.route.outboundLegs">
+    <div class="travel-inner-container" ng-repeat="leg in dirtyAmendment.route.outboundLegs">
       <div class="travel-background" style="display: inline-block; width: 100%;">
         <h2 class="travel-subheader float-left">Outbound Segment {{$index + 1}}</h2>
         <span class="icon-cross travel-container-cross float-right" style=""

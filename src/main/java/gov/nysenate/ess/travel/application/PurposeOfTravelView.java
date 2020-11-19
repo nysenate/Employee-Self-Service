@@ -12,8 +12,6 @@ public class PurposeOfTravelView implements ViewObject {
     private EventTypeView eventType;
     private String eventName;
     private String additionalPurpose;
-    // A set of all valid event types that a purpose of travel could have.
-    private List<EventTypeView> validEventTypes;
 
     public PurposeOfTravelView() {
     }
@@ -22,7 +20,6 @@ public class PurposeOfTravelView implements ViewObject {
         this.eventType = purposeOfTravel == null ? null : new EventTypeView(purposeOfTravel.eventType());
         this.eventName = purposeOfTravel == null ? "" : purposeOfTravel.eventName();
         this.additionalPurpose = purposeOfTravel == null ? "" : purposeOfTravel.additionalPurpose();
-        this.validEventTypes = EnumSet.allOf(EventType.class).stream().map(EventTypeView::new).collect(Collectors.toList());
     }
 
     public PurposeOfTravel toPurposeOfTravel() {
@@ -42,10 +39,6 @@ public class PurposeOfTravelView implements ViewObject {
 
     public String getAdditionalPurpose() {
         return additionalPurpose;
-    }
-
-    public List<EventTypeView> getValidEventTypes() {
-        return validEventTypes;
     }
 
     @Override
