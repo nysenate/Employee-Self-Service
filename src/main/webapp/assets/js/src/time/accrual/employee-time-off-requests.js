@@ -175,8 +175,8 @@
                             $scope.pendingRequests.forEach(function (r) {
                                 r.checked = false;
                             });
-                            badgeService.setBadgeValue('pendingRecordCount', $scope.pendingRequests.length);
-                            console.log("setBadgeValue" + $scope.pendingRequests.length);
+                            badgeService.setBadgeValue('pendingRequestCount', $scope.pendingRequests.length);
+                            console.log("setBadgeValue " + $scope.pendingRequests.length);
                             sortRequests();
                         })
                     ;
