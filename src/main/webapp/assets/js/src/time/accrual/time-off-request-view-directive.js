@@ -90,6 +90,7 @@
                         $scope.accrualsPost.personal = data.result.personalAvailable;
                         $scope.accrualsPost.vacation = data.result.vacationAvailable;
                         $scope.accrualsPost.sick = data.result.sickAvailable;
+                        $scope.updateTotals();
                     },
                     function (data) {
                         console.log("There was an error accessing accrual data.", data);
