@@ -137,14 +137,10 @@ function timeOffRequestReviewModal(appProps, modals, locationService) {
          * Opens a prompt if there are unsubmitted approvals/disapprovals
          */
         $scope.close = function () {
-            console.log("1");
             if ($scope.submissionEmpty()) {
-                console.log("2");
                 modals.reject();
-                console.log("3");
                 return;
             }
-            console.log("4");
             modals.open('time-off-request-review-close')
                 .then(modals.reject);
         };
