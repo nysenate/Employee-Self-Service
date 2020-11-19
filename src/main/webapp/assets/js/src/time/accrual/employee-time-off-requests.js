@@ -176,7 +176,6 @@
                                 r.checked = false;
                             });
                             badgeService.setBadgeValue('pendingRequestCount', $scope.pendingRequests.length);
-                            console.log("setBadgeValue " + $scope.pendingRequests.length);
                             sortRequests();
                         })
                     ;
