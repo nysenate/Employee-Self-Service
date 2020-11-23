@@ -16,16 +16,16 @@
       <div class="text-align-center">
         <div style="display: flex; flex-direction: column;">
 
-          <div class="perdiem-overrides-edit-form-row">
-            <div class="perdiem-overrides-edit-form-calculated">
-              Calculated Mileage: {{::dirtyAmendment.mileagePerDiems.totalPerDiem | currency}}
-            </div>
-            <div class="perdiem-overrides-edit-form-override">
-              <label>Mileage Override $</label>
-              <input ng-model="dirtyAmendment.mileagePerDiems.overrideRate"
-                     type="number" step="0.01" min="0">
-            </div>
-          </div>
+<%--          <div class="perdiem-overrides-edit-form-row">--%>
+<%--            <div class="perdiem-overrides-edit-form-calculated">--%>
+<%--              Calculated Mileage: {{::dirtyAmendment.mileagePerDiems.totalPerDiem | currency}}--%>
+<%--            </div>--%>
+<%--            <div class="perdiem-overrides-edit-form-override">--%>
+<%--              <label>Mileage Override $</label>--%>
+<%--              <input ng-model="dirtyAmendment.mileagePerDiems.overrideRate"--%>
+<%--                     type="number" step="0.01" min="0">--%>
+<%--            </div>--%>
+<%--          </div>--%>
 
           <div class="perdiem-overrides-edit-form-row">
             <div class="perdiem-overrides-edit-form-calculated">
