@@ -23,6 +23,9 @@ public class TravelAppEditDto implements ViewObject {
     // All Possible event types for the Purpose of Travel
     private List<EventTypeView> validEventTypes;
 
+    public TravelAppEditDto() {
+    }
+
     public TravelAppEditDto(DetailedEmployeeView travelerView) {
         this(travelerView, new AmendmentView());
     }

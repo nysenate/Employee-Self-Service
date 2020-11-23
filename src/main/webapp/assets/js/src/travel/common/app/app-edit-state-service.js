@@ -70,7 +70,7 @@ function StateService() {
     };
 
     StateService.prototype.setOverridesState = function () {
-        this.currState = this.STATES.OVERRIDES;
+        this.currState = StateService.prototype.STATES.OVERRIDES;
     };
 
     StateService.prototype.isOverridesNavigable = function () {

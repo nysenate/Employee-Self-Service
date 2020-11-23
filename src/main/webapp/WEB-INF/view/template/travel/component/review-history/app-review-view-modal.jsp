@@ -9,7 +9,7 @@
   <div class="travel-button-container" style="margin-top: 5px !important; float: left; width: 100%;">
     <shiro:hasPermission name="<%= SimpleTravelPermission.TRAVEL_UI_EDIT_APP.getPermissionString() %>">
       <input type="button" class="reject-button" value="Edit Application"
-             ng-click="onEdit(appReview)">
+             ng-click="vm.onEdit(appReview)">
     </shiro:hasPermission>
 
     <div class="" style="float: right;">

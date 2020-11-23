@@ -1,39 +1,43 @@
 var essTravel = angular.module('essTravel');
 
 essTravel.controller('EditApplicationCtrl',
-                     ['$scope', 'LocationService', 'modals', 'AppEditStateService', 'TravelApplicationByIdApi',
-                      'TravelRouteCalcApi', editAppCtrl]);
+                     ['$scope', 'LocationService', 'modals', 'AppEditStateService', 'UnsubmittedAppApi',
+                      'TravelAppEditApi', 'TravelAppEditRouteApi', 'TravelAppEditAllowancesApi', editAppCtrl]);
 
-function editAppCtrl($scope, locationService, modals, stateService, appIdApi, routeCalcApi) {
+function editAppCtrl($scope, locationService, modals, stateService, appPatchApi, appEditApi,
+                     editRouteApi, editAllowancesApi) {
 
     var vm = this;
-    vm.app = undefined;
+    vm.dto = undefined; // Contains the `traveler` and `amendment` fields which can be edited.
+    vm.appId = 0;
 
     (function init() {
         vm.stateService = stateService;
         vm.stateService.setPurposeState();
 
-        var appId = locationService.getSearchParam("appId");
-        appIdApi.get({id: appId}, function (response) {
-            vm.app = response.result;
+        vm.appId = locationService.getSearchParam("appId");
+        appEditApi.get({id: vm.appId}, function (response) {
+            vm.dto = response.result;
         }, $scope.handleErrorResponse);
     })();
 
-    vm.savePurpose = function (app) {
-        vm.app = app;
+    vm.savePurpose = function (amendment) {
+        vm.dto.amendment = amendment;
         stateService.setOutboundState();
     };
 
-    vm.saveOutbound = function (app) {
-        vm.app = app;
+    vm.saveOutbound = function (amendment) {
+        vm.dto.amendment = amendment;
         stateService.setReturnState();
     };
 
-    vm.saveRoute = function (app) {
+    vm.saveRoute = function (amendment) {
         vm.openLoadingModal();
-        routeCalcApi.save({}, app.route, function (response) {
-            console.log(response);
-            vm.app.route = response.result;
+        editRouteApi.save({id: vm.appId}, {
+            traveler: vm.dto.traveler,
+            amendment: amendment
+        }, function (response) {
+            vm.dto = response.result;
             stateService.setAllowancesState();
             vm.closeLoadingModal();
         }, function (error) {
@@ -42,55 +46,71 @@ function editAppCtrl($scope, locationService, modals, stateService, appIdApi, ro
         });
     };
 
-    vm.saveAllowances = function (app) {
-        vm.app = app;
-        stateService.setOverridesState();
-        // var patches = {
-        //     allowances: JSON.stringify(app.allowances),
-        //     mealPerDiems: JSON.stringify(app.mealPerDiems),
-        //     lodgingPerDiems: JSON.stringify(app.lodgingPerDiems),
-        //     mileagePerDiems: JSON.stringify(app.mileagePerDiems)
-        // };
-        // appIdApi.update({id: app.id}, patches, function (response) {
-        //     vm.app = response.result;
-        //     stateService.setOverridesState();
-        // }, $scope.handleErrorResponse)
+    vm.saveAllowances = function (amendment) {
+        vm.openLoadingModal();
+        editAllowancesApi.save({id: vm.appId},
+                               {traveler: vm.dto.traveler, amendment: amendment},
+                               success, error)
+
+        function success(response) {
+            vm.dto = response.result;
+            vm.closeLoadingModal();
+            stateService.setOverridesState();
+        }
+
+        function error(error) {
+            vm.closeLoadingModal();
+            $scope.handleErrorResponse(error);
+        }
     };
 
-    vm.saveOverrides = function (app) {
-        vm.app = app;
-        stateService.setReviewState();
+    vm.saveOverrides = function (amendment) {
+        vm.openLoadingModal();
+        editAllowancesApi.save({id: vm.appId},
+                               {traveler: vm.dto.traveler, amendment: amendment},
+                               success, error)
+
+        function success(response) {
+            vm.dto = response.result;
+            vm.closeLoadingModal();
+            stateService.setReviewState();
+        }
+
+        function error(error) {
+            vm.closeLoadingModal();
+            $scope.handleErrorResponse(error);
+        }
     };
 
-    vm.saveEdits = function (app) {
-        appIdApi.save({appId: app.id}, app, function (response) {
-            locationService.go("/travel/review", false, {appId: app.id});
+    vm.saveEdits = function (amendment) {
+        appEditApi.save({id: vm.appId}, vm.dto, function (response) {
+            locationService.go("/travel/review", false, {appId: vm.appId});
         }, $scope.handleErrorResponse);
     };
 
     vm.cancelEdit = function (app) {
         modals.open('cancel-edits').then(function () {
-            locationService.go("/travel/review", false, {appId: app.id});
+            locationService.go("/travel/review", false, {appId: vm.appId});
         })
     };
 
-    vm.toPurposeState = function (app) {
+    vm.toPurposeState = function (amendment) {
         stateService.setPurposeState();
     };
 
-    vm.toOutboundState = function (app) {
+    vm.toOutboundState = function (amendment) {
         stateService.setOutboundState();
     };
 
-    vm.toReturnState = function (app) {
+    vm.toReturnState = function (amendment) {
         stateService.setReturnState();
     };
 
-    vm.toAllowancesState = function (app) {
+    vm.toAllowancesState = function (amendment) {
         stateService.setAllowancesState();
     };
 
-    vm.toOverridesState = function (app) {
+    vm.toOverridesState = function (amendment) {
         stateService.setOverridesState();
     };
 

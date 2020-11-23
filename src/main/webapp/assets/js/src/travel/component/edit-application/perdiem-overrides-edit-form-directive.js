@@ -6,7 +6,7 @@ function perDiemOverrideEditForm(appProps) {
     return {
         restrict: 'E',
         scope: {
-            app: '<',               // The application being edited.
+            amendment: '<',         // The application being edited.
             title: '@',             // The title
             positiveCallback: '&',  // Callback function called when continuing. Takes a travel app param named 'app'.
             neutralCallback: '&',   // Callback function called when moving back. Takes a travel app param named 'app'.
@@ -17,26 +17,34 @@ function perDiemOverrideEditForm(appProps) {
         templateUrl: appProps.ctxPath + '/template/travel/component/edit-application/perdiem-overrides-edit-form-directive',
         link: function (scope, elem, attrs) {
 
-            scope.dirtyApp = angular.copy(scope.app);
+            scope.dirtyAmendment = angular.copy(scope.amendment);
 
-            console.log(scope.dirtyApp);
+            console.log(scope.dirtyAmendment);
 
             // Convert overrides of 0 to undefined.
-            scope.dirtyApp.route.mileagePerDiems.overrideRate = 0;
-            // scope.dirtyApp.route.mileagePerDiems.overrideRate = zeroToUndefined(scope.dirtyApp.perDiemOverrides.mileageOverride);
-            scope.dirtyApp.mealPerDiems.overrideRate = zeroToUndefined(scope.dirtyApp.mealPerDiems.overrideRate);
-            scope.dirtyApp.lodgingPerDiems.overrideRate = zeroToUndefined(scope.dirtyApp.lodgingPerDiems.overrideRate);
+            scope.dirtyAmendment.route.mileagePerDiems.overrideRate = 0;
+            // scope.dirtyAmendment.route.mileagePerDiems.overrideRate = zeroToUndefined(scope.dirtyAmendment.perDiemOverrides.mileageOverride);
+            scope.dirtyAmendment.mealPerDiems.overrideRate = zeroToUndefined(scope.dirtyAmendment.mealPerDiems.overrideRate);
+            scope.dirtyAmendment.lodgingPerDiems.overrideRate = zeroToUndefined(scope.dirtyAmendment.lodgingPerDiems.overrideRate);
+
+            scope.mileageOverrideRate = 0; // TODO implement mileage overrides.
+            scope.mealOverrideRate = parseFloat(scope.dirtyAmendment.mealPerDiems.overrideRate);
+            scope.lodgingOverrideRate = parseFloat(scope.dirtyAmendment.lodgingPerDiems.overrideRate);
 
             scope.next = function () {
-                scope.positiveCallback({app: scope.dirtyApp});
+                scope.dirtyAmendment.route.mileagePerDiems.overrideRate = scope.mileageOverrideRate.toString();
+                scope.dirtyAmendment.mealPerDiems.overrideRate = scope.mealOverrideRate.toString();
+                scope.dirtyAmendment.lodgingPerDiems.overrideRate = scope.lodgingOverrideRate.toString();
+
+                scope.positiveCallback({amendment: scope.dirtyAmendment});
             };
 
             scope.back = function () {
-                scope.neutralCallback({app: scope.dirtyApp});
+                scope.neutralCallback({amendment: scope.dirtyAmendment});
             };
 
             scope.cancel = function () {
-                scope.negativeCallback({app: scope.dirtyApp});
+                scope.negativeCallback({amendment: scope.dirtyAmendment});
             };
 
             // Use undefined instead of 0 in the override input boxes so they are empty instead of 0 when not overridden.

@@ -5,7 +5,6 @@ import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.client.response.error.ErrorCode;
 import gov.nysenate.ess.core.client.response.error.ErrorResponse;
 import gov.nysenate.ess.core.client.view.DetailedEmployeeView;
-import gov.nysenate.ess.core.client.view.EmployeeView;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.model.personnel.Employee;
@@ -36,8 +35,6 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
     private static final Logger logger = LoggerFactory.getLogger(UnsubmittedAppCtrl.class);
     @Autowired private EmployeeInfoService employeeInfoService;
     @Autowired private UnsubmittedAppDao unsubmittedAppDao;
-    @Autowired private TravelApplicationService travelApplicationService;
-    @Autowired private RouteService routeService;
     @Autowired private AllowedTravelersService allowedTravelersService;
     @Autowired private RouteViewValidator routeViewValidator;
     @Autowired private TravelAppUpdateService appUpdateService;
@@ -163,7 +160,7 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
         Employee user = employeeInfoService.getEmployee(getSubjectEmployeeId());
         TravelAppEditDto dto = findApp(getSubjectEmployeeId());
 
-        TravelApplication app = travelApplicationService.submitTravelApplication(
+        TravelApplication app = appUpdateService.submitTravelApplication(
                 dto.getAmendment().toAmendment(), dto.getTraveler().toEmployee(), user);
         unsubmittedAppDao.delete(user.getEmployeeId());
         return new ViewObjectResponse<>(new TravelApplicationView(app));

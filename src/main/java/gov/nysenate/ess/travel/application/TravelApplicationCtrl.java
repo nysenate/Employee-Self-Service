@@ -4,8 +4,6 @@ import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
-import gov.nysenate.ess.core.model.personnel.Employee;
-import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.travel.report.pdf.TravelAppPdfGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +25,6 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
 
     private static final Logger logger = LoggerFactory.getLogger(TravelApplicationCtrl.class);
     @Autowired private TravelApplicationService appService;
-    @Autowired private EmployeeInfoService employeeInfoService;
 
     @RequestMapping(value = "/application/{appId}", method = RequestMethod.GET)
     public BaseResponse getTravelAppById(@PathVariable int appId) {
@@ -52,15 +49,6 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
             logger.error("Error generating pdf for appId: " + appId, ex);
             throw ex;
         }
-    }
-
-    @RequestMapping(value = "/application/{appId}", method = RequestMethod.POST)
-    public void saveTravelApp(@PathVariable int appId, @RequestBody TravelApplicationView appView) {
-        TravelApplication app = appService.getTravelApplication(appId);
-        checkTravelAppPermission(app, RequestMethod.POST);
-
-        Employee user = employeeInfoService.getEmployee(getSubjectEmployeeId());
-        appService.saveTravelApplication(appView.toTravelApplication(), user);
     }
 
     @RequestMapping(value = "/applications")

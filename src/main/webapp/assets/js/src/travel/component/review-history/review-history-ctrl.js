@@ -39,7 +39,7 @@ function reviewHistory($scope, locationService, modals, appReviewApi) {
     };
 
     // Called by the app-review-view-modal.
-    vm.onEdit = function (reivew) {
+    vm.onEdit = function (review) {
         modals.reject();
         locationService.go("/travel/application/edit", true, {appId: review.travelApplication.id});
     };

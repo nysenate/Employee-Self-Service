@@ -5,69 +5,71 @@
   <div class="content-container content-controls">
     <div class="padding-10 text-align-center">
       <span class="disapproved-text">Editing</span> Travel application for: <span class="bold"
-                                                                                  ng-bind="::vm.app.traveler.fullName"></span>
+                                                                                  ng-bind="::vm.dto.traveler.fullName"></span>
     </div>
   </div>
 
   <ess-edit-app-breadcrumbs></ess-edit-app-breadcrumbs>
 
-  <div ng-if="vm.app">
+  <div ng-if="vm.dto">
     <div ng-if="vm.stateService.isPurposeState()">
-      <ess-purpose-edit-form app="vm.app"
+      <ess-purpose-edit-form amendment="vm.dto.amendment"
                              title="Edit the purpose of travel."
-                             positive-callback="vm.savePurpose(app)"
-                             negative-callback="vm.cancelEdit(app)"
+                             event-types="vm.dto.validEventTypes"
+                             positive-callback="vm.savePurpose(amendment)"
+                             negative-callback="vm.cancelEdit(amendment)"
                              negative-label="Cancel">
       </ess-purpose-edit-form>
     </div>
 
     <div ng-if="vm.stateService.isOutboundState()">
-      <ess-outbound-edit-form app="vm.app"
+      <ess-outbound-edit-form amendment="vm.dto.amendment"
+                              traveler="vm.dto.traveler"
                               title="Edit the outbound route"
-                              positive-callback="vm.saveOutbound(app)"
-                              neutral-callback="vm.toPurposeState(app)"
-                              negative-callback="vm.cancelEdit(app)"
+                              positive-callback="vm.saveOutbound(amendment)"
+                              neutral-callback="vm.toPurposeState(amendment)"
+                              negative-callback="vm.cancelEdit(amendment)"
                               negative-label="Cancel">
       </ess-outbound-edit-form>
     </div>
 
     <div ng-if="vm.stateService.isReturnState()">
-      <ess-return-edit-form app="vm.app"
+      <ess-return-edit-form amendment="vm.dto.amendment"
                             title="Edit the return route"
-                            positive-callback="vm.saveRoute(app)"
-                            neutral-callback="vm.toOutboundState(app)"
-                            negative-callback="vm.cancelEdit(app)"
+                            positive-callback="vm.saveRoute(amendment)"
+                            neutral-callback="vm.toOutboundState(amendment)"
+                            negative-callback="vm.cancelEdit(amendment)"
                             negative-label="Cancel">
       </ess-return-edit-form>
     </div>
 
     <div ng-if="vm.stateService.isAllowancesState()">
-      <ess-allowances-edit-form app="vm.app"
+      <ess-allowances-edit-form amendment="vm.dto.amendment"
                                 title="Edit the expenses"
-                                positive-callback="vm.saveAllowances(app)"
-                                neutral-callback="vm.toReturnState(app)"
-                                negative-callback="vm.cancelEdit(app)"
+                                positive-callback="vm.saveAllowances(amendment)"
+                                neutral-callback="vm.toReturnState(amendment)"
+                                negative-callback="vm.cancelEdit(amendment)"
                                 negative-label="Cancel">
       </ess-allowances-edit-form>
     </div>
 
     <div ng-if="vm.stateService.isOverridesState()">
-      <ess-perdiem-overrides-edit-form app="vm.app"
+      <ess-perdiem-overrides-edit-form amendment="vm.dto.amendment"
                                        title="Override the calculated expenses."
-                                       positive-callback="vm.saveOverrides(app)"
-                                       neutral-callback="vm.toAllowancesState(app)"
-                                       negative-callback="vm.cancelEdit(app)"
+                                       positive-callback="vm.saveOverrides(amendment)"
+                                       neutral-callback="vm.toAllowancesState(amendment)"
+                                       negative-callback="vm.cancelEdit(amendment)"
                                        negative-label="Cancel">
       </ess-perdiem-overrides-edit-form>
     </div>
 
     <div ng-if="vm.stateService.isReviewState()">
-      <ess-review-edit-form app="vm.app"
+      <ess-review-edit-form amendment="vm.dto.amendment"
                             title="Here is the full application with your changes."
                             positive-btn-label="Save Edits"
-                            positive-callback="vm.saveEdits(app)"
-                            neutral-callback="vm.toOverridesState(app)"
-                            negative-callback="vm.cancelEdit(app)"
+                            positive-callback="vm.saveEdits(amendment)"
+                            neutral-callback="vm.toOverridesState(amendment)"
+                            negative-callback="vm.cancelEdit(amendment)"
                             negative-label="Cancel">
       </ess-review-edit-form>
     </div>

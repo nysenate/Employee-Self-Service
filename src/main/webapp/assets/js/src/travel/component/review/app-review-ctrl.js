@@ -6,6 +6,7 @@ essTravel.controller("AppReviewCtrl", ["$scope", "$q", "modals", "LocationServic
 function reviewController($scope, $q, modals, locationService, appReviewApi, roleService) {
 
     const APP_ID_SEARCH_PARAM = "appId";
+    const ISO_FORMAT = "YYYY-MM-DD";
 
     var vm = this;
     vm.modalPromise;

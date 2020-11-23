@@ -1,5 +1,6 @@
 package gov.nysenate.ess.travel.application;
 
+import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.travel.application.allowances.Allowances;
 import gov.nysenate.ess.travel.application.allowances.PerDiem;
@@ -14,6 +15,8 @@ import gov.nysenate.ess.travel.application.route.RouteService;
 import gov.nysenate.ess.travel.application.route.destination.Destination;
 import gov.nysenate.ess.travel.provider.senate.SenateMie;
 import gov.nysenate.ess.travel.provider.senate.SqlSenateMieDao;
+import gov.nysenate.ess.travel.review.ApplicationReview;
+import gov.nysenate.ess.travel.review.ApplicationReviewService;
 import gov.nysenate.ess.travel.utils.Dollars;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -31,6 +35,8 @@ public class TravelAppUpdateService {
 
     @Autowired private RouteService routeService;
     @Autowired private SqlSenateMieDao senateMieDao;
+    @Autowired private TravelApplicationService appService;
+    @Autowired private ApplicationReviewService appReviewService;
 
     /**
      * Returns a new Amendment with the provided purpose of travel added to the amendment.
@@ -180,5 +186,50 @@ public class TravelAppUpdateService {
             }
         }
         return amd;
+    }
+
+    /**
+     * Persists the edits in {@code amd} to the application.
+     * @param appId The id of the TravelApplication to modify.
+     * @param amd An amendment with all desired changes made to it.
+     * @param user The logged in user who is making these changes.
+     * @return
+     */
+    public TravelApplication saveAppEdits(int appId, Amendment amd, Employee user) {
+        amd = new Amendment.Builder(amd)
+                .withAmendmentId(0)
+                .withCreatedBy(user)
+                .withCreatedDateTime(LocalDateTime.now())
+                .build();
+
+        TravelApplication app = appService.getTravelApplication(appId);
+        app.addAmendment(amd);
+        appService.saveApplication(app);
+        return app;
+    }
+
+    /**
+     * Creates and saves a new TravelApplication with one amendment {@code amd}.
+     * This also creates and saves an ApplicationReview.
+     *
+     * @param amd The first amendment to the TravelApplication
+     * @param traveler The employee who will be traveling.
+     * @param submitter The employee who is submitting the application.
+     * @return
+     */
+    public TravelApplication submitTravelApplication(Amendment amd, Employee traveler, Employee submitter) {
+        amd = new Amendment.Builder(amd)
+                .withAmendmentId(0)
+                .withVersion(Version.A)
+                .withCreatedBy(submitter)
+                .withCreatedDateTime(LocalDateTime.now())
+                .build();
+
+        TravelApplication app = new TravelApplication(traveler, amd);
+        appService.saveApplication(app);
+
+        ApplicationReview appReview = appReviewService.createApplicationReview(app);
+        appReviewService.saveApplicationReview(appReview);
+        return app;
     }
 }
