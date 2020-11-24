@@ -5,6 +5,8 @@ import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.travel.report.pdf.TravelAppPdfGenerator;
+import gov.nysenate.ess.travel.utils.AttachmentService;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,7 +27,10 @@ import java.util.stream.Collectors;
 public class TravelApplicationCtrl extends BaseRestApiCtrl {
 
     private static final Logger logger = LoggerFactory.getLogger(TravelApplicationCtrl.class);
+
     @Autowired private TravelApplicationService appService;
+    @Autowired private AttachmentService attachmentService;
+    @Autowired private SqlAttachmentDao attachmentDao;
 
     @RequestMapping(value = "/application/{appId}", method = RequestMethod.GET)
     public BaseResponse getTravelAppById(@PathVariable int appId) {
@@ -38,9 +44,8 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
         TravelApplication app = appService.getTravelApplication(appId);
         checkTravelAppPermission(app, RequestMethod.GET);
 
-        ByteArrayOutputStream pdfBytes = new ByteArrayOutputStream();
         TravelAppPdfGenerator pdfGenerator = new TravelAppPdfGenerator(app);
-        try {
+        try (ByteArrayOutputStream pdfBytes = new ByteArrayOutputStream()) {
             pdfGenerator.write(pdfBytes);
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);
@@ -58,5 +63,15 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
                 .map(TravelApplicationView::new)
                 .collect(Collectors.toList());
         return ListViewResponse.of(appViews);
+    }
+
+    @RequestMapping(value = "/application/attachment/{filename}", method = RequestMethod.GET)
+    public ResponseEntity<byte[]> getAttachment(@PathVariable String filename) throws IOException {
+        Attachment attachment = attachmentDao.selectAttachment(filename);
+        File attachmentFile = attachmentService.getAttachmentFile(filename);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.valueOf(attachment.getContentType()));
+        byte[] bytes = FileUtils.readFileToByteArray(attachmentFile);
+        return new ResponseEntity<>(bytes, headers, HttpStatus.OK);
     }
 }

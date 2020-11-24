@@ -77,7 +77,8 @@
         </div>
       </div>
 
-      <div class="app-form-grid" ng-repeat="dest in app.activeAmendment.route.destinations" style="font-weight: normal;">
+      <div class="app-form-grid" ng-repeat="dest in app.activeAmendment.route.destinations"
+           style="font-weight: normal;">
         <div class="app-form-label">
           <span ng-if="$first">Destination:</span>
           <span ng-if="!$first">&nbsp;</span>
@@ -138,6 +139,22 @@
       </div>
 
       <div class="app-form-grid" style="border-bottom: 4px solid grey; width: 100%; margin-bottom: 4px;">
+      </div>
+
+      <div class="app-form-grid"
+           ng-if="app.activeAmendment.attachments"
+           ng-repeat="attachment in app.activeAmendment.attachments">
+        <div class="app-form-label"
+             ng-if="$first">
+          Attachments:
+        </div>
+        <div class="app-form-label"
+             ng-if="!$first">
+          <span> </span>
+        </div>
+        <div class="app-form-row-l-col">
+          <a ng-href="${ctxPath}/api/v1/travel/application/attachment/{{attachment.filename}}" target="_blank">{{attachment.originalName}}</a>
+        </div>
       </div>
 
     </div>

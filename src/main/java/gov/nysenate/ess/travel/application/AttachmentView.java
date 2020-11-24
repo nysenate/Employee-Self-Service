@@ -2,27 +2,27 @@ package gov.nysenate.ess.travel.application;
 
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 
-public class TravelAttachmentView implements ViewObject {
+public class AttachmentView implements ViewObject {
 
-    String id;
+    String filename;
     String originalName;
     String contentType;
 
-    public TravelAttachmentView() {
+    public AttachmentView() {
     }
 
-    public TravelAttachmentView(TravelAttachment attachment) {
-        this.id = attachment.getId();
+    public AttachmentView(Attachment attachment) {
+        this.filename = attachment.getFilename();
         this.originalName = attachment.getOriginalName();
         this.contentType = attachment.getContentType();
     }
 
-    public TravelAttachment toTravelAttachment() {
-        return new TravelAttachment(id, originalName, contentType);
+    public Attachment toAttachment() {
+        return new Attachment(filename, originalName, contentType);
     }
 
-    public String getId() {
-        return id;
+    public String getFilename() {
+        return filename;
     }
 
     public String getOriginalName() {
@@ -35,6 +35,6 @@ public class TravelAttachmentView implements ViewObject {
 
     @Override
     public String getViewType() {
-        return "travel-attachment";
+        return "attachment";
     }
 }

@@ -1,6 +1,6 @@
 package gov.nysenate.ess.travel.utils;
 
-import gov.nysenate.ess.travel.application.TravelAttachment;
+import gov.nysenate.ess.travel.application.Attachment;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -11,12 +11,12 @@ import java.io.IOException;
 import java.util.UUID;
 
 @Service
-public class UploadProcessor {
+public class AttachmentService {
 
     private File uploadDir;
 
-    public UploadProcessor(@Value("${data.dir}") String dataDir,
-                           @Value("${data.travel.attachments.dir}") String travelDir) throws IOException {
+    public AttachmentService(@Value("${data.dir}") String dataDir,
+                             @Value("${data.travel.attachments.dir}") String travelDir) throws IOException {
         this.uploadDir = new File(dataDir + travelDir);
         FileUtils.forceMkdir(this.uploadDir);
     }
@@ -25,10 +25,10 @@ public class UploadProcessor {
      * Saves an uploaded file.
      * File is saved with a random name in the 'data.travel.attachments.dir' directory.
      * @param upload
-     * @return A {@link TravelAttachment} containing metadata about the file.
+     * @return A {@link Attachment} containing metadata about the file.
      * @throws IOException
      */
-    public TravelAttachment uploadTravelAttachment(MultipartFile upload) throws IOException {
+    public Attachment uploadAttachment(MultipartFile upload) throws IOException {
         String attachmentId = UUID.randomUUID().toString();
         String originalName = upload.getOriginalFilename();
         String contentType = upload.getContentType();
@@ -36,7 +36,7 @@ public class UploadProcessor {
         File attachment = new File(getUploadPath() + attachmentId);
         upload.transferTo(attachment);
 
-        return new TravelAttachment(attachmentId, originalName, contentType);
+        return new Attachment(attachmentId, originalName, contentType);
     }
 
     public File getAttachmentFile(String attachmentId) {

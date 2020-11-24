@@ -28,7 +28,7 @@ public class AmendmentView implements ViewObject {
     private LodgingPerDiemsView lodgingPerDiems;
     private String createdDateTime;
     private DetailedEmployeeView createdBy;
-    private List<TravelAttachmentView> attachments;
+    private List<AttachmentView> attachments;
 
     private String startDate;
     private String endDate;
@@ -69,7 +69,7 @@ public class AmendmentView implements ViewObject {
         createdBy = amendment.createdBy() == null
                 ? null
                 : new DetailedEmployeeView(amendment.createdBy());
-        attachments = amendment.attachments().stream().map(TravelAttachmentView::new).collect(Collectors.toList());
+        attachments = amendment.attachments().stream().map(AttachmentView::new).collect(Collectors.toList());
 
         startDate = amendment.startDate() == null ? "" : amendment.startDate().format(ISO_DATE);
         endDate = amendment.endDate() == null ? "" : amendment.endDate().format(ISO_DATE);
@@ -100,10 +100,10 @@ public class AmendmentView implements ViewObject {
     }
 
     public Amendment toAmendment() {
-        List<TravelAttachment> attachments = this.attachments == null || this.attachments.isEmpty()
+        List<Attachment> attachments = this.attachments == null || this.attachments.isEmpty()
             ? new ArrayList<>()
             : this.attachments.stream()
-                .map(TravelAttachmentView::toTravelAttachment)
+                .map(AttachmentView::toAttachment)
                 .collect(Collectors.toList());
         return new Amendment.Builder()
                 .withVersion(Version.valueOf(version))
@@ -154,7 +154,7 @@ public class AmendmentView implements ViewObject {
         return createdBy;
     }
 
-    public List<TravelAttachmentView> getAttachments() {
+    public List<AttachmentView> getAttachments() {
         return attachments;
     }
 

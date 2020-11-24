@@ -28,9 +28,9 @@
   </ess-travel-inner-container>
 
   <ess-travel-inner-container title="Attachments" ng-if="reviewAmendment.attachments.length > 0">
-    <div ng-repeat="attachment in reviewAmendment.attachments" class="travel-attachment-container padding-10">
-      <div class="travel-attachment-filename">{{attachment.originalName}}</div>
-    </div>
+    <ul ng-repeat="attachment in reviewAmendment.attachments" class="travel-attachment-container">
+      <li class="travel-attachment-filename">{{attachment.originalName}}</li>
+    </ul>
   </ess-travel-inner-container>
 
 

@@ -18,15 +18,22 @@ import gov.nysenate.ess.travel.application.allowances.meal.MealPerDiemsView;
 import gov.nysenate.ess.travel.application.allowances.mileage.MileagePerDiemsView;
 import gov.nysenate.ess.travel.application.route.*;
 import gov.nysenate.ess.travel.provider.ProviderException;
+import gov.nysenate.ess.travel.utils.AttachmentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @SuppressWarnings("UnnecessaryBoxing") @RestController
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/travel/unsubmitted")
@@ -38,6 +45,7 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
     @Autowired private AllowedTravelersService allowedTravelersService;
     @Autowired private RouteViewValidator routeViewValidator;
     @Autowired private TravelAppUpdateService appUpdateService;
+    @Autowired private AttachmentService attachmentService;
 
     /**
      * Get an unsubmitted app API
@@ -164,6 +172,56 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
                 dto.getAmendment().toAmendment(), dto.getTraveler().toEmployee(), user);
         unsubmittedAppDao.delete(user.getEmployeeId());
         return new ViewObjectResponse<>(new TravelApplicationView(app));
+    }
+
+    @RequestMapping(value = "/attachment", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public BaseResponse addAttachments(@RequestParam("file") MultipartFile[] files) throws IOException {
+        TravelAppEditDto dto = findApp(getSubjectEmployeeId());
+        Amendment amd = dto.getAmendment().toAmendment();
+
+        List<Attachment> attachments = new ArrayList<>();
+        for (MultipartFile file : files) {
+            attachments.add(attachmentService.uploadAttachment(file));
+        }
+
+        List<Attachment> allAttachments = Stream.concat(amd.attachments().stream(), attachments.stream())
+                .collect(Collectors.toList());
+
+        amd = new Amendment.Builder(amd)
+                .withAttachments(allAttachments)
+                .build();
+
+        AmendmentView amdView = new AmendmentView(amd);
+        unsubmittedAppDao.save(getSubjectEmployeeId(), dto.getTraveler(), amdView);
+        dto.setAmendment(amdView);
+        return new ViewObjectResponse<>(dto);
+    }
+
+    /**
+     * Delete an attachment
+     * @param filename
+     * @return
+     */
+    @RequestMapping(value = "/attachment/{filename}", method = RequestMethod.DELETE)
+    public BaseResponse deleteAttachment(@PathVariable String filename) {
+        TravelAppEditDto dto = findApp(getSubjectEmployeeId());
+        Amendment amd = dto.getAmendment().toAmendment();
+        List<Attachment> newAttachments = new ArrayList<>();
+        List<Attachment> attachments = amd.attachments();
+        for (Attachment attachment : attachments) {
+            if (!attachment.getFilename().equals(filename)) {
+                newAttachments.add(attachment);
+            }
+        }
+
+        amd = new Amendment.Builder(amd)
+                .withAttachments(newAttachments)
+                .build();
+
+        AmendmentView amdView = new AmendmentView(amd);
+        unsubmittedAppDao.save(getSubjectEmployeeId(), dto.getTraveler(), amdView);
+        dto.setAmendment(amdView);
+        return new ViewObjectResponse<>(dto);
     }
 
     private TravelAppEditDto findApp(int userId) {

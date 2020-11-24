@@ -25,7 +25,7 @@ public class Amendment {
     private final PurposeOfTravel purposeOfTravel;
     private final Route route;
     private final Allowances allowances;
-    private final List<TravelAttachment> attachments;
+    private final List<Attachment> attachments;
     private final LocalDateTime createdDateTime;
     private final Employee createdBy;
     private final MealPerDiems mealPerDiems;
@@ -148,7 +148,7 @@ public class Amendment {
         return allowances;
     }
 
-    public List<TravelAttachment> attachments() {
+    public List<Attachment> attachments() {
         return attachments;
     }
 
@@ -176,7 +176,7 @@ public class Amendment {
         private Allowances allowances = new Allowances();
         private MealPerDiems mealPerDiems = new MealPerDiems(new HashSet<>());
         private LodgingPerDiems lodgingPerDiems = new LodgingPerDiems(new HashSet<>());
-        private List<TravelAttachment> attachments = new ArrayList<>();
+        private List<Attachment> attachments = new ArrayList<>();
         private LocalDateTime createdDateTime;
         private Employee createdBy;
 
@@ -234,7 +234,7 @@ public class Amendment {
             return this;
         }
 
-        public Builder withAttachments(List<TravelAttachment> attachments) {
+        public Builder withAttachments(List<Attachment> attachments) {
             this.attachments = attachments;
             return this;
         }

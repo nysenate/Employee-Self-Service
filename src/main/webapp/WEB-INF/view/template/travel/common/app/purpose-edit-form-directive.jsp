@@ -48,10 +48,11 @@
       </div>
     </ess-travel-inner-container>
 
-    <ess-travel-inner-container ng-if="false" title="Supporting Documentation">
+    <ess-travel-inner-container title="Supporting Documentation">
       <div class="text-align-center">
-        <div ng-repeat="attachment in app.attachments" class="travel-attachment-container">
-          <div class="travel-attachment-filename">{{attachment.originalName}}
+        <div ng-repeat="attachment in dirtyAmendment.attachments" class="travel-attachment-container">
+          <div class="travel-attachment-filename">
+            {{attachment.originalName}}
             <span ng-click="deleteAttachment(attachment)" class="icon-cross" style="cursor: pointer;"></span>
           </div>
         </div>

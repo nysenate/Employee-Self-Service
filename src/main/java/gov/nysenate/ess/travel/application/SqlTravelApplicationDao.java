@@ -40,6 +40,7 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
     @Autowired private SqlAllowancesDao allowancesDao;
     @Autowired private SqlMealPerDiemsDao mealPerDiemsDao;
     @Autowired private SqlLodgingPerDiemsDao lodgingPerDiemsDao;
+    @Autowired private SqlAttachmentDao attachmentDao;
     @Autowired private EmployeeInfoService employeeInfoService;
 
     /**
@@ -64,10 +65,11 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
         for (Amendment amd : app.amendments) {
             if (amd.amendmentId() == 0) {
                 insertAmendment(amd, app.appId);
-                routeDao.saveRoute(app.activeAmendment().route(), amd.amendmentId());
-                allowancesDao.saveAllowances(app.activeAmendment().allowances(), amd.amendmentId());
-                mealPerDiemsDao.saveMealPerDiems(app.activeAmendment().mealPerDiems(), amd.amendmentId());
-                lodgingPerDiemsDao.saveLodgingPerDiems(app.activeAmendment().lodgingPerDiems(), amd.amendmentId());
+                routeDao.saveRoute(amd.route(), amd.amendmentId());
+                allowancesDao.saveAllowances(amd.allowances(), amd.amendmentId());
+                mealPerDiemsDao.saveMealPerDiems(amd.mealPerDiems(), amd.amendmentId());
+                lodgingPerDiemsDao.saveLodgingPerDiems(amd.lodgingPerDiems(), amd.amendmentId());
+                attachmentDao.saveAttachments(amd.attachments(), amd.amendmentId());
             }
         }
     }
@@ -77,7 +79,7 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
         MapSqlParameterSource params = new MapSqlParameterSource("appId", appId);
         String sql = SqlTravelApplicationQuery.SELECT_APP_BY_ID.getSql(schemaMap());
         AmendmentRowMapper amdRowMapper = new AmendmentRowMapper(routeDao, allowancesDao, employeeInfoService,
-                mealPerDiemsDao, lodgingPerDiemsDao);
+                mealPerDiemsDao, lodgingPerDiemsDao, attachmentDao);
         TravelApplicationHandler handler = new TravelApplicationHandler(amdRowMapper, employeeInfoService);
         localNamedJdbc.query(sql, params, handler);
         return handler.results();
@@ -88,7 +90,7 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
         MapSqlParameterSource params = new MapSqlParameterSource("userId", userId);
         String sql = SqlTravelApplicationQuery.SELECT_APP_BY_TRAVELER.getSql(schemaMap());
         AmendmentRowMapper amdHandler = new AmendmentRowMapper(routeDao, allowancesDao, employeeInfoService,
-                mealPerDiemsDao, lodgingPerDiemsDao);
+                mealPerDiemsDao, lodgingPerDiemsDao, attachmentDao);
         TravelApplicationListHandler handler = new TravelApplicationListHandler(amdHandler, employeeInfoService);
         localNamedJdbc.query(sql, params, handler);
         return handler.getApplications();
@@ -270,14 +272,17 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
         private EmployeeInfoService employeeInfoService;
         private SqlMealPerDiemsDao mealPerDiemsDao;
         private SqlLodgingPerDiemsDao lodgingPerDiemsDao;
+        private SqlAttachmentDao attachmentDao;
 
-        public AmendmentRowMapper(RouteDao routeDao, SqlAllowancesDao allowancesDao, EmployeeInfoService employeeInfoService,
-                                  SqlMealPerDiemsDao mealPerDiemsDao, SqlLodgingPerDiemsDao lodgingPerDiemsDao) {
+        public AmendmentRowMapper(RouteDao routeDao, SqlAllowancesDao allowancesDao,
+                                  EmployeeInfoService employeeInfoService, SqlMealPerDiemsDao mealPerDiemsDao,
+                                  SqlLodgingPerDiemsDao lodgingPerDiemsDao, SqlAttachmentDao attachmentDao) {
             this.routeDao = routeDao;
             this.allowancesDao = allowancesDao;
             this.employeeInfoService = employeeInfoService;
             this.mealPerDiemsDao = mealPerDiemsDao;
             this.lodgingPerDiemsDao = lodgingPerDiemsDao;
+            this.attachmentDao = attachmentDao;
         }
 
         @Override
@@ -297,6 +302,7 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
 
             MealPerDiems mpds = mealPerDiemsDao.selectMealPerDiems(amdId);
             LodgingPerDiems lpds = lodgingPerDiemsDao.selectLodgingPerDiems(amdId);
+            List<Attachment> attachments = attachmentDao.selectAttachments(amdId);
 
             Amendment amd = new Amendment.Builder()
                     .withAmendmentId(amdId)
@@ -306,6 +312,7 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
                     .withAllowances(allowances)
                     .withMealPerDiems(mpds)
                     .withLodgingPerDiems(lpds)
+                    .withAttachments(attachments)
                     .withCreatedDateTime(createdDateTime)
                     .withCreatedBy(createdBy)
                     .build();

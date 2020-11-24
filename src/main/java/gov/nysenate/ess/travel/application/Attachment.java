@@ -2,21 +2,22 @@ package gov.nysenate.ess.travel.application;
 
 import java.util.Objects;
 
-public class TravelAttachment {
+public class Attachment {
 
-    // The id is the unique filename of this attachment.
-    private final String id;
+    // A unique filename that is used to persist this file to disk.
+    private final String filename;
+    // The original filename from the user.
     private final String originalName;
     private final String contentType;
 
-    public TravelAttachment(String id, String originalName, String contentType) {
-        this.id = id;
+    public Attachment(String filename, String originalName, String contentType) {
+        this.filename = filename;
         this.originalName = originalName;
         this.contentType = contentType;
     }
 
-    protected String getId() {
-        return id;
+    public String getFilename() {
+        return filename;
     }
 
     protected String getOriginalName() {
@@ -29,8 +30,8 @@ public class TravelAttachment {
 
     @Override
     public String toString() {
-        return "TravelAttachment{" +
-                "id='" + id + '\'' +
+        return "Attachment{" +
+                "filename='" + filename + '\'' +
                 ", originalName='" + originalName + '\'' +
                 ", contentType='" + contentType + '\'' +
                 '}';
@@ -40,14 +41,14 @@ public class TravelAttachment {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        TravelAttachment that = (TravelAttachment) o;
-        return Objects.equals(id, that.id) &&
+        Attachment that = (Attachment) o;
+        return Objects.equals(filename, that.filename) &&
                 Objects.equals(originalName, that.originalName) &&
                 Objects.equals(contentType, that.contentType);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, originalName, contentType);
+        return Objects.hash(filename, originalName, contentType);
     }
 }
