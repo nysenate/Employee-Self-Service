@@ -15,6 +15,7 @@ public class MileagePerDiemsView implements ViewObject {
     private List<LegView> requestedLegs;
     @JsonProperty("doesTripQualifyForReimbursement")
     private boolean doesTripQualifyForReimbursement;
+    private String totalMileage;
 
     public MileagePerDiemsView() {
     }
@@ -31,6 +32,7 @@ public class MileagePerDiemsView implements ViewObject {
                 .map(LegView::new)
                 .collect(Collectors.toList());
         this.doesTripQualifyForReimbursement = ma.tripQualifiesForReimbursement();
+        this.totalMileage = String.valueOf(ma.totalMileage());
     }
 
     public MileagePerDiems toMileagePerDiems() {
@@ -55,6 +57,10 @@ public class MileagePerDiemsView implements ViewObject {
 
     public boolean isDoesTripQualifyForReimbursement() {
         return doesTripQualifyForReimbursement;
+    }
+
+    public String getTotalMileage() {
+        return totalMileage;
     }
 
     @Override

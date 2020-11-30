@@ -127,7 +127,10 @@
 
         <div class="app-form-allowances-box">
           <h4 style="margin: 0px 0px 10px 0px; text-align: center;">Estimated Travel Costs</h4>
-          <label>Transportation</label><span>{{(app.activeAmendment.transportationAllowance | currency) || NOT_AVAILABLE}}</span><br/>
+          <label>
+            Transportation ({{app.activeAmendment.route.mileagePerDiems.totalMileage}} Miles)
+          </label>
+          <span>{{(app.activeAmendment.transportationAllowance | currency) || NOT_AVAILABLE}}</span><br/>
           <label>Food</label><span>{{(app.activeAmendment.mealAllowance | currency) || NOT_AVAILABLE}}</span><br/>
           <label>Lodging</label><span>{{(app.activeAmendment.lodgingAllowance | currency) || NOT_AVAILABLE}}</span><br/>
           <label>Parking/Tolls</label><span>{{(app.activeAmendment.tollsAndParkingAllowance | currency) || NOT_AVAILABLE}}</span><br/>

@@ -36,7 +36,9 @@ public class SqlAttachmentDao extends SqlBaseDao {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("filename", filename);
         String sql = SqlAttachmentQuery.SELECT_ATTACHMENT.getSql(schemaMap());
-        return localNamedJdbc.queryForObject(sql, params, new AttachmentMapper());
+        // There can be multiple attachments with the same filename if edits are made.
+        // All attachments with the same filename are the same file, so just get the first one.
+        return localNamedJdbc.query(sql, params, new AttachmentMapper()).get(0);
     }
 
     private enum SqlAttachmentQuery implements BasicSqlQuery {
