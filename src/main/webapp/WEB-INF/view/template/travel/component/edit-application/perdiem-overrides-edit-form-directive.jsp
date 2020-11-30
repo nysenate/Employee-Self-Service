@@ -58,7 +58,7 @@
              title="Back"
              ng-click="back()">
       <input type="submit" class="submit-button"
-             title="Save Overrides and Continue" value="Save Overrides">
+             title="Save Overrides and Continue" value="Next">
     </div>
   </form>
 </div>
