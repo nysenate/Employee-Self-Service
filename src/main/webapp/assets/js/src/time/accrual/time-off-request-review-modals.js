@@ -265,6 +265,7 @@ function timeOffRequestApproveSubmitModal(modals, appProps, ReviewRequestApi) {
                     );
                 });
                 modals.resolve();
+                $scope.updateLists();
             };
         }
     }
