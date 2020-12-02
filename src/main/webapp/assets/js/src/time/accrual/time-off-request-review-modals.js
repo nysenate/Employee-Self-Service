@@ -11,11 +11,11 @@ essTime.factory('ReviewRequestApi', ['$resource', function ($resource) {
         comment: '@comment'
     });
 }]);
-essApp.directive('timeOffRequestReviewModal', ['appProps', 'modals', 'LocationService', timeOffRequestReviewModal]);
+essApp.directive('timeOffRequestReviewModal', ['appProps', 'modals', 'LocationService', 'AccrualApi', timeOffRequestReviewModal]);
 essApp.directive('timeOffRequestApproveSubmitModal', ['modals', 'appProps', 'ReviewRequestApi', timeOffRequestApproveSubmitModal]);
 
 
-function timeOffRequestReviewModal(appProps, modals, locationService) {
+function timeOffRequestReviewModal(appProps, modals, locationService, AccrualApi) {
     return {
         templateUrl: appProps.ctxPath + '/template/time/accrual/time-off-request-review-modal',
         link: link
@@ -29,7 +29,11 @@ function timeOffRequestReviewModal(appProps, modals, locationService) {
             sick: 0,
             vacation: 0
         };
-        $scope.accrualsPost = $scope.accruals;
+        $scope.accrualsPost = {
+            personal: 0,
+            sick: 0,
+            vacation: 0
+        };
         $scope.iSelectedRequest = 0;
         $scope.requests = modals.params().requests;
         $scope.alreadyApproved = modals.params().alreadyApproved;
@@ -67,7 +71,50 @@ function timeOffRequestReviewModal(appProps, modals, locationService) {
         /** Sets the given index as the index of the selected request */
         $scope.selectRequest = function (index) {
             $scope.iSelectedRequest = index;
+            retrieveAccrualInformation();
         };
+
+        function retrieveAccrualInformation() {
+            var accrualArgs = {
+                'empId': $scope.requests[$scope.iSelectedRequest].employeeId,
+                'beforeDate': new Date().toISOString().substr(0, 10)
+            };
+            AccrualApi.get(accrualArgs).$promise.then(
+                function (data) {
+                    $scope.accruals.personal = data.result.personalAvailable;
+                    $scope.accruals.vacation = data.result.vacationAvailable;
+                    $scope.accruals.sick = data.result.sickAvailable;
+                    $scope.accrualsPost.personal = data.result.personalAvailable;
+                    $scope.accrualsPost.vacation = data.result.vacationAvailable;
+                    $scope.accrualsPost.sick = data.result.sickAvailable;
+                    updateAccrualTotals();
+                },
+                function (data) {
+                    $scope.accruals.personal = 0;
+                    $scope.accruals.vacation = 0;
+                    $scope.accruals.sick = 0;
+                    $scope.accrualsPost.personal = 0;
+                    $scope.accrualsPost.vacation = 0;
+                    $scope.accrualsPost.sick = 0;
+                    console.error("There was an error accessing accrual data.", data);
+                    updateAccrualTotals();
+                }
+            );
+            function updateAccrualTotals() {
+                var vacationUsed = 0, personalUsed = 0, sickUsed = 0;
+                $scope.requests[$scope.iSelectedRequest].days.forEach(function (day) {
+                    day.totalHours = day.workHours + day.vacationHours + day.personalHours + day.sickEmpHours
+                        + day.sickFamHours + day.miscHours + day.holidayHours;
+                    vacationUsed += day.vacationHours;
+                    personalUsed += day.personalHours;
+                    sickUsed += day.sickEmpHours + day.sickFamHours;
+                });
+                $scope.accrualsPost.vacation = $scope.accruals.vacation - vacationUsed;
+                $scope.accrualsPost.personal = $scope.accruals.personal - personalUsed;
+                $scope.accrualsPost.sick = $scope.accruals.sick - sickUsed;
+            };
+        }
+        retrieveAccrualInformation();//initialize accruals
 
         $scope.next = function () {
             selectNextPendingRequest();
@@ -166,6 +213,7 @@ function timeOffRequestReviewModal(appProps, modals, locationService) {
                 if ($scope.getApprovalStatus($scope.requests[iAdj]) === 'untouched') {
                     $scope.iSelectedRequest = iAdj;
                     locationService.scrollToId($scope.requests[iAdj].requestId);
+                    retrieveAccrualInformation();
                     return;
                 }
             }
@@ -179,6 +227,7 @@ function timeOffRequestReviewModal(appProps, modals, locationService) {
             if (nextIndex < $scope.requests.length) {
                 $scope.iSelectedRequest = nextIndex;
             }
+            retrieveAccrualInformation();
         }
 
         /**
@@ -189,6 +238,7 @@ function timeOffRequestReviewModal(appProps, modals, locationService) {
             if (previousIndex >= 0) {
                 $scope.iSelectedRequest = previousIndex;
             }
+            retrieveAccrualInformation();
         }
 
         /**
