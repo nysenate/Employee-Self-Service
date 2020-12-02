@@ -23,10 +23,12 @@
 
     essTime.controller('RequestApprovalCtrl', ['$scope', '$route', 'appProps', 'ActiveRequestsApi',
                                                'PendingRequestsApi', 'ReviewRequestApi',
-                                               'TimeOffRequestListService', 'modals', 'badgeService', requestApprovalCtrl]);
+                                               'TimeOffRequestListService', 'modals', 'badgeService', 
+                                               'supEmpGroupService', requestApprovalCtrl]);
 
     function requestApprovalCtrl($scope, $route, appProps, ActiveRequestsApi, PendingRequestsApi,
-                                 ReviewRequestApi, TimeOffRequestListService, modals, badgeService) {
+                                 ReviewRequestApi, TimeOffRequestListService, modals, badgeService, 
+                                 supEmpGroupService) {
         $scope.pendingFormat = "pending";
         $scope.approvedFormat = "approved";
         $scope.supId = appProps.user.employeeId;
@@ -169,6 +171,8 @@
                     $scope.handleActiveResultAndMakePendingCall(data)
                         .then(function (data2) {
                             $scope.handlePendingResult(data2);
+                            $scope.activeRequests = changeToNames($scope.activeRequests);
+                            $scope.pendingRequests = changeToNames($scope.pendingRequests);
                             $scope.activeRequests.forEach(function (r) {
                                 r.checked = false;
                             });
@@ -184,6 +188,13 @@
                 .catch($scope.errorHandler());
         };
 
+        function changeToNames(requests) {
+            requests.forEach(function(request) {
+                request.name = supEmpGroupService.getName(request.employeeId).firstName
+                    + " " + supEmpGroupService.getName(request.employeeId).lastName;
+            });
+            return requests;
+        };
         /**
          * function to sort the requests by date, from earliest to latest
          */
