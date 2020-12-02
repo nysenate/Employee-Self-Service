@@ -21,7 +21,7 @@
                 var id_num = request.requestId;
                 var newUrl = currentUrl + "/time/accrual/time-off-request/" + id_num;
                 console.log(newUrl);
-                window.open(newUrl, "_self");
+                window.open(newUrl, "_blank");
             };
         }
     }
