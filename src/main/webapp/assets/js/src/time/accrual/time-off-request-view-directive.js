@@ -99,6 +99,7 @@
 
                 $scope.userType = "";
                 $scope.userType = $scope.empId === $scope.data.employeeId ? "E" : "S";
+                console.log("employee classification: " + $scope.userType);
                 $scope.otherContact = $scope.userType === "E" ? "Supervisor" : "Employee";
                 //$scope.addedComment = "";
                 $scope.miscTypeList = appProps.miscLeaves;
@@ -157,6 +158,11 @@
                  * It will also update the leftover accrual values
                  */
                 $scope.updateTotals = function () {
+                    if ($scope.empId !== $scope.data.employeeId) {
+                        $scope.accruals.vacation = 0;
+                        $scope.accruals.personal = 0;
+                        $scope.accruals.sick = 0;
+                    }
                     var vacationUsed = 0, personalUsed = 0, sickUsed = 0;
                     $scope.data.days.forEach(function (day) {
                         day.totalHours = day.workHours + day.vacationHours + day.personalHours + day.sickEmpHours

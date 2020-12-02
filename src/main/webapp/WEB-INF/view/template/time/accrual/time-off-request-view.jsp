@@ -19,7 +19,7 @@
 
 <div class="content-container" ng-init="onloadFn()" ><h1>Review/Submit A Time Off Request</h1></div>
 <!--Include their accruals-->
-<p class="time-off-request-accruals" >&ensp;&ensp;Available Hours: &emsp; <span class="vacation-text">Vacation: {{accruals.vacation}}&ensp;</span>
+<p class="time-off-request-accruals" ng-if="empId === data.employeeId">&ensp;&ensp;Available Hours: &emsp; <span class="vacation-text">Vacation: {{accruals.vacation}}&ensp;</span>
                            <span class="personal-text">Personal: {{accruals.personal}}&ensp;</span>
                            <span class="sick-text">Sick: {{accruals.sick}}&ensp;</span></p>
 <!--Go through all the days-->
