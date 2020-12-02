@@ -25,10 +25,14 @@ function timeOffRequestListUtils() {
             request.timestampPrint = moment(request.timestamp).format("MMM Do YYYY");
             //get the total hours
             var totalHrs = 0;
+            var leaveHrs = 0;
             request.days.forEach(function(day){
                 totalHrs = totalHrs + day.totalHours;
+                leaveHrs = leaveHrs + day.vacationHours + day.personalHours + day.sickEmpHours
+                + day.sickFamHours + day.miscHours + day.holidayHours;
             });
             request.totalHours = totalHrs;
+            request.leaveHours = leaveHrs;
 
             //get all the leave types for the request
             var setMiscLeaveTypes = new Set();

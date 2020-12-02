@@ -21,6 +21,7 @@
           <th class="time-off-approval-table-select-column">Select</th>
           <th class="time-off-approval-table-dates-column">Dates Affected</th>
           <th class="time-off-approval-table-hours-column">Total Hours</th>
+          <th class="time-off-approval-table-hours-column">Leave Hours</th>
           <th class="time-off-approval-table-chips-column"></th> <!--Blank header for the chips column-->
        </tr>
      </thead>
@@ -35,6 +36,7 @@
                </td>
                <td class="time-off-approval-table-dates-column">{{request.startDatePrint}} - {{request.endDatePrint}}</td>
                <td class="time-off-approval-table-hours-column">{{request.totalHours}}</td>
+               <td class="time-off-approval-table-hours-column">{{request.leaveHours}}</td>
                <td class="time-off-table-hour-types chip-container">
                   <div class="md-chip" ng-repeat="type in request.accrualTypes"
                        ng-class="{vacation: type === 'VACATION', personal: type === 'PERSONAL', sick: type === 'SICKEMP' || type === 'SICKFAM'}">
