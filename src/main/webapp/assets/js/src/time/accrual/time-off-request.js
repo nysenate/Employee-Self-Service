@@ -10,9 +10,9 @@
     }]);
 
     essTime.controller('RequestCtrl', ['$scope', 'appProps', 'EmployeeDateRangeApi',
-                                       'TimeOffRequestListService', requestCtrl]);
+                                       'TimeOffRequestListService', 'badgeService', requestCtrl]);
 
-    function requestCtrl($scope, appProps, EmployeeDateRangeApi, TimeOffRequestListService) {
+    function requestCtrl($scope, appProps, EmployeeDateRangeApi, TimeOffRequestListService, badgeService) {
 
         $scope.pageLoaded = false;
         $scope.empId = appProps.user.employeeId;
@@ -79,6 +79,7 @@
             $scope.pastRequests = TimeOffRequestListService.formatData(data);
             $scope.pastRequests = subtractArrays($scope.requests, $scope.pastRequests);
             $scope.pageLoaded = true;
+            badgeService.setBadgeValue("activeRequestCount", $scope.requests.length);
         };
 
         $scope.errorHandler = function () {

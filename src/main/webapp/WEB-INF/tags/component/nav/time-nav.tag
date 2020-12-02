@@ -20,13 +20,16 @@
   </ul>
   <shiro:hasPermission name="<%= SimpleTimePermission.ACCRUAL_PAGES.getPermissionString() %>">
     <h3 class="main-topic">My Accruals</h3>
-    <ul class="sub-topic-list">
+    <ul class="sub-topic-list" ng-init="initializeActiveRequestsBadge()">
         <li class="sub-topic teal"><a href="${ctxPath}/time/accrual/history">Accrual History</a></li>
         <shiro:hasPermission name="<%= SimpleTimePermission.ACCRUAL_PROJECTIONS.getPermissionString() %>">
             <li class="sub-topic teal"><a href="${ctxPath}/time/accrual/projections">Accrual Projections</a></li>
         </shiro:hasPermission>
         <shiro:hasPermission name="<%= SimpleTimePermission.TIME_OFF_REQUEST_PAGES.getPermissionString() %>">
-            <li class="sub-topic teal"><a href="${ctxPath}/time/accrual/time-off-request">Time Off Requests</a></li>
+            <li class="sub-topic teal"><a href="${ctxPath}/time/accrual/time-off-request">Time Off Requests</a>
+            <badge title="Active Request Count" style="cursor: default"
+               badge-id="activeRequestCount" hide-empty="true" color="teal"></badge>
+            </li>
         </shiro:hasPermission>
 
     </ul>
