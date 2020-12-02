@@ -188,12 +188,14 @@ public class TimeOffRequestRestApiCtrl extends BaseRestApiCtrl {
                     "action != SUBMIT");
         }
 
+        //if there is a new comment, then
         if(comment != null) {
             TimeOffRequestComment newComment = new TimeOffRequestComment(requestId, request.getSupervisorId(), comment);
             List<TimeOffRequestComment> originalComments = request.getComments();
             originalComments.add(newComment);
             request.setComments(originalComments);
         }
+
         if(timeOffRequestAction == TimeOffRequestAction.APPROVE) {
             logger.info("APPROVING REQUEST");
             request.setStatus(TimeOffStatus.APPROVED);
@@ -219,7 +221,7 @@ public class TimeOffRequestRestApiCtrl extends BaseRestApiCtrl {
     }
 
     /**
-     * Helper funciton to convert a list of TimeOffRequests
+     * Helper function to convert a list of TimeOffRequests
      * to a list of TimeOffRequestViews
      * @param requests List<TimeOffRequest>
      * @return List<TimeOffRequestView>
