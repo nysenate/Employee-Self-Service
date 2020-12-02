@@ -52,6 +52,7 @@ function timeOffRequestListUtils() {
             request.checked = false;
 
             //add the request object to the master array of request objects
+            console.log(request);
             requestObjs.push(request);
         });
         return requestObjs;

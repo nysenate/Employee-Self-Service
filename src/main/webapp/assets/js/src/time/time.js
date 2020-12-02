@@ -39,7 +39,17 @@ essApp.controller('TimeMainCtrl', ['$scope', 'appProps', 'LocationService', 'bad
                 endRange: "" //Will be changed to DateUtils.THE_FUTURE in Ctrl
             }).$promise.then(function (data) {
                 var requests = TimeOffRequestListService.formatData(data);
-                badgeService.setBadgeValue("activeRequestCount", requests.length);
+                var pendingRequestCount = 0;
+                var approvedRequestCount = 0;
+                var rejectedRequestCount = 0;
+                for (var index = 0; index < requests.length; ++index) {
+                    if (requests[index].status === "SUBMITTED") pendingRequestCount++;
+                    if (requests[index].status === "APPROVED") approvedRequestCount++;
+                    if (requests[index].status === "DISAPPROVED") rejectedRequestCount++;
+                }
+                badgeService.setBadgeValue("activeRequestCount", pendingRequestCount);
+                badgeService.setBadgeValue("activeApprovedRequestCount", approvedRequestCount);
+                badgeService.setBadgeValue("activeRejectedRequestCount", rejectedRequestCount);
             })
             .catch(console.error);
         }

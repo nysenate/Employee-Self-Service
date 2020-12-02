@@ -27,8 +27,12 @@
         </shiro:hasPermission>
         <shiro:hasPermission name="<%= SimpleTimePermission.TIME_OFF_REQUEST_PAGES.getPermissionString() %>">
             <li class="sub-topic teal"><a href="${ctxPath}/time/accrual/time-off-request">Time Off Requests</a>
-            <badge title="Active Request Count" style="cursor: default"
-               badge-id="activeRequestCount" hide-empty="true" color="teal"></badge>
+              <badge title="Pending Request Count" style="cursor: default"
+                badge-id="activeRequestCount" hide-empty="true" color="teal"></badge>
+              <badge title="Approved Request Count" style="cursor: default"
+                badge-id="activeApprovedRequestCount" hide-empty="true" color="green"></badge>
+              <badge title="Rejected Request Count" style="cursor: default"
+                badge-id="activeRejectedRequestCount" hide-empty="true" color="orange"></badge>
             </li>
         </shiro:hasPermission>
 
