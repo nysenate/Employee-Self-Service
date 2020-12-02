@@ -99,7 +99,7 @@
 
         //Adding a new request - open the new request page
         $scope.newRequest = function () {
-            window.open(window.location.href + "/new", "_self");
+            window.open(window.location.origin + "/time/accrual/time-off-request/new", "_self");
         };
 
         /**
