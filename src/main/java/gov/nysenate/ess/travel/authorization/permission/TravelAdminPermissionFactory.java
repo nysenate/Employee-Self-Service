@@ -13,15 +13,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Permissions for the Deputy Executive Assistant role.
+ * Permissions for the Travel Admin role.
  */
 @Service
-public class TravelDeaPermissionFactory implements PermissionFactory {
+public class TravelAdminPermissionFactory implements PermissionFactory {
 
     @Override
     public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum> roles) {
         List<Permission> permissions = new ArrayList<>();
-        if (roles.contains(TravelRole.DEPUTY_EXECUTIVE_ASSISTANT)) {
+        if (roles.contains(TravelRole.TRAVEL_ADMIN)) {
             permissions.add(SimpleTravelPermission.TRAVEL_UI_MANAGE.getPermission());
             permissions.add(SimpleTravelPermission.TRAVEL_UI_REVIEW.getPermission());
             permissions.add(SimpleTravelPermission.TRAVEL_UI_REVIEW_HISTORY.getPermission());

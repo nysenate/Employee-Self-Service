@@ -52,6 +52,6 @@ public class DeaReviewerStrategyTest {
 
     @Test (expected = IllegalArgumentException.class)
     public void givenDeaLastReviewer_throwException() {
-        strategy.after(TravelRole.DEPUTY_EXECUTIVE_ASSISTANT);
+        strategy.after(TravelRole.TRAVEL_ADMIN);
     }
 }

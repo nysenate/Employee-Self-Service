@@ -35,7 +35,7 @@ public class ApplicationReview {
             reviewerStrategy = new SenatorReviewerStrategy();
         } else if (travelerRole == TravelRole.SUPERVISOR) {
             reviewerStrategy = new SupervisorReviewerStrategy();
-        } else if (travelerRole == TravelRole.DEPUTY_EXECUTIVE_ASSISTANT) {
+        } else if (travelerRole == TravelRole.TRAVEL_ADMIN) {
             reviewerStrategy = new DeaReviewerStrategy();
         } else if (travelerRole == TravelRole.SECRETARY_OF_THE_SENATE) {
             reviewerStrategy = new SosReviewerStrategy();

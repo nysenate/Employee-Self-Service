@@ -15,7 +15,7 @@ public enum TravelRole {
 
     /** Travel Roles */
     SUPERVISOR("Supervisor"),
-    DEPUTY_EXECUTIVE_ASSISTANT("Deputy Executive Assistant"),
+    TRAVEL_ADMIN("Travel Admin"),
     SECRETARY_OF_THE_SENATE("Secretary of the Senate"),
     MAJORITY_LEADER("Majority Leader");
 

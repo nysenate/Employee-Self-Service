@@ -10,7 +10,7 @@ public class RegularReviewerStrategy implements ReviewerStrategy {
 
     private static final List<TravelRole> order = Lists.newArrayList(
             TravelRole.SUPERVISOR,
-            TravelRole.DEPUTY_EXECUTIVE_ASSISTANT,
+            TravelRole.TRAVEL_ADMIN,
             TravelRole.SECRETARY_OF_THE_SENATE,
             TravelRole.NONE);
 

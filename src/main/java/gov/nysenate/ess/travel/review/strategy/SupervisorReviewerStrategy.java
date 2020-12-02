@@ -8,7 +8,7 @@ import java.util.List;
 public class SupervisorReviewerStrategy implements ReviewerStrategy {
 
     private static final List<TravelRole> order = Lists.newArrayList(
-            TravelRole.DEPUTY_EXECUTIVE_ASSISTANT,
+            TravelRole.TRAVEL_ADMIN,
             TravelRole.SECRETARY_OF_THE_SENATE,
             TravelRole.NONE);
 

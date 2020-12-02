@@ -47,8 +47,8 @@ public class TravelRoles {
         if (all().contains(TravelRole.SUPERVISOR)) {
             apex = TravelRole.SUPERVISOR;
         }
-        if (all().contains(TravelRole.DEPUTY_EXECUTIVE_ASSISTANT)) {
-            apex = TravelRole.DEPUTY_EXECUTIVE_ASSISTANT;
+        if (all().contains(TravelRole.TRAVEL_ADMIN)) {
+            apex = TravelRole.TRAVEL_ADMIN;
         }
         if (all().contains(TravelRole.SECRETARY_OF_THE_SENATE)) {
             apex = TravelRole.SECRETARY_OF_THE_SENATE;

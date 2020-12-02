@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -61,17 +62,18 @@ public class TravelRoleFactory implements RoleFactory {
 
     private List<TravelRole> primaryRoles(Employee employee) {
         List<TravelRole> r = new ArrayList<>();
+        Set<EssRole> empRoles = essRoleDao.getRoles(employee);
 
         if (supervisorInfoService.isSupervisor(employee.getEmployeeId())) {
             r.add(TravelRole.SUPERVISOR);
         }
-        if (employee.getJobTitle().equals("Deputy Executive Assistant")) {
-            r.add(TravelRole.DEPUTY_EXECUTIVE_ASSISTANT);
+        if (empRoles.contains(EssRole.TRAVEL_ADMIN)) {
+            r.add(TravelRole.TRAVEL_ADMIN);
         }
-        if (employee.getJobTitle().equals("Secretary of the Senate")) {
+        if (empRoles.contains(EssRole.SECRETARY_OF_SENATE)) {
             r.add(TravelRole.SECRETARY_OF_THE_SENATE);
         }
-        if (essRoleDao.getRoles(employee).contains(EssRole.MAJORITY_LEADER)) {
+        if (empRoles.contains(EssRole.MAJORITY_LEADER)) {
             r.add(TravelRole.MAJORITY_LEADER);
         }
 

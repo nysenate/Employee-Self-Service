@@ -16,5 +16,7 @@ public enum EssRole {
     TIME_MANAGER,
     /* Travel */
     MAJORITY_LEADER,
+    TRAVEL_ADMIN,
+    SECRETARY_OF_SENATE
     ;
 }
