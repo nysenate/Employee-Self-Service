@@ -14,12 +14,17 @@ angular.module('essTravel').factory('ApplicationReviewApi', [
         var disapproveApi = $resource(appProps.apiPath + '/travel/review/:appReviewId/disapprove.json',
                                       {appReviewId: '@appReviewId'},
                                       {save: {method: 'POST', cancellable: true}});
+        var editReviewApi = $resource(appProps.apiPath + '/travel/review/:appReviewId',
+                                      {appReviewId: '@appReviewId'},
+                                      {save: {method: 'POST', cancellable: true}});
+        var sharedReviewApi = $resource(appProps.apiPath + '/travel/review/shared.json',
+                                        {},
+                                        {get: {method: 'GET', cancellable: true}});
 
         var appReviewApi = {};
 
-        function ActionBody(notes, isDiscussionRequested) {
+        function ActionBody(notes) {
             this.notes = notes;
-            this.isDiscussionRequested = isDiscussionRequested;
         }
 
         /**
@@ -34,17 +39,25 @@ angular.module('essTravel').factory('ApplicationReviewApi', [
             return reviewHistoryApi.get({});
         };
 
-        appReviewApi.approve = function (appReviewId, role, notes, isDiscussionRequested) {
-            return approveApi.save({appReviewId: appReviewId, role: role}, new ActionBody(notes, isDiscussionRequested));
+        appReviewApi.approve = function (appReviewId, role, notes) {
+            return approveApi.save({appReviewId: appReviewId, role: role}, new ActionBody(notes));
         };
 
         appReviewApi.disapprove = function (appReviewId, role, notes) {
-            return disapproveApi.save({appReviewId: appReviewId, role: role}, new ActionBody(notes, false));
+            return disapproveApi.save({appReviewId: appReviewId, role: role}, new ActionBody(notes));
         };
+
+        appReviewApi.editReview = function (appReviewId, isShared) {
+            return editReviewApi.save({appReviewId: appReviewId, isShared: isShared}, {});
+        }
 
         appReviewApi.parseAppReviewResponse = function (response) {
             return response.result;
         };
+
+        appReviewApi.sharedReviews = function () {
+            return sharedReviewApi.get({});
+        }
 
         return appReviewApi;
     }

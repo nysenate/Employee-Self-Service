@@ -5,6 +5,7 @@ import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class Action {
 
@@ -14,19 +15,15 @@ public class Action {
     protected final ActionType type;
     protected final String notes;
     protected final LocalDateTime dateTime;
-    protected final boolean isDiscussionRequested;
 
     public Action(int actionId, Employee user, TravelRole role, ActionType type,
-                  String notes, LocalDateTime dateTime, boolean isDiscussionRequested) {
-        // Cannot request discussion when disapproving.
-        Preconditions.checkArgument(!(type == ActionType.DISAPPROVE && isDiscussionRequested));
+                  String notes, LocalDateTime dateTime) {
         this.actionId = actionId;
         this.user = user;
         this.role = role;
         this.type = type;
         this.notes = notes;
         this.dateTime = dateTime;
-        this.isDiscussionRequested = isDiscussionRequested;
     }
 
     /**
@@ -69,5 +66,23 @@ public class Action {
      */
     public LocalDateTime dateTime() {
         return dateTime;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Action action = (Action) o;
+        return actionId == action.actionId &&
+                Objects.equals(user, action.user) &&
+                role == action.role &&
+                type == action.type &&
+                Objects.equals(notes, action.notes) &&
+                Objects.equals(dateTime, action.dateTime);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(actionId, user, role, type, notes, dateTime);
     }
 }

@@ -275,7 +275,6 @@ essApi.factory('TravelAppEditAllowancesApi', ['$resource', 'appProps', function 
     return $resource(appProps.apiPath + '/travel/application/edit/:id/allowances', {id: '@id'})
 }])
 
-
 essApi.factory('TravelApplicationByIdApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/travel/application/:id.json', {id: '@id'})
 }]);

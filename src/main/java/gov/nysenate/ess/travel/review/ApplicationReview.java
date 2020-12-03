@@ -19,13 +19,16 @@ public class ApplicationReview {
     private TravelRole travelerRole;
     private SortedSet<Action> actions;
     private ReviewerStrategy reviewerStrategy;
+    private boolean isShared;
 
-    public ApplicationReview(int appReviewId, TravelApplication application, TravelRole travelerRole, List<Action> actions) {
+    public ApplicationReview(int appReviewId, TravelApplication application,
+                             TravelRole travelerRole, List<Action> actions, boolean isShared) {
         this.appReviewId = appReviewId;
         this.application = application;
         this.travelerRole = travelerRole;
         this.actions = new TreeSet<>(actionComparator);
         this.actions.addAll(actions);
+        this.isShared = isShared;
 
         if (travelerRole == TravelRole.NONE) {
             reviewerStrategy = new RegularReviewerStrategy();
@@ -43,7 +46,7 @@ public class ApplicationReview {
     }
 
     public ApplicationReview(TravelApplication application, TravelRole travelerRole) {
-        this(0, application, travelerRole, new ArrayList<>());
+        this(0, application, travelerRole, new ArrayList<>(), false);
     }
 
     public void addAction(Action action) {
@@ -63,15 +66,6 @@ public class ApplicationReview {
         }
     }
 
-    /**
-     * Discussion is requested for this application review if the most recent action
-     * has requested discussion.
-     */
-    public boolean isDiscussionRequested() {
-        Action a = mostRecentAction();
-        return a == null ? false : a.isDiscussionRequested;
-    }
-
     public TravelApplication application() {
         return application;
     }
@@ -82,6 +76,14 @@ public class ApplicationReview {
 
     public TravelRole travelerRole() {
         return travelerRole;
+    }
+
+    public boolean isShared() {
+        return isShared;
+    }
+
+    public void setShared(boolean isShared) {
+        this.isShared = isShared;
     }
 
     int getAppReviewId() {
@@ -105,5 +107,22 @@ public class ApplicationReview {
         catch (NoSuchElementException ex) {
             return null;
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ApplicationReview that = (ApplicationReview) o;
+        return appReviewId == that.appReviewId &&
+                isShared == that.isShared &&
+                Objects.equals(application, that.application) &&
+                travelerRole == that.travelerRole &&
+                Objects.equals(actions, that.actions);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(appReviewId, application, travelerRole, actions, isShared);
     }
 }

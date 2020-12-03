@@ -1,7 +1,10 @@
 <div class="content-container">
   <div ng-show="reviews.length > 0">
-    <div class="padding-10">
+    <h1 ng-if="title" style="border-color: #ccc;">
+      {{title}}
+    </h1>
 
+    <div class="padding-10">
       <table class="travel-table travel-hover">
         <thead>
         <tr>
@@ -16,8 +19,8 @@
         <tbody>
         <tr dir-paginate="review in reviews | orderBy: 'travelApplication.startDate' | itemsPerPage : 10"
             pagination-id="travel-table-pagination"
-            ng-class="{'highlight-row': options.highlightDiscussion == true && review.isDiscussionRequested == true}"
-            ng-click="onRowClick({review: review})">
+            ng-click="onRowClick({review: review})"
+            ng-class="{'shared-review': (review.isShared && activeRole.name && activeRole.name !== review.nextReviewerRole) }">
 
           <td ng-bind="::review.travelApplication.activeAmendment.startDate | date:'M/d/yyyy'"></td>
           <td ng-bind="::review.travelApplication.traveler.lastName"></td>

@@ -17,8 +17,8 @@ public enum SimpleTravelPermission {
     // are not allowed to edit (and the api will block them if they try to edit it). But this should never
     // happen through natural use of the UI.,
     TRAVEL_UI_EDIT_APP("travel:ui:edit-app"),
-    // Users with this permission are allowed to request discussion when approving an application.
-    TRAVEL_UI_REQUEST_DISCUSSION("travel:ui:request-discussion"),
+    // Users with this permission are allowed to share all reviews with the SOS for collaboration.
+    TRAVEL_UI_CAN_SHARE("travel:ui:can-share"),
     // Allowed to browse the assign delegates page and assign delegates.
     TRAVEL_ASSIGN_DELEGATES("travel:assign-delegates");
 

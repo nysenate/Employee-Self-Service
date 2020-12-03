@@ -98,4 +98,20 @@ public class TravelApplication {
     protected void addAmendment(Amendment a) {
         amendments.add(a);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TravelApplication that = (TravelApplication) o;
+        return appId == that.appId &&
+                Objects.equals(traveler, that.traveler) &&
+                Objects.equals(status, that.status) &&
+                Objects.equals(amendments, that.amendments);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(appId, traveler, status, amendments);
+    }
 }

@@ -13,7 +13,7 @@ public class ApplicationReviewView implements ViewObject {
     private TravelApplicationView travelApplication;
     private String nextReviewerRole;
     private List<ActionView> actions;
-    private boolean isDiscussionRequested;
+    private boolean isShared;
 
     public ApplicationReviewView() {
     }
@@ -25,7 +25,7 @@ public class ApplicationReviewView implements ViewObject {
         actions = appReview.actions().stream()
                 .map(ActionView::new)
                 .collect(Collectors.toList());
-        isDiscussionRequested = appReview.isDiscussionRequested();
+        isShared = appReview.isShared();
     }
 
     public String getAppReviewId() {
@@ -44,9 +44,9 @@ public class ApplicationReviewView implements ViewObject {
         return actions;
     }
 
-    @JsonProperty("isDiscussionRequested")
-    public boolean isDiscussionRequested() {
-        return isDiscussionRequested;
+    @JsonProperty("isShared")
+    public boolean isShared() {
+        return isShared;
     }
 
     @Override

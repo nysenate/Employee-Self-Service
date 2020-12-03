@@ -6,9 +6,9 @@ essTravel.directive('appReviewActionModal', ['appProps', function (appProps) {
         controller: 'AppFormReviewCtrl'
     }
 }])
-    .controller('AppFormReviewCtrl', ['$scope', 'modals', appFormReviewCtrl]);
+    .controller('AppFormReviewCtrl', ['$scope', 'modals', 'ApplicationReviewApi', appFormReviewCtrl]);
 
-function appFormReviewCtrl($scope, modals) {
+function appFormReviewCtrl($scope, modals, appReviewApi) {
 
     $scope.appReview = modals.params().review;
     $scope.role = modals.params().role;
@@ -25,4 +25,14 @@ function appFormReviewCtrl($scope, modals) {
     $scope.exit = function () {
         modals.reject();
     };
+
+    $scope.onShare = function () {
+        appReviewApi.editReview($scope.appReview.appReviewId, true).$promise
+            .then(modals.resolve);
+    }
+
+    $scope.onRemoveShare = function () {
+        appReviewApi.editReview($scope.appReview.appReviewId, false).$promise
+            .then(modals.resolve);
+    }
 }

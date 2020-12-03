@@ -13,7 +13,8 @@ function reviewController($scope, $q, modals, locationService, appReviewApi, rol
     vm.isLoading = true;
     vm.reviews = {
         all: [],
-        filtered: [] // Only reviews which need to be reviewed by the selected role.
+        toReview: [], // App Reviews waiting to be reviewed by the selected role.
+        shared: []    // Shared reviews are visible to both the Travel Admin and SOS in separate queues.
     };
     vm.appIdToReview = new Map(); // Map of TravelApplication id to its ApplicationReview
     vm.userRoles = [];
@@ -25,8 +26,14 @@ function reviewController($scope, $q, modals, locationService, appReviewApi, rol
                 vm.userRoles = response.roles;
                 vm.activeRole = vm.userRoles[vm.userRoles.length - 1];
                 queryPendingAppReviews()
-                    .then(filterReviews)
-                    .then(openReviewModalIfSearchParamsSet);
+                    .then(getSharedReviews)
+                    .then(removeDuplicates)
+                    .then(initAppIdToReviewMap)
+                    .then(sortReviews)
+                    .then(openReviewModalIfSearchParamsSet)
+                    .then(function () {
+                        vm.isLoading = false;
+                    })
             });
     })();
 
@@ -44,23 +51,53 @@ function reviewController($scope, $q, modals, locationService, appReviewApi, rol
             .$promise
             .then(appReviewApi.parseAppReviewResponse)
             .then(function (appReviews) {
-                appReviews.forEach(function (review) {
-                    vm.reviews.all.push(review);
-                    vm.appIdToReview.set(review.travelApplication.id, review);
-                });
-                vm.isLoading = false;
+                vm.reviews.all = appReviews;
             })
             .catch($scope.handleErrorResponse);
     }
 
-    function filterReviews() {
-        vm.reviews.filtered = [];
+    function getSharedReviews() {
+        return appReviewApi.sharedReviews()
+            .$promise
+            .then(appReviewApi.parseAppReviewResponse)
+            .then(function (sharedReviews) {
+                vm.reviews.all = vm.reviews.all.concat(sharedReviews);
+            })
+            .catch($scope.handleErrorResponse);
+    }
+
+    function removeDuplicates() {
+        vm.reviews.all = _.uniq(vm.reviews.all, false, function(n) { return n.appReviewId })
+    }
+
+    function initAppIdToReviewMap() {
+        vm.reviews.all.forEach(function (review) {
+            vm.appIdToReview.set(review.travelApplication.id, review);
+        })
+    }
+
+    function sortReviews() {
+        vm.reviews.toReview = [];
+        vm.reviews.shared = [];
         vm.reviews.all.forEach(function (r) {
-            if (r.nextReviewerRole === vm.activeRole.name) {
-                vm.reviews.filtered.push(r);
+            // Add non shared reviews
+            if (!r.isShared) {
+                if (r.nextReviewerRole === vm.activeRole.name) {
+                    vm.reviews.toReview.push(r);
+                }
+            }
+            // Show shared reviews if the active role is the travel admin or SOS.
+            if (r.isShared && (vm.activeRole.name === 'TRAVEL_ADMIN' || vm.activeRole.name === 'SECRETARY_OF_THE_SENATE')) {
+                vm.reviews.shared.push(r);
             }
         });
-        vm.reviews.filtered.sort(function(a, b) {
+        sortByStartDate(vm.reviews.toReview);
+        sortByStartDate(vm.reviews.shared);
+        console.log(vm);
+    }
+
+    function sortByStartDate(appReviews) {
+        appReviews.sort(function (a, b) {
             return moment(a.travelApplication.activeAmendment.startDate, ISO_FORMAT).format('x')
                 - moment(b.travelApplication.activeAmendment.startDate, ISO_FORMAT).format('x');
         })
@@ -111,10 +148,10 @@ function reviewController($scope, $q, modals, locationService, appReviewApi, rol
     /**
      * Used by the app-review-action-modal when the user clicks on the edit link.
      *
-     * This logic needs to be outside the modal since the app-review and app-edit pages
-     * both use appId as a search param. Issues can occur setting it correctly if we go
-     * to the edit page before completely closing the modal because closing the modal
-     * will remove the same search params that the link to the edit page is adding.
+     * This logic seems to work best outside the modal since it involves setting
+     * the appId requestParameter which is also used by this modal.
+     * If this logic is in the modal, the appId request param is set inconsistently when
+     * loading the edit page.
      */
     vm.onEdit = function () {
         var appId = getAppIdParam();

@@ -45,11 +45,26 @@ public class ApplicationReviewCtrl extends BaseRestApiCtrl {
                 : roles.stream().map(TravelRole::of).collect(Collectors.toList());
         Employee employee = employeeInfoService.getEmployee(getSubjectEmployeeId());
 
-        List<ApplicationReview> pendingReviews = new ArrayList<>();
+        Set<ApplicationReview> pendingReviews = new HashSet<>();
         for (TravelRole r : roleList) {
             pendingReviews.addAll(appReviewService.pendingAppReviewsForEmpWithRole(employee, r));
         }
 
+        return ListViewResponse.of(pendingReviews.stream()
+                .map(ApplicationReviewView::new)
+                .collect(Collectors.toList()));
+    }
+
+    @RequestMapping(value = "/shared", method = RequestMethod.GET)
+    public BaseResponse getSharedReviews() {
+        // Check the user is allowed to view application reviews
+        checkPermission(new TravelPermissionBuilder()
+                .forObject(TravelPermissionObject.TRAVEL_APPLICATION_REVIEW)
+                .forAllEmps()
+                .forAction(RequestMethod.GET)
+                .buildPermission());
+
+        Set<ApplicationReview> pendingReviews = new HashSet<>(appReviewService.pendingSharedAppReviews());
         return ListViewResponse.of(pendingReviews.stream()
                 .map(ApplicationReviewView::new)
                 .collect(Collectors.toList()));
@@ -74,9 +89,10 @@ public class ApplicationReviewCtrl extends BaseRestApiCtrl {
 
     /**
      * Adds an Approval to an ApplicationReview
+     *
      * @param appReviewId The id of the ApplicationReview to approve.
-     * @param role The role that is approving this application.
-     * @param body Additional details about the approval.
+     * @param role        The role that is approving this application.
+     * @param body        Additional details about the approval.
      */
     @RequestMapping(value = "/{appReviewId}/approve", method = RequestMethod.POST)
     public BaseResponse approveApplication(@PathVariable int appReviewId,
@@ -92,15 +108,16 @@ public class ApplicationReviewCtrl extends BaseRestApiCtrl {
                 .forAction(RequestMethod.POST)
                 .buildPermission());
 
-        appReviewService.approveApplication(appReview, employee, body.getNotes(), r, body.isDiscussionRequested());
+        appReviewService.approveApplication(appReview, employee, body.getNotes(), r);
         return new ViewObjectResponse<>(new ApplicationReviewView(appReview));
     }
 
     /**
      * Adds a Disapproval to an ApplicationReview
+     *
      * @param appReviewId The id of the ApplicationReview to approve.
-     * @param role The role that is disapproving.
-     * @param body Contains the disapproval reason.
+     * @param role        The role that is disapproving.
+     * @param body        Contains the disapproval reason.
      */
     @RequestMapping(value = "/{appReviewId}/disapprove", method = RequestMethod.POST)
     public BaseResponse disapproveApplication(@PathVariable int appReviewId,
@@ -121,6 +138,27 @@ public class ApplicationReviewCtrl extends BaseRestApiCtrl {
                 .buildPermission());
 
         appReviewService.disapproveApplication(appReview, employee, body.getNotes(), r);
+        return new ViewObjectResponse<>(new ApplicationReviewView(appReview));
+    }
+
+    /**
+     * Update the isShared filed of an ApplicationReview.
+     *
+     * @param appReviewId The id of the review to update.
+     * @param isShared    The new value for isShared.
+     * @return
+     */
+    @RequestMapping(value = "/{appReviewId}", method = RequestMethod.POST)
+    public BaseResponse updateAppReview(@PathVariable int appReviewId,
+                                        @RequestParam boolean isShared) {
+        ApplicationReview appReview = appReviewService.getApplicationReview(appReviewId);
+        checkPermission(new TravelPermissionBuilder()
+                .forObject(TravelPermissionObject.TRAVEL_APPLICATION_REVIEW)
+                .forEmpId(appReview.application().getTraveler().getEmployeeId())
+                .forAction(RequestMethod.POST)
+                .buildPermission());
+
+        appReview = appReviewService.updateIsShared(appReview, isShared);
         return new ViewObjectResponse<>(new ApplicationReviewView(appReview));
     }
 }

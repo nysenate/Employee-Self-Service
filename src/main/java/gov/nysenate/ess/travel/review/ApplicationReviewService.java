@@ -25,9 +25,9 @@ public class ApplicationReviewService {
     @Autowired private TravelRoleFactory travelRoleFactory;
 
     public void approveApplication(ApplicationReview applicationReview, Employee approver, String notes,
-                                   TravelRole approverRole, boolean isDiscussionRequested) {
-        Action approvalAction = new Action(0, approver, approverRole, ActionType.APPROVE, notes,
-                LocalDateTime.now(), isDiscussionRequested);
+                                   TravelRole approverRole) {
+        Action approvalAction = new Action(0, approver, approverRole,
+                ActionType.APPROVE, notes, LocalDateTime.now());
         applicationReview.addAction(approvalAction);
         saveApplicationReview(applicationReview);
 
@@ -40,7 +40,7 @@ public class ApplicationReviewService {
     public void disapproveApplication(ApplicationReview applicationReview, Employee disapprover,
                                       String notes, TravelRole disapproverRole) {
         Action disapproveAction = new Action(0, disapprover, disapproverRole, ActionType.DISAPPROVE,
-                notes, LocalDateTime.now(), false);
+                notes, LocalDateTime.now());
         applicationReview.addAction(disapproveAction);
         saveApplicationReview(applicationReview);
 
@@ -62,6 +62,12 @@ public class ApplicationReviewService {
         appReviewDao.saveApplicationReview(appReview);
     }
 
+    public ApplicationReview updateIsShared(ApplicationReview review, boolean isShared) {
+        review.setShared(isShared);
+        saveApplicationReview(review);
+        return review;
+    }
+
     public List<ApplicationReview> pendingAppReviewsForEmpWithRole(Employee employee, TravelRole role) {
         if (role == TravelRole.NONE) {
             return new ArrayList<>();
@@ -75,6 +81,14 @@ public class ApplicationReviewService {
         }
 
         return pendingReviews;
+    }
+
+    /**
+     * Returns shared app reviews that have not yet been approved by all reviewers.
+     * @return
+     */
+    public List<ApplicationReview> pendingSharedAppReviews() {
+        return appReviewDao.pendingSharedReviews();
     }
 
     public List<ApplicationReview> appReviewHistoryForRole(TravelRole role) {

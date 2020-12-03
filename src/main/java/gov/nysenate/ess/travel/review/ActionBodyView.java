@@ -10,18 +10,12 @@ import gov.nysenate.ess.core.client.view.base.ViewObject;
 public class ActionBodyView implements ViewObject {
 
     private String notes;
-    @JsonProperty("isDiscussionRequested")
-    private boolean isDiscussionRequested;
 
     public ActionBodyView() {
     }
 
     public String getNotes() {
         return notes;
-    }
-
-    public boolean isDiscussionRequested() {
-        return isDiscussionRequested;
     }
 
     @Override

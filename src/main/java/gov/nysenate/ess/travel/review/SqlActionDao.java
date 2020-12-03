@@ -48,8 +48,7 @@ public class SqlActionDao extends SqlBaseDao {
                 .addValue("role", action.role().name())
                 .addValue("type", action.type.name())
                 .addValue("notes", action.notes())
-                .addValue("dateTime", toDate(action.dateTime()))
-                .addValue("isDiscussionRequested", action.isDiscussionRequested);
+                .addValue("dateTime", toDate(action.dateTime()));
 
         String sql = SqlActionQuery.INSERT_REVIEW_ACTION.getSql(schemaMap());
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -72,11 +71,11 @@ public class SqlActionDao extends SqlBaseDao {
     private enum SqlActionQuery implements BasicSqlQuery {
         INSERT_REVIEW_ACTION(
                 "INSERT INTO ${travelSchema}.app_review_action\n" +
-                        " (app_review_id, employee_id, role, type, notes, date_time, is_discussion_requested)\n" +
-                        " VALUES (:appReviewId, :employeeId, :role, :type, :notes, :dateTime, :isDiscussionRequested)"
+                        " (app_review_id, employee_id, role, type, notes, date_time)\n" +
+                        " VALUES (:appReviewId, :employeeId, :role, :type, :notes, :dateTime)"
         ),
         SELECT_ACTIONS_BY_REVIEW_ID(
-                "SELECT app_review_action_id, employee_id, role, type, notes, date_time, is_discussion_requested\n" +
+                "SELECT app_review_action_id, employee_id, role, type, notes, date_time\n" +
                         " FROM ${travelSchema}.app_review_action\n" +
                         " WHERE app_review_id = :appReviewId"
         ),
@@ -115,8 +114,7 @@ public class SqlActionDao extends SqlBaseDao {
                     TravelRole.valueOf(rs.getString("role")),
                     ActionType.valueOf(rs.getString("type")),
                     rs.getString("notes"),
-                    getLocalDateTimeFromRs(rs, "date_time"),
-                    rs.getBoolean("is_discussion_requested")
+                    getLocalDateTimeFromRs(rs, "date_time")
             );
         }
     }

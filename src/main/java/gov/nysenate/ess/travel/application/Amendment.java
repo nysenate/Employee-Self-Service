@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A set of changes to a Application.
@@ -252,5 +253,27 @@ public class Amendment {
         public Amendment build() {
             return new Amendment(this);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Amendment amendment = (Amendment) o;
+        return amendmentId == amendment.amendmentId &&
+                version == amendment.version &&
+                Objects.equals(purposeOfTravel, amendment.purposeOfTravel) &&
+                Objects.equals(route, amendment.route) &&
+                Objects.equals(allowances, amendment.allowances) &&
+                Objects.equals(attachments, amendment.attachments) &&
+                Objects.equals(createdDateTime, amendment.createdDateTime) &&
+                Objects.equals(createdBy, amendment.createdBy) &&
+                Objects.equals(mealPerDiems, amendment.mealPerDiems) &&
+                Objects.equals(lodgingPerDiems, amendment.lodgingPerDiems);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(amendmentId, version, purposeOfTravel, route, allowances, attachments, createdDateTime, createdBy, mealPerDiems, lodgingPerDiems);
     }
 }

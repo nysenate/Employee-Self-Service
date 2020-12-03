@@ -24,7 +24,6 @@ import java.util.List;
 public class SqlApplicationReviewDao extends SqlBaseDao implements ApplicationReviewDao {
 
     @Autowired private TravelApplicationDao travelApplicationDao;
-    @Autowired private EmployeeInfoService employeeInfoService;
     @Autowired private SqlActionDao actionDao;
 
     /**
@@ -42,17 +41,17 @@ public class SqlApplicationReviewDao extends SqlBaseDao implements ApplicationRe
         actionDao.saveAppReviewActions(appReview.actions(), appReview.getAppReviewId());
     }
 
-    private void insertApplicationReview(ApplicationReview appApproval) {
-        MapSqlParameterSource params = appReviewParams(appApproval);
+    private void insertApplicationReview(ApplicationReview appReview) {
+        MapSqlParameterSource params = appReviewParams(appReview);
         String sql = SqlApplicationReviewQuery.INSERT_APPLICATION_REVIEW.getSql(schemaMap());
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         localNamedJdbc.update(sql, params, keyHolder);
-        appApproval.setAppReviewId((Integer) keyHolder.getKeys().get("app_review_id"));
+        appReview.setAppReviewId((Integer) keyHolder.getKeys().get("app_review_id"));
     }
 
-    private void updateApplicationReview(ApplicationReview appApproval) {
-        MapSqlParameterSource params = appReviewParams(appApproval);
+    private void updateApplicationReview(ApplicationReview appReview) {
+        MapSqlParameterSource params = appReviewParams(appReview);
         String sql = SqlApplicationReviewQuery.UPDATE_APPLICATION_REVIEW.getSql(schemaMap());
         localNamedJdbc.update(sql, params);
     }
@@ -65,7 +64,7 @@ public class SqlApplicationReviewDao extends SqlBaseDao implements ApplicationRe
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("appReviewId", appReviewId);
         String sql = SqlApplicationReviewQuery.SELECT_APPLICATION_REVIEW_BY_ID.getSql(schemaMap());
-        return localNamedJdbc.queryForObject(sql, params, new ApplicationReviewRowMapper(travelApplicationDao, employeeInfoService, actionDao));
+        return localNamedJdbc.queryForObject(sql, params, new ApplicationReviewRowMapper(travelApplicationDao, actionDao));
     }
 
     /**
@@ -77,7 +76,16 @@ public class SqlApplicationReviewDao extends SqlBaseDao implements ApplicationRe
                 .addValue("nextReviewerRole", nextReviewerRole == null ? null : nextReviewerRole.name())
                 .addValue("disapproval", ActionType.DISAPPROVE.name());
         String sql = SqlApplicationReviewQuery.SELECT_APPLICATION_REVIEWS_BY_NEXT_ROLE.getSql(schemaMap());
-        return localNamedJdbc.query(sql, params, new ApplicationReviewRowMapper(travelApplicationDao, employeeInfoService, actionDao));
+        return localNamedJdbc.query(sql, params, new ApplicationReviewRowMapper(travelApplicationDao, actionDao));
+    }
+
+    @Override
+    public List<ApplicationReview> pendingSharedReviews() {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("role", TravelRole.NONE.name())
+                .addValue("disapproval", ActionType.DISAPPROVE.name());
+        String sql = SqlApplicationReviewQuery.SELECT_ACTIVE_SHARED_REVIEWS.getSql(schemaMap());
+        return localNamedJdbc.query(sql, params, new ApplicationReviewRowMapper(travelApplicationDao, actionDao));
     }
 
     /**
@@ -88,38 +96,51 @@ public class SqlApplicationReviewDao extends SqlBaseDao implements ApplicationRe
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("role", role.name());
         String sql = SqlApplicationReviewQuery.SELECT_APPLICATION_REVIEWS_WITH_ROLE_ACTION.getSql(schemaMap());
-        return localNamedJdbc.query(sql, params, new ApplicationReviewRowMapper(travelApplicationDao, employeeInfoService, actionDao));
+        return localNamedJdbc.query(sql, params, new ApplicationReviewRowMapper(travelApplicationDao, actionDao));
     }
 
-    private MapSqlParameterSource appReviewParams(ApplicationReview appApproval) {
+    private MapSqlParameterSource appReviewParams(ApplicationReview appReview) {
         return new MapSqlParameterSource()
-                .addValue("appReviewId", appApproval.getAppReviewId())
-                .addValue("appId", appApproval.application().getAppId())
-                .addValue("travelerRole", appApproval.travelerRole().name())
-                .addValue("nextReviewerRole", appApproval.nextReviewerRole().name());
+                .addValue("appReviewId", appReview.getAppReviewId())
+                .addValue("appId", appReview.application().getAppId())
+                .addValue("travelerRole", appReview.travelerRole().name())
+                .addValue("nextReviewerRole", appReview.nextReviewerRole().name())
+                .addValue("isShared", appReview.isShared());
     }
 
     private enum SqlApplicationReviewQuery implements BasicSqlQuery {
         INSERT_APPLICATION_REVIEW(
                 "INSERT INTO ${travelSchema}.app_review \n" +
-                        " (app_id, traveler_role, next_reviewer_role) \n" +
-                        " VALUES (:appId, :travelerRole, :nextReviewerRole)"
+                        " (app_id, traveler_role, next_reviewer_role, is_shared) \n" +
+                        " VALUES (:appId, :travelerRole, :nextReviewerRole, :isShared)"
         ),
         UPDATE_APPLICATION_REVIEW(
-                "UPDATE ${travelSchema}.app_review \n" +
-                        " SET next_reviewer_role = :nextReviewerRole\n" +
+                "UPDATE ${travelSchema}.app_review\n" +
+                        " SET next_reviewer_role = :nextReviewerRole, is_shared = :isShared\n" +
                         " WHERE app_review_id = :appReviewId"
         ),
         SELECT_APPLICATION_REVIEWS_BY_NEXT_ROLE(
-                "SELECT app_review.app_review_id, app_review.app_id, app_review.traveler_role, app_review.next_reviewer_role\n" +
+                "SELECT app_review.app_review_id, app_review.app_id, app_review.traveler_role,\n" +
+                        " app_review.next_reviewer_role, is_shared\n" +
                         " FROM ${travelSchema}.app_review\n" +
                         " WHERE app_review.next_reviewer_role = :nextReviewerRole" +
                         " AND :disapproval NOT IN" +
                         "    (SELECT type FROM ${travelSchema}.app_review_action\n" +
                         "     WHERE app_review_action.app_review_id = app_review.app_review_id)"
         ),
+        SELECT_ACTIVE_SHARED_REVIEWS(
+                "SELECT app_review.app_review_id, app_review.app_id, app_review.traveler_role,\n" +
+                        " app_review.next_reviewer_role, is_shared\n" +
+                        " FROM ${travelSchema}.app_review\n" +
+                        " WHERE app_review.next_reviewer_role != :role" +
+                        " AND :disapproval NOT IN" +
+                        "    (SELECT type FROM ${travelSchema}.app_review_action\n" +
+                        "     WHERE app_review_action.app_review_id = app_review.app_review_id)\n" +
+                        " AND is_shared = true"
+        ),
         SELECT_APPLICATION_REVIEWS_WITH_ROLE_ACTION(
-                "SELECT app_review.app_review_id, app_review.app_id, app_review.traveler_role, app_review.next_reviewer_role\n" +
+                "SELECT app_review.app_review_id, app_review.app_id, app_review.traveler_role,\n" +
+                        " app_review.next_reviewer_role, app_review.is_shared\n" +
                         " FROM ${travelSchema}.app_review\n" +
                         " WHERE EXISTS \n" +
                         "  (SELECT DISTINCT(action.app_review_id) \n" +
@@ -128,7 +149,7 @@ public class SqlApplicationReviewDao extends SqlBaseDao implements ApplicationRe
                         "  AND action.app_review_id = app_review.app_review_id)"
         ),
         SELECT_APPLICATION_REVIEW_BY_ID(
-                "SELECT app_review_id, app_id, traveler_role, next_reviewer_role\n" +
+                "SELECT app_review_id, app_id, traveler_role, next_reviewer_role, is_shared\n" +
                         " FROM ${travelSchema}.app_review\n" +
                         " WHERE app_review_id = :appReviewId"
         );
@@ -153,31 +174,24 @@ public class SqlApplicationReviewDao extends SqlBaseDao implements ApplicationRe
     private class ApplicationReviewRowMapper extends BaseRowMapper<ApplicationReview> {
 
         private TravelApplicationDao travelApplicationDao;
-        private EmployeeInfoService employeeInfoService;
         private SqlActionDao actionDao;
 
-        private int appReviewId;
-        private TravelApplication application;
-        private TravelRole travelRole;
-        private List<Action> actions = new ArrayList<>();
-
         ApplicationReviewRowMapper(TravelApplicationDao travelApplicationDao,
-                                   EmployeeInfoService employeeInfoService,
                                    SqlActionDao actionDao) {
             this.travelApplicationDao = travelApplicationDao;
-            this.employeeInfoService = employeeInfoService;
             this.actionDao = actionDao;
         }
 
         @Override
         public ApplicationReview mapRow(ResultSet rs, int rowNum) throws SQLException {
-            appReviewId = rs.getInt("app_review_id");
-            application = travelApplicationDao.selectTravelApplication(rs.getInt("app_id"));
-            travelRole = rs.getString("traveler_role") == null
+            int appReviewId = rs.getInt("app_review_id");
+            TravelApplication application = travelApplicationDao.selectTravelApplication(rs.getInt("app_id"));
+            TravelRole travelRole = rs.getString("traveler_role") == null
                     ? null
                     : TravelRole.valueOf(rs.getString("traveler_role"));
-            actions = actionDao.selectActionsByApprovalId(appReviewId);
-            return new ApplicationReview(appReviewId, application, travelRole, actions);
+            List<Action> actions = actionDao.selectActionsByApprovalId(appReviewId);
+            boolean isShared = rs.getBoolean("is_shared");
+            return new ApplicationReview(appReviewId, application, travelRole, actions, isShared);
         }
     }
 }

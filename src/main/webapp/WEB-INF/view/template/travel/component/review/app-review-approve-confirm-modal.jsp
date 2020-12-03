@@ -28,13 +28,6 @@
       </label>
     </div>
 
-    <shiro:hasPermission name="<%= SimpleTravelPermission.TRAVEL_UI_REQUEST_DISCUSSION.getPermissionString() %>">
-    <div class="margin-top-20">
-      <input type="checkbox" id="requestDiscussion" ng-model="isDiscussionRequested">
-      <label for="requestDiscussion">Request Discussion</label>
-    </div>
-    </shiro:hasPermission>
-
   </div>
 
   <div class="travel-button-container">
