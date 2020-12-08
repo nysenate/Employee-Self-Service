@@ -7,6 +7,7 @@ import gov.nysenate.ess.travel.application.TravelApplicationService;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
 import gov.nysenate.ess.travel.authorization.role.TravelRoleFactory;
 import gov.nysenate.ess.travel.authorization.role.TravelRoles;
+import gov.nysenate.ess.travel.notifications.email.TravelEmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,7 @@ public class ApplicationReviewService {
     @Autowired private TravelApplicationService travelApplicationService;
     @Autowired private SupervisorInfoService supervisorInfoService;
     @Autowired private TravelRoleFactory travelRoleFactory;
+    @Autowired private TravelEmailService emailService;
 
     public void approveApplication(ApplicationReview applicationReview, Employee approver, String notes,
                                    TravelRole approverRole) {
@@ -32,20 +34,23 @@ public class ApplicationReviewService {
         saveApplicationReview(applicationReview);
 
         if (applicationReview.nextReviewerRole() == TravelRole.NONE) {
+            // If no one else needs to review, the application is completely approved.
             applicationReview.application().approve();
             travelApplicationService.saveApplication(applicationReview.application());
+            emailService.sendApprovalEmails(applicationReview.application());
         }
     }
 
     public void disapproveApplication(ApplicationReview applicationReview, Employee disapprover,
-                                      String notes, TravelRole disapproverRole) {
+                                      String reason, TravelRole disapproverRole) {
         Action disapproveAction = new Action(0, disapprover, disapproverRole, ActionType.DISAPPROVE,
-                notes, LocalDateTime.now());
+                reason, LocalDateTime.now());
         applicationReview.addAction(disapproveAction);
         saveApplicationReview(applicationReview);
 
-        applicationReview.application().disapprove(notes);
+        applicationReview.application().disapprove(reason);
         travelApplicationService.saveApplication(applicationReview.application());
+        emailService.sendDisapprovalEmails(applicationReview.application(), disapprover, reason);
     }
 
     public ApplicationReview createApplicationReview(TravelApplication app) {

@@ -145,7 +145,7 @@ public class Amendment {
         return this.lodgingPerDiems;
     }
 
-    protected Allowances allowances() {
+    public Allowances allowances() {
         return allowances;
     }
 
