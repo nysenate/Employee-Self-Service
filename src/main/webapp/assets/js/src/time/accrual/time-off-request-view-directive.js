@@ -99,7 +99,7 @@
 
                 $scope.userType = "";
                 $scope.userType = $scope.empId === $scope.data.employeeId ? "E" : "S";
-                console.log("employee classification: " + $scope.userType);
+                //console.log("employee classification: " + $scope.userType);
                 $scope.otherContact = $scope.userType === "E" ? "Supervisor" : "Employee";
                 //$scope.addedComment = "";
                 $scope.miscTypeList = appProps.miscLeaves;
