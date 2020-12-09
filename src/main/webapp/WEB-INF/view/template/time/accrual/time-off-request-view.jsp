@@ -126,8 +126,8 @@
 
 <!--Save and Submit buttons-->
 <div class="time-off-request-buttons" ng-if="pageLoaded">
-  <button ng-if="mode==='input'" ng-click="saveRequest()" class="time-off-request-save-button">SAVE</button>
-  <button ng-if="mode==='input'" ng-click="submitRequest()" class="time-off-request-submit-button">SUBMIT</button>
+  <button ng-if="mode==='input'" ng-disabled="data.days.length == 0" ng-click="saveRequest()" class="time-off-request-save-button">SAVE</button>
+  <button ng-if="mode==='input'" ng-disabled="data.days.length == 0" ng-click="submitRequest()" class="time-off-request-submit-button">SUBMIT</button>
   <!-- Cannot edit a request if it has been submitted or approved-->
   <button ng-if="mode==='output' && data.status!=='APPROVED' && data.status!=='SUBMITTED'"
           ng-click="editMode()" class="time-off-request-edit-button">EDIT</button>
