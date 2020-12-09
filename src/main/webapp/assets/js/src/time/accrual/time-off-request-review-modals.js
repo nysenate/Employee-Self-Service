@@ -212,7 +212,7 @@ function timeOffRequestReviewModal(appProps, modals, locationService, AccrualApi
                 var iAdj = (i + $scope.iSelectedRequest) % $scope.requests.length;
                 if ($scope.getApprovalStatus($scope.requests[iAdj]) === 'untouched') {
                     $scope.iSelectedRequest = iAdj;
-                    locationService.scrollToId($scope.requests[iAdj].requestId);
+                    //locationService.scrollToId($scope.requests[iAdj].requestId);
                     retrieveAccrualInformation();
                     return;
                 }
