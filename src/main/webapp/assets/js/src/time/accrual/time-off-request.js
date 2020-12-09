@@ -79,17 +79,10 @@
             $scope.pastRequests = TimeOffRequestListService.formatData(data);
             $scope.pastRequests = subtractArrays($scope.requests, $scope.pastRequests);
             $scope.pageLoaded = true;
-            var pendingRequestCount = 0;
-            var approvedRequestCount = 0;
-            var rejectedRequestCount = 0;
-            for (var index = 0; index < $scope.requests.length; ++index) {
-                if ($scope.requests[index].status === "SUBMITTED") pendingRequestCount++;
-                if ($scope.requests[index].status === "APPROVED") approvedRequestCount++;
-                if ($scope.requests[index].status === "DISAPPROVED") rejectedRequestCount++;
-            }
-            badgeService.setBadgeValue("activeRequestCount", pendingRequestCount);
-            badgeService.setBadgeValue("activeApprovedRequestCount", approvedRequestCount);
-            badgeService.setBadgeValue("activeRejectedRequestCount", rejectedRequestCount);
+            var statusCounts = TimeOffRequestListService.countRequestStatusTypes($scope.requests);
+            badgeService.setBadgeValue("activeRequestCount", statusCounts.pendingRequestCount);
+            badgeService.setBadgeValue("activeApprovedRequestCount", statusCounts.approvedRequestCount);
+            badgeService.setBadgeValue("activeRejectedRequestCount", statusCounts.rejectedRequestCount);
         };
 
         $scope.errorHandler = function () {

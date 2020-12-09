@@ -7,7 +7,8 @@ essTime.service('TimeOffRequestListService', timeOffRequestListUtils);
 function timeOffRequestListUtils() {
 
     return {
-        formatData: formatData
+        formatData: formatData,
+        countRequestStatusTypes: countRequestStatusTypes
     };
 
     /**
@@ -55,5 +56,20 @@ function timeOffRequestListUtils() {
             requestObjs.push(request);
         });
         return requestObjs;
+    }
+
+    function countRequestStatusTypes(requests) {
+        var pendingRequestCount = 0;
+        var approvedRequestCount = 0;
+        var rejectedRequestCount = 0;
+        for (var index = 0; index < requests.length; ++index) {
+            if (requests[index].status === "SUBMITTED") pendingRequestCount++;
+            if (requests[index].status === "APPROVED") approvedRequestCount++;
+            if (requests[index].status === "DISAPPROVED") rejectedRequestCount++;
+        }
+        return { pendingRequestCount: pendingRequestCount,
+            approvedRequestCount: approvedRequestCount,
+            rejectedRequestCount: rejectedRequestCount
+        };
     }
 }
