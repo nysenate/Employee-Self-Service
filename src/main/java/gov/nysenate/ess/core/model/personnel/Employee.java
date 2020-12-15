@@ -1,6 +1,7 @@
 package gov.nysenate.ess.core.model.personnel;
 
 import com.google.common.base.Objects;
+import gov.nysenate.ess.core.department.Department;
 import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.unit.Location;
 
@@ -26,6 +27,7 @@ public class Employee extends Person
     protected Location workLocation;
     protected LocalDateTime updateDateTime;
     protected LocalDate senateContServiceDate;
+    protected Department department;
 
     public Employee() {}
 
@@ -80,13 +82,14 @@ public class Employee extends Person
                 Objects.equal(respCenter, employee.respCenter) &&
                 Objects.equal(workLocation, employee.workLocation) &&
                 Objects.equal(updateDateTime, employee.updateDateTime) &&
-                Objects.equal(senateContServiceDate, employee.senateContServiceDate);
+                Objects.equal(senateContServiceDate, employee.senateContServiceDate) &&
+                Objects.equal(department, employee.department);
     }
 
     @Override
     public int hashCode() {
         return Objects.hashCode(employeeId, supervisorId, active, personnelStatus, uid, jobTitle, payType, nid,
-                respCenter, workLocation, updateDateTime, senateContServiceDate);
+                respCenter, workLocation, updateDateTime, senateContServiceDate, department);
     }
 
     /* --- Functional Getters/Setters --- */
@@ -198,5 +201,13 @@ public class Employee extends Person
 
     public void setSenateContServiceDate(LocalDate senateContServiceDate) {
         this.senateContServiceDate = senateContServiceDate;
+    }
+
+    public Department getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(Department department) {
+        this.department = department;
     }
 }

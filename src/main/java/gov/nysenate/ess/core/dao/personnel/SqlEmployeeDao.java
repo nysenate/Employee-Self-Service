@@ -4,6 +4,7 @@ import gov.nysenate.ess.core.dao.base.PaginatedRowHandler;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.dao.personnel.mapper.EmployeeRowMapper;
 import gov.nysenate.ess.core.dao.unit.LocationDao;
+import gov.nysenate.ess.core.department.DepartmentDao;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.personnel.EmployeeException;
 import gov.nysenate.ess.core.model.personnel.EmployeeNotFoundEx;
@@ -30,6 +31,7 @@ public class SqlEmployeeDao extends SqlBaseDao implements EmployeeDao
     private static final Logger logger = LoggerFactory.getLogger(SqlEmployeeDao.class);
 
     @Autowired private LocationDao locationDao;
+    @Autowired private DepartmentDao departmentDao;
 
     /** {@inheritDoc} */
     @Override
@@ -39,6 +41,7 @@ public class SqlEmployeeDao extends SqlBaseDao implements EmployeeDao
         params.addValue("empId", empId);
         try {
             employee = remoteNamedJdbc.queryForObject(SqlEmployeeQuery.GET_EMP_BY_ID_SQL.getSql(schemaMap()), params, getEmployeeRowMapper());
+            setEmployeeDepartment(employee);
         }
         catch (DataRetrievalFailureException ex) {
             logger.warn("Retrieve employee {} error: {}", empId, ex.getMessage());
@@ -63,6 +66,7 @@ public class SqlEmployeeDao extends SqlBaseDao implements EmployeeDao
         params.addValue("email", email);
         try {
             employee = remoteNamedJdbc.queryForObject(SqlEmployeeQuery.GET_EMP_BY_EMAIL_SQL.getSql(schemaMap()), params, getEmployeeRowMapper());
+            setEmployeeDepartment(employee);
         }
         catch (DataRetrievalFailureException ex) {
             throw new EmployeeNotFoundEx("No matching employee record for email: " + email);
@@ -73,13 +77,23 @@ public class SqlEmployeeDao extends SqlBaseDao implements EmployeeDao
     /** {@inheritDoc} */
     @Override
     public Set<Employee> getAllEmployees() {
-        return new HashSet<>(remoteNamedJdbc.query(SqlEmployeeQuery.GET_ALL_EMPS_SQL.getSql(schemaMap()), getEmployeeRowMapper()));
+        Set<Employee> emps = new HashSet<>(remoteNamedJdbc.query(
+                SqlEmployeeQuery.GET_ALL_EMPS_SQL.getSql(schemaMap()), getEmployeeRowMapper()));
+        for (Employee emp: emps) {
+            setEmployeeDepartment(emp);
+        }
+        return emps;
     }
 
     /** {@inheritDoc} */
     @Override
     public Set<Employee> getActiveEmployees() {
-        return new HashSet<>(remoteNamedJdbc.query(SqlEmployeeQuery.GET_ACTIVE_EMPS_SQL.getSql(schemaMap()), getEmployeeRowMapper()));
+        Set<Employee> emps = new HashSet<>(remoteNamedJdbc.query(
+                SqlEmployeeQuery.GET_ACTIVE_EMPS_SQL.getSql(schemaMap()), getEmployeeRowMapper()));
+        for (Employee emp: emps) {
+            setEmployeeDepartment(emp);
+        }
+        return emps;
     }
 
     /** {@inheritDoc} */
@@ -96,6 +110,9 @@ public class SqlEmployeeDao extends SqlBaseDao implements EmployeeDao
                 new PaginatedRowHandler<>(limitOffset, "total_rows", getEmployeeRowMapper());
         final String searchDml = SqlEmployeeQuery.GET_EMPS_BY_SEARCH_TERM.getSql(schemaMap(), orderBy, limitOffset);
         remoteNamedJdbc.query(searchDml, params, rowHandler);
+        for (Employee emp : rowHandler.getList().getResults()) {
+            setEmployeeDepartment(emp);
+        }
         return rowHandler.getList();
     }
 
@@ -133,8 +150,12 @@ public class SqlEmployeeDao extends SqlBaseDao implements EmployeeDao
 
     @Override
     public List<Employee> getUpdatedEmployees(LocalDateTime fromDateTime) {
-        return remoteNamedJdbc.query(SqlEmployeeQuery.GET_EMP_BY_UPDATE_DATE.getSql(schemaMap()),
+        List<Employee> emps = remoteNamedJdbc.query(SqlEmployeeQuery.GET_EMP_BY_UPDATE_DATE.getSql(schemaMap()),
                 new MapSqlParameterSource("lastUpdate", toDate(fromDateTime)), getEmployeeRowMapper());
+        for (Employee emp : emps) {
+            setEmployeeDepartment(emp);
+        }
+        return emps;
     }
 
     /**
@@ -148,8 +169,13 @@ public class SqlEmployeeDao extends SqlBaseDao implements EmployeeDao
         List<Employee> employees = remoteNamedJdbc.query(sql, params, getEmployeeRowMapper());
         for (Employee emp : employees) {
             employeeMap.put(emp.getEmployeeId(), emp);
+            setEmployeeDepartment(emp);
         }
         return employeeMap;
+    }
+
+    private void setEmployeeDepartment(Employee emp) {
+        emp.setDepartment(departmentDao.getEmployeeDepartment(emp.getEmployeeId()));
     }
 
     /** Returns a EmployeeRowMapper that's configured for use in this dao */
