@@ -1,48 +1,42 @@
 package gov.nysenate.ess.core.department;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 public class Department {
-    private int id;
-    private String name;
+    private final int id;
+    private final LdapDepartment ldapDepartment;
     // The employee id of the department head.
-    private int headEmpId;
+    private final int headEmpId;
     // A department gets set to inactive if no employees are assigned to it.
-    private boolean isActive;
-    // Employees who are in this department.
-    private Set<Integer> employeeIds;
+    private final boolean isActive;
 
-    public Department(String name) {
-        this(0, name, 0, true);
+    public Department(int id, int headEmpId, boolean isActive) {
+        this(id, null, headEmpId, isActive);
     }
 
-    public Department(String name, int headEmpId) {
-        this(0, name, headEmpId, true);
+    public Department(LdapDepartment ldapDepartment) {
+        this(0, ldapDepartment, 0, true);
     }
 
-    public Department(String name, Set<Integer> employeeIds) {
-        this(0, name, 0, true, employeeIds);
-    }
-
-    public Department(int departmentId, String name, int headEmpId, boolean isActive) {
-        this(departmentId, name, headEmpId, isActive, new HashSet<>());
-    }
-
-    public Department(int departmentId, String name, int headEmpId, boolean isActive, Set<Integer> employeeIds) {
-        this.id = departmentId;
-        this.name = name;
+    public Department(int id, LdapDepartment ldapDepartment, int headEmpId, boolean isActive) {
+        this.id = id;
+        this.ldapDepartment = ldapDepartment;
         this.headEmpId = headEmpId;
         this.isActive = isActive;
-        this.employeeIds = employeeIds;
     }
 
     public int getId() {
         return id;
     }
 
+    public LdapDepartment getLdapDepartment() {
+        return ldapDepartment;
+    }
+
     public String getName() {
-        return name;
+        return getLdapDepartment().getName();
     }
 
     public int getHeadEmpId() {
@@ -54,22 +48,47 @@ public class Department {
     }
 
     public Set<Integer> getEmployeeIds() {
-        return employeeIds;
+        return getLdapDepartment().getEmployeeIds();
     }
 
-    void setId(int id) {
-        this.id = id;
+    Department setId(int id) {
+        return new Department(id, this.ldapDepartment, this.headEmpId, this.isActive);
     }
 
-    void addEmployee(int empId) {
-        this.employeeIds.add(empId);
+    Department setHeadEmpId(int headEmpId) {
+        return new Department(id, this.ldapDepartment, headEmpId, this.isActive);
     }
 
-    void setEmployees(Set<Integer> employeeIds) {
-        this.employeeIds = employeeIds;
+    Department setLdapDepartment(LdapDepartment ldapDepartment) {
+        return new Department(this.id, ldapDepartment, this.headEmpId, this.isActive);
     }
 
-    void setActive(boolean active) {
-        isActive = active;
+    Department setActive(boolean active) {
+        return new Department(this.id, this.ldapDepartment, this.headEmpId, active);
+    }
+
+    @Override
+    public String toString() {
+        return "Department{" +
+                "id=" + id +
+                ", ldapDepartment=" + ldapDepartment +
+                ", headEmpId=" + headEmpId +
+                ", isActive=" + isActive +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Department that = (Department) o;
+        return headEmpId == that.headEmpId &&
+                isActive == that.isActive &&
+                Objects.equals(ldapDepartment, that.ldapDepartment);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(ldapDepartment, headEmpId, isActive);
     }
 }

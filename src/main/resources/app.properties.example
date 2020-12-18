@@ -206,6 +206,9 @@ scheduler.supply.sfms_synchronization.cron = 0 0 0 * * *
 # Updates travel application values taken from the web
 scheduler.travel.scrape.cron = 0 0 2 * * *
 
+# The schedule for updating Department data in ESS.
+scheduler.ess.department.update = 0 0 1 * * *
+
 # --- Timeout Configuration ---------------------------------------------------
 
 #timeout in secs

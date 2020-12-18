@@ -10,18 +10,19 @@ public enum SqlDepartmentQuery implements BasicSqlQuery {
                     "WHERE head_emp_id = :headEmpId"
     ),
     SELECT_DEPARTMENTS(
-            "SELECT (dep.department_id, dep.name, dep.head_emp_id, dep.is_active, \n" +
-                    "emp_dep.employee_id) \n" +
+            "SELECT dep.department_id, dep.name, dep.head_emp_id, dep.is_active, \n" +
+                    "emp_dep.employee_id \n" +
                     "FROM ${essSchema}.department dep \n" +
-                    "JOIN ${essSchema}.employee_department emp_dep \n" +
-                    "ON dep.department_id = emp_dep.department_id \n"
+                    "LEFT JOIN ${essSchema}.employee_department emp_dep \n" +
+                    "ON dep.department_id = emp_dep.department_id " +
+                    "WHERE dep.is_active = true \n"
     ),
     SELECT_DEPARTMENT_BY_ID(
             SELECT_DEPARTMENTS.getSql() +
-                    "WHERE department_id = :departmentId"
+                    "WHERE dep.department_id = :departmentId"
     ),
     SELECT_EMPLOYEE_DEPARTMENT_ID(
-            "SELECT (department_id) \n" +
+            "SELECT department_id \n" +
                     "FROM ${essSchema}.employee_department \n" +
                     "WHERE employee_id = :empId"
     ),
@@ -36,7 +37,7 @@ public enum SqlDepartmentQuery implements BasicSqlQuery {
                     "WHERE department_id = :departmentId"
     ),
     UPDATE_EMPLOYEE_DEPARTMENT(
-            "UPDATE ${ess.schema}.employee_department \n" +
+            "UPDATE ${essSchema}.employee_department \n" +
                     "SET department_id = :departmentId \n" +
                     "WHERE employee_id = :empId"
     ),

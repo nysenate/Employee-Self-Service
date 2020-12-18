@@ -49,20 +49,28 @@ public class DepartmentDao extends SqlBaseDao {
         }
     }
 
+    public Department updateDepartment(Department department) {
+        if (!doUpdateDepartment(department)) {
+            department = insertDepartment(department);
+        }
+        updateDepartmentEmployees(department);
+        return department;
+    }
+
     /**
      * Update or insert all given departments includes setting the department employees.
      * @param departments
+     * @return The updated departments, any inserted department will now have its id set.
      */
-    public void updateDepartments(Set<Department> departments) {
+    public Set<Department> updateDepartments(Set<Department> departments) {
+        Set<Department> updatedDepartments = new HashSet<>();
         for (Department dept : departments) {
-            if (!updateDepartment(dept)) {
-                insertDepartment(dept);
-            }
-            updateDepartmentEmployees(dept);
+            updatedDepartments.add(updateDepartment(dept));
         }
+        return updatedDepartments;
     }
 
-    private boolean updateDepartment(Department department) {
+    private boolean doUpdateDepartment(Department department) {
         MapSqlParameterSource params = departmentParams(department);
         String sql = SqlDepartmentQuery.UPDATE_DEPARTMENT.getSql(schemaMap());
         return localNamedJdbc.update(sql, params) > 0;
@@ -72,9 +80,8 @@ public class DepartmentDao extends SqlBaseDao {
         MapSqlParameterSource params = departmentParams(department);
         String sql = SqlDepartmentQuery.INSERT_DEPARTMENT.getSql(schemaMap());
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        localNamedJdbc.update(sql, params);
-        department.setId((Integer) keyHolder.getKeys().get("department_id"));
-        return department;
+        localNamedJdbc.update(sql, params, keyHolder);
+        return department.setId((Integer) keyHolder.getKeys().get("department_id"));
     }
 
     private void updateDepartmentEmployees(Department dept) {

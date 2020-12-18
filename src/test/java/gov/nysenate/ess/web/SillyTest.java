@@ -21,30 +21,4 @@ import java.util.Set;
 @Category(gov.nysenate.ess.core.annotation.SillyTest.class)
 public class SillyTest extends BaseTest {
     private static final Logger logger = LoggerFactory.getLogger(SillyTest.class);
-
-    @Autowired LdapAuthDao ldapAuthDao;
-    @Autowired EmployeeInfoService employeeService;
-
-    @Test
-    public void tst() {
-
-        Set<Employee> emps = employeeService.getAllEmployees(true);
-
-        System.out.println("hell");
-//        Set<SenateLdapPerson> ldapPeople = new HashSet<>();
-//        Set<Employee> emps = employeeService.getAllEmployees(true);
-//        for (Employee e : emps) {
-//            try {
-//                ldapPeople.add(ldapAuthDao.getPersonByEmpId(e.getEmployeeId()));
-//            } catch(Exception ex) {
-//                System.out.println("Failed to get ldap infor for empid: " + e.getEmployeeId());
-//            }
-//        }
-
-//        for (String dep : departments) {
-//            if (!dep.startsWith("Senator")) {
-//                System.out.println(dep);
-//            }
-//        }
-   }
 }
