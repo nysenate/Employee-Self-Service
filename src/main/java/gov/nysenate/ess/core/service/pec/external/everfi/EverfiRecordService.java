@@ -10,6 +10,7 @@ import gov.nysenate.ess.core.service.pec.external.everfi.assignment.EverfiAssign
 import gov.nysenate.ess.core.service.pec.external.everfi.assignment.EverfiAssignmentProgress;
 import gov.nysenate.ess.core.service.pec.external.everfi.assignment.EverfiAssignmentUser;
 import gov.nysenate.ess.core.service.pec.external.everfi.assignment.EverfiAssignmentsAndProgressRequest;
+import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUserService;
 import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +35,7 @@ public class EverfiRecordService implements ESSEverfiRecordService {
     private PersonnelTaskAssignmentDao personnelTaskAssignmentDao;
     private PersonnelTaskService taskService;
     private PersonnelTaskDao personnelTaskDao;
+    private EverfiUserService everfiUserService;
     private HashMap<Integer, Integer> everfiAssignmentIDMap;
     private HashMap<String, Integer> everfiContentIDMap;
 
@@ -45,10 +47,12 @@ public class EverfiRecordService implements ESSEverfiRecordService {
     @Autowired
     public EverfiRecordService(EverfiApiClient everfiApiClient, EmployeeDao employeeDao,
                                PersonnelTaskAssignmentDao personnelTaskAssignmentDao,
+                               EverfiUserService everfiUserService,
                                PersonnelTaskService taskService, PersonnelTaskDao personnelTaskDao) {
         this.everfiApiClient = everfiApiClient;
         this.employeeDao = employeeDao;
         this.personnelTaskAssignmentDao = personnelTaskAssignmentDao;
+        this.everfiUserService = everfiUserService;
         this.taskService = taskService;
         this.personnelTaskDao = personnelTaskDao;
         this.everfiAssignmentIDMap = personnelTaskDao.getEverfiAssignmentIDs();
@@ -127,58 +131,62 @@ public class EverfiRecordService implements ESSEverfiRecordService {
 
             EverfiAssignmentUser user = assignmentAndProgress.getUser();
 
-            try {
-                int empID = getEmployeeId(user);
-                if (empID != 99999) {
-                    //assignment id from the json object
-                    int assignmentID = assignmentAndProgress.getAssignment().getId();
+            if ( !everfiUserService.isEverfiIdIgnored( user.getUuid() ) ) {
 
-                    //this is personnel taskid that should correspond with the everfi assignment id
-                    Integer everfiTaskID = getEverfiTaskID(assignmentID);
+                try {
+                    int empID = getEmployeeId(user);
+                    if (empID != 99999) {
+                        //assignment id from the json object
+                        int assignmentID = assignmentAndProgress.getAssignment().getId();
 
-                    //There is a max of 1 progress object in the progress array at any point
+                        //this is personnel taskid that should correspond with the everfi assignment id
+                        Integer everfiTaskID = getEverfiTaskID(assignmentID);
 
-                    if (!assignmentAndProgress.getProgress().isEmpty()) {
-                        EverfiAssignmentProgress progress = assignmentAndProgress.getProgress().get(0);
-                        String contentID = progress.getContentId();
-                        Integer potentialTaskID = everfiContentIDMap.get(contentID);
+                        //There is a max of 1 progress object in the progress array at any point
 
-                        //Each progress has a content id which should suggest a certain task.
-                        // We check here that the progress and the assignment both correspond to the same task
-                        if (potentialTaskID != null && everfiTaskID != null
-                                && potentialTaskID.intValue() == everfiTaskID.intValue()) {
+                        if (!assignmentAndProgress.getProgress().isEmpty()) {
+                            EverfiAssignmentProgress progress = assignmentAndProgress.getProgress().get(0);
+                            String contentID = progress.getContentId();
+                            Integer potentialTaskID = everfiContentIDMap.get(contentID);
 
-                            LocalDateTime completedAt = null; //not completed by default
-                            boolean active = true; //true by default
+                            //Each progress has a content id which should suggest a certain task.
+                            // We check here that the progress and the assignment both correspond to the same task
+                            if (potentialTaskID != null && everfiTaskID != null
+                                    && potentialTaskID.intValue() == everfiTaskID.intValue()) {
 
-                            try {
-                                completedAt = progress.getCompletedAt().toLocalDateTime();
+                                LocalDateTime completedAt = null; //not completed by default
+                                boolean active = true; //true by default
 
-                                //for loop to get task active status
-                                for (PersonnelTask everfiPersonnelTask : everfiPersonnelTasks) {
-                                    if (everfiPersonnelTask.getTaskId() == everfiTaskID) {
-                                        active = everfiPersonnelTask.isActive();
+                                try {
+                                    completedAt = progress.getCompletedAt().toLocalDateTime();
+
+                                    //for loop to get task active status
+                                    for (PersonnelTask everfiPersonnelTask : everfiPersonnelTasks) {
+                                        if (everfiPersonnelTask.getTaskId() == everfiTaskID) {
+                                            active = everfiPersonnelTask.isActive();
+                                        }
                                     }
+                                } catch (NullPointerException e) {
+                                    //Do nothing completedAt is already null
                                 }
-                            } catch (NullPointerException e) {
-                                //Do nothing completedAt is already null
-                            }
-                            boolean completed = progress.getContentStatus().equals("completed");
+                                boolean completed = progress.getContentStatus().equals("completed");
 
-                            PersonnelTaskAssignment taskToInsert = new PersonnelTaskAssignment(
-                                    everfiTaskID,
-                                    empID,
-                                    empID,
-                                    completedAt,
-                                    completed,
-                                    active
-                            );
-                            personnelTaskAssignmentDao.updateAssignment(taskToInsert);
+                                PersonnelTaskAssignment taskToInsert = new PersonnelTaskAssignment(
+                                        everfiTaskID,
+                                        empID,
+                                        empID,
+                                        completedAt,
+                                        completed,
+                                        active
+                                );
+                                personnelTaskAssignmentDao.updateAssignment(taskToInsert);
+                            }
                         }
                     }
+                } catch (EmployeeNotFoundEx e) {
+                    logger.error("Could not match employee " + e.getMessage());
                 }
-            } catch (EmployeeNotFoundEx e) {
-                logger.error("Could not match employee " + e.getMessage());
+
             }
         }
     }

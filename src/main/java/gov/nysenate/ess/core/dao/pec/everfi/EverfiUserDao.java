@@ -2,6 +2,8 @@ package gov.nysenate.ess.core.dao.pec.everfi;
 
 import gov.nysenate.ess.core.model.pec.everfi.EverfiUserIDs;
 
+import java.util.List;
+
 public interface EverfiUserDao {
 
     /**
@@ -25,6 +27,12 @@ public interface EverfiUserDao {
      * @return
      */
     public int insertEverfiUserIDs(String everfiUUID, Integer empID);
+
+    /**
+     * Returns a list of everfi ids that we want to ignore
+     * @return
+     */
+    public List<EverfiUserIDs> getIgnoredEverfiUserIDs();
 
 }
 

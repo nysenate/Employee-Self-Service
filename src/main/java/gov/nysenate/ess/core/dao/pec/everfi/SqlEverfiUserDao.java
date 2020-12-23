@@ -8,6 +8,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 import static gov.nysenate.ess.core.dao.pec.everfi.SqlEverfiUserQuery.*;
 
 
@@ -33,6 +35,17 @@ public class SqlEverfiUserDao extends SqlBaseDao implements EverfiUserDao {
                     SELECT_EMP_BY_EVERFI_ID.getSql(schemaMap()),
                     new MapSqlParameterSource("everfi_UUID", everfiUUID),
                     everfiUserIDsRowMapper
+            );
+        }
+        catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+    public List<EverfiUserIDs> getIgnoredEverfiUserIDs() {
+        try {
+            return localNamedJdbc.query(
+                    SELECT_IGNORED_EVERFI_USER_IDS.getSql(schemaMap()), everfiUserIDsRowMapper
             );
         }
         catch (EmptyResultDataAccessException e) {

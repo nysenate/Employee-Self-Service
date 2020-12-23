@@ -31,12 +31,12 @@ public class EverfiUserService {
     private EverfiApiClient everfiApiClient;
     private EmployeeDao employeeDao;
     private EverfiUserDao everfiUserDao;
-    private EverfiRecordService everfiRecordService;
     private SendMailService sendMailService;
     private static final Logger logger = LoggerFactory.getLogger(EverfiUserService.class);
     private HashMap<String,EverfiUser> badEmpIDEverfiUsers = new HashMap<>();
     private HashMap<String,EverfiUser> badEmailEverfiUsers = new HashMap<>();
     private HashMap<String,EverfiUser> manualReviewUUIDs = new HashMap<>();
+    private List<EverfiUserIDs> ignoredEverfiUserIDs;
     private EverfiCategoryService categoryService;
 
     @Value("${mail.smtp.from}")
@@ -51,14 +51,13 @@ public class EverfiUserService {
 
     @Autowired
     public EverfiUserService(EverfiApiClient everfiApiClient, EmployeeDao employeeDao, EverfiUserDao everfiUserDao,
-                             EverfiRecordService everfiRecordService, SendMailService sendMailService,
-                             EverfiCategoryService categoryService) {
+                             SendMailService sendMailService, EverfiCategoryService categoryService) {
         this.everfiApiClient = everfiApiClient;
         this.employeeDao = employeeDao;
         this.everfiUserDao = everfiUserDao;
-        this.everfiRecordService = everfiRecordService;
         this.sendMailService = sendMailService;
         this.categoryService = categoryService;
+        this.ignoredEverfiUserIDs = everfiUserDao.getIgnoredEverfiUserIDs();
     }
 
     @Scheduled(cron = "${scheduler.everfi.user.update.cron}")
@@ -197,20 +196,31 @@ public class EverfiUserService {
 
         for (EverfiUser everfiUser : everfiUsers) {
             String UUID = everfiUser.getUuid();
-            try {
-                Integer empid = getEmployeeId(everfiUser);
 
-                if (empid.intValue() != 99999) {
-                    everfiUserDao.insertEverfiUserIDs(UUID, empid);
-                } else {
-                    logger.debug("Everfi user with UUID " + UUID + " empid was improperly retrieved");
+            if ( !isEverfiIdIgnored(UUID) ) { //!ignored
+
+                try {
+                    Integer empid = getEmployeeId(everfiUser);
+
+                    if (empid.intValue() != 99999) {
+                        everfiUserDao.insertEverfiUserIDs(UUID, empid);
+                    } else {
+                        logger.debug("Everfi user with UUID " + UUID + " empid was improperly retrieved");
+                    }
+                } catch (DuplicateKeyException e) {
+                    //Do nothing, it means we already have the user stored in the DB
+                } catch (EmployeeNotFoundEx e) {
+                    logger.debug("Everfi user with UUID " + UUID + " cannot be matched");
                 }
-            } catch (DuplicateKeyException e) {
-                //Do nothing, it means we already have the user stored in the DB
-            } catch (EmployeeNotFoundEx e) {
-                logger.debug("Everfi user with UUID " + UUID + " cannot be matched");
+
             }
+
         }
+    }
+
+    public boolean isEverfiIdIgnored(String everfiUUID) {
+        return this.ignoredEverfiUserIDs.stream()
+                .anyMatch(ignoredID -> ignoredID.getEverfiUUID().equals(everfiUUID));
     }
 
     /**
