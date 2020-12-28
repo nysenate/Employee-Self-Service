@@ -14,8 +14,11 @@ public enum SqlDepartmentQuery implements BasicSqlQuery {
                     "emp_dep.employee_id \n" +
                     "FROM ${essSchema}.department dep \n" +
                     "LEFT JOIN ${essSchema}.employee_department emp_dep \n" +
-                    "ON dep.department_id = emp_dep.department_id " +
-                    "WHERE dep.is_active = true \n"
+                    "ON dep.department_id = emp_dep.department_id \n"
+    ),
+    SELECT_ACTIVE_DEPARTMENTS(
+            SELECT_DEPARTMENTS.getSql() + "\n" +
+                    "WHERE dep.is_active = true"
     ),
     SELECT_DEPARTMENT_BY_ID(
             SELECT_DEPARTMENTS.getSql() +

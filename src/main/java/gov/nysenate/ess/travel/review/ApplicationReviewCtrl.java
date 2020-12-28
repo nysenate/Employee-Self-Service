@@ -27,7 +27,6 @@ public class ApplicationReviewCtrl extends BaseRestApiCtrl {
 
     @Autowired private ApplicationReviewService appReviewService;
     @Autowired private EmployeeInfoService employeeInfoService;
-    @Autowired private TravelRoleFactory travelRoleFactory;
 
     /**
      * Get app reviews which need to be reviewed by any of the given {@code roles}
@@ -45,11 +44,7 @@ public class ApplicationReviewCtrl extends BaseRestApiCtrl {
                 : roles.stream().map(TravelRole::of).collect(Collectors.toList());
         Employee employee = employeeInfoService.getEmployee(getSubjectEmployeeId());
 
-        Set<ApplicationReview> pendingReviews = new HashSet<>();
-        for (TravelRole r : roleList) {
-            pendingReviews.addAll(appReviewService.pendingAppReviewsForEmpWithRole(employee, r));
-        }
-
+        List<ApplicationReview> pendingReviews = appReviewService.pendingAppReviews(employee, roleList);
         return ListViewResponse.of(pendingReviews.stream()
                 .map(ApplicationReviewView::new)
                 .collect(Collectors.toList()));
@@ -76,12 +71,7 @@ public class ApplicationReviewCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/history")
     public BaseResponse reviewHistory() {
         Employee emp = employeeInfoService.getEmployee(getSubjectEmployeeId());
-        TravelRoles roles = travelRoleFactory.travelRolesForEmp(emp);
-
-        Set<ApplicationReview> reviews = new HashSet<>();
-        for (TravelRole role : roles.all()) {
-            reviews.addAll(appReviewService.appReviewHistoryForRole(role));
-        }
+        List<ApplicationReview> reviews = appReviewService.appReviewHistory(emp);
         return ListViewResponse.of(reviews.stream()
                 .map(ApplicationReviewView::new)
                 .collect(Collectors.toList()));

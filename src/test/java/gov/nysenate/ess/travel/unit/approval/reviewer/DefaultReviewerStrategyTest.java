@@ -1,7 +1,7 @@
 package gov.nysenate.ess.travel.unit.approval.reviewer;
 
 import gov.nysenate.ess.core.annotation.UnitTest;
-import gov.nysenate.ess.travel.review.strategy.RegularReviewerStrategy;
+import gov.nysenate.ess.travel.review.strategy.DefaultReviewerStrategy;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,25 +10,25 @@ import org.junit.experimental.categories.Category;
 import static org.junit.Assert.assertEquals;
 
 @Category(UnitTest.class)
-public class RegularReviewerStrategyTest {
+public class DefaultReviewerStrategyTest {
 
-    private RegularReviewerStrategy strategy;
+    private DefaultReviewerStrategy strategy;
 
     @Before
     public void setup() {
-        strategy = new RegularReviewerStrategy();
+        strategy = new DefaultReviewerStrategy();
     }
 
     @Test
     public void givenNullLastReviewer_returnSupervisor() {
         TravelRole actual = strategy.after(null);
-        TravelRole expected = TravelRole.SUPERVISOR;
+        TravelRole expected = TravelRole.DEPARTMENT_HEAD;
         assertEquals(expected, actual);
     }
 
     @Test
     public void givenSupervisorLastReviewer_returnDea() {
-        TravelRole actual = strategy.after(TravelRole.SUPERVISOR);
+        TravelRole actual = strategy.after(TravelRole.DEPARTMENT_HEAD);
         TravelRole expected = TravelRole.TRAVEL_ADMIN;
         assertEquals(expected, actual);
     }

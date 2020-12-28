@@ -61,10 +61,18 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
     public BaseResponse getUnsubmittedApps() {
         Employee user = employeeInfoService.getEmployee(getSubjectEmployeeId());
         Optional<TravelAppEditDto> dtoOpt = unsubmittedAppDao.find(getSubjectEmployeeId());
-        TravelAppEditDto appEditDto = dtoOpt.orElseGet(() -> {
-            Amendment amd = new Amendment.Builder().build();
-            return new TravelAppEditDto(new DetailedEmployeeView(user), new AmendmentView(amd));
-        });
+        TravelAppEditDto appEditDto = null;
+        if (dtoOpt.isPresent()) {
+            appEditDto = dtoOpt.get();
+            // Always make sure the travler's department is up to date.
+            appEditDto.setTraveler(new DetailedEmployeeView(
+                    employeeInfoService.getEmployee(appEditDto.getTraveler().getEmployeeId())));
+        } else {
+            appEditDto = dtoOpt.orElseGet(() -> {
+                Amendment amd = new Amendment.Builder().build();
+                return new TravelAppEditDto(new DetailedEmployeeView(user), new AmendmentView(amd));
+            });
+        }
         appEditDto.setAllowedTravelers(allowedTravelersService.forEmp(user));
         unsubmittedAppDao.save(getSubjectEmployeeId(), appEditDto.getTraveler(), appEditDto.getAmendment());
         return new ViewObjectResponse<>(appEditDto);
@@ -93,9 +101,10 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
      * <p>
      * Usage:   (PATCH) /api/v1/travel/unsubmitted
      * <p>
-     *
+     * <p>
      * Body:
-     * @param patches    Map of patch keys to patch values. Patch key represents a field to be updated with the patch value.
+     *
+     * @param patches Map of patch keys to patch values. Patch key represents a field to be updated with the patch value.
      * @return {@link TravelApplicationView} updated with patches.
      * @throws IOException
      */
@@ -199,6 +208,7 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
 
     /**
      * Delete an attachment
+     *
      * @param filename
      * @return
      */

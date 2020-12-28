@@ -128,6 +128,7 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
         return new MapSqlParameterSource()
                 .addValue("appId", app.getAppId())
                 .addValue("travelerId", app.getTraveler().getEmployeeId())
+                .addValue("travelerDepartmentId", app.getTravelerDepartmentId())
                 .addValue("submittedById", app.getSubmittedBy().getEmployeeId())
                 .addValue("status", app.status().status().name())
                 .addValue("note", app.status().note());
@@ -154,8 +155,8 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
 
     private enum SqlTravelApplicationQuery implements BasicSqlQuery {
         INSERT_APP(
-                "INSERT INTO ${travelSchema}.app(traveler_id, submitted_by_id, status, status_note) \n" +
-                        "VALUES (:travelerId, :submittedById, :status, :note)"
+                "INSERT INTO ${travelSchema}.app(traveler_id, submitted_by_id, status, status_note, traveler_department_id) \n" +
+                        "VALUES (:travelerId, :submittedById, :status, :note, :travelerDepartmentId)"
         ),
         UPDATE_APP(
                 "UPDATE ${travelSchema}.app \n" +
@@ -168,7 +169,7 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
                         "VALUES (:appId, :version, :eventType, :eventName, :additionalPurpose, :createdBy)"
         ),
         TRAVEL_APP_SELECT(
-                "SELECT app.app_id, app.traveler_id, app.status, app.status_note,\n" +
+                "SELECT app.app_id, app.traveler_id, app.status, app.status_note, app.traveler_department_id,\n" +
                         " amendment.amendment_id, amendment.app_id, amendment.version,\n" +
                         " amendment.event_type, amendment.event_name, amendment.additional_purpose,\n" +
                         " amendment.created_date_time, amendment.created_by\n" +
@@ -205,6 +206,7 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
 
         private int appId;
         private Employee traveler;
+        private int travelerDepartmentId;
         private TravelApplicationStatus status;
         private List<Amendment> amendments;
 
@@ -223,6 +225,7 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
             if (appId == 0) {
                 appId = rs.getInt("app_id");
                 traveler = employeeInfoService.getEmployee(rs.getInt("traveler_id"));
+                travelerDepartmentId = rs.getInt("traveler_department_id");
                 status = StringUtils.isBlank(rs.getString("status"))
                         ? new TravelApplicationStatus()
                         : new TravelApplicationStatus(rs.getString("status"), rs.getString("status_note"));
@@ -231,7 +234,7 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
         }
 
         public TravelApplication results() {
-            return new TravelApplication(appId, traveler, status, amendments);
+            return new TravelApplication(appId, traveler, travelerDepartmentId, status, amendments);
         }
     }
 
@@ -252,11 +255,12 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
                 idToApp.get(appId).addAmendment(amdRowMapper.mapRow(rs, rs.getRow()));
             } else {
                 Employee traveler = employeeInfoService.getEmployee(rs.getInt("traveler_id"));
+                int travelerDepartmentId = rs.getInt("traveler_department_id");
                 Amendment amd = amdRowMapper.mapRow(rs, rs.getRow());
                 TravelApplicationStatus status = StringUtils.isBlank(rs.getString("status"))
                         ? new TravelApplicationStatus()
                         : new TravelApplicationStatus(rs.getString("status"), rs.getString("status_note"));
-                TravelApplication app = new TravelApplication(appId, traveler, status, Lists.newArrayList(amd));
+                TravelApplication app = new TravelApplication(appId, traveler, travelerDepartmentId, status, Lists.newArrayList(amd));
                 idToApp.put(appId, app);
             }
         }

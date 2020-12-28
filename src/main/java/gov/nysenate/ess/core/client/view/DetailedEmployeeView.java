@@ -1,6 +1,7 @@
 package gov.nysenate.ess.core.client.view;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import gov.nysenate.ess.core.department.DepartmentView;
 import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.personnel.ResponsibilityCenter;
@@ -24,6 +25,7 @@ public class DetailedEmployeeView extends EmployeeView
     protected AddressView workAddress;
     protected LocationView empWorkLocation;
     protected PersonnelStatusView personnelStatus;
+    protected DepartmentView department;
 
     public DetailedEmployeeView() {}
 
@@ -42,6 +44,7 @@ public class DetailedEmployeeView extends EmployeeView
             this.empWorkLocation = new LocationView(employee.getWorkLocation());
             this.workAddress = new AddressView(employee.getWorkLocation().getAddress());
         }
+        this.department = new DepartmentView(employee.getDepartment());
     }
 
     @JsonIgnore
@@ -53,6 +56,7 @@ public class DetailedEmployeeView extends EmployeeView
         emp.setRespCenter(empRespCtr);
         emp.setPayType(empPayType);
         emp.setWorkLocation(empWorkLocation.toLocation());
+        emp.setDepartment(department.getId() == 0 ? null : department.toDepartment());
         return emp;
     }
 
@@ -105,5 +109,10 @@ public class DetailedEmployeeView extends EmployeeView
     @XmlElement
     public PersonnelStatusView getPersonnelStatus() {
         return personnelStatus;
+    }
+
+    @XmlElement
+    public DepartmentView getDepartment() {
+        return department;
     }
 }

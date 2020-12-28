@@ -5,7 +5,7 @@ import gov.nysenate.ess.travel.authorization.role.TravelRole;
 
 import java.util.List;
 
-public class SupervisorReviewerStrategy implements ReviewerStrategy {
+public class DepartmentHeadReviewerStrategy implements ReviewerStrategy {
 
     private static final List<TravelRole> order = Lists.newArrayList(
             TravelRole.TRAVEL_ADMIN,

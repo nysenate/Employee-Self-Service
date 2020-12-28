@@ -13,6 +13,7 @@ public class TravelApplicationView implements ViewObject {
 
     private int id;
     private DetailedEmployeeView traveler;
+    private int travelerDepartmentId;
     private String submittedDateTime;
     private String lastModifiedDateTime;
     private DetailedEmployeeView lastModifiedBy;
@@ -27,6 +28,7 @@ public class TravelApplicationView implements ViewObject {
     public TravelApplicationView(TravelApplication app) {
         id = app.getAppId();
         traveler = new DetailedEmployeeView(app.getTraveler());
+        travelerDepartmentId = app.getTravelerDepartmentId();
         submittedDateTime = app.getSubmittedDateTime() == null ? null : app.getSubmittedDateTime().format(ISO_DATE_TIME);
         lastModifiedDateTime = app.activeAmendment() == null ? null : app.activeAmendment().createdDateTime().format(ISO_DATE_TIME);
         lastModifiedBy = app.activeAmendment() == null ? null : new DetailedEmployeeView(app.activeAmendment().createdBy());
@@ -41,7 +43,7 @@ public class TravelApplicationView implements ViewObject {
         Set<Amendment> amds = amendments.stream()
                 .map(AmendmentView::toAmendment)
                 .collect(Collectors.toSet());
-        return new TravelApplication(id, traveler.toEmployee(), status.toTravelApplicationStatus(), amds);
+        return new TravelApplication(id, traveler.toEmployee(), travelerDepartmentId, status.toTravelApplicationStatus(), amds);
     }
 
     public int getId() {
@@ -50,6 +52,10 @@ public class TravelApplicationView implements ViewObject {
 
     public DetailedEmployeeView getTraveler() {
         return traveler;
+    }
+
+    public int getTravelerDepartmentId() {
+        return travelerDepartmentId;
     }
 
     public String getSubmittedDateTime() {

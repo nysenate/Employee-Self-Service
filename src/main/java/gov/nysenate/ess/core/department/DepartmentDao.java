@@ -30,7 +30,7 @@ public class DepartmentDao extends SqlBaseDao {
     }
 
     public Set<Department> getDepartments() {
-        String sql = SqlDepartmentQuery.SELECT_DEPARTMENTS.getSql(schemaMap());
+        String sql = SqlDepartmentQuery.SELECT_ACTIVE_DEPARTMENTS.getSql(schemaMap());
         DepartmentRowHandler handler = new DepartmentRowHandler();
         localNamedJdbc.query(sql, handler);
         return handler.getResults();

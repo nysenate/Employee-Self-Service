@@ -1,7 +1,8 @@
 package gov.nysenate.ess.travel.review;
 
+import gov.nysenate.ess.core.department.Department;
+import gov.nysenate.ess.core.department.DepartmentDao;
 import gov.nysenate.ess.core.model.personnel.Employee;
-import gov.nysenate.ess.time.service.personnel.SupervisorInfoService;
 import gov.nysenate.ess.travel.application.TravelApplication;
 import gov.nysenate.ess.travel.application.TravelApplicationService;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
@@ -11,9 +12,9 @@ import gov.nysenate.ess.travel.notifications.email.TravelEmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,9 +23,9 @@ public class ApplicationReviewService {
 
     @Autowired private ApplicationReviewDao appReviewDao;
     @Autowired private TravelApplicationService travelApplicationService;
-    @Autowired private SupervisorInfoService supervisorInfoService;
     @Autowired private TravelRoleFactory travelRoleFactory;
     @Autowired private TravelEmailService emailService;
+    @Autowired private DepartmentDao departmentDao;
 
     public void approveApplication(ApplicationReview applicationReview, Employee approver, String notes,
                                    TravelRole approverRole) {
@@ -73,36 +74,63 @@ public class ApplicationReviewService {
         return review;
     }
 
-    public List<ApplicationReview> pendingAppReviewsForEmpWithRole(Employee employee, TravelRole role) {
-        if (role == TravelRole.NONE) {
-            return new ArrayList<>();
+    /**
+     * @return All {@code ApplicationReview}s that require action by the given employee
+     * acting with the given {@code role}.
+     */
+    public List<ApplicationReview> pendingAppReviews(Employee employee, Collection<TravelRole> roles) {
+        List<ApplicationReview> appReviews = new ArrayList<>();
+        for (TravelRole role : roles) {
+            List<ApplicationReview> reviews = appReviewDao.pendingReviewsByRole(role);
+            if (role == TravelRole.DEPARTMENT_HEAD) {
+                appReviews.addAll(filterReviewsByDepartmentHead(reviews, employee));
+            } else {
+                appReviews.addAll(reviews);
+            }
         }
-
-        List<ApplicationReview> pendingReviews = appReviewDao.pendingReviewsByRole(role);
-        if (role == TravelRole.SUPERVISOR) {
-            pendingReviews = pendingReviews.stream()
-                    .filter(a -> isSupervisor(employee, a))
-                    .collect(Collectors.toList());
-        }
-
-        return pendingReviews;
+        return appReviews;
     }
 
     /**
      * Returns shared app reviews that have not yet been approved by all reviewers.
+     *
      * @return
      */
     public List<ApplicationReview> pendingSharedAppReviews() {
         return appReviewDao.pendingSharedReviews();
     }
 
-    public List<ApplicationReview> appReviewHistoryForRole(TravelRole role) {
-        // TODO if SUPERVISOR need to filter out employees who are not theirs
-        // TODO wait on implementing this until Dept Heads are added.
-        return appReviewDao.reviewHistoryForRole(role);
+    /**
+     * @param emp
+     * @return All ApplicationReviews that have been modified by any of {@code emp} roles.
+     */
+    public List<ApplicationReview> appReviewHistory(Employee emp) {
+        List<ApplicationReview> appReviews = new ArrayList<>();
+        TravelRoles roles = travelRoleFactory.travelRolesForEmp(emp);
+        for (TravelRole role : roles.all()) {
+            List<ApplicationReview> reviews = appReviewDao.reviewHistoryForRole(role);
+            if (role == TravelRole.DEPARTMENT_HEAD) {
+                appReviews.addAll(filterReviewsByDepartmentHead(reviews, emp));
+            } else {
+                appReviews.addAll(reviews);
+            }
+        }
+        return appReviews;
     }
 
-    private boolean isSupervisor(Employee employee, ApplicationReview applicationReview) {
-        return supervisorInfoService.getSupervisorIdForEmp(applicationReview.application().getTraveler().getEmployeeId(), LocalDate.now()) == employee.getEmployeeId();
+    /*
+     * Filters a collection of AppReviews, returning only those that belong to the department deptHead
+     * is in charge of.
+     */
+    private List<ApplicationReview> filterReviewsByDepartmentHead(Collection<ApplicationReview> reviews, Employee deptHead) {
+        return reviews.stream()
+                .filter(r -> {
+                    Department appDepartment = departmentDao.getDepartment(r.application().getTravelerDepartmentId());
+                    if (appDepartment != null) {
+                        return appDepartment.getHeadEmpId() == deptHead.getEmployeeId();
+                    }
+                    return false;
+                })
+                .collect(Collectors.toList());
     }
 }

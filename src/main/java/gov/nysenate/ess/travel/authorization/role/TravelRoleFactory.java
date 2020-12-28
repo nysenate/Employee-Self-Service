@@ -2,6 +2,7 @@ package gov.nysenate.ess.travel.authorization.role;
 
 import com.google.common.collect.ImmutableList;
 import gov.nysenate.ess.core.dao.security.authorization.RoleDao;
+import gov.nysenate.ess.core.department.DepartmentDao;
 import gov.nysenate.ess.core.model.auth.EssRole;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.security.authorization.role.RoleFactory;
@@ -27,8 +28,8 @@ import java.util.stream.Stream;
 public class TravelRoleFactory implements RoleFactory {
 
     @Autowired private RoleDao essRoleDao;
-    @Autowired private SupervisorInfoService supervisorInfoService;
     @Autowired private DelegationDao delegateDao;
+    @Autowired private DepartmentDao departmentDao;
 
     @Override
     public Stream<Enum> getRoles(Employee employee) {
@@ -61,23 +62,25 @@ public class TravelRoleFactory implements RoleFactory {
     }
 
     private List<TravelRole> primaryRoles(Employee employee) {
-        List<TravelRole> r = new ArrayList<>();
+        List<TravelRole> roles = new ArrayList<>();
+        // TRAVEL_ADMIN, SECRETARY_OF_SENATE, and MAJORITY_LEADER roles are stored here.
         Set<EssRole> empRoles = essRoleDao.getRoles(employee);
 
-        if (supervisorInfoService.isSupervisor(employee.getEmployeeId())) {
-            r.add(TravelRole.SUPERVISOR);
+        // The DEPARTMENT_HEAD role is store separately.
+        if (departmentDao.isEmployeeADepartmentHead(employee.getEmployeeId())) {
+            roles.add(TravelRole.DEPARTMENT_HEAD);
         }
         if (empRoles.contains(EssRole.TRAVEL_ADMIN)) {
-            r.add(TravelRole.TRAVEL_ADMIN);
+            roles.add(TravelRole.TRAVEL_ADMIN);
         }
         if (empRoles.contains(EssRole.SECRETARY_OF_SENATE)) {
-            r.add(TravelRole.SECRETARY_OF_THE_SENATE);
+            roles.add(TravelRole.SECRETARY_OF_THE_SENATE);
         }
         if (empRoles.contains(EssRole.MAJORITY_LEADER)) {
-            r.add(TravelRole.MAJORITY_LEADER);
+            roles.add(TravelRole.MAJORITY_LEADER);
         }
 
-        return r;
+        return roles;
     }
 
     private List<TravelRole> delegateRoles(Employee employee) {
@@ -92,5 +95,4 @@ public class TravelRoleFactory implements RoleFactory {
 
         return delegatedRoles;
     }
-
 }

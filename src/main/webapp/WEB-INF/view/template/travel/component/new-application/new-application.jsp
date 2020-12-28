@@ -81,6 +81,19 @@
       <div ess-continue-saved-app-modal></div>
     </modal>
 
+    <modal modal-id="missing-department-data">
+      <div confirm-modal rejectable="false"
+           title="Unable to create Travel application"
+      <%--           confirm-message="Unable to create a Travel Application due to incomplete department data in your employee records.--%>
+      <%--                            Please contact the STS Helpline at {{helplinePhoneNumber}} with any questions or concerns."--%>
+           resolve-button="Okay">
+        <p>
+          Unable to create a Travel Application due to missing department data in your employee records.
+          <br/>
+          Please contact the STS Helpline at {{helplinePhoneNumber}} with any questions or concerns.
+        </p>
+      </div>
+    </modal>
 
     <%--Cancel Modal--%>
     <modal modal-id="cancel-application">
@@ -152,9 +165,9 @@
 
     <modal modal-id="external-api-error">
       <div error-modal
-      title="Communication Error"
-      buttonValue="Ok"
-      buttonClass="reject-button">
+           title="Communication Error"
+           buttonValue="Ok"
+           buttonClass="reject-button">
         <p>
           ESS is unable to communicate with some 3rd party services used to create the travel estimate.
           Please try submitting your travel application again later. If you continue to get this error, please contact

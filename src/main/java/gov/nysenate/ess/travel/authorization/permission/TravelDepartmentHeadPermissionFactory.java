@@ -15,17 +15,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Supervisor permission factory for Travel.
+ * Department Head permission factory for Travel.
  */
 @Service
-public class TravelSupervisorPermissionFactory implements PermissionFactory {
-
-    @Autowired private SupervisorInfoService supInfoService;
+public class TravelDepartmentHeadPermissionFactory implements PermissionFactory {
 
     @Override
     public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum> roles) {
         List<Permission> permissions = new ArrayList<>();
-        if (roles.contains(TravelRole.SUPERVISOR)) {
+        if (roles.contains(TravelRole.DEPARTMENT_HEAD)) {
             permissions.add(SimpleTravelPermission.TRAVEL_UI_MANAGE.getPermission());
             permissions.add(SimpleTravelPermission.TRAVEL_UI_REVIEW.getPermission());
             permissions.add(SimpleTravelPermission.TRAVEL_UI_REVIEW_HISTORY.getPermission());

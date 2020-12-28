@@ -41,6 +41,15 @@ function travelAppController($scope, $window, appProps, modals, locationService,
                 $scope.data.eventTypes = response.result.validEventTypes;
                 $scope.data.traveler = response.result.traveler;
                 $scope.data.amendment = response.result.amendment;
+
+                // Cant place a new app if department or department head are missing
+                if (invalidDepartmentData($scope.data.traveler.department)) {
+                    modals.open('missing-department-data')
+                        .then(function () {
+                            cancelApplication();
+                            locationService.go("/travel", true);
+                        });
+                }
                 if (hasUncompleteApplication()) {
                     modals.open('ess-continue-saved-app-modal')
                         .catch(function () { // Restart application on modal rejection.
@@ -51,6 +60,10 @@ function travelAppController($scope, $window, appProps, modals, locationService,
 
             function hasUncompleteApplication() {
                 return $scope.data.amendment.purposeOfTravel && ($scope.data.amendment.purposeOfTravel.eventType !== null);
+            }
+
+            function invalidDepartmentData(department) {
+                return department.id === 0 || department.headEmpId === 0;
             }
         }
     };

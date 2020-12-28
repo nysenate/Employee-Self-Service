@@ -47,7 +47,7 @@ public class DeaReviewerStrategyTest {
 
     @Test (expected = IllegalArgumentException.class)
     public void givenSupLastReviewer_throwException() {
-        strategy.after(TravelRole.SUPERVISOR);
+        strategy.after(TravelRole.DEPARTMENT_HEAD);
     }
 
     @Test (expected = IllegalArgumentException.class)

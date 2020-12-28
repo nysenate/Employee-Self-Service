@@ -11,8 +11,8 @@ import java.util.List;
  */
 public class TravelRoles {
 
-    private ImmutableList<TravelRole> roles;
-    private ImmutableList<TravelRole> delegatedRoles;
+    private final ImmutableList<TravelRole> roles;
+    private final ImmutableList<TravelRole> delegatedRoles;
 
     public TravelRoles(List<TravelRole> roles, List<TravelRole> delegateRoles) {
         this.roles = ImmutableList.copyOf(roles);
@@ -44,8 +44,8 @@ public class TravelRoles {
      */
     public TravelRole apex() {
         TravelRole apex = TravelRole.NONE;
-        if (all().contains(TravelRole.SUPERVISOR)) {
-            apex = TravelRole.SUPERVISOR;
+        if (all().contains(TravelRole.DEPARTMENT_HEAD)) {
+            apex = TravelRole.DEPARTMENT_HEAD;
         }
         if (all().contains(TravelRole.TRAVEL_ADMIN)) {
             apex = TravelRole.TRAVEL_ADMIN;

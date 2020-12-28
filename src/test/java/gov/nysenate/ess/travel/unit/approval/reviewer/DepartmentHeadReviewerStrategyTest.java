@@ -1,7 +1,7 @@
 package gov.nysenate.ess.travel.unit.approval.reviewer;
 
 import gov.nysenate.ess.core.annotation.UnitTest;
-import gov.nysenate.ess.travel.review.strategy.SupervisorReviewerStrategy;
+import gov.nysenate.ess.travel.review.strategy.DepartmentHeadReviewerStrategy;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,13 +10,13 @@ import org.junit.experimental.categories.Category;
 import static org.junit.Assert.assertEquals;
 
 @Category(UnitTest.class)
-public class SupervisorReviewerStrategyTest {
+public class DepartmentHeadReviewerStrategyTest {
 
-    private SupervisorReviewerStrategy strategy;
+    private DepartmentHeadReviewerStrategy strategy;
 
     @Before
     public void setup() {
-        strategy = new SupervisorReviewerStrategy();
+        strategy = new DepartmentHeadReviewerStrategy();
     }
 
     @Test
@@ -54,6 +54,6 @@ public class SupervisorReviewerStrategyTest {
 
     @Test (expected = IllegalArgumentException.class)
     public void givenSupLastReviewer_throwException() {
-        strategy.after(TravelRole.SUPERVISOR);
+        strategy.after(TravelRole.DEPARTMENT_HEAD);
     }
 }

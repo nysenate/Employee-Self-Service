@@ -14,6 +14,8 @@ public class TravelApplication {
 
     protected int appId;
     protected Employee traveler;
+    protected int travelerDepartmentId;
+
     /**
      * The Review Status of this application.
      * null if this application was created before the review process was implemented.
@@ -22,26 +24,22 @@ public class TravelApplication {
     protected SortedSet<Amendment> amendments;
 
     public TravelApplication(Employee traveler, Amendment amendment) {
-        this(0, traveler, new TravelApplicationStatus(), Lists.newArrayList(amendment));
+        this(0, traveler, traveler.getDepartment().getId(), new TravelApplicationStatus(), Lists.newArrayList(amendment));
     }
 
-    public TravelApplication(int id, Employee traveler, TravelApplicationStatus status, Collection<Amendment> amendments) {
+    public TravelApplication(int id, Employee traveler, int travelerDepartmentId,
+                             TravelApplicationStatus status, Collection<Amendment> amendments) {
         Preconditions.checkArgument(!amendments.isEmpty());
         this.appId = id;
         this.traveler = Preconditions.checkNotNull(traveler, "Travel Application requires a non null traveler.");
+        this.travelerDepartmentId = travelerDepartmentId;
         this.status = status;
         this.amendments = new TreeSet<>(amendmentComparator);
         this.amendments.addAll(amendments);
     }
 
-    // The active amendment is the most recent approved amendment
-    // or, if none are approved, the most recent amendment.
     public Amendment activeAmendment() {
-//        Optional<Amendment> approvedAmd = amendments.stream()
-//                .filter(a -> a.status.isApproved())
-//                .reduce((first, second) -> second);
-//        return approvedAmd.orElse(amendments.last());
-        return amendments.last(); // FIXME for first implementation, just return most recent amendment.
+        return amendments.last();
     }
 
     public TravelApplicationStatus status() {
@@ -69,6 +67,10 @@ public class TravelApplication {
 
     public Employee getTraveler() {
         return traveler;
+    }
+
+    public int getTravelerDepartmentId() {
+        return travelerDepartmentId;
     }
 
     public LocalDateTime getSubmittedDateTime() {
