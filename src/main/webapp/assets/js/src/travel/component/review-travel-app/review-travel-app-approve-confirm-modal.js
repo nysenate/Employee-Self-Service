@@ -1,14 +1,14 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.directive('appReviewDisapproveConfirmModal', ['appProps', function (appProps) {
+essTravel.directive('appReviewApproveConfirmModal', ['appProps', function (appProps) {
     return {
-        templateUrl: appProps.ctxPath + '/template/travel/component/review/app-review-disapprove-confirm-modal',
-        controller: 'DisapproveConfirmModal'
+        templateUrl: appProps.ctxPath + '/template/travel/component/review/review-travel-app-approve-confirm-modal',
+        controller: 'ApproveConfirmModal'
     }
 }])
-    .controller('DisapproveConfirmModal', ['$scope', 'modals', 'ApplicationReviewApi', disapproveConfirmCtrl]);
+    .controller('ApproveConfirmModal', ['$scope', 'modals', 'ApplicationReviewApi', confirmationCtrl]);
 
-function disapproveConfirmCtrl($scope, modals, appReviewApi) {
+function confirmationCtrl($scope, modals, appReviewApi) {
 
     $scope.appReview = modals.params().review;
     $scope.role = modals.params().role;
@@ -16,8 +16,8 @@ function disapproveConfirmCtrl($scope, modals, appReviewApi) {
     $scope.isSingleDayTravel = $scope.appReview.travelApplication.activeAmendment.startDate
         === $scope.appReview.travelApplication.activeAmendment.endDate;
 
-    $scope.disapprove = function () {
-        appReviewApi.disapprove($scope.appReview.appReviewId, $scope.role.name, $scope.notes)
+    $scope.approve = function () {
+        appReviewApi.approve($scope.appReview.appReviewId, $scope.role.name, $scope.notes)
             .$promise
             .then(function () {
                 modals.resolve();

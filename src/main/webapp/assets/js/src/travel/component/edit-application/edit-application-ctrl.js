@@ -84,13 +84,13 @@ function editAppCtrl($scope, locationService, modals, stateService, appPatchApi,
 
     vm.saveEdits = function (amendment) {
         appEditApi.save({id: vm.appId}, vm.dto, function (response) {
-            locationService.go("/travel/review", false, {appId: vm.appId});
+            locationService.go("/travel/manage/review", false, {appId: vm.appId});
         }, $scope.handleErrorResponse);
     };
 
     vm.cancelEdit = function (app) {
         modals.open('cancel-edits').then(function () {
-            locationService.go("/travel/review", false, {appId: vm.appId});
+            locationService.go("/travel/manage/review", false, {appId: vm.appId});
         })
     };
 

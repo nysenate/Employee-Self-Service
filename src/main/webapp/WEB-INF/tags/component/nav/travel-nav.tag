@@ -20,17 +20,26 @@
       <ul class="sub-topic-list">
         <shiro:hasPermission name="<%= SimpleTravelPermission.TRAVEL_UI_REVIEW.getPermissionString() %>">
           <li class="sub-topic orange">
-            <a href="${ctxPath}/travel/review">Review Applications</a>
+            <a href="${ctxPath}/travel/manage/review">Review Travel Applications</a>
             <badge title="Applications pending review"
                    badge-id="travelPendingAppReviewCount" hide-empty="false" color="orange"></badge>
           </li>
         </shiro:hasPermission>
         <shiro:hasPermission name="<%= SimpleTravelPermission.TRAVEL_UI_REVIEW_HISTORY.getPermissionString() %>">
-          <li class="sub-topic orange"><a href="${ctxPath}/travel/review/history">Review History</a></li>
+          <li class="sub-topic orange"><a href="${ctxPath}/travel/manage/history">Review History</a></li>
         </shiro:hasPermission>
         <shiro:hasPermission name="<%= SimpleTravelPermission.TRAVEL_ASSIGN_DELEGATES.getPermissionString() %>">
           <li class="sub-topic orange"><a href="${ctxPath}/travel/delegation">Assign Delegates</a></li>
         </shiro:hasPermission>
+      </ul>
+    </shiro:hasPermission>
+
+    <shiro:hasPermission name="<%= SimpleTravelPermission.TRAVEL_UI_REVIEW_TRAVEL.getPermissionString() %>">
+      <h3 class="main-topic">Review Travel</h3>
+      <ul>
+        <li class="sub-topic orange">
+<%--          <a href="${ctxPath}/travel/"--%>
+        </li>
       </ul>
     </shiro:hasPermission>
 

@@ -9,10 +9,10 @@
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/component/new-application/continue-saved-app-modal.js?v=${releaseVersion}"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/component/new-application/new-app-breadcrumbs-directive.js?v=${releaseVersion}"></script>
 
-        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/component/review/app-review-ctrl.js?v=${releaseVersion}"></script>
-        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/component/review/app-review-action-modal.js?v=${releaseVersion}"></script>
-        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/component/review/app-review-approve-confirm-modal.js?v=${releaseVersion}"></script>
-        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/component/review/app-review-disapprove-confirm-modal.js?v=${releaseVersion}"></script>
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/component/review-travel-app/review-travel-app.js?v=${releaseVersion}"></script>
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/component/review-travel-app/review-travel-app-action-modal.js?v=${releaseVersion}"></script>
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/component/review-travel-app/review-travel-app-approve-confirm-modal.js?v=${releaseVersion}"></script>
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/component/review-travel-app/review-travel-app-disapprove-confirm-modal.js?v=${releaseVersion}"></script>
 
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/component/review-history/review-history-ctrl.js?v=${releaseVersion}"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/component/review-history/app-review-view-modal.js?v=${releaseVersion}"></script>

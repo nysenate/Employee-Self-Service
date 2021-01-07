@@ -1,6 +1,6 @@
 var essTravel = angular.module("essTravel");
 
-essTravel.controller("AppReviewCtrl", ["$scope", "$q", "modals", "LocationService", "ApplicationReviewApi", "TravelRoleService", reviewController
+essTravel.controller("ReviewTravelAppCtrl", ["$scope", "$q", "modals", "LocationService", "ApplicationReviewApi", "TravelRoleService", reviewController
 ]);
 
 function reviewController($scope, $q, modals, locationService, appReviewApi, roleService) {
@@ -134,7 +134,7 @@ function reviewController($scope, $q, modals, locationService, appReviewApi, rol
     };
 
     function reload() {
-        locationService.go("/travel/review", true);
+        locationService.go("/travel/manage/review", true);
     }
 
     function getAppIdParam() {

@@ -1,7 +1,7 @@
-<div ng-controller="AppReviewCtrl as vm">
+<div ng-controller="ReviewTravelAppCtrl as vm">
   <div>
     <div class="travel-hero">
-      <h2>Review Applications</h2>
+      <h2>Review Travel Applications</h2>
     </div>
     <div class="content-container content-controls">
       <h4 class="travel-content-info travel-text-bold" style="margin: 0;">The following travel applications require your

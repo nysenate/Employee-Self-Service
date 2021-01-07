@@ -27,7 +27,7 @@ public class TravelTemplateCtrl extends BaseTemplateCtrl {
         return request.getRequestURI();
     }
 
-    @RequestMapping(value = "/component/review/app-review")
+    @RequestMapping(value = "/component/review-travel-app/review-travel-app")
     public String applicationReview(HttpServletRequest request) {
         if (SecurityUtils.getSubject().isPermitted(SimpleTravelPermission.TRAVEL_UI_REVIEW.getPermission())) {
             return request.getRequestURI();
