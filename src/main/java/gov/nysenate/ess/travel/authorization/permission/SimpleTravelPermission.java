@@ -20,7 +20,9 @@ public enum SimpleTravelPermission {
     // Users with this permission are allowed to share all reviews with the SOS for collaboration.
     TRAVEL_UI_CAN_SHARE("travel:ui:can-share"),
     // Allowed to browse the assign delegates page and assign delegates.
-    TRAVEL_ASSIGN_DELEGATES("travel:assign-delegates");
+    TRAVEL_ASSIGN_DELEGATES("travel:assign-delegates"),
+    // Allowed to view the "Review Travel" navigation pages.
+    TRAVEL_UI_REVIEW_TRAVEL("travel:ui:review-travel");
 
     private String permissionString;
 

@@ -3,6 +3,9 @@ package gov.nysenate.ess.travel.authorization.role;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Roles involved in the approving of Travel Applications.
+ */
 public enum TravelRole {
 
     /** Role edge cases */

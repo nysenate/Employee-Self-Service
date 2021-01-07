@@ -20,9 +20,6 @@ import java.util.stream.Stream;
 
 /**
  * Assigns all travel roles to an employee.
- * <p>
- * The TravelRole.MAJORITY_LEADER is assigned if the employee is assigned the EssRole.MAJORITY_LEADER
- * role from the ess.user_roles table.
  */
 @Service
 public class TravelRoleFactory implements RoleFactory {
@@ -44,7 +41,7 @@ public class TravelRoleFactory implements RoleFactory {
         }
 
         return roles.all().stream()
-                .map(role -> (Enum) role);
+                .map(role -> role);
     }
 
     /**
