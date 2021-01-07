@@ -58,4 +58,12 @@ public class TravelTemplateCtrl extends BaseTemplateCtrl {
         }
         return NOT_AUTHORIZED_PAGE;
     }
+
+    @RequestMapping(value = "/component/reconcile-travel/reconcile-travel")
+    public String reconcileTravel(HttpServletRequest request) {
+        if (SecurityUtils.getSubject().isPermitted(SimpleTravelPermission.TRAVEL_UI_RECONCILE_TRAVEL.getPermission())) {
+            return request.getRequestURI();
+        }
+        return NOT_AUTHORIZED_PAGE;
+    }
 }

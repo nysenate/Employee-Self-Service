@@ -27,6 +27,8 @@
 
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/component/delegation/delegation-ctrl.js?v=${releaseVersion}"></script>
 
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/component/reconcile-travel/reconcile-travel-ctrl.js?v=${releaseVersion}"></script>
+
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/common/app/app-edit-ctrl.js?v=${releaseVersion}"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/common/app/app-edit-state-service.js?v=${releaseVersion}"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/common/app/purpose-edit-form-directive.js?v=${releaseVersion}"></script>

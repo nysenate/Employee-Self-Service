@@ -28,6 +28,28 @@ public class ApplicationReviewCtrl extends BaseRestApiCtrl {
     @Autowired private ApplicationReviewService appReviewService;
     @Autowired private EmployeeInfoService employeeInfoService;
 
+    @Autowired private ApplicationReviewDao reviewDao;
+
+    /**
+     * Get ApplicationReviews which have completed the review process.
+     * @return
+     */
+    @RequestMapping(value = "/reconcile", method = RequestMethod.GET)
+    public BaseResponse reconcileReviews() {
+        checkPermission(new TravelPermissionBuilder()
+                .forObject(TravelPermissionObject.TRAVEL_APPLICATION_REVIEW)
+                .forAllEmps()
+                .forAction(RequestMethod.GET)
+                .buildPermission());
+        List<ApplicationReview> appReviews = reviewDao.pendingReviewsByRole(TravelRole.NONE);
+        appReviews = appReviews.stream()
+                .filter(r -> r.application().status().isApproved())
+                .collect(Collectors.toList());
+        return ListViewResponse.of(appReviews.stream()
+                .map(ApplicationReviewView::new)
+                .collect(Collectors.toSet()));
+    }
+
     /**
      * Get app reviews which need to be reviewed by any of the given {@code roles}
      * <p>

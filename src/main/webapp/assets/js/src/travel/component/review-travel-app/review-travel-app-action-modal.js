@@ -2,7 +2,7 @@ var essTravel = angular.module('essTravel');
 
 essTravel.directive('appReviewActionModal', ['appProps', function (appProps) {
     return {
-        templateUrl: appProps.ctxPath + '/template/travel/component/review/review-travel-app-action-modal',
+        templateUrl: appProps.ctxPath + '/template/travel/component/review-travel-app/review-travel-app-action-modal',
         controller: 'AppFormReviewCtrl'
     }
 }])
@@ -12,7 +12,6 @@ function appFormReviewCtrl($scope, modals, appReviewApi) {
 
     $scope.appReview = modals.params().review;
     $scope.role = modals.params().role;
-    console.log($scope.appReview);
 
     $scope.approve = function () {
         modals.open("app-review-approve-confirm-modal", {review: $scope.appReview, role: $scope.role});

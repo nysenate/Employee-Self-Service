@@ -19,7 +19,7 @@ public class AccountsPayablePermissionFactory implements PermissionFactory {
     public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum> roles) {
         List<Permission> permissions = new ArrayList<>();
         if (roles.contains(EssRole.ACCOUNTS_PAYABLE)) {
-            permissions.add(SimpleTravelPermission.TRAVEL_UI_REVIEW_TRAVEL.getPermission());
+            permissions.add(SimpleTravelPermission.TRAVEL_UI_RECONCILE_TRAVEL.getPermission());
             permissions.add(new TravelPermissionBuilder()
                     .forAllEmps()
                     .forObject(TravelPermissionObject.TRAVEL_APPLICATION)

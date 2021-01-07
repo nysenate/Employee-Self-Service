@@ -34,11 +34,11 @@
       </ul>
     </shiro:hasPermission>
 
-    <shiro:hasPermission name="<%= SimpleTravelPermission.TRAVEL_UI_REVIEW_TRAVEL.getPermissionString() %>">
-      <h3 class="main-topic">Review Travel</h3>
+    <shiro:hasPermission name="<%= SimpleTravelPermission.TRAVEL_UI_RECONCILE_TRAVEL.getPermissionString() %>">
+      <h3 class="main-topic">Reconcile Travel</h3>
       <ul>
         <li class="sub-topic orange">
-<%--          <a href="${ctxPath}/travel/"--%>
+          <a href="${ctxPath}/travel/reconcile">Reconcile Travel</a>
         </li>
       </ul>
     </shiro:hasPermission>

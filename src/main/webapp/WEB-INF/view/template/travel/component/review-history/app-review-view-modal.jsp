@@ -12,6 +12,8 @@
              ng-click="vm.onEdit(appReview)">
     </shiro:hasPermission>
 
+    <a class="margin-10" target="_blank" ng-click="viewExpenseSummary()">Expense Summary</a>
+
     <div class="" style="float: right;">
       <a class="margin-10" target="_blank"
          ng-href="${ctxPath}/api/v1/travel/application/{{appReview.travelApplication.id}}.pdf">Print</a>

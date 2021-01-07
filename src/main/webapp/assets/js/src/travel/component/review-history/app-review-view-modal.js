@@ -15,4 +15,8 @@ function appReviewViewCtrl($scope, modals) {
     $scope.exit = function () {
         modals.resolve();
     };
+
+    $scope.viewExpenseSummary = function () {
+        modals.open("app-expense-summary-modal", $scope.appReview.travelApplication, true);
+    }
 }

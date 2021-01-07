@@ -20,6 +20,9 @@ angular.module('essTravel').factory('ApplicationReviewApi', [
         var sharedReviewApi = $resource(appProps.apiPath + '/travel/review/shared.json',
                                         {},
                                         {get: {method: 'GET', cancellable: true}});
+        var reconcileReviewApi = $resource(appProps.apiPath + '/travel/review/reconcile.json',
+                                           {},
+                                           {get: {method: 'GET', cancellable: true}});
 
         var appReviewApi = {};
 
@@ -57,6 +60,10 @@ angular.module('essTravel').factory('ApplicationReviewApi', [
 
         appReviewApi.sharedReviews = function () {
             return sharedReviewApi.get({});
+        }
+
+        appReviewApi.reconcileReviews = function () {
+            return reconcileReviewApi.get({});
         }
 
         return appReviewApi;

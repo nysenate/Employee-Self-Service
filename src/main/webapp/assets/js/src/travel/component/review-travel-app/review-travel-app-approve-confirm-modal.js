@@ -2,7 +2,7 @@ var essTravel = angular.module('essTravel');
 
 essTravel.directive('appReviewApproveConfirmModal', ['appProps', function (appProps) {
     return {
-        templateUrl: appProps.ctxPath + '/template/travel/component/review/review-travel-app-approve-confirm-modal',
+        templateUrl: appProps.ctxPath + '/template/travel/component/review-travel-app/review-travel-app-approve-confirm-modal',
         controller: 'ApproveConfirmModal'
     }
 }])

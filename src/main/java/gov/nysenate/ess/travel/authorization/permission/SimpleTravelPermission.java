@@ -21,8 +21,8 @@ public enum SimpleTravelPermission {
     TRAVEL_UI_CAN_SHARE("travel:ui:can-share"),
     // Allowed to browse the assign delegates page and assign delegates.
     TRAVEL_ASSIGN_DELEGATES("travel:assign-delegates"),
-    // Allowed to view the "Review Travel" navigation pages.
-    TRAVEL_UI_REVIEW_TRAVEL("travel:ui:review-travel");
+    // Allowed to view the "Reconcile Travel" navigation pages.
+    TRAVEL_UI_RECONCILE_TRAVEL("travel:ui:reconcile-travel");
 
     private String permissionString;
 
