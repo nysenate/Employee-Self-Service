@@ -8,7 +8,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import gov.nysenate.ess.core.service.pec.external.everfi.EverfiApiClient;
 import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategoryLabel;
 import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUser;
+import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUserService;
 import gov.nysenate.ess.core.util.OutputUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
@@ -23,6 +26,8 @@ public class EverfiAddUserRequest {
     private final String lastName;
     private final String email;
     private final List<EverfiCategoryLabel> categoryLabels;
+
+    private static final Logger logger = LoggerFactory.getLogger(EverfiAddUserRequest.class);
 
     public EverfiAddUserRequest(EverfiApiClient everfiClient, int employeeId, String firstName, String lastName,
                                 String email, List<EverfiCategoryLabel> categoryLabels) {
@@ -41,6 +46,11 @@ public class EverfiAddUserRequest {
      */
     public EverfiUser addUser() throws IOException {
         String entity = generateJsonEntity();
+        if (this.email == null || this.email.isEmpty() ) {
+            logger.warn("Could not add user to Everfi with EmpID " + employeeId + ". They do not have an email");
+            return null;
+        }
+        
         String data = everfiClient.post(ADD_USER_END_POINT, entity);
         if (data == null) {
             return null;

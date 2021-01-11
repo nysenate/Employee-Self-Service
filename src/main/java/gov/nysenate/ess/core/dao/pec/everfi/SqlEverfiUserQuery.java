@@ -11,7 +11,9 @@ public enum SqlEverfiUserQuery implements BasicSqlQuery {
 
     INSERT_EVERFI_USER_ID("INSERT INTO ${essSchema}.everfi_user_ids (everfi_uuid, emp_id) VALUES (:everfi_UUID,:emp_id)"),
 
-    SELECT_IGNORED_EVERFI_USER_IDS("SELECT * FROM ${essSchema}.ignored_everfi_user_ids");
+    SELECT_IGNORED_EVERFI_USER_IDS("SELECT * FROM ${essSchema}.ignored_everfi_user_ids"),
+
+    COUNT_EVERFI_USER_IDS("SELECT count(*) FROM ${essSchema}.everfi_user_ids");
 
     private final String sql;
 

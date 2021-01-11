@@ -60,6 +60,11 @@ public class SqlEverfiUserDao extends SqlBaseDao implements EverfiUserDao {
         return localNamedJdbc.update(INSERT_EVERFI_USER_ID.getSql(schemaMap()), params);
     }
 
+    public int everfiUserIDCount() {
+        return localJdbc.queryForObject(
+                COUNT_EVERFI_USER_IDS.getSql(schemaMap()), Integer.class);
+    }
+
     private static final RowMapper<EverfiUserIDs> everfiUserIDsRowMapper = (rs, rowNum) ->
             new EverfiUserIDs(
                     rs.getInt("emp_id"),

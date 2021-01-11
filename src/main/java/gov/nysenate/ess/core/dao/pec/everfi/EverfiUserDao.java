@@ -34,6 +34,12 @@ public interface EverfiUserDao {
      */
     public List<EverfiUserIDs> getIgnoredEverfiUserIDs();
 
+    /**
+     * Returns a count of all ID's in the DB. Useful for correction logic
+     * @return
+     */
+    public int everfiUserIDCount();
+
 }
 
 
