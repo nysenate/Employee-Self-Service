@@ -4,7 +4,7 @@ import gov.nysenate.ess.core.dao.base.BaseRowMapper;
 import gov.nysenate.ess.core.dao.base.BasicSqlQuery;
 import gov.nysenate.ess.core.dao.base.DbVendor;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
-import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
+import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.travel.application.TravelApplication;
 import gov.nysenate.ess.travel.application.TravelApplicationDao;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -68,7 +67,7 @@ public class SqlApplicationReviewDao extends SqlBaseDao implements ApplicationRe
     }
 
     /**
-     * Get all ApplicationReview's which needed to be reviewed by the provided role.
+     * {@inheritDoc}
      */
     @Override
     public List<ApplicationReview> pendingReviewsByRole(TravelRole nextReviewerRole) {
@@ -76,6 +75,19 @@ public class SqlApplicationReviewDao extends SqlBaseDao implements ApplicationRe
                 .addValue("nextReviewerRole", nextReviewerRole == null ? null : nextReviewerRole.name())
                 .addValue("disapproval", ActionType.DISAPPROVE.name());
         String sql = SqlApplicationReviewQuery.SELECT_APPLICATION_REVIEWS_BY_NEXT_ROLE.getSql(schemaMap());
+        return localNamedJdbc.query(sql, params, new ApplicationReviewRowMapper(travelApplicationDao, actionDao));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<ApplicationReview> pendingReviewsForDeptHead(Employee departmentHead) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("nextReviewerRole", TravelRole.DEPARTMENT_HEAD.name())
+                .addValue("disapproval", ActionType.DISAPPROVE.name())
+                .addValue("headEmpId", departmentHead.getEmployeeId());
+        String sql = SqlApplicationReviewQuery.SELECT_PENDING_APP_REVIEWS_FOR_DEPT_HD.getSql(schemaMap());
         return localNamedJdbc.query(sql, params, new ApplicationReviewRowMapper(travelApplicationDao, actionDao));
     }
 
@@ -127,6 +139,21 @@ public class SqlApplicationReviewDao extends SqlBaseDao implements ApplicationRe
                         " AND :disapproval NOT IN" +
                         "    (SELECT type FROM ${travelSchema}.app_review_action\n" +
                         "     WHERE app_review_action.app_review_id = app_review.app_review_id)"
+        ),
+        SELECT_PENDING_APP_REVIEWS_FOR_DEPT_HD(
+                "SELECT app_review.app_review_id, app_review.app_id, app_review.traveler_role,\n" +
+                        "       app_review.next_reviewer_role, is_shared\n" +
+                        "FROM ${travelSchema}.app_review\n" +
+                        "JOIN ${travelSchema}.app ON app.app_id = app_review.app_id\n" +
+                        "  WHERE app_review.next_reviewer_role = :nextReviewerRole\n" +
+                        "  AND :disapproval NOT IN\n" +
+                        "    (SELECT type\n" +
+                        "     FROM ${travelSchema}.app_review_action\n" +
+                        "       WHERE app_review_action.app_review_id = app_review.app_review_id)\n" +
+                        "  AND app.traveler_department_id IN\n" +
+                        "    (SELECT department_id\n" +
+                        "     FROM ${essSchema}.department\n" +
+                        "       WHERE head_emp_id = :headEmpId)"
         ),
         SELECT_ACTIVE_SHARED_REVIEWS(
                 "SELECT app_review.app_review_id, app_review.app_id, app_review.traveler_role,\n" +

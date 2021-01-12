@@ -8,6 +8,8 @@ import gov.nysenate.ess.travel.application.TravelApplicationService;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
 import gov.nysenate.ess.travel.authorization.role.TravelRoleFactory;
 import gov.nysenate.ess.travel.authorization.role.TravelRoles;
+import gov.nysenate.ess.travel.delegate.Delegation;
+import gov.nysenate.ess.travel.delegate.DelegationDao;
 import gov.nysenate.ess.travel.notifications.email.TravelEmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,6 +29,7 @@ public class ApplicationReviewService {
     @Autowired private TravelRoleFactory travelRoleFactory;
     @Autowired private TravelEmailService emailService;
     @Autowired private DepartmentDao departmentDao;
+    @Autowired private DelegationDao delegationDao;
 
     public void approveApplication(ApplicationReview applicationReview, Employee approver, String notes,
                                    TravelRole approverRole) {
@@ -78,14 +82,29 @@ public class ApplicationReviewService {
      * @return All {@code ApplicationReview}s that require action by the given employee
      * acting with the given {@code role}.
      */
-    public List<ApplicationReview> pendingAppReviews(Employee employee, Collection<TravelRole> roles) {
+    public List<ApplicationReview> pendingAppReviews(Employee employee, Set<TravelRole> roles) {
         List<ApplicationReview> appReviews = new ArrayList<>();
         for (TravelRole role : roles) {
-            List<ApplicationReview> reviews = appReviewDao.pendingReviewsByRole(role);
             if (role == TravelRole.DEPARTMENT_HEAD) {
-                appReviews.addAll(filterReviewsByDepartmentHead(reviews, employee));
+                appReviews.addAll(pendingReviewsForDeptHead(employee));
             } else {
-                appReviews.addAll(reviews);
+                appReviews.addAll(appReviewDao.pendingReviewsByRole(role));
+            }
+        }
+        return appReviews;
+    }
+
+    private List<ApplicationReview> pendingReviewsForDeptHead(Employee employee) {
+        List<ApplicationReview> appReviews = new ArrayList<>();
+        // Add AppReviews for this employee's department if any.
+        appReviews.addAll(appReviewDao.pendingReviewsForDeptHead(employee));
+        // Add AppReviews for delegated departments.
+        TravelRoles roles = travelRoleFactory.travelRolesForEmp(employee);
+        if (roles.delegate().contains(TravelRole.DEPARTMENT_HEAD)) {
+            List<Delegation> delegations = delegationDao.findByDelegateEmpId(employee.getEmployeeId());
+            for (Delegation delegation : delegations) {
+                // Check all delegations for any department head pending AppReviews.
+                appReviews.addAll(appReviewDao.pendingReviewsForDeptHead(delegation.principal()));
             }
         }
         return appReviews;

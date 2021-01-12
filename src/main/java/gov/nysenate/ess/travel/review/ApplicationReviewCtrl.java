@@ -61,9 +61,9 @@ public class ApplicationReviewCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping(value = "/pending", method = RequestMethod.GET)
     public BaseResponse getPendingReviews(@RequestParam(required = false) List<String> roles) {
-        List<TravelRole> roleList = roles == null || roles.isEmpty()
-                ? new ArrayList<>()
-                : roles.stream().map(TravelRole::of).collect(Collectors.toList());
+        Set<TravelRole> roleList = roles == null || roles.isEmpty()
+                ? new HashSet<>()
+                : roles.stream().map(TravelRole::of).collect(Collectors.toSet());
         Employee employee = employeeInfoService.getEmployee(getSubjectEmployeeId());
 
         List<ApplicationReview> pendingReviews = appReviewService.pendingAppReviews(employee, roleList);
