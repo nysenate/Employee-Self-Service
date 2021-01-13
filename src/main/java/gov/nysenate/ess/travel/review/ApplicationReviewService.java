@@ -28,7 +28,6 @@ public class ApplicationReviewService {
     @Autowired private TravelApplicationService travelApplicationService;
     @Autowired private TravelRoleFactory travelRoleFactory;
     @Autowired private TravelEmailService emailService;
-    @Autowired private DepartmentDao departmentDao;
     @Autowired private DelegationDao delegationDao;
 
     public void approveApplication(ApplicationReview applicationReview, Employee approver, String notes,
@@ -127,29 +126,20 @@ public class ApplicationReviewService {
         List<ApplicationReview> appReviews = new ArrayList<>();
         TravelRoles roles = travelRoleFactory.travelRolesForEmp(emp);
         for (TravelRole role : roles.all()) {
-            List<ApplicationReview> reviews = appReviewDao.reviewHistoryForRole(role);
-            if (role == TravelRole.DEPARTMENT_HEAD) {
-                appReviews.addAll(filterReviewsByDepartmentHead(reviews, emp));
-            } else {
-                appReviews.addAll(reviews);
+            if (role.equals(TravelRole.DEPARTMENT_HEAD)) {
+                appReviews.addAll(appReviewDao.reviewHistoryForDeptHead(emp));
+            }
+            else {
+                 appReviews.addAll(appReviewDao.reviewHistoryForRole(role));
+            }
+        }
+        // If the DeptHd role is delegated, we need to add the reviewHistory for their delegate principal.
+        if (roles.delegate().contains(TravelRole.DEPARTMENT_HEAD)) {
+            List<Delegation> delegations = delegationDao.findByDelegateEmpId(emp.getEmployeeId());
+            for (Delegation delegation : delegations) {
+                appReviews.addAll(appReviewDao.reviewHistoryForDeptHead(delegation.principal()));
             }
         }
         return appReviews;
-    }
-
-    /*
-     * Filters a collection of AppReviews, returning only those that belong to the department deptHead
-     * is in charge of.
-     */
-    private List<ApplicationReview> filterReviewsByDepartmentHead(Collection<ApplicationReview> reviews, Employee deptHead) {
-        return reviews.stream()
-                .filter(r -> {
-                    Department appDepartment = departmentDao.getDepartment(r.application().getTravelerDepartmentId());
-                    if (appDepartment != null) {
-                        return appDepartment.getHeadEmpId() == deptHead.getEmployeeId();
-                    }
-                    return false;
-                })
-                .collect(Collectors.toList());
     }
 }

@@ -6,3 +6,6 @@ CREATE INDEX app_review_next_reviewer_role_index
 
 CREATE INDEX app_review_action_app_review_id
   ON travel.app_review_action (app_review_id);
+
+CREATE INDEX app_review_action_role
+  ON travel.app_review_action (role);
