@@ -11,7 +11,8 @@ function delegationCtrl($scope, $timeout, appProps, delegationApi, empApi) {
     vm.data = {
         displaySavedMessage: false,
         activeDelegations: [],
-        allowedDelegates: [] // Employees who are allowed to be assigned as a delegate of the current user.
+        allowedDelegates: [], // Employees who are allowed to be assigned as a delegate of the current user.
+        isLoading: true
     };
 
     (function () {
@@ -32,6 +33,7 @@ function delegationCtrl($scope, $timeout, appProps, delegationApi, empApi) {
         empApi.get({activeOnly: true}).$promise
             .then(function (response) {
                 vm.data.allowedDelegates = response.employees;
+                vm.data.isLoading = false;
             });
     }
 
