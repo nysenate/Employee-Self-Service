@@ -16,11 +16,11 @@
     </div>
 
     <div class="padding-10 text-align-center">
-      <div ng-show="vm.activeDelegations.length < 1">
+      <div ng-show="vm.data.activeDelegations.length < 1">
         <h2 class="dark-gray">No Current Delegates.</h2>
       </div>
 
-      <div ng-show="vm.activeDelegations.length > 0">
+      <div ng-show="vm.data.activeDelegations.length > 0">
         <table class="travel-table">
           <thead>
           <tr>
@@ -31,13 +31,13 @@
           </tr>
           </thead>
           <tbody>
-          <tr ng-repeat="d in vm.activeDelegations">
+          <tr ng-repeat="d in vm.data.activeDelegations">
             <td ng-click="vm.deleteDelegation($index)" class="icon-cross"
                 style="font-size: 18px; cursor: pointer;"></td>
             <td style="width: 250px;">
               <span ng-show="d.delegate == undefined">
                 <select ng-model="d.delegate"
-                        ng-options="emp.fullName for emp in vm.allowedDelegates | orderBy: 'fullName'"></select>
+                        ng-options="emp.fullName for emp in vm.data.allowedDelegates | orderBy: 'fullName'"></select>
               </span>
               <span ng-show="d.delegate != undefined">
                 {{::d.delegate.fullName}}
@@ -65,7 +65,7 @@
         <input type="button" class="submit-button" value="Save Delegates"
                ng-click="vm.saveDelegations()">
         <span class="travel-notification margin-left-10" style="position:absolute;"
-              ng-show="vm.displaySavedMessage">
+              ng-show="vm.data.displaySavedMessage">
           Delegates saved
         </span>
       </div>
