@@ -1,5 +1,6 @@
 package gov.nysenate.ess.travel.review;
 
+import com.google.common.collect.Sets;
 import gov.nysenate.ess.core.department.Department;
 import gov.nysenate.ess.core.department.DepartmentDao;
 import gov.nysenate.ess.core.model.personnel.Employee;
@@ -125,7 +126,9 @@ public class ApplicationReviewService {
     public List<ApplicationReview> appReviewHistory(Employee emp) {
         List<ApplicationReview> appReviews = new ArrayList<>();
         TravelRoles roles = travelRoleFactory.travelRolesForEmp(emp);
-        for (TravelRole role : roles.all()) {
+        for (TravelRole role : Sets.newHashSet(roles.all())) {
+            // Convert roles.all to a set to remove duplicates. The only practical duplicate is DEPARTMENT_HEAD,
+            // which can occur from delegation. These will be handled by the delegation handling below.
             if (role.equals(TravelRole.DEPARTMENT_HEAD)) {
                 appReviews.addAll(appReviewDao.reviewHistoryForDeptHead(emp));
             }

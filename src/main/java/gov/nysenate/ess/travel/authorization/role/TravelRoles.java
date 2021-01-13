@@ -21,6 +21,10 @@ public class TravelRoles {
 
     /**
      * All TravelRole's assigned to an employee
+     *
+     * Note: may return duplicate TravelRole,
+     * i.e. if emp has a primary role of DEPARTMENT_HEAD and is also delegated a DEPARTMENT_HEAD role,
+     * this will return 2 instances of DEPARTMENT_HEAD.
      * @return
      */
     public ImmutableList<TravelRole> all() {
