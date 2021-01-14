@@ -213,6 +213,10 @@ essApp.config(function ($routeProvider, $locationProvider) {
         templateUrl: ctxPath + '/template/travel/component/reconcile-travel/reconcile-travel'
     });
 
+    $routeProvider.when(ctxPath + '/travel/application/:id', {
+        templateUrl: ctxPath + '/template/travel/component/travel-application/travel-application'
+    });
+
     /** Help */
 
     $routeProvider.when(ctxPath + '/help/ta/plan', {

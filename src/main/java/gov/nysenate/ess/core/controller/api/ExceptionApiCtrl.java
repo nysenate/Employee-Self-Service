@@ -12,6 +12,7 @@ import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.util.HttpResponseUtils;
 import org.apache.catalina.connector.ClientAbortException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.UnauthenticatedException;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.apache.shiro.subject.Subject;
@@ -77,10 +78,10 @@ public class ExceptionApiCtrl extends BaseRestApiCtrl
     }
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    @ExceptionHandler(UnauthorizedException.class)
+    @ExceptionHandler(AuthorizationException.class)
     @ResponseBody
     public AuthorizationResponse handleUnauthorizedException(HttpServletRequest request,
-                                                             UnauthorizedException ex) {
+                                                             AuthorizationException ex) {
         Object user = Optional.ofNullable(getSubject())
                 .map(Subject::getPrincipal)
                 .orElse(null);
