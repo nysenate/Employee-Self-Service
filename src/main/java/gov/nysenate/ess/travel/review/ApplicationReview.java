@@ -74,6 +74,10 @@ public class ApplicationReview {
         return actions;
     }
 
+    public Action lastAction() {
+        return actions.last();
+    }
+
     public TravelRole travelerRole() {
         return travelerRole;
     }

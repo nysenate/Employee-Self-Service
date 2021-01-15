@@ -30,30 +30,22 @@ public class TravelAppDisapprovalEmail {
         this.domainUrl = domainUrl;
     }
 
-    public MimeMessage createEmail(TravelApplication app, Employee toEmployee,
-                                   Employee disapprover, String reason) {
-        String subject = generateSubject(app);
-        String body = generateBody(app, toEmployee, disapprover, reason);
-        return sendMailService.newHtmlMessage(toEmployee.getEmail(), subject, body);
+    public MimeMessage createEmail(TravelAppEmailView view, Employee recipient) {
+        String subject = generateSubject(view);
+        String body = generateBody(view, recipient);
+        return sendMailService.newHtmlMessage(recipient.getEmail(), subject, body);
     }
 
-    private String generateSubject(TravelApplication app) {
-        StringBuilder subject = new StringBuilder("Disapproved Travel Application for ");
-        subject.append(app.getTraveler().getFullName());
-        subject.append(String.format(" on %s ", app.activeAmendment().route().startDate()));
-        if (!app.activeAmendment().route().startDate().equals(app.activeAmendment().route().endDate())) {
-            subject.append(String.format("- %s ", app.activeAmendment().route().endDate()));
-        }
-        return subject.toString();
+    private String generateSubject(TravelAppEmailView view) {
+        return "Disapproved Travel Application for " + view.getTravelerFullName() +
+                " on " + view.getDatesOfTravel();
     }
 
-    private String generateBody(TravelApplication app, Employee toEmployee, Employee disapprover, String reason) {
+    private String generateBody(TravelAppEmailView view, Employee recipient) {
         StringWriter out = new StringWriter();
         Map dataModel = ImmutableMap.builder()
-                .put("app", app)
-                .put("toEmployee", toEmployee)
-                .put("reason", reason)
-                .put("disapprover", disapprover)
+                .put("view", view)
+                .put("recipient", recipient)
                 .build();
         try {
             Template emailTemplate = freemarkerCfg.getTemplate(template);

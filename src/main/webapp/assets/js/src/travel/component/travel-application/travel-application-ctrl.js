@@ -11,8 +11,6 @@ function travelAppCtrl($scope, $routeParams, modals, appApi) {
         isAuthorized: true
     };
 
-    // TODO Handle invalid permissions
-
     (function () {
         appApi.get({id: $routeParams.id}, function (response) {
             vm.data.app = response.result;

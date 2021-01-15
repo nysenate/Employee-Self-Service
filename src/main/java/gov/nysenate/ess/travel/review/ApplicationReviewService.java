@@ -42,7 +42,7 @@ public class ApplicationReviewService {
             // If no one else needs to review, the application is completely approved.
             applicationReview.application().approve();
             travelApplicationService.saveApplication(applicationReview.application());
-            emailService.sendApprovalEmails(applicationReview.application());
+            emailService.sendApprovalEmails(applicationReview);
         }
     }
 
@@ -55,7 +55,7 @@ public class ApplicationReviewService {
 
         applicationReview.application().disapprove(reason);
         travelApplicationService.saveApplication(applicationReview.application());
-        emailService.sendDisapprovalEmails(applicationReview.application(), disapprover, reason);
+        emailService.sendDisapprovalEmails(applicationReview);
     }
 
     public ApplicationReview createApplicationReview(TravelApplication app) {

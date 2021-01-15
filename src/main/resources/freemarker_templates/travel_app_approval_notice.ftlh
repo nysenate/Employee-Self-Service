@@ -1,13 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-<#setting date_format="MM/dd/yy">
 <head>
     <title>
-        Approved Travel Application for ${app.getTraveler().getFullName()} on
-        ${app.activeAmendment().route().startDate()}
-        <#if !app.activeAmendment().route().startDate().equals(app.activeAmendment().route().endDate())>
-            - ${app.activeAmendment().route().endDate()}
-        </#if>
+        Approved Travel Application for ${view.travelerFullName} on
+        ${view.datesOfTravel}
     </title>
 </head>
 <body>
@@ -19,14 +15,10 @@
 
 <br/>
 <p>
-    Hi ${toEmployee.firstName},
+    Hi ${recipient.fullName},
 </p>
 <p>
-    The Travel Application for ${app.getTraveler().getFullName()} on
-    ${app.activeAmendment().route().startDate()}
-    <#if !app.activeAmendment().route().startDate().equals(app.activeAmendment().route().endDate())>
-        - ${app.activeAmendment().route().endDate()}
-    </#if>
+    The Travel Application for ${view.travelerFullName} on ${view.datesOfTravel}
     has been <strong>approved</strong>.
 </p>
 <br/>

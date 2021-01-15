@@ -1,13 +1,18 @@
 package gov.nysenate.ess.travel.notifications.email;
 
+import com.google.common.collect.Sets;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.mail.SendMailService;
 import gov.nysenate.ess.travel.application.TravelApplication;
+import gov.nysenate.ess.travel.review.ApplicationReview;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.mail.internet.MimeMessage;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class TravelEmailService {
@@ -25,13 +30,27 @@ public class TravelEmailService {
         this.approvalEmail = approvalEmail;
     }
 
-    public void sendApprovalEmails(TravelApplication app) {
-        MimeMessage email = approvalEmail.createEmail(app, app.getSubmittedBy());
-        sendMailService.sendMessages(Collections.singleton(email));
+    public void sendApprovalEmails(ApplicationReview appReview) {
+        Set<Employee> recipients = Sets.newHashSet(
+                appReview.application().getSubmittedBy());
+        Set<MimeMessage> emails = new HashSet<>();
+
+        for (Employee recipient : recipients) {
+            emails.add(approvalEmail.createEmail(new TravelAppEmailView(appReview), recipient));
+        }
+        sendMailService.sendMessages(emails);
     }
 
-    public void sendDisapprovalEmails(TravelApplication app, Employee disapprover, String reason) {
-        MimeMessage email = disapprovalEmail.createEmail(app, app.getSubmittedBy(), disapprover, reason);
-        sendMailService.sendMessages(Collections.singleton(email));
+    public void sendDisapprovalEmails(ApplicationReview appReview) {
+        Set<Employee> recipients = Sets.newHashSet(
+                appReview.application().getSubmittedBy());
+        Set<MimeMessage> emails = new HashSet<>();
+
+        for (Employee recipient : recipients) {
+            TravelAppEmailView view = new TravelAppEmailView(appReview);
+            emails.add(disapprovalEmail.createEmail(view, recipient));
+
+        }
+        sendMailService.sendMessages(emails);
     }
 }

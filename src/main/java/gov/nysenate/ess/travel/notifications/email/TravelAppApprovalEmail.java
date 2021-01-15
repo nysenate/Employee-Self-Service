@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.sql.Date;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 @Service
@@ -28,27 +30,22 @@ public class TravelAppApprovalEmail {
         this.freemarkerCfg = freemarkerCfg;
     }
 
-    public MimeMessage createEmail(TravelApplication app, Employee toEmployee) {
-        String subject = generateSubject(app);
-        String body = generateBody(app, toEmployee);
+    public MimeMessage createEmail(TravelAppEmailView view, Employee toEmployee) {
+        String subject = generateSubject(view);
+        String body = generateBody(view, toEmployee);
         return sendMailService.newHtmlMessage(toEmployee.getEmail(), subject, body);
     }
 
-    private String generateSubject(TravelApplication app) {
-        StringBuilder subject = new StringBuilder("Approved Travel Application for ");
-        subject.append(app.getTraveler().getFullName());
-        subject.append(String.format(" on %s ", app.activeAmendment().route().startDate()));
-        if (!app.activeAmendment().route().startDate().equals(app.activeAmendment().route().endDate())) {
-            subject.append(String.format("- %s ", app.activeAmendment().route().endDate()));
-        }
-        return subject.toString();
+    private String generateSubject(TravelAppEmailView view) {
+        return "Approved Travel Application for " + view.getTravelerFullName() +
+                " on " + view.getDatesOfTravel();
     }
 
-    private String generateBody(TravelApplication app, Employee toEmployee) {
+    private String generateBody(TravelAppEmailView view, Employee recipient) {
         StringWriter out = new StringWriter();
         Map dataModel = ImmutableMap.builder()
-                .put("app", app)
-                .put("toEmployee", toEmployee)
+                .put("view", view)
+                .put("recipient", recipient)
                 .build();
         try {
             Template emailTemplate = freemarkerCfg.getTemplate(template);
