@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <title>
-        Approved Travel Application for ${view.travelerFullName} on
+        New pending travel application for ${view.travelerFullName} on
         ${view.datesOfTravel}
     </title>
 </head>
@@ -18,11 +18,10 @@
     Hi ${recipient.firstName},
 </p>
 <p>
-    The Travel Application for ${view.travelerFullName} on ${view.datesOfTravel}
-    has been <strong>approved</strong>.
+    A Travel Application for ${view.travelerFullName} on ${view.datesOfTravel} is awaiting your review.
 </p>
 <p>
-    Click <a href="${domainUrl}/travel/application/${view.appId}">here</a> to view this Travel Application.
+    <a href="${domainUrl}/travel/manage/review">Click here to review it.</a>
 </p>
 <br/>
 <p>

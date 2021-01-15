@@ -20,14 +20,17 @@ public class TravelEmailService {
     private SendMailService sendMailService;
     private TravelAppDisapprovalEmail disapprovalEmail;
     private TravelAppApprovalEmail approvalEmail;
+    private PendingAppReviewEmail pendingAppReviewEmail;
 
     @Autowired
     public TravelEmailService(SendMailService sendMailService,
                               TravelAppDisapprovalEmail disapprovalEmail,
-                              TravelAppApprovalEmail approvalEmail) {
+                              TravelAppApprovalEmail approvalEmail,
+                              PendingAppReviewEmail pendingAppReviewEmail) {
         this.sendMailService = sendMailService;
         this.disapprovalEmail = disapprovalEmail;
         this.approvalEmail = approvalEmail;
+        this.pendingAppReviewEmail = pendingAppReviewEmail;
     }
 
     public void sendApprovalEmails(ApplicationReview appReview) {
@@ -51,6 +54,20 @@ public class TravelEmailService {
         for (Employee recipient : recipients) {
             TravelAppEmailView view = new TravelAppEmailView(appReview);
             emails.add(disapprovalEmail.createEmail(view, recipient));
+
+        }
+        sendMailService.sendMessages(emails);
+    }
+
+    public void sendPendingReviewEmail(ApplicationReview appReview) {
+        // TODO This is just dummy data for testing
+        Set<Employee> recipients = Sets.newHashSet(
+                appReview.application().getSubmittedBy());
+        Set<MimeMessage> emails = new HashSet<>();
+
+        for (Employee recipient : recipients) {
+            TravelAppEmailView view = new TravelAppEmailView(appReview);
+            emails.add(pendingAppReviewEmail.createEmail(view, recipient));
 
         }
         sendMailService.sendMessages(emails);

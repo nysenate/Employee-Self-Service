@@ -16,16 +16,16 @@ import java.io.StringWriter;
 import java.util.Map;
 
 @Service
-public class TravelAppApprovalEmail {
+public class PendingAppReviewEmail {
 
     private SendMailService sendMailService;
     private Configuration freemarkerCfg;
-    private static final String template = "travel_app_approval_notice.ftlh";
+    private static final String template = "travel_pending_app_review_notice.ftlh";
     private static String domainUrl;
 
     @Autowired
-    public TravelAppApprovalEmail(SendMailService sendMailService, Configuration freemarkerCfg,
-                                  @Value("${domain.url}") final String domainUrl) {
+    public PendingAppReviewEmail(SendMailService sendMailService, Configuration freemarkerCfg,
+                                 @Value("${domain.url}") final String domainUrl) {
         this.sendMailService = sendMailService;
         this.freemarkerCfg = freemarkerCfg;
         this.domainUrl = domainUrl;
@@ -38,7 +38,7 @@ public class TravelAppApprovalEmail {
     }
 
     private String generateSubject(TravelAppEmailView view) {
-        return "Approved Travel Application for " + view.getTravelerFullName() +
+        return "New pending travel application for " + view.getTravelerFullName() +
                 " on " + view.getDatesOfTravel();
     }
 
@@ -57,5 +57,4 @@ public class TravelAppApprovalEmail {
         }
         return out.toString();
     }
-
 }
