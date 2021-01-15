@@ -32,7 +32,8 @@ public class TravelEmailService {
 
     public void sendApprovalEmails(ApplicationReview appReview) {
         Set<Employee> recipients = Sets.newHashSet(
-                appReview.application().getSubmittedBy());
+                appReview.application().getSubmittedBy(),
+                appReview.application().getTraveler());
         Set<MimeMessage> emails = new HashSet<>();
 
         for (Employee recipient : recipients) {
@@ -43,7 +44,8 @@ public class TravelEmailService {
 
     public void sendDisapprovalEmails(ApplicationReview appReview) {
         Set<Employee> recipients = Sets.newHashSet(
-                appReview.application().getSubmittedBy());
+                appReview.application().getSubmittedBy(),
+                appReview.application().getTraveler());
         Set<MimeMessage> emails = new HashSet<>();
 
         for (Employee recipient : recipients) {

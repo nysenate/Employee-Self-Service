@@ -30,6 +30,9 @@
 <p>
     If possible, you may make changes to your application and re-submit it.
 </p>
+<p>
+    Click <a href="${domainUrl}/travel/application/${view.appId}">here</a> to view this Travel Application.
+</p>
 <br/>
 <p>
     Thank you.

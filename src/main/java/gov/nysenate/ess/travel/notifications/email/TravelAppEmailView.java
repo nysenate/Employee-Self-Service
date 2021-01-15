@@ -11,12 +11,14 @@ public class TravelAppEmailView {
 
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("M/d/yyyy");
 
+    private String appId;
     private String travelerFullName;
     private String datesOfTravel;
     private String disapproverFullName;
     private String disapprovalReason;
 
     public TravelAppEmailView(ApplicationReview appReview) {
+        appId = String.valueOf(appReview.application().getAppId());
         travelerFullName = appReview.application().getTraveler().getFullName();
         datesOfTravel = appReview.application().activeAmendment().startDate().format(DATE_FORMAT);
         if (!appReview.application().activeAmendment().startDate().equals(appReview.application().activeAmendment().endDate())) {
@@ -27,6 +29,10 @@ public class TravelAppEmailView {
             disapproverFullName = appReview.lastAction().user().getFullName();
             disapprovalReason = appReview.lastAction().notes();
         }
+    }
+
+    public String getAppId() {
+        return appId;
     }
 
     public String getTravelerFullName() {

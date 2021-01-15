@@ -46,6 +46,7 @@ public class TravelAppDisapprovalEmail {
         Map dataModel = ImmutableMap.builder()
                 .put("view", view)
                 .put("recipient", recipient)
+                .put("domainUrl", domainUrl)
                 .build();
         try {
             Template emailTemplate = freemarkerCfg.getTemplate(template);

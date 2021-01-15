@@ -8,6 +8,7 @@ import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.mail.SendMailService;
 import gov.nysenate.ess.travel.application.TravelApplication;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.mail.internet.MimeMessage;
@@ -23,11 +24,14 @@ public class TravelAppApprovalEmail {
     private SendMailService sendMailService;
     private Configuration freemarkerCfg;
     private static final String template = "travel_app_approval_notice.ftlh";
+    private static String domainUrl;
 
     @Autowired
-    public TravelAppApprovalEmail(SendMailService sendMailService, Configuration freemarkerCfg) {
+    public TravelAppApprovalEmail(SendMailService sendMailService, Configuration freemarkerCfg,
+                                  @Value("${domain.url}") final String domainUrl) {
         this.sendMailService = sendMailService;
         this.freemarkerCfg = freemarkerCfg;
+        this.domainUrl = domainUrl;
     }
 
     public MimeMessage createEmail(TravelAppEmailView view, Employee toEmployee) {
@@ -46,6 +50,7 @@ public class TravelAppApprovalEmail {
         Map dataModel = ImmutableMap.builder()
                 .put("view", view)
                 .put("recipient", recipient)
+                .put("domainUrl", domainUrl)
                 .build();
         try {
             Template emailTemplate = freemarkerCfg.getTemplate(template);
