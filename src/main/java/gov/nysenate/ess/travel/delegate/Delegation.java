@@ -34,6 +34,14 @@ public class Delegation {
     }
 
     /**
+     * Get the delegate
+     * @return
+     */
+    public Employee delegate() {
+        return this.delegate;
+    }
+
+    /**
      * @return true if the current date is between this delegation's startDate and endDate.
      */
     public boolean isActive() {

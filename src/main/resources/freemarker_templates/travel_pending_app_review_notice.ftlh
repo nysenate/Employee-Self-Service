@@ -21,7 +21,7 @@
     A Travel Application for ${view.travelerFullName} on ${view.datesOfTravel} is awaiting your review.
 </p>
 <p>
-    <a href="${domainUrl}/travel/manage/review">Click here to review it.</a>
+    <a href="${domainUrl}/travel/manage/review">Click here to review.</a>
 </p>
 <br/>
 <p>

@@ -43,6 +43,8 @@ public class ApplicationReviewService {
             applicationReview.application().approve();
             travelApplicationService.saveApplication(applicationReview.application());
             emailService.sendApprovalEmails(applicationReview);
+        } else {
+            emailService.sendPendingReviewEmail(applicationReview);
         }
     }
 
@@ -61,6 +63,7 @@ public class ApplicationReviewService {
     public ApplicationReview createApplicationReview(TravelApplication app) {
         TravelRoles roles = travelRoleFactory.travelRolesForEmp(app.getTraveler());
         ApplicationReview appReview = new ApplicationReview(app, roles.apex());
+        emailService.sendPendingReviewEmail(appReview);
         return appReview;
     }
 

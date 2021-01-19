@@ -1,8 +1,10 @@
 package gov.nysenate.ess.travel.notifications.email;
 
+import gov.nysenate.ess.travel.review.Action;
 import gov.nysenate.ess.travel.review.ApplicationReview;
 
 import java.time.format.DateTimeFormatter;
+import java.util.NoSuchElementException;
 
 /**
  * A view of a travel app email notification
@@ -25,10 +27,14 @@ public class TravelAppEmailView {
             datesOfTravel += " - " + appReview.application().activeAmendment().endDate().format(DATE_FORMAT);
         }
 
-        if (appReview.lastAction().isDisapproval() && appReview.application().status().isDisapproved()) {
-            disapproverFullName = appReview.lastAction().user().getFullName();
-            disapprovalReason = appReview.lastAction().notes();
-        }
+        try {
+            Action lastAction = appReview.lastAction();
+            if (lastAction.isDisapproval() && appReview.application().status().isDisapproved()) {
+                disapproverFullName = appReview.lastAction().user().getFullName();
+                disapprovalReason = appReview.lastAction().notes();
+            }
+        } catch (NoSuchElementException ignored) {}
+
     }
 
     public String getAppId() {
