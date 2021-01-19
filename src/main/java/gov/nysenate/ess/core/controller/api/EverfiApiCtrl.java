@@ -10,10 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -185,7 +182,7 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
      *
      *
      * @return String
-     * */
+     */
     @RequestMapping(value = "/department/update", method = {GET})
     @ResponseStatus(value = HttpStatus.OK)
     public SimpleResponse updateDepartmentCategeoryLabel(HttpServletRequest request,
@@ -193,6 +190,52 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
         everfiCategoryService.ensureDepartmentIsUpToDate();
         return new SimpleResponse(true, "Everfi Department Category Updated",
                 "everfi-department-update");
+    }
+
+    /**
+     * Everfi - Active Status Change for Employee by Employee ID
+     * -------------------------------------------
+     *
+     * Chnage a users active status on Everfi by their employee ID
+     *
+     * Usage:
+     * (GET)    /api/v1/everfi/status/empid/{empid}/{status}
+     *
+     *
+     * @return String
+     */
+    @RequestMapping(value = "/status/empid/{empid}/{status}", method = {GET})
+    @ResponseStatus(value = HttpStatus.OK)
+    public SimpleResponse changeStatusForEverfiUserWithEmpID(HttpServletRequest request,
+                                                        HttpServletResponse response,
+                                                        @PathVariable int empid,
+                                                        @PathVariable boolean status) throws Exception {
+        everfiUserService.changeActiveStatusForUserWithEmpID(empid, status);
+        return new SimpleResponse(true, "Everfi User Active Status Updated",
+                "everfi-user-active-status-update");
+    }
+
+    /**
+     * Everfi - Active Status Change for Employee by Everfi UUID
+     * ----------------------------------------------------------
+     *
+     * Change a users active status on Everfi by their Everfi UUID
+     *
+     * Usage:
+     * (GET)    /api/v1/everfi/status/uuid/{uuid}/{status}
+     *
+     *
+     * @return String
+     */
+    @RequestMapping(value = "/status/uuid/{uuid}/{status}", method = {GET})
+    @ResponseStatus(value = HttpStatus.OK)
+    public SimpleResponse changeStatusForEverfiUserWithUUID(HttpServletRequest request,
+                                                         HttpServletResponse response,
+                                                       @PathVariable String uuid,
+                                                       @PathVariable boolean status) throws Exception {
+        everfiUserService.changeActiveStatusForUserWithUUID(uuid, status);
+        return new SimpleResponse(true, "Everfi User Active Status Updated",
+                "everfi-user-active-status-update");
     }
 
 

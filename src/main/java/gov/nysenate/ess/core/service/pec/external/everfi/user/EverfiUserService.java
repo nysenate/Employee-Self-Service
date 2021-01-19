@@ -69,6 +69,40 @@ public class EverfiUserService {
         }
     }
 
+    public void changeActiveStatusForUserWithEmpID(int submittedEmpID, boolean status) throws Exception {
+        //Quick check to ensure that the employee is real
+        Employee employee = employeeDao.getEmployeeById(submittedEmpID);
+        EverfiUserIDs everfiUserID = everfiUserDao.getEverfiUserIDsWithEmpID(employee.getEmployeeId());
+        if (everfiUserID == null) {
+            throw new Exception("Submitted UUID does not match any employee in the database");
+        }
+        changeActiveStatusForUser(everfiUserID, status);
+
+    }
+
+    public void changeActiveStatusForUserWithUUID(String submittedUUID, boolean status) throws Exception {
+        //Ensure UUID is an everfi UUID
+        EverfiUserIDs everfiUserID = everfiUserDao.getEverfiUserIDsWithEverfiUUID(submittedUUID);
+        if (everfiUserID == null) {
+            throw new Exception("Submitted UUID does not match any employee in the database");
+        }
+        changeActiveStatusForUser(everfiUserID, status);
+
+    }
+
+    private void changeActiveStatusForUser(EverfiUserIDs everfiUserID, boolean activeStatus) throws IOException {
+
+        EverfiSingleUserRequest everfiSingleUserRequest =
+                new EverfiSingleUserRequest(everfiApiClient, everfiUserID.getEverfiUUID());
+        EverfiUser everfiUser = everfiSingleUserRequest.getUser();
+
+        EverfiUpdateUserRequest activationStatusRequest = new EverfiUpdateUserRequest(everfiApiClient,everfiUser.getUuid(),
+                everfiUser.getEmployeeId(),everfiUser.getFirstName(),everfiUser.getLastName(), everfiUser.getEmail(),
+                null, everfiUser.getUserCategoryLabels(), activeStatus);
+
+        activationStatusRequest.updateUser();
+    }
+
     /**
      * Returns a list of all new employees that must be added to Everfi. Usually called thru cron
      * @return
