@@ -8,6 +8,7 @@ import gov.nysenate.ess.core.department.DepartmentDao;
 import gov.nysenate.ess.core.model.auth.EssRole;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
+import gov.nysenate.ess.travel.application.TravelApplication;
 import gov.nysenate.ess.travel.delegate.Delegation;
 import gov.nysenate.ess.travel.delegate.DelegationDao;
 import gov.nysenate.ess.travel.review.ApplicationReview;
@@ -40,13 +41,13 @@ public class TravelEmailRecipients {
     /**
      * Determines which employees should be notified about a status change to an application.
      * Examples of status change: approved, disapproved, edited.
-     * @param appReview
+     * @param app
      * @return A set of employees who should be emailed.
      */
-    public Set<Employee> forStatusUpdate(ApplicationReview appReview) {
+    public Set<Employee> forStatusUpdate(TravelApplication app) {
         return Sets.newHashSet(
-                appReview.application().getSubmittedBy(),
-                appReview.application().getTraveler());
+                app.getSubmittedBy(),
+                app.getTraveler());
     }
 
     /**

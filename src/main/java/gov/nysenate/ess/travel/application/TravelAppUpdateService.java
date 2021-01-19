@@ -13,6 +13,7 @@ import gov.nysenate.ess.travel.application.route.Leg;
 import gov.nysenate.ess.travel.application.route.Route;
 import gov.nysenate.ess.travel.application.route.RouteService;
 import gov.nysenate.ess.travel.application.route.destination.Destination;
+import gov.nysenate.ess.travel.notifications.email.TravelEmailService;
 import gov.nysenate.ess.travel.provider.senate.SenateMie;
 import gov.nysenate.ess.travel.provider.senate.SqlSenateMieDao;
 import gov.nysenate.ess.travel.review.ApplicationReview;
@@ -37,6 +38,7 @@ public class TravelAppUpdateService {
     @Autowired private SqlSenateMieDao senateMieDao;
     @Autowired private TravelApplicationService appService;
     @Autowired private ApplicationReviewService appReviewService;
+    @Autowired private TravelEmailService emailService;
 
     /**
      * Returns a new Amendment with the provided purpose of travel added to the amendment.
@@ -205,6 +207,7 @@ public class TravelAppUpdateService {
         TravelApplication app = appService.getTravelApplication(appId);
         app.addAmendment(amd);
         appService.saveApplication(app);
+        emailService.sendEditEmails(app);
         return app;
     }
 

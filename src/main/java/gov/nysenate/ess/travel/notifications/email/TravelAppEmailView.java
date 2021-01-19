@@ -1,5 +1,6 @@
 package gov.nysenate.ess.travel.notifications.email;
 
+import gov.nysenate.ess.travel.application.TravelApplication;
 import gov.nysenate.ess.travel.review.Action;
 import gov.nysenate.ess.travel.review.ApplicationReview;
 
@@ -19,14 +20,17 @@ public class TravelAppEmailView {
     private String disapproverFullName;
     private String disapprovalReason;
 
-    public TravelAppEmailView(ApplicationReview appReview) {
-        appId = String.valueOf(appReview.application().getAppId());
-        travelerFullName = appReview.application().getTraveler().getFullName();
-        datesOfTravel = appReview.application().activeAmendment().startDate().format(DATE_FORMAT);
-        if (!appReview.application().activeAmendment().startDate().equals(appReview.application().activeAmendment().endDate())) {
-            datesOfTravel += " - " + appReview.application().activeAmendment().endDate().format(DATE_FORMAT);
+    public TravelAppEmailView(TravelApplication app) {
+        appId = String.valueOf(app.getAppId());
+        travelerFullName = app.getTraveler().getFullName();
+        datesOfTravel = app.activeAmendment().startDate().format(DATE_FORMAT);
+        if (!app.activeAmendment().startDate().equals(app.activeAmendment().endDate())) {
+            datesOfTravel += " - " + app.activeAmendment().endDate().format(DATE_FORMAT);
         }
+    }
 
+    public TravelAppEmailView(ApplicationReview appReview) {
+        this(appReview.application());
         try {
             Action lastAction = appReview.lastAction();
             if (lastAction.isDisapproval() && appReview.application().status().isDisapproved()) {
