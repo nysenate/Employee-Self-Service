@@ -208,6 +208,7 @@ pec.nysenate.seal =
 # The client id and client secret needed for accessing the Everfi API.
 pec.everfi.client.id =
 pec.everfi.client.secret =
+pec.everfi.bad.email.report.enabled = false
 
 # --- Scheduling Configuration ------------------------------------------------
 

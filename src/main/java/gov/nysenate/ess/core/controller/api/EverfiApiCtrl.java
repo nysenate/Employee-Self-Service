@@ -20,6 +20,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static gov.nysenate.ess.core.model.auth.SimpleEssPermission.ADMIN;
+import static gov.nysenate.ess.core.model.auth.SimpleEssPermission.RUN_PERSONNEL_TASK_ASSIGNER;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 @RestController
@@ -60,6 +61,7 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
     @ResponseStatus(value = HttpStatus.OK)
     public SimpleResponse refreshEverfiCaches(HttpServletRequest request,
                                           HttpServletResponse response) {
+        checkPermission(ADMIN.getPermission());
         everfiRecordService.refreshCaches();
         return new SimpleResponse(true, "Everfi Caches Refreshed", "everfi-cache-refresh");
     }
@@ -187,10 +189,36 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
     @ResponseStatus(value = HttpStatus.OK)
     public SimpleResponse updateDepartmentCategeoryLabel(HttpServletRequest request,
                                               HttpServletResponse response) throws IOException {
+        checkPermission(ADMIN.getPermission());
         everfiCategoryService.ensureDepartmentIsUpToDate();
         return new SimpleResponse(true, "Everfi Department Category Updated",
                 "everfi-department-update");
     }
+
+    /**
+     * Everfi - Update All Everfi Users
+     * ---------------------------------------
+     *
+     * Updates All users in Everfi with their current and most accurate info.
+     * Maintains custom emails, will correct departments and NY Senate emails
+     *
+     * Usage:
+     * (GET)    /api/v1/everfi/users/all/update
+     *
+     *
+     * @return String
+     */
+    @RequestMapping(value = "/users/all/update", method = {GET})
+    @ResponseStatus(value = HttpStatus.OK)
+    public SimpleResponse updateAllEverfiUsers(HttpServletRequest request,
+                                                         HttpServletResponse response) throws IOException {
+        checkPermission(ADMIN.getPermission());
+        everfiCategoryService.ensureDepartmentIsUpToDate();
+        everfiUserService.updateAllEverfiUsers();
+        return new SimpleResponse(true, "Everfi Department Category Updated",
+                "everfi-department-update");
+    }
+
 
     /**
      * Everfi - Active Status Change for Employee by Employee ID
@@ -210,6 +238,7 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
                                                         HttpServletResponse response,
                                                         @PathVariable int empid,
                                                         @PathVariable boolean status) throws Exception {
+        checkPermission(ADMIN.getPermission());
         everfiUserService.changeActiveStatusForUserWithEmpID(empid, status);
         return new SimpleResponse(true, "Everfi User Active Status Updated",
                 "everfi-user-active-status-update");
@@ -233,6 +262,7 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
                                                          HttpServletResponse response,
                                                        @PathVariable String uuid,
                                                        @PathVariable boolean status) throws Exception {
+        checkPermission(ADMIN.getPermission());
         everfiUserService.changeActiveStatusForUserWithUUID(uuid, status);
         return new SimpleResponse(true, "Everfi User Active Status Updated",
                 "everfi-user-active-status-update");
