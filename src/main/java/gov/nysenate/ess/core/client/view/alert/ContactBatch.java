@@ -81,7 +81,7 @@ public class ContactBatch {
         protected List<ContactBatch.BatchContactList.Contact> contact;
 
         public BatchContactList() {
-            contact = new ArrayList<ContactBatch.BatchContactList.Contact>();
+            contact = new ArrayList<>();
         }
 
         public void addContact(Contact contact) {
@@ -173,7 +173,7 @@ public class ContactBatch {
                 @XmlAttribute(name = "customName")
                 protected String customName;
 
-                public ContactField() {};
+                public ContactField() {}
 
                 public ContactField(String name, String customeName, String value) {
                     this.name = name;
@@ -326,14 +326,14 @@ public class ContactBatch {
 
                 public List<gov.nysenate.ess.core.client.view.alert.Group> getGroup() {
                     if (group == null) {
-                        group = new ArrayList<gov.nysenate.ess.core.client.view.alert.Group>();
+                        group = new ArrayList<>();
                     }
                     return this.group;
                 }
 
                 public List<String> getGroupName() {
                     if (groupName == null) {
-                        groupName = new ArrayList<String>();
+                        groupName = new ArrayList<>();
                     }
                     return this.groupName;
                 }
@@ -351,7 +351,7 @@ public class ContactBatch {
 
         public List<ContactBatch.BatchGroupList.Group> getGroup() {
             if (group == null) {
-                group = new ArrayList<ContactBatch.BatchGroupList.Group>();
+                group = new ArrayList<>();
             }
             return this.group;
         }
@@ -394,7 +394,7 @@ public class ContactBatch {
 
                 public List<ContactBatch.BatchGroupList.Group.ContactIdList.Contact> getContact() {
                     if (contact == null) {
-                        contact = new ArrayList<ContactBatch.BatchGroupList.Group.ContactIdList.Contact>();
+                        contact = new ArrayList<>();
                     }
                     return this.contact;
                 }
