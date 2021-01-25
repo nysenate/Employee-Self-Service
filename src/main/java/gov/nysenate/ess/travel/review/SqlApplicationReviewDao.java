@@ -7,6 +7,7 @@ import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.travel.application.TravelApplication;
 import gov.nysenate.ess.travel.application.TravelApplicationDao;
+import gov.nysenate.ess.travel.application.TravelApplicationStatus;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -73,7 +74,7 @@ public class SqlApplicationReviewDao extends SqlBaseDao implements ApplicationRe
     public List<ApplicationReview> pendingReviewsByRole(TravelRole nextReviewerRole) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("nextReviewerRole", nextReviewerRole == null ? null : nextReviewerRole.name())
-                .addValue("disapproval", ActionType.DISAPPROVE.name());
+                .addValue("status", TravelApplicationStatus.ApplicationStatus.PENDING.name());
         String sql = SqlApplicationReviewQuery.SELECT_APPLICATION_REVIEWS_BY_NEXT_ROLE.getSql(schemaMap());
         return localNamedJdbc.query(sql, params, new ApplicationReviewRowMapper(travelApplicationDao, actionDao));
     }
@@ -85,7 +86,7 @@ public class SqlApplicationReviewDao extends SqlBaseDao implements ApplicationRe
     public List<ApplicationReview> pendingReviewsForDeptHead(Employee departmentHead) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("nextReviewerRole", TravelRole.DEPARTMENT_HEAD.name())
-                .addValue("disapproval", ActionType.DISAPPROVE.name())
+                .addValue("status", TravelApplicationStatus.ApplicationStatus.PENDING.name())
                 .addValue("headEmpId", departmentHead.getEmployeeId());
         String sql = SqlApplicationReviewQuery.SELECT_PENDING_APP_REVIEWS_FOR_DEPT_HD.getSql(schemaMap());
         return localNamedJdbc.query(sql, params, new ApplicationReviewRowMapper(travelApplicationDao, actionDao));
@@ -120,6 +121,13 @@ public class SqlApplicationReviewDao extends SqlBaseDao implements ApplicationRe
         return localNamedJdbc.query(sql, params, new ApplicationReviewRowMapper(travelApplicationDao, actionDao));
     }
 
+    @Override
+    public ApplicationReview selectAppReviewByAppId(int appId) {
+        MapSqlParameterSource params = new MapSqlParameterSource("appId", appId);
+        String sql = SqlApplicationReviewQuery.SELECT_APPLICATION_REVIEW_BY_APP_ID.getSql(schemaMap());
+        return localNamedJdbc.queryForObject(sql, params, new ApplicationReviewRowMapper(travelApplicationDao, actionDao));
+    }
+
     private MapSqlParameterSource appReviewParams(ApplicationReview appReview) {
         return new MapSqlParameterSource()
                 .addValue("appReviewId", appReview.getAppReviewId())
@@ -140,33 +148,31 @@ public class SqlApplicationReviewDao extends SqlBaseDao implements ApplicationRe
                         " SET next_reviewer_role = :nextReviewerRole, is_shared = :isShared\n" +
                         " WHERE app_review_id = :appReviewId"
         ),
-        SELECT_APPLICATION_REVIEWS_BY_NEXT_ROLE(
+        APP_REVIEW_SELECT(
                 "SELECT app_review.app_review_id, app_review.app_id, app_review.traveler_role,\n" +
-                        " app_review.next_reviewer_role, is_shared\n" +
+                        " app_review.next_reviewer_role, is_shared\n "
+        ),
+        SELECT_APPLICATION_REVIEWS_BY_NEXT_ROLE(
+                APP_REVIEW_SELECT.getSql() +
                         " FROM ${travelSchema}.app_review\n" +
+                        "  JOIN ${travelSchema}.app ON app.app_id = app_review.app_id\n" +
                         " WHERE app_review.next_reviewer_role = :nextReviewerRole" +
-                        " AND :disapproval NOT IN" +
-                        "    (SELECT type FROM ${travelSchema}.app_review_action\n" +
-                        "     WHERE app_review_action.app_review_id = app_review.app_review_id)"
+                        " AND app.status = :status"
+
         ),
         SELECT_PENDING_APP_REVIEWS_FOR_DEPT_HD(
-                "SELECT app_review.app_review_id, app_review.app_id, app_review.traveler_role,\n" +
-                        "  app_review.next_reviewer_role, is_shared\n" +
+                APP_REVIEW_SELECT.getSql() +
                         "FROM ${travelSchema}.app_review\n" +
                         "  JOIN ${travelSchema}.app ON app.app_id = app_review.app_id\n" +
                         "WHERE app_review.next_reviewer_role = :nextReviewerRole\n" +
-                        "AND :disapproval NOT IN\n" +
-                        "  (SELECT type\n" +
-                        "  FROM ${travelSchema}.app_review_action\n" +
-                        "  WHERE app_review_action.app_review_id = app_review.app_review_id)\n" +
+                        "AND app.status = :status\n" +
                         "AND app.traveler_department_id IN\n" +
                         "  (SELECT department_id\n" +
                         "  FROM ${essSchema}.department\n" +
                         "  WHERE head_emp_id = :headEmpId)"
         ),
         SELECT_ACTIVE_SHARED_REVIEWS(
-                "SELECT app_review.app_review_id, app_review.app_id, app_review.traveler_role,\n" +
-                        " app_review.next_reviewer_role, is_shared\n" +
+                APP_REVIEW_SELECT.getSql() +
                         " FROM ${travelSchema}.app_review\n" +
                         " WHERE app_review.next_reviewer_role != :role" +
                         " AND :disapproval NOT IN" +
@@ -175,8 +181,7 @@ public class SqlApplicationReviewDao extends SqlBaseDao implements ApplicationRe
                         " AND is_shared = true"
         ),
         SELECT_APP_REVIEW_HISTORY_FOR_ROLE(
-                "SELECT app_review.app_review_id, app_review.app_id, app_review.traveler_role,\n" +
-                        " app_review.next_reviewer_role, app_review.is_shared\n" +
+                APP_REVIEW_SELECT.getSql() +
                         " FROM ${travelSchema}.app_review\n" +
                         " WHERE EXISTS \n" +
                         "  (SELECT DISTINCT(action.app_review_id) \n" +
@@ -185,8 +190,7 @@ public class SqlApplicationReviewDao extends SqlBaseDao implements ApplicationRe
                         "  AND action.app_review_id = app_review.app_review_id)"
         ),
         SELECT_APP_REVIEW_HISTORY_FOR_DEPT_HD(
-                "SELECT app_review.app_review_id, app_review.app_id, app_review.traveler_role,\n" +
-                        "  app_review.next_reviewer_role, app_review.is_shared\n" +
+                APP_REVIEW_SELECT.getSql() +
                         "FROM ${travelSchema}.app_review\n" +
                         "  JOIN ${travelSchema}.app ON app.app_id = app_review.app_id\n" +
                         "WHERE EXISTS\n" +
@@ -200,9 +204,14 @@ public class SqlApplicationReviewDao extends SqlBaseDao implements ApplicationRe
                         "  WHERE head_emp_id = :headEmpId)"
         ),
         SELECT_APPLICATION_REVIEW_BY_ID(
-                "SELECT app_review_id, app_id, traveler_role, next_reviewer_role, is_shared\n" +
+                APP_REVIEW_SELECT.getSql() +
                         " FROM ${travelSchema}.app_review\n" +
                         " WHERE app_review_id = :appReviewId"
+        ),
+        SELECT_APPLICATION_REVIEW_BY_APP_ID(
+                APP_REVIEW_SELECT.getSql() +
+                        " FROM ${travelSchema}.app_review\n" +
+                        " WHERE app_id = :appId"
         );
 
         private String sql;

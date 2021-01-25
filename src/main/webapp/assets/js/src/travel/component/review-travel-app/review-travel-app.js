@@ -157,7 +157,7 @@ function reviewController($scope, $q, modals, locationService, appReviewApi, rol
         var appId = getAppIdParam();
         modals.reject();
         $q.all(vm.modalPromise).then(function () {
-            locationService.go("/travel/application/edit", false, {appId: appId});
+            locationService.go("/travel/application/edit", false, {appId: appId, role: vm.activeRole.name});
         });
     }
 }

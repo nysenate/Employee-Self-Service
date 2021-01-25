@@ -50,7 +50,7 @@ public class TravelApplicationStatus {
         this.note = note;
     }
 
-    protected enum ApplicationStatus {
+    public enum ApplicationStatus {
         PENDING,
         APPROVED,
         DISAPPROVED

@@ -1,8 +1,8 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.controller('UserAppsCtrl', ['$scope', 'appProps', 'modals', 'TravelApplicationsForTravelerApi', 'PaginationModel', viewApplicationsCtrl]);
+essTravel.controller('UserAppsCtrl', ['$scope', 'appProps', 'modals', 'LocationService', 'TravelApplicationsForTravelerApi', 'PaginationModel', viewApplicationsCtrl]);
 
-function viewApplicationsCtrl($scope, appProps, modals, travelerAppApi) {
+function viewApplicationsCtrl($scope, appProps, modals, locationService, travelerAppApi) {
 
     const DATEPICKER_FORMAT = "MM/DD/YYYY";
     const ISO_FORMAT = "YYYY-MM-DD";
@@ -55,6 +55,12 @@ function viewApplicationsCtrl($scope, appProps, modals, travelerAppApi) {
         modals.open("app-form-view-modal", app, true)
             .catch(function() {})
     };
+
+    // Called by the app-form-view-modal when clicking the Edit and Resubmit button.
+    vm.onEditAndResubmit = function (app) {
+        modals.reject();
+        locationService.go("/travel/application/edit", true, {appId: app.id, role: 'NONE'});
+    }
 
     init();
 }

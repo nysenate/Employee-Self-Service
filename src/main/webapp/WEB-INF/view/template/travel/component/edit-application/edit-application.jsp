@@ -9,7 +9,8 @@
     </div>
   </div>
 
-  <ess-edit-app-breadcrumbs></ess-edit-app-breadcrumbs>
+  <ess-new-app-breadcrumbs ng-if="vm.activeRole !== 'TRAVEL_ADMIN'"/>
+  <ess-edit-app-breadcrumbs ng-if="vm.activeRole === 'TRAVEL_ADMIN'"/>
 
   <div ng-if="vm.dto">
     <div ng-if="vm.stateService.isPurposeState()">
@@ -64,13 +65,25 @@
     </div>
 
     <div ng-if="vm.stateService.isReviewState()">
-      <ess-review-edit-form amendment="vm.dto.amendment"
-                            title="Here is the full application with your changes."
-                            positive-btn-label="Save Edits"
-                            positive-callback="vm.saveEdits(amendment)"
-                            neutral-callback="vm.toOverridesState(amendment)"
-                            negative-callback="vm.cancelEdit(amendment)"
-                            negative-label="Cancel">
+      <ess-review-edit-form
+          ng-if="vm.activeRole === 'TRAVEL_ADMIN'"
+          amendment="vm.dto.amendment"
+          title="Here is the full application with your changes."
+          positive-btn-label="Save Edits"
+          positive-callback="vm.saveEdits(amendment)"
+          neutral-callback="vm.toOverridesState(amendment)"
+          negative-callback="vm.cancelEdit(amendment)"
+          negative-label="Cancel">
+      </ess-review-edit-form>
+      <ess-review-edit-form
+          ng-if="vm.activeRole === 'NONE'"
+          amendment="vm.dto.amendment"
+          title="Here is the full application with your changes."
+          positive-btn-label="Save and Resubmit"
+          positive-callback="vm.saveEdits(amendment)"
+          neutral-callback="vm.toOverridesState(amendment)"
+          negative-callback="vm.cancelEdit(amendment)"
+          negative-label="Cancel">
       </ess-review-edit-form>
     </div>
   </div>
@@ -83,8 +96,9 @@
       <div confirm-modal rejectable="true"
            title="Cancel Travel Application Edit"
            confirm-message="Are you sure you want to cancel the editing of this travel application? Any changes you have made will be lost."
-           resolve-button="Cancel Edit"
-           reject-button="Continue Edit">
+           resolve-button="Continue Edit"
+           resolve-class="neutral-button"
+           reject-button="Cancel Edit">
       </div>
     </modal>
 

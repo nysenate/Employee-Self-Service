@@ -32,6 +32,11 @@
     <a class="margin-10" target="_blank" ng-click="viewExpenseSummary(app)">Expense Summary</a>
     <a class="margin-10 margin-right-20" target="_blank"
        ng-href="${ctxPath}/api/v1/travel/application/{{app.id}}.pdf">Print</a>
+    <input type="button"
+           ng-if="app.status.isDisapproved"
+           class="neutral-button"
+           value="Edit and Resubmit"
+           ng-click="vm.onEditAndResubmit(app)">
     <input type="button" class="travel-neutral-button" value="Close"
            ng-click="exit()">
   </div>

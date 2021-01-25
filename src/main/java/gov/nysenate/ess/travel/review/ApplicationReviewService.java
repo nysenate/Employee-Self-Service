@@ -71,6 +71,10 @@ public class ApplicationReviewService {
         return appReviewDao.selectAppReviewById(appReviewId);
     }
 
+    public ApplicationReview getApplicationReviewByAppId(int appId) {
+        return appReviewDao.selectAppReviewByAppId(appId);
+    }
+
     public void saveApplicationReview(ApplicationReview appReview) {
         appReviewDao.saveApplicationReview(appReview);
     }

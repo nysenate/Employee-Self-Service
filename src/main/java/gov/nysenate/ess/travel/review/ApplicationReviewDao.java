@@ -50,4 +50,6 @@ public interface ApplicationReviewDao {
      * @param departmentHead A department head.
      */
     List<ApplicationReview> reviewHistoryForDeptHead(Employee departmentHead);
+
+    ApplicationReview selectAppReviewByAppId(int appId);
 }

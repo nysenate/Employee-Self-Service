@@ -101,6 +101,10 @@ public class TravelApplication {
         amendments.add(a);
     }
 
+    protected void setStatus(TravelApplicationStatus status) {
+        this.status = status;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

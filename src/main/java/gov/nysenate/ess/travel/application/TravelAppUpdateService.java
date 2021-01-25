@@ -13,6 +13,7 @@ import gov.nysenate.ess.travel.application.route.Leg;
 import gov.nysenate.ess.travel.application.route.Route;
 import gov.nysenate.ess.travel.application.route.RouteService;
 import gov.nysenate.ess.travel.application.route.destination.Destination;
+import gov.nysenate.ess.travel.notifications.email.TravelAppApprovalEmail;
 import gov.nysenate.ess.travel.notifications.email.TravelEmailService;
 import gov.nysenate.ess.travel.provider.senate.SenateMie;
 import gov.nysenate.ess.travel.provider.senate.SqlSenateMieDao;
@@ -197,7 +198,13 @@ public class TravelAppUpdateService {
      * @param user The logged in user who is making these changes.
      * @return
      */
-    public TravelApplication saveAppEdits(int appId, Amendment amd, Employee user) {
+    public TravelApplication editTravelApp(int appId, Amendment amd, Employee user) {
+        TravelApplication app = saveAppEdits(appId, amd, user);
+        emailService.sendEditEmails(app);
+        return app;
+    }
+
+    private TravelApplication saveAppEdits(int appId, Amendment amd, Employee user) {
         amd = new Amendment.Builder(amd)
                 .withAmendmentId(0)
                 .withCreatedBy(user)
@@ -207,7 +214,15 @@ public class TravelAppUpdateService {
         TravelApplication app = appService.getTravelApplication(appId);
         app.addAmendment(amd);
         appService.saveApplication(app);
-        emailService.sendEditEmails(app);
+        return app;
+    }
+
+    public TravelApplication resubmitApp(int appId, Amendment amd, Employee user) {
+        TravelApplication app = saveAppEdits(appId, amd, user);
+        app.setStatus(new TravelApplicationStatus());
+        appService.saveApplication(app);
+        ApplicationReview applicationReview = appReviewService.getApplicationReviewByAppId(app.getAppId());
+        emailService.sendPendingReviewEmail(applicationReview);
         return app;
     }
 

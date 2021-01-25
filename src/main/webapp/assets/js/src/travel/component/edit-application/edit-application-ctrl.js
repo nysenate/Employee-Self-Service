@@ -2,21 +2,25 @@ var essTravel = angular.module('essTravel');
 
 essTravel.controller('EditApplicationCtrl',
                      ['$scope', 'LocationService', 'modals', 'AppEditStateService', 'UnsubmittedAppApi',
-                      'TravelAppEditApi', 'TravelAppEditRouteApi', 'TravelAppEditAllowancesApi', editAppCtrl]);
+                      'TravelAppEditApi', 'TravelAppEditResubmitApi', 'TravelAppEditRouteApi',
+                      'TravelAppEditAllowancesApi', editAppCtrl]);
 
-function editAppCtrl($scope, locationService, modals, stateService, appPatchApi, appEditApi,
+function editAppCtrl($scope, locationService, modals, stateService, appPatchApi, appEditApi, appResubmitApi,
                      editRouteApi, editAllowancesApi) {
 
     var vm = this;
     vm.dto = undefined; // Contains the `traveler` and `amendment` fields which can be edited.
     vm.appId = 0;
+    // Some editing functionality is only available to the TRAVEL_ADMIN.
+    vm.activeRole = 'NONE';
 
     (function init() {
         vm.stateService = stateService;
         vm.stateService.setPurposeState();
 
         vm.appId = locationService.getSearchParam("appId");
-        appEditApi.get({id: vm.appId}, function (response) {
+        vm.activeRole = locationService.getSearchParam("role");
+        appEditApi.get({id: vm.appId, role: vm.activeRole}, function (response) {
             vm.dto = response.result;
         }, $scope.handleErrorResponse);
     })();
@@ -55,7 +59,11 @@ function editAppCtrl($scope, locationService, modals, stateService, appPatchApi,
         function success(response) {
             vm.dto = response.result;
             vm.closeLoadingModal();
-            stateService.setOverridesState();
+            if (vm.activeRole === 'TRAVEL_ADMIN') {
+                stateService.setOverridesState();
+            } else {
+                stateService.setReviewState();
+            }
         }
 
         function error(error) {
@@ -83,14 +91,24 @@ function editAppCtrl($scope, locationService, modals, stateService, appPatchApi,
     };
 
     vm.saveEdits = function (amendment) {
-        appEditApi.save({id: vm.appId}, vm.dto, function (response) {
-            locationService.go("/travel/manage/review", false, {appId: vm.appId});
-        }, $scope.handleErrorResponse);
+        if (vm.activeRole === 'NONE') {
+            appResubmitApi.save({id: vm.appId}, vm.dto, function (response) {
+                locationService.go("/travel/applications", false);
+            }, $scope.handleErrorResponse);
+        } else {
+            appEditApi.save({id: vm.appId}, vm.dto, function (response) {
+                locationService.go("/travel/manage/review", false, {appId: vm.appId});
+            }, $scope.handleErrorResponse);
+        }
     };
 
     vm.cancelEdit = function (app) {
-        modals.open('cancel-edits').then(function () {
-            locationService.go("/travel/manage/review", false, {appId: vm.appId});
+        modals.open('cancel-edits').catch(function () {
+            if (vm.activeRole === 'NONE') {
+                locationService.go("/travel/applications", false);
+            } else {
+                locationService.go("/travel/manage/review", false, {appId: vm.appId});
+            }
         })
     };
 

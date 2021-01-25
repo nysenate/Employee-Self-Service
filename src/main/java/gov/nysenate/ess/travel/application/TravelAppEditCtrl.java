@@ -9,6 +9,8 @@ import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.travel.allowedtravelers.AllowedTravelersService;
 import gov.nysenate.ess.travel.application.route.RouteViewValidator;
+import gov.nysenate.ess.travel.authorization.role.TravelRole;
+import org.apache.shiro.authz.AuthorizationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,9 +38,9 @@ public class TravelAppEditCtrl extends BaseRestApiCtrl {
      * @return
      */
     @RequestMapping(value = "/edit/{appId}", method = RequestMethod.GET)
-    public BaseResponse editApplication(@PathVariable int appId) {
+    public BaseResponse editApplication(@PathVariable int appId, @RequestParam String role) {
         TravelApplication app = appService.getTravelApplication(appId);
-        // Check the logged in user is allowed to modify this app
+        // Check the logged in user is allowed to modify this app.
         checkTravelAppPermission(app, RequestMethod.POST);
 
         // The amendment to be edited is copied from the latest amendment and the version is incremented.
@@ -61,7 +63,21 @@ public class TravelAppEditCtrl extends BaseRestApiCtrl {
 
         Amendment amd = appDto.getAmendment().toAmendment();
         Employee user = employeeInfoService.getEmployee(getSubjectEmployeeId());
-        appUpdateService.saveAppEdits(app.getAppId(), amd, user);
+        appUpdateService.editTravelApp(app.getAppId(), amd, user);
+
+        return new SimpleResponse(true, "Edits saved", "");
+    }
+
+    @RequestMapping(value = "/edit/resubmit/{appId}", method = RequestMethod.POST)
+    public BaseResponse saveAndResubmitEditedApplication(@PathVariable int appId,
+                                              @RequestBody TravelAppEditDto appDto) {
+        TravelApplication app = appService.getTravelApplication(appId);
+        // Check the logged in user is allowed to modify this app
+        checkTravelAppPermission(app, RequestMethod.POST);
+
+        Amendment amd = appDto.getAmendment().toAmendment();
+        Employee user = employeeInfoService.getEmployee(getSubjectEmployeeId());
+        appUpdateService.resubmitApp(app.getAppId(), amd, user);
 
         return new SimpleResponse(true, "Edits saved", "");
     }

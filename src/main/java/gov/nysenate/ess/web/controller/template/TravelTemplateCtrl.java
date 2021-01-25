@@ -43,14 +43,6 @@ public class TravelTemplateCtrl extends BaseTemplateCtrl {
         return NOT_AUTHORIZED_PAGE;
     }
 
-    @RequestMapping(value = "/component/edit-application/edit-application")
-    public String editApplication(HttpServletRequest request) {
-        if (SecurityUtils.getSubject().isPermitted(SimpleTravelPermission.TRAVEL_UI_EDIT_APP.getPermission())) {
-            return request.getRequestURI();
-        }
-        return NOT_AUTHORIZED_PAGE;
-    }
-
     @RequestMapping(value = "/component/delegation/delegation")
     public String assignDelegates(HttpServletRequest request) {
          if (SecurityUtils.getSubject().isPermitted(SimpleTravelPermission.TRAVEL_ASSIGN_DELEGATES.getPermission())) {

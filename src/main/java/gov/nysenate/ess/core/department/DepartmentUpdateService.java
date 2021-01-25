@@ -33,7 +33,7 @@ public class DepartmentUpdateService {
         this.departmentDao = departmentDao;
     }
 
-    @Scheduled(cron = "${scheduler.department.ess.update:0 * 1 * * *}")
+    @Scheduled(cron = "${scheduler.department.ess.update:0 0 1 * * *}")
     public void updateDepartments() {
         logger.info("Starting department update");
 

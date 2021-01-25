@@ -12,7 +12,7 @@
           <th>Employee</th>
           <th>Destination</th>
           <th>Allotted Funds</th>
-          <th ng-if="options.showAction">Action</th>
+          <th ng-if="options.showAction">Last Action</th>
         </tr>
         </thead>
 

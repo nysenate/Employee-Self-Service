@@ -61,6 +61,9 @@ public class ApplicationReview {
     public TravelRole nextReviewerRole() {
         if (application.status().isDisapproved()) {
             return TravelRole.NONE;
+        } else if (mostRecentAction() != null && mostRecentAction().isDisapproval() && application.status().isPending()) {
+            // App has been resubmitted.
+            return reviewerStrategy.after(null);
         } else {
             return reviewerStrategy.after(previousReviewerRole());
         }
