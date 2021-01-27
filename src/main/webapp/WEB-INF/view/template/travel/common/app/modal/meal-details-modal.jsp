@@ -29,7 +29,7 @@
       <tr ng-show="isOverridden">
         <td></td>
         <td class="disapproved-text">Meals Overridden to:</td>
-        <td class="disapproved-text" ng-bind="::amendment.perDiemOverrides.mealsOverride | currency"></td>
+        <td class="disapproved-text" ng-bind="::amendment.mealPerDiems.totalPerDiem | currency"></td>
       </tr>
       </tbody>
     </table>

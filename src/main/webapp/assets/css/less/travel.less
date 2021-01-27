@@ -125,6 +125,7 @@ h2.travel-subheader {
   &.ng-hide {
     opacity: 0;
   }
+
   &.ng-hide-add {
     transition: all linear 0.75s
   }
@@ -228,7 +229,7 @@ h2.travel-subheader {
       }
 
       &.highlight-row {
-        background-color:  #ffbcbc !important;
+        background-color: #ffbcbc !important;
       }
     }
   }
@@ -241,17 +242,21 @@ h2.travel-subheader {
 .purpose-row {
   //width: 80%;
   margin-bottom: 10px;
+
   label {
     display: inline-block;
     width: 350px;
     text-align: right;
   }
+
   select {
     width: 150px;
   }
+
   input {
     width: 350px;
   }
+
   textarea {
     width: 350px;
   }
@@ -475,6 +480,12 @@ h2.travel-subheader {
   margin: 100px 20px 0 232px;
 }
 
+.disabled {
+  /** Credit css-tricks */
+  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==) repeat !important;
+  cursor: not-allowed !important;
+}
+
 /**
   * App Edit Perdiem Overrides styling
   */
@@ -498,6 +509,7 @@ h2.travel-subheader {
     display: inline-block;
     text-align: right;
   }
+
   input {
     width: 75px;
   }

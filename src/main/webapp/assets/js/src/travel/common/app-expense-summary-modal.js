@@ -13,6 +13,7 @@ function appExpenseSummaryCtrl($scope, modals) {
 
     $scope.app = modals.params();
     $scope.NOT_AVAILABLE = "N/A";
+    console.log($scope.app);
 
     $scope.closeModal = function () {
         modals.resolve();

@@ -55,11 +55,12 @@
           <td>{{perDiem.address.formattedAddressWithCounty}}</td>
           <td>{{::(perDiem.mie.breakfast | currency) || NOT_AVAILABLE }}</td>
           <td>{{::(perDiem.mie.dinner | currency) || NOT_AVAILABLE }}</td>
-          <td>{{perDiem.rate | currency}}</td>
+          <td ng-class="{'line-through': app.activeAmendment.mealPerDiems.isOverridden}">{{perDiem.rate | currency}}</td>
         </tr>
         <tr>
           <td></td>
-          <td class="bold">Total:</td>
+          <td class="bold" ng-if="!app.activeAmendment.mealPerDiems.isOverridden">Total:</td>
+          <td class="disapproved-text" ng-if="app.activeAmendment.mealPerDiems.isOverridden">Overridden to:</td>
           <td></td>
           <td></td>
           <td class="bold">{{app.activeAmendment.mealPerDiems.totalPerDiem | currency}}</td>
@@ -83,17 +84,13 @@
         <tr ng-repeat="perDiem in app.activeAmendment.lodgingPerDiems.requestedLodgingPerDiems">
           <td>{{perDiem.date | date: 'shortDate'}}</td>
           <td>{{perDiem.address.formattedAddressWithCounty}}</td>
-          <td ng-class="{'line-through': isOverridden}">{{perDiem.rate | currency}}</td>
+          <td ng-class="{'line-through': app.activeAmendment.lodgingPerDiems.isOverridden}">{{perDiem.rate | currency}}</td>
         </tr>
-        <tr ng-class="{'line-through': isOverridden}">
+        <tr>
           <td></td>
-          <td class="bold">Total:</td>
+          <td class="bold" ng-if="!app.activeAmendment.lodgingPerDiems.isOverridden">Total:</td>
+          <td class="disapproved-text" ng-if="app.activeAmendment.lodgingPerDiems.isOverridden">Overridden to:</td>
           <td class="bold">{{app.activeAmendment.lodgingPerDiems.totalPerDiem | currency}}</td>
-        </tr>
-        <tr ng-show="isOverridden">
-          <td></td>
-          <td class="disapproved-text">Lodging Overridden:</td>
-          <td class="disapproved-text" ng-bind="::app.activeAmendment.perDiemOverrides.lodgingOverride | currency"></td>
         </tr>
         </tbody>
       </table>

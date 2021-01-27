@@ -54,6 +54,7 @@
       </ess-allowances-edit-form>
     </div>
 
+<%--    <div ng-if="vm.stateService.isPurposeState()">--%>
     <div ng-if="vm.stateService.isOverridesState()">
       <ess-perdiem-overrides-edit-form amendment="vm.dto.amendment"
                                        title="Override the calculated expenses."

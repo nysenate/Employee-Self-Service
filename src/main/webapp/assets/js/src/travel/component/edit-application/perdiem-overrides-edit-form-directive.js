@@ -19,23 +19,22 @@ function perDiemOverrideEditForm(appProps) {
 
             scope.dirtyAmendment = angular.copy(scope.amendment);
 
+            scope.perdiems = [
+                Object.assign(scope.dirtyAmendment.mealPerDiems, {name: 'Meals'}),
+                Object.assign(scope.dirtyAmendment.lodgingPerDiems, {name: 'Lodging'})
+            ]
+
             console.log(scope.dirtyAmendment);
 
-            // Convert overrides of 0 to undefined.
-            scope.dirtyAmendment.route.mileagePerDiems.overrideRate = 0;
-            // scope.dirtyAmendment.route.mileagePerDiems.overrideRate = zeroToUndefined(scope.dirtyAmendment.perDiemOverrides.mileageOverride);
-            scope.dirtyAmendment.mealPerDiems.overrideRate = zeroToUndefined(scope.dirtyAmendment.mealPerDiems.overrideRate);
-            scope.dirtyAmendment.lodgingPerDiems.overrideRate = zeroToUndefined(scope.dirtyAmendment.lodgingPerDiems.overrideRate);
-
-            scope.mileageOverrideRate = 0; // TODO implement mileage overrides.
-            scope.mealOverrideRate = parseFloat(scope.dirtyAmendment.mealPerDiems.overrideRate);
-            scope.lodgingOverrideRate = parseFloat(scope.dirtyAmendment.lodgingPerDiems.overrideRate);
+            // Reset the override rate when unchecked since the backend does not actually check the
+            // isOverridden boolean, its derived from the overrideRate.
+            scope.onCheckboxChange = function(perdiem) {
+                if (!perdiem.isOverridden) {
+                    perdiem.overrideRate = 0;
+                }
+            }
 
             scope.next = function () {
-                scope.dirtyAmendment.route.mileagePerDiems.overrideRate = scope.mileageOverrideRate.toString();
-                scope.dirtyAmendment.mealPerDiems.overrideRate = scope.mealOverrideRate.toString();
-                scope.dirtyAmendment.lodgingPerDiems.overrideRate = scope.lodgingOverrideRate.toString();
-
                 scope.positiveCallback({amendment: scope.dirtyAmendment});
             };
 

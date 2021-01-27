@@ -13,9 +13,8 @@ public class MealPerDiemsView implements ViewObject {
     private List<MealPerDiemView> allMealPerDiems;
     private List<MealPerDiemView> requestedMealPerDiems;
     private String totalPerDiem;
-    @JsonProperty("isOverridden")
     private boolean isOverridden;
-    private String overrideRate;
+    private double overrideRate;
 
     public MealPerDiemsView() {
     }
@@ -30,7 +29,7 @@ public class MealPerDiemsView implements ViewObject {
                 .collect(Collectors.toList());
         this.totalPerDiem = ma.totalPerDiem().toString();
         this.isOverridden = ma.isOverridden();
-        this.overrideRate = ma.overrideRate().toString();
+        this.overrideRate = Double.parseDouble(ma.overrideRate().toString());
     }
 
     public MealPerDiems toMealPerDiems() {
@@ -55,11 +54,12 @@ public class MealPerDiemsView implements ViewObject {
         return totalPerDiem;
     }
 
+    @JsonProperty("isOverridden")
     public boolean isOverridden() {
         return isOverridden;
     }
 
-    public String getOverrideRate() {
+    public double getOverrideRate() {
         return overrideRate;
     }
 
