@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class EverfiSingleUserResponse {
 
-    @JsonProperty("data")
+    @JsonProperty("data") // Category Labels will not be named
     private EverfiUser user;
     private EverfiResponseMeta meta;
 

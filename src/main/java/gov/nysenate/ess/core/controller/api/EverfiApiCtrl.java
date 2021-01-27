@@ -20,7 +20,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static gov.nysenate.ess.core.model.auth.SimpleEssPermission.ADMIN;
-import static gov.nysenate.ess.core.model.auth.SimpleEssPermission.RUN_PERSONNEL_TASK_ASSIGNER;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 @RestController
@@ -267,7 +266,6 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
         return new SimpleResponse(true, "Everfi User Active Status Updated",
                 "everfi-user-active-status-update");
     }
-
 
     private LocalDateTime stringToLocalDateTime(String time) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");

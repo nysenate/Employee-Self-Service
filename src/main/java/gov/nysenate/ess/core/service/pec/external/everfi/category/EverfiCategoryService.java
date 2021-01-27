@@ -145,9 +145,50 @@ public class EverfiCategoryService {
      * @return The users "Upload List" category label or null if they don't have one.
      */
     public EverfiCategoryLabel getUserUploadListLabel(EverfiUser user) {
+        if (user == null) {
+            return null;
+        }
         for (EverfiCategoryLabel label : user.getUserCategoryLabels()) {
             if (label.getCategoryName().equals(UPLOAD_LIST)) {
                 return label;
+            }
+        }
+        return null;
+    }
+
+
+    public List<EverfiCategoryLabel> normalizeUsersCategoryLabel(List<EverfiCategoryLabel> originalLabels) throws IOException {
+        if (originalLabels == null) {
+            return null;
+        }
+        ArrayList<EverfiCategoryLabel> normalizedLabels = new ArrayList<>();
+        for (EverfiCategoryLabel userCatLabel : originalLabels) {
+            EverfiCategoryLabel everfiCategoryLabel = findLabelInCategories( userCatLabel.getLabelId() );
+            if (everfiCategoryLabel != null) {
+                userCatLabel.setCategoryId(everfiCategoryLabel.getCategoryId());
+                userCatLabel.setCategoryName(everfiCategoryLabel.getCategoryName());
+                userCatLabel.setLabelName(everfiCategoryLabel.getLabelName());
+                normalizedLabels.add( userCatLabel );
+            }
+        }
+
+        if (normalizedLabels.isEmpty()) {
+            return null;
+        }
+        else {
+            return normalizedLabels;
+        }
+    }
+    
+    public EverfiCategoryLabel findLabelInCategories(int labelID) throws IOException {
+        if (this.categories == null) {
+            loadCategories();
+        }
+        for (EverfiCategory everfiCategory : this.categories) {
+            for (EverfiCategoryLabel categoryLabel : everfiCategory.getLabels()) {
+                if (categoryLabel.getLabelId() == labelID) {
+                    return categoryLabel;
+                }
             }
         }
         return null;

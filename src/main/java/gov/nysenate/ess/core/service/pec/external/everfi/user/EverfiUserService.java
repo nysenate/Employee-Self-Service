@@ -99,6 +99,11 @@ public class EverfiUserService {
                 new EverfiSingleUserRequest(everfiApiClient, everfiUserID.getEverfiUUID());
         EverfiUser everfiUser = everfiSingleUserRequest.getUser();
 
+        //normalize category labels
+        //Normalize labels that the everfi user already has. This prevents null pointer exception
+        List<EverfiCategoryLabel> normalizedCategoryLabels = this.categoryService.normalizeUsersCategoryLabel(everfiUser.getUserCategoryLabels());
+        everfiUser.setUserCategoryLabels(normalizedCategoryLabels);
+
         EverfiUpdateUserRequest activationStatusRequest = new EverfiUpdateUserRequest(everfiApiClient,everfiUser.getUuid(),
                 everfiUser.getEmployeeId(),everfiUser.getFirstName(),everfiUser.getLastName(), everfiUser.getEmail(),
                 null, everfiUser.getUserCategoryLabels(), activeStatus);
@@ -384,6 +389,10 @@ public class EverfiUserService {
                 properEmail = everfiUser.getEmail();
             }
 
+            //Normalize category labels that the everfi user already has. This prevents null pointer exception
+            List<EverfiCategoryLabel> normalizedCategoryLabels = this.categoryService.normalizeUsersCategoryLabel(everfiUser.getUserCategoryLabels());
+            everfiUser.setUserCategoryLabels(normalizedCategoryLabels);
+
             EverfiUpdateUserRequest updateUserRequest =
                     new EverfiUpdateUserRequest(everfiApiClient, everfiUser.getUuid(), emp.getEmployeeId(),
                             emp.getFirstName(), emp.getLastName(), properEmail, "",
@@ -429,7 +438,7 @@ public class EverfiUserService {
         labels.add(categoryService.getAttendLiveLabel(emp)); // This label is always "No" so it will never need to be created.
         labels.add(getOrCreateDepartmentLabel(emp));
         labels.add(categoryService.getRoleLabel(emp)); // All possible roles already exist.
-//        labels.add(getOrCreateUploadListLabel(user));
+        labels.add(getOrCreateUploadListLabel(user));
         return labels;
     }
 
@@ -452,7 +461,7 @@ public class EverfiUserService {
      * Note: if user is null, a new Upload List will be created.
      */
     private EverfiCategoryLabel getOrCreateUploadListLabel(EverfiUser user) throws IOException {
-        EverfiCategoryLabel label = user == null ? null : categoryService.getUserUploadListLabel(user);
+        EverfiCategoryLabel label = categoryService.getUserUploadListLabel(user);
         if (label == null) {
             // user was null or user does not have a Upload List label.
 

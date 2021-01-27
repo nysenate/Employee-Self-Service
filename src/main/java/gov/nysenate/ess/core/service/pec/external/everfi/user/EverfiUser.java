@@ -86,6 +86,10 @@ public class EverfiUser {
         return this.userCategoryLabels;
     }
 
+    public void setUserCategoryLabels(List<EverfiCategoryLabel> newUserCategoryLabels) {
+        this.userCategoryLabels = newUserCategoryLabels;
+    }
+
 
     @Override
     public String toString() {
