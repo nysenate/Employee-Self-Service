@@ -49,10 +49,9 @@ public class Leg {
      * @return
      */
     public Dollars requestedPerDiem() {
-//        return isReimbursementRequested()
-//                ? maximumPerDiem()
-//                : Dollars.ZERO;
-        return maximumPerDiem();
+        return isReimbursementRequested()
+                ? maximumPerDiem()
+                : Dollars.ZERO;
     }
 
     public void setIsReimbursementRequested(boolean isReimbursementRequested) {
