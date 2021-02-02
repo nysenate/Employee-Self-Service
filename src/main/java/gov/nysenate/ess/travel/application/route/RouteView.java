@@ -2,6 +2,7 @@ package gov.nysenate.ess.travel.application.route;
 
 import gov.nysenate.ess.core.client.view.AddressView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
+import gov.nysenate.ess.travel.application.address.TravelAddressView;
 import gov.nysenate.ess.travel.application.allowances.mileage.MileagePerDiemsView;
 import gov.nysenate.ess.travel.application.route.destination.DestinationView;
 
@@ -14,7 +15,7 @@ public class RouteView implements ViewObject {
     private List<LegView> returnLegs;
     private List<DestinationView> destinations;
     private MileagePerDiemsView mileagePerDiems;
-    private AddressView origin;
+    private TravelAddressView origin;
 
     public RouteView() {
     }
@@ -26,7 +27,7 @@ public class RouteView implements ViewObject {
         returnLegs = route.getReturnLegs().stream()
                 .map(LegView::new)
                 .collect(Collectors.toList());
-        origin = route.origin() == null ? null : new AddressView(route.origin());
+        origin = route.origin() == null ? null : new TravelAddressView(route.origin());
         destinations = route.destinations().stream()
                 .map(DestinationView::new)
                 .collect(Collectors.toList());
@@ -52,7 +53,7 @@ public class RouteView implements ViewObject {
         return destinations;
     }
 
-    public AddressView getOrigin() {
+    public TravelAddressView getOrigin() {
         return origin;
     }
 

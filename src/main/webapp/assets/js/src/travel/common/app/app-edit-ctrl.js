@@ -119,15 +119,13 @@ function Destination () {
 }
 
 function Address () {
-    this.addr1 = "";
-    this.addr2 = "";
-    this.city = "";
-    this.county = "";
-    this.state = "";
-    this.zip4 = "";
-    this.zip5 = "";
-    this.country = "";
     this.placeId = "";
     this.name = "";
+    this.addr1 = "";
+    this.city = "";
+    this.zip5 = "";
+    this.county = "";
+    this.state = "";
+    this.country = "";
     this.formattedAddress = "";
 }

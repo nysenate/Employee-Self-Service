@@ -2,7 +2,7 @@ package gov.nysenate.ess.travel.application.allowances.meal;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
-import gov.nysenate.ess.travel.application.address.GoogleAddressView;
+import gov.nysenate.ess.travel.application.address.TravelAddressView;
 import gov.nysenate.ess.travel.provider.senate.SenateMieView;
 import gov.nysenate.ess.travel.utils.Dollars;
 
@@ -15,7 +15,7 @@ public class MealPerDiemView implements ViewObject {
     private String date;
     private String rate;
     private SenateMieView mie;
-    private GoogleAddressView address;
+    private TravelAddressView address;
     @JsonProperty("isReimbursementRequested")
     private boolean isReimbursementRequested;
     private String requestedPerDiem; // TODO can be derived from rate and isReimbursementRequested?
@@ -27,7 +27,7 @@ public class MealPerDiemView implements ViewObject {
     public MealPerDiemView(MealPerDiem mpd) {
         this.id = mpd.id();
         this.date = mpd.date().format(DateTimeFormatter.ISO_DATE);
-        this.address = new GoogleAddressView(mpd.address());
+        this.address = new TravelAddressView(mpd.address());
         this.rate = mpd.rate().toString();
         this.mie = mpd.mie() == null ? null : new SenateMieView(mpd.mie());
         this.isReimbursementRequested = mpd.isReimbursementRequested();
@@ -38,7 +38,7 @@ public class MealPerDiemView implements ViewObject {
     public MealPerDiem toMealPerDiem() {
         return new MealPerDiem(
                 id,
-                address.toGoogleAddress(),
+                address.toTravelAddress(),
                 LocalDate.parse(date, DateTimeFormatter.ISO_DATE),
                 new Dollars(rate),
                 mie == null ? null : mie.toSenateMie(),
@@ -62,7 +62,7 @@ public class MealPerDiemView implements ViewObject {
         return mie;
     }
 
-    public GoogleAddressView getAddress() {
+    public TravelAddressView getAddress() {
         return address;
     }
 

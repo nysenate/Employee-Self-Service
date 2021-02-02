@@ -2,6 +2,7 @@ package gov.nysenate.ess.travel.application.route;
 
 import com.google.common.collect.ImmutableList;
 import gov.nysenate.ess.core.model.unit.Address;
+import gov.nysenate.ess.travel.application.address.TravelAddress;
 import gov.nysenate.ess.travel.application.allowances.mileage.MileagePerDiems;
 import gov.nysenate.ess.travel.application.route.destination.Destination;
 
@@ -28,7 +29,7 @@ public class Route {
         return new MileagePerDiems(getAllLegs());
     }
 
-    public Address origin() {
+    public TravelAddress origin() {
         if (getOutboundLegs().size() > 0) {
             return getOutboundLegs().get(0).fromAddress();
         }

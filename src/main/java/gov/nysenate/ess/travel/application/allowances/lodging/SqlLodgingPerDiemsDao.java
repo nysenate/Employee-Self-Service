@@ -4,8 +4,8 @@ import gov.nysenate.ess.core.dao.base.BaseHandler;
 import gov.nysenate.ess.core.dao.base.BasicSqlQuery;
 import gov.nysenate.ess.core.dao.base.DbVendor;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
-import gov.nysenate.ess.travel.application.address.GoogleAddress;
-import gov.nysenate.ess.travel.application.address.SqlGoogleAddressDao;
+import gov.nysenate.ess.travel.application.address.TravelAddress;
+import gov.nysenate.ess.travel.application.address.SqlTravelAddressDao;
 import gov.nysenate.ess.travel.application.allowances.PerDiem;
 import gov.nysenate.ess.travel.utils.Dollars;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,13 +23,13 @@ import java.util.Set;
 @Repository
 public class SqlLodgingPerDiemsDao extends SqlBaseDao {
 
-    @Autowired private SqlGoogleAddressDao googleAddressDao;
+    @Autowired private SqlTravelAddressDao travelAddressDao;
 
     public LodgingPerDiems selectLodgingPerDiems(int amendmentId) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("amendmentId", amendmentId);
         String sql = SqlLodgingPerDiemsQuery.SELECT_LODGING_PER_DIEMS.getSql(schemaMap());
-        LodgingPerDiemsHandler handler = new LodgingPerDiemsHandler(googleAddressDao);
+        LodgingPerDiemsHandler handler = new LodgingPerDiemsHandler(travelAddressDao);
         localNamedJdbc.query(sql, params, handler);
         return handler.getResult();
     }
@@ -38,8 +38,8 @@ public class SqlLodgingPerDiemsDao extends SqlBaseDao {
         for (LodgingPerDiem lpd : lodgingPerDiems.allLodgingPerDiems()) {
             // Ensure the address is in the database and update its id.
             // Destination addresses are inserted earlier but they are different instances so these address's ids
-            // do not get updated. We need to call saveGoogleAddress here so the lodgingPerDiem addresses have the correct google_address_id.
-            googleAddressDao.saveGoogleAddress(lpd.address());
+            // do not get updated. We need to call saveGoogleAddress here so the lodgingPerDiem addresses have the correct address_id.
+            travelAddressDao.saveAddress(lpd.address());
             insertLodgingPerDiem(lpd);
             int id = insertIntoJoinTable(lpd, amendmentId, lodgingPerDiems.overrideRate());
             lodgingPerDiems.setId(id);
@@ -48,7 +48,7 @@ public class SqlLodgingPerDiemsDao extends SqlBaseDao {
 
     private void insertLodgingPerDiem(LodgingPerDiem lpd) {
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("googleAddressId", lpd.address().getId())
+                .addValue("addressId", lpd.address().getId())
                 .addValue("date", toDate(lpd.date()))
                 .addValue("rate", lpd.rate().toString())
                 .addValue("isReimbursementRequested", lpd.isReimbursementRequested());
@@ -73,15 +73,15 @@ public class SqlLodgingPerDiemsDao extends SqlBaseDao {
     private enum SqlLodgingPerDiemsQuery implements BasicSqlQuery {
         SELECT_LODGING_PER_DIEMS(
                 "SELECT lpds.amendment_lodging_per_diems_id, lpds.amendment_lodging_per_diem_id, lpds.override_rate,\n" +
-                        " lpd.google_address_id, lpd.date, lpd.rate, lpd.is_reimbursement_requested\n" +
+                        " lpd.address_id, lpd.date, lpd.rate, lpd.is_reimbursement_requested\n" +
                         " FROM ${travelSchema}.amendment_lodging_per_diems lpds\n" +
                         " INNER JOIN ${travelSchema}.amendment_lodging_per_diem lpd ON lpds.amendment_lodging_per_diem_id = lpd.amendment_lodging_per_diem_id\n" +
                         " WHERE lpds.amendment_id = :amendmentId"
         ),
         INSERT_LODGING_PER_DIEM(
-                "INSERT INTO ${travelSchema}.amendment_lodging_per_diem(google_address_id," +
+                "INSERT INTO ${travelSchema}.amendment_lodging_per_diem(address_id," +
                         " date, rate, is_reimbursement_requested) \n" +
-                        "VALUES (:googleAddressId, :date, :rate, :isReimbursementRequested)"
+                        "VALUES (:addressId, :date, :rate, :isReimbursementRequested)"
         ),
         INSERT_JOIN_TABLE(
                 "INSERT INTO ${travelSchema}.amendment_lodging_per_diems(amendment_id," +
@@ -112,9 +112,9 @@ public class SqlLodgingPerDiemsDao extends SqlBaseDao {
         private Dollars overrideRate;
         private Set<LodgingPerDiem> lodgingPerDiems;
 
-        private SqlGoogleAddressDao addressDao;
+        private SqlTravelAddressDao addressDao;
 
-        public LodgingPerDiemsHandler(SqlGoogleAddressDao addressDao) {
+        public LodgingPerDiemsHandler(SqlTravelAddressDao addressDao) {
             this.addressDao = addressDao;
             this.lodgingPerDiems = new HashSet<>();
         }
@@ -125,7 +125,7 @@ public class SqlLodgingPerDiemsDao extends SqlBaseDao {
             overrideRate = new Dollars(rs.getString("override_rate"));
 
             int lpdId = rs.getInt("amendment_lodging_per_diem_id");
-            GoogleAddress address = addressDao.selectGoogleAddress(rs.getInt("google_address_id"));
+            TravelAddress address = addressDao.selectAddress(rs.getInt("address_id"));
             PerDiem perDiem = new PerDiem(getLocalDate(rs, "date"), new BigDecimal(rs.getString("rate")));
             boolean isReimbursementRequested = rs.getBoolean("is_reimbursement_requested");
             LodgingPerDiem lpd = new LodgingPerDiem(lpdId, address, perDiem, isReimbursementRequested);

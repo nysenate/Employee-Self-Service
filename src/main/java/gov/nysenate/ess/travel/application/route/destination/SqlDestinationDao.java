@@ -4,9 +4,9 @@ import gov.nysenate.ess.core.dao.base.BaseHandler;
 import gov.nysenate.ess.core.dao.base.BasicSqlQuery;
 import gov.nysenate.ess.core.dao.base.DbVendor;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
-import gov.nysenate.ess.travel.application.address.GoogleAddress;
-import gov.nysenate.ess.travel.application.address.GoogleAddressRowMapper;
-import gov.nysenate.ess.travel.application.address.SqlGoogleAddressDao;
+import gov.nysenate.ess.travel.application.address.TravelAddress;
+import gov.nysenate.ess.travel.application.address.TravelAddressRowMapper;
+import gov.nysenate.ess.travel.application.address.SqlTravelAddressDao;
 import gov.nysenate.ess.travel.application.allowances.PerDiem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -27,11 +27,11 @@ import java.util.TreeMap;
 @Repository
 public class SqlDestinationDao extends SqlBaseDao implements DestinationDao {
 
-    private SqlGoogleAddressDao googleAddressDao;
+    private SqlTravelAddressDao travelAddressDao;
 
     @Autowired
-    public SqlDestinationDao(SqlGoogleAddressDao googleAddressDao) {
-        this.googleAddressDao = googleAddressDao;
+    public SqlDestinationDao(SqlTravelAddressDao travelAddressDao) {
+        this.travelAddressDao = travelAddressDao;
     }
 
     @Override
@@ -43,11 +43,11 @@ public class SqlDestinationDao extends SqlBaseDao implements DestinationDao {
 
     @Override
     public void insertDestination(Destination destination) {
-        googleAddressDao.saveGoogleAddress(destination.getAddress());
+        travelAddressDao.saveAddress(destination.getAddress());
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("arrivalDate", toDate(destination.arrivalDate()))
                 .addValue("departureDate", toDate(destination.departureDate()))
-                .addValue("googleAddressId", destination.getAddress().getId());
+                .addValue("addressId", destination.getAddress().getId());
         String sql = SqlDestinationQuery.INSERT_DESTINATION.getSql(schemaMap());
         KeyHolder keyHolder = new GeneratedKeyHolder();
         localNamedJdbc.update(sql, params, keyHolder);
@@ -93,15 +93,15 @@ public class SqlDestinationDao extends SqlBaseDao implements DestinationDao {
     public Destination selectDestination(int destinationId) {
         MapSqlParameterSource params = new MapSqlParameterSource("destinationId", destinationId);
         String sql = SqlDestinationQuery.SELECT_DESTINATION.getSql(schemaMap());
-        DestinationHandler handler = new DestinationHandler(new GoogleAddressRowMapper());
+        DestinationHandler handler = new DestinationHandler(new TravelAddressRowMapper());
         localNamedJdbc.query(sql, params, handler);
         return handler.getDestination();
     }
 
     private enum SqlDestinationQuery implements BasicSqlQuery {
         INSERT_DESTINATION(
-                "INSERT INTO ${travelSchema}.destination(arrival_date, departure_date, google_address_id)" +
-                        " VALUES (:arrivalDate, :departureDate, :googleAddressId)"
+                "INSERT INTO ${travelSchema}.destination(arrival_date, departure_date, address_id)" +
+                        " VALUES (:arrivalDate, :departureDate, :addressId)"
         ),
         INSERT_MEAL_PER_DIEMS(
                 "INSERT INTO ${travelSchema}.destination_meal_per_diem" +
@@ -115,13 +115,13 @@ public class SqlDestinationDao extends SqlBaseDao implements DestinationDao {
         ),
         SELECT_DESTINATION(
                 "SELECT dest.destination_id, dest.arrival_date, dest.departure_date,\n" +
-                        " addr.google_address_id, addr.street_1, addr.street_2, addr.city, addr.state,\n" +
-                        " addr.zip_5, addr.zip_4, addr.county, addr.country,\n" +
-                        " addr.place_id, addr.name, addr.formatted_address,\n" +
+                        " addr.address_id, addr.street_1, addr.city, addr.state,\n" +
+                        " addr.zip_5, addr.county, addr.country,\n" +
+                        " addr.place_id, addr.name, \n" +
                         " m.date as meal_date, m.value as meal_value,\n" +
                         " l.date as lodging_date, l.value as lodging_value\n" +
                         " FROM ${travelSchema}.destination dest\n" +
-                        "   LEFT JOIN ${travelSchema}.google_address addr ON addr.google_address_id = dest.google_address_id\n" +
+                        "   LEFT JOIN ${travelSchema}.address addr ON addr.address_id = dest.address_id\n" +
                         "   LEFT JOIN ${travelSchema}.destination_meal_per_diem m ON dest.destination_id = m.destination_id\n" +
                         "   LEFT JOIN ${travelSchema}.destination_lodging_per_diem l ON dest.destination_id = l.destination_id\n" +
                         " WHERE dest.destination_id = :destinationId"
@@ -149,12 +149,12 @@ public class SqlDestinationDao extends SqlBaseDao implements DestinationDao {
         private int id;
         private LocalDate arrivalDate;
         private LocalDate departureDate;
-        private GoogleAddress address;
+        private TravelAddress address;
         private TreeMap<LocalDate, PerDiem> mealPerDiems;
         private TreeMap<LocalDate, PerDiem> lodgingPerDiems;
-        private GoogleAddressRowMapper addressRowMapper;
+        private TravelAddressRowMapper addressRowMapper;
 
-        DestinationHandler(GoogleAddressRowMapper addressRowMapper) {
+        DestinationHandler(TravelAddressRowMapper addressRowMapper) {
             this.mealPerDiems = new TreeMap<>();
             this.lodgingPerDiems = new TreeMap<>();
             this.addressRowMapper = addressRowMapper;

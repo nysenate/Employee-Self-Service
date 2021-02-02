@@ -13,10 +13,10 @@ public class MileagePerDiems {
      * The minimum outbound mileage needed to qualify for mileage reimbursement.
      */
     private static final double MILE_THRESHOLD = 35.0;
-    private final ImmutableList<Leg> mileagePerDiems;
+    private final ImmutableList<Leg> legs;
 
     public MileagePerDiems(Collection<Leg> legs) {
-        this.mileagePerDiems = ImmutableList.copyOf(legs);
+        this.legs = ImmutableList.copyOf(legs);
     }
 
     /**
@@ -37,14 +37,14 @@ public class MileagePerDiems {
     }
 
     public ImmutableList<Leg> allLegs() {
-        return mileagePerDiems;
+        return legs;
     }
 
     /**
      * Legs that are allowed to be reimbursed for travel.
      */
     public ImmutableList<Leg> mileageReimbursableLegs() {
-        return mileagePerDiems.stream()
+        return legs.stream()
                 .filter(Leg::qualifiesForMileageReimbursement)
                 .collect(ImmutableList.toImmutableList());
     }

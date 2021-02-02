@@ -3,7 +3,7 @@ package gov.nysenate.ess.travel.application.allowances.lodging;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
-import gov.nysenate.ess.travel.application.address.GoogleAddressView;
+import gov.nysenate.ess.travel.application.address.TravelAddressView;
 import gov.nysenate.ess.travel.application.allowances.PerDiem;
 
 import java.math.BigDecimal;
@@ -16,7 +16,7 @@ public class LodgingPerDiemView implements ViewObject {
     private int id;
     private String date;
     private String rate;
-    private GoogleAddressView address;
+    private TravelAddressView address;
     @JsonProperty("isReimbursementRequested")
     private boolean isReimbursementRequested;
     private String requestedPerDiem;
@@ -28,7 +28,7 @@ public class LodgingPerDiemView implements ViewObject {
     public LodgingPerDiemView(LodgingPerDiem lpd) {
         this.id = lpd.id();
         this.date = lpd.date().format(ISO_DATE);
-        this.address = new GoogleAddressView(lpd.address());
+        this.address = new TravelAddressView(lpd.address());
         this.rate = lpd.rate().toString();
         this.isReimbursementRequested = lpd.isReimbursementRequested();
         this.requestedPerDiem = lpd.requestedPerDiem().toString();
@@ -38,7 +38,7 @@ public class LodgingPerDiemView implements ViewObject {
     public LodgingPerDiem toLodgingPerDiem() {
         return new LodgingPerDiem(
                 id,
-                address.toGoogleAddress(),
+                address.toTravelAddress(),
                 new PerDiem(LocalDate.parse(date, ISO_DATE), new BigDecimal(rate)),
                 isReimbursementRequested
         );
@@ -62,7 +62,7 @@ public class LodgingPerDiemView implements ViewObject {
         return date;
     }
 
-    public GoogleAddressView getAddress() {
+    public TravelAddressView getAddress() {
         return address;
     }
 

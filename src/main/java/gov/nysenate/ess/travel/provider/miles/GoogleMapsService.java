@@ -7,7 +7,7 @@ import com.google.maps.model.DistanceMatrix;
 import com.google.maps.model.TrafficModel;
 import com.google.maps.model.TravelMode;
 import com.google.maps.model.Unit;
-import gov.nysenate.ess.travel.application.address.GoogleAddress;
+import gov.nysenate.ess.travel.application.address.TravelAddress;
 import gov.nysenate.ess.travel.utils.UnitUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +34,7 @@ public class GoogleMapsService implements MapService {
      * @param to The ending address.
      */
     @Override
-    public double drivingDistance(GoogleAddress from, GoogleAddress to) throws InterruptedException, ApiException, IOException {
+    public double drivingDistance(TravelAddress from, TravelAddress to) throws InterruptedException, ApiException, IOException {
         String[] origins = new String[] {getGoolgeAddressParam(from)};
         String[] destinations = new String[] {getGoolgeAddressParam(to)};
         DistanceMatrix request = DistanceMatrixApi.getDistanceMatrix(context, origins, destinations)
@@ -57,7 +57,7 @@ public class GoogleMapsService implements MapService {
      * @param address
      * @return
      */
-    private String getGoolgeAddressParam(GoogleAddress address) {
+    private String getGoolgeAddressParam(TravelAddress address) {
         if (address.getPlaceId().isEmpty()) {
             return address.toString();
         }

@@ -1,6 +1,6 @@
 package gov.nysenate.ess.travel.application.allowances.lodging;
 
-import gov.nysenate.ess.travel.application.address.GoogleAddress;
+import gov.nysenate.ess.travel.application.address.TravelAddress;
 import gov.nysenate.ess.travel.application.allowances.PerDiem;
 import gov.nysenate.ess.travel.utils.Dollars;
 
@@ -10,15 +10,15 @@ import java.util.Objects;
 public final class LodgingPerDiem {
 
     private int id;
-    private final GoogleAddress address;
+    private final TravelAddress address;
     private final PerDiem perDiem;
     private boolean isReimbursementRequested;
 
-    public LodgingPerDiem(GoogleAddress address, PerDiem perDiem) {
+    public LodgingPerDiem(TravelAddress address, PerDiem perDiem) {
         this(0, address, perDiem, true);
     }
 
-    public LodgingPerDiem(int id, GoogleAddress address, PerDiem perDiem, boolean isReimbursementRequested) {
+    public LodgingPerDiem(int id, TravelAddress address, PerDiem perDiem, boolean isReimbursementRequested) {
         this.id = id;
         this.address = address;
         this.perDiem = perDiem;
@@ -41,7 +41,7 @@ public final class LodgingPerDiem {
         return isReimbursementRequested() ? maximumPerDiem() : Dollars.ZERO;
     }
 
-    public GoogleAddress address() {
+    public TravelAddress address() {
         return address;
     }
 

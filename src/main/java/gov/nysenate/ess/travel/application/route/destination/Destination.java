@@ -1,7 +1,7 @@
 package gov.nysenate.ess.travel.application.route.destination;
 
 import com.google.common.collect.Range;
-import gov.nysenate.ess.travel.application.address.GoogleAddress;
+import gov.nysenate.ess.travel.application.address.TravelAddress;
 import gov.nysenate.ess.travel.application.allowances.PerDiem;
 
 import java.time.LocalDate;
@@ -10,16 +10,16 @@ import java.util.*;
 public class Destination {
 
     protected int id;
-    protected final GoogleAddress address;
+    protected final TravelAddress address;
     protected final Range<LocalDate> dateRange;
     protected Set<PerDiem> mealPerDiems;
     protected Set<PerDiem> lodgingPerDiems;
 
-    public Destination(GoogleAddress address, LocalDate arrival, LocalDate departure) {
+    public Destination(TravelAddress address, LocalDate arrival, LocalDate departure) {
         this(0, address, arrival, departure, new TreeMap<>(), new TreeMap<>());
     }
 
-    public Destination(int id, GoogleAddress address, LocalDate arrival, LocalDate departure,
+    public Destination(int id, TravelAddress address, LocalDate arrival, LocalDate departure,
                        Map<LocalDate, PerDiem> dateToMealPerDiems,
                        Map<LocalDate, PerDiem> dateToLodgingPerDiems) {
         this.id = id;
@@ -29,7 +29,7 @@ public class Destination {
         this.lodgingPerDiems = new HashSet<>(dateToLodgingPerDiems.values());
     }
 
-    public Destination(int id, GoogleAddress address, LocalDate arrival, LocalDate departure,
+    public Destination(int id, TravelAddress address, LocalDate arrival, LocalDate departure,
                        Collection<PerDiem> mealPerDiems, Collection<PerDiem> lodgingPerDiems) {
         this.id = id;
         this.address = address;
@@ -46,7 +46,7 @@ public class Destination {
         return lodgingPerDiems;
     }
 
-    public GoogleAddress getAddress() {
+    public TravelAddress getAddress() {
         return address;
     }
 

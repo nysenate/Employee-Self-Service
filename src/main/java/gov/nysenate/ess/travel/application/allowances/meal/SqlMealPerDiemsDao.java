@@ -4,8 +4,8 @@ import gov.nysenate.ess.core.dao.base.BaseHandler;
 import gov.nysenate.ess.core.dao.base.BasicSqlQuery;
 import gov.nysenate.ess.core.dao.base.DbVendor;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
-import gov.nysenate.ess.travel.application.address.GoogleAddress;
-import gov.nysenate.ess.travel.application.address.SqlGoogleAddressDao;
+import gov.nysenate.ess.travel.application.address.TravelAddress;
+import gov.nysenate.ess.travel.application.address.SqlTravelAddressDao;
 import gov.nysenate.ess.travel.provider.senate.SenateMie;
 import gov.nysenate.ess.travel.provider.senate.SqlSenateMieDao;
 import gov.nysenate.ess.travel.utils.Dollars;
@@ -24,14 +24,14 @@ import java.util.Set;
 @Repository
 public class SqlMealPerDiemsDao extends SqlBaseDao {
 
-    @Autowired private SqlGoogleAddressDao googleAddressDao;
+    @Autowired private SqlTravelAddressDao travelAddressDao;
     @Autowired private SqlSenateMieDao senateMieDao;
 
     public MealPerDiems selectMealPerDiems(int amendmentId) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("amendmentId", amendmentId);
         String sql = SqlMealPerDiemsQuery.SELECT_MEAL_PER_DIEM.getSql(schemaMap());
-        MealPerDiemsHandler handler = new MealPerDiemsHandler(googleAddressDao, senateMieDao);
+        MealPerDiemsHandler handler = new MealPerDiemsHandler(travelAddressDao, senateMieDao);
         localNamedJdbc.query(sql, params, handler);
         return handler.getResult();
     }
@@ -41,8 +41,8 @@ public class SqlMealPerDiemsDao extends SqlBaseDao {
         for (MealPerDiem mpd : mealPerDiems.allMealPerDiems()) {
             // Ensure the address is in the database and update its id.
             // Destination addresses are inserted earlier but they are different instances so these address's ids
-            // do not get updated. We need to call saveGoogleAddress here so the mealPerDiem addresses have the correct google_address_id.
-            googleAddressDao.saveGoogleAddress(mpd.address());
+            // do not get updated. We need to call saveTravelAddress here so the mealPerDiem addresses have the correct address_id.
+            travelAddressDao.saveAddress(mpd.address());
             insertMealPerDiem(mpd);
             int id = insertIntoJoinTable(mpd, amendmentId, mealPerDiems.overrideRate());
             mealPerDiems.setId(id);
@@ -51,7 +51,7 @@ public class SqlMealPerDiemsDao extends SqlBaseDao {
 
     private void insertMealPerDiem(MealPerDiem mpd) {
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("googleAddressId", mpd.address().getId())
+                .addValue("addressId", mpd.address().getId())
                 .addValue("date", toDate(mpd.date()))
                 .addValue("rate", mpd.rate().toString())
                 .addValue("senateMieId", mpd.mie() == null ? null : mpd.mie().getId())
@@ -77,15 +77,15 @@ public class SqlMealPerDiemsDao extends SqlBaseDao {
     private enum SqlMealPerDiemsQuery implements BasicSqlQuery {
         SELECT_MEAL_PER_DIEM(
                 "SELECT mpds.amendment_meal_per_diems_id, mpds.amendment_meal_per_diem_id, mpds.override_rate,\n" +
-                        " mpd.google_address_id, mpd.date, mpd.rate, mpd.senate_mie_id, mpd.is_reimbursement_requested\n" +
+                        " mpd.address_id, mpd.date, mpd.rate, mpd.senate_mie_id, mpd.is_reimbursement_requested\n" +
                         " FROM ${travelSchema}.amendment_meal_per_diems mpds\n" +
                         " INNER JOIN ${travelSchema}.amendment_meal_per_diem mpd ON mpds.amendment_meal_per_diem_id = mpd.amendment_meal_per_diem_id\n" +
                         " WHERE mpds.amendment_id = :amendmentId"
         ),
         INSERT_MEAL_PER_DIEM(
-                "INSERT INTO ${travelSchema}.amendment_meal_per_diem(google_address_id," +
+                "INSERT INTO ${travelSchema}.amendment_meal_per_diem(address_id," +
                         " date, rate, senate_mie_id, is_reimbursement_requested) \n" +
-                        "VALUES (:googleAddressId, :date, :rate, :senateMieId, :isReimbursementRequested)"
+                        "VALUES (:addressId, :date, :rate, :senateMieId, :isReimbursementRequested)"
         ),
         INSERT_JOIN_TABLE(
                 "INSERT INTO ${travelSchema}.amendment_meal_per_diems(amendment_id," +
@@ -117,10 +117,10 @@ public class SqlMealPerDiemsDao extends SqlBaseDao {
         private Dollars overrideRate;
         private Set<MealPerDiem> mealPerDiems;
 
-        private SqlGoogleAddressDao addressDao;
+        private SqlTravelAddressDao addressDao;
         private SqlSenateMieDao senateMieDao;
 
-        public MealPerDiemsHandler(SqlGoogleAddressDao addressDao, SqlSenateMieDao senateMieDao) {
+        public MealPerDiemsHandler(SqlTravelAddressDao addressDao, SqlSenateMieDao senateMieDao) {
             this.addressDao = addressDao;
             this.senateMieDao = senateMieDao;
             this.mealPerDiems = new HashSet<>();
@@ -132,7 +132,7 @@ public class SqlMealPerDiemsDao extends SqlBaseDao {
             overrideRate = new Dollars(rs.getString("override_rate"));
 
             int mpdId = rs.getInt("amendment_meal_per_diem_id");
-            GoogleAddress address = addressDao.selectGoogleAddress(rs.getInt("google_address_id"));
+            TravelAddress address = addressDao.selectAddress(rs.getInt("address_id"));
             LocalDate date = getLocalDate(rs, "date");
             Dollars rate = new Dollars(rs.getString("rate"));
             SenateMie mie = null;

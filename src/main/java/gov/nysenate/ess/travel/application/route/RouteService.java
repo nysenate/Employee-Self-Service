@@ -1,6 +1,6 @@
 package gov.nysenate.ess.travel.application.route;
 
-import gov.nysenate.ess.travel.application.address.GoogleAddress;
+import gov.nysenate.ess.travel.application.address.TravelAddress;
 import gov.nysenate.ess.travel.application.allowances.PerDiem;
 import gov.nysenate.ess.travel.application.route.destination.Destination;
 import gov.nysenate.ess.travel.provider.ProviderException;
@@ -10,7 +10,6 @@ import gov.nysenate.ess.travel.utils.Dollars;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -85,7 +84,7 @@ public class RouteService {
     }
 
     private Destination createFromDestination(Leg previousLeg, Leg currentLeg) {
-        GoogleAddress address = currentLeg.fromAddress();
+        TravelAddress address = currentLeg.fromAddress();
         LocalDate arrival = previousLeg == null ? currentLeg.travelDate() : previousLeg.travelDate();
         LocalDate departure = currentLeg.travelDate();
 
@@ -93,7 +92,7 @@ public class RouteService {
     }
 
     private Destination createToDestination(Leg nextLeg, Leg currentLeg) {
-        GoogleAddress address = currentLeg.toAddress();
+        TravelAddress address = currentLeg.toAddress();
         LocalDate arrival = currentLeg.travelDate();
         LocalDate departure = nextLeg == null ? currentLeg.travelDate() : nextLeg.travelDate();
 

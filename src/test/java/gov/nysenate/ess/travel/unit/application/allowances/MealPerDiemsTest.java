@@ -3,9 +3,10 @@ package gov.nysenate.ess.travel.unit.application.allowances;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import gov.nysenate.ess.core.annotation.UnitTest;
-import gov.nysenate.ess.travel.application.address.GoogleAddress;
+import gov.nysenate.ess.travel.application.address.TravelAddress;
 import gov.nysenate.ess.travel.application.allowances.meal.MealPerDiem;
 import gov.nysenate.ess.travel.application.allowances.meal.MealPerDiems;
+import gov.nysenate.ess.travel.fixtures.TravelAddressFixture;
 import gov.nysenate.ess.travel.provider.senate.SenateMie;
 import gov.nysenate.ess.travel.utils.Dollars;
 import org.junit.BeforeClass;
@@ -20,22 +21,15 @@ import static org.junit.Assert.assertTrue;
 @Category(UnitTest.class)
 public class MealPerDiemsTest {
 
-    private static GoogleAddress CAPITOL = new GoogleAddress(1, "", "", "");
-    private static GoogleAddress AGENCY = new GoogleAddress(1, "", "", "");
+    private static TravelAddress CAPITOL;
+    private static TravelAddress AGENCY;
     private static final LocalDate TODAY = LocalDate.of(2019, 1, 15);
     private static final LocalDate TOMORROW = TODAY.plusDays(1);
 
     @BeforeClass
     public static void setup() {
-        CAPITOL.setAddr1("100 State Street");
-        CAPITOL.setCity("Albany");
-        CAPITOL.setState("New York");
-        CAPITOL.setZip5("12208");
-
-        AGENCY.setAddr1("South Mall Arterial");
-        AGENCY.setCity("Albany");
-        AGENCY.setState("New York");
-        AGENCY.setZip5("12210");
+        CAPITOL = TravelAddressFixture.capital();
+        AGENCY = TravelAddressFixture.agencyBuilding();
     }
 
     @Test

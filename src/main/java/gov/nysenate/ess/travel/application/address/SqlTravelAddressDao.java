@@ -10,83 +10,78 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class SqlGoogleAddressDao extends SqlBaseDao {
+public class SqlTravelAddressDao extends SqlBaseDao {
 
-    public GoogleAddress selectGoogleAddress(int googleAddressId) {
+    public TravelAddress selectAddress(int addressId) {
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("googleAddressId", googleAddressId);
-        String sql = SqlGoogleAddressQuery.SELECT_ADDRESS.getSql(schemaMap());
-        return localNamedJdbc.queryForObject(sql, params, new GoogleAddressRowMapper());
+                .addValue("addressId", addressId);
+        String sql = SqlTravelAddressQuery.SELECT_ADDRESS.getSql(schemaMap());
+        return localNamedJdbc.queryForObject(sql, params, new TravelAddressRowMapper());
     }
 
     /**
-     * Save a GoogleAddress.
+     * Save a TravelAddress.
      * If this address does not yet exist in the database it will be inserted and its id will
      * be updated with the generated id from the database.
      * If this address already exists in the database its id will be set to the matching address's id.
      *
      * @param address
      */
-    public void saveGoogleAddress(GoogleAddress address) {
+    public void saveAddress(TravelAddress address) {
         try {
-            GoogleAddress savedAddr = selectMatchingAddress(address);
+            TravelAddress savedAddr = selectMatchingAddress(address);
             // Make sure the id is set so its available when inserting the destination.
             address.setId(savedAddr.getId());
         } catch (IncorrectResultSizeDataAccessException ex) {
             // A record did not exist, lets insert it.
-            insertGoogleAddress(address);
+            insertAddress(address);
         }
     }
 
-    private GoogleAddress selectMatchingAddress(GoogleAddress address) {
-        String sql = SqlGoogleAddressQuery.SELECT_MATCHING_ADDRESS.getSql(schemaMap());
-        return localNamedJdbc.queryForObject(sql, googleAddressParams(address), new GoogleAddressRowMapper());
+    private TravelAddress selectMatchingAddress(TravelAddress address) {
+        String sql = SqlTravelAddressQuery.SELECT_MATCHING_ADDRESS.getSql(schemaMap());
+        return localNamedJdbc.queryForObject(sql, addressParams(address), new TravelAddressRowMapper());
     }
 
-    // Attempts to insert the address. Returns the number of rows inserted. Updates the GoogleAddress with the auto generated database id.
-    private int insertGoogleAddress(GoogleAddress address) {
-        String sql = SqlGoogleAddressQuery.INSERT_ADDRESS.getSql(schemaMap());
+    // Attempts to insert the address. Returns the number of rows inserted. Updates the address with the auto generated database id.
+    private int insertAddress(TravelAddress address) {
+        String sql = SqlTravelAddressQuery.INSERT_ADDRESS.getSql(schemaMap());
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        int insertCount = localNamedJdbc.update(sql, googleAddressParams(address), keyHolder);
-        address.setId((Integer) keyHolder.getKeys().get("google_address_id"));
+        int insertCount = localNamedJdbc.update(sql, addressParams(address), keyHolder);
+        address.setId((Integer) keyHolder.getKeys().get("address_id"));
         return insertCount;
     }
 
-    private MapSqlParameterSource googleAddressParams(GoogleAddress address) {
+    private MapSqlParameterSource addressParams(TravelAddress address) {
         return new MapSqlParameterSource()
-                .addValue("googleAddressId", address.getId())
+                .addValue("addressId", address.getId())
                 .addValue("street1", address.getAddr1())
-                .addValue("street2", address.getAddr2())
                 .addValue("city", address.getCity())
                 .addValue("state", address.getState())
                 .addValue("zip5", address.getZip5())
-                .addValue("zip4", address.getZip4())
                 .addValue("county", address.getCounty())
                 .addValue("country", address.getCountry())
                 .addValue("placeId", address.getPlaceId())
-                .addValue("name", address.getName())
-                .addValue("formattedAddress", address.getFormattedAddress());
+                .addValue("name", address.getName());
     }
 
-    private enum SqlGoogleAddressQuery implements BasicSqlQuery {
+    private enum SqlTravelAddressQuery implements BasicSqlQuery {
         SELECT_ADDRESS(
-                "SELECT * from ${travelSchema}.google_address\n" +
-                        "WHERE google_address_id = :googleAddressId"
+                "SELECT * from ${travelSchema}.address\n" +
+                        "WHERE address_id = :addressId"
         ),
         INSERT_ADDRESS(
-                "INSERT INTO ${travelSchema}.google_address(street_1, street_2, city, state,\n" +
-                        "zip_5, zip_4, county, country, place_id, name, formatted_address)\n" +
-                        "VALUES(:street1, :street2, :city, :state, :zip5, :zip4,\n" +
-                        ":county, :country, :placeId, :name, :formattedAddress)"
+                "INSERT INTO ${travelSchema}.address(street_1, city, state,\n" +
+                        "zip_5, county, country, place_id, name)\n" +
+                        "VALUES(:street1, :city, :state, :zip5," +
+                        ":county, :country, :placeId, :name)"
         ),
         SELECT_MATCHING_ADDRESS(
-                "SELECT * from ${travelSchema}.google_address\n" +
+                "SELECT * from ${travelSchema}.address\n" +
                         "WHERE street_1 = :street1\n" +
-                        "AND street_2 = :street2\n" +
                         "AND city = :city\n" +
                         "AND state = :state\n" +
                         "AND zip_5 = :zip5\n" +
-                        "AND zip_4 = :zip4\n" +
                         "AND county = :county\n" +
                         "AND country = :country\n" +
                         "AND place_id = :placeId"
@@ -94,7 +89,7 @@ public class SqlGoogleAddressDao extends SqlBaseDao {
 
         private String sql;
 
-        SqlGoogleAddressQuery(String sql) {
+        SqlTravelAddressQuery(String sql) {
             this.sql = sql;
         }
 

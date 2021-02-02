@@ -2,7 +2,7 @@ package gov.nysenate.ess.travel.application;
 
 import gov.nysenate.ess.core.client.view.DetailedEmployeeView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
-import gov.nysenate.ess.travel.application.address.GoogleAddress;
+import gov.nysenate.ess.travel.application.address.TravelAddress;
 import gov.nysenate.ess.travel.application.allowances.AllowancesView;
 import gov.nysenate.ess.travel.application.allowances.lodging.LodgingPerDiemsView;
 import gov.nysenate.ess.travel.application.allowances.meal.MealPerDiemsView;
@@ -88,11 +88,8 @@ public class AmendmentView implements ViewObject {
 
         List<Destination> destinations = amendment.route().destinations();
         if (!destinations.isEmpty()) {
-            GoogleAddress address = destinations.get(0).getAddress();
-            String name = address.getName();
-            String city = address.getCity();
-            String addr1 = address.getAddr1();
-            destinationSummary = name.isEmpty() ? addr1.isEmpty() ? city : addr1 : name;
+            TravelAddress address = destinations.get(0).getAddress();
+            destinationSummary = address.getSummary();
             if (destinations.size() > 1) {
                 destinationSummary += " ...";
             }

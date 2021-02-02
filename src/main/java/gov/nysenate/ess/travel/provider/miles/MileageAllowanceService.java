@@ -2,7 +2,7 @@ package gov.nysenate.ess.travel.provider.miles;
 
 import com.google.maps.errors.ApiException;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
-import gov.nysenate.ess.travel.application.address.GoogleAddress;
+import gov.nysenate.ess.travel.application.address.TravelAddress;
 import gov.nysenate.ess.travel.provider.ProviderException;
 import gov.nysenate.ess.travel.provider.addressvalidation.DistrictAssignmentService;
 import org.slf4j.Logger;
@@ -35,7 +35,7 @@ public class MileageAllowanceService {
      * Calculates the driving mileage from one address to another
      * @throws ProviderException if an error is encountered while communicating with our 3rd party distance provider.
      */
-    public double drivingDistance(GoogleAddress from, GoogleAddress to) {
+    public double drivingDistance(TravelAddress from, TravelAddress to) {
         double distance;
         try {
             distance = googleMapsService.drivingDistance(from, to);

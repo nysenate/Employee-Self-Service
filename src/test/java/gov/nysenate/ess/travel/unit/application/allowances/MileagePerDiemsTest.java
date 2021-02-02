@@ -6,7 +6,7 @@ import gov.nysenate.ess.travel.application.allowances.mileage.MileagePerDiems;
 import gov.nysenate.ess.travel.application.route.Leg;
 import gov.nysenate.ess.travel.application.route.ModeOfTransportation;
 import gov.nysenate.ess.travel.application.route.destination.Destination;
-import gov.nysenate.ess.travel.fixtures.GoogleAddressFixture;
+import gov.nysenate.ess.travel.fixtures.TravelAddressFixture;
 import gov.nysenate.ess.travel.utils.Dollars;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -22,8 +22,8 @@ import static org.junit.Assert.assertTrue;
 @Category(UnitTest.class)
 public class MileagePerDiemsTest {
 
-    private Destination from = new Destination(GoogleAddressFixture.albany(), LocalDate.now(), LocalDate.now());
-    private Destination to = new Destination(GoogleAddressFixture.cliftonPark(), LocalDate.now(), LocalDate.now());
+    private Destination from = new Destination(TravelAddressFixture.albany(), LocalDate.now(), LocalDate.now());
+    private Destination to = new Destination(TravelAddressFixture.cliftonPark(), LocalDate.now(), LocalDate.now());
     private PerDiem perDiem = new PerDiem(LocalDate.now(), new Dollars("0.50"));
 
     @Test(expected = NullPointerException.class)

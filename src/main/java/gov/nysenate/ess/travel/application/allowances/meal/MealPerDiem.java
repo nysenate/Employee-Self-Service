@@ -1,6 +1,6 @@
 package gov.nysenate.ess.travel.application.allowances.meal;
 
-import gov.nysenate.ess.travel.application.address.GoogleAddress;
+import gov.nysenate.ess.travel.application.address.TravelAddress;
 import gov.nysenate.ess.travel.provider.senate.SenateMie;
 import gov.nysenate.ess.travel.utils.Dollars;
 
@@ -10,7 +10,7 @@ import java.util.Objects;
 public final class MealPerDiem {
 
     private int id;
-    private final GoogleAddress address;
+    private final TravelAddress address;
     private final LocalDate date;
     /**
      * The daily meal reimbursement rate for this address and date.
@@ -21,11 +21,11 @@ public final class MealPerDiem {
     private final SenateMie mie;
     private boolean isReimbursementRequested;
 
-    public MealPerDiem(GoogleAddress address, LocalDate date, Dollars rate, SenateMie mie) {
+    public MealPerDiem(TravelAddress address, LocalDate date, Dollars rate, SenateMie mie) {
         this(0, address, date, rate, mie, true);
     }
 
-    public MealPerDiem(int id, GoogleAddress address, LocalDate date, Dollars rate, SenateMie mie, boolean isReimbursementRequested) {
+    public MealPerDiem(int id, TravelAddress address, LocalDate date, Dollars rate, SenateMie mie, boolean isReimbursementRequested) {
         this.id = id;
         this.address = address;
         this.date = date;
@@ -54,7 +54,7 @@ public final class MealPerDiem {
         return mie;
     }
 
-    public GoogleAddress address() {
+    public TravelAddress address() {
         return address;
     }
 
