@@ -95,6 +95,7 @@ public class ReconciliationService {
         return reqs.stream()
                 .map(Requisition::getLineItems)
                 .flatMap(Collection::stream)
+                .filter(li -> li.getQuantity() > 0)
                 .map(LineItem::getItem)
                 .filter(SupplyItem::requiresSynchronization)
                 .filter(i -> !itemIgnoreList.contains(i.getCommodityCode()))
