@@ -9,8 +9,8 @@
       <h4 style="display: inline;">Active Role:</h4>
       <select style="margin: 10px;"
               ng-model="vm.activeRole"
-              ng-options="role.displayName for role in vm.userRoles"
-              ng-change="vm.onActiveRoleChange()"></select>
+              ng-options="role.label for role in vm.userRoles"
+              ng-change="vm.onActiveRoleChange()">hello</select>
     </div>
   </div>
 
@@ -34,7 +34,7 @@
   </div>
 
   <div ng-if="vm.isLoading === false">
-    <div ng-if="vm.reviews.shared.length > 0">
+    <div ng-if="vm.reviews.shared.length > 0 && vm.activeRole.canViewShared">
       <ess-app-review-summary-table
           title="Shared Applications"
           reviews="vm.reviews.shared"

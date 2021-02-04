@@ -12,7 +12,7 @@ function reviewController($scope, $q, modals, locationService, appReviewApi, rol
     vm.modalPromise;
     vm.isLoading = true;
     vm.reviews = {
-        all: [],
+        byRole: {},
         toReview: [], // App Reviews waiting to be reviewed by the selected role.
         shared: []    // Shared reviews are visible to both the Travel Admin and SOS in separate queues.
     };
@@ -23,15 +23,15 @@ function reviewController($scope, $q, modals, locationService, appReviewApi, rol
     (function init() {
         roleService.roles()
             .then(function (response) {
-                vm.userRoles = response.roles;
-                vm.activeRole = vm.userRoles[vm.userRoles.length - 1];
+                vm.userRoles = _.uniq(response.roles, function (r) { return r.name}); // Unique roles.
                 queryPendingAppReviews()
                     .then(getSharedReviews)
-                    .then(removeDuplicates)
                     .then(initAppIdToReviewMap)
-                    .then(sortReviews)
+                    .then(setRoleLabels)
+                    .then(setInitialRole)
                     .then(openReviewModalIfSearchParamsSet)
                     .then(function () {
+                        updateToReview(vm.activeRole);
                         vm.isLoading = false;
                     })
             });
@@ -51,7 +51,7 @@ function reviewController($scope, $q, modals, locationService, appReviewApi, rol
             .$promise
             .then(appReviewApi.parseAppReviewResponse)
             .then(function (appReviews) {
-                vm.reviews.all = appReviews;
+                vm.reviews.byRole = appReviews.items;
             })
             .catch($scope.handleErrorResponse);
     }
@@ -61,39 +61,39 @@ function reviewController($scope, $q, modals, locationService, appReviewApi, rol
             .$promise
             .then(appReviewApi.parseAppReviewResponse)
             .then(function (sharedReviews) {
-                vm.reviews.all = vm.reviews.all.concat(sharedReviews);
+                vm.reviews.shared = sharedReviews;
+                sortByStartDate(vm.reviews.shared);
             })
             .catch($scope.handleErrorResponse);
     }
 
-    function removeDuplicates() {
-        vm.reviews.all = _.uniq(vm.reviews.all, false, function(n) { return n.appReviewId })
-    }
-
     function initAppIdToReviewMap() {
-        vm.reviews.all.forEach(function (review) {
-            vm.appIdToReview.set(review.travelApplication.id, review);
+        vm.userRoles.forEach(function (role) {
+            vm.reviews.byRole[role.name].forEach(function (review) {
+                vm.appIdToReview.set(review.travelApplication.id, review);
+            })
         })
     }
 
-    function sortReviews() {
-        vm.reviews.toReview = [];
-        vm.reviews.shared = [];
-        vm.reviews.all.forEach(function (r) {
-            // Add non shared reviews
-            if (!r.isShared) {
-                if (r.nextReviewerRole === vm.activeRole.name) {
-                    vm.reviews.toReview.push(r);
-                }
-            }
-            // Show shared reviews if the active role is the travel admin or SOS.
-            if (r.isShared && (vm.activeRole.name === 'TRAVEL_ADMIN' || vm.activeRole.name === 'SECRETARY_OF_THE_SENATE')) {
-                vm.reviews.shared.push(r);
-            }
-        });
+    function setRoleLabels() {
+        vm.userRoles.forEach(function (role) {
+            var reviewCount = vm.reviews.byRole[role.name].length;
+            role.label = role.displayName + ' - (' + reviewCount + ') Pending'
+        })
+    }
+
+    function setInitialRole() {
+        vm.activeRole = vm.userRoles[vm.userRoles.length - 1];
+    }
+
+    // Update the `toReview` array to the reviews associated with the selected role.
+    // Removes any reviews that have been shared, they will be displayed by `vm.reviews.shared`.
+    function updateToReview(role) {
+        vm.reviews.toReview = vm.reviews.byRole[role.name]
+        vm.reviews.toReview = vm.reviews.toReview.filter(function (r) {
+            return !r.isShared
+        })
         sortByStartDate(vm.reviews.toReview);
-        sortByStartDate(vm.reviews.shared);
-        console.log(vm);
     }
 
     function sortByStartDate(appReviews) {
@@ -104,7 +104,7 @@ function reviewController($scope, $q, modals, locationService, appReviewApi, rol
     }
 
     function openReviewModalIfSearchParamsSet() {
-        var appId = getAppIdParam();
+        var appId = parseInt(getAppIdParam())
         if (appId) {
             openReviewModal(vm.appIdToReview.get(appId));
         }
@@ -130,7 +130,7 @@ function reviewController($scope, $q, modals, locationService, appReviewApi, rol
     }
 
     vm.onActiveRoleChange = function () {
-        filterReviews();
+        updateToReview(vm.activeRole);
     };
 
     function reload() {

@@ -3,6 +3,8 @@ package gov.nysenate.ess.travel.review;
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
+import gov.nysenate.ess.core.client.view.base.ListView;
+import gov.nysenate.ess.core.client.view.base.MapView;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.model.personnel.Employee;
@@ -11,14 +13,12 @@ import gov.nysenate.ess.travel.authorization.permission.TravelPermissionBuilder;
 import gov.nysenate.ess.travel.authorization.permission.TravelPermissionObject;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
 import gov.nysenate.ess.travel.authorization.role.TravelRoleFactory;
+import gov.nysenate.ess.travel.authorization.role.TravelRoleView;
 import gov.nysenate.ess.travel.authorization.role.TravelRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -66,10 +66,16 @@ public class ApplicationReviewCtrl extends BaseRestApiCtrl {
                 : roles.stream().map(TravelRole::of).collect(Collectors.toSet());
         Employee employee = employeeInfoService.getEmployee(getSubjectEmployeeId());
 
-        List<ApplicationReview> pendingReviews = appReviewService.pendingAppReviews(employee, roleList);
-        return ListViewResponse.of(pendingReviews.stream()
-                .map(ApplicationReviewView::new)
-                .collect(Collectors.toList()));
+        Map<TravelRole, List<ApplicationReview>> pendingReviews = appReviewService.pendingAppReviews(employee, roleList);
+        Map<TravelRoleView, ListView<ApplicationReviewView>> views = new HashMap<>();
+        for (Map.Entry<TravelRole, List<ApplicationReview>> entry : pendingReviews.entrySet()) {
+            List<ApplicationReviewView> appReviewViews = entry.getValue().stream()
+                    .map(ApplicationReviewView::new)
+                    .collect(Collectors.toList());
+            views.put(new TravelRoleView(entry.getKey()), ListView.of(appReviewViews));
+        }
+
+        return new ViewObjectResponse<>(MapView.of(views));
     }
 
     @RequestMapping(value = "/shared", method = RequestMethod.GET)

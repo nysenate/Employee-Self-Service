@@ -29,7 +29,14 @@ function travelBadgeCtrl($scope, badgeService, appReviewApi, roleService) {
         badgeResource.$promise
             .then(appReviewApi.parseAppReviewResponse)
             .then(function (appReviews) {
-                badgeService.setBadgeValue(travelBadgeId, appReviews.length);
+                var count = 0;
+                var reviewsByRole = appReviews.items;
+                for (var role in reviewsByRole) {
+                    if (reviewsByRole.hasOwnProperty(role)) {
+                        count += reviewsByRole[role].length;
+                    }
+                }
+                badgeService.setBadgeValue(travelBadgeId, count);
             })
             .catch(function (error) {
                 console.log("Error loading travel pending application reviews badge." + error);

@@ -16,10 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -89,16 +86,16 @@ public class ApplicationReviewService {
      * @return All {@code ApplicationReview}s that require action by the given employee
      * acting with the given {@code role}.
      */
-    public List<ApplicationReview> pendingAppReviews(Employee employee, Set<TravelRole> roles) {
-        List<ApplicationReview> appReviews = new ArrayList<>();
+    public Map<TravelRole, List<ApplicationReview>> pendingAppReviews(Employee employee, Set<TravelRole> roles) {
+        Map<TravelRole, List<ApplicationReview>> roleReviews = new HashMap<>();
         for (TravelRole role : roles) {
             if (role == TravelRole.DEPARTMENT_HEAD) {
-                appReviews.addAll(pendingReviewsForDeptHead(employee));
+                roleReviews.put(role, pendingReviewsForDeptHead(employee));
             } else {
-                appReviews.addAll(appReviewDao.pendingReviewsByRole(role));
+                roleReviews.put(role, appReviewDao.pendingReviewsByRole(role));
             }
         }
-        return appReviews;
+        return roleReviews;
     }
 
     private List<ApplicationReview> pendingReviewsForDeptHead(Employee employee) {

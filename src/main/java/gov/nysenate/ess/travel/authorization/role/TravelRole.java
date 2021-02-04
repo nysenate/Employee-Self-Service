@@ -12,20 +12,23 @@ public enum TravelRole {
 
     // The DELEGATE role is assigned to users who are a delegate.
     // This is used to disallow them from modifying delegates themselves.
-    DELEGATE("Delegate"),
+    DELEGATE("Delegate", false),
     // NONE is used in place of null.
-    NONE("None"),
+    NONE("None", false),
 
     /** Travel Roles */
-    DEPARTMENT_HEAD("Department Head"),
-    TRAVEL_ADMIN("Travel Admin"),
-    SECRETARY_OF_THE_SENATE("Secretary of the Senate"),
-    MAJORITY_LEADER("Majority Leader");
+    DEPARTMENT_HEAD("Department Head", false),
+    TRAVEL_ADMIN("Travel Admin", true),
+    SECRETARY_OF_THE_SENATE("Secretary of the Senate", true),
+    MAJORITY_LEADER("Majority Leader", false);
 
     protected String displayName;
+    // Can this role view apps that have be shared by reviewers for collaboration purposes.
+    protected boolean canViewShared;
 
-    TravelRole(String displayName) {
+    TravelRole(String displayName, boolean canViewShared) {
         this.displayName = displayName;
+        this.canViewShared = canViewShared;
     }
 
     /**
