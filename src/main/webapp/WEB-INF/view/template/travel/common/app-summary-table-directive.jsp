@@ -18,7 +18,7 @@
             pagination-id="travel-table-pagination">
 
           <td ng-bind="::app.activeAmendment.startDate | date:'M/d/yyyy'" ng-click="onRowClick({app: app})"></td>
-          <td ng-bind="::app.traveler.lastName" ng-click="onRowClick({app: app})"></td>
+          <td ng-bind="::app.traveler.fullName" ng-click="onRowClick({app: app})"></td>
           <td ng-bind="::app.activeAmendment.destinationSummary" ng-click="onRowClick({app: app})"></td>
           <td ng-bind="::app.activeAmendment.totalAllowance | currency" ng-click="onRowClick({app: app})"></td>
           <td ess-app-status="app" ng-if="options.showStatus" ng-click="onRowClick({app: app})"></td>

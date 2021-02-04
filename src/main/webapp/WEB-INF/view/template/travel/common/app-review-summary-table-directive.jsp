@@ -23,7 +23,7 @@
             ng-class="{'shared-review': (review.isShared && activeRole.name && activeRole.name !== review.nextReviewerRole) }">
 
           <td ng-bind="::review.travelApplication.activeAmendment.startDate | date:'M/d/yyyy'"></td>
-          <td ng-bind="::review.travelApplication.traveler.lastName"></td>
+          <td ng-bind="::review.travelApplication.traveler.fullName"></td>
           <td ng-bind="::review.travelApplication.activeAmendment.destinationSummary"></td>
           <td ng-bind="::review.travelApplication.activeAmendment.totalAllowance | currency"></td>
           <td ng-if="options.showAction" ess-review-action-status="userAction(review)"></td>
