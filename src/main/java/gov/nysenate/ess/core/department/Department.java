@@ -1,6 +1,5 @@
 package gov.nysenate.ess.core.department;
 
-import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -25,6 +24,10 @@ public class Department {
         this.ldapDepartment = ldapDepartment;
         this.headEmpId = headEmpId;
         this.isActive = isActive;
+    }
+
+    public boolean hasEmployees() {
+        return !ldapDepartment.getEmployeeIds().isEmpty();
     }
 
     public int getId() {

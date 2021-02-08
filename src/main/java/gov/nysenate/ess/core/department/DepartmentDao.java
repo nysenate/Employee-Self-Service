@@ -29,6 +29,9 @@ public class DepartmentDao extends SqlBaseDao {
         return handler.getResults().stream().findFirst().orElse(null);
     }
 
+    /**
+     * Get all active departments
+     */
     public Set<Department> getDepartments() {
         String sql = SqlDepartmentQuery.SELECT_ACTIVE_DEPARTMENTS.getSql(schemaMap());
         DepartmentRowHandler handler = new DepartmentRowHandler();

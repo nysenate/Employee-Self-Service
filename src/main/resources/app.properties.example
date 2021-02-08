@@ -209,6 +209,9 @@ scheduler.travel.scrape.cron = 0 0 2 * * *
 # The schedule for updating Department data in ESS.
 scheduler.ess.department.update = 0 0 1 * * *
 
+# The schedule for checking for departments missing a department head.
+scheduler.ess.department.check_dept_heads = 0 0 6 * * *
+
 # --- Timeout Configuration ---------------------------------------------------
 
 #timeout in secs
