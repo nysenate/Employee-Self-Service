@@ -62,7 +62,7 @@ public class PersonnelTaskAssignmentDaoIT extends BaseTest {
         // Ensure that it was updated
         assignments = assignmentDao.getAssignmentsForEmp(empId);
         assertEquals(1, assignments.size());
-        assertEquals(updatedTask, assignments.get(0));
+        assertTrue(updatedTask.isCompleted());
     }
 
     @Test
