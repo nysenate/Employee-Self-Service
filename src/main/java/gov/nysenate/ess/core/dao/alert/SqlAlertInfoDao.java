@@ -21,7 +21,9 @@ import static gov.nysenate.ess.core.dao.alert.SqlAlertInfoQuery.*;
 @Repository
 public class SqlAlertInfoDao extends SqlBaseDao implements AlertInfoDao {
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public AlertInfo getAlertInfo(int empId) throws AlertInfoNotFound {
         final String sql = GET_ALERT_INFO_BY_EMP.getSql(schemaMap());
@@ -33,14 +35,18 @@ public class SqlAlertInfoDao extends SqlBaseDao implements AlertInfoDao {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<AlertInfo> getAllAlertInfo() {
         final String sql = GET_ALERT_INFO.getSql(schemaMap());
         return localNamedJdbc.query(sql, alertInfoRowMapper);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void updateAlertInfo(AlertInfo alertInfo) {
         MapSqlParameterSource params = getAlertInfoParams(alertInfo);
@@ -60,10 +66,10 @@ public class SqlAlertInfoDao extends SqlBaseDao implements AlertInfoDao {
                 .setHomePhone(rs.getString("phone_home"))
                 .setMobilePhone(rs.getString("phone_mobile"))
                 .setMobileOptions(Optional.ofNullable(rs.getString("mobile_options"))
-                .map(ContactOptions::valueOf).orElse(null))
+                        .map(ContactOptions::valueOf).orElse(ContactOptions.EVERYTHING))
                 .setAlternatePhone(rs.getString("phone_alternate"))
                 .setAlternateOptions(Optional.ofNullable(rs.getString("alternate_options"))
-                .map(ContactOptions::valueOf).orElse(null))
+                        .map(ContactOptions::valueOf).orElse(ContactOptions.EVERYTHING))
                 .setPersonalEmail(rs.getString("email_personal"))
                 .setAlternateEmail(rs.getString("email_alternate"));
         return builder.build();
