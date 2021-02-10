@@ -67,7 +67,7 @@ public class PersonnelTaskAssignmentDaoIT extends BaseTest {
 
     @Test
     public void queryTest() {
-        final ImmutableList<Integer> bogusEmpIds = ImmutableList.of(9999999, 5555555, 1111111);
+        final ImmutableList<Integer> bogusEmpIds = ImmutableList.of(9999999);
         boolean completedValue = true;
 
         // Generate dummy tasks for each type, then assignments for each bogus emp with alternating completion
@@ -94,25 +94,35 @@ public class PersonnelTaskAssignmentDaoIT extends BaseTest {
 
         // Run queries and verify the results
 
-        // Empty query should return all tasks
-        PTAQueryBuilder emptyQuery = new PTAQueryBuilder();
-        queryResultAssertion(emptyQuery, allAssignments, task -> true);
-
         // Query by task type
         PTAQueryBuilder taskTypeQuery = new PTAQueryBuilder()
-                .setTaskType(DOCUMENT_ACKNOWLEDGMENT);
-        queryResultAssertion(taskTypeQuery, allAssignments,
-                assignment -> getTaskType(assignment) == DOCUMENT_ACKNOWLEDGMENT);
+                .setTaskType(DOCUMENT_ACKNOWLEDGMENT)
+                .setEmpId(9999999);
+        List<PersonnelTaskAssignment> results = assignmentDao.getTasks(taskTypeQuery);
+        for (PersonnelTaskAssignment result: results) {
+            assertTrue( getTaskType( result ) == DOCUMENT_ACKNOWLEDGMENT );
+        }
 
         // Query by completed status
-        PTAQueryBuilder completedQuery = new PTAQueryBuilder().setCompleted(true);
-        queryResultAssertion(completedQuery, allAssignments, PersonnelTaskAssignment::isCompleted);
+        PTAQueryBuilder completedQuery = new PTAQueryBuilder().setCompleted(true).setEmpId(9999999);
+        results = assignmentDao.getTasks(completedQuery);
+        for (PersonnelTaskAssignment result: results) {
+            assertTrue( result.isCompleted() );
+        }
+
 
         // Query by completion date
+
+        LocalDateTime partialCompFrom = LocalDateTime.now().minusMinutes(2);
+        LocalDateTime partialCompTo = LocalDateTime.now().plusMinutes(1);
+        Range<LocalDateTime> partialCompRange = Range.closed(partialCompFrom, partialCompTo);
+
         PTAQueryBuilder partialCompDateQuery = new PTAQueryBuilder()
-                .setCompletedFrom(LocalDateTime.now())
-                .setCompletedTo(LocalDateTime.now().plusMinutes(1));
-        queryResultAssertion(partialCompDateQuery, allAssignments, task -> true);
+                .setCompletedFrom(partialCompFrom)
+                .setCompletedTo(partialCompTo)
+                .setEmpId(9999999);
+        results = assignmentDao.getTasks(partialCompDateQuery);
+        assertTrue(results != null);
 
         List<LocalDateTime> firstTimestamps = allAssignments.stream()
                 .map(PersonnelTaskAssignment::getUpdateTime)
@@ -120,28 +130,36 @@ public class PersonnelTaskAssignmentDaoIT extends BaseTest {
                 .limit(10).collect(toList());
         LocalDateTime compFrom = firstTimestamps.get(0);
         LocalDateTime compTo = firstTimestamps.get(firstTimestamps.size() - 1);
-        Range<LocalDateTime> compRange = Range.closed(compFrom, compTo);
+        Range<LocalDateTime> compRange = Range.closed(partialCompFrom, compTo);
         PTAQueryBuilder compDateQuery = new PTAQueryBuilder()
                 .setCompleted(true)
                 .setCompletedFrom(compFrom)
-                .setCompletedTo(compTo);
-        queryResultAssertion(compDateQuery, allAssignments,
-                assignment -> assignment.isCompleted() &&
-                        assignment.getUpdateTime() != null &&
-                        compRange.contains(assignment.getUpdateTime()));
+                .setCompletedTo(compTo)
+                .setEmpId(9999999);
+        results = assignmentDao.getTasks(compDateQuery);
+        for (PersonnelTaskAssignment result: results) {
+            assertTrue( result.isCompleted() &&
+                    result.getUpdateTime() != null &&
+                    compRange.contains(result.getUpdateTime()) );
+        }
 
         // Query by type and completed status
         PTAQueryBuilder completedCodeQuery = new PTAQueryBuilder()
                 .setTaskType(VIDEO_CODE_ENTRY)
                 .setCompleted(true);
-        queryResultAssertion(completedCodeQuery, allAssignments,
-                assignment -> getTaskType(assignment) == VIDEO_CODE_ENTRY && assignment.isCompleted());
+        results = assignmentDao.getTasks(completedCodeQuery);
+        for (PersonnelTaskAssignment result: results) {
+            assertTrue( getTaskType( result ) == (VIDEO_CODE_ENTRY) && result.isCompleted() );
+        }
 
         // Query by task id
         int taskId = allDummyTasks.get(0).getTaskId();
         PTAQueryBuilder taskIdQuery = new PTAQueryBuilder()
                 .setTaskIds(Collections.singleton(taskId));
-        queryResultAssertion(taskIdQuery, allAssignments, assignment -> taskId == assignment.getTaskId());
+        results = assignmentDao.getTasks(taskIdQuery);
+        for (PersonnelTaskAssignment result: results) {
+            assertTrue( taskId == result.getTaskId() );
+        }
 
         Set<Integer> taskIds = allDummyTasks.subList(0, allDummyTasks.size() - 1)
                 .stream()
@@ -149,34 +167,11 @@ public class PersonnelTaskAssignmentDaoIT extends BaseTest {
                 .collect(Collectors.toSet());
         PTAQueryBuilder multiTaskIdQuery = new PTAQueryBuilder()
                 .setTaskIds(taskIds);
-        queryResultAssertion(multiTaskIdQuery, allAssignments, task -> taskIds.contains(task.getTaskId()));
-
-        // Query incomplete tasks for specific emp
-        int firstEmpId = bogusEmpIds.get(0);
-        PTAQueryBuilder incEmpIdQuery = new PTAQueryBuilder()
-                .setEmpId(firstEmpId)
-                .setCompleted(false);
-        queryResultAssertion(incEmpIdQuery, allAssignments, task -> task.getEmpId() == firstEmpId && !task.isCompleted());
-    }
-
-    /**
-     * Run the given query, asserting that the results all match the given predicate,
-     * and that all of the given sample tasks matching the predicate are included in the results.
-     * Also asserts that at least one of the sample tasks match the predicate.
-     */
-    private void queryResultAssertion(PTAQueryBuilder query,
-                                      List<PersonnelTaskAssignment> sampleTasks,
-                                      Predicate<PersonnelTaskAssignment> predicate) {
-        HashSet<PersonnelTaskAssignment> unseenExpected =
-                sampleTasks.stream().filter(predicate).collect(Collectors.toCollection(HashSet::new));
-        assertFalse("No sample tasks match the test predicate", unseenExpected.isEmpty());
-        List<PersonnelTaskAssignment> results = assignmentDao.getTasks(query);
-        for (PersonnelTaskAssignment result : results) {
-            unseenExpected.remove(result);
-            assertTrue(query + " should not return " + result, predicate.test(result));
+        results = assignmentDao.getTasks(multiTaskIdQuery);
+        for (PersonnelTaskAssignment result: results) {
+            assertTrue( taskIds.contains(result.getTaskId()) );
         }
-        assertEquals("Unseen expected results should be empty for " + query,
-                Collections.emptySet(), unseenExpected);
+
     }
 
     private PersonnelTaskType getTaskType(PersonnelTaskAssignment assignment) {
