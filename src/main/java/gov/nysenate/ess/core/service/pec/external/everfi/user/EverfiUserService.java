@@ -32,9 +32,9 @@ public class EverfiUserService {
     private EverfiUserDao everfiUserDao;
     private SendMailService sendMailService;
     private static final Logger logger = LoggerFactory.getLogger(EverfiUserService.class);
-    private HashMap<String,EverfiUser> badEmpIDEverfiUsers = new HashMap<>();
-    private HashMap<String,EverfiUser> badEmailEverfiUsers = new HashMap<>();
-    private HashMap<String,EverfiUser> manualReviewUUIDs = new HashMap<>();
+    private HashMap<String, EverfiUser> badEmpIDEverfiUsers = new HashMap<>();
+    private HashMap<String, EverfiUser> badEmailEverfiUsers = new HashMap<>();
+    private HashMap<String, EverfiUser> manualReviewUUIDs = new HashMap<>();
     private List<EverfiUserIDs> ignoredEverfiUserIDs;
     private EverfiCategoryService categoryService;
 
@@ -104,8 +104,8 @@ public class EverfiUserService {
         List<EverfiCategoryLabel> normalizedCategoryLabels = this.categoryService.normalizeUsersCategoryLabel(everfiUser.getUserCategoryLabels());
         everfiUser.setUserCategoryLabels(normalizedCategoryLabels);
 
-        EverfiUpdateUserRequest activationStatusRequest = new EverfiUpdateUserRequest(everfiApiClient,everfiUser.getUuid(),
-                everfiUser.getEmployeeId(),everfiUser.getFirstName(),everfiUser.getLastName(), everfiUser.getEmail(),
+        EverfiUpdateUserRequest activationStatusRequest = new EverfiUpdateUserRequest(everfiApiClient, everfiUser.getUuid(),
+                everfiUser.getEmployeeId(), everfiUser.getFirstName(), everfiUser.getLastName(), everfiUser.getEmail(),
                 null, everfiUser.getUserCategoryLabels(), activeStatus);
 
         activationStatusRequest.updateUser();
@@ -113,6 +113,7 @@ public class EverfiUserService {
 
     /**
      * Returns a list of all new employees that must be added to Everfi. Usually called thru cron
+     *
      * @return
      */
     public List<Employee> getNewEmployeesToAddToEverfi() {
@@ -147,63 +148,61 @@ public class EverfiUserService {
      * @throws IOException
      */
     public void getEverfiUserIds() throws IOException {
-        if (everfiSyncEnabled) {
 
-            //Check if first time run
-            int everfiUserRecordCount = everfiUserDao.everfiUserIDCount();
+        //Check if first time run
+        int everfiUserRecordCount = everfiUserDao.everfiUserIDCount();
 
-            EverfiUsersRequest request = new EverfiUsersRequest(everfiApiClient, 1, 1000);
-            List<EverfiUser> everfiUsers;
-            logger.info("Contacting Everfi for User records");
-            this.badEmpIDEverfiUsers.clear();
-            this.badEmailEverfiUsers.clear();
-            this.manualReviewUUIDs.clear();
+        EverfiUsersRequest request = new EverfiUsersRequest(everfiApiClient, 1, 1000);
+        List<EverfiUser> everfiUsers;
+        logger.info("Contacting Everfi for User records");
+        this.badEmpIDEverfiUsers.clear();
+        this.badEmailEverfiUsers.clear();
+        this.manualReviewUUIDs.clear();
 
-            while (request != null) {
-                //Contact everfi api
-                everfiUsers = request.getUsers();
+        while (request != null) {
+            //Contact everfi api
+            everfiUsers = request.getUsers();
 
-                //Process records / insert into db
-                handleUserRecords(everfiUsers);
+            //Process records / insert into db
+            handleUserRecords(everfiUsers);
 
-                //Get next batch of records
-                request = request.next();
-            }
-            ensureNonManualReviewIDs();
-            logger.info("Imported Everfi User ID's");
-            
-            if (everfiUserRecordCount != 0) {
-                //Bad empID is 0 dont send email
-                //App props to include bad or custom email reporting
-                String everfiEmpIDWarning = "There are " + this.badEmpIDEverfiUsers.size() +
-                        " UUID's that have bad EMP IDs.\n" + this.badEmpIDEverfiUsers.values().toString() + "\n";
-
-                String everfiEmailWarning = "There are " + this.badEmailEverfiUsers.size() +
-                        " UUID's that have bad emails. \n" + this.badEmailEverfiUsers.values().toString() + "\n";
-                logger.warn(everfiEmpIDWarning);
-                logger.warn(everfiEmailWarning);
-
-                if (this.badEmpIDEverfiUsers.size() != 0) {
-                    sendEmail(mailToAddress.trim(),"Bad EMP ID data in Everfi Users",
-                            everfiEmpIDWarning);
-                }
-                if (everfiBadEmailReportEnabled) {
-                    sendEmail(mailToAddress.trim(),"Bad email data in Everfi Users",
-                            everfiEmailWarning);
-                }
-
-                logger.info("Beginning Everfi Import Data correction");
-                handleEverfiUsersWithBadEmpID();
-                handleEverfiUsersWithBadEmail();
-
-                if (this.manualReviewUUIDs.size() != 0) {
-                    sendEmail(mailToAddress.trim(),"Data in Everfi Users that REQUIRE manual review",
-                            this.manualReviewUUIDs.values().toString());
-                }
-                logger.info("Finished bad import data correction");
-            }
-            logger.info("Completed Everfi ID import");
+            //Get next batch of records
+            request = request.next();
         }
+        ensureNonManualReviewIDs();
+        logger.info("Imported Everfi User ID's");
+
+        if (everfiUserRecordCount != 0 && everfiSyncEnabled) {
+            //Bad empID is 0 dont send email
+            //App props to include bad or custom email reporting
+            String everfiEmpIDWarning = "There are " + this.badEmpIDEverfiUsers.size() +
+                    " UUID's that have bad EMP IDs.\n" + this.badEmpIDEverfiUsers.values().toString() + "\n";
+
+            String everfiEmailWarning = "There are " + this.badEmailEverfiUsers.size() +
+                    " UUID's that have bad emails. \n" + this.badEmailEverfiUsers.values().toString() + "\n";
+            logger.warn(everfiEmpIDWarning);
+            logger.warn(everfiEmailWarning);
+
+            if (this.badEmpIDEverfiUsers.size() != 0) {
+                sendEmail(mailToAddress.trim(), "Bad EMP ID data in Everfi Users",
+                        everfiEmpIDWarning);
+            }
+            if (everfiBadEmailReportEnabled) {
+                sendEmail(mailToAddress.trim(), "Bad email data in Everfi Users",
+                        everfiEmailWarning);
+            }
+
+            logger.info("Beginning Everfi Import Data correction");
+            handleEverfiUsersWithBadEmpID();
+            handleEverfiUsersWithBadEmail();
+
+            if (this.manualReviewUUIDs.size() != 0) {
+                sendEmail(mailToAddress.trim(), "Data in Everfi Users that REQUIRE manual review",
+                        this.manualReviewUUIDs.values().toString());
+            }
+            logger.info("Finished bad import data correction");
+        }
+        logger.info("Completed Everfi ID import");
     }
 
     private void sendEmail(String to, String subject, String html) {
@@ -217,10 +216,10 @@ public class EverfiUserService {
      */
     private void ensureNonManualReviewIDs() {
         this.badEmpIDEverfiUsers.entrySet()
-                .removeIf( entry -> (this.manualReviewUUIDs.containsKey(entry.getKey())));
+                .removeIf(entry -> (this.manualReviewUUIDs.containsKey(entry.getKey())));
 
         this.badEmailEverfiUsers.entrySet()
-                .removeIf( entry -> (this.manualReviewUUIDs.containsKey(entry.getKey())));
+                .removeIf(entry -> (this.manualReviewUUIDs.containsKey(entry.getKey())));
     }
 
     public void handleEverfiUsersWithBadEmpID() {
@@ -264,7 +263,7 @@ public class EverfiUserService {
         for (EverfiUser everfiUser : everfiUsers) {
             String UUID = everfiUser.getUuid();
 
-            if ( !isEverfiIdIgnored(UUID) ) { //!ignored
+            if (!isEverfiIdIgnored(UUID)) { //!ignored
 
                 try {
                     Integer empid = getEmployeeId(everfiUser);
@@ -338,7 +337,7 @@ public class EverfiUserService {
         return empid;
     }
 
-    private void addBadEverfiUser(EverfiUser everfiUser, HashMap<String,EverfiUser> badList) {
+    private void addBadEverfiUser(EverfiUser everfiUser, HashMap<String, EverfiUser> badList) {
         if (!badList.containsKey(everfiUser.getUuid())) {
             badList.put(everfiUser.getUuid(), everfiUser);
         }
@@ -382,10 +381,9 @@ public class EverfiUserService {
             String properEmail = "";
 
             if (emp.getEmail().endsWith("@nysenate.gov") && everfiUser.getEmail().endsWith("@nysenate.gov")
-                    && !emp.getEmail().equals( everfiUser.getEmail() ) ) {
+                    && !emp.getEmail().equals(everfiUser.getEmail())) {
                 properEmail = emp.getEmail();
-            }
-            else {
+            } else {
                 properEmail = everfiUser.getEmail();
             }
 
@@ -417,8 +415,7 @@ public class EverfiUserService {
             for (EverfiUser everfiUser : everfiUsers) {
                 try {
                     updateEverfiUserWithEmpData(getEmployeeId(everfiUser), everfiUser);
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     logger.warn("error " + e);
                 }
             }
