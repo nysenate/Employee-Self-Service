@@ -112,6 +112,23 @@
 
         }
 
+        function EverfiCourse(task) {
+            PersonnelTask.apply(this, arguments);
+
+            this.getActionUrl = function () {
+                // fixme URL in app props
+                return 'https://admin.fifoundry.net/en/new-york-senate/sign_in';
+            };
+
+            this.getCourseUrl = function () {
+                return task.url;
+            };
+
+            this.getIconClass = function () {
+                return 'icon-graduation-cap';
+            }
+        }
+
         /**
          * Parse the task json into the appropriate PersonnelTask
          *
@@ -127,6 +144,8 @@
                     return new MoodleTask(task);
                 case 'VIDEO_CODE_ENTRY':
                     return new VideoCodeTask(task);
+                case 'EVERFI_COURSE':
+                    return new EverfiCourse(task);
                 default:
                     console.error("Unknown task type '" + taskType + "'!");
                     return new PersonnelTask(task);
