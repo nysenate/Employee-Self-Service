@@ -150,19 +150,6 @@
       </div>
     </modal>
 
-    <%-- Review detail modals --%>
-    <modal modal-id="ess-lodging-details-modal">
-      <div ess-lodging-details-modal></div>
-    </modal>
-
-    <modal modal-id="ess-meal-details-modal">
-      <div ess-meal-details-modal></div>
-    </modal>
-
-    <modal modal-id="ess-mileage-details-modal">
-      <div ess-mileage-details-modal></div>
-    </modal>
-
     <modal modal-id="external-api-error">
       <div error-modal
            title="Communication Error"

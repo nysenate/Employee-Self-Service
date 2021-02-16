@@ -127,17 +127,90 @@
 
         <div class="app-form-allowances-box">
           <h4 style="margin: 0px 0px 10px 0px; text-align: center;">Estimated Travel Costs</h4>
-          <label>
-            Transportation ({{app.activeAmendment.route.mileagePerDiems.totalMileage}} Miles)
-          </label>
-          <span>{{(app.activeAmendment.transportationAllowance | currency) || NOT_AVAILABLE}}</span><br/>
-          <label>Food</label><span>{{(app.activeAmendment.mealAllowance | currency) || NOT_AVAILABLE}}</span><br/>
-          <label>Lodging</label><span>{{(app.activeAmendment.lodgingAllowance | currency) || NOT_AVAILABLE}}</span><br/>
-          <label>Parking/Tolls</label><span>{{(app.activeAmendment.tollsAndParkingAllowance | currency) || NOT_AVAILABLE}}</span><br/>
-          <label>Taxi/Bus/Subway</label><span>{{(app.activeAmendment.alternateTransportationAllowance | currency) || NOT_AVAILABLE}}</span><br/>
-          <label>Registration
-            Fee</label><span>{{(app.activeAmendment.registrationAllowance | currency) || NOT_AVAILABLE}}</span><br/>
-          <label>TOTAL</label><span>{{(app.activeAmendment.totalAllowance | currency) || NOT_AVAILABLE}}</span><br/>
+          <table>
+            <tbody>
+            <tr>
+              <td class="label">
+                <label for="transportation-expense">
+                  Transportation ({{app.activeAmendment.route.mileagePerDiems.totalMileage}} Miles)
+                </label>
+              </td>
+              <td class="price">
+                <span
+                    id="transportation-expense">{{(app.activeAmendment.transportationAllowance | currency) || NOT_AVAILABLE}}</span>
+              </td>
+              <td>
+                <ess-transportation-summary-popover amd="app.activeAmendment" />
+              </td>
+            </tr>
+            <tr>
+              <td class="label">
+                <label>Food</label>
+              </td>
+              <td class="price">
+                <span>{{(app.activeAmendment.mealAllowance | currency) || NOT_AVAILABLE}}</span>
+              </td>
+              <td>
+                <ess-meal-summary-popover amd="app.activeAmendment" />
+              </td>
+            </tr>
+            <tr>
+              <td class="label">
+                <label>Lodging</label>
+              </td>
+              <td class="price">
+                <span>{{(app.activeAmendment.lodgingAllowance | currency) || NOT_AVAILABLE}}</span>
+              </td>
+              <td>
+                <ess-lodging-summary-popover amd="app.activeAmendment" />
+              </td>
+            </tr>
+            <tr>
+              <td class="label">
+                <label>Parking/Tolls</label>
+              </td>
+              <td class="price">
+                <span>{{(app.activeAmendment.tollsAndParkingAllowance | currency) || NOT_AVAILABLE}}</span>
+              </td>
+              <td>
+                &nbsp;
+              </td>
+            </tr>
+            <tr>
+              <td class="label">
+                <label>Taxi/Bus/Subway</label>
+              </td>
+              <td class="price">
+                <span>{{(app.activeAmendment.alternateTransportationAllowance | currency) || NOT_AVAILABLE}}</span>
+              </td>
+              <td>
+                &nbsp;
+              </td>
+            </tr>
+            <tr>
+              <td class="label">
+                <label>Registration Fee</label>
+              </td>
+              <td class="price">
+                <span>{{(app.activeAmendment.registrationAllowance | currency) || NOT_AVAILABLE}}</span>
+              </td>
+              <td>
+                &nbsp;
+              </td>
+            </tr>
+            <tr>
+              <td class="label">
+                <label>TOTAL</label>
+              </td>
+              <td class="price">
+                <span>{{(app.activeAmendment.totalAllowance | currency) || NOT_AVAILABLE}}</span>
+              </td>
+              <td>
+                &nbsp;
+              </td>
+            </tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
@@ -156,7 +229,8 @@
           <span> </span>
         </div>
         <div class="app-form-row-l-col">
-          <a ng-href="${ctxPath}/api/v1/travel/application/attachment/{{attachment.filename}}" target="_blank">{{attachment.originalName}}</a>
+          <a ng-href="${ctxPath}/api/v1/travel/application/attachment/{{attachment.filename}}"
+             target="_blank">{{attachment.originalName}}</a>
         </div>
       </div>
 

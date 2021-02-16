@@ -42,16 +42,12 @@
       </div>
 
       <div class="travel-button-container">
-        <a class="margin-10" target="_blank" ng-click="vm.viewExpenseSummary(vm.data.app)">Expense Summary</a>
         <a class="margin-10 margin-right-20" target="_blank"
            ng-href="${ctxPath}/api/v1/travel/application/{{vm.data.app.id}}.pdf">Print</a>
       </div>
     </div>
 
     <div modal-container>
-      <modal modal-id="app-expense-summary-modal">
-        <div app-expense-summary-modal></div>
-      </modal>
     </div>
 
   </div>

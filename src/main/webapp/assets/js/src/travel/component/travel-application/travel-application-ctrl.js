@@ -19,10 +19,4 @@ function travelAppCtrl($scope, $routeParams, modals, appApi) {
             vm.data.isAuthorized = false;
         })
     })();
-
-    vm.viewExpenseSummary = function (app) {
-        modals.open("app-expense-summary-modal", app, true)
-            .catch(function () {
-            });
-    }
 }

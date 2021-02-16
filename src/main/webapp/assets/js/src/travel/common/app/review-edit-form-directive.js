@@ -37,18 +37,6 @@ function reviewEditForm($compile, appProps, modals) {
                 scope.negativeCallback({amendment: scope.reviewAmendment});
             };
 
-            scope.displayLodgingDetails = function () {
-                modals.open('ess-lodging-details-modal', {amendment: scope.reviewAmendment}, true);
-            };
-
-            scope.displayMealDetails = function () {
-                modals.open('ess-meal-details-modal', {amendment: scope.reviewAmendment}, true);
-            };
-
-            scope.displayMileageDetails = function () {
-                modals.open('ess-mileage-details-modal', {amendment: scope.reviewAmendment}, true);
-            };
-
             function displayMap() {
 
                 var map;

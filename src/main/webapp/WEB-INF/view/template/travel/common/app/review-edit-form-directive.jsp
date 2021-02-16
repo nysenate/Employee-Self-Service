@@ -148,33 +148,21 @@
         </div>
         <div class="col-6-12 margin-bottom-5">
           {{reviewAmendment.mealAllowance | currency}}
-          <span ng-if="reviewAmendment.mealAllowance > 0"
-                class="icon-info pointer"
-                ng-click="displayMealDetails()"
-                title="View detailed meal expense info">
-          </span>
+          <ess-meal-summary-popover amd="reviewAmendment" />
         </div>
         <div class="col-6-12 margin-bottom-5">
           Lodging:
         </div>
         <div class="col-6-12 margin-bottom-5">
           {{reviewAmendment.lodgingAllowance | currency}}
-          <span ng-if="reviewAmendment.lodgingAllowance > 0"
-                class="icon-info pointer"
-                ng-click="displayLodgingDetails()"
-                title="View detailed lodging expense info">
-          </span>
+          <ess-lodging-summary-popover amd="reviewAmendment" />
         </div>
         <div class="col-6-12 margin-bottom-5">
           Mileage:
         </div>
         <div class="col-6-12 margin-bottom-5">
           {{reviewAmendment.mileageAllowance | currency}}
-          <span ng-if="reviewAmendment.mileageAllowance > 0"
-                class="icon-info pointer"
-                ng-click="displayMileageDetails()"
-                title="View detailed mileage expense info">
-          </span>
+          <ess-transportation-summary-popover amd="reviewAmendment" />
         </div>
         <div class="col-6-12 margin-bottom-5">
           Tolls:

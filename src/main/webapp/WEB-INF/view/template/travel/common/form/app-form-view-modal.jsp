@@ -29,7 +29,6 @@
   </div>
 
   <div class="travel-button-container">
-    <a class="margin-10" target="_blank" ng-click="viewExpenseSummary(app)">Expense Summary</a>
     <a class="margin-10 margin-right-20" target="_blank"
        ng-href="${ctxPath}/api/v1/travel/application/{{app.id}}.pdf">Print</a>
     <input type="button"

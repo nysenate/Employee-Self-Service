@@ -58,9 +58,6 @@
       <modal modal-id="app-review-view-modal">
         <div app-review-view-modal></div>
       </modal>
-      <modal modal-id="app-expense-summary-modal">
-        <div app-expense-summary-modal></div>
-      </modal>
     </div>
 
   </div>
