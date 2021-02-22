@@ -30,6 +30,7 @@
             <thead>
             <tr>
               <th></th>
+              <th>Role</th>
               <th>Employee</th>
               <th>Start Date</th>
               <th>End Date</th>
@@ -39,6 +40,12 @@
             <tr ng-repeat="d in vm.data.activeDelegations">
               <td ng-click="vm.deleteDelegation($index)" class="icon-cross"
                   style="font-size: 18px; cursor: pointer;"></td>
+              <td>
+                <select ng-model="d.role"
+                        ng-options="role as role.displayName for role in vm.data.roles track by role.name">
+                </select>
+              </td>
+
               <td style="width: 250px;">
               <span ng-show="d.delegate == undefined">
                 <ui-select ng-model="d.delegate" style="min-width:175px;">

@@ -23,7 +23,7 @@ function reviewController($scope, $q, modals, locationService, appReviewApi, rol
     (function init() {
         roleService.roles()
             .then(function (response) {
-                vm.userRoles = _.uniq(response.roles, function (r) { return r.name}); // Unique roles.
+                vm.userRoles = _.uniq(response.allRoles, function (r) { return r.name}); // Unique roles.
                 queryPendingAppReviews()
                     .then(getSharedReviews)
                     .then(initAppIdToReviewMap)

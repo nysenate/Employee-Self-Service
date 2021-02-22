@@ -6,6 +6,7 @@ import gov.nysenate.ess.core.dao.base.BasicSqlQuery;
 import gov.nysenate.ess.core.dao.base.DbVendor;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
+import gov.nysenate.ess.travel.authorization.role.TravelRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -84,6 +85,7 @@ public class SqlDelegationDao extends SqlBaseDao implements DelegationDao {
 
     private void insertDelegation(Delegation delegation) {
         MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("role", delegation.role.name())
                 .addValue("principalEmpId", delegation.principal.getEmployeeId())
                 .addValue("delegateEmpId", delegation.delegate.getEmployeeId())
                 .addValue("startDate", toDate(delegation.startDate))
@@ -96,19 +98,19 @@ public class SqlDelegationDao extends SqlBaseDao implements DelegationDao {
 
     private enum SqlDelegateQuery implements BasicSqlQuery {
         SELECT_DELEGATES(
-                "SELECT delegation_id, principal_emp_id, delegate_emp_id, start_date, end_date\n" +
+                "SELECT delegation_id, role, principal_emp_id, delegate_emp_id, start_date, end_date\n" +
                         " FROM ${travelSchema}.delegation\n" +
                         " WHERE principal_emp_id = :principalId"
         ),
         INSERT_DELEGATION(
-                "INSERT INTO ${travelSchema}.delegation(principal_emp_id, delegate_emp_id, start_date, end_date)\n" +
-                        " VALUES(:principalEmpId, :delegateEmpId, :startDate, :endDate)"
+                "INSERT INTO ${travelSchema}.delegation(role, principal_emp_id, delegate_emp_id, start_date, end_date)\n" +
+                        " VALUES(:role, :principalEmpId, :delegateEmpId, :startDate, :endDate)"
         ),
         DELETE_DELEGATIONS_FOR_PRINCIPAL(
                 "DELETE FROM ${travelSchema}.delegation WHERE principal_emp_id = :principalId"
         ),
         SELECT_BY_DELEGATE_EMP_ID(
-                "SELECT delegation_id, principal_emp_id, delegate_emp_id, start_date, end_date\n" +
+                "SELECT delegation_id, role, principal_emp_id, delegate_emp_id, start_date, end_date\n" +
                         " FROM ${travelSchema}.delegation\n" +
                         " WHERE delegate_emp_id = :delegateEmpId"
         );
@@ -142,6 +144,7 @@ public class SqlDelegationDao extends SqlBaseDao implements DelegationDao {
         public Delegation mapRow(ResultSet rs, int i) throws SQLException {
             return new Delegation(
                     rs.getInt("delegation_id"),
+                    TravelRole.valueOf(rs.getString("role")),
                     employeeInfoService.getEmployee(rs.getInt("principal_emp_id")),
                     employeeInfoService.getEmployee(rs.getInt("delegate_emp_id")),
                     getLocalDateFromRs(rs, "start_date"),

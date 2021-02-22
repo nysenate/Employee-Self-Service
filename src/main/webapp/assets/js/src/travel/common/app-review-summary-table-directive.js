@@ -21,7 +21,7 @@ essTravel.directive('essAppReviewSummaryTable', ['appProps', 'TravelRoleService'
 
             roleService.roles()
                 .then(function (response) {
-                    roles = response.roles;
+                    roles = response.allRoles;
                 });
 
             /**

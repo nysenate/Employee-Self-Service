@@ -85,11 +85,8 @@ public class TravelRoleFactory implements RoleFactory {
         List<TravelRole> delegatedRoles = new ArrayList<>();
         List<Delegation> delegations = delegateDao.findByDelegateEmpId(employee.getEmployeeId());
         List<Delegation> active = delegations.stream().filter(Delegation::isActive).collect(Collectors.toList());
-
-        for (Delegation d : active) {
-            delegatedRoles.addAll(primaryRoles(d.principal()));
-        }
-
-        return delegatedRoles;
+        return active.stream()
+                .map(d -> d.role())
+                .collect(Collectors.toList());
     }
 }

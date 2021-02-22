@@ -11,7 +11,7 @@ function travelBadgeCtrl($scope, badgeService, appReviewApi, roleService) {
     (function init() {
         roleService.roles()
             .then(function (response) {
-                roles = response.roles.map(function (role) {
+                roles = response.allRoles.map(function (role) {
                     return role.name;
                 });
                 // Ensure the badge has been updated after we have the correct roles.

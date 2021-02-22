@@ -1,9 +1,9 @@
 var essTravel = angular.module('essTravel');
 
 essTravel.controller('DelegationCtrl',
-                     ['$scope', '$timeout', 'appProps', 'DelegationApi', 'ActiveEmployeeApi', delegationCtrl]);
+                     ['$scope', '$timeout', 'appProps', 'DelegationApi', 'ActiveEmployeeApi', 'TravelRoleService', delegationCtrl]);
 
-function delegationCtrl($scope, $timeout, appProps, delegationApi, empApi) {
+function delegationCtrl($scope, $timeout, appProps, delegationApi, empApi, roleService) {
 
     const DATEPICKER_FORMAT = "MM/DD/YYYY";
 
@@ -12,13 +12,22 @@ function delegationCtrl($scope, $timeout, appProps, delegationApi, empApi) {
         displaySavedMessage: false,
         activeDelegations: [],
         allowedDelegates: [], // Employees who are allowed to be assigned as a delegate of the current user.
+        roles: [], // Primary roles of the logged in employee.
         isLoading: true
     };
 
     (function () {
-        setActiveDelegations();
+        setUserRoles()
+            .then(setActiveDelegations);
         setAllowedDelegates();
     })();
+
+    function setUserRoles() {
+        return roleService.roles()
+            .then(function (response) {
+                vm.data.roles = response.primary;
+            })
+    }
 
     function setActiveDelegations() {
         delegationApi.findDelegationsByPrincipalId(appProps.user.employeeId).$promise
@@ -73,6 +82,7 @@ function delegationCtrl($scope, $timeout, appProps, delegationApi, empApi) {
 
     function Delegation () {
         this.id = 0;
+        this.role = vm.data.roles[0];
         this.delegate = undefined;
         this.useStartDate = false;
         this.startDate = undefined;

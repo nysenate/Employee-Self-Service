@@ -2,27 +2,34 @@ package gov.nysenate.ess.travel.delegate;
 
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.model.personnel.Employee;
+import gov.nysenate.ess.travel.authorization.role.TravelRole;
 
 import java.time.LocalDate;
 
 public class Delegation {
 
     protected int id;
+    protected TravelRole role;
     protected Employee principal;
     protected Employee delegate;
     protected LocalDate startDate;
     protected LocalDate endDate;
 
-    public Delegation(int id, Employee principal, Employee delegate, LocalDate startDate, LocalDate endDate) {
+    public Delegation(int id, TravelRole role, Employee principal, Employee delegate, LocalDate startDate, LocalDate endDate) {
         this.id = id;
+        this.role = role;
         this.principal = principal;
         this.delegate = delegate;
         this.startDate = startDate;
         this.endDate = endDate;
     }
 
-    public Delegation(Employee principal, Employee delegate, LocalDate startDate, LocalDate endDate) {
-        this(0, principal, delegate, startDate, endDate);
+    public Delegation(TravelRole role, Employee principal, Employee delegate, LocalDate startDate, LocalDate endDate) {
+        this(0, role, principal, delegate, startDate, endDate);
+    }
+
+    public TravelRole role() {
+        return role;
     }
 
     /**
