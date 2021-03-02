@@ -5,7 +5,9 @@ import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.pec.external.everfi.EverfiRecordService;
 import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategoryService;
+import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUser;
 import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUserService;
+import gov.nysenate.ess.core.service.pec.external.everfi.user.add.EverfiAddUserRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +25,7 @@ import static gov.nysenate.ess.core.model.auth.SimpleEssPermission.ADMIN;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 @RestController
-@RequestMapping(BaseRestApiCtrl.REST_PATH + "/everfi/")
+@RequestMapping(BaseRestApiCtrl.REST_PATH + "/everfi")
 public class EverfiApiCtrl extends BaseRestApiCtrl {
 
     private EverfiRecordService everfiRecordService;
@@ -265,6 +267,28 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
         everfiUserService.changeActiveStatusForUserWithUUID(uuid, status);
         return new SimpleResponse(true, "Everfi User Active Status Updated",
                 "everfi-user-active-status-update");
+    }
+
+    /**
+     * Everfi - Inactivate employees
+     * ----------------------------------------------------------
+     *
+     * Get recently inactivated employees in and update them in Everfi
+     *
+     * Usage:
+     * (GET)    /api/v1/everfi/inactivate/employees
+     *
+     *
+     * @return String
+     */
+    @RequestMapping(value = "/inactivate/employees", method = {GET})
+    @ResponseStatus(value = HttpStatus.OK)
+    public SimpleResponse handleInactivatedEmployeesInEverfi(HttpServletRequest request,
+                                                HttpServletResponse response) throws Exception {
+        checkPermission(ADMIN.getPermission());
+        everfiUserService.handleInactivatedEmployeesInEverfi();
+        return new SimpleResponse(true, "Updated inactive employees in Everfi",
+                "updated-inactive-employees-in-everfi");
     }
 
     private LocalDateTime stringToLocalDateTime(String time) {

@@ -7,6 +7,7 @@ import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.personnel.EmployeeNotFoundEx;
 import gov.nysenate.ess.core.service.mail.SendMailService;
 import gov.nysenate.ess.core.service.pec.external.everfi.EverfiApiClient;
+import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategory;
 import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategoryLabel;
 import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategoryService;
 import gov.nysenate.ess.core.service.pec.external.everfi.user.add.EverfiAddUserRequest;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -63,12 +65,22 @@ public class EverfiUserService {
     }
 
     @Scheduled(cron = "${scheduler.everfi.user.update.cron}")
-    public void runUpdateMethods() throws IOException {
+    public void runUpdateMethods() throws Exception {
         if (everfiSyncEnabled) {
+            //Inactivate employees on Everfi if any need to be inactivated
+            handleInactivatedEmployeesInEverfi();
             //Add new employees to Everfi
             addEmployeesToEverfi(getNewEmployeesToAddToEverfi());
             //Update our db with their UUID from Everfi
             getEverfiUserIds();
+        }
+    }
+
+    public void handleInactivatedEmployeesInEverfi() throws Exception {
+        List<Employee> inactiveEmployees = getRecentlyInactiveEmployees();
+
+        for (Employee employee : inactiveEmployees) {
+            changeActiveStatusForUserWithEmpID(employee.getEmployeeId(), false);
         }
     }
 
@@ -99,16 +111,51 @@ public class EverfiUserService {
                 new EverfiSingleUserRequest(everfiApiClient, everfiUserID.getEverfiUUID());
         EverfiUser everfiUser = everfiSingleUserRequest.getUser();
 
+        if (!everfiUser.isActive() && !activeStatus) {
+            return; //No need to deactivate someone who is deactivated
+        }
+
         //normalize category labels
         //Normalize labels that the everfi user already has. This prevents null pointer exception
         List<EverfiCategoryLabel> normalizedCategoryLabels = this.categoryService.normalizeUsersCategoryLabel(everfiUser.getUserCategoryLabels());
         everfiUser.setUserCategoryLabels(normalizedCategoryLabels);
 
-        EverfiUpdateUserRequest activationStatusRequest = new EverfiUpdateUserRequest(everfiApiClient, everfiUser.getUuid(),
-                everfiUser.getEmployeeId(), everfiUser.getFirstName(), everfiUser.getLastName(), everfiUser.getEmail(),
-                null, everfiUser.getUserCategoryLabels(), activeStatus);
+        if (activeStatus) {
+            //Set them to true
+            EverfiUpdateUserRequest activationStatusRequest = new EverfiUpdateUserRequest(everfiApiClient, everfiUser.getUuid(),
+                    everfiUser.getEmployeeId(), everfiUser.getFirstName(), everfiUser.getLastName(), everfiUser.getEmail(),
+                    null, everfiUser.getUserCategoryLabels(), true);
+            EverfiUser nowActiveUser = activationStatusRequest.updateUser();
 
-        activationStatusRequest.updateUser();
+            String changedEmail = "";
+            if (nowActiveUser.getEmail().endsWith("x")) {
+                changedEmail = nowActiveUser.getEmail().substring(0, nowActiveUser.getEmail().length() - 1);
+            }
+            else {
+                changedEmail = nowActiveUser.getEmail();
+            }
+
+            //change email back
+            EverfiUpdateUserRequest changeEmailRequest = new EverfiUpdateUserRequest(everfiApiClient, nowActiveUser.getUuid(),
+                    nowActiveUser.getEmployeeId(), nowActiveUser.getFirstName(), nowActiveUser.getLastName(), changedEmail,
+                    null, nowActiveUser.getUserCategoryLabels(), true);
+            EverfiUser changedEmailUser = changeEmailRequest.updateUser();
+
+        }
+        else {
+            //Change email
+            EverfiUpdateUserRequest changeEmailRequest = new EverfiUpdateUserRequest(everfiApiClient, everfiUser.getUuid(),
+                    everfiUser.getEmployeeId(), everfiUser.getFirstName(), everfiUser.getLastName(), everfiUser.getEmail() + "x",
+                    null, everfiUser.getUserCategoryLabels(), true);
+            EverfiUser changedEmailUser = changeEmailRequest.updateUser();
+
+            //Set them to inactive
+            EverfiUpdateUserRequest activationStatusRequest = new EverfiUpdateUserRequest(everfiApiClient, changedEmailUser.getUuid(),
+                    changedEmailUser.getEmployeeId(), changedEmailUser.getFirstName(), changedEmailUser.getLastName(), changedEmailUser.getEmail(),
+                    null, changedEmailUser.getUserCategoryLabels(), false);
+            activationStatusRequest.updateUser();
+
+        }
     }
 
     /**
@@ -140,6 +187,18 @@ public class EverfiUserService {
 
         return empsToAddToEverfi;
 
+    }
+
+    public List<Employee> getRecentlyInactiveEmployees() {
+        LocalDateTime oneWeekFromToday = LocalDateTime.now().minusDays(7);
+        List<Employee> allUpdatedEmpsInTheLastWeek = employeeDao.getUpdatedEmployees(oneWeekFromToday);
+        ArrayList<Employee> inactivatedEmployees = new ArrayList<>();
+        for (Employee employee : allUpdatedEmpsInTheLastWeek) {
+            if (!employee.isActive()) {
+                inactivatedEmployees.add(employee);
+            }
+        }
+        return inactivatedEmployees;
     }
 
     /**

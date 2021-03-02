@@ -243,7 +243,7 @@ public class EverfiCategoryService {
         return cat == null ? null : getCategoryLabel(cat, labelName);
     }
 
-    private EverfiCategory getCategory(String name) throws IOException {
+    public EverfiCategory getCategory(String name) throws IOException {
         for (EverfiCategory category : getCategories()) {
             if (category.getName().equals(name)) {
                 return category;
@@ -252,7 +252,7 @@ public class EverfiCategoryService {
         return null;
     }
 
-    private EverfiCategoryLabel getCategoryLabel(EverfiCategory category, String labelName) {
+    public EverfiCategoryLabel getCategoryLabel(EverfiCategory category, String labelName) {
         for (EverfiCategoryLabel label : category.getLabels()) {
             if (label.getLabelName().equals(labelName)) {
                 return label;
