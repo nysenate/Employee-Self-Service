@@ -44,6 +44,12 @@ public class EverfiRecordService implements ESSEverfiRecordService {
     @Value("${scheduler.everfi.sync.enabled:false}")
     private boolean everfiSyncEnabled;
 
+    @Value("${pec.everfi.2020_harassment_task_id}")
+    private int everfi_2020_harassment_task_id;
+
+    @Value("${pec.2020_sexual_harassment_ack_task_id}")
+    private int ack_2020_harassment_task_id;
+
     @Autowired
     public EverfiRecordService(EverfiApiClient everfiApiClient, EmployeeDao employeeDao,
                                PersonnelTaskAssignmentDao personnelTaskAssignmentDao,
@@ -180,6 +186,21 @@ public class EverfiRecordService implements ESSEverfiRecordService {
                                         active
                                 );
                                 personnelTaskAssignmentDao.updateAssignment(taskToInsert);
+
+                                if (everfi_2020_harassment_task_id == everfiTaskID) {
+                                    PersonnelTaskAssignment ackDocCompletionTask = new PersonnelTaskAssignment(
+                                            ack_2020_harassment_task_id,
+                                            empID,
+                                            empID,
+                                            completedAt,
+                                            true,
+                                            active
+                                    );
+                                    personnelTaskAssignmentDao.updateAssignment(ackDocCompletionTask);
+                                }
+
+                                //if ack doc task id = 2020 sexual harrassment update that ack doc too
+                                //2 app props
                             }
                         }
                     }
