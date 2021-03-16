@@ -14,8 +14,8 @@ public enum MiscLeaveType
 {
     ADMINISTRATIVE_LEAVE("A", "Administrative Leave", "Administrative Leave", true, new BigInteger("307455737086830401923262932905351643162")),
     BEREAVEMENT_LEAVE("B","Bereavement Leave", "Bereavement Leave", false, new BigInteger("191601132010624858613098950383796367496")),
-    BRST_PROST_CANCER_SCREENING("C", "Cancer Screening", "Breast and Prostate Cancer Screening Leave", false, new BigInteger("191601132010620022909820491867097542792")),
     BLOOD_DONATION("D", "Blood Donation", "Blood Donation Leave", false, new BigInteger("191601132010628485390557794271320486024")),
+    BRST_PROST_CANCER_SCREENING("C", "Cancer Screening", "Breast and Prostate Cancer Screening Leave", false, new BigInteger("191601132010620022909820491867097542792")),
     EXTENDED_SICK_LEAVE("X", "Extended Sick Leave", "Extended Sick Leave", false, new BigInteger("191601132010617605058181262608748130440")),
     EXTRAORDINARY_LEAVE("E", "Extraordinary Leave", "Leave for Extraordinary Circumstances", false, new BigInteger("191601132010623649687279335754621661320")),
     JURY_LEAVE("J", "Jury Leave", "Jury Leave", false, new BigInteger("191601132010621231835640106496272248968")),
