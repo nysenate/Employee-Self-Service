@@ -134,7 +134,7 @@
     <hierarchicalcontextrunner.version>4.12.1</hierarchicalcontextrunner.version>
     <jackson.version>2.10.1</jackson.version>
     <jstl.version>1.2</jstl.version>
-    <junit.version>4.12</junit.version>
+    <junit.version>4.13.1</junit.version>
     <mockito.version>3.8.0</mockito.version>
     <oracle.driver.version>19.3.0.0</oracle.driver.version>
     <postgres.driver.version>9.4-1201-jdbc41</postgres.driver.version>
