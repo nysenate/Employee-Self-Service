@@ -14,7 +14,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.transaction.TransactionConfiguration;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -25,8 +25,8 @@ import static org.junit.Assert.assertTrue;
 
 @Ignore
 @Category(IntegrationTest.class)
-@Transactional
-@TransactionConfiguration(transactionManager = DatabaseConfig.localTxManager, defaultRollback = true)
+@Transactional(value = "remoteTxManager")
+@Rollback
 public class SqlRequisitionDaoIT extends BaseTest {
 
     @Autowired private RequisitionDao requisitionDao;

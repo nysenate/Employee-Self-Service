@@ -128,7 +128,7 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
     @RequestMapping(value="/documents/all")
     public ListViewResponse<AckDocView> getAllAckDocsForYear() {
         List<Integer> ackDocYears = ackDocDao.getAllYearsContainingAckDocs();
-        List<AckDoc> ackDocs = new ArrayList();
+        List<AckDoc> ackDocs = new ArrayList<>();
 
         for (Integer year : ackDocYears) {
             ackDocs.addAll(ackDocDao.getAckDocsForYear(year));

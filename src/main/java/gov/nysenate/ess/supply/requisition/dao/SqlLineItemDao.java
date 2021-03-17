@@ -113,7 +113,7 @@ public class SqlLineItemDao extends SqlBaseDao {
         private SupplyItemDao itemDao;
         private Map<Integer, Integer> itemIdToCounts;
 
-        private Comparator alphabeticalItemDesc = new Comparator<LineItem>() {
+        private Comparator<LineItem> alphabeticalItemDesc = new Comparator<LineItem>() {
             @Override
             public int compare(LineItem o1, LineItem o2) {
                 return o1.getItem().getDescription().compareTo(o2.getItem().getDescription());

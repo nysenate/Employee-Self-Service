@@ -129,12 +129,12 @@ public class RangeUtilsTest
         Range<Integer> intersectingInBetween = Range.openClosed(4, 6);
         Range<Integer> nonIntersectingOpenBp = Range.atLeast(8);
 
-        assertFalse(RangeUtils.intersects(rangeSet, nonIntersectingClosedBp));
-        assertTrue(RangeUtils.intersects(rangeSet, intersectingClosedBp));
-        assertTrue(RangeUtils.intersects(rangeSet, enclosesLowerRange));
-        assertTrue(RangeUtils.intersects(rangeSet, enclosesSet));
-        assertFalse(RangeUtils.intersects(rangeSet, nonIntersectingInBetween));
-        assertTrue(RangeUtils.intersects(rangeSet, intersectingInBetween));
-        assertFalse(RangeUtils.intersects(rangeSet, nonIntersectingOpenBp));
+        assertFalse(rangeSet.intersects(nonIntersectingClosedBp));
+        assertTrue(rangeSet.intersects(intersectingClosedBp));
+        assertTrue(rangeSet.intersects(enclosesLowerRange));
+        assertTrue(rangeSet.intersects(enclosesSet));
+        assertFalse(rangeSet.intersects(nonIntersectingInBetween));
+        assertTrue(rangeSet.intersects(intersectingInBetween));
+        assertFalse(rangeSet.intersects(nonIntersectingOpenBp));
     }
 }

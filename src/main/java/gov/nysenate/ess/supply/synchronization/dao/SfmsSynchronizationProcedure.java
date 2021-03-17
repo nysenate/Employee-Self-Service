@@ -1,20 +1,14 @@
 package gov.nysenate.ess.supply.synchronization.dao;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
-import gov.nysenate.ess.core.config.CoreConfig;
 import gov.nysenate.ess.core.config.JacksonConfig;
-import gov.nysenate.ess.core.dao.base.SqlQueryUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.jdbc.core.SqlOutParameter;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.object.StoredProcedure;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigDecimal;
 import java.sql.Types;
 import java.util.HashMap;
 import java.util.Map;
@@ -48,7 +42,7 @@ public class SfmsSynchronizationProcedure extends StoredProcedure {
      *                       when serializing the requisition view.
      */
     public void synchronizeRequisition(String requisitionXml) {
-        Map parameterMap = new HashMap();
+        Map<String,String> parameterMap = new HashMap<>();
         parameterMap.put(PARAMETER, requisitionXml);
         execute(parameterMap);
     }
