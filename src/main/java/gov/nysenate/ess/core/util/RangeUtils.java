@@ -208,7 +208,7 @@ public class RangeUtils
      * @param <T> Class<T>
      * @return boolean
      */
-    @Deprecated
+//    @Deprecated
     public static <T extends Comparable<? super T>> boolean intersects(RangeSet<T> rangeSet, Range<T> range) {
         return !rangeSet.complement().encloses(range);
     }

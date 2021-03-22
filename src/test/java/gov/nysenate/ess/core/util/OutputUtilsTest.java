@@ -14,7 +14,7 @@ public class OutputUtilsTest
 {
     @Test(expected = IllegalAccessException.class)
     public void testNoConstructor() throws Exception {
-        Class.forName("gov.nysenate.ess.core.util.OutputUtils").newInstance();
+        Class.forName("gov.nysenate.ess.core.util.OutputUtils").getDeclaredConstructor().newInstance();
     }
 
     @Test

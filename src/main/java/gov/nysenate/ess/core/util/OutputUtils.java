@@ -19,13 +19,12 @@ public class OutputUtils
 {
     private static final Logger logger = LoggerFactory.getLogger(OutputUtils.class);
     public static final ObjectMapper jsonMapper = new ObjectMapper();
-    public static final XmlMapper xmlMapper = new XmlMapper();
+    public static final XmlMapper xmlMapper = XmlMapper.builder().defaultUseWrapper(false).build();
 
     private OutputUtils() {}
 
     static {
         configureMapper(jsonMapper);
-        xmlMapper.setDefaultUseWrapper(false);
         configureMapper(xmlMapper);
     }
 

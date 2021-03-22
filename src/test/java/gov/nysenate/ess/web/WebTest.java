@@ -2,6 +2,8 @@ package gov.nysenate.ess.web;
 
 import gov.nysenate.ess.core.BaseTest;
 import org.apache.shiro.config.IniSecurityManagerFactory;
+import org.apache.shiro.env.BasicIniEnvironment;
+import org.apache.shiro.env.Environment;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.util.ThreadContext;
 import org.junit.Before;
@@ -29,7 +31,9 @@ public abstract class WebTest extends BaseTest
     @Before
     public void setup() {
         this.mockMvc = webAppContextSetup(this.wac).build();
-        SecurityManager securityManager = new IniSecurityManagerFactory("classpath:shiro.ini").getInstance();
+        Environment env = new BasicIniEnvironment("classpath:shiro.ini");
+        SecurityManager securityManager = env.getSecurityManager();
+//        SecurityManager securityManager = new IniSecurityManagerFactory("classpath:shiro.ini").getInstance();
         ThreadContext.bind(securityManager);
     }
 }
