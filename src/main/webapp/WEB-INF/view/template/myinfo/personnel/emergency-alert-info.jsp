@@ -22,37 +22,41 @@
         <span class="immutable-value" ng-bind="state.alertInfo.workPhone"></span>
 
         <label for="home-phone">Home</label>
-        <input type="text" id="home-phone" autocomplete="home tel-national"
+        <input type="text" name="homePhone" id="home-phone" autocomplete="home tel-national"
                ng-pattern="telPattern" ng-model="state.alertInfo.homePhone">
-        <p class="alert-info-error-text" ng-bind="phoneErrorMsg"></p>
+        <div ng-class="{'visibility-hidden': !alertInfoForm.homePhone.$error.pattern}"
+             class="alert-info-error-text" ng-bind="phoneErrorMsg"></div>
+        <label></label>
 
         <label for="alternate-phone">Alternate</label>
-        <input type="text" id="alternate-phone" autocomplete="off"
+        <input type="text" name="alternatephone" id="alternate-phone" autocomplete="off"
                ng-pattern="telPattern" ng-model="state.alertInfo.alternatePhone">
-        <p class="alert-info-error-text" ng-bind="phoneErrorMsg"></p>
+
+        <div class="dropdown">
+          <label for="alternateOptions"></label>
+          <select id="alternateOptions"
+                  ng-model="state.alertInfo.alternateOptions"
+                  ng-disabled="!state.alertInfo.alternatePhone">
+            <option ng-repeat="contactOption in CONTACT_OPTIONS">{{contactOption}}</option>
+          </select>
+        </div>
+        <div ng-class="{'visibility-hidden': !alertInfoForm.alternatephone.$error.pattern}"
+             class="alert-info-error-text" ng-bind="phoneErrorMsg"></div>
 
         <label for="mobile-phone">Mobile</label>
-        <input type="text" id="mobile-phone" autocomplete="mobile tel-national"
+        <input type="text" name="mobilePhone" id="mobile-phone" autocomplete="mobile tel-national"
                ng-pattern="telPattern" ng-model="state.alertInfo.mobilePhone">
-        <p class="alert-info-error-text" ng-bind="phoneErrorMsg"></p>
 
-        <label></label>
-        <div class="check-box-container"
-             ng-class="{'ng-invalid': !validMobileOptions()}">
-          <input type="checkbox" id="mobile-callable"
-                 ng-model="state.alertInfo.mobileCallable"
-                 ng-disabled="!state.alertInfo.mobilePhone">
-          <label for="mobile-callable">Receive Calls on Mobile</label>
-          <br>
-          <input type="checkbox" id="mobile-textable"
-                 ng-model="state.alertInfo.mobileTextable"
-                 ng-disabled="!state.alertInfo.mobilePhone">
-          <label for="mobile-textable">Receive Texts on Mobile</label>
+        <div class="dropdown">
+        <label for="mobileOptions"></label>
+            <select id="mobileOptions"
+                    ng-model="state.alertInfo.mobileOptions"
+                    ng-disabled="!state.alertInfo.mobilePhone">
+              <option ng-repeat="contactOption in CONTACT_OPTIONS">{{contactOption}}</option>
+            </select>
         </div>
-        <p class="alert-info-error-text">
-          You must receive calls and/or texts<br>
-          if a mobile number is provided.
-        </p>
+        <div ng-class="{'visibility-hidden': !alertInfoForm.mobilePhone.$error.pattern}"
+             class="alert-info-error-text" ng-bind="phoneErrorMsg"></div>
       </div>
 
       <div class="push-1-4 col-9-12 alert-info-error-container">
@@ -67,16 +71,19 @@
         <span class="immutable-value" ng-bind="state.alertInfo.workEmail"></span>
 
         <label for="personal-email">Personal</label>
-        <input type="email" id="personal-email" autocomplete="mobile email"
+        <input type="email" name="personalEmail" id="personal-email" autocomplete="mobile email"
                ng-pattern="emailPattern"
                ng-model="state.alertInfo.personalEmail">
-        <p class="alert-info-error-text" ng-bind="emailErrorMsg"></p>
+        <p ng-class="{'visibility-hidden': !alertInfoForm.personalEmail.$error.pattern}"
+           class="alert-info-error-text" ng-bind="emailErrorMsg"></p>
+        <label></label>
 
         <label for="alternate-email">Alternate</label>
-        <input type="email" id="alternate-email" autocomplete="off"
+        <input type="email" name="alternateEmail" id="alternate-email" autocomplete="off"
                ng-pattern="emailPattern"
                ng-model="state.alertInfo.alternateEmail">
-        <p class="alert-info-error-text" ng-bind="emailErrorMsg"></p>
+        <p ng-class="{'visibility-hidden': !alertInfoForm.alternateEmail.$error.pattern}"
+           class="alert-info-error-text" ng-bind="emailErrorMsg"></p>
       </div>
 
       <div class="push-1-4 col-9-12 alert-info-error-container">

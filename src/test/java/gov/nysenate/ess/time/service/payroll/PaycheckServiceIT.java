@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -26,7 +27,7 @@ public class PaycheckServiceIT extends BaseTest
     @Autowired
     PaycheckService paycheckService;
     private final int empId = 11168;
-    private final int year = 2019;
+    private final int year = LocalDate.now().minusYears(1).getYear();
     private List<Paycheck> paychecks;
 
     @Before

@@ -161,7 +161,8 @@
 }
 
 // Prevents blurriness in vertically aligned child elements
+// As of Nov 2020, this seems to be causing blurriness in the record-review-modal.
 .align-parent {
-  -webkit-transform-style: preserve-3d;
-  transform-style: preserve-3d;
+  //-webkit-transform-style: preserve-3d;
+  //transform-style: preserve-3d;
 }

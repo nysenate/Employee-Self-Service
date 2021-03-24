@@ -6,7 +6,7 @@ import gov.nysenate.ess.core.annotation.IntegrationTest;
 import gov.nysenate.ess.core.config.DatabaseConfig;
 import gov.nysenate.ess.core.model.alert.AlertInfo;
 import gov.nysenate.ess.core.model.alert.AlertInfoNotFound;
-import gov.nysenate.ess.core.model.alert.MobileContactOptions;
+import gov.nysenate.ess.core.model.alert.ContactOptions;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,62 +33,46 @@ public class AlertInfoDaoIT extends BaseTest {
     private static final int improbableEmpId = 999999931;
 
     @Test(expected = AlertInfoNotFound.class)
-    public void getNonExistentAlertInfo() throws Exception {
+    public void getNonExistentAlertInfo() {
         alertInfoDao.getAlertInfo(impossibleEmpId);
     }
 
     @Test
-    @Transactional(value = DatabaseConfig.localTxManager)
-    public void getAllAlertInfo() throws Exception {
+    public void getAllAlertInfo() {
         List<AlertInfo> initialAlertInfoList = alertInfoDao.getAllAlertInfo();
-
         Set<AlertInfo> initialAlertInfoSet = new HashSet<>(initialAlertInfoList);
         Set<Integer> initialIdSet = initialAlertInfoSet.stream().map(AlertInfo::getEmpId).collect(Collectors.toSet());
-
         assertEquals("Returned alert info are unique", initialAlertInfoList.size(), initialAlertInfoSet.size());
         assertEquals("Returned AlertInfo have unique emp ids", initialIdSet.size(), initialAlertInfoSet.size());
 
         Set<AlertInfo> newAlertInfos = Sets.newHashSet(
                 makeRandomAlertInfo(impossibleEmpId),
                 makeRandomAlertInfo(improbableEmpId));
-
         Set<Integer> newEmpIdSet = newAlertInfos.stream().map(AlertInfo::getEmpId).collect(Collectors.toSet());
-
         assertEquals("New AlertInfo have unique ids", newAlertInfos.size(), newEmpIdSet.size());
         assertTrue("New AlertInfo are new", Sets.intersection(initialIdSet, newEmpIdSet).isEmpty());
-
         newAlertInfos.forEach(alertInfoDao::updateAlertInfo);
 
         List<AlertInfo> updatedAlertInfoList = alertInfoDao.getAllAlertInfo();
         Set<AlertInfo> updatedAlertInfoSet = new HashSet<>(updatedAlertInfoList);
-
         assertEquals("Updated AlertInfo list is unique", newAlertInfos.size(), newEmpIdSet.size());
-
         int expectedSize = initialAlertInfoSet.size() + newAlertInfos.size();
-
         assertEquals("Updated AlertInfo set is of expected size", expectedSize, updatedAlertInfoSet.size());
-
         assertEquals(Sets.intersection(updatedAlertInfoSet, newAlertInfos), newAlertInfos);
     }
 
     @Test
-    @Transactional(value = DatabaseConfig.localTxManager)
-    public void updateAlertInfo() throws Exception {
+    public void updateAlertInfo() {
         int empId = improbableEmpId;
         AlertInfo firstAlertInfo = makeRandomAlertInfo(empId);
         AlertInfo secondAlertInfo = makeRandomAlertInfo(empId);
-
         assertNotEquals(firstAlertInfo, secondAlertInfo);
         assertEquals(firstAlertInfo.getEmpId(), secondAlertInfo.getEmpId());
-
         alertInfoDao.updateAlertInfo(firstAlertInfo);
         AlertInfo alertInfo = alertInfoDao.getAlertInfo(empId);
-
         assertEquals(alertInfo, firstAlertInfo);
-
         alertInfoDao.updateAlertInfo(secondAlertInfo);
         alertInfo = alertInfoDao.getAlertInfo(empId);
-
         assertEquals(alertInfo, secondAlertInfo);
     }
 
@@ -102,11 +86,10 @@ public class AlertInfoDaoIT extends BaseTest {
                 .setHomePhone(numberGenerator.get())
                 .setMobilePhone(numberGenerator.get())
                 .setAlternatePhone(numberGenerator.get())
-                .setMobileOptions(MobileContactOptions.values()[random.nextInt(MobileContactOptions.values().length)])
+                .setMobileOptions(ContactOptions.values()[random.nextInt(ContactOptions.values().length)])
+                .setAlternateOptions(ContactOptions.values()[random.nextInt(ContactOptions.values().length)])
                 .setPersonalEmail(numberGenerator.get())
                 .setAlternateEmail(numberGenerator.get())
                 .build();
     }
-
-
 }

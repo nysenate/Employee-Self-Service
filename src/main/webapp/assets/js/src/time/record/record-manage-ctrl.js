@@ -154,36 +154,19 @@ function recordManageCtrl($scope, $q, $filter,
         if (!timeRecords) {
             return $q.when();
         }
-        var empIds = [];
-        var beginDates = [];
-        timeRecords.forEach(function (record) {
-            empIds.push(record.employeeId);
-            beginDates.push(record.beginDate);
-        });
-        var params = {
-            empId: empIds,
-            beginDate: beginDates
-        };
-        console.log('sending time record reminders...', params);
         modals.open('record-reminder-posting');
-        return reminderApi.save(params, {},
-            function onSuccess() {
+        return reminderApi.save(null, timeRecords,
+            function onSuccess(reminders) {
                 console.log('time record reminders sent.');
+                console.log(reminders.result);
                 // Close 'record-reminder-posting' modal
                 modals.rejectAll();
-                modals.open('record-reminder-posted', true)
-            },
-            function (response) {
-                modals.rejectAll();
-                var errorCode = ((response || {}).data || {}).errorCode;
-                if (errorCode === 'EMPLOYEE_INACTIVE') {
-                    console.warn('Attempt to remind inactive employees:', response);
-                    $scope.state.inactiveEmps = response.data.errorData;
-                    modals.open('inactive-employee-email');
-                } else {
-                    $scope.handleErrorResponse(response);
-                }
-            }).$promise
+                modals.open('record-reminder-posted', {reminders: reminders.result}, true)
+                    .then(function() {
+                        modals.rejectAll();
+                    })
+            }, $scope.handleErrorResponse
+            ).$promise
     }
 
     /* --- Display Methods --- */
@@ -307,11 +290,6 @@ function recordManageCtrl($scope, $q, $filter,
         modals.open('record-reminder-prompt', {records: selectedRecords}, true)
             .then(function () {
                 return postReminders(selectedRecords);
-            })
-            .then(function () {
-                // Close 'record-reminder-posting' modal
-                modals.rejectAll();
-                modals.open('record-reminder-posted', true)
             });
     };
 

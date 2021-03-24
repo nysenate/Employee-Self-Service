@@ -2,7 +2,7 @@ package gov.nysenate.ess.core.client.view;
 
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.core.model.alert.AlertInfo;
-import gov.nysenate.ess.core.model.alert.MobileContactOptions;
+import gov.nysenate.ess.core.model.alert.ContactOptions;
 import gov.nysenate.ess.core.model.personnel.Employee;
 
 public class AlertInfoView implements ViewObject {
@@ -15,8 +15,9 @@ public class AlertInfoView implements ViewObject {
     private String mobilePhone;
     private String alternatePhone;
 
-    private boolean mobileCallable;
-    private boolean mobileTextable;
+    private String mobileOptions;
+
+    private String alternateOptions;
 
     private String workEmail;
 
@@ -27,17 +28,12 @@ public class AlertInfoView implements ViewObject {
 
     public AlertInfoView(AlertInfo alertInfo, Employee employee) {
         this.empId = alertInfo.getEmpId();
-
         this.workPhone = employee.getWorkPhone();
-
         this.homePhone = alertInfo.getHomePhone();
         this.mobilePhone = alertInfo.getMobilePhone();
         this.alternatePhone = alertInfo.getAlternatePhone();
-
-        MobileContactOptions mobileOptions = alertInfo.getMobileOptions();
-        this.mobileCallable = mobileOptions.isCallable();
-        this.mobileTextable = mobileOptions.isTextable();
-
+        this.mobileOptions = alertInfo.getMobileOptions().getJsString();
+        this.alternateOptions = alertInfo.getAlternateOptions().getJsString();
         this.workEmail = employee.getEmail();
         this.personalEmail = alertInfo.getPersonalEmail();
         this.alternateEmail = alertInfo.getAlternateEmail();
@@ -49,7 +45,8 @@ public class AlertInfoView implements ViewObject {
                 .setHomePhone(homePhone)
                 .setMobilePhone(mobilePhone)
                 .setAlternatePhone(alternatePhone)
-                .setMobileOptions(MobileContactOptions.getMobileContactOption(mobileCallable, mobileTextable))
+                .setMobileOptions(ContactOptions.fromJsString(mobileOptions))
+                .setAlternateOptions(ContactOptions.fromJsString(alternateOptions))
                 .setPersonalEmail(personalEmail)
                 .setAlternateEmail(alternateEmail)
                 .build();
@@ -80,12 +77,12 @@ public class AlertInfoView implements ViewObject {
         return alternatePhone;
     }
 
-    public boolean isMobileCallable() {
-        return mobileCallable;
+    public String getMobileOptions() {
+        return mobileOptions;
     }
 
-    public boolean isMobileTextable() {
-        return mobileTextable;
+    public String getAlternateOptions() {
+        return alternateOptions;
     }
 
     public String getWorkEmail() {
