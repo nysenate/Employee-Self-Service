@@ -18,6 +18,7 @@ public enum MiscLeaveType
     BRST_PROST_CANCER_SCREENING("C", "Cancer Screening", "Breast and Prostate Cancer Screening Leave", false, new BigInteger("191601132010620022909820491867097542792")),
     EXTENDED_SICK_LEAVE("X", "Extended Sick Leave", "Extended Sick Leave", false, new BigInteger("191601132010617605058181262608748130440")),
     EXTRAORDINARY_LEAVE("E", "Extraordinary Leave", "Leave for Extraordinary Circumstances", false, new BigInteger("191601132010623649687279335754621661320")),
+    FLOATING_HOLIDAY("F", "Floating Holiday", "Leave for Floating Holiday", false, new BigInteger("253666602241845525420608059722204643652")),
     JURY_LEAVE("J", "Jury Leave", "Jury Leave", false, new BigInteger("191601132010621231835640106496272248968")),
     MILITARY_LEAVE("M", "Military Leave", "Military Leave", false, new BigInteger("191601132010626067538918565012971073672")),
     OTHER_LEAVE("O", "Other - 1", "Other Leave - 1", false, new BigInteger("191601132010627276464738179642145779848")),
