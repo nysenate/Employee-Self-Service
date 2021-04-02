@@ -39,7 +39,7 @@ public class GoogleMapsService implements MapService {
         String[] destinations = new String[] {getGoolgeAddressParam(to)};
         DistanceMatrix request = DistanceMatrixApi.getDistanceMatrix(context, origins, destinations)
                 .mode(TravelMode.DRIVING)
-                .departureTime(DateTime.now())
+                .departureTime(java.time.Instant.ofEpochMilli(DateTime.now().toInstant().getMillis()))
                 .trafficModel(TrafficModel.OPTIMISTIC)
                 .units(Unit.IMPERIAL)
                 .await();

@@ -73,7 +73,7 @@ public class EssTimeRecordCreationValidator implements TimeRecordCreationValidat
         // Get intersection of effective emp status and per status dates
         RangeSet<LocalDate> fullPerStatRangeSet = RangeUtils.intersection(empStatusRangeSet, perStatRangeSet);
 
-        if (!RangeUtils.intersects(fullPerStatRangeSet, period.getDateRange())) {
+        if (!fullPerStatRangeSet.intersects(period.getDateRange())) {
             throw new TimeRecordCreationNotPermittedEx(empId, period,
                     "Employee status forbids time entry for pay period");
         }

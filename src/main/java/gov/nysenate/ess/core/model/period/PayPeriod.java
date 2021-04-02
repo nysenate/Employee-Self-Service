@@ -185,7 +185,7 @@ public class PayPeriod implements Comparable<PayPeriod>
         return ComparisonChain.start()
             .compare(this.getStartDate(), o.getStartDate())
             .compare(this.getEndDate(), o.getEndDate())
-            .compare(this.isActive(), o.isActive())
+            .compareFalseFirst(this.isActive(), o.isActive())
             .result();
     }
 
