@@ -202,10 +202,10 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
      * Mark Specific Individuals Complete
      * ----------------------------------
      *
-     * Determine personnel tasks for a single employee and assign those that are missing.
+     * Mark specific employees Personnel task assignments complete
      *
      * Usage:
-     * (POST)   /api/v1/admin/personnel/task/mark/complete
+     * (GET)   /api/v1/admin/personnel/task/mark/complete
      *
      * Path params:
      *
