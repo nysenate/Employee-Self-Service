@@ -4,6 +4,7 @@ import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.service.pec.assignment.CsvTaskAssigner;
 import gov.nysenate.ess.core.service.pec.external.PECVideoCSVService;
 import gov.nysenate.ess.core.service.pec.assignment.PersonnelTaskAssigner;
+import gov.nysenate.ess.core.service.pec.task.CachedPersonnelTaskService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.subject.Subject;
@@ -26,13 +27,15 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
     private final PersonnelTaskAssigner taskAssigner;
     private final PECVideoCSVService pecVideoCSVService;
     private final CsvTaskAssigner csvTaskAssigner;
+    private final CachedPersonnelTaskService cachedPersonnelTaskService;
 
     @Autowired
     public PersonnelTaskAdminApiCtrl(PersonnelTaskAssigner taskAssigner, PECVideoCSVService pecVideoCSVService,
-                                     CsvTaskAssigner csvTaskAssigner) {
+                                     CsvTaskAssigner csvTaskAssigner, CachedPersonnelTaskService cachedPersonnelTaskService) {
         this.taskAssigner = taskAssigner;
         this.pecVideoCSVService = pecVideoCSVService;
         this.csvTaskAssigner = csvTaskAssigner;
+        this.cachedPersonnelTaskService = cachedPersonnelTaskService;
     }
 
     /**
@@ -192,5 +195,28 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
         return new SimpleResponse(false,
                 "You do not have permission to execute this api functionality",
                 "employee-task-override");
+    }
+
+
+    /**
+     * Mark Specific Individuals Complete
+     * ----------------------------------
+     *
+     * Determine personnel tasks for a single employee and assign those that are missing.
+     *
+     * Usage:
+     * (POST)   /api/v1/admin/personnel/task/mark/complete
+     *
+     * Path params:
+     *
+     * @return {@link SimpleResponse}
+     */
+    @RequestMapping(value = "/mark/complete", method = GET)
+    public SimpleResponse markTasksComplete() {
+        checkPermission(ADMIN.getPermission());
+        cachedPersonnelTaskService.markTasksComplete();
+        return new SimpleResponse(true,
+                "The tasks have been marked complete",
+                "tasks-marked-complete");
     }
 }

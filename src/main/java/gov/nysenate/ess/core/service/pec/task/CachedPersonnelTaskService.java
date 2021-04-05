@@ -2,12 +2,16 @@ package gov.nysenate.ess.core.service.pec.task;
 
 import com.google.common.collect.*;
 import com.google.common.eventbus.EventBus;
+import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
 import gov.nysenate.ess.core.dao.pec.task.PersonnelTaskDao;
 import gov.nysenate.ess.core.dao.pec.task.detail.PersonnelTaskDetailDao;
+import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
 import gov.nysenate.ess.core.model.cache.ContentCache;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
+import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
 import gov.nysenate.ess.core.model.pec.video.PersonnelTaskAssignmentGroup;
+import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.base.CachingService;
 import gov.nysenate.ess.core.service.cache.EhCacheManageService;
 import net.sf.ehcache.Cache;
@@ -17,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
@@ -38,14 +43,20 @@ public class CachedPersonnelTaskService implements PersonnelTaskService, Caching
     private final PersonnelTaskDao taskDao;
     private final ImmutableMap<PersonnelTaskType, PersonnelTaskDetailDao<?>> taskDetailDaoMap;
     private final Cache taskCache;
+    private final EmployeeDao employeeDao;
+    private final PersonnelTaskAssignmentDao personnelTaskAssignmentDao;
 
     public CachedPersonnelTaskService(PersonnelTaskDao taskDao,
                                       List<PersonnelTaskDetailDao<?>> taskDetailDaos,
                                       EhCacheManageService cacheManageService,
-                                      EventBus eventBus) {
+                                      EventBus eventBus,
+                                      EmployeeDao employeeDao,
+                                      PersonnelTaskAssignmentDao personnelTaskAssignmentDao) {
         this.taskDao = taskDao;
         this.taskDetailDaoMap = Maps.uniqueIndex(taskDetailDaos, PersonnelTaskDetailDao::taskType);
         this.taskCache = cacheManageService.registerTimeBasedCache(getCacheType().name(), cacheEvictTime);
+        this.employeeDao = employeeDao;
+        this.personnelTaskAssignmentDao = personnelTaskAssignmentDao;
         eventBus.register(this);
     }
 
@@ -105,6 +116,33 @@ public class CachedPersonnelTaskService implements PersonnelTaskService, Caching
         evictCache();
         logger.info("Warming personnel task cache...");
         getPersonnelTasks(false);
+    }
+
+    public void markTasksComplete() {
+        Set<Employee> employees = employeeDao.getActiveEmployees();
+        Set<Employee> employeesToMarkComplete = new HashSet<>();
+        employeesToMarkComplete.add(employeeDao.getEmployeeById(7689));
+        employeesToMarkComplete.add(employeeDao.getEmployeeById(9268));
+        employeesToMarkComplete.add(employeeDao.getEmployeeById(12867));
+
+        for (Employee employee : employees) {
+            if (employee.isSenator()) {
+                employeesToMarkComplete.add(employee);
+            }
+        }
+
+        for (Employee employee : employeesToMarkComplete) {
+
+            List<PersonnelTaskAssignment> assignments =
+                    personnelTaskAssignmentDao.getAssignmentsForEmp(employee.getEmployeeId());
+
+            for (PersonnelTaskAssignment assignment : assignments) {
+                if (!assignment.isCompleted()) {
+                    personnelTaskAssignmentDao.setTaskComplete(
+                            employee.getEmployeeId(), assignment.getTaskId(), employee.getEmployeeId());
+                }
+            }
+        }
     }
 
     /* --- Internal Methods --- */
