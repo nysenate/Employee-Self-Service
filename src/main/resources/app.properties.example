@@ -201,6 +201,8 @@ legethics.key =
 pec.import.harassment_2019_video_task_id =
 pec.import.ethics_2018_video_task_id =
 pec.import.ethics_2020_video_task_id =
+pec.everfi.2020_harassment_task_id =
+pec.2020_sexual_harassment_ack_task_id =
 pec.nysenate.seal =
 
 # --- PEC Everfi Config --------------------------------------------------
