@@ -22,7 +22,8 @@ public enum ContentCache
     SUPERVISOR_EMP_GROUP(Integer.class),
     ACTIVE_TIME_RECORDS(Integer.class),
     LOCATION(String.class),
-    GSA_API(GsaResponseId.class)
+    GSA_API(GsaResponseId.class),
+    PERSONNEL_TASK(Integer.class),
     ;
 
     private Class<?> keyType;

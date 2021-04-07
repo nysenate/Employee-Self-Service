@@ -17,6 +17,12 @@ data.ackdoc_subdir = ack_docs/
 # Subdirectory where travel request attachments are stored.
 data.travel.attachments.dir = travel_request_attachments/
 
+# Subdirectory where Personnel Employee Compliance videos are stored
+data.pecvid_subdir = pec_videos/
+
+#Subdirectory where downloaded Personnel Employee Compliance pdfs are stored
+data.pdf_subdir = pec_pdfs/
+
 # --- Domain Configuration ----------------------------------------------------
 
 # The domain url and context path that ess is hosted on (used for generating links)
@@ -184,6 +190,28 @@ login.success.url = /time/record/entry
 # Sfms Report Base Url
 sfms.report.base.url = http://nysasprd.nysenate.gov:7778/reports/rwservlet
 
+# LegEthics Training URL
+# A URL that points to the LegEthics training site.
+legethics.url =
+legethics.api.path =
+legethics.key =
+
+# --- PEC Data Import Config --------------------------------------------------
+
+pec.import.harassment_2019_video_task_id =
+pec.import.ethics_2018_video_task_id =
+pec.import.ethics_2020_video_task_id =
+pec.everfi.2020_harassment_task_id =
+pec.2020_sexual_harassment_ack_task_id =
+pec.nysenate.seal =
+
+# --- PEC Everfi Config --------------------------------------------------
+
+# The client id and client secret needed for accessing the Everfi API.
+pec.everfi.client.id =
+pec.everfi.client.secret =
+pec.everfi.bad.email.report.enabled = false
+
 # --- Scheduling Configuration ------------------------------------------------
 
 # Determines if the scheduled ensure all time records function will run
@@ -205,6 +233,27 @@ scheduler.supply.sfms_synchronization.cron = 0 0 0 * * *
 
 # Updates travel application values taken from the web
 scheduler.travel.scrape.cron = 0 0 2 * * *
+
+# Determines if scheduled polling of course completion records from moodle is enabled.
+scheduler.moodle.sync.enabled = false
+
+#Determines whether or not we automatically scrape from Everfi
+scheduler.everfi.sync.enabled = false
+
+#Default of every hour on the top of the hour to pull Everfi records
+scheduler.everfi.task.sync.cron = 0 0 * * * *
+
+# Schedules when users are added to everfi / ids stored in the db
+scheduler.everfi.user.update.cron = 0 0 23 * * *
+
+# Schedules when the Department category label is updated. Should be done before users are updated
+scheduler.everfi.category.update.cron = 0 0 22 * * *
+
+# Determines if scheduled personnel task assignment is enabled.
+scheduler.personnel_task.assignment.enabled = true
+
+# The schedule for personnel task assigment. (Default every day at 1AM)
+scheduler.personnel_task.assignment.cron = 0 0 3 * * *
 
 # --- Timeout Configuration ---------------------------------------------------
 

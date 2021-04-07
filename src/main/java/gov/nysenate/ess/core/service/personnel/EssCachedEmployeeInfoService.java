@@ -17,6 +17,7 @@ import gov.nysenate.ess.core.model.unit.LocationType;
 import gov.nysenate.ess.core.service.base.CachingService;
 import gov.nysenate.ess.core.service.cache.EhCacheManageService;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
+import gov.nysenate.ess.core.util.AsyncRunner;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.PaginatedList;
@@ -24,12 +25,9 @@ import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -43,21 +41,29 @@ public class EssCachedEmployeeInfoService implements EmployeeInfoService, Cachin
 {
     private static final Logger logger = LoggerFactory.getLogger(EssCachedEmployeeInfoService.class);
 
-    @Autowired protected Environment env;
-    @Autowired protected EmployeeDao employeeDao;
-    @Autowired protected EmpTransactionService transService;
-    @Autowired private LocationDao locationDao;
-    @Autowired protected EventBus eventBus;
-    @Autowired protected EhCacheManageService cacheManageService;
+    private final EmployeeDao employeeDao;
+    private final EmpTransactionService transService;
+    private final LocationDao locationDao;
 
-    protected volatile Cache empCache;
+    private volatile Cache empCache;
     private LocalDateTime lastUpdateDateTime;
 
-    @PostConstruct
-    protected void init() {
-        this.eventBus.register(this);
-        this.empCache = this.cacheManageService.registerEternalCache(getCacheType().name());
+    public EssCachedEmployeeInfoService(EmployeeDao employeeDao,
+                                        EmpTransactionService transService,
+                                        LocationDao locationDao,
+                                        EventBus eventBus,
+                                        EhCacheManageService cacheManageService,
+                                        AsyncRunner asyncRunner) {
+        this.employeeDao = employeeDao;
+        this.transService = transService;
+        this.locationDao = locationDao;
+
+        eventBus.register(this);
+        this.empCache = cacheManageService.registerEternalCache(getCacheType().name());
         lastUpdateDateTime = employeeDao.getLastUpdateTime();
+        if (cacheManageService.isWarmOnStartup()) {
+            asyncRunner.run(this::warmCache);
+        }
     }
 
     /** Employee Info Service Implemented Methods ---
@@ -142,6 +148,12 @@ public class EssCachedEmployeeInfoService implements EmployeeInfoService, Cachin
         return employeeDao.searchEmployees(term, activeOnly, limitOffset);
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public PaginatedList<Employee> searchEmployees(EmployeeSearchBuilder employeeSearchBuilder, LimitOffset limitOffset) {
+        return employeeDao.searchEmployees(employeeSearchBuilder, limitOffset);
+    }
+
     /** --- Caching Service Implemented Methods ---
      * @see CachingService*/
 
@@ -169,12 +181,12 @@ public class EssCachedEmployeeInfoService implements EmployeeInfoService, Cachin
     public void warmCache() {
         logger.info("Refreshing employee cache..");
         empCache.removeAll();
-        Set<Employee> activeEmployees = employeeDao.getActiveEmployees();
+        Set<Employee> activeEmployees = employeeDao.getAllEmployees();
         activeEmployees.forEach(this::cacheEmployee);
         logger.info("Finished refreshing employee cache: {} employees cached", activeEmployees.size());
     }
 
-    /** --- Caching Methods --- */
+    /* --- Caching Methods --- */
 
     /**
      * Fetches the employee from the database with the given empId and saves the Employee object

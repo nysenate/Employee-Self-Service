@@ -25,11 +25,23 @@ essApp.config(function ($routeProvider, $locationProvider) {
         templateUrl: ctxPath + '/template/myinfo/personnel/emergency-alert-info'
     });
 
-    $routeProvider.when(ctxPath + '/myinfo/personnel/acknowledgments', {
-        templateUrl: ctxPath + '/template/myinfo/personnel/acknowledgment'
+    $routeProvider.when(ctxPath + '/myinfo/personnel/todo', {
+        templateUrl: ctxPath + '/template/myinfo/personnel/todo'
     });
 
-    $routeProvider.when(ctxPath + '/myinfo/personnel/acknowledgments/:ackDocId', {
+    $routeProvider.when(ctxPath + '/myinfo/personnel/todo/report', {
+        templateUrl: ctxPath + '/template/myinfo/personnel/todo-report'
+    });
+
+    $routeProvider.when(ctxPath + '/myinfo/personnel/todo/legethics/:taskId', {
+        templateUrl: ctxPath + '/template/myinfo/personnel/legethics'
+    });
+
+    $routeProvider.when(ctxPath + '/myinfo/personnel/todo/video/:videoId', {
+        templateUrl: ctxPath + '/template/myinfo/personnel/pec-vid-view'
+    });
+
+    $routeProvider.when(ctxPath + '/myinfo/personnel/todo/acknowledgment/:ackDocId', {
         templateUrl: ctxPath + '/template/myinfo/personnel/ack-doc-view'
     });
 

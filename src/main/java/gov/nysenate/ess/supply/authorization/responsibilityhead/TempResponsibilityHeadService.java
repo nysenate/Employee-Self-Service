@@ -1,6 +1,6 @@
 package gov.nysenate.ess.supply.authorization.responsibilityhead;
 
-import gov.nysenate.ess.core.dao.personnel.rch.SqlResponsibilityHeadDao;
+import gov.nysenate.ess.core.dao.personnel.rch.ResponsibilityHeadDao;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.personnel.ResponsibilityHead;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,11 +15,11 @@ import java.util.stream.Collectors;
 @Service
 public class TempResponsibilityHeadService {
 
-    private SqlResponsibilityHeadDao rchDao;
+    private ResponsibilityHeadDao rchDao;
     private SqlTempResponsibilityHeadDao tempRchDao;
 
     @Autowired
-    public TempResponsibilityHeadService(SqlResponsibilityHeadDao rchDao, SqlTempResponsibilityHeadDao tempRchDao) {
+    public TempResponsibilityHeadService(ResponsibilityHeadDao rchDao, SqlTempResponsibilityHeadDao tempRchDao) {
         this.rchDao = rchDao;
         this.tempRchDao = tempRchDao;
     }

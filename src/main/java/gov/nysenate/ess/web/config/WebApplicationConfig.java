@@ -24,7 +24,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 import javax.annotation.PostConstruct;
-import javax.servlet.MultipartConfigElement;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -53,28 +53,41 @@ public class WebApplicationConfig extends WebMvcConfigurerAdapter
 
     @Value("${data.dir}") private String dataDir;
     @Value("${data.ackdoc_subdir}") private String ackDocSubdir;
+    @Value("${data.pecvid_subdir}") private String pecVidSubdir;
 
     /** Sets paths that should not be intercepted by a controller (e.g css/ js/). */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         if (resourcePath == null || resourceLocation == null) {
             logger.warn("Resource path/location for accessing public assets were not set!");
-        }
-        else {
+        } else {
             logger.info("Registering resource path {} for files under {}", resourcePath, resourceLocation);
             registry.addResourceHandler(resourcePath + "**", "/favicon.ico")
                     .addResourceLocations(resourceLocation);
         }
-        // Serve ack docs from external directory
-        if (dataDir == null || resourceLocation == null || ackDocSubdir == null) {
-            logger.warn("Resource path/location for accessing acknowledged documents were not set!");
-        }
-        else {
-            String ackDocDir = dataDir + ackDocSubdir;
-            String ackDocUri = resourcePath + ackDocSubdir;
-            logger.info("Registering resource path {} for files under {}", ackDocUri, ackDocDir);
-            registry.addResourceHandler(ackDocUri + "**")
-                    .addResourceLocations("file:" + ackDocDir);
+
+        // Serve PEC resources from external directories
+        if (dataDir == null || resourceLocation == null) {
+            logger.warn("Resource path/locations for accessing PEC resources were not set!");
+        } else {
+            if (ackDocSubdir == null) {
+                logger.warn("Ack doc subdirectory not set in props.  Ack docs will not be served!");
+            } else {
+                String ackDocDir = Paths.get(dataDir, ackDocSubdir).toString() + "/";
+                String ackDocUri = Paths.get(resourcePath, ackDocSubdir).toString() + "/";
+                logger.info("Registering resource path {} for files under {}", ackDocUri, ackDocDir);
+                registry.addResourceHandler(ackDocUri + "**")
+                        .addResourceLocations("file:" + ackDocDir);
+            }
+            if (pecVidSubdir == null) {
+                logger.warn("PEC video subdirectory not set in props.  PEC videos will not be served!");
+            } else {
+                String pecVidDir = Paths.get(dataDir, pecVidSubdir).toString() + "/";
+                String pecVidUri = Paths.get(resourcePath, pecVidSubdir).toString() + "/";
+                logger.info("Registering resource path {} for files under {}", pecVidUri, pecVidDir);
+                registry.addResourceHandler(pecVidUri + "**")
+                        .addResourceLocations("file:" + pecVidDir);
+            }
         }
     }
 

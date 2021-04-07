@@ -11,7 +11,6 @@ import gov.nysenate.ess.core.model.period.Holiday;
 import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.service.base.CachingService;
-import gov.nysenate.ess.core.service.base.SqlDaoBaseService;
 import gov.nysenate.ess.core.service.cache.EhCacheManageService;
 import gov.nysenate.ess.core.service.period.HolidayService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
@@ -53,7 +52,7 @@ import static java.util.stream.Collectors.toList;
 
 @Service
 @WorkInProgress(author = "Ash", since = "2015/09/11", desc = "Reworking methods in the class, adding caching")
-public class EssCachedTimeRecordService extends SqlDaoBaseService implements TimeRecordService, CachingService<Integer>
+public class EssCachedTimeRecordService implements TimeRecordService, CachingService<Integer>
 {
     private static final Logger logger = LoggerFactory.getLogger(EssCachedTimeRecordService.class);
 

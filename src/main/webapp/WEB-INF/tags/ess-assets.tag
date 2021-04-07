@@ -18,6 +18,8 @@
         <script type="text/javascript" src="${ctxPath}/assets/js/src/nav/ess-routes.js?v=${releaseVersion}"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/nav/main.js?v=${releaseVersion}"></script>
 
+
+        <!-- TODO format this file to fit code style.  Also, sort common directives alphabetically. -->
         <!-- Common Directives -->
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/common/toggle-panel-directive.js?v=${releaseVersion}"></script>
@@ -93,6 +95,8 @@
                 src="${ctxPath}/assets/js/src/common/employee-select-directive.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/common/employee-search-ctrl.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/common/resp-ctr-head-picker-directive.js?v=${releaseVersion}"></script>
     </c:when>
     <c:when test="${runtimeLevel eq 'test'}">
         <script type="text/javascript" src="${ctxPath}/assets/js/dest/ess.min.js?v=${releaseVersion}"></script>
