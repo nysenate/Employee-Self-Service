@@ -119,6 +119,7 @@ public class CachedPersonnelTaskService implements PersonnelTaskService, Caching
     }
 
     public void markTasksComplete() {
+        logger.info("Beginning the process of marking specific employees tasks complete");
         Set<Employee> employees = employeeDao.getActiveEmployees();
         Set<Employee> employeesToMarkComplete = new HashSet<>();
         employeesToMarkComplete.add(employeeDao.getEmployeeById(7689));
@@ -143,6 +144,7 @@ public class CachedPersonnelTaskService implements PersonnelTaskService, Caching
                 }
             }
         }
+        logger.info("Finished the process of marking specific employees tasks complete");
     }
 
     /* --- Internal Methods --- */
