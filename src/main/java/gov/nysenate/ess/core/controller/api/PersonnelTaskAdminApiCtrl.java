@@ -95,7 +95,7 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
      *
      * @return {@link SimpleResponse}
      */
-    @RequestMapping(value = "/csv", method = GET)
+    @RequestMapping(value = "/csv", method = POST)
     public SimpleResponse getTasksFromCSV() throws IOException {
         checkPermission(ADMIN.getPermission());
         pecVideoCSVService.processCSVReports();
@@ -205,13 +205,13 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
      * Mark specific employees Personnel task assignments complete
      *
      * Usage:
-     * (GET)   /api/v1/admin/personnel/task/mark/complete
+     * (POST)   /api/v1/admin/personnel/task/mark/complete
      *
      * Path params:
      *
      * @return {@link SimpleResponse}
      */
-    @RequestMapping(value = "/mark/complete", method = GET)
+    @RequestMapping(value = "/mark/complete", method = POST)
     public SimpleResponse markTasksComplete() {
         checkPermission(ADMIN.getPermission());
         cachedPersonnelTaskService.markTasksComplete();

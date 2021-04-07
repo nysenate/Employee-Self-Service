@@ -20,6 +20,7 @@ import java.time.format.DateTimeFormatter;
 
 import static gov.nysenate.ess.core.model.auth.SimpleEssPermission.ADMIN;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/personnel/task/moodle/")
@@ -46,7 +47,7 @@ public class MoodleApiCtrl extends BaseRestApiCtrl {
      * ESS contacts moodle for course data
      *
      * Usage:
-     * (GET)    /api/v1/personnel/task/moodle/generate
+     * (POST)    /api/v1/personnel/task/moodle/generate
      *
      * @Param from, the beginning of the date range needed for the records
      * @Param to, the end of the date range needed for the records
@@ -56,7 +57,7 @@ public class MoodleApiCtrl extends BaseRestApiCtrl {
      *
      * @return String
      * */
-    @RequestMapping(value = "/generate", method = {GET})
+    @RequestMapping(value = "/generate", method = POST)
     @ResponseStatus(value = HttpStatus.OK)
     public SimpleResponse runMoodleImport(HttpServletRequest request,
                                         HttpServletResponse response ,
