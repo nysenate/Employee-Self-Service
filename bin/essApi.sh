@@ -10,18 +10,22 @@
 # Revised: 2018-01-11 - add all of the cache-clear commands
 # Revised: 2018-01-12 - add all options to usage message; fix Curl verbosity
 # Revised: 2021-04-05 - add ability to specify custom API call
+# Revised: 2021-04-07 - add options to specify HTTP method
 #
 
 prog=`basename $0`
 
 usage() {
-  echo "Usage: $prog [--conf|-c config_file] [--host|-h hostname] [--user|-u username] [--pass|-p password] [--no-auth | -n] [--verbose | -v] api_command" >&2
+  echo "Usage: $prog [--conf|-c config_file] [--host|-h hostname] [--user|-u username] [--pass|-p password] [--no-auth | -n] [--force-[get|post|delete]] [--verbose | -v] api_command" >&2
   echo "where:" >&2
   echo "  --conf: file to configure the hostname, username, and password" >&2
   echo "  --host: target hostname for the API request" >&2
   echo "  --user: ESS username to use for authenticated API requests" >&2
   echo "  --pass: ESS password to use for authenticated API requests" >&2
   echo "  --no-auth: do not require username/password" >&2
+  echo "  --force-get: Force HTTP GET method to be used" >&2
+  echo "  --force-post: Force HTTP POST method to be used" >&2
+  echo "  --force-delete: Force HTTP DELETE method to be used" >&2
   echo "  --verbose: generate lots of output" >&2
   echo "  --help: this usage message" >&2
   echo "and api_command is one of:" >&2
@@ -54,6 +58,7 @@ esshost=
 essuser=
 esspass=
 no_auth=0
+method=
 curl_opts="-s"
 
 while [ $# -gt 0 ]; do
@@ -63,6 +68,9 @@ while [ $# -gt 0 ]; do
     --user*|-u) shift; essuser="$1" ;;
     --pass*|-p) shift; esspass="$1" ;;
     --no-auth|-n) no_auth=1 ;;
+    --force-get|--get|-g) method=GET ;;
+    --force-post|--post) method=POST ;;
+    --force-delete|--delete) method=DELETE ;;
     --verbose|-v) set -x; curl_opts="-v" ;;
     --help) usage; exit 0 ;;
     -*) echo "$prog: $1: Invalid option" >&2; usage; exit 1 ;;
@@ -98,8 +106,13 @@ base_url="https://$esshost:8443"
 base_api_url="$base_url/api/v1"
 
 case "$cmd" in
-  /*) http_req=POST; url="$cmd" ;;
-  trm) http_req=POST; url="/admin/time/timerecords/manager" ;;
+  /*)
+    http_req=POST
+    url="$cmd"
+    ;;
+  trm)
+    http_req=POST
+    url="/admin/time/timerecords/manager" ;;
   cc-*)
     http_req=DELETE
     subcmd=`echo $cmd | cut -d"-" -f2`
@@ -117,10 +130,18 @@ case "$cmd" in
     esac
     url="/admin/cache/$cache"
     ;;
-  eax) http_req=GET; url="/alert-info/contact-dump.xml" ;;
+  eax)
+    http_req=GET
+    url="/alert-info/contact-dump.xml"
+    ;;
   *) echo "$prog: $cmd: Unknown API command" >&2; usage; exit 1 ;;
 esac
 
+
+# If --force-{get,post,delete} is specified, then override the default method.
+if [ "$method" ]; then
+  http_req="$method"
+fi
 
 if [ $no_auth -eq 1 ]; then
   curl $curl_opts -X $http_req "$base_api_url/$url" -H 'Accept:application/json'
