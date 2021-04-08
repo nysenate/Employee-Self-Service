@@ -12,17 +12,20 @@ public class PersonnelTaskAssignmentView implements ViewObject {
     private LocalDateTime timestamp;
     private Integer updateUserId;
     private boolean completed;
+    private boolean active;
 
     public PersonnelTaskAssignmentView(int empId,
                                        int taskId,
                                        LocalDateTime timestamp,
                                        Integer updateUserId,
-                                       boolean completed) {
+                                       boolean completed,
+                                       boolean active) {
         this.empId = empId;
         this.taskId = taskId;
         this.timestamp = timestamp;
         this.updateUserId = updateUserId;
         this.completed = completed;
+        this.active = active;
     }
 
     public PersonnelTaskAssignmentView(PersonnelTaskAssignment task) {
@@ -31,7 +34,8 @@ public class PersonnelTaskAssignmentView implements ViewObject {
                 task.getTaskId(),
                 task.getUpdateTime(),
                 task.getUpdateEmpId(),
-                task.isCompleted()
+                task.isCompleted(),
+                task.isActive()
         );
     }
 
@@ -58,5 +62,9 @@ public class PersonnelTaskAssignmentView implements ViewObject {
 
     public boolean isCompleted() {
         return completed;
+    }
+
+    public boolean isActive() {
+        return active;
     }
 }

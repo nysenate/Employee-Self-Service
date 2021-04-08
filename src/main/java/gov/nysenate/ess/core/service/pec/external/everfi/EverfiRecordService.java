@@ -74,9 +74,6 @@ public class EverfiRecordService implements ESSEverfiRecordService {
     /** {@inheritDoc} */
     @Scheduled(cron = "${scheduler.everfi.task.sync.cron}") //At the top of every hour every day
     public void getUpdatesFromEverfi() throws IOException {
-        if (!everfiSyncEnabled) {
-            return;
-        }
         final LocalDateTime jan1970 = LocalDateTime.of(1970, 1, 1, 0, 0, 0, 0);
         contactEverfiForUserRecords(jan1970.toString() + ":00.000");
     }
@@ -198,14 +195,11 @@ public class EverfiRecordService implements ESSEverfiRecordService {
                                     );
                                     personnelTaskAssignmentDao.updateAssignment(ackDocCompletionTask);
                                 }
-
-                                //if ack doc task id = 2020 sexual harrassment update that ack doc too
-                                //2 app props
                             }
                         }
                     }
-                } catch (EmployeeNotFoundEx e) {
-                    logger.error("Could not match employee " + e.getMessage());
+                } catch (Exception e) {
+                    logger.error("Could not pull in Everfi Record for an employee "  + user.toString());
                 }
 
             }
