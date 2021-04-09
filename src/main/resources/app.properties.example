@@ -240,6 +240,9 @@ scheduler.moodle.sync.enabled = false
 #Determines whether or not we automatically scrape from Everfi
 scheduler.everfi.sync.enabled = false
 
+#Default pull Moodle records every hour or so
+scheduler.moodle.task.sync.cron = 30 0 * * * *
+
 #Default of every hour on the top of the hour to pull Everfi records
 scheduler.everfi.task.sync.cron = 0 0 * * * *
 

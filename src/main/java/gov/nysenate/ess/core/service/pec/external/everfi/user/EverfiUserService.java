@@ -301,6 +301,7 @@ public class EverfiUserService {
      */
     public void addEmployeesToEverfi(List<Employee> emps) throws IOException {
         for (Employee emp : emps) {
+            logger.info("Adding new employee to Everfi " + emp.getFullName() + ", " + emp.getEmail() + ", " + emp.getEmployeeId());
             EverfiAddUserRequest addUserRequest = new EverfiAddUserRequest(
                     everfiApiClient, emp.getEmployeeId(), emp.getFirstName(), emp.getLastName(),
                     emp.getEmail(), getOrCreateEmpCategoryLabels(emp, null));

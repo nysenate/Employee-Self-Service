@@ -51,6 +51,7 @@ public class MoodleRecordService implements ESSMoodleRecordService {
     @Value("${legethics.key:}") private String moodleKey;
     @Value("${scheduler.moodle.sync.enabled:false}") private boolean moodleSyncEnabled;
 
+
     @Autowired
     public MoodleRecordService(EmployeeDao employeeDao,
                                PersonnelTaskService taskService,
@@ -130,7 +131,7 @@ public class MoodleRecordService implements ESSMoodleRecordService {
         return objectMapper.readTree(response.getEntity().getContent());
     }
 
-    @Scheduled(fixedDelay = 50000, initialDelay = 20000) //Ensure 5 secs from the finish of the previous task before querying again
+    @Scheduled(cron = "${scheduler.moodle.task.sync.cron:30 0 * * * *}")
     public void getUpdatesFromMoodle() throws IOException {
         if (!moodleSyncEnabled) {
             return;

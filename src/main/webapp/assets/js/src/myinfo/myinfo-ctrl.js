@@ -19,7 +19,8 @@
             function setCount(assignments) {
                 var count = assignments
                     .filter(function (assignment) {
-                        return assignment.hasOwnProperty('completed') && !assignment.completed
+                        console.log(assignment);
+                        return assignment.hasOwnProperty('completed') && !assignment.completed && assignment.active
                             && assignment.task.active
                     })
                     .length;

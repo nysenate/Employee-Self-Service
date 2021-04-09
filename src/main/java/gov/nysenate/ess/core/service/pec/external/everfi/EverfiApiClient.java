@@ -154,7 +154,7 @@ public class EverfiApiClient {
             int statusCode = response.getStatusLine().getStatusCode();
             String body = EntityUtils.toString(response.getEntity());
 
-            logger.info("AUTHENTICATING stausCode: " + statusCode);
+            logger.info("AUTHENTICATING statusCode: " + statusCode);
 
             if (statusCode == SUCCESS || statusCode == CREATED) {
                 // Use the new access token for future requests

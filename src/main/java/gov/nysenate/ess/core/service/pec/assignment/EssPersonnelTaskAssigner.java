@@ -37,8 +37,10 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
 
     private final EmployeeInfoService empInfoService;
     private final EmpTransactionService transactionService;
-    private final boolean scheduledAssignmentEnabled;
     private final PersonnelTaskDao personnelTaskDao;
+
+    @Value("${scheduler.personnel_task.assignment.enabled:true}")
+    private boolean scheduledAssignmentEnabled;
 
     /** Classes which handle assignment for different {@link PersonnelTaskAssignmentGroup} */
     private final List<GroupTaskAssigner> groupTaskAssigners;
@@ -47,12 +49,9 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
                                     EmpTransactionService transactionService,
                                     List<GroupTaskAssigner> groupTaskAssigners,
                                     PersonnelTaskDao personnelTaskDao,
-                                    @Value("${scheduler.personnel_task.assignment.enabled:true}")
-                                            boolean scheduledAssignmentEnabled,
                                     EventBus eventBus) {
         this.empInfoService = empInfoService;
         this.transactionService = transactionService;
-        this.scheduledAssignmentEnabled = scheduledAssignmentEnabled;
         this.groupTaskAssigners = groupTaskAssigners;
         this.personnelTaskDao = personnelTaskDao;
         eventBus.register(this);

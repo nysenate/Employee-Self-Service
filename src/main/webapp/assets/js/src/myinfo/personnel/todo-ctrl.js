@@ -69,7 +69,9 @@ function todoCtrl($scope, $q, appProps, modals, taskUtils) {
                 if (assignment.completed) {
                     stateAssignments.complete.push(assignment);
                 } else {
-                    stateAssignments.incomplete.push(assignment);
+                    if (assignment.active) {
+                        stateAssignments.incomplete.push(assignment);
+                    }
                 }
             });
 
