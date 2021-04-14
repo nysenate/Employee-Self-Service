@@ -1,7 +1,8 @@
-package gov.nysenate.ess.travel.review;
+package gov.nysenate.ess.travel.review.controller;
 
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
+import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.client.view.base.ListView;
 import gov.nysenate.ess.core.client.view.base.MapView;
@@ -12,9 +13,12 @@ import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.travel.authorization.permission.TravelPermissionBuilder;
 import gov.nysenate.ess.travel.authorization.permission.TravelPermissionObject;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
-import gov.nysenate.ess.travel.authorization.role.TravelRoleFactory;
 import gov.nysenate.ess.travel.authorization.role.TravelRoleView;
-import gov.nysenate.ess.travel.authorization.role.TravelRoles;
+import gov.nysenate.ess.travel.review.ApplicationReview;
+import gov.nysenate.ess.travel.review.dao.ApplicationReviewDao;
+import gov.nysenate.ess.travel.review.ApplicationReviewService;
+import gov.nysenate.ess.travel.review.view.ActionBodyView;
+import gov.nysenate.ess.travel.review.view.ApplicationReviewView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,7 +45,9 @@ public class ApplicationReviewCtrl extends BaseRestApiCtrl {
                 .forAllEmps()
                 .forAction(RequestMethod.GET)
                 .buildPermission());
-        List<ApplicationReview> appReviews = reviewDao.pendingReviewsByRole(TravelRole.NONE);
+        // FIXME
+        List<ApplicationReview> appReviews = new ArrayList<>();
+//        List<ApplicationReview> appReviews = reviewDao.pendingReviewsByRole(TravelRole.NONE);
         appReviews = appReviews.stream()
                 .filter(r -> r.application().status().isApproved())
                 .collect(Collectors.toList());
@@ -56,19 +62,14 @@ public class ApplicationReviewCtrl extends BaseRestApiCtrl {
      * This does not implement strict permission checking for this endpoint because it is
      * used in the badge service for all users. Instead of checking permissions,
      * this method will return an empty list if its not applicable to the user.
-     *
-     * @param roles A list of TravelRole's.
      */
     @RequestMapping(value = "/pending", method = RequestMethod.GET)
-    public BaseResponse getPendingReviews(@RequestParam(required = false) List<String> roles) {
-        Set<TravelRole> roleList = roles == null || roles.isEmpty()
-                ? new HashSet<>()
-                : roles.stream().map(TravelRole::of).collect(Collectors.toSet());
+    public BaseResponse getPendingReviews() {
         Employee employee = employeeInfoService.getEmployee(getSubjectEmployeeId());
 
-        Map<TravelRole, List<ApplicationReview>> pendingReviews = appReviewService.pendingAppReviews(employee, roleList);
+        Map<TravelRole, Set<ApplicationReview>> pendingReviews = appReviewService.pendingReviews(employee);
         Map<TravelRoleView, ListView<ApplicationReviewView>> views = new HashMap<>();
-        for (Map.Entry<TravelRole, List<ApplicationReview>> entry : pendingReviews.entrySet()) {
+        for (Map.Entry<TravelRole, Set<ApplicationReview>> entry : pendingReviews.entrySet()) {
             List<ApplicationReviewView> appReviewViews = entry.getValue().stream()
                     .map(ApplicationReviewView::new)
                     .collect(Collectors.toList());

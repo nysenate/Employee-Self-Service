@@ -1,8 +1,9 @@
-package gov.nysenate.ess.travel.review;
+package gov.nysenate.ess.travel.review.view;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.travel.application.TravelApplicationView;
+import gov.nysenate.ess.travel.review.ApplicationReview;
 
 import java.util.List;
 import java.util.stream.Collectors;

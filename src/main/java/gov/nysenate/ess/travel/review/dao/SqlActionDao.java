@@ -1,4 +1,4 @@
-package gov.nysenate.ess.travel.review;
+package gov.nysenate.ess.travel.review.dao;
 
 import gov.nysenate.ess.core.dao.base.BaseRowMapper;
 import gov.nysenate.ess.core.dao.base.BasicSqlQuery;
@@ -6,6 +6,8 @@ import gov.nysenate.ess.core.dao.base.DbVendor;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
+import gov.nysenate.ess.travel.review.Action;
+import gov.nysenate.ess.travel.review.view.ActionType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -33,7 +35,7 @@ public class SqlActionDao extends SqlBaseDao {
      */
     public void saveAppReviewActions(Collection<Action> actions, int appReviewId) {
         Collection<Action> newActions = actions.stream()
-                .filter(a -> a.actionId == 0)
+                .filter(a -> a.actionId() == 0)
                 .collect(Collectors.toList());
 
         for (Action action : newActions) {
@@ -46,14 +48,13 @@ public class SqlActionDao extends SqlBaseDao {
                 .addValue("appReviewId", appReviewId)
                 .addValue("employeeId", action.user().getEmployeeId())
                 .addValue("role", action.role().name())
-                .addValue("type", action.type.name())
+                .addValue("type", action.type().name())
                 .addValue("notes", action.notes())
                 .addValue("dateTime", toDate(action.dateTime()));
 
         String sql = SqlActionQuery.INSERT_REVIEW_ACTION.getSql(schemaMap());
         KeyHolder keyHolder = new GeneratedKeyHolder();
         localNamedJdbc.update(sql, params, keyHolder);
-        action.actionId = (Integer) keyHolder.getKeys().get("app_review_action_id");
     }
 
     /**
@@ -61,7 +62,7 @@ public class SqlActionDao extends SqlBaseDao {
      * @param appReviewId
      * @return
      */
-    public List<Action> selectActionsByApprovalId(int appReviewId) {
+    public List<Action> selectActionsByReviewId(int appReviewId) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("appReviewId", appReviewId);
         String sql = SqlActionQuery.SELECT_ACTIONS_BY_REVIEW_ID.getSql(schemaMap());

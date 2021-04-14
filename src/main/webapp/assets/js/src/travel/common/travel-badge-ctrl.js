@@ -2,21 +2,13 @@ var essTravel = angular.module('essTravel');
 
 essTravel.controller('TravelBadgeCtrl', ['$scope', 'badgeService', 'ApplicationReviewApi', 'TravelRoleService', travelBadgeCtrl]);
 
-function travelBadgeCtrl($scope, badgeService, appReviewApi, roleService) {
+function travelBadgeCtrl($scope, badgeService, appReviewApi) {
 
     const travelBadgeId = "travelPendingAppReviewCount";
     var badgeResource = undefined;
-    var roles = [];
 
     (function init() {
-        roleService.roles()
-            .then(function (response) {
-                roles = response.allRoles.map(function (role) {
-                    return role.name;
-                });
-                // Ensure the badge has been updated after we have the correct roles.
-                updateBadge();
-            });
+        updateBadge();
     })();
 
     // Update the app review badge count on page changes.
@@ -25,7 +17,7 @@ function travelBadgeCtrl($scope, badgeService, appReviewApi, roleService) {
     });
 
     function updateBadge() {
-        badgeResource = appReviewApi.pendingReviews(roles);
+        badgeResource = appReviewApi.pendingReviews();
         badgeResource.$promise
             .then(appReviewApi.parseAppReviewResponse)
             .then(function (appReviews) {

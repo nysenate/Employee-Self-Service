@@ -44,10 +44,7 @@ function reviewController($scope, $q, modals, locationService, appReviewApi, rol
      * @return {*}
      */
     function queryPendingAppReviews() {
-        var roleNames = vm.userRoles.map(function (role) {
-            return role.name;
-        });
-        return appReviewApi.pendingReviews(roleNames)
+        return appReviewApi.pendingReviews()
             .$promise
             .then(appReviewApi.parseAppReviewResponse)
             .then(function (appReviews) {

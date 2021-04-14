@@ -24,6 +24,10 @@ public enum SqlDepartmentQuery implements BasicSqlQuery {
             SELECT_DEPARTMENTS.getSql() +
                     "WHERE dep.department_id = :departmentId"
     ),
+    SELECT_DEPARTMENT_BY_HEAD(
+            SELECT_DEPARTMENTS.getSql() + "\n" +
+                    "WHERE dep.head_emp_id = :headEmpId"
+    ),
     SELECT_EMPLOYEE_DEPARTMENT_ID(
             "SELECT department_id \n" +
                     "FROM ${essSchema}.employee_department \n" +

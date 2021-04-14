@@ -12,6 +12,9 @@ import gov.nysenate.ess.travel.authorization.role.TravelRoles;
 import gov.nysenate.ess.travel.delegate.Delegation;
 import gov.nysenate.ess.travel.delegate.DelegationDao;
 import gov.nysenate.ess.travel.notifications.email.TravelEmailService;
+import gov.nysenate.ess.travel.review.dao.PendingReviews;
+import gov.nysenate.ess.travel.review.dao.ApplicationReviewDao;
+import gov.nysenate.ess.travel.review.view.ActionType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +30,7 @@ public class ApplicationReviewService {
     @Autowired private TravelRoleFactory travelRoleFactory;
     @Autowired private TravelEmailService emailService;
     @Autowired private DelegationDao delegationDao;
+    @Autowired private DepartmentDao departmentDao;
 
     public void approveApplication(ApplicationReview applicationReview, Employee approver, String notes,
                                    TravelRole approverRole) {
@@ -82,36 +86,40 @@ public class ApplicationReviewService {
         return review;
     }
 
-    /**
-     * @return All {@code ApplicationReview}s that require action by the given employee
-     * acting with the given {@code role}.
-     */
-    public Map<TravelRole, List<ApplicationReview>> pendingAppReviews(Employee employee, Set<TravelRole> roles) {
-        Map<TravelRole, List<ApplicationReview>> roleReviews = new HashMap<>();
-        for (TravelRole role : roles) {
-            if (role == TravelRole.DEPARTMENT_HEAD) {
-                roleReviews.put(role, pendingReviewsForDeptHead(employee));
+    public Map<TravelRole, Set<ApplicationReview>> pendingReviews(Employee employee) {
+        Map<TravelRole, Set<ApplicationReview>> pendingAppReviews = new HashMap<>();
+
+        TravelRoles userRoles = travelRoleFactory.travelRolesForEmp(employee);
+        List<ApplicationReview> allReviews = appReviewDao.selectAllReviews();
+
+        // Find apps requiring review by employee's primary roles.
+        for (TravelRole role : userRoles.primary()) {
+            if (role.equals(TravelRole.DEPARTMENT_HEAD)) {
+                pendingAppReviews.put(role, departmentPendingReviews(employee, allReviews));
             } else {
-                roleReviews.put(role, appReviewDao.pendingReviewsByRole(role));
+                pendingAppReviews.put(role, PendingReviews.forRole(role, allReviews));
             }
         }
-        return roleReviews;
+
+        // Find aps required review by all delegated roles.
+        List<Delegation> delegations = delegationDao.findByDelegateEmpId(employee.getEmployeeId());
+        for (Delegation delegation : delegations) {
+            if (delegation.role().equals(TravelRole.DEPARTMENT_HEAD)) {
+                pendingAppReviews.put(delegation.role(), departmentPendingReviews(delegation.principal(), allReviews));
+            } else {
+                pendingAppReviews.put(delegation.role(), PendingReviews.forRole(delegation.role(), allReviews));
+            }
+        }
+
+        return pendingAppReviews;
     }
 
-    private List<ApplicationReview> pendingReviewsForDeptHead(Employee employee) {
-        List<ApplicationReview> appReviews = new ArrayList<>();
-        // Add AppReviews for this employee's department if any.
-        appReviews.addAll(appReviewDao.pendingReviewsForDeptHead(employee));
-        // Add AppReviews for delegated departments.
-        TravelRoles roles = travelRoleFactory.travelRolesForEmp(employee);
-        if (roles.delegate().contains(TravelRole.DEPARTMENT_HEAD)) {
-            List<Delegation> delegations = delegationDao.findByDelegateEmpId(employee.getEmployeeId());
-            for (Delegation delegation : delegations) {
-                // Check all delegations for any department head pending AppReviews.
-                appReviews.addAll(appReviewDao.pendingReviewsForDeptHead(delegation.principal()));
-            }
-        }
-        return appReviews;
+    private Set<ApplicationReview> departmentPendingReviews(Employee departmentHead, List<ApplicationReview> allReviews) {
+        Set<Department> departments = departmentDao.getDepartmentsByHead(departmentHead.getEmployeeId());
+        Set<Integer> departmentIds = departments.stream()
+                .map(Department::getId)
+                .collect(Collectors.toSet());
+        return PendingReviews.forDepartment(allReviews, departmentIds);
     }
 
     /**

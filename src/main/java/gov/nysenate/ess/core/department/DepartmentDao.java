@@ -1,6 +1,7 @@
 package gov.nysenate.ess.core.department;
 
 import gov.nysenate.ess.core.dao.base.*;
+import gov.nysenate.ess.core.model.personnel.Employee;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -71,6 +72,15 @@ public class DepartmentDao extends SqlBaseDao {
             updatedDepartments.add(updateDepartment(dept));
         }
         return updatedDepartments;
+    }
+
+    public Set<Department> getDepartmentsByHead(int headEmpId) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+            .addValue("headEmpId", headEmpId);
+        String sql = SqlDepartmentQuery.SELECT_DEPARTMENT_BY_HEAD.getSql(schemaMap());
+        DepartmentRowHandler handler = new DepartmentRowHandler();
+        localNamedJdbc.query(sql, params, handler);
+        return handler.getResults();
     }
 
     private boolean doUpdateDepartment(Department department) {

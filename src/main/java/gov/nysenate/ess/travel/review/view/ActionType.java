@@ -1,4 +1,4 @@
-package gov.nysenate.ess.travel.review;
+package gov.nysenate.ess.travel.review.view;
 
 public enum ActionType {
     APPROVE,

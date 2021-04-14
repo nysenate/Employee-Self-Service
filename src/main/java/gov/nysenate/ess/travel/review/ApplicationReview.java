@@ -93,7 +93,7 @@ public class ApplicationReview {
         this.isShared = isShared;
     }
 
-    int getAppReviewId() {
+    public int getAppReviewId() {
         return appReviewId;
     }
 

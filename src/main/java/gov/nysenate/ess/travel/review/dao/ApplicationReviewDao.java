@@ -1,7 +1,8 @@
-package gov.nysenate.ess.travel.review;
+package gov.nysenate.ess.travel.review.dao;
 
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
+import gov.nysenate.ess.travel.review.ApplicationReview;
 
 import java.util.List;
 
@@ -11,22 +12,7 @@ public interface ApplicationReviewDao {
 
     ApplicationReview selectAppReviewById(int approvalId);
 
-    /**
-     * Get all ApplicationReview's that require action by the given role.
-     *
-     * Note for TravelRole.DepartmentHead, this returns ApplicationReviews
-     * for ALL departments. Use {@link #pendingReviewsForDeptHead(Employee)}
-     * to get pending reviews for a single department.
-     */
-    List<ApplicationReview> pendingReviewsByRole(TravelRole nextReviewerRole);
-
-    /**
-     * Get all ApplicationReview's that require action by the department head
-     * {@code departmentHead}.
-     *
-     * Returns an empty list if {@code departmentHead} is not a Department Head.
-     */
-    List<ApplicationReview> pendingReviewsForDeptHead(Employee departmentHead);
+    List<ApplicationReview> selectAllReviews();
 
     /**
      * Gets all reviews that have been shared, have not been disapproved,
@@ -36,7 +22,7 @@ public interface ApplicationReviewDao {
 
     /**
      * Get all ApplicationReview's which have an action from the given role.
-     *
+     * <p>
      * Note, to get review history for a single department, see
      * {@link #reviewHistoryForDeptHead(Employee)}.
      */
@@ -45,8 +31,9 @@ public interface ApplicationReviewDao {
     /**
      * Gets all ApplicationReview's that have a DEPARTMENT_HEAD action
      * and the traveler is in a department managed by {@code departmentHead}.
-     *
+     * <p>
      * Returns an empty list if {@code departmentHead} is not a Department Head.
+     *
      * @param departmentHead A department head.
      */
     List<ApplicationReview> reviewHistoryForDeptHead(Employee departmentHead);

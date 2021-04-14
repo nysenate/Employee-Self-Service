@@ -1,7 +1,7 @@
-package gov.nysenate.ess.travel.review;
+package gov.nysenate.ess.travel.review.view;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
+import gov.nysenate.ess.travel.review.controller.ApplicationReviewCtrl;
 
 /**
  * This view is accepted as the body for approve and disapprove api

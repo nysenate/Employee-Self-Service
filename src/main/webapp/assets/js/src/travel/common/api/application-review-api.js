@@ -3,7 +3,7 @@ angular.module('essTravel').factory('ApplicationReviewApi', [
     function ($resource, appProps, modals, restErrorService) {
 
         var pendingReviewsApi = $resource(appProps.apiPath + '/travel/review/pending.json',
-                                          {roles: '@roles'},
+                                          {},
                                           {get: {method: 'GET', cancellable: true}});
         var reviewHistoryApi = $resource(appProps.apiPath + '/travel/review/history.json',
                                          {},
@@ -34,8 +34,8 @@ angular.module('essTravel').factory('ApplicationReviewApi', [
          * Get all application reviews which need to be reviewed by the logged in user.
          * Will get all application reviews pending review by a role in roles array.
          */
-        appReviewApi.pendingReviews = function (roles) {
-            return pendingReviewsApi.get({roles: roles});
+        appReviewApi.pendingReviews = function () {
+            return pendingReviewsApi.get({});
         };
 
         appReviewApi.reviewHistory = function () {

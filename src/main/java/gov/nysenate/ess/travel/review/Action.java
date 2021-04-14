@@ -2,6 +2,7 @@ package gov.nysenate.ess.travel.review;
 
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
+import gov.nysenate.ess.travel.review.view.ActionType;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -25,6 +26,10 @@ public class Action {
         this.dateTime = dateTime;
     }
 
+    public int actionId() {
+        return this.actionId;
+    }
+
     /**
      * The user who performed this action.
      */
@@ -37,6 +42,10 @@ public class Action {
      */
     public TravelRole role() {
         return role;
+    }
+
+    public ActionType type() {
+        return type;
     }
 
     /**
