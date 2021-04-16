@@ -1,6 +1,5 @@
 package gov.nysenate.ess.core.service.alert;
 
-import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.annotation.UnitTest;
 import gov.nysenate.ess.core.model.alert.AlertInfo;
 import gov.nysenate.ess.core.model.alert.InvalidAlertInfoEx;
@@ -11,7 +10,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 @Category(UnitTest.class)
-public class AlertInfoValidationTest extends BaseTest {
+public class AlertInfoValidationTest {
 
     private static final int empId = 11423;
     private static final int badEmpId = -1;

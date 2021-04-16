@@ -46,6 +46,28 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
     }
 
     /**
+     * Everfi - Manual User Sync
+     * ---------------------------------------
+     *
+     * Manually trigger the processes that sync Employees with Everfi
+     *
+     *
+     * Usage:
+     * (POST)    /api/v1/everfi/manual/user/sync
+     *
+     *
+     * @return String
+     * */
+    @RequestMapping(value = "/manual/user/sync", method = {POST})
+    @ResponseStatus(value = HttpStatus.OK)
+    public SimpleResponse manualUserSync(HttpServletRequest request,
+                                              HttpServletResponse response) throws Exception {
+        checkPermission(ADMIN.getPermission());
+        everfiUserService.runUpdateMethods();
+        return new SimpleResponse(true, "Everfi Manual User Sync", "everfi-manual-user-sync");
+    }
+
+    /**
      * Everfi - Cache Refresh
      * ---------------------------------------
      *
