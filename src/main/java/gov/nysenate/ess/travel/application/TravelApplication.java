@@ -61,6 +61,10 @@ public class TravelApplication {
         status().disapprove(reason);
     }
 
+    public boolean isApproved() {
+        return status().status().equals(ApprovalStatus.APPROVED);
+    }
+
     public int getAppId() {
         return appId;
     }

@@ -45,13 +45,8 @@ public class ApplicationReviewCtrl extends BaseRestApiCtrl {
                 .forAllEmps()
                 .forAction(RequestMethod.GET)
                 .buildPermission());
-        // FIXME
-        List<ApplicationReview> appReviews = new ArrayList<>();
-//        List<ApplicationReview> appReviews = reviewDao.pendingReviewsByRole(TravelRole.NONE);
-        appReviews = appReviews.stream()
-                .filter(r -> r.application().status().isApproved())
-                .collect(Collectors.toList());
-        return ListViewResponse.of(appReviews.stream()
+        List<ApplicationReview> toReconcile = appReviewService.appsToReconcile();
+        return ListViewResponse.of(toReconcile.stream()
                 .map(ApplicationReviewView::new)
                 .collect(Collectors.toSet()));
     }

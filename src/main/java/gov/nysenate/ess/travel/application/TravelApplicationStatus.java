@@ -4,36 +4,36 @@ import java.util.Objects;
 
 public class TravelApplicationStatus {
 
-    protected ApplicationStatus status;
+    protected ApprovalStatus status;
     // A note about this status. Currently used to explain disapproval reasons.
     protected String note;
 
     public TravelApplicationStatus() {
-        status = ApplicationStatus.PENDING;
+        status = ApprovalStatus.PENDING;
     }
 
-    public TravelApplicationStatus(ApplicationStatus status, String note) {
+    public TravelApplicationStatus(ApprovalStatus status, String note) {
         this.status = status;
         this.note = note == null ? "" : note;
     }
 
     public TravelApplicationStatus(String status, String note) {
-        this(ApplicationStatus.valueOf(status), note);
+        this(ApprovalStatus.valueOf(status), note);
     }
 
     public boolean isPending() {
-        return status == ApplicationStatus.PENDING;
+        return status == ApprovalStatus.PENDING;
     }
 
     public boolean isApproved() {
-        return status == ApplicationStatus.APPROVED;
+        return status == ApprovalStatus.APPROVED;
     }
 
     public boolean isDisapproved() {
-        return status == ApplicationStatus.DISAPPROVED;
+        return status == ApprovalStatus.DISAPPROVED;
     }
 
-    public ApplicationStatus status() {
+    public ApprovalStatus status() {
         return status;
     }
 
@@ -42,18 +42,12 @@ public class TravelApplicationStatus {
     }
 
     protected void approve() {
-        status = ApplicationStatus.APPROVED;
+        status = ApprovalStatus.APPROVED;
     }
 
     protected void disapprove(String note) {
-        status = ApplicationStatus.DISAPPROVED;
+        status = ApprovalStatus.DISAPPROVED;
         this.note = note;
-    }
-
-    public enum ApplicationStatus {
-        PENDING,
-        APPROVED,
-        DISAPPROVED
     }
 
     @Override

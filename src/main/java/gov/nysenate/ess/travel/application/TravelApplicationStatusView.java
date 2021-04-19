@@ -3,10 +3,6 @@ package gov.nysenate.ess.travel.application;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 
-import java.time.LocalDateTime;
-
-import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
-
 public class TravelApplicationStatusView implements ViewObject {
 
     @JsonProperty("isPending")
@@ -28,9 +24,9 @@ public class TravelApplicationStatusView implements ViewObject {
     }
 
     public TravelApplicationStatus toTravelApplicationStatus() {
-        TravelApplicationStatus.ApplicationStatus status = isPending ? TravelApplicationStatus.ApplicationStatus.PENDING
-                : isApproved ? TravelApplicationStatus.ApplicationStatus.APPROVED
-                : isDisapproved ? TravelApplicationStatus.ApplicationStatus.DISAPPROVED
+        ApprovalStatus status = isPending ? ApprovalStatus.PENDING
+                : isApproved ? ApprovalStatus.APPROVED
+                : isDisapproved ? ApprovalStatus.DISAPPROVED
                 : null;
         if (status == null) {
             throw new IllegalArgumentException("TravelApplicationStatus ApplicationStatus cannot be null." +

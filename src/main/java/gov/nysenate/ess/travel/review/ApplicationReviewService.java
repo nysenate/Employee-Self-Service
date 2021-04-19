@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 import gov.nysenate.ess.core.department.Department;
 import gov.nysenate.ess.core.department.DepartmentDao;
 import gov.nysenate.ess.core.model.personnel.Employee;
+import gov.nysenate.ess.travel.application.ApprovalStatus;
 import gov.nysenate.ess.travel.application.TravelApplication;
 import gov.nysenate.ess.travel.application.TravelApplicationService;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
@@ -156,5 +157,13 @@ public class ApplicationReviewService {
             }
         }
         return appReviews;
+    }
+
+    public List<ApplicationReview> appsToReconcile() {
+        List<ApplicationReview> allReviews = appReviewDao.selectAllReviews();
+        allReviews = allReviews.stream()
+                .filter(r -> r.application().isApproved())
+                .collect(Collectors.toList());
+        return allReviews;
     }
 }
