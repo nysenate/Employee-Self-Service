@@ -1,46 +1,34 @@
-var essTime = angular.module('essMyInfo');
+(function () {
 
-/**
- * The wrapping controller that is the parent of the nav menu and view content.
- */
-essApp.controller('MyInfoMainCtrl', ['$scope', '$q', 'appProps', 'badgeService', 'AckDocApi', 'AcknowledgmentApi',
-   function($scope, $q, appProps, badgeService, ackDocApi, ackApi) {
+    angular.module('essMyInfo')
+        .controller('MyInfoMainCtrl', ['$scope', '$q', 'appProps', 'badgeService', 'TaskUtils', myInfoCtrl])
+    ;
 
-       $scope.updateAckBadge = function () {
-           var docs = [];
-           var acks = {};
+    /**
+     * The wrapping controller that is the parent of the nav menu and view content.
+     */
+    function myInfoCtrl($scope, $q, appProps, badgeService, taskUtils) {
 
-           var params = {empId: appProps.user.employeeId};
+        $scope.updatePersonnelTaskBadge = function () {
 
-           var requests =
-               [
-                  ackDocApi.get({}, setDocs, $scope.handleErrorResponse).$promise,
-                  ackApi.get(params, setAcks, $scope.handleErrorResponse).$promise
-               ];
+            return taskUtils.getEmpAssignments(appProps.user.employeeId, true)
+                .then(setCount)
+                .catch($scope.handleErrorResponse)
+            ;
 
-           $q.all(requests).then(setCount);
+            function setCount(assignments) {
+                var count = assignments
+                    .filter(function (assignment) {
+                        console.log(assignment);
+                        return assignment.hasOwnProperty('completed') && !assignment.completed && assignment.active
+                            && assignment.task.active
+                    })
+                    .length;
+                badgeService.setBadgeValue('incompleteTasks', count);
+            }
+        };
 
-           function setAcks(resp) {
-               angular.forEach(resp.acknowledgments, function (ack) {
-                   acks[ack.ackDocId] = ack;
-               });
-           }
+        $scope.updatePersonnelTaskBadge();
+    }
 
-           function setDocs(resp) {
-               docs = resp.documents;
-           }
-
-           function setCount() {
-               var count = 0;
-               angular.forEach(docs, function (doc) {
-                   if (!acks.hasOwnProperty(doc.id)) {
-                       count++;
-                   }
-               });
-               badgeService.setBadgeValue('unacknowledgedDocuments', count);
-           }
-       };
-
-       $scope.updateAckBadge();
-   }
-]);
+})();

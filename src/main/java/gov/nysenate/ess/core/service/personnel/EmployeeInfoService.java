@@ -93,8 +93,18 @@ public interface EmployeeInfoService
      *
      * @param term String - search term
      * @param activeOnly
-     *@param limitOffset {@link LimitOffset} - pagination for query results  @return {@link PaginatedList<Employee>}
+     * @param limitOffset {@link LimitOffset} - pagination for query results
+     * @return {@link PaginatedList<Employee>}
      */
     PaginatedList<Employee> searchEmployees(String term, boolean activeOnly, LimitOffset limitOffset);
+
+    /**
+     * Search for employees based on the given query object.
+     *
+     * @param employeeSearchBuilder {@link EmployeeSearchBuilder}
+     * @param limitOffset {@link LimitOffset}
+     * @return {@link PaginatedList}
+     */
+    PaginatedList<Employee> searchEmployees(EmployeeSearchBuilder employeeSearchBuilder, LimitOffset limitOffset);
 
 }

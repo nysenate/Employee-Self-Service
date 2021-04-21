@@ -5,7 +5,9 @@ import com.google.common.collect.RangeSet;
 import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.annotation.SillyTest;
 import gov.nysenate.ess.core.model.personnel.Employee;
+import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.OutputUtils;
+import gov.nysenate.ess.core.util.PaginatedList;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
@@ -15,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.time.LocalDate;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Category(SillyTest.class)
 public class EmployeeInfoServiceTest extends BaseTest
@@ -65,6 +68,16 @@ public class EmployeeInfoServiceTest extends BaseTest
         activeEmpIds = employeeInfoService.getActiveEmpIds();
         activeEmpIds.forEach(employeeInfoService::getEmployee);
         logger.info("Get all emps 2: {}ms", sw.stop().elapsed(TimeUnit.MILLISECONDS));
+    }
+
+    @Test
+    public void empSearchTest() {
+        String term = "Valenti,  Jo-Ann ";
+        EmployeeSearchBuilder esb = new EmployeeSearchBuilder().setName(term);
+        PaginatedList<Employee> results = employeeInfoService.searchEmployees(esb, LimitOffset.ALL);
+        logger.info("emps:\n{}", results.getResults().stream()
+                .map(emp -> emp.getFullName() + "\t" + emp.getRespCenter().getHead().getShortName())
+                .collect(Collectors.toList()));
     }
 
 }

@@ -3,12 +3,14 @@ package gov.nysenate.ess.core.dao.personnel;
 import gov.nysenate.ess.core.dao.base.PaginatedRowHandler;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.dao.personnel.mapper.EmployeeRowMapper;
+import gov.nysenate.ess.core.dao.personnel.mapper.MinimalEmployeeRowMapper;
 import gov.nysenate.ess.core.dao.unit.LocationDao;
 import gov.nysenate.ess.core.department.DepartmentDao;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.personnel.EmployeeException;
 import gov.nysenate.ess.core.model.personnel.EmployeeNotFoundEx;
 import gov.nysenate.ess.core.model.transaction.TransactionCode;
+import gov.nysenate.ess.core.service.personnel.EmployeeSearchBuilder;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.OrderBy;
 import gov.nysenate.ess.core.util.PaginatedList;
@@ -116,6 +118,21 @@ public class SqlEmployeeDao extends SqlBaseDao implements EmployeeDao
         return rowHandler.getList();
     }
 
+    @Override
+    public PaginatedList<Employee> searchEmployees(EmployeeSearchBuilder employeeSearchBuilder, LimitOffset limitOffset) {
+        MapSqlParameterSource params = getEmpSearchParams(employeeSearchBuilder);
+        OrderBy orderBy = new OrderBy(
+                "per.FFNALAST", SortOrder.ASC,
+                "per.FFNAFIRST", SortOrder.ASC,
+                "per.FFNAMIDINIT", SortOrder.ASC
+        );
+        PaginatedRowHandler<Employee> rowHandler =
+                new PaginatedRowHandler<>(limitOffset, "total_rows", getEmployeeRowMapper());
+        final String searchDml = SqlEmployeeQuery.GET_EMPS_BY_SEARCH_QUERY.getSql(schemaMap(), orderBy, limitOffset);
+        remoteNamedJdbc.query(searchDml, params, rowHandler);
+        return rowHandler.getList();
+    }
+
     /** {@inheritDoc} */
     @Override
     public Set<Integer> getActiveEmployeeIds(){
@@ -158,6 +175,32 @@ public class SqlEmployeeDao extends SqlBaseDao implements EmployeeDao
         return emps;
     }
 
+    @Override
+    public List<Employee> getNewEmployees() {
+        return remoteJdbc.query(SqlEmployeeQuery.GET_NEW_EMPLOYEES.getSql(schemaMap()), getMinimalEmployeeRowMapper());
+    }
+
+    private MapSqlParameterSource getEmpSearchParams(EmployeeSearchBuilder searchBuilder) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("name", Optional.ofNullable(searchBuilder.getName())
+                .map(name -> name.trim()
+                        .toUpperCase()
+                        .replaceAll("[^A-Z ]", "")
+                        .replaceAll(" +", " "))
+                .orElse(null));
+        params.addValue("empStatus",
+                Optional.ofNullable(searchBuilder.getActive())
+                        .map(SqlBaseDao::getStatusCode)
+                        .map(String::valueOf)
+                        .orElse(null));
+        params.addValue("respCtrHeadCodesEmpty", searchBuilder.getRespCtrHeadCodes().isEmpty());
+        params.addValue("respCtrHeadCodes",
+                searchBuilder.getRespCtrHeadCodes().isEmpty() ? null : searchBuilder.getRespCtrHeadCodes());
+        params.addValue("contServFrom", toDate(searchBuilder.getContinuousServiceFrom()));
+        params.addValue("contServTo", toDate(searchBuilder.getContinuousServiceTo()));
+        return params;
+    }
+
     /**
      * Helper method to create employee id -> Employee object mappings.
      * @param sql String - The sql query to execute
@@ -181,5 +224,9 @@ public class SqlEmployeeDao extends SqlBaseDao implements EmployeeDao
     /** Returns a EmployeeRowMapper that's configured for use in this dao */
     private EmployeeRowMapper getEmployeeRowMapper() {
         return new EmployeeRowMapper("", "RCTR_", "RCTRHD_", "AGCY_", "LOC_", locationDao);
+    }
+
+    private MinimalEmployeeRowMapper getMinimalEmployeeRowMapper() {
+        return new MinimalEmployeeRowMapper("");
     }
 }

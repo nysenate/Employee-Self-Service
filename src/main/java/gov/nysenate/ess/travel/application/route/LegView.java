@@ -6,6 +6,7 @@ import gov.nysenate.ess.travel.application.allowances.PerDiem;
 import gov.nysenate.ess.travel.application.route.destination.DestinationView;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -38,7 +39,7 @@ public class LegView implements ViewObject {
         this.to = new DestinationView(leg.to());
         this.methodOfTravelDisplayName = leg.methodOfTravelDisplayName();
         this.methodOfTravelDescription = leg.methodOfTravelDescription();
-        this.miles = new BigDecimal(leg.miles()).setScale(1, BigDecimal.ROUND_HALF_UP).toString();
+        this.miles = BigDecimal.valueOf(leg.miles()).setScale(1, RoundingMode.HALF_UP).toString();
         this.travelDate = leg.travelDate().format(DATEPICKER_FORMAT);
         this.mileageRate = leg.mileageRate().toString();
         this.isReimbursementRequested = leg.isReimbursementRequested();

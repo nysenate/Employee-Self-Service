@@ -1,6 +1,5 @@
 package gov.nysenate.ess.core.service.alert;
 
-import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.annotation.UnitTest;
 import gov.nysenate.ess.core.model.alert.AlertInfo;
 import gov.nysenate.ess.core.model.alert.InvalidAlertInfoEx;

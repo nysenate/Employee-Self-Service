@@ -72,6 +72,19 @@ public abstract class SqlBaseDao
     }
 
     /**
+     * Get a nullable int value from the given result set.
+     *
+     * This is needed because {@link ResultSet#getInt(String)} returns 0 if the column is null.
+     */
+    public static Integer getNullableInt(ResultSet rs, String column) throws SQLException {
+        Integer intValue = rs.getInt(column);
+        if (rs.wasNull()) {
+            intValue = null;
+        }
+        return intValue;
+    }
+
+    /**
      * Converts true to 'A' and false to 'I'
      * @param status Boolean
      * @return char

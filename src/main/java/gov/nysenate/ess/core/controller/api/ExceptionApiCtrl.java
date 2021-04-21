@@ -18,13 +18,18 @@ import org.apache.shiro.authz.UnauthorizedException;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.HttpMediaTypeNotAcceptableException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+
 import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 
@@ -68,6 +73,20 @@ public class ExceptionApiCtrl extends BaseRestApiCtrl
         return new ViewObjectErrorResponse(ErrorCode.MISSING_PARAMETERS, parameterView);
     }
 
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    protected ErrorResponse handleBadMethodTypeException(HttpServletRequest request,
+                                                         MethodArgumentTypeMismatchException ex) {
+        MethodParameter param = ex.getParameter();
+        ParameterView parameterView = new ParameterView(
+                param.getParameterName(),
+                param.getParameterType().getSimpleName()
+        );
+        logger.warn("Invalid param type for request: {}\n{}", request.getRequestURI(), toJson(parameterView));
+        return new ViewObjectErrorResponse(ErrorCode.INVALID_PARAM_TYPE, parameterView);
+    }
+
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(UnauthenticatedException.class)
     @ResponseBody
@@ -91,6 +110,7 @@ public class ExceptionApiCtrl extends BaseRestApiCtrl
 
     @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    @ResponseBody
     public SimpleResponse handleMethodNotSupportedEx(HttpRequestMethodNotSupportedException ex) {
         final String messageTemplate = "Method %s is not supported for this request";
         final String message = String.format(messageTemplate, ex.getMethod());
@@ -100,6 +120,24 @@ public class ExceptionApiCtrl extends BaseRestApiCtrl
     @ExceptionHandler(ClientAbortException.class)
     public void handleClientAbortException(ClientAbortException ex) {
         logger.debug("Client aborted", ex);
+    }
+
+    @ResponseStatus(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    @ResponseBody
+    public SimpleResponse handleMethodNotSupportedEx(HttpMediaTypeNotSupportedException ex) {
+        final String messageTemplate = "Media type %s is not supported for this request";
+        final String message = String.format(messageTemplate, ex.getContentType());
+        return new SimpleResponse(false, message, "Media type not supported");
+    }
+
+    @ResponseStatus(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+    @ExceptionHandler(HttpMediaTypeNotAcceptableException.class)
+    @ResponseBody
+    public SimpleResponse handleMethodNotSupportedEx(HttpMediaTypeNotAcceptableException ex) {
+        final String messageTemplate = "Cannot respond with given media type.  Acceptable types include %s";
+        final String message = String.format(messageTemplate, ex.getSupportedMediaTypes());
+        return new SimpleResponse(false, message, "Response media type not supported");
     }
 
     /** --- Internal Methods --- */

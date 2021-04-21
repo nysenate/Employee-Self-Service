@@ -45,7 +45,7 @@ public class MyInfoTemplateCtrl extends BaseTemplateCtrl
             "/personnel/emp-ack-doc-report"
     })
     public String getAcknowledgmentReportPage(HttpServletRequest request, ModelMap modelMap) {
-        final Permission managementPermission = SimpleEssPermission.ACK_REPORT_GENERATION.getPermission();
+        final Permission managementPermission = SimpleEssPermission.COMPLIANCE_REPORT_GENERATION.getPermission();
         if (SecurityUtils.getSubject().isPermitted(managementPermission)) {
             return request.getRequestURI();
         }

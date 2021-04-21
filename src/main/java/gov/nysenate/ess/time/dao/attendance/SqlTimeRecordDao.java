@@ -89,8 +89,7 @@ public class SqlTimeRecordDao extends SqlBaseDao implements TimeRecordDao
     @Override
     public LocalDateTime getLatestUpdateTime() {
         return DateUtils.getLocalDateTime(
-                remoteJdbc.queryForObject(SqlTimeRecordQuery.GET_LAST_UPDATE_DATE_TIME.getSql(schemaMap()),
-                        null, Timestamp.class));
+                remoteJdbc.queryForObject(SqlTimeRecordQuery.GET_LAST_UPDATE_DATE_TIME.getSql(schemaMap()), Timestamp.class));
     }
 
     /** {@inheritDoc} */

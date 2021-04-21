@@ -10,7 +10,7 @@ public enum EssRole {
     SENATOR,
     TIMEOUT_EXEMPT,
     /* MyInfo */
-    ACK_MANAGER,
+    PERSONNEL_COMPLIANCE_MANAGER,
     /* Supply */
     SUPPLY_EMPLOYEE,
     SUPPLY_MANAGER,

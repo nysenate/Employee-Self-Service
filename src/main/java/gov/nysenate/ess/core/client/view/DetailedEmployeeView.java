@@ -8,6 +8,7 @@ import gov.nysenate.ess.core.model.personnel.ResponsibilityCenter;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.time.LocalDate;
 
 @XmlRootElement
 public class DetailedEmployeeView extends EmployeeView
@@ -21,6 +22,7 @@ public class DetailedEmployeeView extends EmployeeView
     protected String jobTitle;
     protected String payType;
     protected boolean senator;
+    protected LocalDate contServiceDate;
     protected RespCenterView respCtr;
     protected AddressView workAddress;
     protected LocationView empWorkLocation;
@@ -37,6 +39,7 @@ public class DetailedEmployeeView extends EmployeeView
         this.empPayType = employee.getPayType();
         this.payType = (employee.getPayType() != null) ? employee.getPayType().name() : "";
         this.senator = employee.isSenator();
+        this.contServiceDate = employee.getSenateContServiceDate();
         this.empRespCtr = employee.getRespCenter();
         this.respCtr = new RespCenterView(employee.getRespCenter());
         this.personnelStatus = employee.getPersonnelStatus() == null ? null : new PersonnelStatusView(employee.getPersonnelStatus());
@@ -109,6 +112,11 @@ public class DetailedEmployeeView extends EmployeeView
     @XmlElement
     public PersonnelStatusView getPersonnelStatus() {
         return personnelStatus;
+    }
+
+    @XmlElement
+    public LocalDate getContServiceDate() {
+        return contServiceDate;
     }
 
     @XmlElement

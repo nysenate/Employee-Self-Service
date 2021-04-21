@@ -19,6 +19,7 @@ import java.util.Set;
  * A sample file to run misc tests.
  */
 @Category(gov.nysenate.ess.core.annotation.SillyTest.class)
+
 public class SillyTest extends BaseTest {
     private static final Logger logger = LoggerFactory.getLogger(SillyTest.class);
 }

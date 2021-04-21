@@ -36,12 +36,11 @@ public class DistrictAssignmentService {
         }
         url = url + "uspsValidate=true";
 
-        JsonParser parser = new JsonParser();
         int senateDistNumber = 0;
         String senateDistName = null;
         try {
             String resp = restTemplate.getForObject(url, String.class);
-            JsonObject senateInfo = parser.parse(resp).getAsJsonObject().get("districts")
+            JsonObject senateInfo = JsonParser.parseString(resp).getAsJsonObject().get("districts")
                     .getAsJsonObject().get("senate").getAsJsonObject();
             senateDistName = senateInfo.get("name").getAsString();
             senateDistNumber = senateInfo.get("district").getAsInt();

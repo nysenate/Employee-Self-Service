@@ -2,13 +2,13 @@
 
 angular.module('essMyInfo')
     .controller('AckDocViewCtrl', ['$scope', '$routeParams', '$q', '$location', '$window', '$timeout', '$sce',
-                                   'appProps', 'modals', 'AckDocApi', 'AcknowledgmentApi',
+                                   'appProps', 'modals', 'TaskUtils', 'AcknowledgmentApi',
                                         acknowledgmentCtrl]);
 
 function acknowledgmentCtrl($scope, $routeParams, $q, $location, $window, $timeout, $sce,
-                            appProps, modals, documentApi, ackApi) {
+                            appProps, modals, taskUtils, ackApi) {
 
-    $scope.ackDocPageUrl = appProps.ctxPath + '/myinfo/personnel/acknowledgments';
+    $scope.todoPageUrl = appProps.ctxPath + '/myinfo/personnel/todo';
 
     /** Flag indicating that the window scroll handler was bound */
     var windowScrollBound = false;
@@ -17,13 +17,13 @@ function acknowledgmentCtrl($scope, $routeParams, $q, $location, $window, $timeo
     pdfjsLib.GlobalWorkerOptions.workerSrc =  appProps.ctxPath + '/assets/js/dest/pdf.worker.min.js';
 
     var initialState = {
-        docId: null,
+        taskId: null,
         document: null,
-        acknowledgments: {},
+        assignment: null,
+        assignmentFound: false,
         acknowledged: false,
         ackTimestamp: null,
         docFound: false,
-        docHeight: 500,
         docReady: false,
         docRead: false,
         pages: [],
@@ -38,13 +38,11 @@ function acknowledgmentCtrl($scope, $routeParams, $q, $location, $window, $timeo
     function init() {
         bindWindowScrollHandler();
         $scope.state = angular.copy(initialState);
-        $scope.state.docId = $routeParams.ackDocId;
-        $q.all([
-                   getDocument(),
-                   getAcknowledgments()
-               ])
+        $scope.state.taskId = parseInt($routeParams.ackDocId);
+        getTaskAssignment()
             .then(processAcknowledgment)
             .then(showPdf)
+            .catch($scope.handleErrorResponse)
         ;
     }
 
@@ -75,11 +73,11 @@ function acknowledgmentCtrl($scope, $routeParams, $q, $location, $window, $timeo
                 return postAcknowledgment()
             })
             .then(function () {
-                $scope.updateAckBadge();
+                $scope.updatePersonnelTaskBadge();
                 return modals.open('acknowledge-success');
             })
             .then(function () {
-                $location.url($scope.ackDocPageUrl)
+                $location.url($scope.todoPageUrl)
             })
     };
 
@@ -93,68 +91,35 @@ function acknowledgmentCtrl($scope, $routeParams, $q, $location, $window, $timeo
     /* --- Request Methods --- */
 
     /**
-     * Get a list of active documents from the server
+     * Get the assignment that corresponds to this ack doc
      */
-    function getDocument() {
-        $scope.state.document = null;
-
-        var params = {
-            ackDocId: $scope.state.docId
-        };
-
-        $scope.state.request.document = true;
-        return documentApi.get(params, onSuccess, onFail)
-            .$promise.finally(function () {
-                $scope.state.request.document = false;
-            });
-
-        function onSuccess(resp) {
-            $scope.state.document = resp.document;
-            $scope.state.docFound = true;
-            $scope.state.docRead = false;
-            setDocEmbedHeight();
-            // Potentially set the doc as read if the doc happens to fit in the window
-            $timeout(checkIfDocRead, 500);
-        }
-
-        function onFail(resp) {
-            $scope.state.docFound = false;
-            if (resp && resp.data && resp.data.errorCode === 'ACK_DOC_NOT_FOUND') {
-                console.warn("Couldn't find ack doc:", $scope.state.docId);
-            } else {
-                $scope.handleErrorResponse(resp);
-            }
-        }
-
-    }
-
-    /**
-     * Get all acknowledgments for the currently authenticated employee.
-     */
-    function getAcknowledgments() {
-        $scope.state.acknowledgments = {};
-
-        var params = {
-            empId: appProps.user.employeeId
-        };
-
+    function getTaskAssignment() {
         $scope.state.request.ackGet = true;
-        return ackApi.get(params, onSuccess, $scope.handleErrorResponse)
-            .$promise.finally(function () {
+        $scope.state.assignmentFound = false;
+        var empId = appProps.user.employeeId,
+            taskId = $scope.state.taskId;
+        return taskUtils.getPersonnelTaskAssignment(empId, taskId)
+            .then(setAckTask)
+            .finally(function () {
                 $scope.state.request.ackGet = false;
             });
 
-        function onSuccess(resp) {
-            angular.forEach(resp.acknowledgments, function (ack) {
-                $scope.state.acknowledgments[ack.ackDocId] = ack;
-            });
+        function setAckTask(assignment) {
+            $scope.state.assignment = assignment;
+            $scope.state.document = assignment.task;
+
+            $scope.state.assignmentFound = true;
+            $scope.state.docFound = true;
+            $scope.state.docRead = false;
+            // Potentially set the doc as read if the doc happens to fit in the window
+            $timeout(checkIfDocRead, 500);
         }
     }
 
     function postAcknowledgment() {
         var params = {
             empId: appProps.user.employeeId,
-            ackDocId: $scope.state.document.id
+            taskId: $scope.state.taskId
         };
 
         $scope.state.request.ackPost = true;
@@ -165,28 +130,17 @@ function acknowledgmentCtrl($scope, $routeParams, $q, $location, $window, $timeo
     }
 
     /**
-     * Determine whether the document was acknowledged based on received acknowledgments
+     * Determine whether the document was acknowledged based on received task
      */
     function processAcknowledgment() {
-        var acknowledgments = $scope.state.acknowledgments;
-        var docId = $scope.state.document.id;
-        if (acknowledgments.hasOwnProperty(docId)) {
-            var ack = acknowledgments[docId];
-            $scope.state.ackTimestamp = ack.timestamp;
-            $scope.state.acknowledged = true
+        var assignment = $scope.state.assignment;
+        if (assignment && assignment.hasOwnProperty('completed')) {
+            $scope.state.acknowledged = assignment.completed;
+            $scope.state.ackTimestamp = assignment.timestamp;
         } else {
-            $scope.state.acknowledged = false
+            console.warn('No assignment found for ack doc');
+            throw 'No corresponding assignment for ack doc!';
         }
-    }
-
-    /**
-     * Set the height of the embedded document
-     */
-    function setDocEmbedHeight() {
-        var document = $scope.state.document;
-        var width = 840;
-        var heightFactor = document.totalHeight / document.maxWidth;
-        $scope.state.docHeight = width * heightFactor;
     }
 
     /**
@@ -241,7 +195,6 @@ function acknowledgmentCtrl($scope, $routeParams, $q, $location, $window, $timeo
             .then(function () {
                 $scope.state.docReady = true;
             })
-            .catch($scope.handleErrorResponse)
     }
 
     /**

@@ -113,34 +113,59 @@ essApi.factory('EmployeeSearchApi', ['$resource', 'appProps', function ($resourc
     return $resource(appProps.apiPath + '/employees/search');
 }]);
 
+/** --- Responsibility Center API --- */
+
+essApi.factory('RCHSearchApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/respctr/head/search');
+}]);
+
 /** --- Alert Info API --- */
 
 essApi.factory('AlertInfoApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/alert-info');
 }]);
 
+/** --- Personnel Task API --- */
+
+essApi.factory('PersonnelTaskApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/personnel/task');
+}]);
+
+essApi.factory('EmpPATSearchApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/personnel/task/emp/search');
+}]);
+
+essApi.factory('PersonnelAssignmentsForEmpApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/personnel/task/assignment/:empId', {
+        empId: '@empId'
+    });
+}]);
+
+essApi.factory('PersonnelAssignmentApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/personnel/task/assignment/:empId/:taskId', {
+        empId: '@empId',
+        taskId: '@taskId'
+    });
+}]);
+
+essApi.factory('UpdatePersonnelTaskAssignmentApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/admin/personnel/task/overrride/:updateEmpID/:taskId/true/:empId', {
+        updateEmpID: '@updateEmpID',
+        taskId: '@taskId',
+        empId: '@empId'
+    });
+}]);
+
 /** --- Acknowledgment API --- */
 
-essApi.factory('AckDocApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/acknowledgment/documents/:ackDocId', {
-            ackDocId: '@ackDocId'
-        });
-}]);
-
-essApi.factory('AllAckDocApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/acknowledgment/documents/all');
-}]);
-
 essApi.factory('AcknowledgmentApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/acknowledgment/acks');
+    return $resource(appProps.apiPath + '/personnel/task/acknowledgment');
 }]);
 
-essApi.factory('AcknowledgmentYearApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/acknowledgment/documents/years');
-}]);
+/** --- PEC Video Code API --- */
 
-essApi.factory('EmpAckReportApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/acknowledgment/report/acks/emp');
+essApi.factory('PECVidCodeApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/personnel/task/video/code');
 }]);
 
 /** --- Transaction API --- */

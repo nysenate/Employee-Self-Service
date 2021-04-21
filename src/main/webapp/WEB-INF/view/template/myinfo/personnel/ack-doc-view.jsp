@@ -10,9 +10,21 @@
 
   <div loader-indicator class="loader" ng-show="isLoading()"></div>
 
-  <div class="content-container ack-doc-container" ng-cloak ng-if="!isLoading()">
+  <ess-notification level="info" title="Document not found" ng-show="!isLoading() && !state.docFound">
+    The requested document was not found.
+  </ess-notification>
 
-    <p class="content-info" ng-hide="state.acknowledged">
+  <ess-notification level="warn"
+                    title="Acknowledgment task not found"
+                    ng-show="!isLoading() && state.docFound && !state.assignmentFound">
+    No acknowledgment task record exists for the given document.  Please contact the helpline.
+  </ess-notification>
+
+  <div class="content-container ack-doc-container"
+       ng-cloak
+       ng-if="!isLoading() && state.docFound && state.assignmentFound">
+
+    <p class="content-info personnel-todo-instructions" ng-hide="state.acknowledged">
       Please review this policy/document and click the button to acknowledge it.
       <br/><span class="bold-text">You must scroll to the end of the page for the button to become available.</span>
       <br/>If desired, click "Open Printable View" to open a separate tab to print the document.
@@ -21,9 +33,9 @@
       You acknowledged this policy/document on {{state.ackTimestamp | moment:'LL'}}
     </p>
 
-    <div class="ack-doc-view-nav">
-      <a ng-href="{{ackDocPageUrl}}">
-        Return to Acknowledgments page
+    <div class="todo-task-view-nav">
+      <a ng-href="{{todoPageUrl}}">
+        Return to Personnel To-Do List
       </a>
       <a ng-href="{{ctxPath + state.document.path}}" target="_blank">
         Open Printable View
@@ -70,7 +82,7 @@
     <modal modal-id="acknowledge-success">
       <div confirm-modal rejectable="true" title="Acknowledgment Complete"
            confirm-message="You have successfully acknowledged this policy/document."
-           resolve-button="Return to Acknowledgments" resolve-class="time-neutral-button"
+           resolve-button="Return to To-Do List" resolve-class="time-neutral-button"
            reject-button="Remain Here" reject-class="time-neutral-button">
       </div>
     </modal>
