@@ -119,7 +119,7 @@
   </build>
 
   <properties>
-    <apache.shiro.version>1.5.0</apache.shiro.version>
+    <apache.shiro.version>1.7.1</apache.shiro.version>
     <apache.http.client.version>4.5.13</apache.http.client.version>
     <commons.io.version>2.4</commons.io.version>
     <commons.lang3.version>3.4</commons.lang3.version>
