@@ -49,24 +49,47 @@ public class GetDepartmentHeadIdTest {
         elizabeth.setFirstName("Elizabeth");
         elizabeth.setLastName("Little");
 
-        employees = Sets.newHashSet(rachel, patrick, toby, joseph, frederick, elizabeth);
+        var john = new Employee();
+        john.setEmployeeId(7);
+        john.setFirstName("John");
+        john.setLastName("Smith");
+
+        var johnA = new Employee();
+        johnA.setEmployeeId(8);
+        johnA.setFirstName("John");
+        johnA.setInitial("A");
+        johnA.setLastName("Smith");
+
+        employees = Sets.newHashSet(rachel, patrick, toby, joseph, frederick, elizabeth, john, johnA);
     }
 
     @Test
-    public void ifDepartmentNameDoesNotStartWithSenator_returnZero() {
-        int empId = GetDepartmentHeadId.forSenatorDepartment("Rachel May", Sets.newHashSet());
+    public void givenNullDeptName_thenReturnEmpId0() {
+        var empId = GetDepartmentHeadId.forSenatorDepartment(null, employees);
         assertEquals(0, empId);
     }
 
     @Test
-    public void findsDeptIdWhenMissingMiddleName() {
+    public void givenEmptyDeptName_thenReturnEmpId0() {
+        var empId = GetDepartmentHeadId.forSenatorDepartment("", employees);
+        assertEquals(0, empId);
+    }
+
+    @Test
+    public void givenDeptNameNotPrefixedWithSenator_thenReturnEmpId0() {
+        int empId = GetDepartmentHeadId.forSenatorDepartment("Rachel May", employees);
+        assertEquals(0, empId);
+    }
+
+    @Test
+    public void givenNoMiddleName_thenMatchCanBeFound() {
         String departmentName = "Senator Rachel May";
         int empId = GetDepartmentHeadId.forSenatorDepartment(departmentName, employees);
         assertEquals(1, empId);
     }
 
     @Test
-    public void findsDeptIdWithMiddleName() {
+    public void givenFullNames_thenMatchCanBeFound() {
         String departmentName = "Senator Patrick M. Gallivan";
         int empId = GetDepartmentHeadId.forSenatorDepartment(departmentName, employees);
         assertEquals(2, empId);
@@ -77,7 +100,28 @@ public class GetDepartmentHeadIdTest {
     }
 
     @Test
-    public void testEdgeCases() {
+    public void givenMiddleNameMissingFromDeptName_thenMatchCanBeFound() {
+        String departmentName = "Senator Patrick Gallivan";
+        int empId = GetDepartmentHeadId.forSenatorDepartment(departmentName, employees);
+        assertEquals(2, empId);
+    }
+
+    @Test
+    public void givenMiddleNameMissingFromEmpData_thenMatchCanBeFound() {
+        String departmentName = "Senator Rachel Z. May";
+        int empId = GetDepartmentHeadId.forSenatorDepartment(departmentName, employees);
+        assertEquals(1, empId);
+    }
+
+    @Test
+    public void givenMultipleEmpsWithSameName_thenNoMatchFound() {
+        var departmentName = "Senator John Smith";
+        int empId = GetDepartmentHeadId.forSenatorDepartment(departmentName, employees);
+        assertEquals(0, empId);
+    }
+
+    @Test
+    public void testNameEdgeCases() {
         String departmentName = "Senator Joseph P. Addabbo, Jr.";
         int empId = GetDepartmentHeadId.forSenatorDepartment(departmentName, employees);
         assertEquals(4, empId);
