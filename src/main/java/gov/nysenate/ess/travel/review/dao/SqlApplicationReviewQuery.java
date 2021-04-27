@@ -27,9 +27,10 @@ enum SqlApplicationReviewQuery implements BasicSqlQuery {
             APP_REVIEW_SELECT.getSql() +
                     " FROM ${travelSchema}.app_review\n" +
                     " WHERE app_review.next_reviewer_role != :role" +
-                    " AND :disapproval NOT IN" +
-                    "    (SELECT type FROM ${travelSchema}.app_review_action\n" +
-                    "     WHERE app_review_action.app_review_id = app_review.app_review_id)\n" +
+                    " AND (SELECT type FROM ${travelSchema}.app_review_action\n" +
+                    "     WHERE app_review_action.app_review_id = app_review.app_review_id\n" +
+                    "     ORDER BY date_time desc\n" +
+                    "     Limit 1) != :disapproval\n" +
                     " AND is_shared = true"
     ),
     SELECT_APP_REVIEW_HISTORY_FOR_ROLE(
