@@ -17,11 +17,13 @@
       <div ng-if="reviewAmendment.purposeOfTravel.additionalPurpose !== ''" class="purpose-row">
         <div ng-if="reviewAmendment.purposeOfTravel.eventType.requiresAdditionalPurpose">
           <label style="vertical-align: top;">Description:</label>
-          <span ng-bind="::reviewAmendment.purposeOfTravel.additionalPurpose" style="width: 400px; display: inline-block;"></span>
+          <span ng-bind="::reviewAmendment.purposeOfTravel.additionalPurpose"
+                style="width: 400px; display: inline-block;"></span>
         </div>
         <div ng-if="!reviewAmendment.purposeOfTravel.eventType.requiresAdditionalPurpose">
           <label style="vertical-align: top;">Additional information:</label>
-          <span ng-bind="::reviewAmendment.purposeOfTravel.additionalPurpose" style="width: 400px; display: inline-block;"></span>
+          <span ng-bind="::reviewAmendment.purposeOfTravel.additionalPurpose"
+                style="width: 400px; display: inline-block;"></span>
         </div>
       </div>
     </div>
@@ -141,66 +143,92 @@
   </ess-travel-inner-container>
 
   <ess-travel-inner-container title="Expenses">
-    <div>
-      <div class="grid" style="padding-left: 300px; padding-right: 200px;">
-        <div class="col-6-12 margin-bottom-5">
-          Meals:
-        </div>
-        <div class="col-6-12 margin-bottom-5">
-          {{reviewAmendment.mealAllowance | currency}}
-          <ess-meal-summary-popover amd="reviewAmendment" />
-        </div>
-        <div class="col-6-12 margin-bottom-5">
-          Lodging:
-        </div>
-        <div class="col-6-12 margin-bottom-5">
-          {{reviewAmendment.lodgingAllowance | currency}}
-          <ess-lodging-summary-popover amd="reviewAmendment" />
-        </div>
-        <div class="col-6-12 margin-bottom-5">
-          Mileage:
-        </div>
-        <div class="col-6-12 margin-bottom-5">
-          {{reviewAmendment.mileageAllowance | currency}}
-          <ess-transportation-summary-popover amd="reviewAmendment" />
-        </div>
-        <div class="col-6-12 margin-bottom-5">
-          Tolls:
-        </div>
-        <div class="col-6-12 margin-bottom-5">
-          {{reviewAmendment.tollsAllowance | currency}}
-        </div>
-        <div class="col-6-12 margin-bottom-5">
-          Parking:
-        </div>
-        <div class="col-6-12 margin-bottom-5">
-          {{reviewAmendment.parkingAllowance | currency}}
-        </div>
-        <div class="col-6-12 margin-bottom-5">
-          Taxi/Bus/Subway:
-        </div>
-        <div class="col-6-12 margin-bottom-5">
-          {{reviewAmendment.alternateTransportationAllowance | currency}}
-        </div>
-        <div class="col-6-12 margin-bottom-5">
-          Train/Airplane:
-        </div>
-        <div class="col-6-12 margin-bottom-5">
-          {{reviewAmendment.trainAndPlaneAllowance | currency}}
-        </div>
-        <div class="col-6-12 margin-bottom-5">
-          Registration Fee:
-        </div>
-        <div class="col-6-12 margin-bottom-5">
-          {{reviewAmendment.registrationAllowance | currency}}
-        </div>
-        <div class="col-6-12 margin-bottom-5">
-          <span class="bold">Total:</span>
-        </div>
-        <div class="col-6-12 margin-bottom-5">
-          {{reviewAmendment.totalAllowance | currency}}
-        </div>
-      </div>
+    <div class="app-review-allowances-box">
+      <table>
+        <tbody>
+        <tr>
+          <td class="label">
+            Meals:
+          </td>
+          <td class="price">
+            {{reviewAmendment.mealAllowance | currency}}
+          </td>
+          <td>
+            <ess-meal-summary-popover amd="reviewAmendment"/>
+          </td>
+        </tr>
+        <tr>
+          <td class="label">
+            Lodging:
+          </td>
+          <td class="price">
+            {{reviewAmendment.lodgingAllowance | currency}}
+          </td>
+          <td>
+            <ess-lodging-summary-popover amd="reviewAmendment"/>
+          </td>
+        </tr>
+        <tr>
+          <td class="label">
+            Mileage:
+          </td>
+          <td class="price">
+            {{reviewAmendment.mileageAllowance | currency}}
+          </td>
+          <td>
+            <ess-transportation-summary-popover amd="reviewAmendment"/>
+          </td>
+        </tr>
+        <tr>
+          <td class="label">
+            Tolls:
+          </td>
+          <td class="price">
+            {{reviewAmendment.tollsAllowance | currency}}
+          </td>
+        </tr>
+        <tr>
+          <td class="label">
+            Parking:
+          </td>
+          <td class="price">
+            {{reviewAmendment.parkingAllowance | currency}}
+          </td>
+        </tr>
+        <tr>
+          <td class="label">
+            Taxi/Bus/Subway:
+          </td>
+          <td class="price">
+            {{reviewAmendment.alternateTransportationAllowance | currency}}
+          </td>
+        </tr>
+        <tr>
+          <td class="label">
+            Train/Airplane:
+          </td>
+          <td class="price">
+            {{reviewAmendment.trainAndPlaneAllowance | currency}}
+          </td>
+        </tr>
+        <tr>
+          <td class="label">
+            Registration Fee:
+          </td>
+          <td class="price">
+            {{reviewAmendment.registrationAllowance | currency}}
+          </td>
+        </tr>
+        <tr>
+          <td class="label">
+            <span class="bold">Total:</span>
+          </td>
+          <td class="price">
+            {{reviewAmendment.totalAllowance | currency}}
+          </td>
+        </tr>
+        </tbody>
+      </table>
     </div>
   </ess-travel-inner-container>
 
