@@ -38,108 +38,55 @@
 
   <ess-travel-inner-container title="Segments">
 
-    <form name="outboundForm">
-      <fieldset disabled="disabled" style="border: none;">
-        <div class="travel-container"
-             ng-repeat="leg in reviewAmendment.route.outboundLegs">
-
-          <div class="outbound width-100" style="display: inline-block;">
-            <h3 class="float-left">Outbound Segment {{$index + 1}}</h3>
-          </div>
-
-          <div class="itinerary-address">
-            <label>From</label><br/>
-            <input ess-address-autocomplete
-                   ng-model="leg.from.address.formattedAddressWithCounty"
-                   callback="leg.setFrom(address)"
-                   placeholder="200 State St, Albany NY 12210"
-                   type="text" size="40">
-          </div>
-          <div class="itinerary-date">
-            <label>Travel Date</label><br/>
-            <input datepicker ng-model="leg.travelDate" size="13">
-          </div>
-          <div class="clear"></div>
-
-          <div class="itinerary-address">
-            <label>To</label><br/>
-            <input ess-address-autocomplete
-                   ng-model="leg.to.address.formattedAddressWithCounty"
-                   callback="leg.setTo(address)"
-                   placeholder="200 State St, Albany NY 12210"
-                   type="text"
-                   size="40">
-          </div>
-
-          <div class="itinerary-mot-container">
-            <div class="itinerary-mot">
-              <label>Mode of Transportation:</label><br/>
-              <select ng-model="leg.methodOfTravelDisplayName"
-                      ng-options="name for name in methodsOfTravel"></select>
-            </div>
-            <div class="itinerary-mot-write-in" ng-if="leg.methodOfTravelDisplayName == 'Other'">
-              <label>Please Specify:</label><br/>
-              <input type="text" size="17" ng-model="leg.methodOfTravelDescription">
-            </div>
-          </div>
-          <div class="clear"></div>
-
+    <div class="app-review-segments">
+      <div class="margin-20">
+        <h4>Outbound Segments</h4>
+        <div>
+          <table class="travel-table">
+            <thead>
+            <tr>
+              <td>Travel Date</td>
+              <td>From</td>
+              <td>To</td>
+              <td>Mode of Transportation</td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="leg in reviewAmendment.route.outboundLegs">
+              <td>{{leg.travelDate | date: 'shortDate'}}</td>
+              <td>{{leg.from.address.formattedAddressWithCounty}}</td>
+              <td>{{leg.to.address.formattedAddressWithCounty}}</td>
+              <td>{{leg.methodOfTravelDisplayName}}</td>
+            </tr>
+            </tbody>
+          </table>
         </div>
-      </fieldset>
-    </form>
+      </div>
 
-
-    <form name="returnForm">
-      <fieldset disabled="disabled" style="border: none;">
-
-        <div class="travel-container"
-             ng-repeat="leg in reviewAmendment.route.returnLegs">
-
-          <div class="return width-100" style="display: inline-block;">
-            <h3 class="float-left">Return Segment {{$index + 1}}</h3>
-          </div>
-
-          <div class="itinerary-address">
-            <label>From</label><br/>
-            <input ess-address-autocomplete
-                   ng-model="leg.from.address.formattedAddressWithCounty"
-                   callback="leg.setFrom(address)"
-                   placeholder="200 State St, Albany NY 12210"
-                   type="text" size="40">
-          </div>
-          <div class="itinerary-date">
-            <label>Travel Date</label><br/>
-            <input datepicker ng-model="leg.travelDate" size="13">
-          </div>
-          <div class="clear"></div>
-
-          <div class="itinerary-address">
-            <label>To</label><br/>
-            <input ess-address-autocomplete
-                   ng-model="leg.to.address.formattedAddressWithCounty"
-                   callback="leg.setTo(address)"
-                   placeholder="200 State St, Albany NY 12210"
-                   type="text"
-                   size="40">
-          </div>
-
-          <div class="itinerary-mot-container">
-            <div class="itinerary-mot">
-              <label>Mode of Transportation:</label><br/>
-              <select ng-model="leg.methodOfTravelDisplayName"
-                      ng-options="name for name in methodsOfTravel"></select>
-            </div>
-            <div class="itinerary-mot-write-in" ng-if="leg.methodOfTravelDisplayName == 'Other'">
-              <label>Please Specify:</label><br/>
-              <input type="text" size="17" ng-model="leg.methodOfTravelDescription">
-            </div>
-          </div>
-          <div class="clear"></div>
-
+      <div class="margin-20">
+        <h4>Return Segments</h4>
+        <div>
+          <table class="travel-table">
+            <thead>
+            <tr>
+              <td>Travel Date</td>
+              <td>From</td>
+              <td>To</td>
+              <td>Mode of Transportation</td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="leg in reviewAmendment.route.returnLegs">
+              <td>{{leg.travelDate | date: 'shortDate'}}</td>
+              <td>{{leg.from.address.formattedAddressWithCounty}}</td>
+              <td>{{leg.to.address.formattedAddressWithCounty}}</td>
+              <td>{{leg.methodOfTravelDisplayName}}</td>
+            </tr>
+            </tbody>
+          </table>
         </div>
-
-      </fieldset>
-    </form>
+      </div>
+    </div>
   </ess-travel-inner-container>
 
   <ess-travel-inner-container title="Expenses">
