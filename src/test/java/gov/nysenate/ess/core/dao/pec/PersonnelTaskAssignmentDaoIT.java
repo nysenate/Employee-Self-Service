@@ -113,8 +113,8 @@ public class PersonnelTaskAssignmentDaoIT extends BaseTest {
 
         // Query by completion date
 
-        LocalDateTime partialCompFrom = LocalDateTime.now().minusMinutes(2);
-        LocalDateTime partialCompTo = LocalDateTime.now().plusMinutes(1);
+        LocalDateTime partialCompFrom = LocalDateTime.now().minusMinutes(10);
+        LocalDateTime partialCompTo = LocalDateTime.now().plusMinutes(10);
         Range<LocalDateTime> partialCompRange = Range.closed(partialCompFrom, partialCompTo);
 
         PTAQueryBuilder partialCompDateQuery = new PTAQueryBuilder()
@@ -140,7 +140,7 @@ public class PersonnelTaskAssignmentDaoIT extends BaseTest {
         for (PersonnelTaskAssignment result: results) {
             assertTrue( result.isCompleted() &&
                     result.getUpdateTime() != null &&
-                    compRange.contains(result.getUpdateTime()) );
+                    partialCompRange.contains(result.getUpdateTime()) );
         }
 
         // Query by type and completed status

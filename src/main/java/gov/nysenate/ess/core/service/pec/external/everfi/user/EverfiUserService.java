@@ -51,6 +51,9 @@ public class EverfiUserService {
     @Value("${pec.everfi.bad.email.report.enabled:false}")
     private boolean everfiBadEmailReportEnabled;
 
+    @Value("${everfi.report.email}")
+    private String everfiReportEmail;
+
 
     @Autowired
     public EverfiUserService(EverfiApiClient everfiApiClient, EmployeeDao employeeDao, EverfiUserDao everfiUserDao,
@@ -79,6 +82,9 @@ public class EverfiUserService {
 
         try {
             List<Employee> inactiveEmployees = getRecentlyInactiveEmployees();
+
+            sendEmail(this.everfiReportEmail, "Employees to be Inactivated",
+                    inactiveEmployees.toString() + "\n\n Some of these users above may have already been deactivated prior to this run");
 
             for (Employee employee : inactiveEmployees) {
                 changeActiveStatusForUserWithEmpID(employee.getEmployeeId(), false);
@@ -312,6 +318,9 @@ public class EverfiUserService {
      * @param emps
      */
     public void addEmployeesToEverfi(List<Employee> emps) {
+
+        //send email to Everfi report email for new employees
+        sendEmail(this.everfiReportEmail, "New Users Added to Everfi", emps.toString());
 
         try {
             for (Employee emp : emps) {
