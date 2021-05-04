@@ -37,7 +37,7 @@ function travelBadgeCtrl($scope, badgeService, appReviewApi) {
 
     // Cancel the badgeResource request if it has not yet completed when leaving the page.
     $scope.$on('$locationChangeStart', function (event, next, current) {
-        if (badgeResource && badgeResource.success !== true) {
+        if (badgeResource && badgeResource.$resolved !== true) {
             badgeResource.$cancelRequest();
         }
     })
