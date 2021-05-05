@@ -51,20 +51,26 @@ public class PECVideoCSVService {
     private final String csvFileDir;
 
     private static final Pattern csvEthics2018ReportPattern =
-            Pattern.compile("ExportDocsEthics(\\d{4})_V(\\d)");
+            Pattern.compile("ExportDocsEthics2018_V(\\d)");
 
     private static final Pattern csvHarrassment2019ReportPattern =
-            Pattern.compile("ExportDocsHarassment(\\d{4})_V(\\d)");
+            Pattern.compile("ExportDocsHarassment2018_V(\\d)");
 
     private static final Pattern csvLiveTrainingDHPReportPattern =
             Pattern.compile("LiveTrainingDHP(\\d{4})");
 
     private static final Pattern csvEthics2020ReportPattern =
-            Pattern.compile("(\\d{4})LegEthicsTraining_V(\\d)");
+            Pattern.compile("2020LegEthicsTraining_V(\\d)");
+
+    private static final Pattern csvEthics2021ReportPattern =
+            Pattern.compile("2021LegEthicsTraining_V(\\d)");
+
+
 
     private final int ETHICS_VID_2018_ID_NUM;
     private final int HARASSMENT_VID_2019_ID_NUM;
     private final int ETHICS_VID_2020_ID_NUM;
+    private final int ETHICS_VID_2021_ID_NUM;
 
     private static final DateTimeFormatter liveDTF = DateTimeFormatter.ofPattern("M/dd/yyyy HH:mm");
     private static final DateTimeFormatter liveDTFAlt = DateTimeFormatter.ofPattern("M/d/yyyy HH:mm");
@@ -77,9 +83,10 @@ public class PECVideoCSVService {
                               EmpTransactionService transactionService,
                               ResponsibilityHeadDao rchDao,
                               @Value("${data.dir:}") String dataDir,
-                              @Value("${pec.import.harassment_2019_video_task_id:}") int harrassmentVid2019Id,
                               @Value("${pec.import.ethics_2018_video_task_id:}") int ethicsVid2018Id,
-                              @Value("${pec.import.ethics_2020_video_task_id:}") int ethicsVid2020Id) {
+                              @Value("${pec.import.harassment_2019_video_task_id:}") int harrassmentVid2019Id,
+                              @Value("${pec.import.ethics_2020_video_task_id:}") int ethicsVid2020Id,
+                              @Value("${pec.import.ethics_2021_video_task_id:}") int ethicsVid2021Id) {
         this.employeeDao = employeeDao;
         this.personnelTaskAssignmentDao = personnelTaskAssignmentDao;
         this.employeeInfoService = employeeInfoService;
@@ -89,6 +96,7 @@ public class PECVideoCSVService {
         this.ETHICS_VID_2018_ID_NUM = ethicsVid2018Id;
         this.HARASSMENT_VID_2019_ID_NUM = harrassmentVid2019Id;
         this.ETHICS_VID_2020_ID_NUM = ethicsVid2020Id;
+        this.ETHICS_VID_2021_ID_NUM = ethicsVid2021Id;
     }
 
     public void processCSVReports() throws IOException {
@@ -103,6 +111,7 @@ public class PECVideoCSVService {
             Matcher harassmentMatcher = csvHarrassment2019ReportPattern.matcher(fileName);
             Matcher liveTrainingDHPMatcher = csvLiveTrainingDHPReportPattern.matcher(fileName);
             Matcher ethics2020Matcher = csvEthics2020ReportPattern.matcher(fileName);
+            Matcher ethics2021Matcher = csvEthics2021ReportPattern.matcher(fileName);
 
             if (ethicsMatcher.matches()) {
                 logger.info("Processing Ethics 2018 CSV report: " + fileName);
@@ -116,7 +125,14 @@ public class PECVideoCSVService {
             } else if (ethics2020Matcher.matches()) {
                 logger.info("Processing Ethics 2020 CSV report: " + fileName);
                 handleGeneratedReportCSV(file, ETHICS_VID_2020_ID_NUM, 10);
+            } else if (ethics2021Matcher.matches()) {
+                logger.info("Processing Ethics 2021 CSV report: " + fileName);
+                handleGeneratedReportCSV(file, ETHICS_VID_2021_ID_NUM, 9);
             }
+            else {
+                logger.info("Unable to match and process: " + fileName);
+            }
+
         }
 
         logger.info("Completed processing of PEC CSV files");
@@ -127,7 +143,7 @@ public class PECVideoCSVService {
         CSVParser csvParser = new CSVParser(reader, CSVFormat.EXCEL);
         for (CSVRecord csvRecord : csvParser) {
             // Accessing Values by Column Index
-            //0 Name
+            //0 Name / User
             //1 EmpID
             //2 Office
             //3 Location
@@ -138,7 +154,7 @@ public class PECVideoCSVService {
             //8 EC1
             //9 EC2
             //10 Date 02/21/2018 11:27:18 EST
-            if (csvRecord.get(0).equals("Name")) {
+            if (csvRecord.get(0).equals("Name") || csvRecord.get(0).equals("User") ) {
                 continue;
             }
 
