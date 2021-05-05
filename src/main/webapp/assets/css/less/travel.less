@@ -4,6 +4,25 @@
  * Styles for ESS Travel
  */
 
+
+/**
+ * Travel css resets
+ */
+
+textarea,
+select {
+  border: none;
+  overflow: auto;
+  outline: none;
+
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+
+  resize: none; /*remove the resize handle on the bottom right*/
+}
+
+
 /**
  * Basic Theme
  */
@@ -12,6 +31,101 @@
 @travelSecondaryColor: @teal;
 @travelLightGray: #e4e6e8;
 @travelDarkGray: #3b4045;
+
+/**
+ * Travel Theme
+ */
+
+@yellow1: #fefaf0;
+@yellow3: #f5d68a;
+@yellow4: #e9bb49;
+@yellow5: #D19526;
+@yellow7: #BB8621;
+@yellow9: #ad7b1f;
+
+@gray1: #fafafa;
+@gray2: #f7f7f7;
+@gray3: #F0F0F0;
+@gray4: #d1d1d1;
+@gray5: #999;
+@gray6: #8c8c8c;
+@gray7: #666666;
+@gray8: #4d4d4d;
+@gray9: #333;
+
+
+.travel-card {
+  .content-container;
+  overflow: auto;
+}
+
+// TODO better way of doing this, style input's directly?
+.travel-input {
+  //background: #fff;
+  //border: 1px solid @gray5 !important;
+  background: @gray2 !important;
+  border: 1px solid @gray4 !important;
+
+  &:focus {
+    background: #fff !important;
+    box-shadow: 0 0 0 1px @gray5 !important;
+  }
+}
+
+.travel-btn {
+  font-weight: 600;
+  font-size: 14px;
+  padding: 5px 10px;
+  min-width: 80px;
+  margin: 10px 20px;
+  cursor: pointer;
+}
+
+.travel-primary-btn {
+  .travel-btn;
+  color: white;
+  background: @yellow5;
+  border: 1px solid @yellow5;
+
+  &:hover {
+    background: @yellow4;
+    border: 1px solid @yellow4;
+  }
+}
+
+.travel-neutral-btn {
+  .travel-btn;
+  color: @gray9;
+  background: #fff;
+  border: 1px solid @gray9;
+
+  &:hover {
+    background: @gray4;
+  }
+}
+
+.travel-title {
+  padding: 10px;
+  color: @gray9;
+  text-align: center;
+  border-bottom: 1px solid @gray4;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+.travel-container-item {
+  margin: 0 20px 30px 20px;
+}
+
+.travel-button-container {
+  margin-top: 30px;
+  text-align: center;
+  background: @gray2;
+}
+
+
+/** OLD CSS BELOW - Review/refactor and delete unused. */
+
 
 .travel-hero {
   .page-hero(@travelPrimaryColor, white);
@@ -78,6 +192,7 @@
 .travel-inner-container {
   margin: 10px 10px 20px;
   border: solid @travelLightGray 1px;
+  background: #fafafa;
 }
 
 .travel-inner-container-content {
@@ -92,16 +207,16 @@ h2.travel-subheader {
   color: white;
 }
 
-.travel-button-container {
-  .text-align-center;
-  .margin-top-20;
-  padding: 10px;
-  background: #f9f9f9;
-
-  input[type="button"] {
-    margin-right: 5px;
-  }
-}
+//.travel-button-container {
+//  .text-align-center;
+//  .margin-top-20;
+//  padding: 10px;
+//  background: #f9f9f9;
+//
+//  input[type="button"] {
+//    margin-right: 5px;
+//  }
+//}
 
 .expenses-opt-out-list {
   .clear;
@@ -342,15 +457,13 @@ h2.travel-subheader {
   */
 
 .travel-attachment-container {
-  .margin-10;
+  .margin-5;
 
   & > .travel-attachment-filename {
-    .margin-5;
     color: darken(@gray, 15%);
     font-family: monospace;
 
     & > .icon-cross {
-      .margin-5;
       vertical-align: middle;
       color: @dark-red;
       font-size: large;
@@ -643,7 +756,7 @@ h2.travel-subheader {
   }
 
   &.navigable {
-    @navigableColor: lighten(@stepColorCompleted, 10%);
+    @navigableColor: lighten(@stepColorCompleted, 5%);
     cursor: pointer;
 
     &:hover {

@@ -28,7 +28,6 @@
   <div ng-if="data.amendment">
     <div ng-if="stateService.isPurposeState()">
       <ess-purpose-edit-form amendment="data.amendment"
-                             title="Enter your purpose of travel."
                              event-types="data.eventTypes"
                              positive-callback="savePurpose(amendment)"
                              negative-callback="cancel(amendment)">

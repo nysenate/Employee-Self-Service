@@ -15,7 +15,6 @@
   <div ng-if="vm.dto">
     <div ng-if="vm.stateService.isPurposeState()">
       <ess-purpose-edit-form amendment="vm.dto.amendment"
-                             title="Edit the purpose of travel."
                              event-types="vm.dto.validEventTypes"
                              positive-callback="vm.savePurpose(amendment)"
                              negative-callback="vm.cancelEdit(amendment)"

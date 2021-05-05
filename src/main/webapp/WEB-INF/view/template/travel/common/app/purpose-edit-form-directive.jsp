@@ -1,79 +1,89 @@
-<div class="content-container">
-  <p class="travel-content-info travel-text-bold" ng-bind="::title"></p>
+<div>
+  <div ng-show="purpose.form.$submitted && !purpose.form.$valid" class="margin: 10px 0px;">
+    <ess-notification level="error">
+      <ul>
+        <li ng-if="purpose.form.$error.eventTypeRequired">A purpose of travel is required</li>
+        <li ng-if="purpose.form.$error.eventNameRequired">Name of the
+          {{dirtyAmendment.purposeOfTravel.eventType.displayName}} is required.
+        </li>
+        <li ng-if="purpose.form.$error.additionalPurposeRequired">A description of your purpose of travel is required.
+        </li>
+      </ul>
+    </ess-notification>
+  </div>
 
-  <form ng-cloak name="purpose.form" id="purposeForm" novalidate>
-
-    <div ng-show="purpose.form.$submitted && !purpose.form.$valid" class="margin-10">
-      <ess-notification level="error" title="Purpose of Travel has errors">
-        <ul>
-          <li ng-if="purpose.form.$error.eventTypeRequired">A purpose of travel is required</li>
-          <li ng-if="purpose.form.$error.eventNameRequired">Name of the {{dirtyAmendment.purposeOfTravel.eventType.displayName}} is required.</li>
-          <li ng-if="purpose.form.$error.additionalPurposeRequired">A description of your purpose of travel is required.</li>
-        </ul>
-      </ess-notification>
-    </div>
-
-    <ess-travel-inner-container title="Purpose of Travel">
-      <div class="">
-        <div class="purpose-row">
-          <label for="eventTypeSelect">Select your purpose of travel:</label>
-          <select id="eventTypeSelect"
-                  event-type-validator
-                  ng-options="eventType as eventType.displayName for eventType in eventTypes track by eventType.name"
-                  ng-model="dirtyAmendment.purposeOfTravel.eventType"/>
-        </div>
-        <div ng-if="dirtyAmendment.purposeOfTravel.eventType.requiresName" class="purpose-row">
-          <label for="eventNameInput">Name of the {{dirtyAmendment.purposeOfTravel.eventType.displayName}}:</label>
-          <input id="eventNameInput" type="text"
-                 event-name-validator
-                 ng-model="dirtyAmendment.purposeOfTravel.eventName"/>
-        </div>
-        <div ng-if="dirtyAmendment.purposeOfTravel.eventType !== null" class="purpose-row">
-          <div ng-if="dirtyAmendment.purposeOfTravel.eventType.requiresAdditionalPurpose">
-            <label for="purposeAdditionalTextRequired">
-              Enter your purpose of travel:
-            </label>
-            <textarea id="purposeAdditionalTextRequired" ng-model="dirtyAmendment.purposeOfTravel.additionalPurpose"
-                      additional-purpose-validator
-                      cols="120" rows="3"></textarea>
+  <div class="travel-card">
+    <form ng-cloak name="purpose.form" id="purposeForm" novalidate>
+      <div class="travel-container-item">
+        <h3 class="travel-title">Purpose of Travel</h3>
+        <div>
+          <div class="purpose-row">
+            <label for="eventTypeSelect">Select your purpose of travel:</label>
+            <select id="eventTypeSelect"
+                    class="travel-input"
+                    event-type-validator
+                    ng-options="eventType as eventType.displayName for eventType in eventTypes track by eventType.name"
+                    ng-model="dirtyAmendment.purposeOfTravel.eventType"/>
           </div>
-          <div ng-if="!dirtyAmendment.purposeOfTravel.eventType.requiresAdditionalPurpose">
-            <label for="purposeAdditionalTextOptional">
-              Provide additional information (Optional):
-            </label>
-            <textarea id="purposeAdditionalTextOptional" ng-model="dirtyAmendment.purposeOfTravel.additionalPurpose"
-                      cols="120" rows="3"></textarea>
+          <div ng-if="dirtyAmendment.purposeOfTravel.eventType.requiresName" class="purpose-row">
+            <label for="eventNameInput">Name of the {{dirtyAmendment.purposeOfTravel.eventType.displayName}}:</label>
+            <input id="eventNameInput" type="text" class="travel-input"
+                   event-name-validator
+                   ng-model="dirtyAmendment.purposeOfTravel.eventName"/>
+          </div>
+          <div ng-if="dirtyAmendment.purposeOfTravel.eventType !== null" class="purpose-row">
+            <div ng-if="dirtyAmendment.purposeOfTravel.eventType.requiresAdditionalPurpose">
+              <label for="purposeAdditionalTextRequired">
+                Enter your purpose of travel:
+              </label>
+              <textarea id="purposeAdditionalTextRequired" ng-model="dirtyAmendment.purposeOfTravel.additionalPurpose"
+                        class="travel-input"
+                        additional-purpose-validator
+                        cols="120" rows="3"></textarea>
+            </div>
+            <div ng-if="!dirtyAmendment.purposeOfTravel.eventType.requiresAdditionalPurpose">
+              <label for="purposeAdditionalTextOptional">
+                Provide additional information (<em>Optional </em>):
+              </label>
+              <textarea id="purposeAdditionalTextOptional" ng-model="dirtyAmendment.purposeOfTravel.additionalPurpose"
+                        class="travel-input"
+                        style="resize:vertical;"
+                        cols="120" rows="3"></textarea>
+            </div>
           </div>
         </div>
       </div>
-    </ess-travel-inner-container>
 
-    <ess-travel-inner-container title="Supporting Documentation">
-      <div class="text-align-center">
-        <div ng-repeat="attachment in dirtyAmendment.attachments" class="travel-attachment-container">
-          <div class="travel-attachment-filename">
-            {{attachment.originalName}}
-            <span ng-click="deleteAttachment(attachment)" class="icon-cross" style="cursor: pointer;"></span>
+      <div class="travel-container-item">
+        <h3 class="travel-title margin-top-30">Supporting Documentation</h3>
+        <div class="text-align-center">
+          <p>
+            You may attach any relevant supporting documentation.
+          </p>
+          <div ng-repeat="attachment in dirtyAmendment.attachments" class="travel-attachment-container">
+            <div class="travel-attachment-filename">
+              {{attachment.originalName}}
+              <span ng-click="deleteAttachment(attachment)" class="icon-cross" style="cursor: pointer;"></span>
+            </div>
+          </div>
+          <div class="margin-20">
+            <label for="addAttachment" class="travel-neutral-btn">
+              <i class="icon-upload margin-right-10"></i>Attach Document
+            </label>
+            <input type="file" value='fileInput' id="addAttachment" name="file" multiple style="display:none;">
           </div>
         </div>
-        <%--Cant have an inner form, do more testing to see if this form was necessary--%>
-        <%--<form method="POST" enctype="multipart/form-data">--%>
-        <%--Hack to change the button text of file input--%>
-        <input class="neutral-button" type="button" id="addAttachmentDisplay" value="Add Attachment"
-               onclick="document.getElementById('addAttachment').click();"/>
-        <input type="file" id="addAttachment" name="file" multiple style="display:none;">
-        <%--<input type="submit" ng-click="save()">--%>
-        <%--</form>--%>
       </div>
-    </ess-travel-inner-container>
 
-    <div class="travel-button-container">
-      <input type="button" class="reject-button" ng-value="::negativeLabel || 'Cancel'"
-             ng-click="cancel()">
-      <input type="submit" class="submit-button"
-             title="Continue to next step" value="Next"
-             ng-click="next()">
-    </div>
-
-  </form>
+      <div class="travel-button-container">
+        <input type="button" class="travel-neutral-btn"
+               ng-value="::negativeLabel || 'Cancel'"
+               ng-click="cancel()">
+        <button type="submit" class="travel-primary-btn"
+                ng-click="next()">
+          Next
+        </button>
+      </div>
+    </form>
+  </div>
 </div>
