@@ -45,7 +45,6 @@
 
     <div ng-if="vm.stateService.isAllowancesState()">
       <ess-allowances-edit-form amendment="vm.dto.amendment"
-                                title="Edit the expenses"
                                 positive-callback="vm.saveAllowances(amendment)"
                                 neutral-callback="vm.toReturnState(amendment)"
                                 negative-callback="vm.cancelEdit(amendment)"

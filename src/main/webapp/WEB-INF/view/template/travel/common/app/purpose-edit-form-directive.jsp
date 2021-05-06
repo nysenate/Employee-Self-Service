@@ -14,7 +14,7 @@
 
   <div class="travel-card">
     <form ng-cloak name="purpose.form" id="purposeForm" novalidate>
-      <div class="travel-container-item">
+      <div class="travel-card-item">
         <h3 class="travel-title">Purpose of Travel</h3>
         <div>
           <div class="purpose-row">
@@ -43,7 +43,7 @@
             </div>
             <div ng-if="!dirtyAmendment.purposeOfTravel.eventType.requiresAdditionalPurpose">
               <label for="purposeAdditionalTextOptional">
-                Provide additional information (<em>Optional </em>):
+                Provide additional information (<em>Optional</em>):
               </label>
               <textarea id="purposeAdditionalTextOptional" ng-model="dirtyAmendment.purposeOfTravel.additionalPurpose"
                         class="travel-input"
@@ -54,12 +54,10 @@
         </div>
       </div>
 
-      <div class="travel-container-item">
-        <h3 class="travel-title margin-top-30">Supporting Documentation</h3>
+      <div class="travel-card-item">
+        <h3 class="travel-title margin-top-30">Supporting Documentation <em class="optional">(Optional)</em></h3>
+        <span class="travel-instructions">You may attach any relevant supporting documentation.</span>
         <div class="text-align-center">
-          <p>
-            You may attach any relevant supporting documentation.
-          </p>
           <div ng-repeat="attachment in dirtyAmendment.attachments" class="travel-attachment-container">
             <div class="travel-attachment-filename">
               {{attachment.originalName}}
@@ -76,9 +74,11 @@
       </div>
 
       <div class="travel-button-container">
-        <input type="button" class="travel-neutral-btn"
+        <button class="travel-neutral-btn"
                ng-value="::negativeLabel || 'Cancel'"
                ng-click="cancel()">
+          {{::negativeLabel || 'Cancel'}}
+        </button>
         <button type="submit" class="travel-primary-btn"
                 ng-click="next()">
           Next

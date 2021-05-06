@@ -55,7 +55,6 @@
 
     <div ng-if="stateService.isAllowancesState()">
       <ess-allowances-edit-form amendment="data.amendment"
-                                title="Enter your estimated expenses for the following categories."
                                 positive-callback="saveAllowances(amendment)"
                                 neutral-callback="toReturnState(amendment)"
                                 negative-callback="cancel(amendment)">

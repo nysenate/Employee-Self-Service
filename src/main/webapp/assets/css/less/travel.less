@@ -4,25 +4,6 @@
  * Styles for ESS Travel
  */
 
-
-/**
- * Travel css resets
- */
-
-textarea,
-select {
-  border: none;
-  overflow: auto;
-  outline: none;
-
-  -webkit-box-shadow: none;
-  -moz-box-shadow: none;
-  box-shadow: none;
-
-  resize: none; /*remove the resize handle on the bottom right*/
-}
-
-
 /**
  * Basic Theme
  */
@@ -49,20 +30,36 @@ select {
 @gray4: #d1d1d1;
 @gray5: #999;
 @gray6: #8c8c8c;
-@gray7: #666666;
+@gray7: #707070;
 @gray8: #4d4d4d;
 @gray9: #333;
-
 
 .travel-card {
   .content-container;
   overflow: auto;
 }
 
-// TODO better way of doing this, style input's directly?
+.travel-card-item {
+  margin: 20px 20px 50px 20px;
+
+  > h3 {
+    .travel-title;
+  }
+
+  > div {
+    margin-top: 10px;
+  }
+}
+
 .travel-input {
-  //background: #fff;
-  //border: 1px solid @gray5 !important;
+  border: none;
+  overflow: auto;
+  outline: none;
+
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+
   background: @gray2 !important;
   border: 1px solid @gray4 !important;
 
@@ -105,16 +102,20 @@ select {
 }
 
 .travel-title {
-  padding: 10px;
-  color: @gray9;
-  text-align: center;
-  border-bottom: 1px solid @gray4;
-  margin-left: 20px;
-  margin-right: 20px;
+  font-size: 18px;
+  color: @yellow5;
+  margin-bottom: 5px;
+
+  .optional {
+    font-size: 14px;
+    font-weight: 400;
+  }
 }
 
-.travel-container-item {
-  margin: 0 20px 30px 20px;
+.travel-instructions {
+  color: @gray7;
+  display: inline-block;
+  width: 45%;
 }
 
 .travel-button-container {
@@ -123,6 +124,45 @@ select {
   background: @gray2;
 }
 
+.expenses-flex-grid {
+  display:flex;
+  justify-content: center;
+  align-items: center;
+
+  .left {
+    width: 40%;
+
+    .row {
+      margin: 10px;
+    }
+  }
+
+  label {
+    display: inline-block;
+    width: 120px;
+    text-align: right;
+    color: @gray9;
+    font-weight: 400;
+  }
+}
+
+.travel-note {
+  border: 1px solid @yellow5;
+  border-left: 5px solid @yellow5;
+  background: @yellow1;
+  padding: 10px;
+  color: @yellow7;
+  width: 300px;
+  display: inline-block;
+
+  p {
+    margin: 0;
+  }
+}
+
+.asterisk {
+  color: @yellow7;
+}
 
 /** OLD CSS BELOW - Review/refactor and delete unused. */
 
@@ -312,6 +352,7 @@ h2.travel-subheader {
 .travel-table {
   width: 100%;
   .text-align-center;
+  color: @gray9;
 
   thead {
     background: white;
@@ -328,13 +369,16 @@ h2.travel-subheader {
   }
 
   tbody {
+    color: @gray9;
+
     tr {
       &:nth-child(odd) {
         background: #fafafa;
       }
 
       td {
-        .padding-10;
+        padding: 8px 10px;
+        min-width: 150px;
       }
 
       &.notes {
@@ -382,13 +426,6 @@ h2.travel-subheader {
   width: 500px;
   display: inline-block;
   text-align: left;
-}
-
-.travel-allowance-label {
-  display: inline-block;
-  width: 120px;
-  text-align: right;
-  margin-bottom: 10px;
 }
 
 .travel-hover {
