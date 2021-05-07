@@ -164,12 +164,13 @@
   color: @yellow7;
 }
 
+.travel-hero {
+  .page-hero(@yellow5, white);
+}
+
+
 /** OLD CSS BELOW - Review/refactor and delete unused. */
 
-
-.travel-hero {
-  .page-hero(@travelPrimaryColor, white);
-}
 
 .white-text {
   color: white;
@@ -710,8 +711,11 @@ h2.travel-subheader {
   * Step Indicator
   */
 
-@stepColor: @white;
-@stepColorCompleted: @travelSecondaryColor;
+@stepColor: @gray1;
+@stepActiveColor: #0AA7C7;
+@stepCompletedColor: darken(@stepActiveColor, 8%);
+@stepNavigableColor: lighten(@stepActiveColor, 3%);
+
 @textColor: #666;
 @textColorCompleted: #fff;
 
@@ -778,34 +782,47 @@ h2.travel-subheader {
     }
   }
 
-  &.completed {
-    background: @stepColorCompleted;
+  &.active {
+    background: @stepActiveColor;
     color: @textColorCompleted;
 
     &:before {
-      border-color: @stepColorCompleted;
+      border-color: @stepActiveColor;
       border-left-color: transparent;
     }
 
     &:after {
-      border-left-color: @stepColorCompleted;
+      border-left-color: @stepActiveColor;
+    }
+  }
+
+  &.completed {
+    background: @stepCompletedColor;
+    color: @textColorCompleted;
+
+    &:before {
+      border-color: @stepCompletedColor;
+      border-left-color: transparent;
+    }
+
+    &:after {
+      border-left-color: @stepCompletedColor;
     }
   }
 
   &.navigable {
-    @navigableColor: lighten(@stepColorCompleted, 5%);
     cursor: pointer;
 
     &:hover {
-      background: @navigableColor;
+      background: @stepNavigableColor;
 
       &:before {
-        border-color: @navigableColor;
+        border-color: @stepNavigableColor;
         border-left-color: transparent;
       }
 
       &:after {
-        border-left-color: @navigableColor;
+        border-left-color: @stepNavigableColor;
       }
     }
   }
