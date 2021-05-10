@@ -37,7 +37,6 @@
     <div ng-if="stateService.isOutboundState()">
       <ess-outbound-edit-form amendment="data.amendment"
                               traveler="data.traveler"
-                              title="Enter your outbound route starting from the origin and including all destinations."
                               positive-callback="saveOutbound(amendment)"
                               neutral-callback="toPurposeState(amendment)"
                               negative-callback="cancel(amendment)">

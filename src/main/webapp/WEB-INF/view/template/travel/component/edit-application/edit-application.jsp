@@ -25,7 +25,6 @@
     <div ng-if="vm.stateService.isOutboundState()">
       <ess-outbound-edit-form amendment="vm.dto.amendment"
                               traveler="vm.dto.traveler"
-                              title="Edit the outbound route"
                               positive-callback="vm.saveOutbound(amendment)"
                               neutral-callback="vm.toPurposeState(amendment)"
                               negative-callback="vm.cancelEdit(amendment)"

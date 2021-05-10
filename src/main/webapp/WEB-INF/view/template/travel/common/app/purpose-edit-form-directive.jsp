@@ -55,7 +55,7 @@
       </div>
 
       <div class="travel-card-item">
-        <h3 class="travel-title margin-top-30">Supporting Documentation <em class="optional">(Optional)</em></h3>
+        <h3 class="travel-title">Supporting Documentation <em class="optional">(Optional)</em></h3>
         <span class="travel-instructions">You may attach any relevant supporting documentation.</span>
         <div class="text-align-center">
           <div ng-repeat="attachment in dirtyAmendment.attachments" class="travel-attachment-container">
@@ -65,7 +65,7 @@
             </div>
           </div>
           <div class="margin-20">
-            <label for="addAttachment" class="travel-neutral-btn">
+            <label for="addAttachment" class="travel-primary-ghost-btn">
               <i class="icon-upload margin-right-10"></i>Attach Document
             </label>
             <input type="file" value='fileInput' id="addAttachment" name="file" multiple style="display:none;">
