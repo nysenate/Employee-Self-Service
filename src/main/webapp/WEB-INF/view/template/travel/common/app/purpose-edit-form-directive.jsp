@@ -75,6 +75,7 @@
 
       <div class="travel-button-container">
         <button class="travel-neutral-btn"
+                type="button"
                ng-value="::negativeLabel || 'Cancel'"
                ng-click="cancel()">
           {{::negativeLabel || 'Cancel'}}

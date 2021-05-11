@@ -34,7 +34,6 @@
 
     <div ng-if="vm.stateService.isReturnState()">
       <ess-return-edit-form amendment="vm.dto.amendment"
-                            title="Edit the return route"
                             positive-callback="vm.saveRoute(amendment)"
                             neutral-callback="vm.toOutboundState(amendment)"
                             negative-callback="vm.cancelEdit(amendment)"

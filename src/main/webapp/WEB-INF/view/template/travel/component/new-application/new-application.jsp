@@ -45,7 +45,6 @@
 
     <div ng-if="stateService.isReturnState()">
       <ess-return-edit-form amendment="data.amendment"
-                            title="Enter your return route from the last destination to the origin."
                             positive-callback="saveRoute(amendment)"
                             neutral-callback="toOutboundState(amendment)"
                             negative-callback="cancel(amendment)">

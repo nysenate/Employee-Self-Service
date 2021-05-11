@@ -106,10 +106,12 @@
       </div>
       <div class="travel-button-container">
         <button class="travel-neutral-btn"
+                type="button"
                 ng-click="back()">
           Back
         </button>
         <button class="travel-neutral-btn"
+                type="button"
                 ng-click="cancel()">
           {{::negativeLabel || 'Cancel'}}
         </button>
