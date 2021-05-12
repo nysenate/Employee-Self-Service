@@ -61,7 +61,6 @@
 
     <div ng-if="stateService.isReviewState()">
       <ess-review-edit-form amendment="data.amendment"
-                            title="Please review your application."
                             positive-btn-label="Submit Application"
                             positive-callback="submitApplication(amendment)"
                             neutral-callback="toAllowancesState(amendment)"

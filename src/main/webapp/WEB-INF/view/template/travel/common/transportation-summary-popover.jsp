@@ -8,7 +8,7 @@
 
 <script type="text/ng-template" id="transportation-summary">
   <div class="triangle"></div>
-  <div class="ns-popover-tooltip" style="max-width: 600px;">
+  <div class="ns-popover-tooltip" style="max-width: 800px;">
     <table class="travel-table">
       <thead>
       <tr>

@@ -38,6 +38,7 @@
 .travel-card {
   .content-container;
   overflow: auto;
+  color: @gray9;
 }
 
 .travel-card-item {
@@ -146,7 +147,7 @@
 }
 
 .expenses-flex-grid {
-  display:flex;
+  display: flex;
   justify-content: center;
   align-items: center;
 
@@ -200,6 +201,23 @@
   color: #ce4125f0;
 }
 
+.review-purpose {
+  display: flex;
+  flex-wrap: wrap;
+  width: 80%;
+
+  label {
+    flex: 1 1 18%;
+    margin: 0 5px;
+  }
+
+  span {
+    flex: 1 1 65%;
+    margin: 0 5px;
+  }
+}
+
+
 /** OLD CSS BELOW - Review/refactor and delete unused. */
 
 
@@ -250,7 +268,8 @@
 
 .travel-content-info {
   .content-info;
-  border-bottom: 1px solid @travelLightGray;
+  border-bottom: 1px solid @gray4;
+  color: @gray9;
 }
 
 .travel-content-controls {
@@ -520,16 +539,16 @@ h2.travel-subheader {
 .travel-attachment-container {
   .margin-5;
 
-  & > .travel-attachment-filename {
-    color: darken(@gray, 15%);
-    font-family: monospace;
-
-    & > .icon-cross {
-      vertical-align: middle;
-      color: @dark-red;
-      font-size: large;
-    }
+  .icon-cross {
+    vertical-align: middle;
+    color: @dark-red;
+    font-size: large;
   }
+}
+
+.travel-attachment-filename {
+  color: @gray7;
+  font-family: monospace;
 }
 
 /**
@@ -648,9 +667,7 @@ h2.travel-subheader {
 }
 
 .app-review-allowances-box {
-  width: 300px;
-  margin: 0 auto;
-  .padding-10;
+  width: 220px;
 
   .label {
     width: 130px;
@@ -746,9 +763,9 @@ h2.travel-subheader {
   */
 
 @stepColor: @gray1;
-@stepActiveColor: #0AA7C7;
-@stepCompletedColor: darken(@stepActiveColor, 8%);
-@stepNavigableColor: lighten(@stepActiveColor, 3%);
+@stepActiveColor: lighten(@stepCompletedColor, 10%);
+@stepCompletedColor: @travelSecondaryColor;
+@stepNavigableColor: lighten(@stepCompletedColor, 15%);
 
 @textColor: #666;
 @textColorCompleted: #fff;

@@ -65,7 +65,6 @@
       <ess-review-edit-form
           ng-if="vm.activeRole === 'TRAVEL_ADMIN'"
           amendment="vm.dto.amendment"
-          title="Here is the full application with your changes."
           positive-btn-label="Save Edits"
           positive-callback="vm.saveEdits(amendment)"
           neutral-callback="vm.toOverridesState(amendment)"
@@ -75,7 +74,6 @@
       <ess-review-edit-form
           ng-if="vm.activeRole === 'NONE'"
           amendment="vm.dto.amendment"
-          title="Here is the full application with your changes."
           positive-btn-label="Save and Resubmit"
           positive-callback="vm.saveEdits(amendment)"
           neutral-callback="vm.toOverridesState(amendment)"
