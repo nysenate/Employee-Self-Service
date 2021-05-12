@@ -51,19 +51,19 @@ public class EverfiUserService {
     @Value("${pec.everfi.bad.email.report.enabled:false}")
     private boolean everfiBadEmailReportEnabled;
 
-    @Value("${everfi.report.email}")
-    private String everfiReportEmail;
+    private List<String> everfiReportEmails;
 
 
     @Autowired
     public EverfiUserService(EverfiApiClient everfiApiClient, EmployeeDao employeeDao, EverfiUserDao everfiUserDao,
-                             SendMailService sendMailService, EverfiCategoryService categoryService) {
+                             SendMailService sendMailService, EverfiCategoryService categoryService, @Value("${everfi.report.email}") String everfiReportEmailList) {
         this.everfiApiClient = everfiApiClient;
         this.employeeDao = employeeDao;
         this.everfiUserDao = everfiUserDao;
         this.sendMailService = sendMailService;
         this.categoryService = categoryService;
         this.ignoredEverfiUserIDs = everfiUserDao.getIgnoredEverfiUserIDs();
+        this.everfiReportEmails = Arrays.asList(everfiReportEmailList.replaceAll(" ","").split(","));
     }
 
     @Scheduled(cron = "${scheduler.everfi.user.update.cron}")
@@ -83,7 +83,7 @@ public class EverfiUserService {
         try {
             List<Employee> inactiveEmployees = getRecentlyInactiveEmployees();
 
-            sendEmail(this.everfiReportEmail, "Employees to be Inactivated",
+            sendEmailToEverfiReportEmails("Employees to be Inactivated",
                     inactiveEmployees.toString() + "\n\n Some of these users above may have already been deactivated prior to this run");
 
             for (Employee employee : inactiveEmployees) {
@@ -277,6 +277,12 @@ public class EverfiUserService {
         logger.info("Completed Everfi ID import");
     }
 
+    private void sendEmailToEverfiReportEmails(String subject, String html) {
+        for (String email : this.everfiReportEmails) {
+            sendEmail(email, subject, html);
+        }
+    }
+
     private void sendEmail(String to, String subject, String html) {
         try {
             MimeMessage message = sendMailService.newHtmlMessage(to.trim(),
@@ -320,7 +326,7 @@ public class EverfiUserService {
     public void addEmployeesToEverfi(List<Employee> emps) {
 
         //send email to Everfi report email for new employees
-        sendEmail(this.everfiReportEmail, "New Users Added to Everfi", emps.toString());
+        sendEmailToEverfiReportEmails("New Users Added to Everfi", emps.toString());
 
         try {
             for (Employee emp : emps) {

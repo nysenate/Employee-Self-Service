@@ -288,6 +288,8 @@ slack.notification.line.limit = 5
 
 # --- Error Report EmailConfiguration -----------------------------------------------------
 report.email =
+
+#Supports comma separated emails
 everfi.report.email =
 
 # --- Supply Configuration -----------------------------------------------------

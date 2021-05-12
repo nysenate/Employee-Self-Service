@@ -65,6 +65,9 @@ public class PECVideoCSVService {
     private static final Pattern csvEthics2021ReportPattern =
             Pattern.compile("2021LegEthicsTraining_V(\\d)");
 
+    private static final Pattern csvLiveEthics2021ReportPattern =
+            Pattern.compile("2021LiveEthicsTraining_V(\\d)");
+
 
 
     private final int ETHICS_VID_2018_ID_NUM;
@@ -112,6 +115,7 @@ public class PECVideoCSVService {
             Matcher liveTrainingDHPMatcher = csvLiveTrainingDHPReportPattern.matcher(fileName);
             Matcher ethics2020Matcher = csvEthics2020ReportPattern.matcher(fileName);
             Matcher ethics2021Matcher = csvEthics2021ReportPattern.matcher(fileName);
+            Matcher liveEthics2021Matcher = csvLiveEthics2021ReportPattern.matcher(fileName);
 
             if (ethicsMatcher.matches()) {
                 logger.info("Processing Ethics 2018 CSV report: " + fileName);
@@ -128,6 +132,9 @@ public class PECVideoCSVService {
             } else if (ethics2021Matcher.matches()) {
                 logger.info("Processing Ethics 2021 CSV report: " + fileName);
                 handleGeneratedReportCSV(file, ETHICS_VID_2021_ID_NUM, 9);
+            } else if (liveEthics2021Matcher.matches()) {
+                logger.info("Processing Live Ethics 2021 CSV report: " + fileName);
+                handle2021LiveTrainingReportCSV(file);
             }
             else {
                 logger.info("Unable to match and process: " + fileName);
@@ -154,7 +161,7 @@ public class PECVideoCSVService {
             //8 EC1
             //9 EC2
             //10 Date 02/21/2018 11:27:18 EST
-            if (csvRecord.get(0).equals("Name") || csvRecord.get(0).equals("User") ) {
+            if (csvRecord.get(0).trim().equals("Name") || csvRecord.get(0).trim().equals("User") ) {
                 continue;
             }
 
@@ -176,6 +183,39 @@ public class PECVideoCSVService {
             catch (NumberFormatException e) {
                 logger.warn("CSV report has problematic data in the EmpID field in record: {}", csvRecord);
             }
+        }
+    }
+
+    private void handle2021LiveTrainingReportCSV(File liveTrainingCSV2021) throws IOException {
+        Reader reader = Files.newBufferedReader(Paths.get(liveTrainingCSV2021.getAbsolutePath()));
+        CSVParser csvParser = new CSVParser(reader, CSVFormat.EXCEL);
+        for (CSVRecord csvRecord : csvParser) {
+            //0 First
+            //1 Last
+            //2 Office
+            //3 Email
+            //4 Date
+            //5 Time
+            if (csvRecord.get(0).trim().equals("First")) {
+                continue;
+            }
+
+            try {
+                Employee employee = employeeDao.getEmployeeByEmail(csvRecord.get(3).toLowerCase().trim());
+                String dateFromFile = csvRecord.get(4).trim() + " " +
+                        csvRecord.get(5).toUpperCase().replaceAll("AM", "")
+                                .replaceAll("PM", "").trim();
+
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/dd/yyyy HH:mm:ss");
+                LocalDateTime dateTime = LocalDateTime.parse(dateFromFile, formatter);
+
+                updateDB(employee, dateTime, this.ETHICS_VID_2021_ID_NUM);
+            }
+            catch (EmployeeNotFoundEx ex) {
+                logger.warn("COULD NOT MATCH EMAIL in 2021 live ethics record" + ex);
+                logger.warn(csvRecord.toString());
+            }
+
         }
     }
 
