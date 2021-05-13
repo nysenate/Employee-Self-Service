@@ -5,15 +5,6 @@
  */
 
 /**
- * Basic Theme
- */
-
-@travelPrimaryColor: @orange;
-@travelSecondaryColor: @teal;
-@travelLightGray: #e4e6e8;
-@travelDarkGray: #3b4045;
-
-/**
  * Travel Theme
  */
 
@@ -254,12 +245,8 @@
 /** OLD CSS BELOW - Review/refactor and delete unused. */
 
 
-.white-text {
-  color: white;
-}
-
 .travel-text {
-  color: @travelDarkGray;
+  color: @gray9;
 }
 
 .travel-text-bold {
@@ -268,12 +255,12 @@
 }
 
 .travel-highlight-text {
-  color: @travelPrimaryColor;
+  color: @yellow5;
   .bold;
 }
 
 .travel-secondary-text {
-  color: @travelSecondaryColor;
+  color: @teal;
   .bold;
 }
 
@@ -287,18 +274,6 @@
   .bold;
 }
 
-.travel-background {
-  background: @travelPrimaryColor;
-}
-
-.travel-secondary-background {
-  background: @travelSecondaryColor;
-}
-
-.travel-neutral-background {
-  background: @travelLightGray;
-}
-
 .travel-content-info {
   .content-info;
   border-bottom: 1px solid @gray4;
@@ -310,49 +285,6 @@
 
   p, label {
     .travel-text-bold;
-  }
-}
-
-.travel-inner-container {
-  margin: 10px 10px 20px;
-  border: solid @travelLightGray 1px;
-  background: #fafafa;
-}
-
-.travel-inner-container-content {
-  margin: 15px;
-}
-
-h2.travel-subheader {
-  margin: 0;
-  font-weight: bold;
-  font-size: 1.1em;
-  padding: 10px;
-  color: white;
-}
-
-//.travel-button-container {
-//  .text-align-center;
-//  .margin-top-20;
-//  padding: 10px;
-//  background: #f9f9f9;
-//
-//  input[type="button"] {
-//    margin-right: 5px;
-//  }
-//}
-
-.expenses-opt-out-list {
-  .clear;
-  padding-top: 15px;
-
-  div {
-    margin-top: 3px;
-    .travel-text;
-
-    &.col-6-12 {
-      .travel-text-bold;
-    }
   }
 }
 
@@ -389,47 +321,6 @@ h2.travel-subheader {
         border: 1px solid @redorange;
       }
     }
-  }
-}
-
-
-@travel-location-box-core: {
-  display: inline-block;
-  width: 100%;
-  padding: 5px;
-  height: 50px;
-  text-align: center;
-  line-height: 20px;
-  background: #F6F6F6;
-  border-radius: 5px;
-  div {
-    display: inline-block;
-    text-align: center;
-    vertical-align: top;
-  }
-};
-
-.travel-origin-display-box {
-  @travel-location-box-core();
-}
-
-.travel-destination-display-box {
-  @travel-location-box-core();
-
-  :nth-child(1) {
-    float: left;
-    width: 25%;
-    font-size: 0.8em;
-  }
-
-  :nth-child(2) {
-    width: 50%
-  }
-
-  :nth-child(3) {
-    float: right;
-    width: 25%;
-    font-size: 0.8em;
   }
 }
 
@@ -505,13 +396,6 @@ h2.travel-subheader {
   }
 }
 
-.review-additional-purpose {
-  white-space: pre-wrap;
-  width: 500px;
-  display: inline-block;
-  text-align: left;
-}
-
 .travel-hover {
   tbody {
     tr:hover {
@@ -531,38 +415,6 @@ h2.travel-subheader {
   margin: 0;
   display: table-cell;
   vertical-align: middle;
-}
-
-.travel-container {
-  background: #fafafa;
-  position: relative;
-  //.box-shadow(0px 1px 2px #aaa);
-  border: solid @travelLightGray 1px;
-
-  h3 {
-    color: @travelDarkGray;
-    //padding: 10px;
-    margin: 10px;
-  }
-
-  > .outbound {
-    //color: @green;
-    //border-bottom: solid @green 1px;
-    border-bottom: solid @travelLightGray 1px;
-    //background: @travelPrimaryColor;
-  }
-
-  > .return {
-    //color: @teal;
-    border-bottom: solid @travelLightGray 1px;
-    //border: solid @travelLightGray 1px;
-    //border-bottom: solid @teal 1px;
-    //background: @travelSecondaryColor;
-  }
-
-  input {
-    background: #ffffff;
-  }
 }
 
 /**
@@ -763,41 +615,12 @@ h2.travel-subheader {
 }
 
 /**
-  * App Edit Perdiem Overrides styling
-  */
-
-.perdiem-overrides-edit-form-row {
-  margin-bottom: 10px;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: baseline;
-}
-
-.perdiem-overrides-edit-form-calculated {
-  width: 200px;
-  margin-right: 50px;
-}
-
-.perdiem-overrides-edit-form-override {
-  label {
-    width: 120px;
-    display: inline-block;
-    text-align: right;
-  }
-
-  input {
-    width: 75px;
-  }
-}
-
-/**
   * Step Indicator
   */
 
 @stepColor: @gray1;
 @stepActiveColor: lighten(@stepCompletedColor, 10%);
-@stepCompletedColor: @travelSecondaryColor;
+@stepCompletedColor: @teal;
 @stepNavigableColor: lighten(@stepCompletedColor, 15%);
 
 @textColor: #666;
