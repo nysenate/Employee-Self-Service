@@ -36,6 +36,7 @@
         <ess-app-review-summary-table
             reviews="vm.data.reviews.filtered"
             on-row-click="vm.displayReviewViewModal(review)"
+            roles="vm.data.roles"
             show-action>
         </ess-app-review-summary-table>
       </div>

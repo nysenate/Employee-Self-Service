@@ -1,8 +1,9 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.controller('ReviewHistoryCtrl', ['$scope', 'LocationService', 'modals', 'ApplicationReviewApi', reviewHistory]);
+essTravel.controller('ReviewHistoryCtrl', ['$scope', 'LocationService', 'modals', 'ApplicationReviewApi',
+                                           'TravelRoleService', reviewHistory]);
 
-function reviewHistory($scope, locationService, modals, appReviewApi) {
+function reviewHistory($scope, locationService, modals, appReviewApi, roleService) {
 
     const DATEPICKER_FORMAT = "MM/DD/YYYY";
     const ISO_FORMAT = "YYYY-MM-DD";
@@ -13,7 +14,8 @@ function reviewHistory($scope, locationService, modals, appReviewApi) {
         reviews: {
             all: [],
             filtered: []
-        }
+        },
+        roles: []
     };
     vm.date = {
         from: moment().subtract(3, 'month').format(DATEPICKER_FORMAT),
@@ -32,6 +34,11 @@ function reviewHistory($scope, locationService, modals, appReviewApi) {
                 vm.data.isLoading = false;
             })
             .catch($scope.handleErrorResponse);
+
+        roleService.roles()
+            .then(function (response) {
+                vm.data.roles = response.allRoles;
+            });
     })();
 
     vm.displayReviewViewModal = function (review) {
