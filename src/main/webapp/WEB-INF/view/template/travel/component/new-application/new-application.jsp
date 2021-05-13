@@ -6,17 +6,17 @@
     <div class="padding-10 text-align-center">
       Travel application on behalf of:
       <span ng-if="!stateService.isReviewState()">
-      <ui-select ng-model="data.traveler" style="min-width: 200px;">
-        <ui-select-match>
-          <span ng-bind="$select.selected.fullName"></span>
-        </ui-select-match>
-        <ui-select-choices repeat="emp in data.allowedTravelers | filter: $select.search track by emp.employeeId">
-          <div ng-bind-html="emp.fullName"></div>
-        </ui-select-choices>
-      </ui-select>
+        <ui-select ng-model="data.traveler" style="min-width: 200px;">
+          <ui-select-match>
+            <span ng-bind="$select.selected.fullName"></span>
+          </ui-select-match>
+          <ui-select-choices repeat="emp in data.allowedTravelers | filter: $select.search track by emp.employeeId">
+            <div ng-bind-html="emp.fullName"></div>
+          </ui-select-choices>
+        </ui-select>
       </span>
       <span ng-if="stateService.isReviewState()">
-        {{data.app.traveler.fullName}}
+        {{data.traveler.fullName}}
       </span>
     </div>
   </div>
@@ -96,9 +96,9 @@
            title="Cancel Travel Application"
            confirm-message="Are you sure you want to cancel your current application? This will delete any data you have entered."
            resolve-button="Cancel Application"
-           resolve-class="reject-button"
-           reject-button="Keep Application"
-           reject-class="neutral-button">
+           resolve-class="travel-reject-btn"
+           reject-button="Do not Cancel"
+           reject-class="travel-neutral-btn">
       </div>
     </modal>
 
@@ -117,18 +117,21 @@
            title="Scheduled trip is longer than 7 days"
            confirm-message="Are you sure your travel dates are correct?"
            resolve-button="Yes, my dates are correct"
-           reject-button="Let me review">
+           resolve-class="travel-neutral-btn"
+           reject-button="Let me review"
+           reject-class="travel-primary-btn">
       </div>
     </modal>
 
     <%-- Review Modals --%>
     <modal modal-id="submit-confirm">
       <div confirm-modal rejectable="true"
-           title="Submit Travel Application?"
+           title="Submit Travel Application"
            confirm-message="Are you sure you want to submit this travel application?"
            resolve-button="Submit Application"
+           resolve-class="travel-submit-btn"
            reject-button="Cancel"
-           reject-class="neutral-button">
+           reject-class="travel-neutral-btn">
       </div>
     </modal>
 

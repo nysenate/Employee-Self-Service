@@ -1,8 +1,5 @@
 <div>
   <div class="travel-card">
-    <p class="travel-content-info travel-text-bold">
-      Please review your application.
-    </p>
     <div class="travel-card-item">
       <h3 class="travel-title">Purpose of Travel</h3>
       <div class="margin-left-20">

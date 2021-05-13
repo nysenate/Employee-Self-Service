@@ -62,7 +62,9 @@
   }
 
   &.ng-invalid {
-    border: 1px solid @redorange !important;
+    &.ng-touched {
+      border: 1px solid @redorange !important;
+    }
   }
 }
 
