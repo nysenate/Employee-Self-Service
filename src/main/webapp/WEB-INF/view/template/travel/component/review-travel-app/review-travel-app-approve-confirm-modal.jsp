@@ -24,16 +24,20 @@
 
     <div class="margin-top-20">
       <label>Approval Notes:
-        <textarea ng-model="notes" cols="40" rows="3"></textarea>
+        <textarea class="travel-input" ng-model="notes" cols="40" rows="3"></textarea>
       </label>
     </div>
 
   </div>
 
   <div class="travel-button-container">
-    <input type="button" class="submit-button" value="Approve Application"
+    <button type="button" class="travel-submit-btn"
            title="Approve Application" ng-click="approve()">
-    <input type="button" class="neutral-button" value="Cancel Approval"
+      Approve
+    </button>
+    <button type="button" class="travel-neutral-btn"
            title="Cancel Approval" ng-click="cancel()">
+      Cancel
+    </button>
   </div>
 </div>

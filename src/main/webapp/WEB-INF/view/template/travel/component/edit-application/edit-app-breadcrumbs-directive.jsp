@@ -28,7 +28,7 @@
     Expenses
   </span>
   <span class="step"
-        ng-class="{active: stateService.isOverridesState,
+        ng-class="{active: stateService.isOverridesState(),
                    completed: stateService.isReviewState() || stateService.isReviewNavigable(),
                    navigable: stateService.isOverridesNavigable()}"
         ng-click="stateService.isOverridesNavigable() && stateService.setOverridesState()">

@@ -31,12 +31,15 @@
   <div class="travel-button-container">
     <a class="margin-10 margin-right-20" target="_blank"
        ng-href="${ctxPath}/api/v1/travel/application/{{app.id}}.pdf">Print</a>
-    <input type="button"
+    <button type="button"
            ng-if="app.status.isDisapproved"
-           class="neutral-button"
-           value="Edit and Resubmit"
+           class="travel-neutral-btn"
            ng-click="vm.onEditAndResubmit(app)">
-    <input type="button" class="travel-neutral-button" value="Close"
+      Edit and Resubmit
+    </button>
+    <button type="button" class="travel-neutral-btn"
            ng-click="exit()">
+      Close
+    </button>
   </div>
 </div>

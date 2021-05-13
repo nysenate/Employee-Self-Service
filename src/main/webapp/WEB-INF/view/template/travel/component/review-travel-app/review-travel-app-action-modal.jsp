@@ -9,33 +9,43 @@
 
   <div class="travel-button-container" style="margin-top: 5px !important; min-height: 50px;">
     <span ng-if="role.name === appReview.nextReviewerRole">
-      <input type="button" class="submit-button" value="Approve Application"
+      <button type="button" class="travel-submit-btn"
              ng-click="approve()">
-      <input type="button" class="reject-button" value="Disapprove Application"
+        Approve Application
+      </button>
+      <button type="button" class="travel-reject-btn"
              ng-click="disapprove()">
+        Disapprove application
+      </button>
 
       <shiro:hasPermission name="<%= SimpleTravelPermission.TRAVEL_UI_EDIT_APP.getPermissionString() %>">
-        <input type="button" class="neutral-button" value="Edit Application"
+        <button type="button" class="travel-neutral-btn"
                ng-click="vm.onEdit()">
+          Edit Application
+        </button>
       </shiro:hasPermission>
       <shiro:hasPermission name="<%= SimpleTravelPermission.TRAVEL_UI_CAN_SHARE.getPermissionString() %>">
-        <input ng-if="appReview.isShared"
+        <button ng-if="appReview.isShared"
                type="button"
-               class="neutral-button"
-               value="Remove share with SOS"
+               class="travel-neutral-btn"
                ng-click="onRemoveShare()">
-        <input ng-if="!appReview.isShared"
+          Remove share with SOS
+        </button>
+        <button ng-if="!appReview.isShared"
                type="button"
-               class="neutral-button"
-               value="Share with SOS"
+               class="travel-neutral-btn"
                ng-click="onShare()">
+          Share with SOS
+        </button>
       </shiro:hasPermission>
     </span>
     <div style="float: right;">
       <a class="margin-10" target="_blank"
          ng-href="${ctxPath}/api/v1/travel/application/{{appReview.travelApplication.id}}.pdf">Print</a>
-      <input type="button" class="travel-neutral-button" value="Close"
+      <button type="button" class="travel-neutral-btn"
              ng-click="exit()">
+        Close
+      </button>
     </div>
   </div>
 </div>

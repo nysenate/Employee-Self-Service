@@ -69,6 +69,10 @@
     background: #fff !important;
     box-shadow: 0 0 0 1px @gray5 !important;
   }
+
+  &.ng-invalid {
+    border: 1px solid @redorange !important;
+  }
 }
 
 .travel-btn {
@@ -100,6 +104,30 @@
 
   &:hover {
     background: @yellow2;
+  }
+}
+
+.travel-submit-btn {
+  .travel-btn;
+  color: #fff;
+  background: @green;
+  border: none;
+  box-shadow: none;
+
+  &:hover {
+    background: saturate(@green, 20%);
+  }
+}
+
+.travel-reject-btn {
+  .travel-btn;
+  color: #fff;
+  background: @redorange;
+  border: none;
+  box-shadow: none;
+
+  &:hover {
+    background: saturate(@redorange, 20%);
   }
 }
 

@@ -15,8 +15,10 @@
     <div class="" style="float: right;">
       <a class="margin-10" target="_blank"
          ng-href="${ctxPath}/api/v1/travel/application/{{appReview.travelApplication.id}}.pdf">Print</a>
-      <input type="button" class="travel-neutral-button" value="Close"
+      <button type="button" class="travel-neutral-btn"
              ng-click="exit()">
+        Close
+      </button>
     </div>
   </div>
 </div>
