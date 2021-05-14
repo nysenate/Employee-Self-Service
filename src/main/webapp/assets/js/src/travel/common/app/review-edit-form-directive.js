@@ -7,7 +7,6 @@ function reviewEditForm($compile, appProps, modals) {
         restrict: 'E',
         scope: {
             amendment: '<',               // The application being edited.
-            title: '@',             // The title
             positiveCallback: '&',  // Callback function called when continuing. Takes a travel app param named 'app'.
             positiveBtnLabel: '@',   // The label to use for the positive button.
             neutralCallback: '&',   // Callback function called when moving back. Takes a travel app param named 'app'.

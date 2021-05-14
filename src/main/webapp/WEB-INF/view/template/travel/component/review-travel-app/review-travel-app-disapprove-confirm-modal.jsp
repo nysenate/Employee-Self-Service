@@ -28,16 +28,20 @@
 
       <div class="margin-top-20">
         <label>Disapproval Reason:
-          <textarea ng-model="notes" cols="40" rows="3" required></textarea>
+          <textarea class="travel-input" ng-model="notes" cols="40" rows="3" required></textarea>
         </label>
       </div>
     </div>
 
     <div class="travel-button-container">
-      <input type="submit" class="reject-button" value="Disapprove Application"
+      <button type="submit" class="travel-reject-btn"
              title="Disapprove Application">
-      <input type="button" class="neutral-button" value="Cancel Disapproval"
+        Disapprove
+      </button>
+      <button type="button" class="travel-neutral-btn"
              title="Cancel Disapproval" ng-click="cancel()">
+        Cancel
+      </button>
     </div>
   </form>
 </div>

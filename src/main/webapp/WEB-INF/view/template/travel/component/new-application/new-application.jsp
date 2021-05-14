@@ -6,17 +6,17 @@
     <div class="padding-10 text-align-center">
       Travel application on behalf of:
       <span ng-if="!stateService.isReviewState()">
-      <ui-select ng-model="data.traveler" style="min-width: 200px;">
-        <ui-select-match>
-          <span ng-bind="$select.selected.fullName"></span>
-        </ui-select-match>
-        <ui-select-choices repeat="emp in data.allowedTravelers | filter: $select.search track by emp.employeeId">
-          <div ng-bind-html="emp.fullName"></div>
-        </ui-select-choices>
-      </ui-select>
+        <ui-select ng-model="data.traveler" style="min-width: 200px;">
+          <ui-select-match>
+            <span ng-bind="$select.selected.fullName"></span>
+          </ui-select-match>
+          <ui-select-choices repeat="emp in data.allowedTravelers | filter: $select.search track by emp.employeeId">
+            <div ng-bind-html="emp.fullName"></div>
+          </ui-select-choices>
+        </ui-select>
       </span>
       <span ng-if="stateService.isReviewState()">
-        {{data.app.traveler.fullName}}
+        {{data.traveler.fullName}}
       </span>
     </div>
   </div>
@@ -28,7 +28,6 @@
   <div ng-if="data.amendment">
     <div ng-if="stateService.isPurposeState()">
       <ess-purpose-edit-form amendment="data.amendment"
-                             title="Enter your purpose of travel."
                              event-types="data.eventTypes"
                              positive-callback="savePurpose(amendment)"
                              negative-callback="cancel(amendment)">
@@ -38,7 +37,6 @@
     <div ng-if="stateService.isOutboundState()">
       <ess-outbound-edit-form amendment="data.amendment"
                               traveler="data.traveler"
-                              title="Enter your outbound route starting from the origin and including all destinations."
                               positive-callback="saveOutbound(amendment)"
                               neutral-callback="toPurposeState(amendment)"
                               negative-callback="cancel(amendment)">
@@ -47,7 +45,6 @@
 
     <div ng-if="stateService.isReturnState()">
       <ess-return-edit-form amendment="data.amendment"
-                            title="Enter your return route from the last destination to the origin."
                             positive-callback="saveRoute(amendment)"
                             neutral-callback="toOutboundState(amendment)"
                             negative-callback="cancel(amendment)">
@@ -56,7 +53,6 @@
 
     <div ng-if="stateService.isAllowancesState()">
       <ess-allowances-edit-form amendment="data.amendment"
-                                title="Enter your estimated expenses for the following categories."
                                 positive-callback="saveAllowances(amendment)"
                                 neutral-callback="toReturnState(amendment)"
                                 negative-callback="cancel(amendment)">
@@ -65,7 +61,6 @@
 
     <div ng-if="stateService.isReviewState()">
       <ess-review-edit-form amendment="data.amendment"
-                            title="Please review your application."
                             positive-btn-label="Submit Application"
                             positive-callback="submitApplication(amendment)"
                             neutral-callback="toAllowancesState(amendment)"
@@ -101,9 +96,9 @@
            title="Cancel Travel Application"
            confirm-message="Are you sure you want to cancel your current application? This will delete any data you have entered."
            resolve-button="Cancel Application"
-           resolve-class="reject-button"
-           reject-button="Keep Application"
-           reject-class="neutral-button">
+           resolve-class="travel-reject-btn"
+           reject-button="Do not Cancel"
+           reject-class="travel-neutral-btn">
       </div>
     </modal>
 
@@ -122,18 +117,21 @@
            title="Scheduled trip is longer than 7 days"
            confirm-message="Are you sure your travel dates are correct?"
            resolve-button="Yes, my dates are correct"
-           reject-button="Let me review">
+           resolve-class="travel-neutral-btn"
+           reject-button="Let me review"
+           reject-class="travel-primary-btn">
       </div>
     </modal>
 
     <%-- Review Modals --%>
     <modal modal-id="submit-confirm">
       <div confirm-modal rejectable="true"
-           title="Submit Travel Application?"
+           title="Submit Travel Application"
            confirm-message="Are you sure you want to submit this travel application?"
            resolve-button="Submit Application"
+           resolve-class="travel-submit-btn"
            reject-button="Cancel"
-           reject-class="neutral-button">
+           reject-class="travel-neutral-btn">
       </div>
     </modal>
 

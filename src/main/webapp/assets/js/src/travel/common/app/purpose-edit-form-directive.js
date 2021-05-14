@@ -7,7 +7,6 @@ function purposeEditLink($http, appProps, attachmentDeleteApi) {
         restrict: 'E',
         scope: {
             amendment: '<',         // The amendment being edited.
-            title: '@',             // The title
             eventTypes: '<',         // Valid Purpose of Travel event types.
             positiveCallback: '&',  // Callback function called when continuing. Takes a travel app param named 'amendment'.
             negativeCallback: '&',  // Callback function called when canceling. Takes a travel app param named 'amendment'.

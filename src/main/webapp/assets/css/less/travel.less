@@ -5,24 +5,250 @@
  */
 
 /**
- * Basic Theme
+ * Travel Theme
  */
 
-@travelPrimaryColor: @orange;
-@travelSecondaryColor: @teal;
-@travelLightGray: #e4e6e8;
-@travelDarkGray: #3b4045;
+@yellow1: #fefaf0;
+@yellow2: #f9e3a9;
+@yellow3: #f5d68a;
+@yellow4: #e9bb49;
+@yellow5: #D19526;
+@yellow7: #BB8621;
+@yellow9: #ad7b1f;
+
+@gray1: #fafafa;
+@gray2: #f7f7f7;
+@gray3: #F0F0F0;
+@gray4: #d1d1d1;
+@gray5: #999;
+@gray6: #8c8c8c;
+@gray7: #707070;
+@gray8: #4d4d4d;
+@gray9: #333;
+
+.travel-card {
+  .content-container;
+  overflow: auto;
+  color: @gray9;
+}
+
+.travel-card-item {
+  margin: 20px 20px 40px 20px;
+
+  > h3 {
+    .travel-title;
+  }
+
+  > div {
+    margin-top: 10px;
+  }
+}
+
+.travel-input {
+  border: none;
+  overflow: auto;
+  outline: none;
+
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+
+  background: @gray2 !important;
+  border: 1px solid @gray4 !important;
+
+  &:focus {
+    background: #fff !important;
+    box-shadow: 0 0 0 1px @gray5 !important;
+  }
+
+  &.ng-invalid {
+    &.ng-touched {
+      border: 1px solid @redorange !important;
+    }
+  }
+}
+
+.travel-btn {
+  font-weight: 600;
+  font-size: 14px;
+  padding: 5px 10px;
+  min-width: 80px;
+  margin: 10px 20px;
+  cursor: pointer;
+}
+
+.travel-primary-btn {
+  .travel-btn;
+  color: white;
+  background: @yellow5;
+  border: 1px solid @yellow5;
+
+  &:hover {
+    background: @yellow4;
+    border: 1px solid @yellow4;
+  }
+}
+
+.travel-primary-ghost-btn {
+  .travel-btn;
+  color: @yellow5;
+  background: #fff;
+  border: 1px solid @yellow5;
+
+  &:hover {
+    background: @yellow2;
+  }
+}
+
+.travel-submit-btn {
+  .travel-btn;
+  color: #fff;
+  background: @green;
+  border: none;
+  box-shadow: none;
+
+  &:hover {
+    background: saturate(@green, 20%);
+  }
+}
+
+.travel-reject-btn {
+  .travel-btn;
+  color: #fff;
+  background: @redorange;
+  border: none;
+  box-shadow: none;
+
+  &:hover {
+    background: saturate(@redorange, 20%);
+  }
+}
+
+.travel-neutral-btn {
+  .travel-btn;
+  color: @gray9;
+  background: #fff;
+  border: 1px solid @gray9;
+  box-shadow: none;
+
+  &:hover {
+    background: @gray4;
+  }
+}
+
+.travel-title {
+  font-size: 18px;
+  color: @yellow5;
+  margin-bottom: 5px;
+  font-weight: 600;
+
+  .optional {
+    font-size: 14px;
+    font-weight: 400;
+  }
+}
+
+.travel-title-small {
+  font-size: 16px;
+  color: @yellow5;
+  margin-bottom: 5px;
+  font-weight: 400;
+  margin: 0px;
+}
+
+.travel-instructions {
+  color: @gray7;
+  display: inline-block;
+  width: 45%;
+}
+
+.travel-button-container {
+  margin-top: 30px;
+  text-align: center;
+  background: @gray2;
+}
+
+.expenses-flex-grid {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .left {
+    width: 40%;
+
+    .row {
+      margin: 10px;
+    }
+  }
+
+  label {
+    display: inline-block;
+    width: 120px;
+    text-align: right;
+    color: @gray9;
+    font-weight: 400;
+  }
+}
+
+.travel-note {
+  border: 1px solid @yellow5;
+  border-left: 5px solid @yellow5;
+  background: @yellow1;
+  padding: 10px;
+  color: @yellow7;
+  width: 300px;
+  display: inline-block;
+
+  p {
+    margin: 0;
+  }
+}
+
+.asterisk {
+  color: @yellow7;
+}
 
 .travel-hero {
-  .page-hero(@travelPrimaryColor, white);
+  .page-hero(@yellow5, white);
 }
 
-.white-text {
-  color: white;
+.segment-content {
+  margin: 0 10px;
 }
+
+.travel-cross {
+  cursor: pointer;
+  vertical-align: text-bottom;
+  font-size: 18px;
+  color: #ce4125f0;
+}
+
+.review-purpose {
+  display: flex;
+  flex-wrap: wrap;
+  width: 80%;
+
+  label {
+    flex: 1 1 18%;
+    margin: 0 5px;
+  }
+
+  span {
+    flex: 1 1 65%;
+    margin: 0 5px;
+  }
+}
+
+.travel-text-color {
+  color: @gray9;
+}
+
+
+/** OLD CSS BELOW - Review/refactor and delete unused. */
+
 
 .travel-text {
-  color: @travelDarkGray;
+  color: @gray9;
 }
 
 .travel-text-bold {
@@ -31,12 +257,12 @@
 }
 
 .travel-highlight-text {
-  color: @travelPrimaryColor;
+  color: @yellow5;
   .bold;
 }
 
 .travel-secondary-text {
-  color: @travelSecondaryColor;
+  color: @teal;
   .bold;
 }
 
@@ -50,21 +276,10 @@
   .bold;
 }
 
-.travel-background {
-  background: @travelPrimaryColor;
-}
-
-.travel-secondary-background {
-  background: @travelSecondaryColor;
-}
-
-.travel-neutral-background {
-  background: @travelLightGray;
-}
-
 .travel-content-info {
   .content-info;
-  border-bottom: 1px solid @travelLightGray;
+  border-bottom: 1px solid @gray4;
+  color: @gray9;
 }
 
 .travel-content-controls {
@@ -72,48 +287,6 @@
 
   p, label {
     .travel-text-bold;
-  }
-}
-
-.travel-inner-container {
-  margin: 10px 10px 20px;
-  border: solid @travelLightGray 1px;
-}
-
-.travel-inner-container-content {
-  margin: 15px;
-}
-
-h2.travel-subheader {
-  margin: 0;
-  font-weight: bold;
-  font-size: 1.1em;
-  padding: 10px;
-  color: white;
-}
-
-.travel-button-container {
-  .text-align-center;
-  .margin-top-20;
-  padding: 10px;
-  background: #f9f9f9;
-
-  input[type="button"] {
-    margin-right: 5px;
-  }
-}
-
-.expenses-opt-out-list {
-  .clear;
-  padding-top: 15px;
-
-  div {
-    margin-top: 3px;
-    .travel-text;
-
-    &.col-6-12 {
-      .travel-text-bold;
-    }
   }
 }
 
@@ -153,50 +326,10 @@ h2.travel-subheader {
   }
 }
 
-
-@travel-location-box-core: {
-  display: inline-block;
-  width: 100%;
-  padding: 5px;
-  height: 50px;
-  text-align: center;
-  line-height: 20px;
-  background: #F6F6F6;
-  border-radius: 5px;
-  div {
-    display: inline-block;
-    text-align: center;
-    vertical-align: top;
-  }
-};
-
-.travel-origin-display-box {
-  @travel-location-box-core();
-}
-
-.travel-destination-display-box {
-  @travel-location-box-core();
-
-  :nth-child(1) {
-    float: left;
-    width: 25%;
-    font-size: 0.8em;
-  }
-
-  :nth-child(2) {
-    width: 50%
-  }
-
-  :nth-child(3) {
-    float: right;
-    width: 25%;
-    font-size: 0.8em;
-  }
-}
-
 .travel-table {
   width: 100%;
   .text-align-center;
+  color: @gray9;
 
   thead {
     background: white;
@@ -213,13 +346,16 @@ h2.travel-subheader {
   }
 
   tbody {
+    color: @gray9;
+
     tr {
       &:nth-child(odd) {
         background: #fafafa;
       }
 
       td {
-        .padding-10;
+        padding: 8px 10px;
+        min-width: 150px;
       }
 
       &.notes {
@@ -262,20 +398,6 @@ h2.travel-subheader {
   }
 }
 
-.review-additional-purpose {
-  white-space: pre-wrap;
-  width: 500px;
-  display: inline-block;
-  text-align: left;
-}
-
-.travel-allowance-label {
-  display: inline-block;
-  width: 120px;
-  text-align: right;
-  margin-bottom: 10px;
-}
-
 .travel-hover {
   tbody {
     tr:hover {
@@ -297,65 +419,23 @@ h2.travel-subheader {
   vertical-align: middle;
 }
 
-.travel-container {
-  background: #fafafa;
-  position: relative;
-  //.box-shadow(0px 1px 2px #aaa);
-  border: solid @travelLightGray 1px;
-
-  h3 {
-    color: @travelDarkGray;
-    //padding: 10px;
-    margin: 10px;
-  }
-
-  > .outbound {
-    //color: @green;
-    //border-bottom: solid @green 1px;
-    border-bottom: solid @travelLightGray 1px;
-    //background: @travelPrimaryColor;
-  }
-
-  > .return {
-    //color: @teal;
-    border-bottom: solid @travelLightGray 1px;
-    //border: solid @travelLightGray 1px;
-    //border-bottom: solid @teal 1px;
-    //background: @travelSecondaryColor;
-  }
-
-  input {
-    background: #ffffff;
-  }
-}
-
-.travel-container-cross {
-  float: right;
-  margin: 10px;
-  font-size: large;
-  color: white;
-  cursor: pointer;
-}
-
 /**
   * Attachment styling
   */
 
 .travel-attachment-container {
-  .margin-10;
+  .margin-5;
 
-  & > .travel-attachment-filename {
-    .margin-5;
-    color: darken(@gray, 15%);
-    font-family: monospace;
-
-    & > .icon-cross {
-      .margin-5;
-      vertical-align: middle;
-      color: @dark-red;
-      font-size: large;
-    }
+  .icon-cross {
+    vertical-align: middle;
+    color: @dark-red;
+    font-size: large;
   }
+}
+
+.travel-attachment-filename {
+  color: @gray7;
+  font-family: monospace;
 }
 
 /**
@@ -366,21 +446,32 @@ h2.travel-subheader {
   width: 55%;
   margin: 1%;
   float: left;
+  color: @gray9;
 }
 
 .itinerary-date {
   width: 40%;
   margin: 1%;
   float: right;
+  color: @gray9;
+
+  .travel-input {
+    width: 125px;
+  }
 }
 
 .itinerary-mot-container {
   width: 40%;
   margin: 1%;
   float: right;
+  color: @gray9;
 
   .itinerary-mot {
     float: left;
+  }
+
+  .travel-input {
+    width: 125px;
   }
 
   .itinerary-mot-write-in {
@@ -463,9 +554,7 @@ h2.travel-subheader {
 }
 
 .app-review-allowances-box {
-  width: 300px;
-  margin: 0 auto;
-  .padding-10;
+  width: 220px;
 
   .label {
     width: 130px;
@@ -528,40 +617,14 @@ h2.travel-subheader {
 }
 
 /**
-  * App Edit Perdiem Overrides styling
-  */
-
-.perdiem-overrides-edit-form-row {
-  margin-bottom: 10px;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: baseline;
-}
-
-.perdiem-overrides-edit-form-calculated {
-  width: 200px;
-  margin-right: 50px;
-}
-
-.perdiem-overrides-edit-form-override {
-  label {
-    width: 120px;
-    display: inline-block;
-    text-align: right;
-  }
-
-  input {
-    width: 75px;
-  }
-}
-
-/**
   * Step Indicator
   */
 
-@stepColor: @white;
-@stepColorCompleted: @travelSecondaryColor;
+@stepColor: @gray1;
+@stepActiveColor: lighten(@stepCompletedColor, 10%);
+@stepCompletedColor: @teal;
+@stepNavigableColor: lighten(@stepCompletedColor, 15%);
+
 @textColor: #666;
 @textColorCompleted: #fff;
 
@@ -628,34 +691,47 @@ h2.travel-subheader {
     }
   }
 
-  &.completed {
-    background: @stepColorCompleted;
+  &.active {
+    background: @stepActiveColor;
     color: @textColorCompleted;
 
     &:before {
-      border-color: @stepColorCompleted;
+      border-color: @stepActiveColor;
       border-left-color: transparent;
     }
 
     &:after {
-      border-left-color: @stepColorCompleted;
+      border-left-color: @stepActiveColor;
+    }
+  }
+
+  &.completed {
+    background: @stepCompletedColor;
+    color: @textColorCompleted;
+
+    &:before {
+      border-color: @stepCompletedColor;
+      border-left-color: transparent;
+    }
+
+    &:after {
+      border-left-color: @stepCompletedColor;
     }
   }
 
   &.navigable {
-    @navigableColor: lighten(@stepColorCompleted, 10%);
     cursor: pointer;
 
     &:hover {
-      background: @navigableColor;
+      background: @stepNavigableColor;
 
       &:before {
-        border-color: @navigableColor;
+        border-color: @stepNavigableColor;
         border-left-color: transparent;
       }
 
       &:after {
-        border-left-color: @navigableColor;
+        border-left-color: @stepNavigableColor;
       }
     }
   }

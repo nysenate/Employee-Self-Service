@@ -8,7 +8,6 @@ function outboundEditLink(appProps) {
         scope: {
             amendment: '<',         // The amendment being edited.
             traveler: '<',          // The employee who will be traveling.
-            title: '@',             // The title.
             positiveCallback: '&',  // Callback function called when continuing. Takes a travel app param named 'amendment'.
             neutralCallback: '&',   // Callback function called when moving back. Takes a travel app param named 'amendment'.
             negativeCallback: '&',  // Callback function called when canceling. Takes a travel app param named 'amendment'.

@@ -15,7 +15,6 @@
   <div ng-if="vm.dto">
     <div ng-if="vm.stateService.isPurposeState()">
       <ess-purpose-edit-form amendment="vm.dto.amendment"
-                             title="Edit the purpose of travel."
                              event-types="vm.dto.validEventTypes"
                              positive-callback="vm.savePurpose(amendment)"
                              negative-callback="vm.cancelEdit(amendment)"
@@ -26,7 +25,6 @@
     <div ng-if="vm.stateService.isOutboundState()">
       <ess-outbound-edit-form amendment="vm.dto.amendment"
                               traveler="vm.dto.traveler"
-                              title="Edit the outbound route"
                               positive-callback="vm.saveOutbound(amendment)"
                               neutral-callback="vm.toPurposeState(amendment)"
                               negative-callback="vm.cancelEdit(amendment)"
@@ -36,7 +34,6 @@
 
     <div ng-if="vm.stateService.isReturnState()">
       <ess-return-edit-form amendment="vm.dto.amendment"
-                            title="Edit the return route"
                             positive-callback="vm.saveRoute(amendment)"
                             neutral-callback="vm.toOutboundState(amendment)"
                             negative-callback="vm.cancelEdit(amendment)"
@@ -46,7 +43,6 @@
 
     <div ng-if="vm.stateService.isAllowancesState()">
       <ess-allowances-edit-form amendment="vm.dto.amendment"
-                                title="Edit the expenses"
                                 positive-callback="vm.saveAllowances(amendment)"
                                 neutral-callback="vm.toReturnState(amendment)"
                                 negative-callback="vm.cancelEdit(amendment)"
@@ -54,10 +50,9 @@
       </ess-allowances-edit-form>
     </div>
 
-<%--    <div ng-if="vm.stateService.isPurposeState()">--%>
+    <%--    <div ng-if="vm.stateService.isPurposeState()">--%>
     <div ng-if="vm.stateService.isOverridesState()">
       <ess-perdiem-overrides-edit-form amendment="vm.dto.amendment"
-                                       title="Override the calculated expenses."
                                        positive-callback="vm.saveOverrides(amendment)"
                                        neutral-callback="vm.toAllowancesState(amendment)"
                                        negative-callback="vm.cancelEdit(amendment)"
@@ -69,7 +64,6 @@
       <ess-review-edit-form
           ng-if="vm.activeRole === 'TRAVEL_ADMIN'"
           amendment="vm.dto.amendment"
-          title="Here is the full application with your changes."
           positive-btn-label="Save Edits"
           positive-callback="vm.saveEdits(amendment)"
           neutral-callback="vm.toOverridesState(amendment)"
@@ -79,7 +73,6 @@
       <ess-review-edit-form
           ng-if="vm.activeRole === 'NONE'"
           amendment="vm.dto.amendment"
-          title="Here is the full application with your changes."
           positive-btn-label="Save and Resubmit"
           positive-callback="vm.saveEdits(amendment)"
           neutral-callback="vm.toOverridesState(amendment)"
@@ -97,8 +90,9 @@
       <div confirm-modal rejectable="true"
            title="Cancel Travel Application Edit"
            confirm-message="Are you sure you want to cancel the editing of this travel application? Any changes you have made will be lost."
-           resolve-button="Continue Edit"
-           resolve-class="neutral-button"
+           resolve-button="Do not Cancel"
+           resolve-class="travel-neutral-btn"
+           reject-class="travel-reject-btn"
            reject-button="Cancel Edit">
       </div>
     </modal>
@@ -118,7 +112,9 @@
            title="Scheduled trip is longer than 7 days"
            confirm-message="Are you sure your travel dates are correct?"
            resolve-button="Yes, my dates are correct"
-           reject-button="Let me review">
+           resolve-class="travel-neutral-btn"
+           reject-button="Let me review"
+           reject-class="travel-primary-btn">
       </div>
     </modal>
 
@@ -128,41 +124,14 @@
            title="Save Travel Application?"
            confirm-message="Are you sure you want to save this travel application?"
            resolve-button="Save"
-           reject-button="Cancel">
+           resolve-class="travel-submit-btn"
+           reject-button="Cancel"
+           reject-class="travel-neutral-btn">
       </div>
     </modal>
 
     <modal modal-id="submit-progress">
       <div progress-modal title="Saving travel application..."></div>
-    </modal>
-
-    <modal modal-id="submit-results">
-      <div confirm-modal rejectable="true"
-           title="Your travel application has been saved."
-      <%--confirm-message="What would you like to do next?"--%>
-           resolve-button="Go back to ESS"
-           reject-button="Log out of ESS">
-        <div style="padding-bottom: 20px;">
-          <p>
-            You should now <a class="bold" target="_blank"
-                              ng-href="${ctxPath}/travel/application/print?id={{vm.app.id}}&print=true">print</a>,
-            sign and deliver your application to your department head.
-          </p>
-        </div>
-      </div>
-    </modal>
-
-    <%-- Review detail modals --%>
-    <modal modal-id="ess-lodging-details-modal">
-      <div ess-lodging-details-modal></div>
-    </modal>
-
-    <modal modal-id="ess-meal-details-modal">
-      <div ess-meal-details-modal></div>
-    </modal>
-
-    <modal modal-id="ess-mileage-details-modal">
-      <div ess-mileage-details-modal></div>
     </modal>
 
     <modal modal-id="external-api-error">

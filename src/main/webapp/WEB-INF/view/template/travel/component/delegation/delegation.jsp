@@ -81,10 +81,14 @@
         </div>
 
         <div class="padding-top-10">
-          <input type="button" class="travel-neutral-button" value="Add New Delegate"
+          <button type="button" class="travel-primary-btn"
                  ng-click="vm.addNewDelegation()">
-          <input type="button" class="submit-button" value="Save Delegates"
+            Add New Delegate
+          </button>
+          <button type="button" class="travel-submit-btn"
                  ng-click="vm.saveDelegations()">
+            Save Delegates
+          </button>
           <span class="travel-notification margin-left-10" style="position:absolute;"
                 ng-show="vm.data.displaySavedMessage">
           Delegates saved

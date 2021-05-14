@@ -66,7 +66,7 @@ function StateService() {
     };
 
     StateService.prototype.isOverridesState = function () {
-        return this.currState == this.STATES.OVERRIDES;
+        return this.currState === this.STATES.OVERRIDES;
     };
 
     StateService.prototype.setOverridesState = function () {
