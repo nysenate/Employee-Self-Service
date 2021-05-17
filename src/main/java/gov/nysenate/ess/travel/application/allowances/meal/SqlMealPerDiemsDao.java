@@ -6,7 +6,9 @@ import gov.nysenate.ess.core.dao.base.DbVendor;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.travel.application.address.TravelAddress;
 import gov.nysenate.ess.travel.application.address.SqlTravelAddressDao;
+import gov.nysenate.ess.travel.application.address.TravelAddressRowMapper;
 import gov.nysenate.ess.travel.provider.senate.SenateMie;
+import gov.nysenate.ess.travel.provider.senate.SenateMieRowMapper;
 import gov.nysenate.ess.travel.provider.senate.SqlSenateMieDao;
 import gov.nysenate.ess.travel.utils.Dollars;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,13 +27,12 @@ import java.util.Set;
 public class SqlMealPerDiemsDao extends SqlBaseDao {
 
     @Autowired private SqlTravelAddressDao travelAddressDao;
-    @Autowired private SqlSenateMieDao senateMieDao;
 
     public MealPerDiems selectMealPerDiems(int amendmentId) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("amendmentId", amendmentId);
-        String sql = SqlMealPerDiemsQuery.SELECT_MEAL_PER_DIEM.getSql(schemaMap());
-        MealPerDiemsHandler handler = new MealPerDiemsHandler(travelAddressDao, senateMieDao);
+        String sql = SqlMealPerDiemsQuery.SELECT_MEAL_PER_DIEMS.getSql(schemaMap());
+        MealPerDiemsHandler handler = new MealPerDiemsHandler();
         localNamedJdbc.query(sql, params, handler);
         return handler.getResult();
     }
@@ -75,24 +76,30 @@ public class SqlMealPerDiemsDao extends SqlBaseDao {
     }
 
     private enum SqlMealPerDiemsQuery implements BasicSqlQuery {
-        SELECT_MEAL_PER_DIEM(
-                "SELECT mpds.amendment_meal_per_diems_id, mpds.amendment_meal_per_diem_id, mpds.override_rate,\n" +
-                        " mpd.address_id, mpd.date, mpd.rate, mpd.senate_mie_id, mpd.is_reimbursement_requested\n" +
-                        " FROM ${travelSchema}.amendment_meal_per_diems mpds\n" +
-                        " INNER JOIN ${travelSchema}.amendment_meal_per_diem mpd ON mpds.amendment_meal_per_diem_id = mpd.amendment_meal_per_diem_id\n" +
-                        " WHERE mpds.amendment_id = :amendmentId"
+        SELECT_MEAL_PER_DIEMS("""
+                SELECT mpds.amendment_meal_per_diems_id, mpds.amendment_meal_per_diem_id, mpds.override_rate,
+                  mpd.address_id, mpd.date, mpd.rate, mpd.senate_mie_id, mpd.is_reimbursement_requested,
+                  senate_mie.fiscal_year, senate_mie.total, senate_mie.breakfast, senate_mie.dinner,
+                  addr.street_1, addr.city, addr.state, addr.zip_5, addr.county, addr.country, addr.place_id, addr.name
+                FROM ${travelSchema}.amendment_meal_per_diems mpds
+                  INNER JOIN ${travelSchema}.amendment_meal_per_diem mpd ON mpds.amendment_meal_per_diem_id = mpd.amendment_meal_per_diem_id
+                  LEFT JOIN ${travelSchema}.senate_mie ON mpd.senate_mie_id = senate_mie.senate_mie_id
+                  INNER JOIN ${travelSchema}.address addr ON mpd.address_id = addr.address_id
+                WHERE mpds.amendment_id = :amendmentId;
+                """
         ),
-        INSERT_MEAL_PER_DIEM(
-                "INSERT INTO ${travelSchema}.amendment_meal_per_diem(address_id," +
-                        " date, rate, senate_mie_id, is_reimbursement_requested) \n" +
-                        "VALUES (:addressId, :date, :rate, :senateMieId, :isReimbursementRequested)"
+        INSERT_MEAL_PER_DIEM("""
+                INSERT INTO ${travelSchema}.amendment_meal_per_diem
+                  (address_id, date, rate, senate_mie_id, is_reimbursement_requested)
+                VALUES (:addressId, :date, :rate, :senateMieId, :isReimbursementRequested)
+                """
         ),
-        INSERT_JOIN_TABLE(
-                "INSERT INTO ${travelSchema}.amendment_meal_per_diems(amendment_id," +
-                        " amendment_meal_per_diem_id, override_rate) \n" +
-                        "VALUES (:amendmentId, :mpdId, :overrideRate)"
-        )
-        ;
+        INSERT_JOIN_TABLE("""
+                INSERT INTO ${travelSchema}.amendment_meal_per_diems
+                  (amendment_id, amendment_meal_per_diem_id, override_rate)
+                VALUES (:amendmentId, :mpdId, :overrideRate)
+                """
+        );
 
         private String sql;
 
@@ -116,13 +123,10 @@ public class SqlMealPerDiemsDao extends SqlBaseDao {
         private int mealPerDiemsId;
         private Dollars overrideRate;
         private Set<MealPerDiem> mealPerDiems;
+        private TravelAddressRowMapper addressRowMapper = new TravelAddressRowMapper();
+        private SenateMieRowMapper senateMieRowMapper = new SenateMieRowMapper();
 
-        private SqlTravelAddressDao addressDao;
-        private SqlSenateMieDao senateMieDao;
-
-        public MealPerDiemsHandler(SqlTravelAddressDao addressDao, SqlSenateMieDao senateMieDao) {
-            this.addressDao = addressDao;
-            this.senateMieDao = senateMieDao;
+        public MealPerDiemsHandler() {
             this.mealPerDiems = new HashSet<>();
         }
 
@@ -132,14 +136,15 @@ public class SqlMealPerDiemsDao extends SqlBaseDao {
             overrideRate = new Dollars(rs.getString("override_rate"));
 
             int mpdId = rs.getInt("amendment_meal_per_diem_id");
-            TravelAddress address = addressDao.selectAddress(rs.getInt("address_id"));
+            TravelAddress address = addressRowMapper.mapRow(rs, rs.getRow());
             LocalDate date = getLocalDate(rs, "date");
             Dollars rate = new Dollars(rs.getString("rate"));
-            SenateMie mie = null;
-            int senateMieId = rs.getInt("senate_mie_id");
-            if (senateMieId != 0) { // not null
-                mie = senateMieDao.selectSenateMie(senateMieId);
-            }
+            SenateMie mie = senateMieRowMapper.mapRow(rs, rs.getRow()); // TODO what if mie data is missing?
+
+//            int senateMieId = rs.getInt("senate_mie_id");
+//            if (senateMieId != 0) { // not null
+//                mie = senateMieDao.selectSenateMie(senateMieId);
+//            }
             boolean isReimbursementRequested = rs.getBoolean("is_reimbursement_requested");
             MealPerDiem mpd = new MealPerDiem(mpdId, address, date, rate, mie, isReimbursementRequested);
             mealPerDiems.add(mpd);
