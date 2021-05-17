@@ -6,6 +6,7 @@ import gov.nysenate.ess.core.dao.base.DbVendor;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.travel.application.address.TravelAddress;
 import gov.nysenate.ess.travel.application.address.SqlTravelAddressDao;
+import gov.nysenate.ess.travel.application.address.TravelAddressRowMapper;
 import gov.nysenate.ess.travel.application.allowances.PerDiem;
 import gov.nysenate.ess.travel.utils.Dollars;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ public class SqlLodgingPerDiemsDao extends SqlBaseDao {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("amendmentId", amendmentId);
         String sql = SqlLodgingPerDiemsQuery.SELECT_LODGING_PER_DIEMS.getSql(schemaMap());
-        LodgingPerDiemsHandler handler = new LodgingPerDiemsHandler(travelAddressDao);
+        LodgingPerDiemsHandler handler = new LodgingPerDiemsHandler();
         localNamedJdbc.query(sql, params, handler);
         return handler.getResult();
     }
@@ -71,22 +72,27 @@ public class SqlLodgingPerDiemsDao extends SqlBaseDao {
     }
 
     private enum SqlLodgingPerDiemsQuery implements BasicSqlQuery {
-        SELECT_LODGING_PER_DIEMS(
-                "SELECT lpds.amendment_lodging_per_diems_id, lpds.amendment_lodging_per_diem_id, lpds.override_rate,\n" +
-                        " lpd.address_id, lpd.date, lpd.rate, lpd.is_reimbursement_requested\n" +
-                        " FROM ${travelSchema}.amendment_lodging_per_diems lpds\n" +
-                        " INNER JOIN ${travelSchema}.amendment_lodging_per_diem lpd ON lpds.amendment_lodging_per_diem_id = lpd.amendment_lodging_per_diem_id\n" +
-                        " WHERE lpds.amendment_id = :amendmentId"
+        SELECT_LODGING_PER_DIEMS("""
+                SELECT lpds.amendment_lodging_per_diems_id, lpds.amendment_lodging_per_diem_id, lpds.override_rate,
+                  lpd.address_id, lpd.date, lpd.rate, lpd.is_reimbursement_requested,
+                  addr.street_1, addr.city, addr.state, addr.zip_5, addr.county, addr.country, addr.place_id, addr.name
+                FROM ${travelSchema}.amendment_lodging_per_diems lpds
+                INNER JOIN ${travelSchema}.amendment_lodging_per_diem lpd ON lpds.amendment_lodging_per_diem_id = lpd.amendment_lodging_per_diem_id
+                INNER JOIN ${travelSchema}.address addr ON lpd.address_id = addr.address_id
+                WHERE lpds.amendment_id = :amendmentId;
+                """
         ),
-        INSERT_LODGING_PER_DIEM(
-                "INSERT INTO ${travelSchema}.amendment_lodging_per_diem(address_id," +
-                        " date, rate, is_reimbursement_requested) \n" +
-                        "VALUES (:addressId, :date, :rate, :isReimbursementRequested)"
+        INSERT_LODGING_PER_DIEM("""
+                INSERT INTO ${travelSchema}.amendment_lodging_per_diem
+                  (address_id, date, rate, is_reimbursement_requested)
+                VALUES (:addressId, :date, :rate, :isReimbursementRequested)
+                """
         ),
-        INSERT_JOIN_TABLE(
-                "INSERT INTO ${travelSchema}.amendment_lodging_per_diems(amendment_id," +
-                        " amendment_lodging_per_diem_id, override_rate) \n" +
-                        "VALUES (:amendmentId, :lpdId, :overrideRate)"
+        INSERT_JOIN_TABLE("""
+                INSERT INTO ${travelSchema}.amendment_lodging_per_diems
+                  (amendment_id, amendment_lodging_per_diem_id, override_rate)
+                VALUES (:amendmentId, :lpdId, :overrideRate)
+                """
         );
 
         private String sql;
@@ -111,11 +117,9 @@ public class SqlLodgingPerDiemsDao extends SqlBaseDao {
         private int lodgingPerDiemsId;
         private Dollars overrideRate;
         private Set<LodgingPerDiem> lodgingPerDiems;
+        private TravelAddressRowMapper addressRowMapper = new TravelAddressRowMapper();
 
-        private SqlTravelAddressDao addressDao;
-
-        public LodgingPerDiemsHandler(SqlTravelAddressDao addressDao) {
-            this.addressDao = addressDao;
+        public LodgingPerDiemsHandler() {
             this.lodgingPerDiems = new HashSet<>();
         }
 
@@ -125,7 +129,7 @@ public class SqlLodgingPerDiemsDao extends SqlBaseDao {
             overrideRate = new Dollars(rs.getString("override_rate"));
 
             int lpdId = rs.getInt("amendment_lodging_per_diem_id");
-            TravelAddress address = addressDao.selectAddress(rs.getInt("address_id"));
+            TravelAddress address = addressRowMapper.mapRow(rs, rs.getRow());
             PerDiem perDiem = new PerDiem(getLocalDate(rs, "date"), new BigDecimal(rs.getString("rate")));
             boolean isReimbursementRequested = rs.getBoolean("is_reimbursement_requested");
             LodgingPerDiem lpd = new LodgingPerDiem(lpdId, address, perDiem, isReimbursementRequested);
