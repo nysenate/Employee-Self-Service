@@ -40,6 +40,19 @@ public interface EverfiUserDao {
      */
     public int everfiUserIDCount();
 
+    /**
+     * Insert a UUID into the ignored everfi uuid table
+     * @param everfiUUID
+     * @param empID
+     */
+    public void insertIgnoredID(String everfiUUID, Integer empID);
+
+    /**
+     * Remove a UUID from the ignored everfi uuid table
+     * @param everfiUUID
+     */
+    public void removeIgnoredID(String everfiUUID);
+
 }
 
 

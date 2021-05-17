@@ -134,6 +134,10 @@ public class EverfiRecordService implements ESSEverfiRecordService {
 
             EverfiAssignmentUser user = assignmentAndProgress.getUser();
 
+            if (!user.active) {
+                continue;
+            }
+
             if ( !everfiUserService.isEverfiIdIgnored( user.getUuid() ) ) {
 
                 try {

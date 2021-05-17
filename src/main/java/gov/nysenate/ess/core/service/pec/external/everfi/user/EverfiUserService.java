@@ -137,6 +137,14 @@ public class EverfiUserService {
             EverfiUser everfiUser = everfiSingleUserRequest.getUser();
 
             if (!everfiUser.isActive() && !activeStatus) {
+                try {
+                    //Ensure that the employees are actually deactivated
+                    everfiUserDao.insertIgnoredID(everfiUser.getUuid(), everfiUser.getEmployeeId());
+                    this.ignoredEverfiUserIDs = everfiUserDao.getIgnoredEverfiUserIDs();
+                }
+                catch (DuplicateKeyException e) {
+                 // Do nothing, it means they are already deactivated, and ignored
+                }
                 return; //No need to deactivate someone who is deactivated
             }
 
@@ -167,6 +175,10 @@ public class EverfiUserService {
                         null, nowActiveUser.getUserCategoryLabels(), true);
                 EverfiUser changedEmailUser = changeEmailRequest.updateUser();
 
+                //remove from ignored users
+                everfiUserDao.removeIgnoredID(everfiUser.getUuid());
+                this.ignoredEverfiUserIDs = everfiUserDao.getIgnoredEverfiUserIDs();
+
             }
             if (!activeStatus) {
                 logger.info("Beginning deactivation of " + everfiUser.getFirstName() + " " + everfiUser.getLastName() + " " + everfiUser.getUuid());
@@ -182,6 +194,9 @@ public class EverfiUserService {
                         null, changedEmailUser.getUserCategoryLabels(), false);
                 activationStatusRequest.updateUser();
 
+                //send id to dao to ignore
+                everfiUserDao.insertIgnoredID(everfiUser.getUuid(), everfiUser.getEmployeeId());
+                this.ignoredEverfiUserIDs = everfiUserDao.getIgnoredEverfiUserIDs();
             }
         }
         catch (Exception e) {
