@@ -15,18 +15,18 @@ public class Destination {
     protected Set<PerDiem> mealPerDiems;
     protected Set<PerDiem> lodgingPerDiems;
 
+    public Destination(int id) {
+        this(id, null, null, null, new TreeSet<>(), new TreeSet<>());
+    }
+
     public Destination(TravelAddress address, LocalDate arrival, LocalDate departure) {
-        this(0, address, arrival, departure, new TreeMap<>(), new TreeMap<>());
+        this(0, address, arrival, departure, new TreeSet<>(), new TreeSet<>());
     }
 
     public Destination(int id, TravelAddress address, LocalDate arrival, LocalDate departure,
                        Map<LocalDate, PerDiem> dateToMealPerDiems,
                        Map<LocalDate, PerDiem> dateToLodgingPerDiems) {
-        this.id = id;
-        this.address = address;
-        this.dateRange = arrival != null && departure != null ? Range.closed(arrival, departure) : null;
-        this.mealPerDiems = new HashSet<>(dateToMealPerDiems.values());
-        this.lodgingPerDiems = new HashSet<>(dateToLodgingPerDiems.values());
+        this(id, address, arrival, departure, dateToMealPerDiems.values(), dateToLodgingPerDiems.values());
     }
 
     public Destination(int id, TravelAddress address, LocalDate arrival, LocalDate departure,

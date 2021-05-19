@@ -88,9 +88,15 @@ public class SqlRouteDao extends SqlBaseDao implements RouteDao {
 
         MapSqlParameterSource routeParams = new MapSqlParameterSource("legIds", appVersionLegIds);
         String routeSql = SqlRouteQuery.SELECT_ROUTE.getSql(schemaMap());
-        RouteHandler handler = new RouteHandler(destinationDao);
+        RouteHandler handler = new RouteHandler();
         localNamedJdbc.query(routeSql, routeParams, handler);
-        return handler.getRoute();
+        Route route = handler.getRoute();
+        // Populate from and to destinations
+        for (Leg l : route.getAllLegs()) {
+            l.setFromDestination(destinationDao.selectDestination(l.from().getId()));
+            l.setToDestination(destinationDao.selectDestination(l.to().getId()));
+        }
+        return route;
     }
 
     private enum SqlRouteQuery implements BasicSqlQuery {
@@ -136,13 +142,9 @@ public class SqlRouteDao extends SqlBaseDao implements RouteDao {
 
     private class RouteHandler extends BaseHandler {
 
-        private LegMapper legMapper;
+        private LegMapper legMapper = new LegMapper();
         private List<Leg> outboundLegs = new ArrayList<>();
         private List<Leg> returnLegs = new ArrayList<>();
-
-        public RouteHandler(DestinationDao destinationDao) {
-            this.legMapper = new LegMapper(destinationDao);
-        }
 
         @Override
         public void processRow(ResultSet rs) throws SQLException {
@@ -165,20 +167,14 @@ public class SqlRouteDao extends SqlBaseDao implements RouteDao {
 
     private class LegMapper extends BaseRowMapper<Leg> {
 
-        private DestinationDao destinationDao;
-
-        LegMapper(DestinationDao destinationDao) {
-            this.destinationDao = destinationDao;
-        }
-
         @Override
         public Leg mapRow(ResultSet rs, int rowNum) throws SQLException {
             PerDiem perDiem = new PerDiem(getLocalDate(rs, "travel_date"),
                     new BigDecimal(rs.getString("mileage_rate")));
             return new Leg(
                     rs.getInt("leg_id"),
-                    destinationDao.selectDestination(rs.getInt("from_destination_id")),
-                    destinationDao.selectDestination(rs.getInt("to_destination_id")),
+                    new Destination(rs.getInt("from_destination_id")),
+                    new Destination(rs.getInt("to_destination_id")),
                     new ModeOfTransportation(MethodOfTravel.of(rs.getString("method_of_travel")), rs.getString("method_of_travel_description")),
                     Double.parseDouble(rs.getString("miles")),
                     perDiem,

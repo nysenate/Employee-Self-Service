@@ -1,5 +1,6 @@
 package gov.nysenate.ess.travel.application.address;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 
 public class TravelAddressView implements ViewObject {
@@ -20,17 +21,19 @@ public class TravelAddressView implements ViewObject {
     }
 
     public TravelAddressView(TravelAddress addr) {
-        this.id = addr.getId();
-        this.placeId = addr.getPlaceId();
-        this.name = addr.getName();
-        this.addr1 = addr.getAddr1();
-        this.city = addr.getCity();
-        this.zip5 = addr.getZip5();
-        this.county = addr.getCounty();
-        this.state = addr.getState();
-        this.country = addr.getCountry();
-        this.summary = addr.getSummary();
-        this.formattedAddressWithCounty = addr.getFormattedAddressWithCounty();
+        if (addr != null) {
+            this.id = addr.getId();
+            this.placeId = addr.getPlaceId();
+            this.name = addr.getName();
+            this.addr1 = addr.getAddr1();
+            this.city = addr.getCity();
+            this.zip5 = addr.getZip5();
+            this.county = addr.getCounty();
+            this.state = addr.getState();
+            this.country = addr.getCountry();
+            this.summary = addr.getSummary();
+            this.formattedAddressWithCounty = addr.getFormattedAddressWithCounty();
+        }
     }
 
     public TravelAddress toTravelAddress() {

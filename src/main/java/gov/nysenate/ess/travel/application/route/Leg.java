@@ -12,11 +12,11 @@ import java.util.Objects;
 public class Leg {
 
     private int id;
-    private final Destination from;
-    private final Destination to;
+    private Destination from;
+    private Destination to;
     private final ModeOfTransportation modeOfTransportation;
     private final double miles;
-    private PerDiem mileagePerDiem;
+    private final PerDiem mileagePerDiem;
     private final boolean isOutbound;
     private boolean isReimbursementRequested;
 
@@ -56,6 +56,14 @@ public class Leg {
 
     public void setIsReimbursementRequested(boolean isReimbursementRequested) {
         this.isReimbursementRequested = isReimbursementRequested;
+    }
+
+    public void setFromDestination(Destination from) {
+        this.from = from;
+    }
+
+    public void setToDestination(Destination to) {
+        this.to = to;
     }
 
     public int getId() {
@@ -112,10 +120,6 @@ public class Leg {
 
     public boolean qualifiesForMileageReimbursement() {
         return modeOfTransportation.qualifiesForMileageReimbursement();
-    }
-
-    public void setMileagePerDiem(PerDiem mileagePerDiem) {
-        this.mileagePerDiem = mileagePerDiem;
     }
 
     void setId(int id) {
