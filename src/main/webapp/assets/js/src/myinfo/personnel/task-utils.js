@@ -9,6 +9,7 @@
         AcknowledgmentTask.prototype = new PersonnelTask();
         MoodleTask.prototype = new PersonnelTask();
         VideoCodeTask.prototype = new PersonnelTask();
+        EthicsCourseTask.prototype = new PersonnelTask();
 
         return {
             getEmpAssignments: getEmpAssignments,
@@ -82,7 +83,6 @@
             PersonnelTask.apply(this, arguments);
 
             this.getActionUrl = function () {
-                // fixme this only works for the legethics course
                 return appProps.ctxPath + "/myinfo/personnel/todo/legethics/" + task.taskId;
             };
 
@@ -116,8 +116,23 @@
             PersonnelTask.apply(this, arguments);
 
             this.getActionUrl = function () {
-                // fixme URL in app props
-                return 'https://admin.fifoundry.net/en/new-york-senate/sign_in';
+                return task.url;
+            };
+
+            this.getCourseUrl = function () {
+                return task.url;
+            };
+
+            this.getIconClass = function () {
+                return 'icon-graduation-cap';
+            }
+        }
+
+        function EthicsCourseTask(task) {
+            PersonnelTask.apply(this, arguments);
+
+            this.getActionUrl = function () {
+                return appProps.ctxPath + "/myinfo/personnel/todo/ethicscourse/" + task.taskId;
             };
 
             this.getCourseUrl = function () {
@@ -146,6 +161,8 @@
                     return new VideoCodeTask(task);
                 case 'EVERFI_COURSE':
                     return new EverfiCourse(task);
+                case 'ETHICS_COURSE':
+                    return new EthicsCourseTask(task);
                 default:
                     console.error("Unknown task type '" + taskType + "'!");
                     return new PersonnelTask(task);

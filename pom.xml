@@ -6,7 +6,7 @@
 
   <groupId>gov.nysenate</groupId>
   <artifactId>ess</artifactId>
-  <version>1.7.1</version>
+  <version>1.7.2</version>
   <packaging>war</packaging>
 
   <build>
@@ -54,8 +54,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.8.1</version>
         <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
+          <source>15</source>
+          <target>15</target>
           <!-- avoid possible encoding issues -->
           <encoding>utf-8</encoding>
         </configuration>
@@ -119,31 +119,31 @@
   </build>
 
   <properties>
-    <apache.shiro.version>1.5.0</apache.shiro.version>
+    <apache.shiro.version>1.7.1</apache.shiro.version>
     <apache.http.client.version>4.5.13</apache.http.client.version>
-    <commons.io.version>2.4</commons.io.version>
-    <commons.lang3.version>3.4</commons.lang3.version>
-    <commons.validator.version>1.6</commons.validator.version>
-    <commons-csv.version>1.5</commons-csv.version>
-    <commons-fileupload.version>1.3.3</commons-fileupload.version>
-    <c3p0.version>0.9.5.3</c3p0.version>
-    <eh-cache.version>2.10.0</eh-cache.version>
-    <freemarker.version>2.3.23</freemarker.version>
-    <guava.version>30.1-jre</guava.version>
+    <commons.io.version>2.8.0</commons.io.version>
+    <commons.lang3.version>3.12.0</commons.lang3.version>
+    <commons.validator.version>1.7</commons.validator.version>
+    <commons-csv.version>1.8</commons-csv.version>
+    <commons-fileupload.version>1.4</commons-fileupload.version>
+    <c3p0.version>0.9.5.5</c3p0.version>
+    <eh-cache.version>2.10.6</eh-cache.version>
+    <freemarker.version>2.3.31</freemarker.version>
+    <guava.version>30.1.1-jre</guava.version>
     <guice.version>5.0.1</guice.version>
     <hamcrest.version>1.3</hamcrest.version>
-    <hierarchicalcontextrunner.version>4.12.1</hierarchicalcontextrunner.version>
-    <jackson.version>2.10.2</jackson.version>
+    <hierarchicalcontextrunner.version>4.12.2</hierarchicalcontextrunner.version>
+    <jackson.version>2.12.3</jackson.version>
     <jstl.version>1.2</jstl.version>
-    <junit.version>4.12</junit.version>
-    <mockito.version>3.8.0</mockito.version>
-    <oracle.driver.version>19.3.0.0</oracle.driver.version>
-    <postgres.driver.version>9.4-1201-jdbc41</postgres.driver.version>
-    <slf4j.version>1.7.5</slf4j.version>
-    <log4j.version>2.11.1</log4j.version>
-    <spring.version>4.3.24.RELEASE</spring.version>
+    <junit.version>4.13.2</junit.version>
+    <mockito.version>3.9.0</mockito.version>
+    <oracle.driver.version>21.1.0.0</oracle.driver.version>
+    <postgres.driver.version>42.2.19</postgres.driver.version>
+    <slf4j.version>1.7.30</slf4j.version>
+    <log4j.version>2.14.1</log4j.version>
+    <spring.version>4.3.30.RELEASE</spring.version>
     <spring.ldap.version>2.3.3.RELEASE</spring.ldap.version>
-    <tomcat.servlet.version>8.0.23</tomcat.servlet.version>
+    <tomcat.servlet.version>9.0.45</tomcat.servlet.version>
     <woodstox.version>4.4.1</woodstox.version>
     <org.apache.pdfbox.version>2.0.15</org.apache.pdfbox.version>
     <javax.xml.bind.version>2.3.1</javax.xml.bind.version>
@@ -349,7 +349,7 @@
 
     <!-- Database Drivers -->
     <dependency>
-      <groupId>com.oracle.ojdbc</groupId>
+      <groupId>com.oracle.database.jdbc</groupId>
       <artifactId>ojdbc8</artifactId>
       <version>${oracle.driver.version}</version>
       <scope>runtime</scope>
@@ -421,8 +421,8 @@
 
     <dependency>
       <groupId>javax.servlet.jsp</groupId>
-      <artifactId>jsp-api</artifactId>
-      <version>2.1</version>
+      <artifactId>javax.servlet.jsp-api</artifactId>
+      <version>2.3.3</version>
       <scope>provided</scope>
     </dependency>
 
@@ -525,7 +525,7 @@
     <dependency>
       <groupId>org.jsoup</groupId>
       <artifactId>jsoup</artifactId>
-      <version>1.11.1</version>
+      <version>1.13.1</version>
     </dependency>
 
     <dependency>

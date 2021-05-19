@@ -28,6 +28,7 @@
           Please take some time to watch the video below.<br>
           Codes will appear on-screen at various points during the video.<br>
           Record these codes as they appear.<br>
+          <b>You can scroll backwards in case you miss a code. You CANNOT scroll forwards</b> <br>
           When the video is finished, use the form below the video to enter the codes to confirm your viewing.
         </span>
       </p>
@@ -39,7 +40,7 @@
       </div>
       <%-- Video Container--%>
       <div class="pec-video-container">
-        <video id="video" controls>
+        <video id="video" controls controlsList="nodownload">
           <source ng-src="{{state.videoUrl}}" type="video/mp4">
         </video>
       </div>

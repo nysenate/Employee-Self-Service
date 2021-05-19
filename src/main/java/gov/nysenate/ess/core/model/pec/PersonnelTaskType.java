@@ -7,5 +7,6 @@ public enum PersonnelTaskType {
     DOCUMENT_ACKNOWLEDGMENT,
     MOODLE_COURSE,
     VIDEO_CODE_ENTRY,
-    EVERFI_COURSE
+    EVERFI_COURSE,
+    ETHICS_COURSE
 }

@@ -65,6 +65,19 @@ public class SqlEverfiUserDao extends SqlBaseDao implements EverfiUserDao {
                 COUNT_EVERFI_USER_IDS.getSql(schemaMap()), Integer.class);
     }
 
+    public void insertIgnoredID(String everfiUUID, Integer empID) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("everfi_UUID", everfiUUID);
+        params.addValue("emp_id", empID);
+        localNamedJdbc.update(INSERT_IGNORED_EVERFI_USER_ID.getSql(schemaMap()), params);
+    }
+
+    public void removeIgnoredID(String everfiUUID) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("everfi_UUID", everfiUUID);
+        localNamedJdbc.update(REMOVE_IGNORED_EVERFI_USER_ID.getSql(schemaMap()), params);
+    }
+
     private static final RowMapper<EverfiUserIDs> everfiUserIDsRowMapper = (rs, rowNum) ->
             new EverfiUserIDs(
                     rs.getInt("emp_id"),

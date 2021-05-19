@@ -96,13 +96,18 @@
                     });
 
                     video.addEventListener('seeking', function() {
-                        // console.log('seeking event');
-                        // guard against infinite recursion:
-                        var delta = video.currentTime - supposedCurrentTime;
-                        if (Math.abs(delta) > 0.01) {
-                            // console.log("Seeking is disabled");
-                            video.currentTime = supposedCurrentTime;
+
+                        if (!$scope.state.assignment.completed) {
+                            // console.log('seeking event');
+                            // guard against infinite recursion:
+                            var delta = video.currentTime - supposedCurrentTime;
+                            // console.log(delta);
+                            if (Math.abs(delta) > 0.01 && !(delta < 0) ) {
+                                // console.log("Seeking is disabled");
+                                video.currentTime = supposedCurrentTime;
+                            }
                         }
+
                     });
 
                     firstPass = true;
