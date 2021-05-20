@@ -84,7 +84,7 @@ public class EverfiUserService {
             List<Employee> inactiveEmployees = getRecentlyInactiveEmployees();
 
             sendEmailToEverfiReportEmails("Employees to be Inactivated",
-                    inactiveEmployees.toString() + "\n\n Some of these users above may have already been deactivated prior to this run");
+                    generateEmployeeListString(inactiveEmployees) + "\n\n Some of these users above may have already been deactivated prior to this run");
 
             for (Employee employee : inactiveEmployees) {
                 changeActiveStatusForUserWithEmpID(employee.getEmployeeId(), false);
@@ -332,6 +332,14 @@ public class EverfiUserService {
         }
     }
 
+    private String generateEmployeeListString(List<Employee> emps) {
+        String employeeListDetails = "";
+        for (Employee employee: emps) {
+            employeeListDetails = employeeListDetails + " " + employee.getFullName() + " " + employee.getEmail() + " " + employee.getEmployeeId() + "\n";
+        }
+        return employeeListDetails;
+    }
+
     /**
      * Adds the given Employees to Everfi.
      * These employees should not already exist in Everfi. There are separate methods for updating employee data.
@@ -341,7 +349,7 @@ public class EverfiUserService {
     public void addEmployeesToEverfi(List<Employee> emps) {
 
         //send email to Everfi report email for new employees
-        sendEmailToEverfiReportEmails("New Users Added to Everfi", emps.toString());
+        sendEmailToEverfiReportEmails("New Users Added to Everfi", generateEmployeeListString(emps));
 
         try {
             for (Employee emp : emps) {

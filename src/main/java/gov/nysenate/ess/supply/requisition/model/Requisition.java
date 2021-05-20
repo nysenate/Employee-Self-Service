@@ -402,7 +402,7 @@ public final class Requisition {
             // LocalDateTime precision defaults to the system clock, which can be different in different environments.
             // Changes in the Java version can also alter the precision.
             // This rounds to micro seconds which should be supported by all environments and versions of java.
-            this.modifiedDateTime = modifiedDateTime.truncatedTo(ChronoUnit.MICROS);
+            this.modifiedDateTime = modifiedDateTime == null ? null : modifiedDateTime.truncatedTo(ChronoUnit.MICROS);
             return this;
         }
 
