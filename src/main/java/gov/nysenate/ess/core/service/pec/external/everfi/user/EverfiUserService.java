@@ -335,7 +335,7 @@ public class EverfiUserService {
     private String generateEmployeeListString(List<Employee> emps) {
         String employeeListDetails = "";
         for (Employee employee: emps) {
-            employeeListDetails = employeeListDetails + " " + employee.getFullName() + " " + employee.getEmail() + " " + employee.getEmployeeId() + "\n";
+            employeeListDetails = " | " + employeeListDetails + " NAME: " + employee.getFullName() + " EMAIL: " + employee.getEmail() + " EMPID: " + employee.getEmployeeId() + "<br>\n";
         }
         return employeeListDetails;
     }
@@ -353,6 +353,9 @@ public class EverfiUserService {
 
         try {
             for (Employee emp : emps) {
+                if (emp.getEmail().isEmpty() || emp.getEmail() == null) {
+                    continue;
+                }
                 logger.info("Adding new employee to Everfi " + emp.getFullName() + ", " + emp.getEmail() + ", " + emp.getEmployeeId());
                 EverfiAddUserRequest addUserRequest = new EverfiAddUserRequest(
                         everfiApiClient, emp.getEmployeeId(), emp.getFirstName(), emp.getLastName(),
