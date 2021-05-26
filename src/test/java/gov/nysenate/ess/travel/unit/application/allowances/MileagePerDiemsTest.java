@@ -1,11 +1,11 @@
 package gov.nysenate.ess.travel.unit.application.allowances;
 
 import gov.nysenate.ess.core.annotation.UnitTest;
-import gov.nysenate.ess.travel.application.allowances.PerDiem;
-import gov.nysenate.ess.travel.application.allowances.mileage.MileagePerDiems;
-import gov.nysenate.ess.travel.application.route.Leg;
-import gov.nysenate.ess.travel.application.route.ModeOfTransportation;
-import gov.nysenate.ess.travel.application.route.destination.Destination;
+import gov.nysenate.ess.travel.request.allowances.PerDiem;
+import gov.nysenate.ess.travel.request.allowances.mileage.MileagePerDiems;
+import gov.nysenate.ess.travel.request.route.Leg;
+import gov.nysenate.ess.travel.request.route.ModeOfTransportation;
+import gov.nysenate.ess.travel.request.route.destination.Destination;
 import gov.nysenate.ess.travel.fixtures.TravelAddressFixture;
 import gov.nysenate.ess.travel.utils.Dollars;
 import org.junit.Test;

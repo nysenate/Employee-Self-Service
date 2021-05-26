@@ -2,15 +2,12 @@ package gov.nysenate.ess.travel.review.dao;
 
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.model.personnel.Employee;
-import gov.nysenate.ess.travel.application.TravelApplicationDao;
-import gov.nysenate.ess.travel.application.TravelApplicationStatus;
+import gov.nysenate.ess.travel.request.app.dao.TravelApplicationDao;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
 import gov.nysenate.ess.travel.review.ApplicationReview;
 import gov.nysenate.ess.travel.review.view.ActionType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 

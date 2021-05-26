@@ -2,7 +2,7 @@ package gov.nysenate.ess.travel.notifications.email;
 
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.mail.SendMailService;
-import gov.nysenate.ess.travel.application.TravelApplication;
+import gov.nysenate.ess.travel.request.app.TravelApplication;
 import gov.nysenate.ess.travel.review.ApplicationReview;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

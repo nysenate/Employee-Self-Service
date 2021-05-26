@@ -1,7 +1,7 @@
 package gov.nysenate.ess.travel.review;
 
 import com.google.common.base.Preconditions;
-import gov.nysenate.ess.travel.application.TravelApplication;
+import gov.nysenate.ess.travel.request.app.TravelApplication;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
 import gov.nysenate.ess.travel.review.strategy.*;
 

@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableMap;
 import freemarker.template.*;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.mail.SendMailService;
-import gov.nysenate.ess.travel.application.TravelApplication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

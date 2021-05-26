@@ -2,7 +2,7 @@ package gov.nysenate.ess.travel.provider.miles;
 
 import com.google.maps.errors.ApiException;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
-import gov.nysenate.ess.travel.application.address.TravelAddress;
+import gov.nysenate.ess.travel.request.address.TravelAddress;
 import gov.nysenate.ess.travel.provider.ProviderException;
 import gov.nysenate.ess.travel.provider.addressvalidation.DistrictAssignmentService;
 import org.slf4j.Logger;

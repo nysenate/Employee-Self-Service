@@ -7,7 +7,7 @@ import com.google.maps.model.DistanceMatrix;
 import com.google.maps.model.TrafficModel;
 import com.google.maps.model.TravelMode;
 import com.google.maps.model.Unit;
-import gov.nysenate.ess.travel.application.address.TravelAddress;
+import gov.nysenate.ess.travel.request.address.TravelAddress;
 import gov.nysenate.ess.travel.utils.UnitUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;

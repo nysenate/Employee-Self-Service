@@ -1,7 +1,7 @@
 package gov.nysenate.ess.travel.provider.miles;
 
 import com.google.maps.errors.ApiException;
-import gov.nysenate.ess.travel.application.address.TravelAddress;
+import gov.nysenate.ess.travel.request.address.TravelAddress;
 
 import java.io.IOException;
 

@@ -1,6 +1,6 @@
 package gov.nysenate.ess.travel.notifications.email;
 
-import gov.nysenate.ess.travel.application.TravelApplication;
+import gov.nysenate.ess.travel.request.app.TravelApplication;
 import gov.nysenate.ess.travel.review.Action;
 import gov.nysenate.ess.travel.review.ApplicationReview;
 

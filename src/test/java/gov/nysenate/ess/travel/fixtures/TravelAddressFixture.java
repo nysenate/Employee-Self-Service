@@ -1,6 +1,6 @@
 package gov.nysenate.ess.travel.fixtures;
 
-import gov.nysenate.ess.travel.application.address.TravelAddress;
+import gov.nysenate.ess.travel.request.address.TravelAddress;
 
 public class TravelAddressFixture {
 

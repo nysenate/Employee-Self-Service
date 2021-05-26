@@ -1,8 +1,8 @@
 package gov.nysenate.ess.travel.review.dao;
 
 import gov.nysenate.ess.core.dao.base.BaseRowMapper;
-import gov.nysenate.ess.travel.application.TravelApplication;
-import gov.nysenate.ess.travel.application.TravelApplicationDao;
+import gov.nysenate.ess.travel.request.app.TravelApplication;
+import gov.nysenate.ess.travel.request.app.dao.TravelApplicationDao;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
 import gov.nysenate.ess.travel.review.Action;
 import gov.nysenate.ess.travel.review.ApplicationReview;

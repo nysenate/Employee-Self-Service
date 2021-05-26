@@ -1,15 +1,11 @@
 package gov.nysenate.ess.travel.review.dao;
 
 import com.google.common.collect.ImmutableSet;
-import gov.nysenate.ess.core.model.personnel.Employee;
-import gov.nysenate.ess.travel.application.TravelApplicationStatus;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
 import gov.nysenate.ess.travel.review.ApplicationReview;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class PendingReviews {
 

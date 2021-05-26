@@ -1,6 +1,6 @@
 package gov.nysenate.ess.travel.utils;
 
-import gov.nysenate.ess.travel.application.Attachment;
+import gov.nysenate.ess.travel.request.attachment.Attachment;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

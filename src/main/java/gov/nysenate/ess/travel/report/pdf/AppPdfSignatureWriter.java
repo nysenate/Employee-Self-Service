@@ -1,7 +1,7 @@
 package gov.nysenate.ess.travel.report.pdf;
 
 import com.google.common.base.Preconditions;
-import gov.nysenate.ess.travel.application.TravelApplication;
+import gov.nysenate.ess.travel.request.app.TravelApplication;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 
 import java.io.IOException;

@@ -1,8 +1,7 @@
 package gov.nysenate.ess.travel.provider.gsa;
 
-import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.core.service.notification.slack.service.DefaultSlackChatService;
-import gov.nysenate.ess.travel.application.address.TravelAddress;
+import gov.nysenate.ess.travel.request.address.TravelAddress;
 import gov.nysenate.ess.travel.provider.ProviderException;
 import gov.nysenate.ess.travel.provider.senate.SqlSenateMieDao;
 import gov.nysenate.ess.travel.utils.Dollars;
@@ -11,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.time.LocalDate;
 
 @Service

@@ -1,7 +1,7 @@
 package gov.nysenate.ess.travel.unit.application.address;
 
 import gov.nysenate.ess.core.annotation.UnitTest;
-import gov.nysenate.ess.travel.application.address.TravelAddress;
+import gov.nysenate.ess.travel.request.address.TravelAddress;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
