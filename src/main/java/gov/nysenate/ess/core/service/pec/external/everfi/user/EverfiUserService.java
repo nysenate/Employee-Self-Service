@@ -335,7 +335,11 @@ public class EverfiUserService {
     private String generateEmployeeListString(List<Employee> emps) {
         String employeeListDetails = "";
         for (Employee employee: emps) {
-            employeeListDetails = " | " + employeeListDetails + " NAME: " + employee.getFullName() + " EMAIL: " + employee.getEmail() + " EMPID: " + employee.getEmployeeId() + "<br>\n";
+            employeeListDetails = employeeListDetails + " NAME: " + employee.getFullName() + " EMAIL: " + employee.getEmail() + " EMPID: " + employee.getEmployeeId() + "<br>\n";
+        }
+
+        if (employeeListDetails.isEmpty()) {
+            employeeListDetails = "There are no employees to perform this operation on";
         }
         return employeeListDetails;
     }
