@@ -10,14 +10,12 @@ import java.sql.SQLException;
 
 class AmendmentRowMapper extends BaseRowMapper<AmendmentRepositoryView> {
 
-    private AmendmentRepositoryView view;
-
     public AmendmentRowMapper() {
-        view = new AmendmentRepositoryView();
     }
 
     @Override
     public AmendmentRepositoryView mapRow(ResultSet rs, int i) throws SQLException {
+        AmendmentRepositoryView view = new AmendmentRepositoryView();
         view.amendmentId = rs.getInt("amendment_id");
         view.appId = rs.getInt("app_id");
         view.version = Version.valueOf(rs.getString("version"));
