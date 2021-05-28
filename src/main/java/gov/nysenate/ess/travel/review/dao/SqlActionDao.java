@@ -14,8 +14,10 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Array;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -66,7 +68,13 @@ public class SqlActionDao extends SqlBaseDao {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("appReviewId", appReviewId);
         String sql = SqlActionQuery.SELECT_ACTIONS_BY_REVIEW_ID.getSql(schemaMap());
-        return localNamedJdbc.query(sql, params, new ActionRowMapper(employeeInfoService));
+        var views = localNamedJdbc.query(sql, params, new ActionRowMapper());
+        var actions = new ArrayList<Action>();
+        for (var view: views) {
+            var emp = employeeInfoService.getEmployee(view.userEmpId);
+            actions.add(new Action(view.actionId, emp, view.role, view.type, view.notes, view.dateTime));
+        }
+        return actions;
     }
 
     private enum SqlActionQuery implements BasicSqlQuery {
@@ -99,24 +107,21 @@ public class SqlActionDao extends SqlBaseDao {
         }
     }
 
-    private class ActionRowMapper extends BaseRowMapper<Action> {
+    private class ActionRowMapper extends BaseRowMapper<ActionRepositoryView> {
 
-        private EmployeeInfoService employeeInfoService;
-
-        ActionRowMapper(EmployeeInfoService employeeInfoService) {
-            this.employeeInfoService = employeeInfoService;
+        ActionRowMapper() {
         }
 
         @Override
-        public Action mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return new Action(
-                    rs.getInt("app_review_action_id"),
-                    employeeInfoService.getEmployee(rs.getInt("employee_id")),
-                    TravelRole.valueOf(rs.getString("role")),
-                    ActionType.valueOf(rs.getString("type")),
-                    rs.getString("notes"),
-                    getLocalDateTimeFromRs(rs, "date_time")
-            );
+        public ActionRepositoryView mapRow(ResultSet rs, int rowNum) throws SQLException {
+            ActionRepositoryView view = new ActionRepositoryView();
+            view.actionId = rs.getInt("app_review_action_id");
+            view.userEmpId = rs.getInt("employee_id");
+            view.role = TravelRole.valueOf(rs.getString("role"));
+            view.type = ActionType.valueOf(rs.getString("type"));
+            view.notes = rs.getString("notes");
+            view.dateTime = getLocalDateTimeFromRs(rs, "date_time");
+            return view;
         }
     }
 }
