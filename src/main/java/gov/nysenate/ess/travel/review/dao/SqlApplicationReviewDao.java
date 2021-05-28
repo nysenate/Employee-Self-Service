@@ -11,6 +11,8 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Repository
@@ -49,11 +51,27 @@ public class SqlApplicationReviewDao extends SqlBaseDao implements ApplicationRe
 
     /**
      * Select all app reviews
+     *
      * @return
      */
     public List<ApplicationReview> selectAllReviews() {
         String sql = SqlApplicationReviewQuery.ALL_APP_REVIEW.getSql(schemaMap());
-        return localNamedJdbc.query(sql, new ApplicationReviewRowMapper(travelApplicationDao, actionDao));
+        List<AppReviewRepositoryView> repViews = localNamedJdbc.query(sql, new ApplicationReviewRowMapper());
+        return populateRepViews(repViews);
+    }
+
+    private List<ApplicationReview> populateRepViews(Collection<AppReviewRepositoryView> views) {
+        var reviews = new ArrayList<ApplicationReview>();
+        for (var view : views) {
+            reviews.add(populateRepView(view));
+        }
+        return reviews;
+    }
+
+    private ApplicationReview populateRepView(AppReviewRepositoryView view) {
+        var travelApplication = travelApplicationDao.selectTravelApplication(view.appId);
+        var actions = actionDao.selectActionsByReviewId(view.appReviewId);
+        return new ApplicationReview(view.appReviewId, travelApplication, view.travelerRole, actions, view.isShared);
     }
 
     /**
@@ -64,7 +82,8 @@ public class SqlApplicationReviewDao extends SqlBaseDao implements ApplicationRe
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("appReviewId", appReviewId);
         String sql = SqlApplicationReviewQuery.SELECT_APPLICATION_REVIEW_BY_ID.getSql(schemaMap());
-        return localNamedJdbc.queryForObject(sql, params, new ApplicationReviewRowMapper(travelApplicationDao, actionDao));
+        AppReviewRepositoryView view = localNamedJdbc.queryForObject(sql, params, new ApplicationReviewRowMapper());
+        return populateRepView(view);
     }
 
     @Override
@@ -73,7 +92,8 @@ public class SqlApplicationReviewDao extends SqlBaseDao implements ApplicationRe
                 .addValue("role", TravelRole.NONE.name())
                 .addValue("disapproval", ActionType.DISAPPROVE.name());
         String sql = SqlApplicationReviewQuery.SELECT_ACTIVE_SHARED_REVIEWS.getSql(schemaMap());
-        return localNamedJdbc.query(sql, params, new ApplicationReviewRowMapper(travelApplicationDao, actionDao));
+        var views = localNamedJdbc.query(sql, params, new ApplicationReviewRowMapper());
+        return populateRepViews(views);
     }
 
     /**
@@ -84,7 +104,8 @@ public class SqlApplicationReviewDao extends SqlBaseDao implements ApplicationRe
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("role", role.name());
         String sql = SqlApplicationReviewQuery.SELECT_APP_REVIEW_HISTORY_FOR_ROLE.getSql(schemaMap());
-        return localNamedJdbc.query(sql, params, new ApplicationReviewRowMapper(travelApplicationDao, actionDao));
+        var views = localNamedJdbc.query(sql, params, new ApplicationReviewRowMapper());
+        return populateRepViews(views);
     }
 
     @Override
@@ -93,14 +114,16 @@ public class SqlApplicationReviewDao extends SqlBaseDao implements ApplicationRe
                 .addValue("role", TravelRole.DEPARTMENT_HEAD.name())
                 .addValue("headEmpId", departmentHead.getEmployeeId());
         String sql = SqlApplicationReviewQuery.SELECT_APP_REVIEW_HISTORY_FOR_DEPT_HD.getSql(schemaMap());
-        return localNamedJdbc.query(sql, params, new ApplicationReviewRowMapper(travelApplicationDao, actionDao));
+        var views = localNamedJdbc.query(sql, params, new ApplicationReviewRowMapper());
+        return populateRepViews(views);
     }
 
     @Override
     public ApplicationReview selectAppReviewByAppId(int appId) {
         MapSqlParameterSource params = new MapSqlParameterSource("appId", appId);
         String sql = SqlApplicationReviewQuery.SELECT_APPLICATION_REVIEW_BY_APP_ID.getSql(schemaMap());
-        return localNamedJdbc.queryForObject(sql, params, new ApplicationReviewRowMapper(travelApplicationDao, actionDao));
+        var view = localNamedJdbc.queryForObject(sql, params, new ApplicationReviewRowMapper());
+        return populateRepView(view);
     }
 
     private MapSqlParameterSource appReviewParams(ApplicationReview appReview) {

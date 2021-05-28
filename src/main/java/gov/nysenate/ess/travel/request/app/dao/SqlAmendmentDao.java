@@ -15,6 +15,9 @@ import gov.nysenate.ess.travel.request.attachment.SqlAttachmentDao;
 import gov.nysenate.ess.travel.request.route.Route;
 import gov.nysenate.ess.travel.request.route.RouteDao;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -65,5 +68,31 @@ public class SqlAmendmentDao extends SqlBaseDao {
                 .build();
     }
 
+    void saveAmendment(Amendment amd, int appId) {
+        // If amendment id is set, its already in the database.
+        // Amendments should never be modified so we can return.
+        if (amd.amendmentId() != 0) {
+            return;
+        }
+        insertAmendment(amd, appId);
+        routeDao.saveRoute(amd.route(), amd.amendmentId());
+        allowancesDao.saveAllowances(amd.allowances(), amd.amendmentId());
+        mealPerDiemsDao.saveMealPerDiems(amd.mealPerDiems(), amd.amendmentId());
+        lodgingPerDiemsDao.saveLodgingPerDiems(amd.lodgingPerDiems(), amd.amendmentId());
+        attachmentDao.saveAttachments(amd.attachments(), amd.amendmentId());
+    }
 
+    private void insertAmendment(Amendment amd, int appId) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("appId", appId)
+                .addValue("eventType", amd.purposeOfTravel().eventType().name())
+                .addValue("eventName", amd.purposeOfTravel().eventName())
+                .addValue("additionalPurpose", amd.purposeOfTravel().additionalPurpose())
+                .addValue("createdBy", amd.createdBy().getEmployeeId())
+                .addValue("version", amd.version().name());
+        String sql = SqlTravelApplicationQuery.INSERT_AMENDMENT.getSql(schemaMap());
+        KeyHolder kh = new GeneratedKeyHolder();
+        localNamedJdbc.update(sql, params, kh);
+        amd.setAmendmentId((Integer) kh.getKeys().get("amendment_id"));
+    }
 }
