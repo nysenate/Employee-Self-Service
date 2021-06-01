@@ -4,6 +4,7 @@ import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
 import gov.nysenate.ess.travel.review.ApplicationReview;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface ApplicationReviewDao {
@@ -12,7 +13,20 @@ public interface ApplicationReviewDao {
 
     ApplicationReview selectAppReviewById(int approvalId);
 
-    List<ApplicationReview> selectAllReviews();
+    /**
+     * Retrieve AppReviews which are pending review by the given role.
+     * role should be a primary non DepartmentHead role.
+     * @param role A non department head primary role.
+     * @return
+     */
+    List<ApplicationReview> pendingReviewsForRole(TravelRole role);
+
+    /**
+     * Retrieve AppReviews which are pending review any of the given departmentIds.
+     * @param departmentIds
+     * @return
+     */
+    List<ApplicationReview> pendingReviewsForDeptIds(Collection<Integer> departmentIds);
 
     /**
      * Gets all reviews that have been shared, have not been disapproved,
@@ -39,4 +53,6 @@ public interface ApplicationReviewDao {
     List<ApplicationReview> reviewHistoryForDeptHead(Employee departmentHead);
 
     ApplicationReview selectAppReviewByAppId(int appId);
+
+    List<ApplicationReview> approvedAppReviews();
 }

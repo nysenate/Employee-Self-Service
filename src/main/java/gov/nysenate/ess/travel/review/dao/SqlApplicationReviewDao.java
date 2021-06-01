@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Repository
 public class SqlApplicationReviewDao extends SqlBaseDao implements ApplicationReviewDao {
@@ -49,14 +51,19 @@ public class SqlApplicationReviewDao extends SqlBaseDao implements ApplicationRe
         localNamedJdbc.update(sql, params);
     }
 
-    /**
-     * Select all app reviews
-     *
-     * @return
-     */
-    public List<ApplicationReview> selectAllReviews() {
-        String sql = SqlApplicationReviewQuery.ALL_APP_REVIEW.getSql(schemaMap());
-        List<AppReviewRepositoryView> repViews = localNamedJdbc.query(sql, new ApplicationReviewRowMapper());
+    @Override
+    public List<ApplicationReview> pendingReviewsForRole(TravelRole role) {
+        var params = new MapSqlParameterSource("role", role.name());
+        var sql = SqlApplicationReviewQuery.PENDING_REVIEWS_FOR_ROLE.getSql(schemaMap());
+        var repViews = localNamedJdbc.query(sql, params, new ApplicationReviewRowMapper());
+        return populateRepViews(repViews);
+    }
+
+    @Override
+    public List<ApplicationReview> pendingReviewsForDeptIds(Collection<Integer> departmentIds) {
+        var params = new MapSqlParameterSource("departmentIds", departmentIds);
+        var sql = SqlApplicationReviewQuery.PENDING_REVIEWS_FOR_DEPT_IDS.getSql(schemaMap());
+        var repViews = localNamedJdbc.query(sql, params, new ApplicationReviewRowMapper());
         return populateRepViews(repViews);
     }
 
@@ -124,6 +131,13 @@ public class SqlApplicationReviewDao extends SqlBaseDao implements ApplicationRe
         String sql = SqlApplicationReviewQuery.SELECT_APPLICATION_REVIEW_BY_APP_ID.getSql(schemaMap());
         var view = localNamedJdbc.queryForObject(sql, params, new ApplicationReviewRowMapper());
         return populateRepView(view);
+    }
+
+    @Override
+    public List<ApplicationReview> approvedAppReviews() {
+        String sql = SqlApplicationReviewQuery.SELECT_APP_REVIEWS_FOR_RECONCILIATION.getSql(schemaMap());
+        var repViews = localNamedJdbc.query(sql, new ApplicationReviewRowMapper());
+        return populateRepViews(repViews);
     }
 
     private MapSqlParameterSource appReviewParams(ApplicationReview appReview) {

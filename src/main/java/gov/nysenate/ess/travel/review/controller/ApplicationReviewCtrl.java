@@ -62,9 +62,9 @@ public class ApplicationReviewCtrl extends BaseRestApiCtrl {
     public BaseResponse getPendingReviews() {
         Employee employee = employeeInfoService.getEmployee(getSubjectEmployeeId());
 
-        Map<TravelRole, Set<ApplicationReview>> pendingReviews = appReviewService.pendingReviews(employee);
+        Map<TravelRole, List<ApplicationReview>> pendingReviews = appReviewService.pendingReviews(employee);
         Map<TravelRoleView, ListView<ApplicationReviewView>> views = new HashMap<>();
-        for (Map.Entry<TravelRole, Set<ApplicationReview>> entry : pendingReviews.entrySet()) {
+        for (Map.Entry<TravelRole, List<ApplicationReview>> entry : pendingReviews.entrySet()) {
             List<ApplicationReviewView> appReviewViews = entry.getValue().stream()
                     .map(ApplicationReviewView::new)
                     .collect(Collectors.toList());

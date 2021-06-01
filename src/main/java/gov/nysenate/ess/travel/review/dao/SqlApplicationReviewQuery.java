@@ -14,10 +14,24 @@ enum SqlApplicationReviewQuery implements BasicSqlQuery {
                     " SET next_reviewer_role = :nextReviewerRole, is_shared = :isShared\n" +
                     " WHERE app_review_id = :appReviewId"
     ),
-    ALL_APP_REVIEW(
-            "SELECT app_review.app_review_id, app_review.app_id, app_review.traveler_role,\n" +
-                    " app_review.next_reviewer_role, is_shared\n " +
-                    " FROM ${travelSchema}.app_review"
+    PENDING_REVIEWS_FOR_ROLE("""
+            SELECT app_review.app_review_id, app_review.app_id, app_review.traveler_role,
+                   app_review.next_reviewer_role, is_shared
+            FROM ${travelSchema}.app_review
+              JOIN ${travelSchema}.app ON app_review.app_id = app.app_id
+            WHERE app.status = 'PENDING'
+            AND app_review.next_reviewer_role = :role
+            """
+    ),
+    PENDING_REVIEWS_FOR_DEPT_IDS("""
+            SELECT app_review.app_review_id, app_review.app_id, app_review.traveler_role,
+                   app_review.next_reviewer_role, is_shared, app.status, app.traveler_department_id
+            FROM ${travelSchema}.app_review
+                     JOIN ${travelSchema}.app ON app_review.app_id = app.app_id
+            WHERE app.status = 'PENDING'
+              AND app_review.next_reviewer_role = 'DEPARTMENT_HEAD'
+              AND app.traveler_department_id IN (:departmentIds) 
+            """
     ),
     APP_REVIEW_SELECT(
             "SELECT app_review.app_review_id, app_review.app_id, app_review.traveler_role,\n" +
@@ -65,6 +79,14 @@ enum SqlApplicationReviewQuery implements BasicSqlQuery {
             APP_REVIEW_SELECT.getSql() +
                     " FROM ${travelSchema}.app_review\n" +
                     " WHERE app_id = :appId"
+    ),
+    SELECT_APP_REVIEWS_FOR_RECONCILIATION(
+            APP_REVIEW_SELECT.getSql() +
+            """
+            FROM ${travelSchema}.app_review
+              JOIN ${travelSchema}.app ON app_review.app_id = app.app_id
+            WHERE app.status = 'APPROVED'
+            """
     );
 
     private String sql;
