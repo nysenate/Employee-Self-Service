@@ -22,6 +22,7 @@ import gov.nysenate.ess.travel.review.view.ApplicationReviewView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -39,13 +40,15 @@ public class ApplicationReviewCtrl extends BaseRestApiCtrl {
      * @return
      */
     @RequestMapping(value = "/reconcile", method = RequestMethod.GET)
-    public BaseResponse reconcileReviews() {
+    public BaseResponse reconcileReviews(@RequestParam String from, @RequestParam String to) {
         checkPermission(new TravelPermissionBuilder()
                 .forObject(TravelPermissionObject.TRAVEL_APPLICATION_REVIEW)
                 .forAllEmps()
                 .forAction(RequestMethod.GET)
                 .buildPermission());
-        List<ApplicationReview> toReconcile = appReviewService.appsToReconcile();
+        LocalDate fromDate = parseISODate(from, "from");
+        LocalDate toDate = parseISODate(to, "to");
+        List<ApplicationReview> toReconcile = appReviewService.appsToReconcile(fromDate, toDate);
         return ListViewResponse.of(toReconcile.stream()
                 .map(ApplicationReviewView::new)
                 .collect(Collectors.toSet()));

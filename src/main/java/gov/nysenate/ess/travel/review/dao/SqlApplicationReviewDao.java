@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -134,9 +135,12 @@ public class SqlApplicationReviewDao extends SqlBaseDao implements ApplicationRe
     }
 
     @Override
-    public List<ApplicationReview> approvedAppReviews() {
+    public List<ApplicationReview> approvedAppReviews(LocalDate from, LocalDate to) {
+        var params = new MapSqlParameterSource()
+                .addValue("from", from)
+                .addValue("to", to);
         String sql = SqlApplicationReviewQuery.SELECT_APP_REVIEWS_FOR_RECONCILIATION.getSql(schemaMap());
-        var repViews = localNamedJdbc.query(sql, new ApplicationReviewRowMapper());
+        var repViews = localNamedJdbc.query(sql, params, new ApplicationReviewRowMapper());
         return populateRepViews(repViews);
     }
 

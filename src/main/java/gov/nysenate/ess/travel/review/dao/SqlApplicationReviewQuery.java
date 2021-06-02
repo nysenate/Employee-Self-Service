@@ -81,12 +81,22 @@ enum SqlApplicationReviewQuery implements BasicSqlQuery {
                     " WHERE app_id = :appId"
     ),
     SELECT_APP_REVIEWS_FOR_RECONCILIATION(
-            APP_REVIEW_SELECT.getSql() +
-            """
-            FROM ${travelSchema}.app_review
-              JOIN ${travelSchema}.app ON app_review.app_id = app.app_id
-            WHERE app.status = 'APPROVED'
-            """
+            APP_REVIEW_SELECT.getSql() + """
+                    FROM ${travelSchema}.app_review
+                             JOIN ${travelSchema}.app ON app.app_id = app_review.app_id
+                             JOIN (SELECT app_id, max(amendment_id) as active_amendment_id
+                                   FROM ${travelSchema}.amendment
+                                   GROUP BY app_id) active_amendment
+                                  ON active_amendment.app_id = app.app_id
+                             JOIN (SELECT amendment_id, min(leg_id) as first_leg_id
+                                   FROM ${travelSchema}.amendment_legs
+                                   GROUP BY amendment_id) first_leg
+                                  ON first_leg.amendment_id = active_amendment.active_amendment_id
+                             JOIN ${travelSchema}.leg ON leg.leg_id = first_leg.first_leg_id
+                    WHERE app.status = 'APPROVED'
+                      AND leg.travel_date >= :from
+                      AND leg.travel_date <= :to
+                    """
     );
 
     private String sql;

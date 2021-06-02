@@ -4,6 +4,7 @@ import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
 import gov.nysenate.ess.travel.review.ApplicationReview;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
@@ -54,5 +55,12 @@ public interface ApplicationReviewDao {
 
     ApplicationReview selectAppReviewByAppId(int appId);
 
-    List<ApplicationReview> approvedAppReviews();
+    /**
+     * Get all ApplicationReview's which are approved and have an amendment with
+     * a start date between from and to inclusive.
+     * @param from
+     * @param to
+     * @return
+     */
+    List<ApplicationReview> approvedAppReviews(LocalDate from, LocalDate to);
 }

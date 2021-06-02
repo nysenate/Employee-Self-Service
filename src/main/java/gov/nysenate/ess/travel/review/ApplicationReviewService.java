@@ -17,6 +17,7 @@ import gov.nysenate.ess.travel.review.view.ActionType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -167,7 +168,14 @@ public class ApplicationReviewService {
         return appReviews;
     }
 
-    public List<ApplicationReview> appsToReconcile() {
-        return appReviewDao.approvedAppReviews();
+    /**
+     * Get a List of ApplicationReviews to display for reconciliation.
+     * These are apps which have been fully approved.
+     * @param from
+     * @param to
+     * @return
+     */
+    public List<ApplicationReview> appsToReconcile(LocalDate from, LocalDate to) {
+        return appReviewDao.approvedAppReviews(from, to);
     }
 }
