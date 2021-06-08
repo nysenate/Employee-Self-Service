@@ -6,12 +6,14 @@ import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.model.pec.everfi.EverfiCourseTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  * {@link PersonnelTaskDetailDao} for {@link EverfiCourseTask}s
@@ -26,11 +28,17 @@ public class EverfiTaskDetailDao extends SqlBaseDao implements PersonnelTaskDeta
 
     @Override
     public EverfiCourseTask getTaskDetails(PersonnelTask task) {
-        return localNamedJdbc.queryForObject(
+        List<EverfiCourseTask> everfiCourseTasks = localNamedJdbc.query(
                 Query.SELECT_EVERFI_COURSE.getSql(schemaMap()),
                 new MapSqlParameterSource("taskId", task.getTaskId()),
                 new EverfiCourseRowMapper(task)
         );
+        if (everfiCourseTasks.isEmpty() || everfiCourseTasks == null) {
+            throw new IncorrectResultSizeDataAccessException(0);
+        }
+        else {
+            return everfiCourseTasks.get(0);
+        }
     }
 
     private static class EverfiCourseRowMapper implements RowMapper<EverfiCourseTask> {

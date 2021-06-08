@@ -25,8 +25,14 @@ import java.util.Set;
 public class SupplyEmployeeApiCtrl extends BaseRestApiCtrl {
 
     private static final Logger logger = LoggerFactory.getLogger(SupplyEmployeeApiCtrl.class);
-    @Autowired private RoleDao roleDao;
-    @Autowired private SupplyEmployeeDao supplyEmployeeDao;
+    private RoleDao roleDao;
+    private SupplyEmployeeDao supplyEmployeeDao;
+
+    @Autowired
+    public SupplyEmployeeApiCtrl(RoleDao roleDao, SupplyEmployeeDao supplyEmployeeDao) {
+        this.roleDao = roleDao;
+        this.supplyEmployeeDao = supplyEmployeeDao;
+    }
 
     @RequestMapping("")
     public BaseResponse getSupplyEmployees() {

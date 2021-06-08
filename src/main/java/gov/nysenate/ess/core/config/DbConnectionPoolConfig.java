@@ -34,7 +34,7 @@ public class DbConnectionPoolConfig
      * Configures and returns the local data source.
      * @return ComboPooledDataSource
      */
-    @Bean(destroyMethod = "close")
+    @Bean(destroyMethod = "close", name = "localDataSource")
     public ComboPooledDataSource localDataSource() {
         ComboPooledDataSource cpds = getComboPooledDataSource(dbLocalType, dbLocalHost, dbLocalName, dbLocalDriver,
                 dbLocalUser, dbLocalPass);
@@ -52,7 +52,7 @@ public class DbConnectionPoolConfig
      * Configures and returns the remote data source.
      * @return ComboPooledDataSource
      */
-    @Bean(destroyMethod = "close")
+    @Bean(destroyMethod = "close", name = "remoteDataSource")
     public ComboPooledDataSource remoteDataSource() {
         ComboPooledDataSource cpds = getComboPooledDataSource(dbRemoteType, dbRemoteHost, dbRemoteName, dbRemoteDriver,
                 dbRemoteUser, dbRemotePass);

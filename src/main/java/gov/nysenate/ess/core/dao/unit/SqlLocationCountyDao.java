@@ -6,6 +6,8 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * This repository retrieves the county of Senate work addresses which is very important to travel applications.
  *
@@ -24,7 +26,14 @@ public class SqlLocationCountyDao extends SqlBaseDao {
 
         String county;
         try {
-            county = localNamedJdbc.queryForObject(sql, params, (rs, rowNum) -> rs.getString("county"));
+            List<String> counties = localNamedJdbc.query(sql, params, (rs, rowNum) -> rs.getString("county"));
+            if (counties.isEmpty()) {
+                county = "";
+            }
+            else {
+                county = counties.get(0);
+            }
+
         }
         catch(IncorrectResultSizeDataAccessException ex) {
             // If no county has been entered for this location return an empty string.

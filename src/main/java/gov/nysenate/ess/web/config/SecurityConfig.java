@@ -15,8 +15,6 @@ import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.session.mgt.ServletContainerSessionManager;
 import org.apache.shiro.web.session.mgt.WebSessionManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -32,7 +30,6 @@ import javax.servlet.Filter;
 @Configuration
 public class SecurityConfig
 {
-    private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
 
     private final String loginUrl;
     private final String loginSuccessUrl;
@@ -85,8 +82,7 @@ public class SecurityConfig
      */
     @Bean(name = "sessionManager")
     public WebSessionManager sessionManager() {
-        ServletContainerSessionManager sessionManager = new ServletContainerSessionManager();
-        return sessionManager;
+        return new ServletContainerSessionManager();
     }
 
     @Bean(name = "shiroCacheManager")

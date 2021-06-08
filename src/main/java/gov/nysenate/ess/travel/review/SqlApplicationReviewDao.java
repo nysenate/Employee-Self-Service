@@ -9,6 +9,7 @@ import gov.nysenate.ess.travel.application.TravelApplication;
 import gov.nysenate.ess.travel.application.TravelApplicationDao;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -65,7 +66,13 @@ public class SqlApplicationReviewDao extends SqlBaseDao implements ApplicationRe
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("appReviewId", appReviewId);
         String sql = SqlApplicationReviewQuery.SELECT_APPLICATION_REVIEW_BY_ID.getSql(schemaMap());
-        return localNamedJdbc.queryForObject(sql, params, new ApplicationReviewRowMapper(travelApplicationDao, employeeInfoService, actionDao));
+        List<ApplicationReview> applicationReviews =  localNamedJdbc.query(sql, params, new ApplicationReviewRowMapper(travelApplicationDao, employeeInfoService, actionDao));
+        if (applicationReviews.isEmpty() || applicationReviews == null) {
+            throw new IncorrectResultSizeDataAccessException(0);
+        }
+        else {
+            return applicationReviews.get(0);
+        }
     }
 
     /**

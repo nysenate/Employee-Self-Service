@@ -9,6 +9,7 @@ import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.OrderBy;
 import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.core.util.SortOrder;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
@@ -26,7 +27,13 @@ public class SqlResponsibilityHeadDao extends SqlBaseDao implements Responsibili
         Preconditions.checkArgument(code != null && !code.isEmpty());
         MapSqlParameterSource params = new MapSqlParameterSource("code", code);
         String sql = SqlResponsibilityHeadQuery.RCH_BY_CODE.getSql(schemaMap());
-        return remoteNamedJdbc.queryForObject(sql, params, new RespHeadRowMapper(""));
+        List<ResponsibilityHead> responsibilityHeads = remoteNamedJdbc.query(sql, params, new RespHeadRowMapper(""));
+        if (responsibilityHeads.isEmpty() || responsibilityHeads == null) {
+            throw new EmptyResultDataAccessException("Unable to retrieve the rch code" + code, 404);
+        }
+        else {
+            return responsibilityHeads.get(0);
+        }
     }
 
     @Override

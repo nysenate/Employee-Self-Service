@@ -12,10 +12,10 @@ import java.util.concurrent.Executor;
 
 @EnableAsync
 @Configuration
-public class AsyncConfig implements AsyncConfigurer {
+public class  AsyncConfig implements AsyncConfigurer {
 
     @Override
-    @Bean(name = "essAsync", destroyMethod = "shutdown")
+    @Bean(name = "essAsync")
     public Executor getAsyncExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(4);

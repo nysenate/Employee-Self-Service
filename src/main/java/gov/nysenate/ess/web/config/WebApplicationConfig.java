@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
@@ -36,12 +37,18 @@ import java.util.List;
 @ComponentScan("gov.nysenate.ess.web")
 @Profile({"test", "dev", "prod"})
 @Import({CoreConfig.class, SecurityConfig.class})
-public class WebApplicationConfig extends WebMvcConfigurerAdapter
+public class WebApplicationConfig implements WebMvcConfigurer
 {
     private static final Logger logger = LoggerFactory.getLogger(WebApplicationConfig.class);
 
-    @Autowired private ObjectMapper jsonObjectMapper;
-    @Autowired private ObjectMapper xmlObjectMapper;
+    private ObjectMapper jsonObjectMapper;
+    private ObjectMapper xmlObjectMapper;
+
+    @Autowired
+    public WebApplicationConfig(ObjectMapper jsonObjectMapper, ObjectMapper xmlObjectMapper) {
+        this.jsonObjectMapper = jsonObjectMapper;
+        this.xmlObjectMapper = xmlObjectMapper;
+    }
 
     @PostConstruct
     public void init() {

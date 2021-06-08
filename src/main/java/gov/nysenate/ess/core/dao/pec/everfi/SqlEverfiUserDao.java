@@ -4,6 +4,7 @@ import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.model.pec.everfi.EverfiUserIDs;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
@@ -18,11 +19,17 @@ public class SqlEverfiUserDao extends SqlBaseDao implements EverfiUserDao {
 
     public EverfiUserIDs getEverfiUserIDsWithEmpID(int empID) {
         try {
-            return localNamedJdbc.queryForObject(
+            List<EverfiUserIDs> everfiUserIDsList =  localNamedJdbc.query(
                     SELECT_EMP_BY_EMP_ID.getSql(schemaMap()),
                     new MapSqlParameterSource("emp_id", empID),
                     everfiUserIDsRowMapper
             );
+            if (everfiUserIDsList.isEmpty() || everfiUserIDsList == null) {
+                throw new IncorrectResultSizeDataAccessException(0);
+            }
+            else {
+                return everfiUserIDsList.get(0);
+            }
         }
         catch (EmptyResultDataAccessException e) {
             return null;
