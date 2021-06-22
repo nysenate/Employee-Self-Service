@@ -9,6 +9,7 @@ import gov.nysenate.ess.core.dao.base.DbVendor;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
@@ -16,6 +17,7 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Month;
+import java.util.List;
 import java.util.Map;
 
 @Repository
@@ -56,8 +58,14 @@ public class SqlGsaBatchResponseDao extends SqlBaseDao implements GsaBatchRespon
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("zipcode", gsaResponseId.getZipcode())
                 .addValue("fiscalYear", gsaResponseId.getFiscalYear());
-        return localNamedJdbc.queryForObject(SqlGsaBatchResponseQuery.GET_GSA_DATA.getSql(), params,
+        List<GsaResponse> gsaResponseList = localNamedJdbc.query(SqlGsaBatchResponseQuery.GET_GSA_DATA.getSql(), params,
                 new GsaInfoRowMapper());
+        if (gsaResponseList.isEmpty() || gsaResponseList == null) {
+            throw new IncorrectResultSizeDataAccessException(0);
+        }
+        else {
+            return gsaResponseList.get(0);
+        }
     }
 
     private enum SqlGsaBatchResponseQuery implements BasicSqlQuery {

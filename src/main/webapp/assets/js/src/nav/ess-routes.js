@@ -37,6 +37,10 @@ essApp.config(function ($routeProvider, $locationProvider) {
         templateUrl: ctxPath + '/template/myinfo/personnel/legethics'
     });
 
+    $routeProvider.when(ctxPath + '/myinfo/personnel/todo/ethicscourse/:taskId', {
+        templateUrl: ctxPath + '/template/myinfo/personnel/ethicscourse'
+    });
+
     $routeProvider.when(ctxPath + '/myinfo/personnel/todo/video/:videoId', {
         templateUrl: ctxPath + '/template/myinfo/personnel/pec-vid-view'
     });

@@ -12,10 +12,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.StrSubstitutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -68,8 +71,22 @@ public class SqlEmpTransactionDao extends SqlBaseDao implements EmpTransactionDa
     @Override
     public LocalDateTime getMaxUpdateDateTime() {
         Map<String, String> schemaMap = schemaMap();
-        return DateUtils.getLocalDateTime(
-            remoteJdbc.queryForObject(SqlEmpTransactionQuery.GET_MAX_UPDATE_DATE_TIME_SQL.getSql(schemaMap),  Timestamp.class));
+
+        List<String> timestamps = remoteJdbc.query(SqlEmpTransactionQuery.GET_MAX_UPDATE_DATE_TIME_SQL.getSql(schemaMap), (rs, rowNum) -> rs.getString("MAX_DTTXNUPDATE"));
+        if (timestamps.isEmpty()) {
+            throw new IncorrectResultSizeDataAccessException(0);
+        }
+        else {
+            try {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
+                Date parsedDate = dateFormat.parse(timestamps.get(0));
+                Timestamp timestamp = new java.sql.Timestamp(parsedDate.getTime());
+                return DateUtils.getLocalDateTime( timestamp );
+            }
+            catch ( ParseException e ) {
+                return null;
+            }
+        }
     }
 
     @Override

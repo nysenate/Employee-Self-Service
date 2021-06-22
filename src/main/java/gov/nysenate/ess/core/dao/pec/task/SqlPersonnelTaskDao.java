@@ -6,6 +6,7 @@ import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
 import gov.nysenate.ess.core.model.pec.everfi.EverfiAssignmentID;
 import gov.nysenate.ess.core.model.pec.everfi.EverfiContentID;
 import gov.nysenate.ess.core.model.pec.video.PersonnelTaskAssignmentGroup;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
@@ -25,11 +26,19 @@ public class SqlPersonnelTaskDao extends SqlBaseDao implements PersonnelTaskDao 
 
     @Override
     public PersonnelTask getPersonnelTask(int taskId) {
-        return localNamedJdbc.queryForObject(
+
+        List<PersonnelTask> personnelTasks = localNamedJdbc.query(
                 SELECT_TASK_BY_ID.getSql(schemaMap()),
                 new MapSqlParameterSource("taskId", taskId),
                 taskRowMapper
         );
+
+        if (personnelTasks.isEmpty() || personnelTasks == null) {
+            throw new IncorrectResultSizeDataAccessException(0);
+        }
+        else {
+            return personnelTasks.get(0);
+        }
     }
 
 

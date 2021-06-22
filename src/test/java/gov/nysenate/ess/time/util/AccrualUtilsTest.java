@@ -25,7 +25,7 @@ public class AccrualUtilsTest {
 
     @Test
     public void testRoundAccrualValue() throws Exception {
-        BigDecimal roundedValue = SICK_VAC_INCREMENT.multiply(new BigDecimal(51));
+        BigDecimal roundedValue = SICK_VAC_INCREMENT.multiply(new BigDecimal(26));
 
         assertTrue(roundedValue.compareTo(roundSickVacHours(roundedValue)) == 0);
 
@@ -33,7 +33,7 @@ public class AccrualUtilsTest {
 
         BigDecimal unRoundedValue = roundedValue.add(lessThanAccInc);
 
-        BigDecimal expectedRound = roundedValue.add(SICK_VAC_INCREMENT);
+        BigDecimal expectedRound = new BigDecimal(6.5);
 
         assertTrue(expectedRound.compareTo(roundSickVacHours(unRoundedValue)) == 0);
     }

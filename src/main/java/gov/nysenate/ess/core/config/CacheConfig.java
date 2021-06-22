@@ -16,6 +16,8 @@ import org.springframework.cache.interceptor.SimpleKeyGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.Objects;
+
 import static net.sf.ehcache.config.SizeOfPolicyConfiguration.MaxDepthExceededBehavior.CONTINUE;
 
 @Configuration
@@ -44,7 +46,6 @@ public class CacheConfig implements CachingConfigurer
         config.setMaxBytesLocalHeap(cacheMaxHeapSize + "M");
         config.addDefaultCache(cacheConfiguration);
         config.sizeOfPolicy(sizeOfConfig);
-        config.setUpdateCheck(false);
 
         return net.sf.ehcache.CacheManager.newInstance(config);
     }
@@ -56,7 +57,7 @@ public class CacheConfig implements CachingConfigurer
         logger.info("{}", cacheManager.getConfiguration().getSizeOfPolicyConfiguration().getMaxDepth());
 
         EhCacheCacheManager ehCacheCacheManager = new EhCacheCacheManager(cacheManager);
-        logger.info("{}", ehCacheCacheManager.getCacheManager().getConfiguration().getSizeOfPolicyConfiguration().getMaxDepth());
+        logger.info("{}", Objects.requireNonNull(ehCacheCacheManager.getCacheManager()).getConfiguration().getSizeOfPolicyConfiguration().getMaxDepth());
         return ehCacheCacheManager;
     }
 

@@ -51,16 +51,19 @@ public class EverfiUserService {
     @Value("${pec.everfi.bad.email.report.enabled:false}")
     private boolean everfiBadEmailReportEnabled;
 
+    private List<String> everfiReportEmails;
+
 
     @Autowired
     public EverfiUserService(EverfiApiClient everfiApiClient, EmployeeDao employeeDao, EverfiUserDao everfiUserDao,
-                             SendMailService sendMailService, EverfiCategoryService categoryService) {
+                             SendMailService sendMailService, EverfiCategoryService categoryService, @Value("${everfi.report.email}") String everfiReportEmailList) {
         this.everfiApiClient = everfiApiClient;
         this.employeeDao = employeeDao;
         this.everfiUserDao = everfiUserDao;
         this.sendMailService = sendMailService;
         this.categoryService = categoryService;
         this.ignoredEverfiUserIDs = everfiUserDao.getIgnoredEverfiUserIDs();
+        this.everfiReportEmails = Arrays.asList(everfiReportEmailList.replaceAll(" ","").split(","));
     }
 
     @Scheduled(cron = "${scheduler.everfi.user.update.cron}")
@@ -79,6 +82,9 @@ public class EverfiUserService {
 
         try {
             List<Employee> inactiveEmployees = getRecentlyInactiveEmployees();
+
+            sendEmailToEverfiReportEmails("Employees to be Inactivated",
+                    generateEmployeeListString(inactiveEmployees) + "\n\n Some of these users above may have already been deactivated prior to this run");
 
             for (Employee employee : inactiveEmployees) {
                 changeActiveStatusForUserWithEmpID(employee.getEmployeeId(), false);
@@ -131,6 +137,14 @@ public class EverfiUserService {
             EverfiUser everfiUser = everfiSingleUserRequest.getUser();
 
             if (!everfiUser.isActive() && !activeStatus) {
+                try {
+                    //Ensure that the employees are actually deactivated
+                    everfiUserDao.insertIgnoredID(everfiUser.getUuid(), everfiUser.getEmployeeId());
+                    this.ignoredEverfiUserIDs = everfiUserDao.getIgnoredEverfiUserIDs();
+                }
+                catch (DuplicateKeyException e) {
+                 // Do nothing, it means they are already deactivated, and ignored
+                }
                 return; //No need to deactivate someone who is deactivated
             }
 
@@ -161,6 +175,10 @@ public class EverfiUserService {
                         null, nowActiveUser.getUserCategoryLabels(), true);
                 EverfiUser changedEmailUser = changeEmailRequest.updateUser();
 
+                //remove from ignored users
+                everfiUserDao.removeIgnoredID(everfiUser.getUuid());
+                this.ignoredEverfiUserIDs = everfiUserDao.getIgnoredEverfiUserIDs();
+
             }
             if (!activeStatus) {
                 logger.info("Beginning deactivation of " + everfiUser.getFirstName() + " " + everfiUser.getLastName() + " " + everfiUser.getUuid());
@@ -176,6 +194,9 @@ public class EverfiUserService {
                         null, changedEmailUser.getUserCategoryLabels(), false);
                 activationStatusRequest.updateUser();
 
+                //send id to dao to ignore
+                everfiUserDao.insertIgnoredID(everfiUser.getUuid(), everfiUser.getEmployeeId());
+                this.ignoredEverfiUserIDs = everfiUserDao.getIgnoredEverfiUserIDs();
             }
         }
         catch (Exception e) {
@@ -271,6 +292,12 @@ public class EverfiUserService {
         logger.info("Completed Everfi ID import");
     }
 
+    private void sendEmailToEverfiReportEmails(String subject, String html) {
+        for (String email : this.everfiReportEmails) {
+            sendEmail(email, subject, html);
+        }
+    }
+
     private void sendEmail(String to, String subject, String html) {
         try {
             MimeMessage message = sendMailService.newHtmlMessage(to.trim(),
@@ -305,6 +332,18 @@ public class EverfiUserService {
         }
     }
 
+    private String generateEmployeeListString(List<Employee> emps) {
+        String employeeListDetails = "";
+        for (Employee employee: emps) {
+            employeeListDetails = employeeListDetails + " NAME: " + employee.getFullName() + " EMAIL: " + employee.getEmail() + " EMPID: " + employee.getEmployeeId() + "<br>\n";
+        }
+
+        if (employeeListDetails.isEmpty()) {
+            employeeListDetails = "There are no employees to perform this operation on";
+        }
+        return employeeListDetails;
+    }
+
     /**
      * Adds the given Employees to Everfi.
      * These employees should not already exist in Everfi. There are separate methods for updating employee data.
@@ -313,8 +352,14 @@ public class EverfiUserService {
      */
     public void addEmployeesToEverfi(List<Employee> emps) {
 
+        //send email to Everfi report email for new employees
+        sendEmailToEverfiReportEmails("New Users Added to Everfi", generateEmployeeListString(emps));
+
         try {
             for (Employee emp : emps) {
+                if (emp.getEmail().isEmpty() || emp.getEmail() == null) {
+                    continue;
+                }
                 logger.info("Adding new employee to Everfi " + emp.getFullName() + ", " + emp.getEmail() + ", " + emp.getEmployeeId());
                 EverfiAddUserRequest addUserRequest = new EverfiAddUserRequest(
                         everfiApiClient, emp.getEmployeeId(), emp.getFirstName(), emp.getLastName(),

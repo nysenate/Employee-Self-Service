@@ -6,6 +6,8 @@ import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.supply.item.LineItem;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -396,7 +398,11 @@ public final class Requisition {
         }
 
         public Builder withModifiedDateTime(LocalDateTime modifiedDateTime) {
-            this.modifiedDateTime = modifiedDateTime;
+            // Modified date time significant units must be consistent because it is used in pessimistic locking.
+            // LocalDateTime precision defaults to the system clock, which can be different in different environments.
+            // Changes in the Java version can also alter the precision.
+            // This rounds to micro seconds which should be supported by all environments and versions of java.
+            this.modifiedDateTime = modifiedDateTime == null ? null : modifiedDateTime.truncatedTo(ChronoUnit.MICROS);
             return this;
         }
 

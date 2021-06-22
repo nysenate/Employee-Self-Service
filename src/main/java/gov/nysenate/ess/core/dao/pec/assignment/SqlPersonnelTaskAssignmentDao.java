@@ -5,6 +5,7 @@ import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
@@ -32,11 +33,17 @@ public class SqlPersonnelTaskAssignmentDao extends SqlBaseDao implements Personn
     public PersonnelTaskAssignment getTaskForEmp(int empId, int taskId)
             throws PersonnelTaskAssignmentNotFoundEx {
         try {
-            return localNamedJdbc.queryForObject(
+            List<PersonnelTaskAssignment> personnelTaskAssignments = localNamedJdbc.query(
                     SELECT_SPECIFIC_TASK_FOR_EMP.getSql(schemaMap()),
                     getEmpIdTaskIdParams(empId, taskId),
                     patRowMapper
             );
+            if (personnelTaskAssignments.isEmpty() || personnelTaskAssignments == null) {
+                throw new IncorrectResultSizeDataAccessException(0);
+            }
+            else {
+                return personnelTaskAssignments.get(0);
+            }
         } catch (EmptyResultDataAccessException ex) {
             throw new PersonnelTaskAssignmentNotFoundEx(empId, taskId);
         }
