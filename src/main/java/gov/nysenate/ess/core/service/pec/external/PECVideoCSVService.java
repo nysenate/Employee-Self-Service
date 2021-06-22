@@ -86,10 +86,10 @@ public class PECVideoCSVService {
                               EmpTransactionService transactionService,
                               ResponsibilityHeadDao rchDao,
                               @Value("${data.dir:}") String dataDir,
-                              @Value("${pec.import.ethics_2018_video_task_id:}") int ethicsVid2018Id,
-                              @Value("${pec.import.harassment_2019_video_task_id:}") int harrassmentVid2019Id,
-                              @Value("${pec.import.ethics_2020_video_task_id:}") int ethicsVid2020Id,
-                              @Value("${pec.import.ethics_2021_video_task_id:}") int ethicsVid2021Id) {
+                              @Value("${pec.import.ethics_2018_video_task_id:0}") int ethicsVid2018Id,
+                              @Value("${pec.import.harassment_2019_video_task_id:0}") int harrassmentVid2019Id,
+                              @Value("${pec.import.ethics_2020_video_task_id:0}") int ethicsVid2020Id,
+                              @Value("${pec.import.ethics_2021_video_task_id:0}") int ethicsVid2021Id) {
         this.employeeDao = employeeDao;
         this.personnelTaskAssignmentDao = personnelTaskAssignmentDao;
         this.employeeInfoService = employeeInfoService;
