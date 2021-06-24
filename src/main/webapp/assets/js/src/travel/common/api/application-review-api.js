@@ -2,25 +2,25 @@ angular.module('essTravel').factory('ApplicationReviewApi', [
     '$resource', 'appProps', 'modals', 'RestErrorService',
     function ($resource, appProps, modals, restErrorService) {
 
-        var pendingReviewsApi = $resource(appProps.apiPath + '/travel/review/pending.json',
+        var pendingReviewsApi = $resource(appProps.apiPath + '/travel/review/pending',
                                           {},
                                           {get: {method: 'GET', cancellable: true}});
-        var reviewHistoryApi = $resource(appProps.apiPath + '/travel/review/history.json',
+        var reviewHistoryApi = $resource(appProps.apiPath + '/travel/review/history',
                                          {},
                                          {get: {method: 'GET', cancellable: true}});
-        var approveApi = $resource(appProps.apiPath + '/travel/review/:appReviewId/approve.json',
+        var approveApi = $resource(appProps.apiPath + '/travel/review/:appReviewId/approve',
                                    {appReviewId: '@appReviewId'},
                                    {save: {method: 'POST', cancellable: true}});
-        var disapproveApi = $resource(appProps.apiPath + '/travel/review/:appReviewId/disapprove.json',
+        var disapproveApi = $resource(appProps.apiPath + '/travel/review/:appReviewId/disapprove',
                                       {appReviewId: '@appReviewId'},
                                       {save: {method: 'POST', cancellable: true}});
         var editReviewApi = $resource(appProps.apiPath + '/travel/review/:appReviewId',
                                       {appReviewId: '@appReviewId'},
                                       {save: {method: 'POST', cancellable: true}});
-        var sharedReviewApi = $resource(appProps.apiPath + '/travel/review/shared.json',
+        var sharedReviewApi = $resource(appProps.apiPath + '/travel/review/shared',
                                         {},
                                         {get: {method: 'GET', cancellable: true}});
-        var reconcileReviewApi = $resource(appProps.apiPath + '/travel/review/reconcile.json');
+        var reconcileReviewApi = $resource(appProps.apiPath + '/travel/review/reconcile');
 
         var appReviewApi = {};
 
