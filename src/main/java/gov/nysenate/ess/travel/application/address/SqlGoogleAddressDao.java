@@ -9,6 +9,8 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public class SqlGoogleAddressDao extends SqlBaseDao {
 
@@ -16,7 +18,13 @@ public class SqlGoogleAddressDao extends SqlBaseDao {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("googleAddressId", googleAddressId);
         String sql = SqlGoogleAddressQuery.SELECT_ADDRESS.getSql(schemaMap());
-        return localNamedJdbc.queryForObject(sql, params, new GoogleAddressRowMapper());
+        List<GoogleAddress> googleAddressList = localNamedJdbc.query(sql, params, new GoogleAddressRowMapper());
+        if (googleAddressList.isEmpty() || googleAddressList == null) {
+            return null;
+        }
+        else {
+            return googleAddressList.get(0);
+        }
     }
 
     /**
@@ -40,7 +48,13 @@ public class SqlGoogleAddressDao extends SqlBaseDao {
 
     private GoogleAddress selectMatchingAddress(GoogleAddress address) {
         String sql = SqlGoogleAddressQuery.SELECT_MATCHING_ADDRESS.getSql(schemaMap());
-        return localNamedJdbc.queryForObject(sql, googleAddressParams(address), new GoogleAddressRowMapper());
+        List<GoogleAddress> googleAddressList = localNamedJdbc.query(sql, googleAddressParams(address), new GoogleAddressRowMapper());
+        if (googleAddressList.isEmpty() || googleAddressList == null) {
+            throw new IncorrectResultSizeDataAccessException(0);
+        }
+        else {
+            return googleAddressList.get(0);
+        }
     }
 
     // Attempts to insert the address. Returns the number of rows inserted. Updates the GoogleAddress with the auto generated database id.

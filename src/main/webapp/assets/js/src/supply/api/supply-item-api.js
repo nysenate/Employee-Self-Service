@@ -2,9 +2,9 @@ angular.module('essSupply').factory('SupplyItemApi', [
     '$resource', 'appProps', 'modals', 'RestErrorService',
     function ($resource, appProps, modals, RestErrorService) {
 
-        var itemsApi = $resource(appProps.apiPath + '/supply/items.json');
-        var itemApi = $resource(appProps.apiPath + '/supply/items/:itemId.json', {itemId: '@itemId'});
-        var itemsForLocApi = $resource(appProps.apiPath + '/supply/items/orderable/:locId.json', {locId: '@locId'});
+        var itemsApi = $resource(appProps.apiPath + '/supply/items');
+        var itemApi = $resource(appProps.apiPath + '/supply/items/:itemId', {itemId: '@itemId'});
+        var itemsForLocApi = $resource(appProps.apiPath + '/supply/items/orderable/:locId', {locId: '@locId'});
 
         function item(itemId) {
             return itemApi.get({itemId: itemId}).$promise

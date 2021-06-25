@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
@@ -31,7 +32,13 @@ public class SqlLocationDao extends SqlBaseDao {
                 .addValue("locType", locId.getTypeAsString());
         String sql = SqlLocationQuery.GET_BY_CODE_AND_TYPE.getSql(schemaMap());
         LocationRowMapper locationRowMapper = new LocationRowMapper("LOC_", "RCTRHD_", locationCountyDao);
-        return remoteNamedJdbc.queryForObject(sql, params, locationRowMapper);
+        List<Location> locations = remoteNamedJdbc.query(sql, params, locationRowMapper);
+        if (locations.isEmpty() || locations == null) {
+            throw new IncorrectResultSizeDataAccessException(0);
+        }
+        else {
+            return locations.get(0);
+        }
     }
 
     /**

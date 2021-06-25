@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -29,6 +30,8 @@ import java.math.BigInteger;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -88,8 +91,23 @@ public class SqlTimeRecordDao extends SqlBaseDao implements TimeRecordDao
     /** {@inheritDoc} */
     @Override
     public LocalDateTime getLatestUpdateTime() {
-        return DateUtils.getLocalDateTime(
-                remoteJdbc.queryForObject(SqlTimeRecordQuery.GET_LAST_UPDATE_DATE_TIME.getSql(schemaMap()), Timestamp.class));
+
+        List<Object> timestamps = remoteJdbc.query(SqlTimeRecordQuery.GET_LAST_UPDATE_DATE_TIME.getSql(schemaMap()), (rs, rowNum) -> rs.getString("MAX_DTTXNUPDATE"));
+
+        if (timestamps.isEmpty()) {
+            throw new IncorrectResultSizeDataAccessException(0);
+        }
+        else {
+            try {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
+                Date parsedDate = dateFormat.parse( (String) timestamps.get(0));
+                Timestamp timestamp = new java.sql.Timestamp(parsedDate.getTime());
+                return DateUtils.getLocalDateTime( timestamp );
+            }
+            catch ( ParseException e ) {
+                return null;
+            }
+        }
     }
 
     /** {@inheritDoc} */
@@ -203,8 +221,14 @@ public class SqlTimeRecordDao extends SqlBaseDao implements TimeRecordDao
     @Override
     public boolean hasActiveEmployeeRecord(int supId) {
         MapSqlParameterSource params = new MapSqlParameterSource("supId", supId);
-        Integer activeRecordCount = remoteNamedJdbc.queryForObject(SqlTimeRecordQuery.GET_SUP_TREC_COUNT.getSql(schemaMap()),
-                params, Integer.class);
+        Integer activeRecordCount = 0;
+        List<Integer> activeRecordCounts = remoteNamedJdbc.query(SqlTimeRecordQuery.GET_SUP_TREC_COUNT.getSql(schemaMap()), params, (rs, rowNum) -> rs.getInt("record_count"));
+        if (activeRecordCounts.isEmpty() || activeRecordCounts == null) {
+
+        }
+        else {
+            activeRecordCount = activeRecordCounts.get(0);
+        }
         return activeRecordCount > 0;
     }
 
@@ -287,17 +311,36 @@ public class SqlTimeRecordDao extends SqlBaseDao implements TimeRecordDao
         MapSqlParameterSource params = getTimeRecordParams(record);
         // Attempt to find existing record for employee with matching begin date
         // If that record exists, use that record id
+        TimeRecordIDRowCallbackHandler timeRecordIDRowCallbackHandler = new TimeRecordIDRowCallbackHandler();
         try {
-            Map<String, Object> resultMap =
-                    remoteNamedJdbc.queryForMap(GET_EXISTING_TREC_ID.getSql(schemaMap()), params);
+            remoteNamedJdbc.query(GET_EXISTING_TREC_ID.getSql(schemaMap()), params, timeRecordIDRowCallbackHandler);
+            Map<String, Object> resultMap = timeRecordIDRowCallbackHandler.getResultMap();
             TimeRecordStatus status = TimeRecordStatus.valueOfCode(String.valueOf(resultMap.get("CDTSSTAT")));
-            BigInteger id = ((BigDecimal) resultMap.get("NUXRTIMESHEET")).toBigInteger();
+            BigInteger id = ( (BigDecimal) resultMap.get("NUXRTIMESHEET")).toBigInteger();
             if (status == APPROVED_PERSONNEL) {
                 throw new IllegalRecordModificationEx(id, "Existing record is approved by personnel");
             }
             return id;
         } catch (EmptyResultDataAccessException ex) {
             return null;
+        }
+    }
+
+    private static class TimeRecordIDRowCallbackHandler implements RowCallbackHandler {
+        private RemoteRecordRowMapper remoteRecordRowMapper = new RemoteRecordRowMapper();
+        private RemoteEntryRowMapper remoteEntryRowMapper = new RemoteEntryRowMapper("ENT_");
+        Map<String, Object> resultMap = new HashMap<>();
+
+        @Override
+        public void processRow(ResultSet rs) throws SQLException {
+            BigDecimal recordId = rs.getBigDecimal("NUXRTIMESHEET");
+            String CDTSTAT = rs.getString("CDTSSTAT");
+            resultMap.put("NUXRTIMESHEET", recordId);
+            resultMap.put("CDTSSTAT", CDTSTAT);
+        }
+
+        public Map<String, Object> getResultMap() {
+            return resultMap;
         }
     }
 

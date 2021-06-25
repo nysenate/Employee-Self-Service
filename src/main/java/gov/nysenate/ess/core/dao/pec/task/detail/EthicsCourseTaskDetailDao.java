@@ -6,12 +6,14 @@ import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
 import gov.nysenate.ess.core.model.pec.ethics.EthicsCourseTask;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  * {@link PersonnelTaskDetailDao} for {@link gov.nysenate.ess.core.model.pec.ethics.EthicsCourseTask}s
@@ -26,11 +28,17 @@ public class EthicsCourseTaskDetailDao extends SqlBaseDao implements PersonnelTa
 
     @Override
     public EthicsCourseTask getTaskDetails(PersonnelTask task) {
-        return localNamedJdbc.queryForObject(
+        List<EthicsCourseTask> ethicsCourseTaskList = localNamedJdbc.query(
                 Query.SELECT_ETHICS_COURSE.getSql(schemaMap()),
                 new MapSqlParameterSource("taskId", task.getTaskId()),
                 new EthicsCourseRowMapper(task)
         );
+        if (ethicsCourseTaskList.isEmpty() || ethicsCourseTaskList == null) {
+            throw new IncorrectResultSizeDataAccessException(0);
+        }
+        else {
+            return ethicsCourseTaskList.get(0);
+        }
     }
 
     private static class EthicsCourseRowMapper implements RowMapper<EthicsCourseTask> {

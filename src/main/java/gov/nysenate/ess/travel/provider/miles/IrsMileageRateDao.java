@@ -4,6 +4,7 @@ import gov.nysenate.ess.core.dao.base.BaseRowMapper;
 import gov.nysenate.ess.core.dao.base.BasicSqlQuery;
 import gov.nysenate.ess.core.dao.base.DbVendor;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
@@ -12,6 +13,7 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.List;
 
 @Repository
 public class IrsMileageRateDao extends SqlBaseDao {
@@ -35,7 +37,13 @@ public class IrsMileageRateDao extends SqlBaseDao {
         MapSqlParameterSource params = new MapSqlParameterSource("date", toDate(startDate));
         String sql = SqlIrsRateQuery.GET_MILEAGE_RATE.getSql(schemaMap());
         IrsMileageRateDao.MileageRateMapper mapper = new MileageRateMapper();
-        return localNamedJdbc.queryForObject(sql, params, mapper);
+        List<MileageRate> mileageRateList = localNamedJdbc.query(sql, params, mapper);
+        if (mileageRateList.isEmpty() || mileageRateList == null) {
+            throw new IncorrectResultSizeDataAccessException(0);
+        }
+        else {
+            return mileageRateList.get(0);
+        }
     }
 
     private enum SqlIrsRateQuery implements BasicSqlQuery {

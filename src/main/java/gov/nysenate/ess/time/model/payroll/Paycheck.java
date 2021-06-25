@@ -4,14 +4,16 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.TreeSet;
 
-public class Paycheck
+public class Paycheck implements Comparable<Paycheck>
 {
     private final String payPeriod;
     private final LocalDate checkDate;
     private final BigDecimal grossIncome;
     private final BigDecimal netIncome;
-    private List<Deduction> deductions;
+    private TreeSet<Deduction> deductions;
     /** Amount payed via Direct Deposit. */
     private final BigDecimal directDepositAmount;
     /** Amount payed via check. */
@@ -25,7 +27,7 @@ public class Paycheck
         this.netIncome = netIncome;
         this.directDepositAmount = directDepositAmount;
         this.checkAmount = checkAmount;
-        this.deductions = new ArrayList<>();
+        this.deductions = new TreeSet<>();
     }
 
     /** Functional Methods */
@@ -36,6 +38,18 @@ public class Paycheck
 
     public BigDecimal getTotalDeductions() {
         return deductions.stream().map(Deduction::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    /**
+     * Returns the deduction from the paycheck with the given code, or null if no deduction matches.
+     * @param code
+     * @return
+     */
+    public Deduction getDeduction(int code) {
+        return deductions.stream()
+                .filter(d -> d.getCode() == code)
+                .findFirst()
+                .orElse(null);
     }
 
     /** Basic Getters */
@@ -56,7 +70,7 @@ public class Paycheck
         return netIncome;
     }
 
-    public List<Deduction> getDeductions() {
+    public TreeSet<Deduction> getDeductions() {
         return deductions;
     }
 
@@ -68,4 +82,34 @@ public class Paycheck
         return checkAmount;
     }
 
+    @Override
+    public String toString() {
+        return "Paycheck{" +
+                "payPeriod='" + payPeriod + '\'' +
+                ", checkDate=" + checkDate +
+                ", grossIncome=" + grossIncome +
+                ", netIncome=" + netIncome +
+                ", deductions=" + deductions +
+                ", directDepositAmount=" + directDepositAmount +
+                ", checkAmount=" + checkAmount +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Paycheck paycheck = (Paycheck) o;
+        return Objects.equals(checkDate, paycheck.checkDate);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(checkDate);
+    }
+
+    @Override
+    public int compareTo(Paycheck o) {
+        return this.getCheckDate().compareTo(o.getCheckDate());
+    }
 }

@@ -24,13 +24,18 @@ import java.util.Map;
 @EnableTransactionManagement
 @Configuration
 public class DatabaseConfig {
-    private static final Logger logger = LoggerFactory.getLogger(DatabaseConfig.class);
 
     public static final String localTxManager = "localTxManager";
     public static final String remoteTxManager = "remoteTxManager";
 
-    @Autowired ComboPooledDataSource localDataSource;
-    @Autowired ComboPooledDataSource remoteDataSource;
+    ComboPooledDataSource localDataSource;
+    ComboPooledDataSource remoteDataSource;
+
+    @Autowired
+    public DatabaseConfig (ComboPooledDataSource localDataSource, ComboPooledDataSource remoteDataSource) {
+        this.localDataSource = localDataSource;
+        this.remoteDataSource = remoteDataSource;
+    }
 
     @Bean(name = "localJdbcTemplate")
     public JdbcTemplate localJdbcTemplate() {

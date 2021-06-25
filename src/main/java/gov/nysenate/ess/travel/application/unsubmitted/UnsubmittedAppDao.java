@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -36,8 +37,15 @@ public class UnsubmittedAppDao extends SqlBaseDao {
                 .addValue("userId", userId);
         String sql = SqlUnsubmittedAppQuery.FIND.getSql(schemaMap());
         try {
-            String appJson = localNamedJdbc.queryForObject(sql, params, new UnsubmittedAppRowMapper());
-            return Optional.of(deserializeAppView(appJson));
+            String appJson = "";
+            List<String> jsons = localNamedJdbc.query(sql, params, new UnsubmittedAppRowMapper());
+            if (jsons.isEmpty() || jsons == null) {
+                return Optional.empty();
+            }
+            else {
+                appJson = jsons.get(0);
+                return Optional.of(deserializeAppView(appJson));
+            }
         } catch (IncorrectResultSizeDataAccessException ex) {
             return Optional.empty();
         }

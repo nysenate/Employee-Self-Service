@@ -141,7 +141,7 @@
     <postgres.driver.version>42.2.19</postgres.driver.version>
     <slf4j.version>1.7.30</slf4j.version>
     <log4j.version>2.14.1</log4j.version>
-    <spring.version>4.3.30.RELEASE</spring.version>
+    <spring.version>5.3.7</spring.version>
     <spring.ldap.version>2.3.3.RELEASE</spring.ldap.version>
     <tomcat.servlet.version>9.0.45</tomcat.servlet.version>
     <woodstox.version>4.4.1</woodstox.version>
@@ -213,14 +213,15 @@
     <!-- Spring LDAP -->
     <dependency>
       <groupId>org.springframework.ldap</groupId>
-      <artifactId>spring-ldap-core</artifactId>
-      <version>${spring.ldap.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.springframework.ldap</groupId>
       <artifactId>spring-ldap-core-tiger</artifactId>
       <version>${spring.ldap.version}</version>
+      <exclusions>
+        <exclusion>
+<!--      spring-ldap depends on an old version of spring-tx. To avoid a version conflict, exclude it here and use the one packaged with spring-jdbc-->
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-tx</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <!-- Spring JDBC -->
