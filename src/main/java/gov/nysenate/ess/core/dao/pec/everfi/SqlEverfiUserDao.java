@@ -25,7 +25,7 @@ public class SqlEverfiUserDao extends SqlBaseDao implements EverfiUserDao {
                     everfiUserIDsRowMapper
             );
             if (everfiUserIDsList.isEmpty() || everfiUserIDsList == null) {
-                throw new IncorrectResultSizeDataAccessException(0);
+                return null;
             }
             else {
                 return everfiUserIDsList.get(0);
