@@ -44,14 +44,6 @@ public class SqlEmployeeDao extends SqlBaseDao implements EmployeeDao
         try {
             employee = remoteNamedJdbc.queryForObject(SqlEmployeeQuery.GET_EMP_BY_ID_SQL.getSql(schemaMap()), params, getEmployeeRowMapper());
             setEmployeeDepartment(employee);
-//            List<Employee> employeeList = remoteNamedJdbc.query(SqlEmployeeQuery.GET_EMP_BY_ID_SQL.getSql(schemaMap()), params, getEmployeeRowMapper());
-//            if (employeeList.isEmpty()) {
-//                logger.warn("Retrieve employee {} error: {}", empId);
-//                throw new EmployeeNotFoundEx("No matching employee record for employee id: " + empId);
-//            }
-//            else {
-//                return employeeList.get(0);
-//            }
         }
         catch (DataRetrievalFailureException ex) {
             logger.warn("Retrieve employee {} error: {}", empId, ex.getMessage());
@@ -77,13 +69,6 @@ public class SqlEmployeeDao extends SqlBaseDao implements EmployeeDao
         try {
             employee = remoteNamedJdbc.queryForObject(SqlEmployeeQuery.GET_EMP_BY_EMAIL_SQL.getSql(schemaMap()), params, getEmployeeRowMapper());
             setEmployeeDepartment(employee);
-//            List<Employee> employees = remoteNamedJdbc.query(SqlEmployeeQuery.GET_EMP_BY_EMAIL_SQL.getSql(schemaMap()), params, getEmployeeRowMapper());
-//            if (employees.isEmpty() || employees == null)  {
-//                throw new EmployeeNotFoundEx("No matching employee record for email: " + email);
-//            }
-//            else {
-//                return employees.get(0);
-//            }
         }
         catch (DataRetrievalFailureException ex) {
             throw new EmployeeNotFoundEx("No matching employee record for email: " + email);

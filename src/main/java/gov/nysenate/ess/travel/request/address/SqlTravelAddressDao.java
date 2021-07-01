@@ -19,15 +19,6 @@ public class SqlTravelAddressDao extends SqlBaseDao {
                 .addValue("addressId", addressId);
         String sql = SqlTravelAddressQuery.SELECT_ADDRESS.getSql(schemaMap());
         return localNamedJdbc.queryForObject(sql, params, new TravelAddressRowMapper());
-//                .addValue("googleAddressId", googleAddressId);
-//        String sql = SqlGoogleAddressQuery.SELECT_ADDRESS.getSql(schemaMap());
-//        List<GoogleAddress> googleAddressList = localNamedJdbc.query(sql, params, new GoogleAddressRowMapper());
-//        if (googleAddressList.isEmpty() || googleAddressList == null) {
-//            return null;
-//        }
-//        else {
-//            return googleAddressList.get(0);
-//        }
     }
 
     /**
@@ -52,15 +43,6 @@ public class SqlTravelAddressDao extends SqlBaseDao {
     private TravelAddress selectMatchingAddress(TravelAddress address) {
         String sql = SqlTravelAddressQuery.SELECT_MATCHING_ADDRESS.getSql(schemaMap());
         return localNamedJdbc.queryForObject(sql, addressParams(address), new TravelAddressRowMapper());
-//    private GoogleAddress selectMatchingAddress(GoogleAddress address) {
-//        String sql = SqlGoogleAddressQuery.SELECT_MATCHING_ADDRESS.getSql(schemaMap());
-//        List<GoogleAddress> googleAddressList = localNamedJdbc.query(sql, googleAddressParams(address), new GoogleAddressRowMapper());
-//        if (googleAddressList.isEmpty() || googleAddressList == null) {
-//            throw new IncorrectResultSizeDataAccessException(0);
-//        }
-//        else {
-//            return googleAddressList.get(0);
-//        }
     }
 
     // Attempts to insert the address. Returns the number of rows inserted. Updates the address with the auto generated database id.
