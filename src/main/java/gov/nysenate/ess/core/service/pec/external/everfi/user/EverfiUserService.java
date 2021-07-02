@@ -69,12 +69,14 @@ public class EverfiUserService {
     @Scheduled(cron = "${scheduler.everfi.user.update.cron}")
     public void runUpdateMethods() {
         if (everfiSyncEnabled) {
-            //Inactivate employees on Everfi if any need to be inactivated
-            handleInactivatedEmployeesInEverfi();
+            logger.info("Beginning Everfi Sync");
             //Add new employees to Everfi
             addEmployeesToEverfi(getNewEmployeesToAddToEverfi());
+            //Inactivate employees on Everfi if any need to be inactivated
+            handleInactivatedEmployeesInEverfi();
             //Update our db with their UUID from Everfi
             getEverfiUserIds();
+            logger.info("Completed Everfi Sync");
         }
     }
 
@@ -352,12 +354,15 @@ public class EverfiUserService {
      */
     public void addEmployeesToEverfi(List<Employee> emps) {
 
+        logger.info("Beginning Everfi add employee process");
+
         //send email to Everfi report email for new employees
         sendEmailToEverfiReportEmails("New Users Added to Everfi", generateEmployeeListString(emps));
 
         try {
             for (Employee emp : emps) {
                 if (emp.getEmail().isEmpty() || emp.getEmail() == null) {
+                    logger.info("Skipping new employee to Everfi " + emp.getFullName() + ", " + emp.getEmail() + ", " + emp.getEmployeeId());
                     continue;
                 }
                 logger.info("Adding new employee to Everfi " + emp.getFullName() + ", " + emp.getEmail() + ", " + emp.getEmployeeId());
@@ -375,9 +380,10 @@ public class EverfiUserService {
             }
         }
         catch (Exception e) {
-            logger.error("There was ana exception trying to add a new employee to Everfi");
+            logger.error("There was an exception trying to add a new employee to Everfi" + e);
         }
 
+        logger.info("Completed Everfi add employee process");
 
     }
 
