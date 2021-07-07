@@ -321,7 +321,7 @@ public class SqlTimeRecordDao extends SqlBaseDao implements TimeRecordDao
                 throw new IllegalRecordModificationEx(id, "Existing record is approved by personnel");
             }
             return id;
-        } catch (EmptyResultDataAccessException ex) {
+        } catch (EmptyResultDataAccessException | NullPointerException ex) {
             return null;
         }
     }
