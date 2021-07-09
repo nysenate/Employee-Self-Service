@@ -92,8 +92,9 @@ public final class AccrualUtils {
      * @return BigDecimal
      */
     private static BigDecimal roundAccrualValue(BigDecimal value, BigDecimal increment) {
+        value = value.setScale(4, RoundingMode.FLOOR);
         BigDecimal multiplier = BigDecimal.ONE.divide(increment, RoundingMode.HALF_UP);
-
+        multiplier = multiplier.setScale(4, RoundingMode.FLOOR);
         /// Below previously was:   .setScale(0, RoundingMode.CEILING)
         /// Issue was that accruals were not rounding correctly.  EX: Employee with Sick Accrual 2.250015 rounded to
         /// 2.5 with CEILING when it should have been 2.25..
@@ -101,7 +102,7 @@ public final class AccrualUtils {
         /// Personal, Work Time are only in .5 increments.
 
         return value.multiply(multiplier)
-                .setScale(0, RoundingMode.HALF_UP)
+                .setScale(0, RoundingMode.CEILING)
                 .divide(multiplier);
     }
 }
