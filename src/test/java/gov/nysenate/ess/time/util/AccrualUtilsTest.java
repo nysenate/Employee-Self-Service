@@ -33,7 +33,7 @@ public class AccrualUtilsTest {
 
         BigDecimal unRoundedValue = roundedValue.add(lessThanAccInc);
 
-        BigDecimal expectedRound = new BigDecimal(6.5);
+        BigDecimal expectedRound = new BigDecimal(6.75);
 
         assertTrue(expectedRound.compareTo(roundSickVacHours(unRoundedValue)) == 0);
     }
