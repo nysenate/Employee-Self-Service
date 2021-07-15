@@ -229,7 +229,11 @@ public class EverfiUserService {
                         everfiUserDao.getEverfiUserIDsWithEmpID(completeNewEmp.getEmployeeId());
 
                 if (potentialEverfiUserID == null) {
+                    logger.info(completeNewEmp.getFullName() + " " + completeNewEmp.getEmployeeId() + " has not been added to Everfi");
                     empsToAddToEverfi.add(completeNewEmp);
+                }
+                else {
+                    logger.info(completeNewEmp.getFullName() + " " + completeNewEmp.getEmployeeId() + " will be skipped. They have been added to Everfi");
                 }
 
             }
