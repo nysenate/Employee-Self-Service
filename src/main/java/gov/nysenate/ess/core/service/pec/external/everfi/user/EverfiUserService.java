@@ -104,7 +104,7 @@ public class EverfiUserService {
             EverfiUserIDs everfiUserID = everfiUserDao.getEverfiUserIDsWithEmpID(employee.getEmployeeId());
             if (everfiUserID == null) {
                 logger.warn( "Couldn't change active status for user. " +
-                        "Submitted EMP ID " + submittedEmpID + " does not match any employee in the Everfi records table");
+                        "Submitted EMP ID " + submittedEmpID + " does not match any employee in the Everfi UUID records table");
                 return;
             }
             changeActiveStatusForUser(everfiUserID, status);
@@ -202,7 +202,7 @@ public class EverfiUserService {
             }
         }
         catch (Exception e) {
-            logger.error("There was an exception when trying to change the active status of a user " + everfiUserID);
+            logger.error("There was an exception when trying to change the active status of a user " + everfiUserID.getEverfiUUID() + " to an active status of " + activeStatus);
         }
     }
 
@@ -365,8 +365,8 @@ public class EverfiUserService {
 
         try {
             for (Employee emp : emps) {
-                if (emp.getEmail().isEmpty() || emp.getEmail() == null) {
-                    logger.info("Skipping new employee to Everfi " + emp.getFullName() + ", " + emp.getEmail() + ", " + emp.getEmployeeId());
+                if (emp.getEmail() == null | emp.getEmail().isEmpty() ) {
+                    logger.info("Skipping new employee to Everfi. Their Email is null or empty" + emp.getFullName() + ", " + emp.getEmployeeId());
                     continue;
                 }
                 logger.info("Adding new employee to Everfi " + emp.getFullName() + ", " + emp.getEmail() + ", " + emp.getEmployeeId());
@@ -409,7 +409,7 @@ public class EverfiUserService {
                     if (empid.intValue() != 99999) {
                         everfiUserDao.insertEverfiUserIDs(UUID, empid);
                     } else {
-                        logger.warn("Everfi user with UUID " + UUID + " empid was improperly retrieved");
+                        logger.warn("Everfi user with UUID " + UUID + " empid " + empid + " was improperly retrieved");
                     }
                 } catch (DuplicateKeyException e) {
                     //Do nothing, it means we already have the user stored in the DB
