@@ -363,29 +363,30 @@ public class EverfiUserService {
         //send email to Everfi report email for new employees
         sendEmailToEverfiReportEmails("New Users Added to Everfi", generateEmployeeListString(emps));
 
-        try {
             for (Employee emp : emps) {
-                if (emp.getEmail() == null | emp.getEmail().isEmpty() ) {
-                    logger.info("Skipping new employee to Everfi. Their Email is null or empty" + emp.getFullName() + ", " + emp.getEmployeeId());
+
+                try {
+                    if (emp.getEmail() == null | emp.getEmail().isEmpty() ) {
+                        logger.info("Skipping new employee to Everfi. Their Email is null or empty" + emp.getFullName() + ", " + emp.getEmployeeId());
+                        continue;
+                    }
+                    logger.info("Adding new employee to Everfi " + emp.getFullName() + ", " + emp.getEmail() + ", " + emp.getEmployeeId());
+                    EverfiAddUserRequest addUserRequest = new EverfiAddUserRequest(
+                            everfiApiClient, emp.getEmployeeId(), emp.getFirstName(), emp.getLastName(),
+                            emp.getEmail(), getOrCreateEmpCategoryLabels(emp, null));
+                    EverfiUser newestEverfiUser = addUserRequest.addUser();
+                    if (newestEverfiUser != null) {
+                        everfiUserDao.insertEverfiUserIDs(newestEverfiUser.getUuid(), emp.getEmployeeId());
+                    }
+                    else {
+                        logger.error("Something odd happened when adding " + emp.getEmployeeId() + " to Everfi. Add User request was executed but returned null");
+                    }
+                }
+                catch (Exception e) {
+                    logger.error("There was an exception trying to add a new employee " + emp.getEmployeeId() + " to Everfi" + e);
                     continue;
                 }
-                logger.info("Adding new employee to Everfi " + emp.getFullName() + ", " + emp.getEmail() + ", " + emp.getEmployeeId());
-                EverfiAddUserRequest addUserRequest = new EverfiAddUserRequest(
-                        everfiApiClient, emp.getEmployeeId(), emp.getFirstName(), emp.getLastName(),
-                        emp.getEmail(), getOrCreateEmpCategoryLabels(emp, null));
-                EverfiUser newestEverfiUser = addUserRequest.addUser();
-                if (newestEverfiUser != null) {
-                    everfiUserDao.insertEverfiUserIDs(newestEverfiUser.getUuid(), emp.getEmployeeId());
-                }
-                else {
-                    logger.error("Something odd happened when adding " + emp.getEmployeeId() + " to Everfi. Add User request was executed but returned null");
-                }
-
             }
-        }
-        catch (Exception e) {
-            logger.error("There was an exception trying to add a new employee to Everfi" + e);
-        }
 
         logger.info("Completed Everfi add employee process");
 
