@@ -23,7 +23,10 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.*;
 
 @Repository
@@ -172,6 +175,15 @@ public class SqlEmployeeDao extends SqlBaseDao implements EmployeeDao
     public List<Employee> getUpdatedEmployees(LocalDateTime fromDateTime) {
         return remoteNamedJdbc.query(SqlEmployeeQuery.GET_EMP_BY_UPDATE_DATE.getSql(schemaMap()),
                 new MapSqlParameterSource("lastUpdate", toDate(fromDateTime)), getEmployeeRowMapper());
+    }
+
+    @Override
+    public List<Employee> getInactivatedEmployeesSinceDate(LocalDateTime since) {
+        DateTimeFormatter formatter= new DateTimeFormatterBuilder().parseCaseSensitive()
+                .appendPattern("dd-MMM-yyyy").toFormatter();
+        String formattedDate = since.format(formatter).toUpperCase();
+        return remoteNamedJdbc.query(SqlEmployeeQuery.GET_INACTIVE_EMPLOYEES_SINCE_DATE.getSql(schemaMap()),
+                new MapSqlParameterSource("since", formattedDate), getMinimalEmployeeRowMapper());
     }
 
     @Override
