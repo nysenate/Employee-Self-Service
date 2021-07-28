@@ -83,6 +83,7 @@ public class EverfiUserService {
     public void handleInactivatedEmployeesInEverfi() {
 
         try {
+            logger.info("Beginning Everfi deactivation process for inactive employees");
             List<Employee> inactiveEmployees = getRecentlyInactiveEmployees();
 
             sendEmailToEverfiReportEmails("Employees to be Inactivated",
@@ -91,9 +92,10 @@ public class EverfiUserService {
             for (Employee employee : inactiveEmployees) {
                 changeActiveStatusForUserWithEmpID(employee.getEmployeeId(), false);
             }
+            logger.info("Completed Everfi Deactivation process for inactive employees");
         }
         catch (Exception e) {
-            logger.error("Error occured when handling inactive employees",e);
+            logger.error("Error occurred when handling inactive employees",e);
         }
     }
 
@@ -228,8 +230,11 @@ public class EverfiUserService {
                 EverfiUserIDs potentialEverfiUserID =
                         everfiUserDao.getEverfiUserIDsWithEmpID(completeNewEmp.getEmployeeId());
 
-                if (potentialEverfiUserID == null) {
-                    logger.info(completeNewEmp.getFullName() + " " + completeNewEmp.getEmployeeId() + " has not been added to Everfi");
+                if (potentialEverfiUserID == null && completeNewEmp.getEmail() == null) {
+                    logger.info(completeNewEmp.getFullName() + " " + completeNewEmp.getEmployeeId() + " has not been added to Everfi and has a null email so they will be skipped");
+                }
+                else if (potentialEverfiUserID == null && completeNewEmp.getEmail() != null) {
+                    logger.info(completeNewEmp.getFullName() + " " + completeNewEmp.getEmployeeId() + " has not been added to Everfi and has a proper email");
                     empsToAddToEverfi.add(completeNewEmp);
                 }
                 else {
@@ -251,13 +256,7 @@ public class EverfiUserService {
     public List<Employee> getRecentlyInactiveEmployees() {
         try {
             LocalDateTime oneWeekFromToday = LocalDateTime.now().minusDays(7);
-            List<Employee> allUpdatedEmpsInTheLastWeek = employeeDao.getUpdatedEmployees(oneWeekFromToday);
-            ArrayList<Employee> inactivatedEmployees = new ArrayList<>();
-            for (Employee employee : allUpdatedEmpsInTheLastWeek) {
-                if (!employee.isActive()) {
-                    inactivatedEmployees.add(employee);
-                }
-            }
+            List<Employee> inactivatedEmployees = employeeDao.getInactivatedEmployeesSinceDate(oneWeekFromToday);
             return inactivatedEmployees;
         }
         catch (Exception e) {
@@ -366,7 +365,7 @@ public class EverfiUserService {
             for (Employee emp : emps) {
 
                 try {
-                    if (emp.getEmail() == null | emp.getEmail().isEmpty() ) {
+                    if (emp.getEmail() == null || emp.getEmail().isEmpty() ) {
                         logger.info("Skipping new employee to Everfi. Their Email is null or empty" + emp.getFullName() + ", " + emp.getEmployeeId());
                         continue;
                     }
@@ -384,7 +383,6 @@ public class EverfiUserService {
                 }
                 catch (Exception e) {
                     logger.error("There was an exception trying to add a new employee " + emp.getEmployeeId() + " to Everfi" + e);
-                    continue;
                 }
             }
 
