@@ -70,15 +70,13 @@ public class SqlEmpTransactionDao extends SqlBaseDao implements EmpTransactionDa
 
     @Override
     public LocalDateTime getMaxUpdateDateTime() {
-        Map<String, String> schemaMap = schemaMap();
-
-        List<String> timestamps = remoteJdbc.query(SqlEmpTransactionQuery.GET_MAX_UPDATE_DATE_TIME_SQL.getSql(schemaMap), (rs, rowNum) -> rs.getString("MAX_DTTXNUPDATE"));
+        List<String> timestamps = remoteJdbc.query(SqlEmpTransactionQuery.GET_MAX_UPDATE_DATE_TIME_SQL.getSql(schemaMap()), (rs, rowNum) -> rs.getString("MAX_DTTXNUPDATE"));
         if (timestamps.isEmpty()) {
             throw new IncorrectResultSizeDataAccessException(0);
         }
         else {
             try {
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
                 Date parsedDate = dateFormat.parse(timestamps.get(0));
                 Timestamp timestamp = new java.sql.Timestamp(parsedDate.getTime());
                 return DateUtils.getLocalDateTime( timestamp );

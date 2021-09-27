@@ -114,7 +114,12 @@ public enum SqlEmployeeQuery implements BasicSqlQuery
                     "                 WHERE cdtrans IN ('APP', 'RTP')\n" +
                     "                   AND dteffect >= TRUNC(SYSDATE)- 30\n" +
                     "                   AND cdstatus = 'A')"
+    ),
+
+    GET_INACTIVE_EMPLOYEES_SINCE_DATE(
+            "SELECT * FROM ${masterSchema}.PM21PERSONN p WHERE p.CDEMPSTATUS = 'I' AND TRUNC(p.DTTXNUPDATE) >= TO_DATE(:since, 'DD-MON-RRRR')"
     )
+
     ;
 
     private String sql;

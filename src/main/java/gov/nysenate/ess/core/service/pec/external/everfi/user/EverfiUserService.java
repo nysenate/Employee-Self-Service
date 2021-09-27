@@ -69,18 +69,21 @@ public class EverfiUserService {
     @Scheduled(cron = "${scheduler.everfi.user.update.cron}")
     public void runUpdateMethods() {
         if (everfiSyncEnabled) {
-            //Inactivate employees on Everfi if any need to be inactivated
-            handleInactivatedEmployeesInEverfi();
+            logger.info("Beginning Everfi Sync");
             //Add new employees to Everfi
             addEmployeesToEverfi(getNewEmployeesToAddToEverfi());
+            //Inactivate employees on Everfi if any need to be inactivated
+            handleInactivatedEmployeesInEverfi();
             //Update our db with their UUID from Everfi
             getEverfiUserIds();
+            logger.info("Completed Everfi Sync");
         }
     }
 
     public void handleInactivatedEmployeesInEverfi() {
 
         try {
+            logger.info("Beginning Everfi deactivation process for inactive employees");
             List<Employee> inactiveEmployees = getRecentlyInactiveEmployees();
 
             sendEmailToEverfiReportEmails("Employees to be Inactivated",
@@ -89,9 +92,10 @@ public class EverfiUserService {
             for (Employee employee : inactiveEmployees) {
                 changeActiveStatusForUserWithEmpID(employee.getEmployeeId(), false);
             }
+            logger.info("Completed Everfi Deactivation process for inactive employees");
         }
         catch (Exception e) {
-            logger.error("Error occured when handling inactive employees",e);
+            logger.error("Error occurred when handling inactive employees",e);
         }
     }
 
@@ -102,7 +106,7 @@ public class EverfiUserService {
             EverfiUserIDs everfiUserID = everfiUserDao.getEverfiUserIDsWithEmpID(employee.getEmployeeId());
             if (everfiUserID == null) {
                 logger.warn( "Couldn't change active status for user. " +
-                        "Submitted EMP ID " + submittedEmpID + " does not match any employee in the Everfi records table");
+                        "Submitted EMP ID " + submittedEmpID + " does not match any employee in the Everfi UUID records table");
                 return;
             }
             changeActiveStatusForUser(everfiUserID, status);
@@ -200,7 +204,7 @@ public class EverfiUserService {
             }
         }
         catch (Exception e) {
-            logger.error("There was an exception when trying to change the active status of a user " + everfiUserID);
+            logger.error("There was an exception when trying to change the active status of a user " + everfiUserID.getEverfiUUID() + " to an active status of " + activeStatus);
         }
     }
 
@@ -226,8 +230,15 @@ public class EverfiUserService {
                 EverfiUserIDs potentialEverfiUserID =
                         everfiUserDao.getEverfiUserIDsWithEmpID(completeNewEmp.getEmployeeId());
 
-                if (potentialEverfiUserID == null) {
+                if (potentialEverfiUserID == null && completeNewEmp.getEmail() == null) {
+                    logger.info(completeNewEmp.getFullName() + " " + completeNewEmp.getEmployeeId() + " has not been added to Everfi and has a null email so they will be skipped");
+                }
+                else if (potentialEverfiUserID == null && completeNewEmp.getEmail() != null) {
+                    logger.info(completeNewEmp.getFullName() + " " + completeNewEmp.getEmployeeId() + " has not been added to Everfi and has a proper email");
                     empsToAddToEverfi.add(completeNewEmp);
+                }
+                else {
+                    logger.info(completeNewEmp.getFullName() + " " + completeNewEmp.getEmployeeId() + " will be skipped. They have been added to Everfi");
                 }
 
             }
@@ -245,13 +256,7 @@ public class EverfiUserService {
     public List<Employee> getRecentlyInactiveEmployees() {
         try {
             LocalDateTime oneWeekFromToday = LocalDateTime.now().minusDays(7);
-            List<Employee> allUpdatedEmpsInTheLastWeek = employeeDao.getUpdatedEmployees(oneWeekFromToday);
-            ArrayList<Employee> inactivatedEmployees = new ArrayList<>();
-            for (Employee employee : allUpdatedEmpsInTheLastWeek) {
-                if (!employee.isActive()) {
-                    inactivatedEmployees.add(employee);
-                }
-            }
+            List<Employee> inactivatedEmployees = employeeDao.getInactivatedEmployeesSinceDate(oneWeekFromToday);
             return inactivatedEmployees;
         }
         catch (Exception e) {
@@ -352,32 +357,36 @@ public class EverfiUserService {
      */
     public void addEmployeesToEverfi(List<Employee> emps) {
 
+        logger.info("Beginning Everfi add employee process");
+
         //send email to Everfi report email for new employees
         sendEmailToEverfiReportEmails("New Users Added to Everfi", generateEmployeeListString(emps));
 
-        try {
             for (Employee emp : emps) {
-                if (emp.getEmail().isEmpty() || emp.getEmail() == null) {
-                    continue;
-                }
-                logger.info("Adding new employee to Everfi " + emp.getFullName() + ", " + emp.getEmail() + ", " + emp.getEmployeeId());
-                EverfiAddUserRequest addUserRequest = new EverfiAddUserRequest(
-                        everfiApiClient, emp.getEmployeeId(), emp.getFirstName(), emp.getLastName(),
-                        emp.getEmail(), getOrCreateEmpCategoryLabels(emp, null));
-                EverfiUser newestEverfiUser = addUserRequest.addUser();
-                if (newestEverfiUser != null) {
-                    everfiUserDao.insertEverfiUserIDs(newestEverfiUser.getUuid(), emp.getEmployeeId());
-                }
-                else {
-                    logger.error("Something odd happened when adding " + emp.getEmployeeId() + " to Everfi. Add User request was executed but returned null");
-                }
 
+                try {
+                    if (emp.getEmail() == null || emp.getEmail().isEmpty() ) {
+                        logger.info("Skipping new employee to Everfi. Their Email is null or empty" + emp.getFullName() + ", " + emp.getEmployeeId());
+                        continue;
+                    }
+                    logger.info("Adding new employee to Everfi " + emp.getFullName() + ", " + emp.getEmail() + ", " + emp.getEmployeeId());
+                    EverfiAddUserRequest addUserRequest = new EverfiAddUserRequest(
+                            everfiApiClient, emp.getEmployeeId(), emp.getFirstName(), emp.getLastName(),
+                            emp.getEmail(), getOrCreateEmpCategoryLabels(emp, null));
+                    EverfiUser newestEverfiUser = addUserRequest.addUser();
+                    if (newestEverfiUser != null) {
+                        everfiUserDao.insertEverfiUserIDs(newestEverfiUser.getUuid(), emp.getEmployeeId());
+                    }
+                    else {
+                        logger.error("Something odd happened when adding " + emp.getEmployeeId() + " to Everfi. Add User request was executed but returned null");
+                    }
+                }
+                catch (Exception e) {
+                    logger.error("There was an exception trying to add a new employee " + emp.getEmployeeId() + " to Everfi" + e);
+                }
             }
-        }
-        catch (Exception e) {
-            logger.error("There was ana exception trying to add a new employee to Everfi");
-        }
 
+        logger.info("Completed Everfi add employee process");
 
     }
 
@@ -399,7 +408,7 @@ public class EverfiUserService {
                     if (empid.intValue() != 99999) {
                         everfiUserDao.insertEverfiUserIDs(UUID, empid);
                     } else {
-                        logger.warn("Everfi user with UUID " + UUID + " empid was improperly retrieved");
+                        logger.warn("Everfi user with UUID " + UUID + " empid " + empid + " was improperly retrieved");
                     }
                 } catch (DuplicateKeyException e) {
                     //Do nothing, it means we already have the user stored in the DB

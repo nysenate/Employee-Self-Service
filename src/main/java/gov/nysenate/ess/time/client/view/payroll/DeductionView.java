@@ -6,11 +6,12 @@ import gov.nysenate.ess.time.model.payroll.Deduction;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.math.BigDecimal;
+import java.util.Objects;
 
 @XmlRootElement
 public class DeductionView implements ViewObject
 {
-    protected String code;
+    protected int code;
     protected int order;
     protected String description;
     protected BigDecimal amount;
@@ -29,7 +30,7 @@ public class DeductionView implements ViewObject
     }
 
     @XmlElement
-    public String getCode() {
+    public int getCode() {
         return code;
     }
 

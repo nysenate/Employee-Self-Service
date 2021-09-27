@@ -108,10 +108,10 @@ public class EssCachedEmpTransactionService implements EmpTransactionService, Ca
 
     @Scheduled(fixedDelayString = "${cache.poll.delay.transactions:60000}")
     private void syncTransHistory() {
-        logger.debug("Checking for transaction updates since {}...", lastUpdateDateTime);
+        logger.info("Checking for transaction updates since {}...", lastUpdateDateTime);
         List<TransactionRecord> transRecs = transactionDao.updatedRecordsSince(lastUpdateDateTime);
         lastCheckTime = LocalDateTime.now();
-        logger.debug("{} new transaction records have been found.", transRecs.size());
+        logger.info("{} new transaction records have been found.", transRecs.size());
         if (!transRecs.isEmpty()) {
             // Get the last updated record date/time
             lastUpdateDateTime = transRecs.stream()
@@ -119,7 +119,7 @@ public class EssCachedEmpTransactionService implements EmpTransactionService, Ca
                     .max(LocalDateTime::compareTo).get();
             // Gather a set of affected employee ids and refresh their transaction cache
             transRecs.stream().map(TransactionRecord::getEmployeeId).distinct().forEach(empId -> {
-                logger.debug("Re-Caching transactions for employee {}", empId);
+                logger.info("Re-Caching transactions for employee {}", empId);
                 TransactionHistory transHistory = getTransHistoryFromDao(empId);
                 putTransactionHistoryInCache(empId, transHistory);
             });
