@@ -132,7 +132,7 @@ case "$cmd" in
     ;;
   eax)
     http_req=GET
-    url="/alert-info/contact-dump.xml"
+    url="/alert-info/contact-dump"
     ;;
   *) echo "$prog: $cmd: Unknown API command" >&2; usage; exit 1 ;;
 esac
