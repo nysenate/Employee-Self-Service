@@ -129,7 +129,7 @@
            title="Submit Travel Application"
            confirm-message="Are you sure you want to submit this travel application?"
            resolve-button="Submit Application"
-           resolve-class="travel-submit-btn"
+           resolve-class="travel-primary-btn"
            reject-button="Cancel"
            reject-class="travel-neutral-btn">
       </div>
