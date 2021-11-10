@@ -28,7 +28,7 @@ essTravel.directive('essAppReviewSummaryTable', ['appProps', function (appProps)
                         return a.role === r.name
                     });
                     if (actions.length > 0) {
-                        return actions[0];
+                        return actions[actions.length - 1];
                     }
                 }
             }
