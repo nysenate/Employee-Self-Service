@@ -11,6 +11,7 @@
 # Revised: 2018-01-12 - add all options to usage message; fix Curl verbosity
 # Revised: 2021-04-05 - add ability to specify custom API call
 # Revised: 2021-04-07 - add options to specify HTTP method
+# Revised: 2021-10-26 - modify HTTP Accept header for ESS/Alert XML output
 #
 
 prog=`basename $0`
@@ -26,6 +27,7 @@ usage() {
   echo "  --force-get: Force HTTP GET method to be used" >&2
   echo "  --force-post: Force HTTP POST method to be used" >&2
   echo "  --force-delete: Force HTTP DELETE method to be used" >&2
+  echo "  --xml: Use application/xml instead of application/json for Accept header" >&2
   echo "  --verbose: generate lots of output" >&2
   echo "  --help: this usage message" >&2
   echo "and api_command is one of:" >&2
@@ -59,6 +61,7 @@ essuser=
 esspass=
 no_auth=0
 method=
+format=json
 curl_opts="-s"
 
 while [ $# -gt 0 ]; do
@@ -71,6 +74,7 @@ while [ $# -gt 0 ]; do
     --force-get|--get|-g) method=GET ;;
     --force-post|--post) method=POST ;;
     --force-delete|--delete) method=DELETE ;;
+    --xml|-x) format=xml ;;
     --verbose|-v) set -x; curl_opts="-v" ;;
     --help) usage; exit 0 ;;
     -*) echo "$prog: $1: Invalid option" >&2; usage; exit 1 ;;
@@ -132,7 +136,8 @@ case "$cmd" in
     ;;
   eax)
     http_req=GET
-    url="/alert-info/contact-dump.xml"
+    format=xml
+    url="/alert-info/contact-dump"
     ;;
   *) echo "$prog: $cmd: Unknown API command" >&2; usage; exit 1 ;;
 esac
@@ -144,13 +149,13 @@ if [ "$method" ]; then
 fi
 
 if [ $no_auth -eq 1 ]; then
-  curl $curl_opts -X $http_req "$base_api_url/$url" -H 'Accept:application/json'
+  curl $curl_opts -X $http_req "$base_api_url/$url" -H "Accept:application/$format"
   rc=$?
 else
   [ "$esspass" ] || read -s -p "Password: " esspass
 
-  curl $curl_opts -X POST -c "$cookietmp" "$base_url/login" -H 'Accept:application/json' -H 'Content-Type:application/x-www-form-urlencoded' -d "username=$essuser&password=$esspass&rememberMe=false"
-  curl $curl_opts -X $http_req -b "$cookietmp" "$base_api_url/$url" -H 'Accept:application/json'
+  curl $curl_opts -X POST -c "$cookietmp" "$base_url/login" -H "Accept:application/$format" -H 'Content-Type:application/x-www-form-urlencoded' -d "username=$essuser&password=$esspass&rememberMe=false"
+  curl $curl_opts -X $http_req -b "$cookietmp" "$base_api_url/$url" -H "Accept:application/$format"
   rc=$?
   rm -f "$cookietmp"
 fi

@@ -75,6 +75,7 @@ public class MoodleRecordService implements ESSMoodleRecordService {
     public void processMoodleEmployeeRecords(List<MoodleEmployeeRecord> moodleEmployeeRecords) {
 
         logger.info("Start Processing Moodle Records");
+        logger.info("Attempting to process " + moodleEmployeeRecords.size() + " employee records");
 
         int moodleTaskId = getMoodleTaskId();
 
@@ -131,15 +132,17 @@ public class MoodleRecordService implements ESSMoodleRecordService {
         return objectMapper.readTree(response.getEntity().getContent());
     }
 
-    @Scheduled(cron = "${scheduler.moodle.task.sync.cron:30 0 * * * *}")
+    @Scheduled(cron = "${scheduler.moodle.task.sync.cron:0 30 * * * *}")
     public void getUpdatesFromMoodle() throws IOException {
         if (!moodleSyncEnabled) {
             return;
         }
+        logger.info("Beginning Moodle Record Cron");
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime pastTime = now.minusMinutes(5);
+        LocalDateTime pastTime = now.minusMinutes(35);
         JsonNode json = contactMoodleForRecords( pastTime, now, "Senate");
         processMoodleEmployeeRecords(getMoodleRecordsFromJson(json.toString()));
+        logger.info("Completed Moodle Record Cron");
     }
 
     /**
