@@ -13,7 +13,6 @@ essTravel.directive('essReviewActionStatus', ['appProps', function (appProps) {
         link: function ($scope, $elem, $attrs) {
 
             var action = $scope.essReviewActionStatus;
-            console.log(action);
 
             $scope.actionClass = function () {
                 return action.isApproval ? 'approved-text'

@@ -55,7 +55,7 @@ public class ApplicationReviewCtrl extends BaseRestApiCtrl {
     }
 
     /**
-     * Get app reviews which need to be reviewed by any of the given {@code roles}
+     * Get app reviews which need to be reviewed by the logged in employee.
      * <p>
      * This does not implement strict permission checking for this endpoint because it is
      * used in the badge service for all users. Instead of checking permissions,

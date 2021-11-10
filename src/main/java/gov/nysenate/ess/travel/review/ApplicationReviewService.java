@@ -94,10 +94,10 @@ public class ApplicationReviewService {
     public Map<TravelRole, List<ApplicationReview>> pendingReviews(Employee employee) {
         Map<TravelRole, List<ApplicationReview>> pendingReviews = new HashMap<>();
         var userRoles = travelRoleFactory.travelRolesForEmp(employee);
-        var nonDeptPrimaryRoles = userRoles.primary().stream()
+        var nonDeptHdRoles = userRoles.all().stream()
                 .filter(r -> !r.equals(TravelRole.DEPARTMENT_HEAD))
                 .collect(Collectors.toSet());
-        for (TravelRole role : nonDeptPrimaryRoles) {
+        for (TravelRole role : nonDeptHdRoles) {
             pendingReviews.put(role, appReviewDao.pendingReviewsForRole(role));
         }
 
