@@ -171,6 +171,9 @@ public class EverfiRecordService implements ESSEverfiRecordService {
                                     for (PersonnelTask everfiPersonnelTask : everfiPersonnelTasks) {
                                         if (everfiPersonnelTask.getTaskId() == everfiTaskID) {
                                             active = everfiPersonnelTask.isActive();
+                                            if (assignmentAndProgress.getAssignmentStatus().contains("unassigned")) {
+                                                active = false;
+                                            }
                                         }
                                     }
                                 } catch (NullPointerException e) {
