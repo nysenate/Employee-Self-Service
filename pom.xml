@@ -146,7 +146,7 @@
     <oracle.driver.version>21.1.0.0</oracle.driver.version>
     <postgres.driver.version>42.2.19</postgres.driver.version>
     <slf4j.version>1.7.30</slf4j.version>
-    <log4j.version>2.14.1</log4j.version>
+    <log4j.version>2.15.0</log4j.version>
     <spring.version>5.3.8</spring.version>
     <spring.ldap.version>2.3.4.RELEASE</spring.ldap.version>
     <tomcat.servlet.version>9.0.45</tomcat.servlet.version>
