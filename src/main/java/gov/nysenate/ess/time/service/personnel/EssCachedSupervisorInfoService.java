@@ -134,7 +134,7 @@ public class EssCachedSupervisorInfoService implements SupervisorInfoService, Ca
                 // If the primary supervisor is a senator,
                 // and the employee is in the senator's department,
                 // Add the employees of this employee to the queue
-                if (supervisor.isSenator() && supervisor.getRespCenterHeadCode() != null) {
+                if (supervisor.isSenator() && supervisor.getRespCenterHeadCode() != null && supId != 8975) {
                     Employee employee = empInfoService.getEmployee(supInfo.getEmpId());
                     if (supervisor.getRespCenterHeadCode().equals(employee.getRespCenterHeadCode())) {
                         supInfoQueue.addAll(subEmpGroup.getPrimaryEmpSupInfos());
