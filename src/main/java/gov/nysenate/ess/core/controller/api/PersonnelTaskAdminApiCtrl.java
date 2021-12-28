@@ -86,7 +86,7 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
      * Parse Out Personnel Tasks for PEC Videos
      * ----------------------------------
      *
-     * Determine personnel tasks for a single employee and assign those that are missing.
+     * Process personnel task records from csv files
      *
      * Usage:
      * (POST)   /api/v1/admin/personnel/task/csv
