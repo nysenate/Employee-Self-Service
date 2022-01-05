@@ -117,6 +117,8 @@ public class EssCachedSupervisorInfoService implements SupervisorInfoService, Ca
 
         Employee supervisor = empInfoService.getEmployee(supId);
 
+        List<Integer> processedSupervisors = new ArrayList<>();
+        processedSupervisors.add(supId);
         Queue<EmployeeSupInfo> supInfoQueue = new ArrayDeque<>(extendedEmpGroup.getPrimaryEmpSupInfos());
 
         while (!supInfoQueue.isEmpty()) {
@@ -125,6 +127,7 @@ public class EssCachedSupervisorInfoService implements SupervisorInfoService, Ca
                 SecondarySupEmpGroup subEmpGroup =
                         new SecondarySupEmpGroup(getPrimarySupEmpGroup(supInfo.getEmpId()), supInfo.getSupId());
                 subEmpGroup.setActiveDates(supInfo.getEffectiveDateRange());
+                processedSupervisors.add(supInfo.getEmpId());
 
                 // The employee may not be supervising any employees for their time under this supervisor
                 if (subEmpGroup.hasEmployees()) {
@@ -134,10 +137,15 @@ public class EssCachedSupervisorInfoService implements SupervisorInfoService, Ca
                 // If the primary supervisor is a senator,
                 // and the employee is in the senator's department,
                 // Add the employees of this employee to the queue
-                if (supervisor.isSenator() && supervisor.getRespCenterHeadCode() != null && supId != 8975) {
+                if (supervisor.isSenator() && supervisor.getRespCenterHeadCode() != null) {
                     Employee employee = empInfoService.getEmployee(supInfo.getEmpId());
                     if (supervisor.getRespCenterHeadCode().equals(employee.getRespCenterHeadCode())) {
-                        supInfoQueue.addAll(subEmpGroup.getPrimaryEmpSupInfos());
+                        for (var info : subEmpGroup.getPrimaryEmpSupInfos()) {
+                            // Prevent an infinite loop when 2 emps are the supervisors for each other.
+                            if (!processedSupervisors.contains(info.getEmpId())) {
+                                supInfoQueue.add(info);
+                            }
+                        }
                     }
                 }
             } catch (SupervisorException ignored) {
