@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
 
 @Service("sfmsurlservice")
@@ -52,6 +53,9 @@ public class SfmsAttendanceReportUrlService implements AttendanceReportUrlServic
 
     private UriComponentsBuilder withComputedParams(UriComponentsBuilder builder, PeriodAccSummary accruals) {
         PeriodAccUsage perAccUsag = accruals.getPeriodAccUsage();
+//        if (accruals.getEmpId() == 2658) {
+//            accruals.setPerHoursAccrued(new BigDecimal(30));
+//        }
         return builder
                 .queryParam("p_datafrom", "AUTO")
                 .queryParam("p_proj", accruals.isSubmitted() ? "N" : "Y")
@@ -66,7 +70,7 @@ public class SfmsAttendanceReportUrlService implements AttendanceReportUrlServic
                 .queryParam("p_nuvachrsbsd", accruals.getVacHoursBanked())
                 .queryParam("p_nuemphrsbsd", accruals.getEmpHoursBanked())
 
-                .queryParam("p_nuperhrsacc", accruals.getPerHoursAccrued())
+                .queryParam("p_nuperhrsacc", accruals.getPerHoursAccrued().toPlainString())
                 .queryParam("p_nuvachrsacc", accruals.getVacHoursAccrued())
                 .queryParam("p_nuemphrsacc", accruals.getEmpHoursAccrued())
 
