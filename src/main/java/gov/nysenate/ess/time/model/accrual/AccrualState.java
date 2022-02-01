@@ -2,11 +2,14 @@ package gov.nysenate.ess.time.model.accrual;
 
 import com.google.common.collect.RangeSet;
 import com.google.common.collect.TreeRangeSet;
+import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
 import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.period.PayPeriod;
+import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.time.util.AccrualUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -14,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static gov.nysenate.ess.core.model.payroll.PayType.SA;
 import static gov.nysenate.ess.time.model.EssTimeConstants.ANNUAL_PER_HOURS;
 
 /**
@@ -23,7 +27,6 @@ import static gov.nysenate.ess.time.model.EssTimeConstants.ANNUAL_PER_HOURS;
  */
 public class AccrualState extends AccrualSummary
 {
-
     protected LocalDate beginDate;
     protected LocalDate endDate;
     protected int payPeriodCount;
@@ -122,6 +125,10 @@ public class AccrualState extends AccrualSummary
         return AccrualUtils.getProratePercentage(this.minTotalHours);
     }
 
+    private BigDecimal getSpecialAnnualProratePercentage() {
+        return AccrualUtils.getProratePercentage(this.ytdHoursExpected);
+    }
+
     /**
      * Get the number hours the employee is required to work during the given pay period
      */
@@ -153,6 +160,12 @@ public class AccrualState extends AccrualSummary
     public void applyYearRollover() {
         this.setPerHoursAccrued(AccrualUtils.roundPersonalHours(
                 ANNUAL_PER_HOURS.multiply(getProratePercentage())));
+
+        if (this.payType == SA) {
+            this.setPerHoursAccrued(AccrualUtils.roundPersonalHours(
+                    ANNUAL_PER_HOURS.multiply(getSpecialAnnualProratePercentage())));
+        }
+
         this.setVacHoursBanked(
                 this.getVacHoursBanked()
                         .add(this.getVacHoursAccrued())
