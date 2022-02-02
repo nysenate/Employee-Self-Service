@@ -1,14 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="org.springframework.web.servlet.support.RequestContextUtils" %>
-<%@ page import="org.springframework.context.ApplicationContext" %>
-<%@ page import="gov.nysenate.ess.time.service.attendance.SfmsAttendanceReportUrlService" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
-<%
-  ApplicationContext ac = RequestContextUtils.findWebApplicationContext(request);
-  SfmsAttendanceReportUrlService reportUrlService = (SfmsAttendanceReportUrlService) ac.getBean("sfmsurlservice");
-  request.setAttribute("reportUrl", reportUrlService.getAccrualReportBaseUrl());
-%>
 
 <div class="grid">
   <h3 class="content-info" style="margin-bottom:0;">
@@ -122,7 +114,7 @@
     <h3 class="content-info">Actions</h3>
     <div class="record-details-section">
       <a target="_blank" title="Open a Printable View for this Record"
-         ng-href="${reportUrl}?report=PRTIMESHEET23&cmdkey=tsuser&p_stamp=N&p_nuxrtimesheet={{record.timeRecordId}}">
+         ng-href="${ctxPath}/time/record/history/pdf/{{record.beginDate}}?timeRecordId={{record.timeRecordId}}">
         Print Record
       </a>
       <div ng-if="showExitBtn">
