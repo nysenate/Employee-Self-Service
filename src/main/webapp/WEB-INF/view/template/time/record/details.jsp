@@ -114,7 +114,7 @@
     <h3 class="content-info">Actions</h3>
     <div class="record-details-section">
       <a target="_blank" title="Open a Printable View for this Record"
-         ng-href="${ctxPath}/time/record/history/pdf/{{record.beginDate}}?timeRecordId={{record.timeRecordId}}">
+         ng-href="${ctxPath}/api/v1/attendance/report?timeRecordId={{record.timeRecordId}}">
         Print Record
       </a>
       <div ng-if="showExitBtn">
