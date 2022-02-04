@@ -66,7 +66,7 @@ public class ReportRestApiCtrl extends BaseRestApiCtrl {
             @RequestParam String date) throws IOException {
         LocalDate parsedDate = parseISODate(date, "date");
         PayPeriod payPeriod = payPeriodService.getPayPeriod(AF, parsedDate);
-        return getPdfReport(empId, payPeriod, reportUrlService.getAccrualReportUrl(empId, payPeriod));
+        return getPdfReport(empId, payPeriod, reportUrlService.getAccrualReportUrl(empId, payPeriod), "accrual");
     }
 
     /**
@@ -83,14 +83,15 @@ public class ReportRestApiCtrl extends BaseRestApiCtrl {
         var timeRecord = timeRecordService.getTimeRecord(new BigInteger(timeRecordId));
         PayPeriod payPeriod = payPeriodService.getPayPeriod(AF, timeRecord.getEndDate());
         return getPdfReport(timeRecord.getEmployeeId(), payPeriod,
-                reportUrlService.getAttendanceReportUrl(timeRecordId));
+                reportUrlService.getAttendanceReportUrl(timeRecordId), "attendance");
     }
 
     /**
      * Helper method to produce a PDF.
      * @return the properly named PDF.
      */
-    private ResponseEntity<InputStreamResource> getPdfReport(int empId, PayPeriod payPeriod, URL url) throws IOException {
+    private ResponseEntity<InputStreamResource> getPdfReport(int empId, PayPeriod payPeriod, URL url,
+                                                             String reportType) throws IOException {
         // Require permissions that were valid at some point during the requested pay period.
         attendanceReportPermissions.stream()
                 .map(po -> new EssTimePermission(empId, po, GET, payPeriod.getDateRange(), false))
@@ -98,7 +99,7 @@ public class ReportRestApiCtrl extends BaseRestApiCtrl {
         Employee employee = empInfoService.getEmployee(empId);
 
         String uid = Optional.ofNullable(employee.getUid()).orElse(Integer.toString(empId));
-        String filename = uid + "_" + payPeriod.getEndDate() + ".pdf";
+        String filename =  uid + "_" + reportType + "_" + payPeriod.getEndDate() + ".pdf";
         return ResponseEntity.ok()
                 .header("Content-Disposition", "inline; filename=\"" + filename + "\"")
                 .header("Content-Type", APPLICATION_PDF_VALUE + "; name=\"" + filename + "\"")
