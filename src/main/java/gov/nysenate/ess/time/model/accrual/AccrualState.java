@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static gov.nysenate.ess.core.model.payroll.PayType.SA;
 import static gov.nysenate.ess.time.model.EssTimeConstants.ANNUAL_PER_HOURS;
 
 /**
@@ -34,6 +35,7 @@ public class AccrualState extends AccrualSummary
     protected PayType payType;
     protected BigDecimal minTotalHours;
     protected BigDecimal minHoursToEnd;
+    protected BigDecimal Nnmintotend;
     protected BigDecimal sickRate;
     protected BigDecimal vacRate;
     protected BigDecimal ytdHoursExpected;
@@ -122,6 +124,10 @@ public class AccrualState extends AccrualSummary
         return AccrualUtils.getProratePercentage(this.minTotalHours);
     }
 
+    private BigDecimal getSpecialAnnualProratePercentage() {
+        return AccrualUtils.getProratePercentage(this.getNnmintotend());
+    }
+
     /**
      * Get the number hours the employee is required to work during the given pay period
      */
@@ -153,6 +159,12 @@ public class AccrualState extends AccrualSummary
     public void applyYearRollover() {
         this.setPerHoursAccrued(AccrualUtils.roundPersonalHours(
                 ANNUAL_PER_HOURS.multiply(getProratePercentage())));
+
+        if (this.payType == SA) {
+            this.setPerHoursAccrued(AccrualUtils.roundPersonalHours(
+                    ANNUAL_PER_HOURS.multiply(getSpecialAnnualProratePercentage())));
+        }
+
         this.setVacHoursBanked(
                 this.getVacHoursBanked()
                         .add(this.getVacHoursAccrued())
@@ -240,6 +252,14 @@ public class AccrualState extends AccrualSummary
 
     public void setMinTotalHours(BigDecimal minTotalHours) {
         this.minTotalHours = minTotalHours;
+    }
+
+    public BigDecimal getNnmintotend() {
+        return Nnmintotend;
+    }
+
+    public void setNnmintotend(BigDecimal nnmintotend) {
+        Nnmintotend = nnmintotend;
     }
 
     public BigDecimal getMinHoursToEnd() {
