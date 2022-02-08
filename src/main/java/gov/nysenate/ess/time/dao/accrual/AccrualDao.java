@@ -9,6 +9,7 @@ import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.time.model.accrual.PeriodAccSummary;
 import gov.nysenate.ess.time.model.accrual.PeriodAccUsage;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -57,5 +58,13 @@ public interface AccrualDao extends BaseDao
      * @return TreeMap<PayPeriod, PeriodAccUsage>
      */
     TreeMap<PayPeriod, PeriodAccUsage> getPeriodAccrualUsages(int empId, Range<LocalDate> dateRange);
+
+    /**
+     * Retrieve the value necessary to caclulate SA personal time
+     *
+     * @param empId
+     * @return Integer
+     */
+    public BigDecimal getBasisForSAPersonalTime(int empId);
 
 }

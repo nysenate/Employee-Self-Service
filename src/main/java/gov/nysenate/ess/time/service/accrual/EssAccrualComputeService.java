@@ -424,6 +424,7 @@ public class EssAccrualComputeService implements AccrualComputeService
         if (!payTypesMap.isEmpty()) {
             accrualState.setPayType(transHistory.getEffectivePayTypes(initialRange).firstEntry().getValue());
         }
+        accrualState.setNumintotend( accrualDao.getBasisForSAPersonalTime(transHistory.getEmployeeId()) );
         accrualState.setMinTotalHours(transHistory.getEffectiveMinHours(initialRange).firstEntry().getValue());
         accrualState.computeRates();
         return accrualState;

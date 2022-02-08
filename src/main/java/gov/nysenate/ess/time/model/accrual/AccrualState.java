@@ -9,11 +9,13 @@ import gov.nysenate.ess.time.util.AccrualUtils;
 import org.apache.commons.lang3.ObjectUtils;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static gov.nysenate.ess.core.model.payroll.PayType.SA;
 import static gov.nysenate.ess.time.model.EssTimeConstants.ANNUAL_PER_HOURS;
 
 /**
@@ -34,6 +36,7 @@ public class AccrualState extends AccrualSummary
     protected PayType payType;
     protected BigDecimal minTotalHours;
     protected BigDecimal minHoursToEnd;
+    protected BigDecimal numintotend;
     protected BigDecimal sickRate;
     protected BigDecimal vacRate;
     protected BigDecimal ytdHoursExpected;
@@ -122,6 +125,10 @@ public class AccrualState extends AccrualSummary
         return AccrualUtils.getProratePercentage(this.minTotalHours);
     }
 
+    private BigDecimal getSpecialAnnualProratePercentage() {
+        return AccrualUtils.getProratePercentageNoDigitLimits(this.numintotend);
+    }
+
     /**
      * Get the number hours the employee is required to work during the given pay period
      */
@@ -153,6 +160,13 @@ public class AccrualState extends AccrualSummary
     public void applyYearRollover() {
         this.setPerHoursAccrued(AccrualUtils.roundPersonalHours(
                 ANNUAL_PER_HOURS.multiply(getProratePercentage())));
+
+        if (this.payType == SA) {
+            this.setPerHoursAccrued(
+                    AccrualUtils.roundPersonalHours(
+                            ANNUAL_PER_HOURS.multiply( getSpecialAnnualProratePercentage() ) ) );
+        }
+
         this.setVacHoursBanked(
                 this.getVacHoursBanked()
                         .add(this.getVacHoursAccrued())
@@ -240,6 +254,14 @@ public class AccrualState extends AccrualSummary
 
     public void setMinTotalHours(BigDecimal minTotalHours) {
         this.minTotalHours = minTotalHours;
+    }
+
+    public BigDecimal getNumintotend() {
+        return this.numintotend;
+    }
+
+    public void setNumintotend(BigDecimal numintotend) {
+        this.numintotend = numintotend;
     }
 
     public BigDecimal getMinHoursToEnd() {

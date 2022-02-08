@@ -17,6 +17,7 @@ import gov.nysenate.ess.time.model.accrual.PeriodAccSummary;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -76,6 +77,14 @@ public class SqlAccrualDao extends SqlBaseDao implements AccrualDao
         List<PeriodAccUsage> usageRecs =
             remoteNamedJdbc.query(SqlAccrualQuery.GET_PERIOD_ACCRUAL_USAGE.getSql(schemaMap()), params, new PeriodAccUsageRowMapper("",""));
         return new TreeMap<>(Maps.uniqueIndex(usageRecs, PeriodAccUsage::getPayPeriod));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public BigDecimal getBasisForSAPersonalTime(int empId) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("empId", empId);
+        return remoteNamedJdbc.queryForObject(SqlAccrualQuery.GET_SA_NUMINTOTEND.getSql(schemaMap()), params, BigDecimal.class);
     }
 
     /** --- Param Source Methods --- */
