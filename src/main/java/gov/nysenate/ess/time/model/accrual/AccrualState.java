@@ -9,6 +9,7 @@ import gov.nysenate.ess.time.util.AccrualUtils;
 import org.apache.commons.lang3.ObjectUtils;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,7 +36,7 @@ public class AccrualState extends AccrualSummary
     protected PayType payType;
     protected BigDecimal minTotalHours;
     protected BigDecimal minHoursToEnd;
-    protected BigDecimal Nnmintotend;
+    protected BigDecimal numintotend;
     protected BigDecimal sickRate;
     protected BigDecimal vacRate;
     protected BigDecimal ytdHoursExpected;
@@ -125,7 +126,7 @@ public class AccrualState extends AccrualSummary
     }
 
     private BigDecimal getSpecialAnnualProratePercentage() {
-        return AccrualUtils.getProratePercentage(this.getNnmintotend());
+        return AccrualUtils.getProratePercentageNoDigitLimits(this.numintotend);
     }
 
     /**
@@ -161,8 +162,9 @@ public class AccrualState extends AccrualSummary
                 ANNUAL_PER_HOURS.multiply(getProratePercentage())));
 
         if (this.payType == SA) {
-            this.setPerHoursAccrued(AccrualUtils.roundPersonalHours(
-                    ANNUAL_PER_HOURS.multiply(getSpecialAnnualProratePercentage())));
+            this.setPerHoursAccrued(
+                    AccrualUtils.roundPersonalHours(
+                            ANNUAL_PER_HOURS.multiply( getSpecialAnnualProratePercentage() ) ) );
         }
 
         this.setVacHoursBanked(
@@ -254,12 +256,12 @@ public class AccrualState extends AccrualSummary
         this.minTotalHours = minTotalHours;
     }
 
-    public BigDecimal getNnmintotend() {
-        return Nnmintotend;
+    public BigDecimal getNumintotend() {
+        return this.numintotend;
     }
 
-    public void setNnmintotend(BigDecimal nnmintotend) {
-        Nnmintotend = nnmintotend;
+    public void setNumintotend(BigDecimal numintotend) {
+        this.numintotend = numintotend;
     }
 
     public BigDecimal getMinHoursToEnd() {

@@ -28,6 +28,18 @@ public final class AccrualUtils {
     }
 
     /**
+     * Get a prorate percentage based on the minimum total hours worked in a year
+     * @param minTotalHours BigDecimal
+     * @return BigDecimal
+     */
+    public static BigDecimal getProratePercentageNoDigitLimits(BigDecimal minTotalHours) {
+        if (minTotalHours == null) {
+            return BigDecimal.ZERO;
+        }
+        return minTotalHours.divide(MAX_YTD_HOURS, new MathContext(50));
+    }
+
+    /**
      * Get the number of hours an employee is expected to work in a pay period,
      * given the number of hours expected for a whole year.
      *
