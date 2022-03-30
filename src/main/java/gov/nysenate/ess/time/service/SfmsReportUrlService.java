@@ -65,31 +65,31 @@ public class SfmsReportUrlService implements ReportUrlService {
                 // Total Hours YTD was passed instead, set to 0 since these hours are added in the report
                 .queryParam("p_nutothrslast", 0)
 
-                .queryParam("p_nubiwvacrate", accruals.getVacRate())
-                .queryParam("p_nubiwsicrate", accruals.getSickRate())
+                .queryParam("p_nubiwvacrate", accruals.getVacRate().toPlainString())
+                .queryParam("p_nubiwsicrate", accruals.getSickRate().toPlainString())
 
-                .queryParam("p_nuvachrsbsd", accruals.getVacHoursBanked())
-                .queryParam("p_nuemphrsbsd", accruals.getEmpHoursBanked())
+                .queryParam("p_nuvachrsbsd", accruals.getVacHoursBanked().toPlainString())
+                .queryParam("p_nuemphrsbsd", accruals.getEmpHoursBanked().toPlainString())
 
                 .queryParam("p_nuperhrsacc", accruals.getPerHoursAccrued().toPlainString())
-                .queryParam("p_nuvachrsacc", accruals.getVacHoursAccrued())
-                .queryParam("p_nuemphrsacc", accruals.getEmpHoursAccrued())
+                .queryParam("p_nuvachrsacc", accruals.getVacHoursAccrued().toPlainString())
+                .queryParam("p_nuemphrsacc", accruals.getEmpHoursAccrued().toPlainString())
 
-                .queryParam("p_nuperhrsuse", accruals.getPerHoursUsed())
-                .queryParam("p_nuvachrsuse", accruals.getVacHoursUsed())
-                .queryParam("p_nuemphrsuse", accruals.getEmpHoursUsed())
-                .queryParam("p_nufamhrsuse", accruals.getFamHoursUsed())
+                .queryParam("p_nuperhrsuse", accruals.getPerHoursUsed().toPlainString())
+                .queryParam("p_nuvachrsuse", accruals.getVacHoursUsed().toPlainString())
+                .queryParam("p_nuemphrsuse", accruals.getEmpHoursUsed().toPlainString())
+                .queryParam("p_nufamhrsuse", accruals.getFamHoursUsed().toPlainString())
 
-                .queryParam("p_nuworkhrs", perAccUsag.getWorkHours())
-                .queryParam("p_nuperhrs", perAccUsag.getPerHoursUsed())
-                .queryParam("p_nuvachrs", perAccUsag.getVacHoursUsed())
-                .queryParam("p_nuemphrs", perAccUsag.getEmpHoursUsed())
-                .queryParam("p_nufamhrs", perAccUsag.getFamHoursUsed())
-                .queryParam("p_nuholhrs", perAccUsag.getHolHoursUsed())
-                .queryParam("p_nutrvhrs", perAccUsag.getTravelHoursUsed())
+                .queryParam("p_nuworkhrs", perAccUsag.getWorkHours().toPlainString())
+                .queryParam("p_nuperhrs", perAccUsag.getPerHoursUsed().toPlainString())
+                .queryParam("p_nuvachrs", perAccUsag.getVacHoursUsed().toPlainString())
+                .queryParam("p_nuemphrs", perAccUsag.getEmpHoursUsed().toPlainString())
+                .queryParam("p_nufamhrs", perAccUsag.getFamHoursUsed().toPlainString())
+                .queryParam("p_nuholhrs", perAccUsag.getHolHoursUsed().toPlainString())
+                .queryParam("p_nutrvhrs", perAccUsag.getTravelHoursUsed().toPlainString())
 
-                .queryParam("p_nuhrsexpect", accruals.getExpectedTotalHours())
-                .queryParam("p_nutotalhrs", accruals.getTotalHoursYtd())
+                .queryParam("p_nuhrsexpect", accruals.getExpectedTotalHours().toPlainString())
+                .queryParam("p_nutotalhrs", accruals.getTotalHoursYtd().toPlainString())
                 ;
     }
 
