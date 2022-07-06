@@ -124,7 +124,7 @@
   </build>
 
   <properties>
-    <apache.shiro.version>1.8.0</apache.shiro.version>
+    <apache.shiro.version>1.9.1</apache.shiro.version>
     <apache.httpclient.version>4.5.13</apache.httpclient.version>
     <commons.io.version>2.8.0</commons.io.version>
     <commons.lang3.version>3.12.0</commons.lang3.version>
