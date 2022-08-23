@@ -2,6 +2,7 @@ package gov.nysenate.ess.web.controller.page;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,14 +15,19 @@ import javax.servlet.http.HttpServletRequest;
  */
 @Controller
 @RequestMapping("/myinfo/**")
-public class MyInfoPageCtrl extends BaseEssPageCtrl
+public class MyInfoPageCtrl
 {
     private static final Logger logger = LoggerFactory.getLogger(MyInfoPageCtrl.class);
+    private final PageCtrlUtils pageCtrlUtils;
+
+    @Autowired
+    public MyInfoPageCtrl(PageCtrlUtils pageCtrlUtils) {
+        this.pageCtrlUtils = pageCtrlUtils;
+    }
 
     @RequestMapping(method = {RequestMethod.GET, RequestMethod.HEAD})
-    @Override
-    String mainPage(ModelMap modelMap, HttpServletRequest request) {
-        addCommonModelMapData(modelMap);
+    public Object myInfoPage(ModelMap modelMap, HttpServletRequest request) {
+        modelMap.addAllAttributes(pageCtrlUtils.commonPageData());
         return "myinfo";
     }
 }

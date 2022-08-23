@@ -1,5 +1,6 @@
 package gov.nysenate.ess.web.controller.page;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,12 +13,18 @@ import javax.servlet.http.HttpServletRequest;
  */
 @Controller
 @RequestMapping("/help/**")
-public class HelpPageCtrl extends BaseEssPageCtrl
-{
+public class HelpPageCtrl {
+
+    private final PageCtrlUtils pageCtrlUtils;
+
+    @Autowired
+    public HelpPageCtrl(PageCtrlUtils pageCtrlUtils) {
+        this.pageCtrlUtils = pageCtrlUtils;
+    }
+
     @RequestMapping(method = {RequestMethod.GET, RequestMethod.HEAD})
-    @Override
-    String mainPage(ModelMap modelMap, HttpServletRequest request) {
-        addCommonModelMapData(modelMap);
+    public Object helpPage(ModelMap modelMap, HttpServletRequest request) {
+        modelMap.addAllAttributes(pageCtrlUtils.commonPageData());
         return "help";
     }
 }
