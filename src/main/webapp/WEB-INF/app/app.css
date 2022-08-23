@@ -1,0 +1,14 @@
+/* Import tailwind */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base styles */
+@layer base {
+
+}
+
+/*  Custom css classes */
+@layer components {
+
+}
