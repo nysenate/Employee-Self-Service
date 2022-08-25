@@ -38,7 +38,7 @@ module.exports = {
         // Send api requests for these paths to the target base url while in dev mode.
         proxy: [
             {
-                context: ['/api'],
+                context: ['/api', '/assets'],
                 target: 'http://localhost:8080',
             }
         ],
