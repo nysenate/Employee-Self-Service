@@ -1,8 +1,10 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
 import "./app.css"
 import MyInfo from "app/views/myinfo/MyInfo";
 import { BrowserRouter, NavLink } from "react-router-dom";
+import { ThemeContext, themes } from "app/contexts/ThemeContext";
+import { createRoot } from "react-dom/client";
+
 
 function App() {
   return (
@@ -10,14 +12,17 @@ function App() {
       <BrowserRouter>
         <EssNavBar/>
         <div className="w-[1150px] pt-[70px] mx-auto">
-          <MyInfo/>
+          <ThemeContext.Provider value={themes.myinfo}>
+            <MyInfo/>
+          </ThemeContext.Provider>
         </div>
       </BrowserRouter>
     </div>
   )
 }
 
-ReactDOM.render(<App/>, document.getElementById('app'))
+const root = createRoot(document.getElementById('app'))
+root.render(<App />)
 
 function EssNavBar() {
   return (
@@ -32,16 +37,16 @@ function EssNavBar() {
             </div>
             <ul className="inline-block h-full">
               <li className="leading-[40px] inline-block h-full">
-                <AppLink name="My Info" to="myinfo" />
+                <AppLink name="My Info" to="myinfo"/>
               </li>
               <li className="leading-[40px] inline">
-                <AppLink name="Time & Attendance" to="time" />
+                <AppLink name="Time & Attendance" to="time"/>
               </li>
               <li className="leading-[40px] inline">
-                <AppLink name="Supply" to="supply" />
+                <AppLink name="Supply" to="supply"/>
               </li>
               <li className="leading-[40px] inline">
-                <AppLink name="Travel" to="travel" />
+                <AppLink name="Travel" to="travel"/>
               </li>
             </ul>
           </div>
@@ -54,7 +59,7 @@ function EssNavBar() {
   )
 }
 
-function AppLink({to, name}) {
+function AppLink({ to, name }) {
   const themeColor = '#175B81'
   const classes = "px-6"
   const activeClasses = "border-b-[3px] border-blue-700 inline-block h-full"

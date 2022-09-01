@@ -1,7 +1,10 @@
-import React from "react"
+import React, { useContext } from "react"
+import { ThemeContext } from "app/contexts/ThemeContext";
 
 
 export default function MyInfo() {
+
+  // const theme = useContext(ThemeContext)
   return (
     <div className="flex flex-row justify-between">
       <NavigationMenu>
