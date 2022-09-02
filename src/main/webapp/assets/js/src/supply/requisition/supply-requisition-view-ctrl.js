@@ -18,9 +18,9 @@ function supplyViewController($scope, historyApi, locationService, $window, $tim
         $scope.requisitionResponse = historyApi.get({id: id});
         $scope.requisitionResponse.$promise
             .then(extractShipment)
-            .then(printIfRequested)
             .then(generateHistory)
             .then(selectCurrentVersion)
+            .then(printIfRequested)
             .catch($scope.handleErrorResponse);
     };
 

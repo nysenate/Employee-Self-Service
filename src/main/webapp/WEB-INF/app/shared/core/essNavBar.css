@@ -1,0 +1,19 @@
+
+/*
+When links are clicked, their font changes from normal to semibold, this causes them to
+take up more space and shifts the nearby content.
+
+This css ::before styling will make the link always take up the same amount of space, preventing nearby
+elements from shifting when clicked.
+
+I tried to get this to work with tailwind as shown below, but I couldn't get it to work.
+<span className="inline-block before:block before:content-[attr(title)] before:font-semibold before:h-0 before:hidden before:overflow-hidden" title={name}>
+*/
+.app-link::before {
+    display: block;
+    content: attr(title);
+    font-weight: 600;
+    height: 0;
+    overflow: hidden;
+    visibility: hidden;
+}
