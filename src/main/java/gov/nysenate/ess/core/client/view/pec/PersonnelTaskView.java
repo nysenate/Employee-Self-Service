@@ -7,7 +7,7 @@ import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-public abstract class PersonnelTaskView implements ViewObject {
+public class PersonnelTaskView implements ViewObject {
 
     private final int taskId;
     private final PersonnelTaskType taskType;
