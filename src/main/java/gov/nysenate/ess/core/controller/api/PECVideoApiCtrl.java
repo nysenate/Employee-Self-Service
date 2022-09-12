@@ -5,6 +5,7 @@ import gov.nysenate.ess.core.client.response.error.ErrorCode;
 import gov.nysenate.ess.core.client.response.error.ErrorResponse;
 import gov.nysenate.ess.core.client.view.pec.video.PECVideoCodeSubmission;
 import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
+import gov.nysenate.ess.core.dao.pec.task.detail.VideoTaskDetailDao;
 import gov.nysenate.ess.core.model.auth.CorePermission;
 import gov.nysenate.ess.core.model.auth.CorePermissionObject;
 import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static gov.nysenate.ess.core.model.pec.PersonnelTaskType.VIDEO_CODE_ENTRY;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
@@ -29,10 +31,14 @@ public class PECVideoApiCtrl extends BaseRestApiCtrl {
     private final PersonnelTaskService personnelTaskService;
     private final PersonnelTaskAssignmentDao assignedTaskDao;
 
+    private final VideoTaskDetailDao videoTaskDetailDao;
+
     public PECVideoApiCtrl(PersonnelTaskService personnelTaskService,
-                           PersonnelTaskAssignmentDao assignedTaskDao) {
+                           PersonnelTaskAssignmentDao assignedTaskDao,
+                           VideoTaskDetailDao videoTaskDetailDao) {
         this.personnelTaskService = personnelTaskService;
         this.assignedTaskDao = assignedTaskDao;
+        this.videoTaskDetailDao = videoTaskDetailDao;
     }
 
     /**
@@ -55,7 +61,7 @@ public class PECVideoApiCtrl extends BaseRestApiCtrl {
 
         ensureEmpIdExists(submission.getEmpId(), "empId");
 
-        VideoTask videoTask = getVideoFromIdParams(submission.getTaskId(), "taskId");
+        VideoTask videoTask = (VideoTask) getVideoFromIdParams(submission.getTaskId(), "taskId");
 
         validateCodeFormat(submission.getCodes(), videoTask, "codes");
 
@@ -89,11 +95,11 @@ public class PECVideoApiCtrl extends BaseRestApiCtrl {
         try {
             PersonnelTask task = personnelTaskService.getPersonnelTask(taskId);
 
-            if (!(task instanceof VideoTask)) {
+            if (!(task.getTaskType() == VIDEO_CODE_ENTRY)) {
                 throw invalidTaskIdEx;
             }
 
-            return (VideoTask) task;
+            return videoTaskDetailDao.getTaskDetails(task);
         } catch (PersonnelTaskNotFoundEx ex) {
             throw invalidTaskIdEx;
         }
