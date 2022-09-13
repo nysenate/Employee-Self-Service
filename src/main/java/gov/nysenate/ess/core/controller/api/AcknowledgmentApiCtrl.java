@@ -33,6 +33,7 @@ import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import static gov.nysenate.ess.core.model.pec.PersonnelTaskType.DOCUMENT_ACKNOWLEDGMENT;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -163,13 +164,13 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
 
     /* --- Internal Methods --- */
 
-    private AckDoc getAckDoc(int taskId, String paramName) {
+    private boolean getAckDoc(int taskId, String paramName) {
         PersonnelTask task = taskService.getPersonnelTask(taskId);
-        if (!(task instanceof AckDoc)) {
+        if (!(task.getTaskType() == DOCUMENT_ACKNOWLEDGMENT)) {
             throw new InvalidRequestParamEx(taskId, paramName, "int",
                     "id must reference a personnel task of type ack doc");
         }
-        return (AckDoc) task;
+        return true;
     }
 
     private Resource loadFileAsResource(File file) throws IOException {
