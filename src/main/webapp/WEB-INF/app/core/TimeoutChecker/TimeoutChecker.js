@@ -1,5 +1,6 @@
 import React from "react"
 import { pingApi } from "app/core/TimeoutChecker/pingApi";
+import Modal from "app/shared/Modal";
 
 
 // Values are in Seconds.

@@ -13,11 +13,13 @@ function App() {
     <div>
       <BrowserRouter>
         <TimeoutChecker>
-          <EssNavBar/>
-          <div className="w-[1150px] pt-[70px] mx-auto">
-            <ThemeContext.Provider value={themes.myinfo}>
-              <MyInfo/>
-            </ThemeContext.Provider>
+          <div className="w-screen">
+            <EssNavBar/>
+            <div className="w-[1150px] pt-[70px] mx-auto">
+              <ThemeContext.Provider value={themes.myinfo}>
+                <MyInfo/>
+              </ThemeContext.Provider>
+            </div>
           </div>
         </TimeoutChecker>
       </BrowserRouter>

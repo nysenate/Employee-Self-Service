@@ -1,66 +1,66 @@
 <component name="ProjectCodeStyleConfiguration">
-  <code_scheme name="Project" version="173">
-    <DBN-PSQL>
-      <case-options enabled="true">
-        <option name="KEYWORD_CASE" value="lower" />
-        <option name="FUNCTION_CASE" value="lower" />
-        <option name="PARAMETER_CASE" value="lower" />
-        <option name="DATATYPE_CASE" value="lower" />
-        <option name="OBJECT_CASE" value="preserve" />
-      </case-options>
-      <formatting-settings enabled="false" />
-    </DBN-PSQL>
-    <DBN-SQL>
-      <case-options enabled="true">
-        <option name="KEYWORD_CASE" value="lower" />
-        <option name="FUNCTION_CASE" value="lower" />
-        <option name="PARAMETER_CASE" value="lower" />
-        <option name="DATATYPE_CASE" value="lower" />
-        <option name="OBJECT_CASE" value="preserve" />
-      </case-options>
-      <formatting-settings enabled="false">
-        <option name="STATEMENT_SPACING" value="one_line" />
-        <option name="CLAUSE_CHOP_DOWN" value="chop_down_if_statement_long" />
-        <option name="ITERATION_ELEMENTS_WRAPPING" value="chop_down_if_not_single" />
-      </formatting-settings>
-    </DBN-SQL>
-    <codeStyleSettings language="HTML">
-      <indentOptions>
-        <option name="INDENT_SIZE" value="2" />
-        <option name="CONTINUATION_INDENT_SIZE" value="4" />
-        <option name="TAB_SIZE" value="2" />
-      </indentOptions>
-    </codeStyleSettings>
-    <codeStyleSettings language="JAVA">
-      <option name="CLASS_ANNOTATION_WRAP" value="1" />
-      <option name="FIELD_ANNOTATION_WRAP" value="1" />
-    </codeStyleSettings>
-    <codeStyleSettings language="JSP">
-      <indentOptions>
-        <option name="INDENT_SIZE" value="2" />
-        <option name="CONTINUATION_INDENT_SIZE" value="4" />
-        <option name="TAB_SIZE" value="2" />
-      </indentOptions>
-    </codeStyleSettings>
-    <codeStyleSettings language="JSPX">
-      <indentOptions>
-        <option name="INDENT_SIZE" value="2" />
-        <option name="CONTINUATION_INDENT_SIZE" value="4" />
-        <option name="TAB_SIZE" value="2" />
-      </indentOptions>
-    </codeStyleSettings>
-    <codeStyleSettings language="JavaScript">
-      <option name="ALIGN_MULTILINE_PARAMETERS_IN_CALLS" value="true" />
-      <option name="ALIGN_MULTILINE_TERNARY_OPERATION" value="true" />
-      <option name="ALIGN_MULTILINE_ARRAY_INITIALIZER_EXPRESSION" value="true" />
-      <option name="TERNARY_OPERATION_SIGNS_ON_NEXT_LINE" value="true" />
-    </codeStyleSettings>
-    <codeStyleSettings language="XML">
-      <indentOptions>
-        <option name="INDENT_SIZE" value="2" />
-        <option name="CONTINUATION_INDENT_SIZE" value="4" />
-        <option name="TAB_SIZE" value="2" />
-      </indentOptions>
-    </codeStyleSettings>
-  </code_scheme>
+    <code_scheme name="Project" version="173">
+        <DBN-PSQL>
+            <case-options enabled="true">
+                <option name="KEYWORD_CASE" value="lower" />
+                <option name="FUNCTION_CASE" value="lower" />
+                <option name="PARAMETER_CASE" value="lower" />
+                <option name="DATATYPE_CASE" value="lower" />
+                <option name="OBJECT_CASE" value="preserve" />
+            </case-options>
+            <formatting-settings enabled="false" />
+        </DBN-PSQL>
+        <DBN-SQL>
+            <case-options enabled="true">
+                <option name="KEYWORD_CASE" value="lower" />
+                <option name="FUNCTION_CASE" value="lower" />
+                <option name="PARAMETER_CASE" value="lower" />
+                <option name="DATATYPE_CASE" value="lower" />
+                <option name="OBJECT_CASE" value="preserve" />
+            </case-options>
+            <formatting-settings enabled="false">
+                <option name="STATEMENT_SPACING" value="one_line" />
+                <option name="CLAUSE_CHOP_DOWN" value="chop_down_if_statement_long" />
+                <option name="ITERATION_ELEMENTS_WRAPPING" value="chop_down_if_not_single" />
+            </formatting-settings>
+        </DBN-SQL>
+        <codeStyleSettings language="HTML">
+            <indentOptions>
+                <option name="INDENT_SIZE" value="2" />
+                <option name="CONTINUATION_INDENT_SIZE" value="4" />
+                <option name="TAB_SIZE" value="2" />
+            </indentOptions>
+        </codeStyleSettings>
+        <codeStyleSettings language="JAVA">
+            <option name="CLASS_ANNOTATION_WRAP" value="1" />
+            <option name="FIELD_ANNOTATION_WRAP" value="1" />
+        </codeStyleSettings>
+        <codeStyleSettings language="JSP">
+            <indentOptions>
+                <option name="INDENT_SIZE" value="2" />
+                <option name="CONTINUATION_INDENT_SIZE" value="4" />
+                <option name="TAB_SIZE" value="2" />
+            </indentOptions>
+        </codeStyleSettings>
+        <codeStyleSettings language="JSPX">
+            <indentOptions>
+                <option name="INDENT_SIZE" value="2" />
+                <option name="CONTINUATION_INDENT_SIZE" value="4" />
+                <option name="TAB_SIZE" value="2" />
+            </indentOptions>
+        </codeStyleSettings>
+        <codeStyleSettings language="JavaScript">
+            <option name="ALIGN_MULTILINE_PARAMETERS_IN_CALLS" value="true" />
+            <option name="ALIGN_MULTILINE_TERNARY_OPERATION" value="true" />
+            <option name="ALIGN_MULTILINE_ARRAY_INITIALIZER_EXPRESSION" value="true" />
+            <option name="TERNARY_OPERATION_SIGNS_ON_NEXT_LINE" value="true" />
+        </codeStyleSettings>
+        <codeStyleSettings language="XML">
+            <indentOptions>
+                <option name="INDENT_SIZE" value="2" />
+                <option name="CONTINUATION_INDENT_SIZE" value="4" />
+                <option name="TAB_SIZE" value="2" />
+            </indentOptions>
+        </codeStyleSettings>
+    </code_scheme>
 </component>

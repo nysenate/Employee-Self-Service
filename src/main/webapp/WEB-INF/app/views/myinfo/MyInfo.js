@@ -1,8 +1,10 @@
 import React, { useContext } from "react"
 import { ThemeContext } from "app/contexts/ThemeContext";
-
+import Modal from "app/shared/Modal";
+import { Dialog } from '@headlessui/react'
 
 export default function MyInfo() {
+  const [ isOpen, setIsOpen ] = React.useState(false)
 
   // const theme = useContext(ThemeContext)
   return (
@@ -39,9 +41,9 @@ function NavigationMenu({ children }) {
 
 function AppContent({ children }) {
   return (
-    <div className="w-[880px] flex-none">
+    <main className="w-[880px] flex-none">
       {children}
-    </div>
+    </main>
   )
 }
 

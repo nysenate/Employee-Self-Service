@@ -6,7 +6,7 @@ import { themes } from "app/contexts/ThemeContext";
 
 export default function EssNavBar() {
   return (
-    <nav className="fixed h-[45px] w-full bg-gray-50 shadow">
+    <nav className="fixed h-[45px] w-screen bg-gray-50 shadow">
       <div className="w-[1150px] h-full mx-auto">
         <div className="h-full flex justify-between items-center">
           <div className="flex h-full items-center ml-2">
