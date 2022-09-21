@@ -29,7 +29,7 @@ export default function TimeoutChecker({ children }) {
 
   React.useEffect(() => {
     if (remainingTime < 0 || failedPings >= PING_FAIL_TOLERANCE) {
-      window.location.replace("http://localhost:8080/logout") // TODO remove hardcoded url
+      window.location.replace(`${process.env.DOMAIN_URL}/logout`)
       console.log("Logout user")
     } else if (remainingTime <= WARNING_THRESHOLD) { // TODO and modal not already open
       console.log("show idle prompt modal")
