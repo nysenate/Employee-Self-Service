@@ -21,6 +21,14 @@ export default function MyInfo() {
             Kevin
           </Hero>
           <div className="p-3">
+            <br/>
+            <br/>
+            <p>
+              All hours available need approval from appointing authority.
+            </p>
+            <br/>
+            <br/>
+            <br/>
             <StubText/>
           </div>
         </Card>

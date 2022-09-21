@@ -5,7 +5,9 @@
 
 /* Base styles */
 @layer base {
-
+    html {
+        @apply font-openSans;
+    }
 }
 
 /*  Custom css classes */
