@@ -386,10 +386,10 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
             if ( (timeEntries[i].payType === "RA" || timeEntries[i].payType === "SA") &&
                 timeEntries[i].totalHours === 0) {
                 nullRecordCount = nullRecordCount + 1;
-                if (timeEntries[i].workHours === 0 || timeEntries[i].travelHours === 0
-                    || timeEntries[i].holidayHours === 0 || timeEntries[i].vacationHours === 0
-                    || timeEntries[i].personalHours === 0 || timeEntries[i].sickEmpHours === 0
-                    || timeEntries[i].sickFamHours === 0 || timeEntries[i].miscHours === 0)  {
+                if (timeEntries[i].workHours !== null || timeEntries[i].travelHours !== null
+                    || timeEntries[i].holidayHours !== null || timeEntries[i].vacationHours !== null
+                    || timeEntries[i].personalHours !== null || timeEntries[i].sickEmpHours !== null
+                    || timeEntries[i].sickFamHours !== null || timeEntries[i].miscHours !== null)  {
                     nullRecordCount = nullRecordCount - 1;
                 }
             }
