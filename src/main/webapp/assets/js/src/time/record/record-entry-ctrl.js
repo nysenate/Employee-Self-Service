@@ -375,8 +375,32 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
      */
     $scope.recordValid = function () {
         var record = $scope.getSelectedRecord();
-        return !(record == null || $scope.selRecordHasEntryErrors());
+        return !(record == null || $scope.selRecordHasEntryErrors() );
     };
+
+    $scope.isRecordEmpty = function (record) {
+        var timeEntries = record.timeEntries;
+        var nullRecordCount = 0;
+
+        for (var i = 0; i < timeEntries.length; i++) {
+            if ( (timeEntries[i].payType === "RA" || timeEntries[i].payType === "SA") &&
+                timeEntries[i].totalHours === 0) {
+                nullRecordCount = nullRecordCount + 1;
+                if (timeEntries[i].workHours === 0 || timeEntries[i].travelHours === 0
+                    || timeEntries[i].holidayHours === 0 || timeEntries[i].vacationHours === 0
+                    || timeEntries[i].personalHours === 0 || timeEntries[i].sickEmpHours === 0
+                    || timeEntries[i].sickFamHours === 0 || timeEntries[i].miscHours === 0)  {
+                    nullRecordCount = nullRecordCount - 1;
+                }
+            }
+        }
+        if (nullRecordCount === timeEntries.length) {
+            //RECORD IS EMPTY RETURN TRUE
+            return true;
+        }
+        //RECORD HAS SOME DATA RETURN FALSE
+        return false;
+    }
 
     /**
      * Returns true if the record is submittable, i.e. it exists, passes all validations, and has ended or will end
@@ -386,7 +410,8 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
     $scope.recordSubmittable = function () {
         return !$scope.requestInProgress() &&
                $scope.recordValid() &&
-               !$scope.selRecordHasRecordErrors();
+               !$scope.selRecordHasRecordErrors() &&
+            !$scope.isRecordEmpty($scope.getSelectedRecord());
     };
 
     /**
