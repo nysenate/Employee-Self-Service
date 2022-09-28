@@ -2,6 +2,7 @@ import React, { useContext } from "react"
 import { ThemeContext } from "app/contexts/ThemeContext";
 import Modal from "app/shared/Modal";
 import { Dialog } from '@headlessui/react'
+import { Button } from "app/shared/Button";
 
 export default function MyInfo() {
   const [ isOpen, setIsOpen ] = React.useState(false)
@@ -26,6 +27,8 @@ export default function MyInfo() {
             <p>
               All hours available need approval from appointing authority.
             </p>
+            <Button variant="text" color="error" onClick={() => console.log("CLICK")} >Save</Button>
+            <Button variant="text" color="error" onClick={() => console.log("CLICK")} disabled>Save</Button>
             <br/>
             <br/>
             <br/>
