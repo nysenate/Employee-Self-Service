@@ -1,4 +1,5 @@
 #--------------------------------------------#
+#--------------------------------------------#
 # Senate Electronic Timesheets Configuration #
 #--------------------------------------------#
 
@@ -264,8 +265,6 @@ sage.api.url = https://pubgeo.nysenate.gov/api/v2
 # The senate helpline phone number
 helpline.phone.number =
 
-
-########################################################################################################################
 #---------------------------------------------#
 # Personnel Employee Compliance Configuration #
 #---------------------------------------------#
@@ -361,3 +360,12 @@ everfi.report.email =
 
 #Supports comma-separated emails
 pec.code.admin.emails =
+
+# --- Front End Configuration -----------------------------------------------------------
+
+# Configure which ESS applications should serve a ReactJS front end.
+# If true, the ReactJS front end will be used. If false, the AngularJS front end will be used.
+serve.react.myinfo = false
+serve.react.time = false
+serve.react.supply = false
+serve.react.travel = false
