@@ -73,5 +73,10 @@ public class WebInitializer implements WebApplicationInitializer
         DelegatingFilterProxy restApiFilter = new DelegatingFilterProxy("restApiFilter", dispatcherContext);
         servletContext.addFilter("restApiFilter", restApiFilter)
                 .addMappingForUrlPatterns(EnumSet.of(REQUEST, FORWARD, INCLUDE), false, BaseRestApiCtrl.REST_PATH + "*");
+
+        /** Registers the charsetRequestFilter which sets the charset to UTF-8 on all responses. */
+        DelegatingFilterProxy charsetRequestFilter = new DelegatingFilterProxy("charsetRequestFilter", dispatcherContext);
+        servletContext.addFilter("charsetRequestFilter", charsetRequestFilter)
+                .addMappingForUrlPatterns(EnumSet.of(REQUEST, FORWARD, INCLUDE, ERROR), false, "/*");
     }
 }
