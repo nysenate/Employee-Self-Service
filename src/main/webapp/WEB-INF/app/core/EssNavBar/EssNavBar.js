@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import React from "react";
 import './essNavBar.css'
 import { themes } from "app/contexts/ThemeContext";
@@ -40,6 +40,8 @@ export default function EssNavBar() {
 }
 
 function AppLink({ to, name, theme }) {
+  const location = useLocation()
+  const isActive = location.pathname.includes(theme)
   let themeBorder
   let themeText
 
@@ -65,18 +67,23 @@ function AppLink({ to, name, theme }) {
       themeText = "hover:text-gray-700"
   }
 
-  const classes = `text-[14.3px] inline-block h-full px-5 mx-0.5 border-0 hover:border-b-[3px] ${themeBorder} ${themeText}`
+  const baseClasses = `text-[14.3px] inline-block h-full px-5 mx-0.5 border-0 hover:border-b-[3px] ${themeBorder} ${themeText}`
   const activeClasses = `font-semibold border-b-[3px]`
+  const classes = baseClasses + " " + (isActive ? activeClasses : "")
   return (
-    <NavLink
-      to={to}
-      className={({ isActive }) =>
-        isActive ? `${classes} ${activeClasses}` : `${classes}`
-      }
-    >
-      <span className="app-link inline-block" title={name}>
-      {name}
-      </span>
-    </NavLink>
+    <a href={to} className={classes}>{name}</a>
   )
+  // TODO Can't use a NavLink until all ESS sub apps are implemented in React.
+  // return (
+  //   <NavLink
+  //     to={to}
+  //     className={({ isActive }) =>
+  //       isActive ? `${classes} ${activeClasses}` : `${classes}`
+  //     }
+  //   >
+  //     <span className="app-link inline-block" title={name}>
+  //     {name}
+  //     </span>
+  //   </NavLink>
+  // )
 }
