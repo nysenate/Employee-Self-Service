@@ -1,17 +1,13 @@
 package gov.nysenate.ess.core.service.transaction;
 
-import com.google.common.eventbus.EventBus;
 import gov.nysenate.ess.core.dao.transaction.EmpTransDaoOption;
 import gov.nysenate.ess.core.dao.transaction.EmpTransactionDao;
-import gov.nysenate.ess.core.model.cache.ContentCache;
+import gov.nysenate.ess.core.model.cache.CacheType;
 import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.model.transaction.TransactionHistoryMissingEx;
 import gov.nysenate.ess.core.model.transaction.TransactionHistoryUpdateEvent;
 import gov.nysenate.ess.core.model.transaction.TransactionRecord;
 import gov.nysenate.ess.core.service.base.CachingService;
-import gov.nysenate.ess.core.service.cache.EhCacheManageService;
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,30 +15,22 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Service
-public class EssCachedEmpTransactionService implements EmpTransactionService, CachingService<Integer>
-{
+public class EssCachedEmpTransactionService extends CachingService<Integer, TransactionHistory>
+        implements EmpTransactionService {
     private static final Logger logger = LoggerFactory.getLogger(EssCachedEmpTransactionService.class);
 
-    @Autowired EmpTransactionDao transactionDao;
-    @Autowired EventBus eventBus;
-    @Autowired EhCacheManageService ehCacheManageService;
-
-    private Cache transCache;
-    private LocalDateTime lastCheckTime;
+    private final EmpTransactionDao transactionDao;
     private LocalDateTime lastUpdateDateTime;
 
-    @PostConstruct
-    public void init() {
-        eventBus.register(this);
-        transCache = ehCacheManageService.registerEternalCache(getCacheType().name());
-        lastUpdateDateTime = transactionDao.getMaxUpdateDateTime();
-        lastCheckTime = LocalDateTime.now();
+    @Autowired
+    public EssCachedEmpTransactionService(EmpTransactionDao transactionDao) {
+        this.transactionDao = transactionDao;
+        this.lastUpdateDateTime = transactionDao.getMaxUpdateDateTime();
     }
 
     /** --- Transaction Service Methods --- */
@@ -50,22 +38,16 @@ public class EssCachedEmpTransactionService implements EmpTransactionService, Ca
     /** {@inheritDoc} */
     @Override
     public TransactionHistory getTransHistory(int empId) {
-        TransactionHistory transactionHistory;
-        transCache.acquireReadLockOnKey(empId);
-        Element cachedElem = transCache.get(empId);
-        try {
-            transactionHistory = (cachedElem == null)
-                ? getTransHistoryFromDao(empId)
-                : (TransactionHistory) cachedElem.getObjectValue();
+        TransactionHistory history = cache.get(empId);
+        if (history == null) {
+            try {
+                history = getTransHistoryFromDao(empId);
+            } catch (EmptyResultDataAccessException ex) {
+                throw new TransactionHistoryMissingEx(empId);
+            }
+            cache.put(empId, history);
         }
-        catch (EmptyResultDataAccessException ex) {
-            throw new TransactionHistoryMissingEx(empId);
-        }
-        finally {
-            transCache.releaseReadLockOnKey(empId);
-        }
-        if (cachedElem == null) putTransactionHistoryInCache(empId, transactionHistory);
-        return transactionHistory;
+        return history;
     }
 
     /** --- Caching Service Implemented Methods ---
@@ -73,21 +55,8 @@ public class EssCachedEmpTransactionService implements EmpTransactionService, Ca
 
     /** {@inheritDoc} */
     @Override
-    public ContentCache getCacheType() {
-        return ContentCache.TRANSACTION;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void evictContent(Integer empId) {
-        transCache.remove(empId);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void evictCache() {
-        logger.info("Clearing {} cache..", getCacheType());
-        transCache.removeAll();
+    public CacheType cacheType() {
+        return CacheType.TRANSACTION;
     }
 
     /** --- Internal Methods --- */
@@ -96,32 +65,21 @@ public class EssCachedEmpTransactionService implements EmpTransactionService, Ca
         return transactionDao.getTransHistory(empId, EmpTransDaoOption.INITIALIZE_AS_APP);
     }
 
-    private void putTransactionHistoryInCache(int empId, TransactionHistory transactionHistory) {
-        transCache.acquireWriteLockOnKey(empId);
-        try {
-            transCache.put(new Element(empId, transactionHistory));
-        }
-        finally {
-            transCache.releaseWriteLockOnKey(empId);
-        }
-    }
-
     @Scheduled(fixedDelayString = "${cache.poll.delay.transactions:60000}")
     private void syncTransHistory() {
         logger.info("Checking for transaction updates since {}...", lastUpdateDateTime);
         List<TransactionRecord> transRecs = transactionDao.updatedRecordsSince(lastUpdateDateTime);
-        lastCheckTime = LocalDateTime.now();
+        LocalDateTime lastCheckTime = LocalDateTime.now();
         logger.info("{} new transaction records have been found.", transRecs.size());
         if (!transRecs.isEmpty()) {
             // Get the last updated record date/time
             lastUpdateDateTime = transRecs.stream()
-                    .flatMap(tRec -> Arrays.asList(tRec.getAuditUpdateDate(), tRec.getUpdateDate()).stream())
+                    .flatMap(tRec -> Stream.of(tRec.getAuditUpdateDate(), tRec.getUpdateDate()))
                     .max(LocalDateTime::compareTo).get();
             // Gather a set of affected employee ids and refresh their transaction cache
             transRecs.stream().map(TransactionRecord::getEmployeeId).distinct().forEach(empId -> {
                 logger.info("Re-Caching transactions for employee {}", empId);
-                TransactionHistory transHistory = getTransHistoryFromDao(empId);
-                putTransactionHistoryInCache(empId, transHistory);
+                cache.put(empId, getTransHistoryFromDao(empId));
             });
             // Post the update event
             eventBus.post(new TransactionHistoryUpdateEvent(transRecs, lastCheckTime));

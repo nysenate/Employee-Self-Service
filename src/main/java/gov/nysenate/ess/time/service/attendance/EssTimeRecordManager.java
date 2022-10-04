@@ -5,8 +5,6 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import gov.nysenate.ess.core.config.DatabaseConfig;
 import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
-import gov.nysenate.ess.core.model.cache.CacheEvictIdEvent;
-import gov.nysenate.ess.core.model.cache.ContentCache;
 import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.model.period.PayPeriodType;
@@ -54,7 +52,7 @@ public class EssTimeRecordManager implements TimeRecordManager
     private static final Logger logger = LoggerFactory.getLogger(EssTimeRecordManager.class);
 
     /** A set of transactions that, when posted, will require changes in existing time records */
-    private static final ImmutableSet recordAlteringTransCodes =
+    private static final ImmutableSet<TransactionCode> recordAlteringTransCodes =
             ImmutableSet.of(
                     TransactionCode.SUP,    // Supervisor change
                     TransactionCode.TYP,    // Pay type change
@@ -69,7 +67,7 @@ public class EssTimeRecordManager implements TimeRecordManager
 
     /** --- Services --- */
     @Lazy
-    @Autowired protected TimeRecordService timeRecordService;
+    @Autowired protected EssCachedTimeRecordService timeRecordService;
     @Autowired protected AccrualInfoService accrualInfoService;
     @Autowired protected PayPeriodService payPeriodService;
     @Autowired protected EmpTransactionService transService;
@@ -79,7 +77,7 @@ public class EssTimeRecordManager implements TimeRecordManager
 
     @Autowired protected EventBus eventBus;
 
-    /** When set to false, the scheduled run of ensureAllRecords wont run */
+    /** When set to false, the scheduled run of ensureAllRecords won't run */
     @Value("${scheduler.timerecord.ensureall.enabled:false}")
     private boolean ensureAllEnabled;
 
@@ -235,7 +233,7 @@ public class EssTimeRecordManager implements TimeRecordManager
         } catch (Exception ex) {
             // If anything goes wrong, attempt to clear the employee's record cache.
             logger.warn("Clearing time record cache for emp:{} due to time record manager error.", empId);
-            eventBus.post(new CacheEvictIdEvent<>(ContentCache.ACTIVE_TIME_RECORDS, empId));
+            timeRecordService.evictContent(empId);
             throw ex;
         }
     }

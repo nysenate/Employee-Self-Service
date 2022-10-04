@@ -1,17 +1,14 @@
 package gov.nysenate.ess.time.service.attendance;
 
 import com.google.common.collect.*;
-import com.google.common.eventbus.EventBus;
 import gov.nysenate.ess.core.annotation.WorkInProgress;
 import gov.nysenate.ess.core.config.DatabaseConfig;
-import gov.nysenate.ess.core.model.cache.CacheEvictIdEvent;
-import gov.nysenate.ess.core.model.cache.ContentCache;
+import gov.nysenate.ess.core.model.cache.CacheType;
 import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.period.Holiday;
 import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.service.base.CachingService;
-import gov.nysenate.ess.core.service.cache.EhCacheManageService;
 import gov.nysenate.ess.core.service.period.HolidayService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
@@ -27,8 +24,6 @@ import gov.nysenate.ess.time.service.accrual.AccrualInfoService;
 import gov.nysenate.ess.time.service.attendance.validation.TimeRecordValidationService;
 import gov.nysenate.ess.time.service.notification.DisapprovalEmailService;
 import gov.nysenate.ess.time.service.personnel.SupervisorInfoService;
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.Element;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,18 +47,14 @@ import static java.util.stream.Collectors.toList;
 
 @Service
 @WorkInProgress(author = "Ash", since = "2015/09/11", desc = "Reworking methods in the class, adding caching")
-public class EssCachedTimeRecordService implements TimeRecordService, CachingService<Integer>
-{
+public class EssCachedTimeRecordService
+        extends CachingService<Integer, EssCachedTimeRecordService.TimeRecordCacheCollection>
+        implements TimeRecordService {
     private static final Logger logger = LoggerFactory.getLogger(EssCachedTimeRecordService.class);
 
     /** --- Daos --- */
     @Autowired protected TimeRecordDao timeRecordDao;
     @Autowired protected TimeRecordAuditDao auditDao;
-
-    /** --- Caching / Events --- */
-    @Autowired protected EventBus eventBus;
-    @Autowired protected EhCacheManageService cacheManageService;
-    private Cache activeRecordCache;
 
     /** --- Services --- */
     @Autowired protected TimeRecordManager timeRecordManager;
@@ -79,16 +70,13 @@ public class EssCachedTimeRecordService implements TimeRecordService, CachingSer
 
     @PostConstruct
     public void init() {
-        this.eventBus.register(this);
-        this.activeRecordCache = this.cacheManageService.registerEternalCache(getCacheType().name());
-        this.lastUpdateTime = timeRecordDao.getLatestUpdateTime();
+        lastUpdateTime = timeRecordDao.getLatestUpdateTime();
     }
 
     /** Helper class to store a collection of time records in a cache. */
-    protected static class TimeRecordCacheCollection
-    {
-        private int empId;
-        private Map<BigInteger, TimeRecord> cachedTimeRecords = new LinkedHashMap<>();
+    protected static class TimeRecordCacheCollection {
+        private final int empId;
+        private final Map<BigInteger, TimeRecord> cachedTimeRecords = new LinkedHashMap<>();
 
         public TimeRecordCacheCollection(int empId, Collection<TimeRecord> cachedTimeRecords) {
             this.empId = empId;
@@ -144,19 +132,11 @@ public class EssCachedTimeRecordService implements TimeRecordService, CachingSer
      */
     @Override
     public List<TimeRecord> getActiveTimeRecords(Integer empId) {
-        activeRecordCache.acquireReadLockOnKey(empId);
-        TimeRecordCacheCollection cachedRecs;
-        Element element = activeRecordCache.get(empId);
-        activeRecordCache.releaseReadLockOnKey(empId);
-        if (element != null) {
-            cachedRecs = (TimeRecordCacheCollection) element.getObjectValue();
-        }
-        else {
+        TimeRecordCacheCollection cachedRecs = cache.get(empId);
+        if (cachedRecs == null) {
             List<TimeRecord> records = timeRecordDao.getActiveRecords(empId);
             cachedRecs = new TimeRecordCacheCollection(empId, records);
-            activeRecordCache.acquireWriteLockOnKey(empId);
-            activeRecordCache.put(new Element(empId, cachedRecs));
-            activeRecordCache.releaseWriteLockOnKey(empId);
+            cache.put(empId, cachedRecs);
         }
         // Initialize time entries before returning records
         return cachedRecs.getTimeRecords().stream()
@@ -169,7 +149,7 @@ public class EssCachedTimeRecordService implements TimeRecordService, CachingSer
     public List<TimeRecord> getTimeRecords(Set<Integer> empIds, Range<LocalDate> dateRange,
                                            Set<TimeRecordStatus> statuses) {
         TreeMultimap<PayPeriod, TimeRecord> records = TreeMultimap.create();
-        timeRecordDao.getRecordsDuring(empIds, dateRange, EnumSet.allOf(TimeRecordStatus.class)).values().stream()
+        timeRecordDao.getRecordsDuring(empIds, dateRange, EnumSet.allOf(TimeRecordStatus.class)).values()
                 .forEach(rec -> records.put(rec.getPayPeriod(), rec));
         return records.values().stream()
                 .filter(record -> statuses.contains(record.getRecordStatus()))
@@ -306,7 +286,7 @@ public class EssCachedTimeRecordService implements TimeRecordService, CachingSer
         } catch (Exception ex) {
             // If anything goes wrong, attempt to clear the employee's record cache.
             logger.warn("Clearing time record cache for emp:{} due to time record save error.", empId);
-            eventBus.post(new CacheEvictIdEvent<>(ContentCache.ACTIVE_TIME_RECORDS, empId));
+            evictContent(empId);
             throw ex;
         }
     }
@@ -316,27 +296,10 @@ public class EssCachedTimeRecordService implements TimeRecordService, CachingSer
         return timeRecordDao.deleteRecord(timeRecordId);
     }
 
-    /** --- Caching Service Implemented Methods ---
-     * @see CachingService */
-
     /** {@inheritDoc} */
     @Override
-    public ContentCache getCacheType() {
-        return ContentCache.ACTIVE_TIME_RECORDS;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void evictContent(Integer empId) {
-        logger.info("Clearing active time record cache for employee {}", empId);
-        activeRecordCache.remove(empId);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void evictCache() {
-        logger.info("Clearing {} cache..", getCacheType());
-        activeRecordCache.removeAll();
+    public CacheType cacheType() {
+        return CacheType.ACTIVE_TIME_RECORDS;
     }
 
     /**
@@ -365,21 +328,15 @@ public class EssCachedTimeRecordService implements TimeRecordService, CachingSer
      * @param record TimeRecord
      */
     private void updateCache(TimeRecord record) {
-        int empId = record.getEmployeeId();
-        activeRecordCache.acquireWriteLockOnKey(empId);
-        try {
-            Element elem = activeRecordCache.get(empId);
-            if (elem != null) {
-                TimeRecordCacheCollection cachedRecs = (TimeRecordCacheCollection) elem.getObjectValue();
-                if (record.isActive() && TimeRecordStatus.inProgress().contains(record.getRecordStatus())) {
-                    initializeEntries(record);
-                    cachedRecs.update(record);
-                } else {
-                    cachedRecs.remove(record.getTimeRecordId());
-                }
-            }
-        } finally {
-            activeRecordCache.releaseWriteLockOnKey(empId);
+        TimeRecordCacheCollection cachedRecs = cache.get(record.getEmployeeId());
+        if (cachedRecs == null) {
+            return;
+        }
+        if (record.isActive() && TimeRecordStatus.inProgress().contains(record.getRecordStatus())) {
+            initializeEntries(record);
+            cachedRecs.update(record);
+        } else {
+            cachedRecs.remove(record.getTimeRecordId());
         }
     }
 
@@ -430,7 +387,7 @@ public class EssCachedTimeRecordService implements TimeRecordService, CachingSer
                         entry.setHolidayHours(holiday.get().getHours());
                     }
                     // Otherwise (SA), set the holiday hours to zero if it is null and a new entry
-                    else if (!entry.getHolidayHours().isPresent() && newEntry) {
+                    else if (entry.getHolidayHours().isEmpty() && newEntry) {
                         entry.setHolidayHours(BigDecimal.ZERO);
                     }
                 }

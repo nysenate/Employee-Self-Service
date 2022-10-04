@@ -9,8 +9,6 @@ import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.annotation.SillyTest;
 import gov.nysenate.ess.core.dao.transaction.EmpTransDaoOption;
 import gov.nysenate.ess.core.dao.transaction.EmpTransactionDao;
-import gov.nysenate.ess.core.model.cache.CacheEvictIdEvent;
-import gov.nysenate.ess.core.model.cache.ContentCache;
 import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.model.transaction.TransactionHistoryUpdateEvent;
 import gov.nysenate.ess.core.model.transaction.TransactionRecord;
@@ -55,7 +53,7 @@ public class CachedTransactionServiceTest extends BaseTest {
         timedGet(empId);
         timedGet(empId);
         logger.info("invalidating {}!", empId);
-        eventBus.post(new CacheEvictIdEvent<>(ContentCache.TRANSACTION, empId));
+        // TODO: remove empId
         timedGet(empId);
     }
 

@@ -3,11 +3,10 @@ package gov.nysenate.ess.core.service.personnel;
 import com.google.common.collect.DiscreteDomain;
 import com.google.common.collect.Range;
 import com.google.common.collect.RangeSet;
-import com.google.common.eventbus.EventBus;
 import gov.nysenate.ess.core.annotation.WorkInProgress;
 import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
 import gov.nysenate.ess.core.dao.unit.LocationDao;
-import gov.nysenate.ess.core.model.cache.ContentCache;
+import gov.nysenate.ess.core.model.cache.CacheType;
 import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.personnel.*;
 import gov.nysenate.ess.core.model.transaction.TransactionHistory;
@@ -15,14 +14,11 @@ import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.core.model.unit.LocationType;
 import gov.nysenate.ess.core.service.base.CachingService;
-import gov.nysenate.ess.core.service.cache.EhCacheManageService;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
 import gov.nysenate.ess.core.util.AsyncRunner;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.PaginatedList;
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -30,40 +26,35 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Service
-public class EssCachedEmployeeInfoService implements EmployeeInfoService, CachingService<Integer>
-{
+public class EssCachedEmployeeInfoService extends CachingService<Integer, Employee>
+        implements EmployeeInfoService {
     private static final Logger logger = LoggerFactory.getLogger(EssCachedEmployeeInfoService.class);
 
     private final EmployeeDao employeeDao;
     private final EmpTransactionService transService;
     private final LocationDao locationDao;
-
-    private volatile Cache empCache;
     private LocalDateTime lastUpdateDateTime;
 
     public EssCachedEmployeeInfoService(EmployeeDao employeeDao,
                                         EmpTransactionService transService,
                                         LocationDao locationDao,
-                                        EventBus eventBus,
-                                        EhCacheManageService cacheManageService,
                                         AsyncRunner asyncRunner) {
         this.employeeDao = employeeDao;
         this.transService = transService;
         this.locationDao = locationDao;
-
-        eventBus.register(this);
-        this.empCache = cacheManageService.registerEternalCache(getCacheType().name());
         lastUpdateDateTime = employeeDao.getLastUpdateTime();
-        if (cacheManageService.isWarmOnStartup()) {
+        if (warmOnStartup) {
             asyncRunner.run(this::warmCache);
         }
+    }
+
+    private void warmCache() {
+        clearCache(true);
     }
 
     /** Employee Info Service Implemented Methods ---
@@ -73,14 +64,12 @@ public class EssCachedEmployeeInfoService implements EmployeeInfoService, Cachin
     /** {@inheritDoc} */
     @Override
     public Employee getEmployee(int empId) throws EmployeeNotFoundEx {
-        empCache.acquireReadLockOnKey(empId);
-        Element elem = empCache.get(empId);
-        empCache.releaseReadLockOnKey(empId);
-        if (elem != null) {
-            return (Employee) elem.getObjectValue();
-        } else {
-            return getEmployeeAndPutInCache(empId);
+        Employee employee = cache.get(empId);
+        if (employee == null) {
+            employee = employeeDao.getEmployeeById(empId);
+            cache.put(employee.getEmployeeId(), employee);
         }
+        return employee;
     }
 
     /** {@inheritDoc} */
@@ -137,9 +126,7 @@ public class EssCachedEmployeeInfoService implements EmployeeInfoService, Cachin
     /** {@inheritDoc} */
     @Override
     public Set<Employee> getAllEmployees(boolean activeOnly) {
-        return activeOnly
-                ? employeeDao.getActiveEmployees()
-                : employeeDao.getAllEmployees();
+        return activeOnly ? employeeDao.getActiveEmployees() : employeeDao.getAllEmployees();
     }
 
     /** {@inheritDoc} */
@@ -159,61 +146,21 @@ public class EssCachedEmployeeInfoService implements EmployeeInfoService, Cachin
 
     /** {@inheritDoc} */
     @Override
-    public ContentCache getCacheType() {
-        return ContentCache.EMPLOYEE;
+    public CacheType cacheType() {
+        return CacheType.EMPLOYEE;
     }
 
-    /** {@inheritDoc} */
     @Override
-    public void evictContent(Integer empId) {
-        empCache.remove(empId);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void evictCache() {
-        logger.info("Clearing {} cache..", getCacheType());
-        empCache.removeAll();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void warmCache() {
-        logger.info("Refreshing employee cache..");
-        empCache.removeAll();
+    protected Map<Integer, Employee> initialEntries() {
+        var map = new HashMap<Integer, Employee>();
         Set<Employee> activeEmployees = employeeDao.getAllEmployees();
-        activeEmployees.forEach(this::cacheEmployee);
-        logger.info("Finished refreshing employee cache: {} employees cached", activeEmployees.size());
-    }
-
-    /* --- Caching Methods --- */
-
-    /**
-     * Fetches the employee from the database with the given empId and saves the Employee object
-     * into the employee cache.
-     * @param empId int - Employee Id
-     * @return Employee
-     */
-    private Employee getEmployeeAndPutInCache(int empId) {
-        Employee employee = employeeDao.getEmployeeById(empId);
-        cacheEmployee(employee);
-        return employee;
-    }
-
-    /**
-     * Saves the given employee info into the employee cache
-     * @param employee Employee
-     */
-    private void cacheEmployee(Employee employee) {
-        int empId = employee.getEmployeeId();
-        empCache.acquireWriteLockOnKey(empId);
-        empCache.put(new Element(empId, employee));
-        empCache.releaseWriteLockOnKey(empId);
+        activeEmployees.forEach(employee -> map.put(employee.getEmployeeId(), employee));
+        return map;
     }
 
     @Scheduled(fixedDelayString = "${cache.poll.delay.employees:43200000}")
     @WorkInProgress(author = "sam", since = "10/30/2015", desc = "insufficient live testing")
-    public void syncEmployeeCache() {
+    private void syncEmployeeCache() {
         // Get employees updated since the last check
         logger.debug("syncing employee cache: getting emps updated since {}", lastUpdateDateTime);
         List<Employee> updatedEmps = employeeDao.getUpdatedEmployees(lastUpdateDateTime);
@@ -230,8 +177,8 @@ public class EssCachedEmployeeInfoService implements EmployeeInfoService, Cachin
 
             // Insert all updated employees that are active or already cached
             long cached = updatedEmps.stream()
-                    .filter(emp -> emp.isActive() || empCache.get(emp.getEmployeeId()) != null)
-                    .peek(this::cacheEmployee)
+                    .filter(emp -> emp.isActive() || cache.get(emp.getEmployeeId()) != null)
+                    .peek(employee -> cache.put(employee.getEmployeeId(), employee))
                     .count();
             logger.debug("cached {} of {} updated employees", cached, updatedEmps.size());
         } else {

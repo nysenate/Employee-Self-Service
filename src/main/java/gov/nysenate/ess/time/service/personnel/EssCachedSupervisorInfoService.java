@@ -1,16 +1,14 @@
 package gov.nysenate.ess.time.service.personnel;
 
 import com.google.common.collect.*;
-import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import gov.nysenate.ess.core.annotation.WorkInProgress;
-import gov.nysenate.ess.core.model.cache.ContentCache;
+import gov.nysenate.ess.core.model.cache.CacheType;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.transaction.TransactionCode;
 import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.model.transaction.TransactionHistoryUpdateEvent;
 import gov.nysenate.ess.core.service.base.CachingService;
-import gov.nysenate.ess.core.service.cache.EhCacheManageService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
 import gov.nysenate.ess.core.util.AsyncRunner;
@@ -18,8 +16,6 @@ import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.RangeUtils;
 import gov.nysenate.ess.time.dao.personnel.SupervisorDao;
 import gov.nysenate.ess.time.model.personnel.*;
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +23,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -37,41 +32,46 @@ import static gov.nysenate.ess.core.model.transaction.TransactionCode.*;
 import static gov.nysenate.ess.time.model.personnel.SupOverrideType.EMPLOYEE;
 import static gov.nysenate.ess.time.model.personnel.SupOverrideType.SUPERVISOR;
 
+// TODO: I don't think you can use an optional here. Is it ok to just map to a boolean or a default PrimarySupEmpGroup?
 @Service
-public class EssCachedSupervisorInfoService implements SupervisorInfoService, CachingService<Integer>
-{
+public class EssCachedSupervisorInfoService extends CachingService<Integer, EssCachedSupervisorInfoService.SupGroupOptional>
+        implements SupervisorInfoService {
     private static final Logger logger = LoggerFactory.getLogger(EssCachedSupervisorInfoService.class);
 
     /** A set of transactions that can affect a supervisor employee group */
     private static final ImmutableSet<TransactionCode> supervisorTransCodes =
             ImmutableSet.of(SUP, APP, RTP, EMP, AGY, TYP);
 
-    /** Employees are assigned this value in the cache if they are not supervisors */
-    private static final Object NON_SUPERVISOR_VALUE = Boolean.FALSE;
-
-    @Autowired private EmpTransactionService empTransService;
-    @Autowired private EmployeeInfoService empInfoService;
-    @Autowired private SupervisorDao supervisorDao;
-    @Autowired private EhCacheManageService cacheManageService;
-    @Autowired private EventBus eventBus;
-    @Autowired private AsyncRunner asyncRunner;
+    private final EmpTransactionService empTransService;
+    private final EmployeeInfoService empInfoService;
+    private final SupervisorDao supervisorDao;
+    private LocalDateTime lastSupOvrUpdate;
 
     @Value("${cache.warm.onstartup.supervisors:true}")
-    private boolean warmOnStartup;
+    private boolean supervisorWarmOnStartup;
 
-    private Cache supEmployeeGroupCache;
-
-    private LocalDateTime lastSupOvrUpdate;
-    private LocalDateTime lastSupTransUpdate;
-
-    @PostConstruct
-    public void init() {
-        eventBus.register(this);
-        supEmployeeGroupCache = cacheManageService.registerEternalCache(getCacheType().name());
-        lastSupOvrUpdate = lastSupTransUpdate = supervisorDao.getLastSupUpdateDate();
-        if (cacheManageService.isWarmOnStartup() && warmOnStartup) {
+    @Autowired
+    public EssCachedSupervisorInfoService(EmpTransactionService empTransService,
+                                          EmployeeInfoService empInfoService,
+                                          SupervisorDao supervisorDao, AsyncRunner asyncRunner) {
+        this.empTransService = empTransService;
+        this.empInfoService = empInfoService;
+        this.supervisorDao = supervisorDao;
+        this.lastSupOvrUpdate = supervisorDao.getLastSupUpdateDate();
+        if (warmOnStartup && supervisorWarmOnStartup) {
             // Run asynchronously since this will take a while
             asyncRunner.run(this::warmCache);
+        }
+    }
+
+    private void warmCache() {
+        clearCache(true);
+    }
+
+    static class SupGroupOptional {
+        private final Optional<PrimarySupEmpGroup> value;
+        SupGroupOptional(PrimarySupEmpGroup value) {
+            this.value = Optional.ofNullable(value);
         }
     }
 
@@ -219,28 +219,17 @@ public class EssCachedSupervisorInfoService implements SupervisorInfoService, Ca
 
     /** {@inheritDoc} */
     @Override
-    public ContentCache getCacheType() {
-        return ContentCache.SUPERVISOR_EMP_GROUP;
+    public CacheType cacheType() {
+        return CacheType.SUPERVISOR_EMP_GROUP;
     }
 
     /** {@inheritDoc} */
     @Override
-    public void evictContent(Integer supId) {
-        supEmployeeGroupCache.remove(supId);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void evictCache() {
-        logger.info("Clearing {} cache..", getCacheType());
-        supEmployeeGroupCache.removeAll();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void warmCache() {
-        evictCache();
-        logger.info("Warming {} cache...", getCacheType());
+    public void clearCache(boolean warmCache) {
+        cache.clear();
+        if (!warmCache) {
+            return;
+        }
         // Cache all extended sup emp groups
         Set<Integer> activeEmpIds = empInfoService.getActiveEmpIds();
         TreeSet<Integer> sortedActiveEmpIds = new TreeSet<>(activeEmpIds);
@@ -249,7 +238,6 @@ public class EssCachedSupervisorInfoService implements SupervisorInfoService, Ca
                 getExtendedSupEmpGroup(empId, DateUtils.ALL_DATES);
             } catch (SupervisorMissingEmpsEx ignored) {}
         }
-        logger.info("{} cache warmed.", getCacheType());
     }
 
     /* --- Internal Methods --- */
@@ -281,13 +269,9 @@ public class EssCachedSupervisorInfoService implements SupervisorInfoService, Ca
                 continue;
             }
             switch (override.getSupOverrideType()) {
-                case SUPERVISOR:
-                    getSupOverrideEmps(override)
-                            .forEach(empGroup::addSupOverrideEmployee);
-                    break;
-                case EMPLOYEE:
-                    getEmpOverrideEmp(override).forEach(empGroup::addOverrideEmployee);
-                    break;
+                case SUPERVISOR -> getSupOverrideEmps(override)
+                        .forEach(empGroup::addSupOverrideEmployee);
+                case EMPLOYEE -> getEmpOverrideEmp(override).forEach(empGroup::addOverrideEmployee);
             }
         }
 
@@ -368,40 +352,22 @@ public class EssCachedSupervisorInfoService implements SupervisorInfoService, Ca
      * Get a {@link PrimarySupEmpGroup} for the given employee
      * The group will be retrieved from the cache if it exists there
      * Or pulled from the database (and into the cache) if not
-     * @see #getCachedPrimarySupEmpGroup(int)
      * @see #getAndCachePrimarySupEmpGroup(int)
      * @param supId int - supervisor id
      * @return {@link PrimarySupEmpGroup}
      * @throws SupervisorException if the employee has no direct employees
      */
     private PrimarySupEmpGroup getPrimarySupEmpGroup(int supId) throws SupervisorException {
-        PrimarySupEmpGroup primarySupEmpGroup =
-                Optional.ofNullable(getCachedPrimarySupEmpGroup(supId))
-                        .orElseGet(() -> this.getAndCachePrimarySupEmpGroup(supId));
-
-        // Return a copy to prevent unintentional modification to the cached value
-        return new PrimarySupEmpGroup(primarySupEmpGroup);
-    }
-
-    /**
-     * Get a {@link PrimarySupEmpGroup} from the cache for the given supervisor
-     *
-     * @param supId int - supervisor id
-     * @return {@link PrimarySupEmpGroup} if one exists, null otherwise
-     * @throws SupervisorException if the employee is registered in the cache as a non-supervisor
-     */
-    private PrimarySupEmpGroup getCachedPrimarySupEmpGroup(int supId) throws SupervisorException {
-        supEmployeeGroupCache.acquireReadLockOnKey(supId);
-        Element cachedElem = supEmployeeGroupCache.get(supId);
-        supEmployeeGroupCache.releaseReadLockOnKey(supId);
-        if (cachedElem == null) {
-            return null;
+        var result = cache.get(supId);
+        if (result == null) {
+            return new PrimarySupEmpGroup(getAndCachePrimarySupEmpGroup(supId));
         }
-        Object cachedValue = cachedElem.getObjectValue();
-        if (NON_SUPERVISOR_VALUE.equals(cachedValue)) {
+        else if (result.value.isEmpty()) {
             throw new SupervisorMissingEmpsEx(supId);
         }
-        return (PrimarySupEmpGroup) cachedElem.getObjectValue();
+
+        // Return a copy to prevent unintentional modification to the cached value
+        return new PrimarySupEmpGroup(result.value.get());
     }
 
     /**
@@ -414,56 +380,12 @@ public class EssCachedSupervisorInfoService implements SupervisorInfoService, Ca
     private PrimarySupEmpGroup getAndCachePrimarySupEmpGroup(int supId) throws SupervisorException {
         try {
             PrimarySupEmpGroup primarySupEmpGroup = supervisorDao.getPrimarySupEmpGroup(supId);
-            putValueInCache(supId, primarySupEmpGroup);
+            cache.put(supId, new SupGroupOptional(primarySupEmpGroup));
             return primarySupEmpGroup;
         } catch (SupervisorException ex) {
-            putValueInCache(supId, NON_SUPERVISOR_VALUE);
+            cache.put(supId, new SupGroupOptional(null));
             throw ex;
         }
-    }
-
-    private void putValueInCache(int empId, Object value) {
-        supEmployeeGroupCache.acquireWriteLockOnKey(empId);
-        try {
-            supEmployeeGroupCache.put(new Element(empId, value));
-        }
-        finally {
-            supEmployeeGroupCache.releaseWriteLockOnKey(empId);
-        }
-    }
-
-    private Iterator<PrimarySupEmpGroup> getCachedEmpGroupItr() {
-        List<?> keys = supEmployeeGroupCache.getKeys();
-        return new Iterator<PrimarySupEmpGroup>() {
-            private Queue<?> queue = new ArrayDeque<>(keys);
-
-            private PrimarySupEmpGroup next = getNextEmpGroup();
-
-            @Override
-            public boolean hasNext() {
-                return next != null;
-            }
-
-            @Override
-            public PrimarySupEmpGroup next() {
-                if (next == null) {
-                    throw new IllegalStateException("Next value does not exist");
-                }
-                PrimarySupEmpGroup rtrn = next;
-                next = getNextEmpGroup();
-                return rtrn;
-            }
-
-            private PrimarySupEmpGroup getNextEmpGroup() {
-                while (!queue.isEmpty()) {
-                    Object result = supEmployeeGroupCache.get(queue.remove()).getObjectValue();
-                    if (result instanceof PrimarySupEmpGroup) {
-                        return (PrimarySupEmpGroup) result;
-                    }
-                }
-                return null;
-            }
-        };
     }
 
     /**
@@ -520,15 +442,16 @@ public class EssCachedSupervisorInfoService implements SupervisorInfoService, Ca
      */
     private Set<Integer> getAffectedSupIdsInCache(Map<Integer, RangeSet<LocalDate>> affectedEmpDates) {
         Set<Integer> affectedSupIds = new HashSet<>();
-        if (!affectedEmpDates.isEmpty()) {
-            for (Iterator<PrimarySupEmpGroup> it = getCachedEmpGroupItr(); it.hasNext(); ) {
-                PrimarySupEmpGroup seg = it.next();
-                // Check if the supervisor had any of the affected emps during the relevant dates.
-                for (Map.Entry<Integer, RangeSet<LocalDate>> empDates : affectedEmpDates.entrySet()) {
-                    for (Range<LocalDate> dates : empDates.getValue().asRanges()) {
-                        if (seg.hasEmployeeDuringRange(empDates.getKey(), dates)) {
-                            affectedSupIds.add(seg.getSupervisorId());
-                        }
+        for (var entry : cache) {
+            if (entry.getValue().value.isEmpty()) {
+                continue;
+            }
+            PrimarySupEmpGroup group = entry.getValue().value.get();
+            // Check if the supervisor had any of the affected emps during the relevant dates.
+            for (Map.Entry<Integer, RangeSet<LocalDate>> empDates : affectedEmpDates.entrySet()) {
+                for (Range<LocalDate> dates : empDates.getValue().asRanges()) {
+                    if (group.hasEmployeeDuringRange(empDates.getKey(), dates)) {
+                        affectedSupIds.add(group.getSupervisorId());
                     }
                 }
             }
@@ -563,12 +486,8 @@ public class EssCachedSupervisorInfoService implements SupervisorInfoService, Ca
     @Scheduled(fixedDelayString = "${cache.poll.delay.supervisors:60000}")
     private void syncSupervisorCache() {
         logger.debug("Checking for supervisor override updates...");
-        Set<Integer> modifiedSups = new HashSet<>();
-
-        modifiedSups.addAll(getOvrUpdatedSups());
-
+        Set<Integer> modifiedSups = new HashSet<>(getOvrUpdatedSups());
         modifiedSups.forEach(this::getAndCachePrimarySupEmpGroup);
-
         logger.debug("Refreshed {} supervisor emp groups", modifiedSups.size());
     }
 
