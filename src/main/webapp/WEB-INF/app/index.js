@@ -7,7 +7,7 @@ import TimeoutChecker from "app/core/TimeoutChecker/TimeoutChecker";
 import Supply from "app/views/supply/Supply";
 import Time from "app/views/time/Time";
 import Travel from "app/views/travel/Travel";
-import AppLayout from "app/AppLayout";
+import EssLayout from "app/core/EssLayout";
 
 
 function App() {
@@ -15,7 +15,7 @@ function App() {
     <BrowserRouter>
       <TimeoutChecker>
         <Routes>
-          <Route path="/" element={<AppLayout/>}>
+          <Route path="/" element={<EssLayout/>}>
             <Route path="/myinfo/*" element={<MyInfo/>}/>
             <Route path="/time/*" element={<Time/>}/>
             <Route path="/supply/*" element={<Supply/>}/>

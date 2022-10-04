@@ -3,7 +3,7 @@ import EssNavBar from "app/core/EssNavBar/EssNavBar";
 import { Outlet } from "react-router-dom";
 
 
-export default function AppLayout() {
+export default function EssLayout() {
   return (
     <div className="w-screen">
       <EssNavBar/>

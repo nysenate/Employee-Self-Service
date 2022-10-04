@@ -1,6 +1,8 @@
-import React, { useContext } from "react"
+import React from "react"
 import { ThemeContext, themes } from "app/contexts/ThemeContext";
-import { Routes, Route, Outlet } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
+import Navigation from "app/shared/Navigation";
+import AppLayout from "app/shared/AppLayout";
 
 
 // TODO remove Routes, instead use it so that loaders, etc can be used.
@@ -21,50 +23,20 @@ export default function MyInfo() {
 
 function MyInfoLayout() {
   return (
-    <div className="flex flex-row justify-between">
-      <NavigationMenu>
-        <Hero>
+    <AppLayout>
+      <Navigation>
+        <Navigation.Title>
           My Info Menu
-        </Hero>
-        Paycheck
-      </NavigationMenu>
-      <AppContent>
-        <Outlet/>
-      </AppContent>
-    </div>
-  )
-}
-
-function NavigationMenu({ children }) {
-  return (
-    <nav className="w-[250px] flex-none">
-      <Card>
-        {children}
-      </Card>
-    </nav>
-  )
-}
-
-function AppContent({ children }) {
-  return (
-    <main className="w-[880px] flex-none">
-      {children}
-    </main>
-  )
-}
-
-function Card({ children }) {
-  return (
-    <div className="bg-white shadow">
-      {children}
-    </div>
-  )
-}
-
-function Hero({ children }) {
-  return (
-    <div className="px-3 py-2 bg-blue-800 text-base text-white font-medium">
-      {children}
-    </div>
+        </Navigation.Title>
+        <Navigation.Section name="Personnel">
+          <Navigation.Link to="/myinfo/personnel/summary">
+            Paycheck History
+          </Navigation.Link>
+          <Navigation.Link to="/myinfo/personnel/emergency-alert-info">
+            Emergency Alert Info
+          </Navigation.Link>
+        </Navigation.Section>
+      </Navigation>
+    </AppLayout>
   )
 }
