@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 
 /**
  * Copied from https://github.com/gpedro/slack-webhook with some customizations
@@ -65,7 +66,7 @@ public class SlackApi {
             int responseCode = connection.getResponseCode();
             if (responseCode != 200) {
                 InputStream es = connection.getErrorStream();
-                String errorMessage = IOUtils.toString(es);
+                String errorMessage = IOUtils.toString(es, Charset.defaultCharset());
                 IOUtils.closeQuietly(es);
 
                 if (responseCode == 404 && channelNotFoundMessage.equals(errorMessage)) {
@@ -75,7 +76,7 @@ public class SlackApi {
                 throw new SlackApiException(errorMessage, responseCode);
             }
             InputStream is = connection.getInputStream();
-            String responseMessage = IOUtils.toString(is);
+            String responseMessage = IOUtils.toString(is, Charset.defaultCharset());
             IOUtils.closeQuietly(is);
 
             return responseMessage;
