@@ -176,11 +176,15 @@ function acknowledgmentCtrl($scope, $routeParams, $q, $location, $window, $timeo
      */
     function windowAtBottom () {
         var windowHeight = "innerHeight" in window ? window.innerHeight : document.documentElement.offsetHeight;
+        console.log("window height " + windowHeight);
         var body = document.body, html = document.documentElement;
+        console.log("body " + body);
         var docHeight = Math.max(body.scrollHeight, body.offsetHeight,
                                  html.clientHeight,  html.scrollHeight, html.offsetHeight);
+        console.log("docHeight " + docHeight);
         var windowBottom = windowHeight + window.pageYOffset;
-
+        console.log("wwindowBottom " + windowBottom);
+        console.log("windowBottom >= docHeight " + windowBottom >= docHeight);
         return windowBottom >= docHeight;
     }
 
