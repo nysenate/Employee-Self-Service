@@ -17,16 +17,16 @@ export default function EssNavBar() {
             </div>
             <ul className="h-full">
               <li className="leading-[40px] inline">
-                <AppLink name="My Info" to="myinfo" theme={themes.myinfo}/>
+                <AppLink name="My Info" to="/myinfo" theme={themes.myinfo}/>
               </li>
               <li className="leading-[40px] inline">
-                <AppLink name="Time & Attendance" to="time" theme={themes.time}/>
+                <AppLink name="Time & Attendance" to="/time" theme={themes.time}/>
               </li>
               <li className="leading-[40px] inline">
-                <AppLink name="Supply" to="supply" theme={themes.supply}/>
+                <AppLink name="Supply" to="/supply" theme={themes.supply}/>
               </li>
               <li className="leading-[40px] inline">
-                <AppLink name="Travel" to="travel" theme={themes.travel}/>
+                <AppLink name="Travel" to="/travel" theme={themes.travel}/>
               </li>
             </ul>
           </div>
