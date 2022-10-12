@@ -59,13 +59,13 @@ public class SqlPersonnelTaskDao extends SqlBaseDao implements PersonnelTaskDao 
     }
 
     @Override
-    public HashMap<String, Integer> getEverfiContentIDs() {
+    public HashMap<Integer, String> getEverfiContentIDs() {
         List<EverfiContentID> everfiContentIDList =
                 localJdbc.query(SELECT_EVERFI_CONTENT_IDS.getSql(schemaMap()), everfiContentIDRowMapper);
 
-        HashMap<String, Integer> everfiContentIDMap = new HashMap<>();
+        HashMap<Integer, String> everfiContentIDMap = new HashMap<>();
         for (EverfiContentID everfiContentID: everfiContentIDList) {
-            everfiContentIDMap.put(everfiContentID.getID(), everfiContentID.getTaskID());
+            everfiContentIDMap.put( everfiContentID.getTaskID(), everfiContentID.getID());
         }
 
         return everfiContentIDMap;

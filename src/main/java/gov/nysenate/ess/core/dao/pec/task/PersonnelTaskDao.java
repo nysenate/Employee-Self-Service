@@ -36,7 +36,7 @@ public interface PersonnelTaskDao {
     /**
      * Get a hash map of everfi content ID's to personnel task ids
      */
-    HashMap<String, Integer> getEverfiContentIDs();
+    HashMap<Integer, String> getEverfiContentIDs();
 
     /**
      * Get a hash map of everfi Assignment ID's to personnel task ids
