@@ -89,8 +89,6 @@ public class PersonnelTaskTestDao extends SqlBaseDao {
 
         localNamedJdbc.update(detailInsertSql, new MapSqlParameterSource("taskId", taskId));
 
-        clearTaskCache();
-
         return taskBuilder.setTaskId(taskId)
                 .build();
     }
@@ -103,12 +101,6 @@ public class PersonnelTaskTestDao extends SqlBaseDao {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("taskId", taskId)
                 .addValue("active", active);
-        int updated = localNamedJdbc.update(setActiveSql, params);
-        clearTaskCache();
-        return updated;
-    }
-
-    private void clearTaskCache() {
-        EssCacheManager.clearCaches(Set.of(CacheType.PERSONNEL_TASK), false);
+        return localNamedJdbc.update(setActiveSql, params);
     }
 }

@@ -22,7 +22,7 @@ public class SupervisorEmpGroupTest
      */
     @Test
     public void testGetAllEmployees() throws Exception {
-        SupervisorEmpGroup empGroup = new SupervisorEmpGroup();
+        SupervisorEmpGroup empGroup = new SupervisorEmpGroup(0);
         LocalDate date = LocalDate.now();
 
         Multimap<Integer, EmployeeSupInfo> primaryEmployees = HashMultimap.create();

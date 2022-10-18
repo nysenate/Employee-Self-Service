@@ -4,9 +4,7 @@ import com.google.common.eventbus.EventBus;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.client.view.CacheStatsView;
-import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.model.cache.CacheType;
-import gov.nysenate.ess.core.model.period.PayPeriodType;
 import gov.nysenate.ess.core.service.cache.EssCacheManager;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +14,11 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Set;
 
+import static gov.nysenate.ess.core.controller.api.BaseRestApiCtrl.ADMIN_REST_PATH;
 import static gov.nysenate.ess.core.controller.api.BaseRestApiCtrl.REST_PATH;
 
 @RestController
-@RequestMapping(value = REST_PATH + "admin/cache")
+@RequestMapping(value = ADMIN_REST_PATH + "/cache")
 public class CacheManagementCtrl extends BaseRestApiCtrl {
     @Autowired EventBus eventBus;
 
@@ -37,7 +36,8 @@ public class CacheManagementCtrl extends BaseRestApiCtrl {
     @RequiresPermissions("admin:cache:get")
     @RequestMapping(value = "/stats", method = {RequestMethod.GET, RequestMethod.HEAD})
     public ListViewResponse<CacheStatsView> getCacheStats() {
-        return ListViewResponse.of(Arrays.stream(CacheType.values()).map(CacheStatsView::new).toList());
+        return ListViewResponse.of(Arrays.stream(CacheType.values())
+                .map(EssCacheManager::getStatsView).toList());
     }
 
     /**
@@ -104,9 +104,8 @@ public class CacheManagementCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/{cacheName}", params = {"key"}, method = RequestMethod.DELETE)
     public SimpleResponse evictCacheElement(@PathVariable String cacheName,
                                             @RequestParam String key) {
-        CacheType cache = getEnumParameter("cacheName", cacheName, CacheType.class);
-        Object parsedKey = cache.getTypedKey(key);
-        // TODO: evict content
+        CacheType type = getEnumParameter("cacheName", cacheName, CacheType.class);
+        EssCacheManager.removeEntry(type, key);
         return new SimpleResponse(true,
                 "evicted element:" + key + " from cache:" + cacheName,
                 "cache-evict-success");
@@ -118,8 +117,6 @@ public class CacheManagementCtrl extends BaseRestApiCtrl {
         if ("all".equalsIgnoreCase(cacheName)) {
             return Set.of(CacheType.values());
         }
-        return EnumSet.of(
-                getEnumParameter("cacheName", cacheName, CacheType.class)
-        );
+        return EnumSet.of(getEnumParameter("cacheName", cacheName, CacheType.class));
     }
 }

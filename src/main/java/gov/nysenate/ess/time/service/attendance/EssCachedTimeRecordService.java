@@ -8,7 +8,7 @@ import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.period.Holiday;
 import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.model.transaction.TransactionHistory;
-import gov.nysenate.ess.core.service.base.CachingService;
+import gov.nysenate.ess.core.service.cache.CachingService;
 import gov.nysenate.ess.core.service.period.HolidayService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
@@ -286,7 +286,7 @@ public class EssCachedTimeRecordService
         } catch (Exception ex) {
             // If anything goes wrong, attempt to clear the employee's record cache.
             logger.warn("Clearing time record cache for emp:{} due to time record save error.", empId);
-            evictContent(empId);
+            cache.remove(empId);
             throw ex;
         }
     }

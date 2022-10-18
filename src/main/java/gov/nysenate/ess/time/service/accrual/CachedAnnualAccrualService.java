@@ -2,7 +2,7 @@ package gov.nysenate.ess.time.service.accrual;
 
 import com.google.common.collect.ImmutableSortedMap;
 import gov.nysenate.ess.core.model.cache.CacheType;
-import gov.nysenate.ess.core.service.base.CachingService;
+import gov.nysenate.ess.core.service.cache.CachingService;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.time.dao.accrual.AccrualDao;
 import gov.nysenate.ess.time.model.accrual.AnnualAccSummary;

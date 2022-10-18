@@ -1,19 +1,27 @@
 package gov.nysenate.ess.core.controller.api;
 
 import gov.nysenate.ess.core.client.response.base.SimpleResponse;
+import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
+import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
+import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
+import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.pec.assignment.CsvTaskAssigner;
 import gov.nysenate.ess.core.service.pec.external.PECVideoCSVService;
 import gov.nysenate.ess.core.service.pec.assignment.PersonnelTaskAssigner;
-import gov.nysenate.ess.core.service.pec.task.CachedPersonnelTaskService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.subject.Subject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static gov.nysenate.ess.core.model.auth.SimpleEssPermission.ADMIN;
 import static gov.nysenate.ess.core.model.auth.SimpleEssPermission.RUN_PERSONNEL_TASK_ASSIGNER;
@@ -23,19 +31,23 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 @RestController
 @RequestMapping(BaseRestApiCtrl.ADMIN_REST_PATH + "/personnel/task")
 public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
+    private static final Logger logger = LoggerFactory.getLogger(PersonnelTaskAdminApiCtrl.class);
 
     private final PersonnelTaskAssigner taskAssigner;
     private final PECVideoCSVService pecVideoCSVService;
     private final CsvTaskAssigner csvTaskAssigner;
-    private final CachedPersonnelTaskService cachedPersonnelTaskService;
+    private final EmployeeDao employeeDao;
+    private final PersonnelTaskAssignmentDao personnelTaskAssignmentDao;
 
     @Autowired
     public PersonnelTaskAdminApiCtrl(PersonnelTaskAssigner taskAssigner, PECVideoCSVService pecVideoCSVService,
-                                     CsvTaskAssigner csvTaskAssigner, CachedPersonnelTaskService cachedPersonnelTaskService) {
+                                     CsvTaskAssigner csvTaskAssigner, EmployeeDao employeeDao,
+                                     PersonnelTaskAssignmentDao personnelTaskAssignmentDao) {
         this.taskAssigner = taskAssigner;
         this.pecVideoCSVService = pecVideoCSVService;
         this.csvTaskAssigner = csvTaskAssigner;
-        this.cachedPersonnelTaskService = cachedPersonnelTaskService;
+        this.employeeDao = employeeDao;
+        this.personnelTaskAssignmentDao = personnelTaskAssignmentDao;
     }
 
     /**
@@ -214,7 +226,30 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/mark/complete", method = POST)
     public SimpleResponse markTasksComplete() {
         checkPermission(ADMIN.getPermission());
-        cachedPersonnelTaskService.markTasksComplete();
+        logger.info("Beginning the process of marking specific employees tasks complete");
+        Set<Employee> employees = employeeDao.getActiveEmployees();
+        Set<Employee> employeesToMarkComplete = new HashSet<>();
+        employeesToMarkComplete.add(employeeDao.getEmployeeById(7689));
+        employeesToMarkComplete.add(employeeDao.getEmployeeById(9268));
+        employeesToMarkComplete.add(employeeDao.getEmployeeById(12867));
+
+        for (Employee employee : employees) {
+            if (employee.isSenator()) {
+                employeesToMarkComplete.add(employee);
+            }
+        }
+
+        for (Employee employee : employeesToMarkComplete) {
+            List<PersonnelTaskAssignment> assignments =
+                    personnelTaskAssignmentDao.getAssignmentsForEmp(employee.getEmployeeId());
+            for (PersonnelTaskAssignment assignment : assignments) {
+                if (!assignment.isCompleted()) {
+                    personnelTaskAssignmentDao.setTaskComplete(
+                            employee.getEmployeeId(), assignment.getTaskId(), employee.getEmployeeId());
+                }
+            }
+        }
+        logger.info("Finished the process of marking specific employees tasks complete");
         return new SimpleResponse(true,
                 "The tasks have been marked complete",
                 "tasks-marked-complete");

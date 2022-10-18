@@ -10,6 +10,7 @@ import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.model.period.PayPeriodType;
 import gov.nysenate.ess.core.model.transaction.TransactionCode;
+import gov.nysenate.ess.core.service.cache.EssCacheManager;
 import gov.nysenate.ess.core.service.period.PayPeriodService;
 import gov.nysenate.ess.core.service.transaction.EssCachedEmpTransactionService;
 import gov.nysenate.ess.core.util.SortOrder;
@@ -103,7 +104,7 @@ public class EssTimeRecordManagerTest extends BaseTest
 
         postSplitTransaction(empId);
 
-        transService.evictContent(empId);
+        EssCacheManager.removeEntry(transService.cacheType(), String.valueOf(empId));
 
         manager.ensureRecords(empId);
     }

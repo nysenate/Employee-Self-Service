@@ -39,7 +39,7 @@ public class BaseRestApiCtrl
 
     public static final String REST_PATH = "/api/v1/";
     
-    public static final String ADMIN_REST_PATH = "/api/v1/admin";
+    public static final String ADMIN_REST_PATH = REST_PATH + "admin";
 
     /** Maximum number of results that can be requested via the query params. */
     private static final int MAX_LIMIT = 1000;

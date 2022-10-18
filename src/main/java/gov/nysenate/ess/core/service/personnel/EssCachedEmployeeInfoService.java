@@ -13,7 +13,7 @@ import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.core.model.unit.LocationType;
-import gov.nysenate.ess.core.service.base.CachingService;
+import gov.nysenate.ess.core.service.cache.CachingService;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
 import gov.nysenate.ess.core.util.AsyncRunner;
 import gov.nysenate.ess.core.util.DateUtils;
@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -42,19 +43,11 @@ public class EssCachedEmployeeInfoService extends CachingService<Integer, Employ
 
     public EssCachedEmployeeInfoService(EmployeeDao employeeDao,
                                         EmpTransactionService transService,
-                                        LocationDao locationDao,
-                                        AsyncRunner asyncRunner) {
+                                        LocationDao locationDao) {
         this.employeeDao = employeeDao;
         this.transService = transService;
         this.locationDao = locationDao;
         lastUpdateDateTime = employeeDao.getLastUpdateTime();
-        if (warmOnStartup) {
-            asyncRunner.run(this::warmCache);
-        }
-    }
-
-    private void warmCache() {
-        clearCache(true);
     }
 
     /** Employee Info Service Implemented Methods ---
@@ -153,7 +146,7 @@ public class EssCachedEmployeeInfoService extends CachingService<Integer, Employ
     @Override
     protected Map<Integer, Employee> initialEntries() {
         var map = new HashMap<Integer, Employee>();
-        Set<Employee> activeEmployees = employeeDao.getAllEmployees();
+        Set<Employee> activeEmployees = employeeDao.getActiveEmployees();
         activeEmployees.forEach(employee -> map.put(employee.getEmployeeId(), employee));
         return map;
     }

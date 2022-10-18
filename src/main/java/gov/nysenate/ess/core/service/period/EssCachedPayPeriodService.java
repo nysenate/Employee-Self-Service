@@ -9,10 +9,8 @@ import gov.nysenate.ess.core.model.cache.CacheType;
 import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.model.period.PayPeriodNotFoundEx;
 import gov.nysenate.ess.core.model.period.PayPeriodType;
-import gov.nysenate.ess.core.service.base.CachingService;
+import gov.nysenate.ess.core.service.cache.CachingService;
 import gov.nysenate.ess.core.util.SortOrder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -23,15 +21,11 @@ import java.util.*;
 @Service
 public class EssCachedPayPeriodService extends CachingService<PayPeriodType, EssCachedPayPeriodService.PayPeriodCacheTree>
         implements PayPeriodService {
-    private static final Logger logger = LoggerFactory.getLogger(EssCachedPayPeriodService.class);
     private final PayPeriodDao payPeriodDao;
 
     @Autowired
     public EssCachedPayPeriodService(PayPeriodDao payPeriodDao) {
         this.payPeriodDao = payPeriodDao;
-        if (warmOnStartup) {
-            cacheAfPayPeriods();
-        }
     }
 
     /**
@@ -91,6 +85,11 @@ public class EssCachedPayPeriodService extends CachingService<PayPeriodType, Ess
         return CacheType.PAY_PERIOD;
     }
 
+    @Override
+    protected void evictContent(String key) throws ClassCastException {
+        cache.remove(PayPeriodType.valueOf(key));
+    }
+
     /** --- Internal Methods --- */
 
     private PayPeriodCacheTree getCachedPayPeriodTree(PayPeriodType type) {
@@ -99,9 +98,6 @@ public class EssCachedPayPeriodService extends CachingService<PayPeriodType, Ess
             cache.put(type, getPeriodTree(type));
             // Try again.
             value = cache.get(type);
-            if (value == null) {
-                throw new IllegalStateException(type + " Pay Periods are not caching properly.");
-            }
         }
         return value;
     }
@@ -113,7 +109,7 @@ public class EssCachedPayPeriodService extends CachingService<PayPeriodType, Ess
 
     @Scheduled(cron = "${cache.cron.period}")
     private void cacheAfPayPeriods() {
-        cache.putAll(initialEntries());
+        clearCache(true);
     }
 
     private PayPeriodCacheTree getPeriodTree(PayPeriodType type) {

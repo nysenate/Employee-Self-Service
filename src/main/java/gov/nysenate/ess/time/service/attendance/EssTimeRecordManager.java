@@ -14,6 +14,7 @@ import gov.nysenate.ess.core.model.transaction.TransactionCode;
 import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.model.transaction.TransactionHistoryUpdateEvent;
 import gov.nysenate.ess.core.model.transaction.TransactionRecord;
+import gov.nysenate.ess.core.service.cache.EssCacheManager;
 import gov.nysenate.ess.core.service.period.PayPeriodService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.security.authorization.DepartmentalWhitelistService;
@@ -130,7 +131,7 @@ public class EssTimeRecordManager implements TimeRecordManager
                         return ensureRecords(empId,
                                 accrualInfoService.getOpenPayPeriods(PayPeriodType.AF, empId, SortOrder.ASC),
                                 timeRecordService.getActiveTimeRecords(empId),
-                                Optional.ofNullable(activeAttendanceRecords.get(empId)).orElse(Collections.emptyList()));
+                                Optional.of(activeAttendanceRecords.get(empId)).orElse(Collections.emptyList()));
                     } catch (Exception ex) {
                         // Catch and save exceptions to be reported at the end
                         LocalDateTime timestamp = LocalDateTime.now();
@@ -233,7 +234,7 @@ public class EssTimeRecordManager implements TimeRecordManager
         } catch (Exception ex) {
             // If anything goes wrong, attempt to clear the employee's record cache.
             logger.warn("Clearing time record cache for emp:{} due to time record manager error.", empId);
-            timeRecordService.evictContent(empId);
+            EssCacheManager.removeEntry(timeRecordService.cacheType(), String.valueOf(empId));
             throw ex;
         }
     }

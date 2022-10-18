@@ -3,6 +3,7 @@ package gov.nysenate.ess.core.service.base;
 import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.annotation.IntegrationTest;
 import gov.nysenate.ess.core.model.cache.CacheType;
+import gov.nysenate.ess.core.service.cache.CachingService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -10,10 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Optional;
 
 @Category(IntegrationTest.class)
 public class CachingServiceTest extends BaseTest{

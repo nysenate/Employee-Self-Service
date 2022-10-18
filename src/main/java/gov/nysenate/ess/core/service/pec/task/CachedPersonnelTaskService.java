@@ -3,23 +3,19 @@ package gov.nysenate.ess.core.service.pec.task;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
-import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
 import gov.nysenate.ess.core.dao.pec.task.PersonnelTaskDao;
 import gov.nysenate.ess.core.dao.pec.task.detail.PersonnelTaskDetailDao;
-import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
 import gov.nysenate.ess.core.model.cache.CacheType;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
-import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
 import gov.nysenate.ess.core.model.pec.video.PersonnelTaskAssignmentGroup;
-import gov.nysenate.ess.core.model.personnel.Employee;
-import gov.nysenate.ess.core.service.base.CachingService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import gov.nysenate.ess.core.service.cache.UnclearableCache;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -28,33 +24,16 @@ import java.util.stream.Collectors;
  * and utilizing caching to improve performance.
  */
 @Service
-public class CachedPersonnelTaskService extends CachingService<Integer, PersonnelTask>
+public class CachedPersonnelTaskService extends UnclearableCache<Integer, PersonnelTask>
         implements PersonnelTaskService {
-
-    private static final Logger logger = LoggerFactory.getLogger(CachedPersonnelTaskService.class);
-    /** Number of seconds the task map is valid in cache before it is evicted */
-    private static final int cacheEvictTime = 300;
-
     private final PersonnelTaskDao taskDao;
     private final ImmutableMap<PersonnelTaskType, PersonnelTaskDetailDao<?>> taskDetailDaoMap;
-    // TODO: move these two into PersonnelTaskAdminApiCtrl
-    private final EmployeeDao employeeDao;
-    private final PersonnelTaskAssignmentDao personnelTaskAssignmentDao;
 
     @Autowired
     public CachedPersonnelTaskService(PersonnelTaskDao taskDao,
-                                      List<PersonnelTaskDetailDao<?>> taskDetailDaos,
-                                      EmployeeDao employeeDao,
-                                      PersonnelTaskAssignmentDao personnelTaskAssignmentDao) {
+                                      List<PersonnelTaskDetailDao<?>> taskDetailDaos) {
         this.taskDao = taskDao;
         this.taskDetailDaoMap = Maps.uniqueIndex(taskDetailDaos, PersonnelTaskDetailDao::taskType);
-        this.employeeDao = employeeDao;
-        this.personnelTaskAssignmentDao = personnelTaskAssignmentDao;
-    }
-
-    @Override
-    public int expiryTimeSeconds() {
-        return cacheEvictTime;
     }
 
     @Override
@@ -73,7 +52,7 @@ public class CachedPersonnelTaskService extends CachingService<Integer, Personne
     }
 
     @Override
-    public PersonnelTask getPersonnelTask(int taskId, boolean getDetail) throws PersonnelTaskNotFoundEx {
+    public synchronized PersonnelTask getPersonnelTask(int taskId, boolean getDetail) throws PersonnelTaskNotFoundEx {
         PersonnelTask personnelTask = cache.get(taskId);
         if (personnelTask == null) {
             throw new PersonnelTaskNotFoundEx(taskId);
@@ -82,7 +61,7 @@ public class CachedPersonnelTaskService extends CachingService<Integer, Personne
     }
 
     @Override
-    public List<PersonnelTask> getPersonnelTasks(boolean activeOnly, boolean getDetail) {
+    public synchronized List<PersonnelTask> getPersonnelTasks(boolean activeOnly, boolean getDetail) {
         var iter = cache.iterator();
         List<PersonnelTask> list = new ArrayList<>();
         while (iter.hasNext()) {
@@ -111,36 +90,9 @@ public class CachedPersonnelTaskService extends CachingService<Integer, Personne
         return CacheType.PERSONNEL_TASK;
     }
 
-    @Override
-    public void evictContent(Integer key) {
-        super.clearCache(true);
-    }
-
-    public void markTasksComplete() {
-        logger.info("Beginning the process of marking specific employees tasks complete");
-        Set<Employee> employees = employeeDao.getActiveEmployees();
-        Set<Employee> employeesToMarkComplete = new HashSet<>();
-        employeesToMarkComplete.add(employeeDao.getEmployeeById(7689));
-        employeesToMarkComplete.add(employeeDao.getEmployeeById(9268));
-        employeesToMarkComplete.add(employeeDao.getEmployeeById(12867));
-
-        for (Employee employee : employees) {
-            if (employee.isSenator()) {
-                employeesToMarkComplete.add(employee);
-            }
-        }
-
-        for (Employee employee : employeesToMarkComplete) {
-            List<PersonnelTaskAssignment> assignments =
-                    personnelTaskAssignmentDao.getAssignmentsForEmp(employee.getEmployeeId());
-            for (PersonnelTaskAssignment assignment : assignments) {
-                if (!assignment.isCompleted()) {
-                    personnelTaskAssignmentDao.setTaskComplete(
-                            employee.getEmployeeId(), assignment.getTaskId(), employee.getEmployeeId());
-                }
-            }
-        }
-        logger.info("Finished the process of marking specific employees tasks complete");
+    @Scheduled(timeUnit = TimeUnit.MINUTES, fixedDelay = 5)
+    private void remakeCache() {
+        clearCache(true);
     }
 
     private PersonnelTask getDetailedTask(PersonnelTask basicTask) {

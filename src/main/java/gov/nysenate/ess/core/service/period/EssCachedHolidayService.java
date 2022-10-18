@@ -5,11 +5,10 @@ import com.google.common.collect.Range;
 import gov.nysenate.ess.core.dao.period.HolidayDao;
 import gov.nysenate.ess.core.model.cache.CacheType;
 import gov.nysenate.ess.core.model.period.Holiday;
-import gov.nysenate.ess.core.service.base.CachingService;
+import gov.nysenate.ess.core.service.cache.CachingService;
+import gov.nysenate.ess.core.service.cache.UnclearableCache;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.SortOrder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -19,7 +18,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class EssCachedHolidayService extends CachingService<String, EssCachedHolidayService.HolidayCacheTree>
+public class EssCachedHolidayService extends UnclearableCache<String, EssCachedHolidayService.HolidayCacheTree>
         implements HolidayService {
     private static final String HOLIDAY_CACHE_KEY = "holiday";
 
@@ -96,7 +95,8 @@ public class EssCachedHolidayService extends CachingService<String, EssCachedHol
         return Map.of(HOLIDAY_CACHE_KEY, new HolidayCacheTree(holidays));
     }
 
-    @Scheduled(cron = "${cache.cron.holiday}") // Refresh the cache every 12 hours
+    // Refresh the cache every 12 hours
+    @Scheduled(cron = "${cache.cron.holiday}")
     private void cacheHolidays() {
         clearCache(true);
     }

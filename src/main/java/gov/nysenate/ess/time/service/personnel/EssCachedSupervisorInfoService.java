@@ -8,7 +8,7 @@ import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.transaction.TransactionCode;
 import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.model.transaction.TransactionHistoryUpdateEvent;
-import gov.nysenate.ess.core.service.base.CachingService;
+import gov.nysenate.ess.core.service.cache.CachingService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
 import gov.nysenate.ess.core.util.AsyncRunner;
@@ -32,12 +32,12 @@ import static gov.nysenate.ess.core.model.transaction.TransactionCode.*;
 import static gov.nysenate.ess.time.model.personnel.SupOverrideType.EMPLOYEE;
 import static gov.nysenate.ess.time.model.personnel.SupOverrideType.SUPERVISOR;
 
-// TODO: I don't think you can use an optional here. Is it ok to just map to a boolean or a default PrimarySupEmpGroup?
 @Service
-public class EssCachedSupervisorInfoService extends CachingService<Integer, EssCachedSupervisorInfoService.SupGroupOptional>
+public class EssCachedSupervisorInfoService extends CachingService<Integer, PrimarySupEmpGroup>
         implements SupervisorInfoService {
     private static final Logger logger = LoggerFactory.getLogger(EssCachedSupervisorInfoService.class);
-
+    // This is how we represent an employee that isn't a supervisor.
+    private static final PrimarySupEmpGroup invalidGroup = new PrimarySupEmpGroup(Integer.MIN_VALUE);
     /** A set of transactions that can affect a supervisor employee group */
     private static final ImmutableSet<TransactionCode> supervisorTransCodes =
             ImmutableSet.of(SUP, APP, RTP, EMP, AGY, TYP);
@@ -58,21 +58,11 @@ public class EssCachedSupervisorInfoService extends CachingService<Integer, EssC
         this.empInfoService = empInfoService;
         this.supervisorDao = supervisorDao;
         this.lastSupOvrUpdate = supervisorDao.getLastSupUpdateDate();
-        if (warmOnStartup && supervisorWarmOnStartup) {
-            // Run asynchronously since this will take a while
-            asyncRunner.run(this::warmCache);
-        }
-    }
-
-    private void warmCache() {
-        clearCache(true);
-    }
-
-    static class SupGroupOptional {
-        private final Optional<PrimarySupEmpGroup> value;
-        SupGroupOptional(PrimarySupEmpGroup value) {
-            this.value = Optional.ofNullable(value);
-        }
+        // TODO: I mean, it shouldn't take long?
+//        if (warmOnStartup && supervisorWarmOnStartup) {
+//            // Run asynchronously since this will take a while
+//            asyncRunner.run(() -> clearCache(true));
+//        }
     }
 
     /** --- Supervisor Info Service Implemented Methods --- */
@@ -114,7 +104,6 @@ public class EssCachedSupervisorInfoService extends CachingService<Integer, EssC
     public ExtendedSupEmpGroup getExtendedSupEmpGroup(int supId, Range<LocalDate> dateRange) throws SupervisorException {
         SupervisorEmpGroup empGroup = getSupervisorEmpGroup(supId, dateRange);
         ExtendedSupEmpGroup extendedEmpGroup = new ExtendedSupEmpGroup(empGroup);
-
         Employee supervisor = empInfoService.getEmployee(supId);
 
         List<Integer> processedSupervisors = new ArrayList<>();
@@ -123,33 +112,35 @@ public class EssCachedSupervisorInfoService extends CachingService<Integer, EssC
 
         while (!supInfoQueue.isEmpty()) {
             EmployeeSupInfo supInfo = supInfoQueue.remove();
+            SecondarySupEmpGroup subEmpGroup;
             try {
-                SecondarySupEmpGroup subEmpGroup =
-                        new SecondarySupEmpGroup(getPrimarySupEmpGroup(supInfo.getEmpId()), supInfo.getSupId());
-                subEmpGroup.setActiveDates(supInfo.getEffectiveDateRange());
-                processedSupervisors.add(supInfo.getEmpId());
+                subEmpGroup = new SecondarySupEmpGroup(getPrimarySupEmpGroup(supInfo.getEmpId()),
+                        supInfo.getSupId());
+            } catch (SupervisorException ignored) {
+                // Do not add entries for employees that are not supervisors
+                continue;
+            }
+            subEmpGroup.setActiveDates(supInfo.getEffectiveDateRange());
+            processedSupervisors.add(supInfo.getEmpId());
 
-                // The employee may not be supervising any employees for their time under this supervisor
-                if (subEmpGroup.hasEmployees()) {
-                    extendedEmpGroup.addEmployeeSupEmpGroup(subEmpGroup);
-                }
+            // The employee may not be supervising any employees for their time under this supervisor
+            if (subEmpGroup.hasEmployees()) {
+                extendedEmpGroup.addEmployeeSupEmpGroup(subEmpGroup);
+            }
 
-                // If the primary supervisor is a senator,
-                // and the employee is in the senator's department,
-                // Add the employees of this employee to the queue
-                if (supervisor.isSenator() && supervisor.getRespCenterHeadCode() != null) {
-                    Employee employee = empInfoService.getEmployee(supInfo.getEmpId());
-                    if (supervisor.getRespCenterHeadCode().equals(employee.getRespCenterHeadCode())) {
-                        for (var info : subEmpGroup.getPrimaryEmpSupInfos()) {
-                            // Prevent an infinite loop when 2 emps are the supervisors for each other.
-                            if (!processedSupervisors.contains(info.getEmpId())) {
-                                supInfoQueue.add(info);
-                            }
+            // If the primary supervisor is a senator,
+            // and the employee is in the senator's department,
+            // Add the employees of this employee to the queue
+            if (supervisor.isSenator() && supervisor.getRespCenterHeadCode() != null) {
+                Employee employee = empInfoService.getEmployee(supInfo.getEmpId());
+                if (supervisor.getRespCenterHeadCode().equals(employee.getRespCenterHeadCode())) {
+                    for (var info : subEmpGroup.getPrimaryEmpSupInfos()) {
+                        // Prevent an infinite loop when 2 emps are the supervisors for each other.
+                        if (!processedSupervisors.contains(info.getEmpId())) {
+                            supInfoQueue.add(info);
                         }
                     }
                 }
-            } catch (SupervisorException ignored) {
-                // Do not add entries for employees that are not supervisors
             }
         }
 
@@ -223,9 +214,15 @@ public class EssCachedSupervisorInfoService extends CachingService<Integer, EssC
         return CacheType.SUPERVISOR_EMP_GROUP;
     }
 
+    @Override
+    protected Map<Integer, PrimarySupEmpGroup> initialEntries() {
+        // TODO: fix
+        return super.initialEntries();
+    }
+
     /** {@inheritDoc} */
     @Override
-    public void clearCache(boolean warmCache) {
+    public synchronized void clearCache(boolean warmCache) {
         cache.clear();
         if (!warmCache) {
             return;
@@ -259,8 +256,7 @@ public class EssCachedSupervisorInfoService extends CachingService<Integer, EssC
             if (overrides.isEmpty()) {
                 throw ex;
             }
-            empGroup = new SupervisorEmpGroup();
-            empGroup.setSupervisorId(supId);
+            empGroup = new SupervisorEmpGroup(supId);
         }
 
         for (SupervisorOverride override : overrides) {
@@ -362,12 +358,11 @@ public class EssCachedSupervisorInfoService extends CachingService<Integer, EssC
         if (result == null) {
             return new PrimarySupEmpGroup(getAndCachePrimarySupEmpGroup(supId));
         }
-        else if (result.value.isEmpty()) {
+        else if (result.getSupervisorId() == invalidGroup.getSupervisorId()) {
             throw new SupervisorMissingEmpsEx(supId);
         }
-
         // Return a copy to prevent unintentional modification to the cached value
-        return new PrimarySupEmpGroup(result.value.get());
+        return new PrimarySupEmpGroup(result);
     }
 
     /**
@@ -380,10 +375,10 @@ public class EssCachedSupervisorInfoService extends CachingService<Integer, EssC
     private PrimarySupEmpGroup getAndCachePrimarySupEmpGroup(int supId) throws SupervisorException {
         try {
             PrimarySupEmpGroup primarySupEmpGroup = supervisorDao.getPrimarySupEmpGroup(supId);
-            cache.put(supId, new SupGroupOptional(primarySupEmpGroup));
+            cache.put(supId, primarySupEmpGroup);
             return primarySupEmpGroup;
         } catch (SupervisorException ex) {
-            cache.put(supId, new SupGroupOptional(null));
+            cache.put(supId, invalidGroup);
             throw ex;
         }
     }
@@ -443,10 +438,10 @@ public class EssCachedSupervisorInfoService extends CachingService<Integer, EssC
     private Set<Integer> getAffectedSupIdsInCache(Map<Integer, RangeSet<LocalDate>> affectedEmpDates) {
         Set<Integer> affectedSupIds = new HashSet<>();
         for (var entry : cache) {
-            if (entry.getValue().value.isEmpty()) {
+            PrimarySupEmpGroup group = entry.getValue();
+            if (group.getSupervisorId() == invalidGroup.getSupervisorId()) {
                 continue;
             }
-            PrimarySupEmpGroup group = entry.getValue().value.get();
             // Check if the supervisor had any of the affected emps during the relevant dates.
             for (Map.Entry<Integer, RangeSet<LocalDate>> empDates : affectedEmpDates.entrySet()) {
                 for (Range<LocalDate> dates : empDates.getValue().asRanges()) {

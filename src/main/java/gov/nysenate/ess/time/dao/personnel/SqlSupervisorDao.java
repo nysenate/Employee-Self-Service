@@ -39,10 +39,11 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
             List<Object> booleans = remoteNamedJdbc.query(SqlSupervisorQuery.TEST_IF_SUPERVISOR.getSql(schemaMap()),
                     params, (rs, rowNum) -> rs.getString("1"));
 
-            if (booleans.isEmpty() || booleans == null) {
+            if (booleans.isEmpty()) {
                 return false;
             }
             else {
+                // TODO: "booleans" is really a list of Strings, so this fails. Note that the Strings are not just "false" or "true".
                 return (Boolean) booleans.get(0);
             }
         } catch (EmptyResultDataAccessException ex) {
