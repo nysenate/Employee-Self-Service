@@ -8,5 +8,6 @@ public enum PersonnelTaskType {
     MOODLE_COURSE,
     VIDEO_CODE_ENTRY,
     EVERFI_COURSE,
-    ETHICS_COURSE
+    ETHICS_COURSE,
+    ETHICS_LIVE_COURSE
 }
