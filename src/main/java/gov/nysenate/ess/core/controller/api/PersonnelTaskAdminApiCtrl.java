@@ -183,11 +183,18 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
      *
      * @return {@link SimpleResponse}
      */
-    @RequestMapping(value = "/overrride/csv/assign", method = GET)
-    public SimpleResponse overrideTaskAssignmentFromCSV() throws AuthorizationException, IOException {
+    @RequestMapping(value = "/overrride/csv/assign/{sts}", method = GET)
+    public SimpleResponse overrideTaskAssignmentFromCSV(@PathVariable boolean sts) throws AuthorizationException, IOException {
         Subject subject = SecurityUtils.getSubject();
         if (subject.hasRole("ADMIN") || subject.hasRole("PERSONNEL_COMPLIANCE_MANAGER") ) {
-            csvTaskAssigner.processCSVForManualAssignments();
+
+            if (sts) {
+                csvTaskAssigner.processCSVForSTSManualAssignments();
+            }
+            else {
+                csvTaskAssigner.processCSVForPersonnelManualAssignments();
+            }
+
             return new SimpleResponse(true,
                     "The batch assignment csv was processed successfully",
                     "employee-task-override");
