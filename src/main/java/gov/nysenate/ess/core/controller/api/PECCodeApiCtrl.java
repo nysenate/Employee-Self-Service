@@ -14,17 +14,23 @@ import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.ethics.EthicsLiveCourseTask;
 import gov.nysenate.ess.core.model.pec.video.IncorrectPECVideoCodeEx;
 import gov.nysenate.ess.core.model.pec.video.VideoTask;
+import gov.nysenate.ess.core.service.pec.task.PersonnelCodeGenerationService;
 import gov.nysenate.ess.core.service.pec.task.PersonnelTaskNotFoundEx;
 import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
 import gov.nysenate.ess.core.util.ShiroUtils;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.AuthorizationException;
+import org.apache.shiro.subject.Subject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 import static gov.nysenate.ess.core.model.pec.PersonnelTaskType.ETHICS_LIVE_COURSE;
 import static gov.nysenate.ess.core.model.pec.PersonnelTaskType.VIDEO_CODE_ENTRY;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
@@ -38,14 +44,48 @@ public class PECCodeApiCtrl extends BaseRestApiCtrl {
 
     private final EthicsLiveCourseTaskDetailDao ethicsLiveCourseTaskDetailDao;
 
+    private final PersonnelCodeGenerationService personnelCodeGenerationService;
+
     public PECCodeApiCtrl(PersonnelTaskService personnelTaskService,
                           PersonnelTaskAssignmentDao assignedTaskDao,
                           VideoTaskDetailDao videoTaskDetailDao,
-                          EthicsLiveCourseTaskDetailDao ethicsLiveCourseTaskDetailDao) {
+                          EthicsLiveCourseTaskDetailDao ethicsLiveCourseTaskDetailDao,
+                          PersonnelCodeGenerationService personnelCodeGenerationService) {
         this.personnelTaskService = personnelTaskService;
         this.assignedTaskDao = assignedTaskDao;
         this.videoTaskDetailDao = videoTaskDetailDao;
         this.ethicsLiveCourseTaskDetailDao = ethicsLiveCourseTaskDetailDao;
+        this.personnelCodeGenerationService = personnelCodeGenerationService;
+    }
+
+    /**
+     * Update Personnel Task Assignment API
+     * ------------------------------------
+     *
+     * Create new codes to be used for personnel ethics tasks
+     *
+     * Usage:
+     * (GET)   /api/v1/personnel/task/codes/generate
+     *
+     * Path params:
+     *
+     * @return {@link SimpleResponse}
+     */
+    @RequestMapping(value = "/codes/generate", method = GET)
+    public SimpleResponse generateNewCodes() throws AuthorizationException {
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.hasRole("ADMIN") || subject.hasRole("PERSONNEL_COMPLIANCE_MANAGER") ) {
+
+            String code1 = personnelCodeGenerationService.createCode();
+            String code2 = personnelCodeGenerationService.createCode();
+
+            return new SimpleResponse(true,
+                    "The new codes were generated successfully. " + "Code 1: " + code1 + " Code 2: " + code2,
+                    "employee-task-override");
+        }
+        return new SimpleResponse(false,
+                "You do not have permission to execute this api functionality",
+                "employee-task-override");
     }
 
     /**
