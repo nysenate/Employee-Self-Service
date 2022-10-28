@@ -17,6 +17,8 @@ import java.util.EnumMap;
 import java.util.Set;
 
 public final class EssCacheManager {
+    // Cache sizes are rounded to the nearest multiple of this, and are always at least this big.
+    private static final int FOR_ROUNDING = 50;
     private static final StatisticsService statisticsService = new DefaultStatisticsService();
     private static final CacheManager cacheManager = CacheManagerBuilder.newCacheManagerBuilder()
             .using(statisticsService).build(true);
@@ -24,19 +26,15 @@ public final class EssCacheManager {
             new EnumMap<>(CacheType.class);
     private static final EnumMap<CacheType, Integer> cacheCapacityMap = new EnumMap<>(CacheType.class);
 
-    @SuppressWarnings("unchecked")
-    static <K, V> Cache<K, V> createCache(CachingService<K, V> service, int size) {
-        var genSuper = service.getClass().getGenericSuperclass();
-        var classes = ((ParameterizedType) genSuper)
-                .getActualTypeArguments();
-        var keyClass = (Class<K>) classes[0];
-        Class<V> valueClass = (Class<V>) classes[1];
+    static <K, V> Cache<K, V> createCache(Class<K> keyClass, Class<V> valueClass, CachingService<K, V> service, int size) {
         var type = service.cacheType();
 
+        size = (int) ((Math.floor(size * 1.1/FOR_ROUNDING) + 1) * FOR_ROUNDING);
         cacheCapacityMap.put(type, size);
         var config = CacheConfigurationBuilder
-                .newCacheConfigurationBuilder(keyClass, valueClass, ResourcePoolsBuilder.heap(size))
-                .withSizeOfMaxObjectGraph(100000).withExpiry(ExpiryPolicy.NO_EXPIRY);
+                .newCacheConfigurationBuilder(keyClass, valueClass,
+                        ResourcePoolsBuilder.heap(size)).withSizeOfMaxObjectGraph(100000)
+                .withExpiry(ExpiryPolicy.NO_EXPIRY);
         cacheTypeMap.put(type, service);
         return cacheManager.createCache(type.name(), config);
     }

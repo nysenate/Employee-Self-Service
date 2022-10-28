@@ -15,9 +15,9 @@ import java.time.LocalDate;
 import java.util.SortedSet;
 
 @Category(SillyTest.class)
-public class EssCachedAccrualInfoServiceTest extends BaseTest
+public class EssAccrualInfoServiceTest extends BaseTest
 {
-    private static final Logger logger = LoggerFactory.getLogger(EssCachedAccrualInfoServiceTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(EssAccrualInfoServiceTest.class);
 
     @Autowired private AccrualInfoService accrualInfoService;
 

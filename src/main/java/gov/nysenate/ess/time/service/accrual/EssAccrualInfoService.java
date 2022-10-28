@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
  * A service that provides accrual information
  */
 @Service
-public class EssCachedAccrualInfoService implements AccrualInfoService {
+public class EssAccrualInfoService implements AccrualInfoService {
     @Autowired private CachedAnnualAccrualService cacheService;
     @Autowired private AttendanceDao attendanceDao;
     @Autowired private PayPeriodService payPeriodService;

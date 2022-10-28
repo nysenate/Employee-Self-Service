@@ -8,6 +8,7 @@ import gov.nysenate.ess.core.model.transaction.TransactionHistoryMissingEx;
 import gov.nysenate.ess.core.model.transaction.TransactionHistoryUpdateEvent;
 import gov.nysenate.ess.core.model.transaction.TransactionRecord;
 import gov.nysenate.ess.core.service.cache.CachingService;
+import gov.nysenate.ess.core.service.cache.EmployeeIdCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +18,11 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 @Service
-public class EssCachedEmpTransactionService extends CachingService<Integer, TransactionHistory>
+public class EssCachedEmpTransactionService extends EmployeeIdCache<TransactionHistory>
         implements EmpTransactionService {
     private static final Logger logger = LoggerFactory.getLogger(EssCachedEmpTransactionService.class);
 
@@ -57,6 +59,11 @@ public class EssCachedEmpTransactionService extends CachingService<Integer, Tran
     @Override
     public CacheType cacheType() {
         return CacheType.TRANSACTION;
+    }
+
+    @Override
+    protected void putId(int id) {
+        cache.put(id, getTransHistoryFromDao(id));
     }
 
     /** --- Internal Methods --- */

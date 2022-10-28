@@ -40,13 +40,13 @@ public class TaskPDFSignatureService {
 
     private final EmployeeInfoService empInfoService;
     private final SqlPersonnelTaskAssignmentDao taskAssignmentDao;
-    private final CachedPersonnelTaskService personnelTaskService;
+    private final EssPersonnelTaskService personnelTaskService;
     private final AckDocTaskDetailDao ackDocTaskDetailDao;
 
     @Autowired
     public TaskPDFSignatureService(EmployeeInfoService empInfoService,
                                    SqlPersonnelTaskAssignmentDao taskAssignmentDao,
-                                   CachedPersonnelTaskService personnelTaskService,
+                                   EssPersonnelTaskService personnelTaskService,
                                    AckDocTaskDetailDao ackDocTaskDetailDao) {
         this.empInfoService = empInfoService;
         this.taskAssignmentDao =  taskAssignmentDao;

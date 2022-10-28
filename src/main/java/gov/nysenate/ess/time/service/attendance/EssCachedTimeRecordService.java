@@ -9,6 +9,7 @@ import gov.nysenate.ess.core.model.period.Holiday;
 import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.service.cache.CachingService;
+import gov.nysenate.ess.core.service.cache.EmployeeIdCache;
 import gov.nysenate.ess.core.service.period.HolidayService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
@@ -48,7 +49,7 @@ import static java.util.stream.Collectors.toList;
 @Service
 @WorkInProgress(author = "Ash", since = "2015/09/11", desc = "Reworking methods in the class, adding caching")
 public class EssCachedTimeRecordService
-        extends CachingService<Integer, EssCachedTimeRecordService.TimeRecordCacheCollection>
+        extends EmployeeIdCache<EssCachedTimeRecordService.TimeRecordCacheCollection>
         implements TimeRecordService {
     private static final Logger logger = LoggerFactory.getLogger(EssCachedTimeRecordService.class);
 
@@ -300,6 +301,11 @@ public class EssCachedTimeRecordService
     @Override
     public CacheType cacheType() {
         return CacheType.ACTIVE_TIME_RECORDS;
+    }
+
+    @Override
+    protected void putId(int id) {
+        getActiveTimeRecords(id);
     }
 
     /**

@@ -6,6 +6,7 @@ package gov.nysenate.ess.core.model.cache;
  * up upon request.
  */
 public enum CacheType {
-    EMPLOYEE, ACCRUAL_ANNUAL, HOLIDAY, PAY_PERIOD, TRANSACTION,
-    SUPERVISOR_EMP_GROUP, ACTIVE_TIME_RECORDS, LOCATION, PERSONNEL_TASK
+    // TODO: TIME THESE, vs originals. and pseudo-caches
+    EMPLOYEE, ACCRUAL_ANNUAL, TRANSACTION,
+    SUPERVISOR_EMP_GROUP, ACTIVE_TIME_RECORDS
 }

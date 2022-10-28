@@ -14,8 +14,8 @@ import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.core.model.unit.LocationType;
 import gov.nysenate.ess.core.service.cache.CachingService;
+import gov.nysenate.ess.core.service.cache.EmployeeIdCache;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
-import gov.nysenate.ess.core.util.AsyncRunner;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.PaginatedList;
@@ -26,13 +26,12 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Service
-public class EssCachedEmployeeInfoService extends CachingService<Integer, Employee>
+public class EssCachedEmployeeInfoService extends EmployeeIdCache<Employee>
         implements EmployeeInfoService {
     private static final Logger logger = LoggerFactory.getLogger(EssCachedEmployeeInfoService.class);
 
@@ -78,7 +77,7 @@ public class EssCachedEmployeeInfoService extends CachingService<Integer, Employ
             employee.setPayType(PayType.valueOf(transHistory.latestValueOf("CDPAYTYPE", effectiveDate, true).orElse(null)));
         } catch (NullPointerException | IllegalArgumentException ignored) {}
         setRespCenterAtDate(employee, transHistory, effectiveDate);
-        employee.setWorkLocation(getWorkLocAtDate(employee, transHistory, effectiveDate));
+        employee.setWorkLocation(getWorkLocAtDate(transHistory, effectiveDate));
         return employee;
     }
 
@@ -144,11 +143,8 @@ public class EssCachedEmployeeInfoService extends CachingService<Integer, Employ
     }
 
     @Override
-    protected Map<Integer, Employee> initialEntries() {
-        var map = new HashMap<Integer, Employee>();
-        Set<Employee> activeEmployees = employeeDao.getActiveEmployees();
-        activeEmployees.forEach(employee -> map.put(employee.getEmployeeId(), employee));
-        return map;
+    protected void putId(int id) {
+        cache.put(id, employeeDao.getEmployeeById(id));
     }
 
     @Scheduled(fixedDelayString = "${cache.poll.delay.employees:43200000}")
@@ -217,7 +213,7 @@ public class EssCachedEmployeeInfoService extends CachingService<Integer, Employ
      * Get an employees work location at a particular date.
      * Return the location or null if they were not assigned a location.
      */
-    private Location getWorkLocAtDate(Employee emp, TransactionHistory transHistory, LocalDate effectiveDate) {
+    private Location getWorkLocAtDate(TransactionHistory transHistory, LocalDate effectiveDate) {
         boolean hasWorkLocation = transHistory.latestValueOf("CDLOCAT", effectiveDate, true).isPresent();
         if (!hasWorkLocation) {
             return null;

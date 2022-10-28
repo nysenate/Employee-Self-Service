@@ -19,16 +19,14 @@ public interface HolidayService
      * @param date LocalDate
      * @return {@link Optional<Holiday>}
      */
-    public Optional<Holiday> getActiveHoliday(LocalDate date);
+    Optional<Holiday> getActiveHoliday(LocalDate date);
 
     /**
-     * Retrieves a list of all the holidays that occur between the given dates inclusively in order
-     * of earliest first.
+     * Retrieves a list of all the holidays that occur between the given dates inclusively in
+     * ascending order by date.
      *
-     * @param dateRange Range<LocalDate> - The date range to search.
      * @param includeQuestionable boolean - Include questionable holidays
-     * @param dateOrder SortOrder - Order the results by date.
      * @return List<Holiday>
      */
-    public List<Holiday> getHolidays(Range<LocalDate> dateRange, boolean includeQuestionable, SortOrder dateOrder);
+    List<Holiday> getHolidays(LocalDate fromDate, LocalDate toDate, boolean includeQuestionable);
 }

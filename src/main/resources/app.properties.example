@@ -133,11 +133,6 @@ mail.test.address =
 
 # --- Eh Cache Configuration --------------------------------------------------
 
-# The amount of memory to allocate to Eh Cache for all heap based caches (MB).
-# This value cannot exceed the maximum jvm heap size or the application will
-# fail to startup. (Recommended: 1000)
-cache.max.size = 1000
-
 # Set to true if caches should be warmed when the application deploys, false
 # otherwise.
 cache.warm.onstartup = true

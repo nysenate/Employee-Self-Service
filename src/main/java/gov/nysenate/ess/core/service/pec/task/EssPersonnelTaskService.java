@@ -5,41 +5,37 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import gov.nysenate.ess.core.dao.pec.task.PersonnelTaskDao;
 import gov.nysenate.ess.core.dao.pec.task.detail.PersonnelTaskDetailDao;
-import gov.nysenate.ess.core.model.cache.CacheType;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
 import gov.nysenate.ess.core.model.pec.video.PersonnelTaskAssignmentGroup;
-import gov.nysenate.ess.core.service.cache.UnclearableCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Implements {@link PersonnelTaskService} using {@link PersonnelTaskDao} and {@link PersonnelTaskDetailDao}
  * and utilizing caching to improve performance.
  */
 @Service
-public class CachedPersonnelTaskService extends UnclearableCache<Integer, PersonnelTask>
-        implements PersonnelTaskService {
+public class EssPersonnelTaskService implements PersonnelTaskService {
     private final PersonnelTaskDao taskDao;
     private final ImmutableMap<PersonnelTaskType, PersonnelTaskDetailDao<?>> taskDetailDaoMap;
+    private ImmutableMap<Integer, PersonnelTask> taskMap;
 
     @Autowired
-    public CachedPersonnelTaskService(PersonnelTaskDao taskDao,
-                                      List<PersonnelTaskDetailDao<?>> taskDetailDaos) {
+    public EssPersonnelTaskService(PersonnelTaskDao taskDao,
+                                   List<PersonnelTaskDetailDao<?>> taskDetailDaos) {
         this.taskDao = taskDao;
         this.taskDetailDaoMap = Maps.uniqueIndex(taskDetailDaos, PersonnelTaskDetailDao::taskType);
-    }
-
-    @Override
-    protected Map<Integer, PersonnelTask> initialEntries() {
-        return taskDao.getAllTasks().stream().map(this::getDetailedTask)
-                .collect(Collectors.toMap(PersonnelTask::getTaskId, Function.identity()));
+        initializeData();
     }
 
     /* --- PersonnelTaskService implementations --- */
@@ -52,8 +48,8 @@ public class CachedPersonnelTaskService extends UnclearableCache<Integer, Person
     }
 
     @Override
-    public synchronized PersonnelTask getPersonnelTask(int taskId, boolean getDetail) throws PersonnelTaskNotFoundEx {
-        PersonnelTask personnelTask = cache.get(taskId);
+    public PersonnelTask getPersonnelTask(int taskId, boolean getDetail) throws PersonnelTaskNotFoundEx {
+        PersonnelTask personnelTask = taskMap.get(taskId);
         if (personnelTask == null) {
             throw new PersonnelTaskNotFoundEx(taskId);
         }
@@ -61,20 +57,14 @@ public class CachedPersonnelTaskService extends UnclearableCache<Integer, Person
     }
 
     @Override
-    public synchronized List<PersonnelTask> getPersonnelTasks(boolean activeOnly, boolean getDetail) {
-        var iter = cache.iterator();
-        List<PersonnelTask> list = new ArrayList<>();
-        while (iter.hasNext()) {
-            PersonnelTask task = iter.next().getValue();
-            if (!activeOnly || task.isActive()) {
-                list.add(task);
-            }
-        }
+    public List<PersonnelTask> getPersonnelTasks(boolean activeOnly, boolean getDetail) {
+        Stream<PersonnelTask> taskStream = taskMap.values().stream()
+                .filter(task -> !activeOnly || task.isActive());
         if (getDetail) {
-            list = list.stream().map(this::getDetailedTask).collect(Collectors.toList());
+            taskStream = taskStream.map(this::getDetailedTask);
         }
-        list.sort(Comparator.comparingInt(PersonnelTask::getTaskId));
-        return list;
+        return taskStream.sorted(Comparator.comparingInt(PersonnelTask::getTaskId))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -83,19 +73,13 @@ public class CachedPersonnelTaskService extends UnclearableCache<Integer, Person
                 .filter(task -> task.getAssignmentGroup() == assignmentGroup).toList();
     }
 
-    /* --- CachingService implementations --- */
-
-    @Override
-    public CacheType cacheType() {
-        return CacheType.PERSONNEL_TASK;
+    private PersonnelTask getDetailedTask(PersonnelTask basicTask) {
+        return taskDetailDaoMap.get(basicTask.getTaskType()).getTaskDetails(basicTask);
     }
 
     @Scheduled(timeUnit = TimeUnit.MINUTES, fixedDelay = 5)
-    private void remakeCache() {
-        clearCache(true);
-    }
-
-    private PersonnelTask getDetailedTask(PersonnelTask basicTask) {
-        return taskDetailDaoMap.get(basicTask.getTaskType()).getTaskDetails(basicTask);
+    private void initializeData() {
+        taskMap = taskDao.getAllTasks().stream()
+                .collect(ImmutableMap.toImmutableMap(PersonnelTask::getTaskId, Function.identity()));
     }
 }
