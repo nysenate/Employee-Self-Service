@@ -18,7 +18,8 @@ public class PersonnelCodeGenerationService {
     List<String> numberList = Arrays.asList(IntStream.rangeClosed('0', '9')
             .mapToObj(c -> (char) c+",").collect(Collectors.joining()).split(","));
 
-    List<String> characterList = Arrays.asList(IntStream.rangeClosed('A', 'Z')
+    List<String> characterList = Arrays.asList(IntStream.concat(IntStream.rangeClosed('P', 'Z'),
+                    IntStream.concat( IntStream.rangeClosed('A', 'H'), IntStream.rangeClosed('J', 'N')))
             .mapToObj(c -> (char) c+",").collect(Collectors.joining()).split(","));
 
     List<String> DecisionList = Arrays.asList(IntStream.rangeClosed('1', '2')
