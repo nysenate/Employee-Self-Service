@@ -1,7 +1,7 @@
 package gov.nysenate.ess.core.service.pec.assignment;
 
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
-import gov.nysenate.ess.core.model.pec.video.PersonnelTaskAssignmentGroup;
+import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignmentGroup;
 
 /**
  * A service that assigns {@link PersonnelTask}s of a specific {@link PersonnelTaskAssignmentGroup} to employees.

@@ -1,6 +1,5 @@
 package gov.nysenate.ess.core.model.pec;
 
-import gov.nysenate.ess.core.model.pec.video.PersonnelTaskAssignmentGroup;
 import gov.nysenate.ess.core.util.DateUtils;
 
 import java.time.LocalDateTime;

@@ -37,7 +37,7 @@ public class EverfiRecordService implements ESSEverfiRecordService {
     private PersonnelTaskDao personnelTaskDao;
     private EverfiUserService everfiUserService;
     private HashMap<Integer, Integer> everfiAssignmentIDMap;
-    private HashMap<String, Integer> everfiContentIDMap;
+    private HashMap<Integer, String> everfiContentIDMap;
 
     private static final Logger logger = LoggerFactory.getLogger(EverfiRecordService.class);
 
@@ -143,24 +143,22 @@ public class EverfiRecordService implements ESSEverfiRecordService {
 
                 try {
                     int empID = getEmployeeId(user);
-                    if (empID != 99999) {
+                    if (empID < 77000 && empID != 0) {
                         //assignment id from the json object
                         int assignmentID = assignmentAndProgress.getAssignment().getId();
-
                         //this is personnel taskid that should correspond with the everfi assignment id
                         Integer everfiTaskID = getEverfiTaskID(assignmentID);
-
                         //There is a max of 1 progress object in the progress array at any point
 
                         if (!assignmentAndProgress.getProgress().isEmpty()) {
                             EverfiAssignmentProgress progress = assignmentAndProgress.getProgress().get(0);
-                            String contentID = progress.getContentId();
-                            Integer potentialTaskID = everfiContentIDMap.get(contentID);
+                            String everfiApiContentID = progress.getContentId();
+                            String databaseRetrievedContentID = everfiContentIDMap.get(everfiTaskID);
 
                             //Each progress has a content id which should suggest a certain task.
                             // We check here that the progress and the assignment both correspond to the same task
-                            if (potentialTaskID != null && everfiTaskID != null
-                                    && potentialTaskID.intValue() == everfiTaskID.intValue()) {
+                            if (everfiTaskID != null && everfiApiContentID != null && databaseRetrievedContentID != null
+                            && everfiApiContentID.equalsIgnoreCase(databaseRetrievedContentID)) {
 
                                 LocalDateTime completedAt = null; //not completed by default
                                 boolean active = true; //true by default

@@ -1,4 +1,4 @@
-package gov.nysenate.ess.core.model.pec.video;
+package gov.nysenate.ess.core.model.pec;
 
 /**
  * Classification which dictates assignment logic for a task.

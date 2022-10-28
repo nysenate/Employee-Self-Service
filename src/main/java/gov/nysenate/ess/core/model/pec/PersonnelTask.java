@@ -2,7 +2,6 @@ package gov.nysenate.ess.core.model.pec;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.ComparisonChain;
-import gov.nysenate.ess.core.model.pec.video.PersonnelTaskAssignmentGroup;
 
 import java.time.LocalDateTime;
 import java.util.StringJoiner;
