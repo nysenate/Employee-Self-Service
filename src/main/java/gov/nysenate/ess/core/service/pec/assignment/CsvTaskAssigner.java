@@ -131,7 +131,7 @@ public class CsvTaskAssigner {
         CSVParser csvParser = new CSVParser(reader, CSVFormat.EXCEL);
         for (CSVRecord csvRecord : csvParser) {
 
-            if (csvRecord.get(0).equals("name".toLowerCase())) {
+            if (csvRecord.get(0).toLowerCase().equals("name")) {
                 continue;
             }
 
