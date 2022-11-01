@@ -8,6 +8,7 @@ import gov.nysenate.ess.core.client.response.error.ViewObjectErrorResponse;
 import gov.nysenate.ess.core.client.view.DetailedEmployeeView;
 import gov.nysenate.ess.core.client.view.pec.*;
 import gov.nysenate.ess.core.client.view.pec.acknowledgment.AckDocView;
+import gov.nysenate.ess.core.client.view.pec.ethicsLive.EthicsLiveCourseTaskView;
 import gov.nysenate.ess.core.client.view.pec.video.PECVideoView;
 import gov.nysenate.ess.core.dao.pec.assignment.PTAQueryBuilder;
 import gov.nysenate.ess.core.dao.pec.assignment.PTAQueryCompletionStatus;
@@ -19,6 +20,7 @@ import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.model.pec.*;
 import gov.nysenate.ess.core.model.pec.acknowledgment.AckDoc;
 import gov.nysenate.ess.core.model.pec.ethics.EthicsCourseTask;
+import gov.nysenate.ess.core.model.pec.ethics.EthicsLiveCourseTask;
 import gov.nysenate.ess.core.model.pec.everfi.EverfiCourseTask;
 import gov.nysenate.ess.core.model.pec.moodle.MoodleCourseTask;
 import gov.nysenate.ess.core.model.pec.video.VideoTask;
@@ -387,6 +389,8 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
                     new EverfiTaskView((EverfiCourseTask) cachedPersonnelTaskService.getDetailedTask(personnelTask));
             case ETHICS_COURSE ->
                     new EthicsCourseTaskView((EthicsCourseTask) cachedPersonnelTaskService.getDetailedTask(personnelTask));
+            case ETHICS_LIVE_COURSE ->
+                    new EthicsLiveCourseTaskView((EthicsLiveCourseTask) cachedPersonnelTaskService.getDetailedTask(personnelTask));
             default -> throw new IllegalArgumentException("No PersonnelTask exists of class: "
                     + personnelTask.getClass().getName());
         };

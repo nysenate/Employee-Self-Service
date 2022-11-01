@@ -13,7 +13,7 @@ public enum ErrorCode
     DUPLICATE_ACK(8, "The requested document has already been acknowledged"),
     INVALID_PARAM_TYPE(9, "One of the provided parameters could not be converted to the correct type"),
     PERSONNEL_ASSIGNED_TASK_NOT_FOUND(10, "The requested personnel assigned task could not be found."),
-    INVALID_PEC_VIDEO_CODE(11, "The submitted video code(s) are incorrect."),
+    INVALID_PEC_CODE(11, "The submitted personnel task code(s) are incorrect."),
 
     /** Errors with Personnel Records */
     INVALID_RC_ERROR(50, "There is an issue with your responsibility center in your personnel records"),

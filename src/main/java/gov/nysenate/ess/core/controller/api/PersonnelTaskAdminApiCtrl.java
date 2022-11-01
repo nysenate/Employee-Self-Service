@@ -177,17 +177,24 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
      * This api call updates assigned tasks for multiple employees based off of a csv file
      *
      * Usage:
-     * (GET)   /api/v1/admin/personnel/task/overrride/csv/assign
+     * (POST)   /api/v1/admin/personnel/task/overrride/csv/assign/{sts}
      *
      * Path params:
      *
      * @return {@link SimpleResponse}
      */
-    @RequestMapping(value = "/overrride/csv/assign", method = GET)
-    public SimpleResponse overrideTaskAssignmentFromCSV() throws AuthorizationException, IOException {
+    @RequestMapping(value = "/overrride/csv/assign/{sts}", method = POST)
+    public SimpleResponse overrideTaskAssignmentFromCSV(@PathVariable boolean sts) throws AuthorizationException, IOException {
         Subject subject = SecurityUtils.getSubject();
         if (subject.hasRole("ADMIN") || subject.hasRole("PERSONNEL_COMPLIANCE_MANAGER") ) {
-            csvTaskAssigner.processCSVForManualAssignments();
+
+            if (sts) {
+                csvTaskAssigner.processCSVForSTSManualAssignments();
+            }
+            else {
+                csvTaskAssigner.processCSVForPersonnelManualAssignments();
+            }
+
             return new SimpleResponse(true,
                     "The batch assignment csv was processed successfully",
                     "employee-task-override");
