@@ -2,7 +2,6 @@ package gov.nysenate.ess.time.service.accrual;
 
 import com.google.common.collect.ImmutableSortedMap;
 import gov.nysenate.ess.core.model.cache.CacheType;
-import gov.nysenate.ess.core.service.cache.CachingService;
 import gov.nysenate.ess.core.service.cache.EmployeeIdCache;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.time.dao.accrual.AccrualDao;
@@ -14,7 +13,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
+import java.util.TreeMap;
 
 @Service
 class CachedAnnualAccrualService extends EmployeeIdCache<CachedAnnualAccrualService.AnnualAccCacheTree> {
@@ -51,13 +51,10 @@ class CachedAnnualAccrualService extends EmployeeIdCache<CachedAnnualAccrualServ
     }
 
     ImmutableSortedMap<Integer, AnnualAccSummary> getAnnualAccruals(int empId, int endYear) {
-        AnnualAccCacheTree annualAccCacheTree = cache.get(empId);
-        if (annualAccCacheTree == null) {
-            annualAccCacheTree = new AnnualAccCacheTree(accrualDao
-                    .getAnnualAccruals(empId, DateUtils.THE_FUTURE.getYear()));
-            cache.put(empId, annualAccCacheTree);
+        if (!cache.containsKey(empId)) {
+            putId(empId);
         }
-        return ImmutableSortedMap.copyOf(annualAccCacheTree.headMap(endYear, true));
+        return ImmutableSortedMap.copyOf(cache.get(empId).headMap(endYear, true));
     }
 
     @Scheduled(fixedDelayString = "${cache.poll.delay.accruals:60000}")

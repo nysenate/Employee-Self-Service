@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 @Service
@@ -40,16 +39,14 @@ public class EssCachedEmpTransactionService extends EmployeeIdCache<TransactionH
     /** {@inheritDoc} */
     @Override
     public TransactionHistory getTransHistory(int empId) {
-        TransactionHistory history = cache.get(empId);
-        if (history == null) {
+        if (!cache.containsKey(empId)) {
             try {
-                history = getTransHistoryFromDao(empId);
+                putId(empId);
             } catch (EmptyResultDataAccessException ex) {
                 throw new TransactionHistoryMissingEx(empId);
             }
-            cache.put(empId, history);
         }
-        return history;
+        return cache.get(empId);
     }
 
     /** --- Caching Service Implemented Methods ---
