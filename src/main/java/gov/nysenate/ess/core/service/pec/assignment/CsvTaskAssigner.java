@@ -118,6 +118,7 @@ public class CsvTaskAssigner {
             Matcher manualMatcher = personnelManualAsssignmentCSV.matcher(fileName);
 
             if (manualMatcher.matches()) {
+                logger.info("Beginning record processing for file " + fileName);
                 processPersonnelManualAssignments(file);
             }
 
@@ -137,7 +138,7 @@ public class CsvTaskAssigner {
             }
 
             try {
-                String email = csvRecord.get(1);
+                String email = csvRecord.get(1).toLowerCase().trim();
                 int taskId =  Integer.parseInt(csvRecord.get(3));
                 //verify that the employee exists. We don't want bad data in the database
                 Employee employee = employeeDao.getEmployeeByEmail(email);
