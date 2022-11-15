@@ -183,7 +183,7 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
      *
      * @return {@link SimpleResponse}
      */
-    @RequestMapping(value = "/overrride/csv/assign/{sts}", method = POST)
+    @RequestMapping(value = "/override/csv/assign/{sts}", method = POST)
     public SimpleResponse overrideTaskAssignmentFromCSV(@PathVariable boolean sts) throws AuthorizationException, IOException {
         Subject subject = SecurityUtils.getSubject();
         if (subject.hasRole("ADMIN") || subject.hasRole("PERSONNEL_COMPLIANCE_MANAGER") ) {
