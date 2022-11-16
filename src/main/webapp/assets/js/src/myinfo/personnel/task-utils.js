@@ -179,7 +179,7 @@
                     return new EverfiCourse(task);
                 case 'ETHICS_COURSE':
                     return new EthicsCourseTask(task);
-                case 'ETHICS_COURSE_LIVE':
+                case 'ETHICS_LIVE_COURSE':
                     return new EthicsCourseLiveTask(task);
                 default:
                     console.error("Unknown task type '" + taskType + "'!");

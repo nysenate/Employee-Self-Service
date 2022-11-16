@@ -1,6 +1,6 @@
 <section ng-controller="EthicsCourseLiveCtrl">
   <div class="my-info-hero">
-    <h2>Ethics Course Live Training</h2>
+    <h2>Mandatory LIVE in-person and Online Ethics Training Instructions</h2>
   </div>
 
   <div class="content-container">
@@ -27,22 +27,32 @@
         <a ng-href="{{todoPageUrl}}">Return to Personnel To-Do List</a>
 
         <div ng-hide="state.assignment.completed">
-          <h2>Ethics Live Course Training Instructions</h2>
+          <h2>Training Instructions</h2>
           <p>
-            This course can be accessed using the link below
+            New employees must attend a LIVE in-person or online ethics training within 90 days of their employment (pursuant to Chapter 56 of the Laws of 2022).
+            More details on dates and times for in-person training and live broadcasts can be found at:
           </p>
-          <a ng-href="{{state.assignment.task.getCourseUrl()}}">Live Ethics Training Course</a>
+          <a ng-href="{{state.assignment.task.getCourseUrl()}}" target="_blank">https://my.nysenate.gov/department/personnel/training</a>
 
           <hr style="margin-top: 30px; margin-bottom: 30px; margin-left: 80px; margin-right: 80px"/>
 
-          <h2>Ethics Live Course Code Submittion</h2>
+          <h2>Code Submission</h2>
           <p>
             Once you have completed the course, enter the codes below to confirm your completion.
           </p>
 
+          <div class="content-info" ng-show="state.request.code">
+            <h3>Submitting codes...</h3>
+            <div loader-indicator class="sm-loader"></div>
+          </div>
+          <%-- Show error message if incorrect codes were submitted --%>
+          <ess-notification level="error" title="Incorrect Codes"
+                            ng-show="state.incorrectCode"
+                            message="One or more of the submitted codes were incorrect.  Please double check them and resubmit."
+          ></ess-notification>
           <form name="videoCodeForm"
                 class="pec-video-code-form"
-                ng-submit="submitCodes()">
+                ng-submit="submitEthicsCodes()">
             <label ng-repeat="code in state.assignment.task.codes">
               {{code.label}}
               <br/>
@@ -61,4 +71,14 @@
     </div>
   </div>
 
+
+  <div modal-container>
+    <modal modal-id="code-submit-success">
+      <div confirm-modal rejectable="true" title="Code Submission Complete"
+           confirm-message="Video codes were successfully submitted."
+           resolve-button="Return to To-Do List" resolve-class="time-neutral-button"
+           reject-button="Remain Here" reject-class="time-neutral-button">
+      </div>
+    </modal>
+  </div>
 </section>

@@ -118,6 +118,7 @@ public class CsvTaskAssigner {
             Matcher manualMatcher = personnelManualAsssignmentCSV.matcher(fileName);
 
             if (manualMatcher.matches()) {
+                logger.info("Beginning record processing for file " + fileName);
                 processPersonnelManualAssignments(file);
             }
 
@@ -129,24 +130,29 @@ public class CsvTaskAssigner {
 
         Reader reader = Files.newBufferedReader(Paths.get(manualAssignmentCSV.getAbsolutePath()));
         CSVParser csvParser = new CSVParser(reader, CSVFormat.EXCEL);
+        int count = 0;
         for (CSVRecord csvRecord : csvParser) {
 
-            if (csvRecord.get(0).equals("name".toLowerCase())) {
+            if (csvRecord.get(0).toLowerCase().equals("name")) {
                 continue;
             }
 
             try {
-                String email = csvRecord.get(1);
+                String email = csvRecord.get(1).toLowerCase().trim();
                 int taskId =  Integer.parseInt(csvRecord.get(3));
                 //verify that the employee exists. We don't want bad data in the database
                 Employee employee = employeeDao.getEmployeeByEmail(email);
                 int empId = employee.getEmployeeId();
+                logger.info("Retrieved employee from email: " + email);
 
                 if (!employee.isActive()) {
+                    logger.info("employee: " + empId + " " + email + " is not active");
                     personnelTaskAssignmentDao.deactivatePersonnelTaskAssignment(empId, taskId);
                 }
                 else {
                     logger.info("Creating task for emp " + empId + " for task " + taskId);
+                    count++;
+                    logger.info(count + "");
                     PersonnelTaskAssignment taskToInsertForEmp =
                             new PersonnelTaskAssignment(
                                     taskId,empId,empId, LocalDateTime.now(),false, true);

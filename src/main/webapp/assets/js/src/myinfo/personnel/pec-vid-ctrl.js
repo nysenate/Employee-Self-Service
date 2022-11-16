@@ -161,7 +161,7 @@
          */
         function onSubmitFail(resp) {
             var errorCode = ((resp || {}).data || {}).errorCode;
-            if (errorCode === 'INVALID_PEC_VIDEO_CODE') {
+            if (errorCode === 'INVALID_PEC_CODE') {
                 console.warn('user submitted one or more incorrect codes:', $scope.state.codes);
                 $scope.state.incorrectCode = true;
             } else {

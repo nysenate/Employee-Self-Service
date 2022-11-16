@@ -56,6 +56,8 @@ public class PersonnelTaskTestDao extends SqlBaseDao {
                             "INSERT INTO ess.everfi_course(task_id, url) VALUES(:taskId, 'https://www.example.com')")
                     .put(ETHICS_COURSE,
                             "INSERT INTO ess.ethics_course(task_id, url) VALUES(:taskId, 'https://www.example.com')")
+                    .put(ETHICS_LIVE_COURSE,
+                            "INSERT INTO ess.ethics_live_course(task_id, url) VALUES(:taskId, 'https://www.example.com')")
                     .build();
 
     private final EventBus eventBus;

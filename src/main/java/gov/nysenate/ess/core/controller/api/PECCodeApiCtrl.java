@@ -198,7 +198,7 @@ public class PECCodeApiCtrl extends BaseRestApiCtrl {
                 taskId,
                 paramName,
                 "int",
-                "Task id must correspond to active Video code entry task."
+                "Task id must correspond to active Ethics Live code entry task."
         );
         try {
             PersonnelTask task = personnelTaskService.getPersonnelTask(taskId);

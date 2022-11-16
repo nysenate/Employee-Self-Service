@@ -168,6 +168,12 @@ essApi.factory('PECVidCodeApi', ['$resource', 'appProps', function ($resource, a
     return $resource(appProps.apiPath + '/personnel/task/video/code');
 }]);
 
+/** --- Ethics Code API --- */
+
+essApi.factory('PECEthicsCodeApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/personnel/task/ethics/live/code');
+}]);
+
 /** --- Transaction API --- */
 
 essApi.factory('EmpTransactionsApi', ['$resource', 'appProps', function($resource, appProps) {
