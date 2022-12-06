@@ -35,6 +35,8 @@ public class EthicsGroupTaskAssigner extends BaseGroupTaskAssigner {
 
         Optional<PersonnelTask> ethicsLiveTaskOpt = getEthicsLiveCourseTask();
 
+        Optional<PersonnelTask> moodleTaskOpt = getMoodleEthicsTask();
+
         Optional<PersonnelTaskAssignment> latestCompletedOpt = getGroupAssignments(empId).stream()
                 .filter(PersonnelTaskAssignment::isCompleted)
                 .max(Comparator.comparing(PersonnelTaskAssignment::getUpdateTime));
@@ -51,8 +53,11 @@ public class EthicsGroupTaskAssigner extends BaseGroupTaskAssigner {
                 requiredTaskIds.add(latestTask.getTaskId());
             }
         } else {
-            // Otherwise, require the ethics live course, assuming there is one.
+            // Otherwise, require the ethics live & moodle courses, assuming there is one.
             ethicsLiveTaskOpt
+                    .map(PersonnelTask::getTaskId)
+                    .ifPresent(requiredTaskIds::add);
+            moodleTaskOpt
                     .map(PersonnelTask::getTaskId)
                     .ifPresent(requiredTaskIds::add);
         }
@@ -72,6 +77,21 @@ public class EthicsGroupTaskAssigner extends BaseGroupTaskAssigner {
             default:
                 throw new IllegalStateException(
                         "Expected a single ethics live course task, got " + ethicsLiveTasks.size() + ": " + ethicsLiveTasks);
+        }
+    }
+
+    private Optional<PersonnelTask> getMoodleEthicsTask() {
+        List<PersonnelTask> moodleTasks = getActiveGroupTasks().stream()
+                .filter(task -> task.getTaskType() == PersonnelTaskType.MOODLE_COURSE)
+                .collect(Collectors.toList());
+        switch (moodleTasks.size()) {
+            case 0:
+                return Optional.empty();
+            case 1:
+                return Optional.of(moodleTasks.get(0));
+            default:
+                throw new IllegalStateException(
+                        "Expected a single moodle ethics task, got " + moodleTasks.size() + ": " + moodleTasks);
         }
     }
 
