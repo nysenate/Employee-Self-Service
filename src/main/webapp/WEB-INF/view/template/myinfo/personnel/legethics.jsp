@@ -1,6 +1,6 @@
 <section ng-controller="LegEthicsCtrl">
   <div class="my-info-hero">
-    <h2>Legislative Ethics Training</h2>
+    <h2>Introduction to Ethics Training</h2>
   </div>
 
   <div class="content-container">
@@ -13,8 +13,8 @@
       <%-- If the task was not loaded successfully --%>
       <ess-notification ng-hide="state.assignment"
                         level="error"
-                        title="LegEthics Personnel Task Assignment Not Found">
-        The personnel task assignment associated with the Legislative Ethics course could not be retrieved.<br>
+                        title="Introduction to Ethics Personnel Task Assignment Not Found">
+        The personnel task assignment associated with the Introduction to Ethics course could not be retrieved.<br>
         Please contact the helpline to report this issue.
       </ess-notification>
 
@@ -24,7 +24,7 @@
         <%-- Instruction header --%>
         <p class="content-info personnel-todo-instructions">
           <span ng-show="state.assignment.completed">
-            Records indicate you completed Legislative Ethics training on or before
+            Records indicate you completed the Introduction to Ethics training on or before
             {{state.assignment.timestamp | moment:'LL'}}
           </span>
           <span ng-hide="state.assignment.completed">
@@ -41,7 +41,7 @@
 
           <%-- If the task is not yet completed --%>
           <div ng-hide="state.assignment.completed">
-            <h2>LegEthics Training Instructions</h2>
+            <h2>Training Instructions</h2>
             <ul>
               <li>The interactive course can be accessed using the link below.</li>
               <li>
@@ -56,7 +56,7 @@
                 material.
               </li>
             </ul>
-            <p><a ng-href="{{state.assignment.task.getCourseUrl()}}">Legislative Ethics Training Course</a></p>
+            <p><a ng-href="{{state.assignment.task.getCourseUrl()}}">Introduction to Ethics Training Course</a></p>
           </div>
         </div>
 
