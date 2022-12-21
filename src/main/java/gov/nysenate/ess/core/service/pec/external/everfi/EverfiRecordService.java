@@ -1,6 +1,7 @@
 package gov.nysenate.ess.core.service.pec.external.everfi;
 
 import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
+import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentNotFoundEx;
 import gov.nysenate.ess.core.dao.pec.task.PersonnelTaskDao;
 import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
@@ -179,6 +180,24 @@ public class EverfiRecordService implements ESSEverfiRecordService {
                                     //Do nothing completedAt is already null
                                 }
                                 boolean completed = progress.getContentStatus().equals("completed");
+
+                                //check to see if assignment exists and then if modified at all
+                                //prevent completed=true & any records where emp_id != update_user_id
+                                try {
+                                    PersonnelTaskAssignment currentTaskAssignment =
+                                            personnelTaskAssignmentDao.getTaskForEmp(empID,everfiTaskID);
+
+                                    if ( currentTaskAssignment.isCompleted() ) {
+                                        continue;
+                                    }
+                                    else if ( currentTaskAssignment.getUpdateEmpId() != null &&
+                                            currentTaskAssignment.getEmpId() != currentTaskAssignment.getUpdateEmpId() ) {
+                                        continue;
+                                    }
+                                }
+                                catch (PersonnelTaskAssignmentNotFoundEx ex) {
+                                    //This means they dont have a task to insert so we dont need to do anything
+                                }
 
                                 PersonnelTaskAssignment taskToInsert = new PersonnelTaskAssignment(
                                         everfiTaskID,

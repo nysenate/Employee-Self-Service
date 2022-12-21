@@ -39,7 +39,8 @@ public class SqlPersonnelTaskAssignmentDao extends SqlBaseDao implements Personn
                     patRowMapper
             );
             if (personnelTaskAssignments.isEmpty() || personnelTaskAssignments == null) {
-                throw new IncorrectResultSizeDataAccessException(0);
+                logger.error("FAILED TO GET PERSONNEL TASK ASSIGNMENT WITH ID: " + taskId + " FOR EMPLOYEE: " + empId);
+                throw new PersonnelTaskAssignmentNotFoundEx(empId, taskId);
             }
             else {
                 return personnelTaskAssignments.get(0);
