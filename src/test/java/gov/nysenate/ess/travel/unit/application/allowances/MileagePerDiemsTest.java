@@ -46,16 +46,15 @@ public class MileagePerDiemsTest {
     }
 
     /**
-     * Ensure that return legs are not counted towards the MILE_THRESHOLD necessary
-     * to qualify a trip for mileage reimbursement. A trips oubound legs mileage must be > MILE_THRESHOLD.
+     * The outbound mileage must be greater than the MILE_THRESHOLD to receive mileage reimbursement.
      */
     @Test
-    public void givenOnlyReturnLeg_thenTripDoesNotQualifyForReimbursement() {
-        boolean isOutbound = false;
-        Leg leg = new Leg(0, from, to, ModeOfTransportation.PERSONAL_AUTO, 99999.0, perDiem, isOutbound, true);
+    public void toQualityForMileageReimbursement_outboundLegMustBeGreaterThanMileageThreshold() {
+        Leg outboundLeg = new Leg(0, from, to, ModeOfTransportation.TRAIN, 100, perDiem, true, true);
+        Leg returnLeg = new Leg(0, to, from, ModeOfTransportation.PERSONAL_AUTO, 100, perDiem, false, true);
 
-        MileagePerDiems mpd = new MileagePerDiems(Arrays.asList(leg));
-        assertFalse(mpd.tripQualifiesForReimbursement());
+        MileagePerDiems mpd = new MileagePerDiems(Arrays.asList(outboundLeg, returnLeg));
+        assertTrue(mpd.tripQualifiesForReimbursement());
     }
 
     @Test
