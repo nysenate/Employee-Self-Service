@@ -59,12 +59,25 @@ public class MileagePerDiems {
                 .collect(ImmutableList.toImmutableList());
     }
 
+    /**
+     * A trip qualifies for mileage reimbursement if a isMileageReimbursable MethodOfTravel is used
+     * on any leg of the trip and the total outbound miles is greater than MILE_THRESHOLD.
+     * @return
+     */
     public boolean tripQualifiesForReimbursement() {
-        double outboundMiles = mileageReimbursableLegs().stream()
+        return isOutboundMileageGreaterThanTheshold() && isReimbursableMethodOfTravelUsed();
+    }
+
+    private boolean isOutboundMileageGreaterThanTheshold() {
+        double outboundMiles = mileagePerDiems.stream()
                 .filter(Leg::isOutbound)
                 .mapToDouble(Leg::miles)
                 .sum();
         return outboundMiles > MILE_THRESHOLD;
+    }
+
+    private boolean isReimbursableMethodOfTravelUsed() {
+        return mileagePerDiems.stream().anyMatch(Leg::qualifiesForMileageReimbursement);
     }
 
     /**
