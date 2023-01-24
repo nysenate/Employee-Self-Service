@@ -185,7 +185,8 @@ function acknowledgmentCtrl($scope, $routeParams, $q, $location, $window, $timeo
         var windowBottom = windowHeight + window.pageYOffset;
         console.log("wwindowBottom " + windowBottom);
         console.log("windowBottom >= docHeight " + windowBottom >= docHeight);
-        return windowBottom >= docHeight;
+        // Since these height values are rounded, allow a 3px tolerance.
+        return docHeight - windowBottom < 3
     }
 
     /**
