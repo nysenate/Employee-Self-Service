@@ -20,7 +20,7 @@ function todoCtrl($scope, $q, appProps, modals, taskUtils) {
     function init() {
         $scope.state = angular.copy(initialState);
         getAssignments();
-        $scope.state.assignments.complete.sort((a, b) => a.taskId - b.taskId);
+        // $scope.state.assignments.complete.sort((a, b) => a.taskId - b.taskId);
     }
 
     /* --- Display methods --- */
@@ -69,7 +69,7 @@ function todoCtrl($scope, $q, appProps, modals, taskUtils) {
                 console.log(assignment);
                 if (assignment.completed) {
                     stateAssignments.complete.push(assignment);
-                    stateAssignments.complete.sort((a, b) => a.taskId - b.taskId);
+                    // stateAssignments.complete.sort((a, b) => a.taskId - b.taskId);
                 } else {
                     if (assignment.active) {
                         stateAssignments.incomplete.push(assignment);
