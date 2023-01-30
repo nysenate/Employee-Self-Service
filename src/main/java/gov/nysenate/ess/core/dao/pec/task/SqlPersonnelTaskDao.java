@@ -49,13 +49,14 @@ public class SqlPersonnelTaskDao extends SqlBaseDao implements PersonnelTaskDao 
         updateParams.addValue("completed",completed);
         updateParams.addValue("empId",empID);
         updateParams.addValue("taskId",taskID);
+        updateParams.addValue("manualOverride",true);
 
         int value = localNamedJdbc.update(UPDATE_TASK_COMPLETION.getSql(schemaMap()), updateParams );
     }
 
     @Override
     public void updatePersonnelAssignedTaskAssignment(int empID, int updateEmpID, boolean assigned, int taskID) {
-        localJdbc.update(UPDATE_TASK_ASSIGNMENT.getSql(schemaMap()), assigned,updateEmpID,empID,taskID );
+        localJdbc.update(UPDATE_TASK_ASSIGNMENT.getSql(schemaMap()), assigned,updateEmpID,true,empID,taskID );
     }
 
     @Override

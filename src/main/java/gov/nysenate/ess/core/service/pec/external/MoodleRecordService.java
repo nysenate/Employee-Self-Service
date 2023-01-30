@@ -107,6 +107,9 @@ public class MoodleRecordService implements ESSMoodleRecordService {
                         currentTaskAssignment.getEmpId() != currentTaskAssignment.getUpdateEmpId() ) {
                     continue;
                 }
+                else if (currentTaskAssignment.wasManuallyOverridden()) {
+                    continue;
+                }
             }
             catch (PersonnelTaskAssignmentNotFoundEx ex) {
                 //This means they dont have a task to insert so we dont need to do anything

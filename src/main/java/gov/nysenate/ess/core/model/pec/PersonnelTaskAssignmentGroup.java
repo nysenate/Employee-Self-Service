@@ -8,6 +8,7 @@ public enum PersonnelTaskAssignmentGroup {
     DEFAULT,
     /** Supports assignment of ethics tasks, which may fulfill equivalent requirements. */
     ETHICS,
+    ETHICS_LIVE,
     /** Dynamic tasks are not assigned to anyone by ESS. External Services assign these tasks to employees */
     DYNAMIC
 }

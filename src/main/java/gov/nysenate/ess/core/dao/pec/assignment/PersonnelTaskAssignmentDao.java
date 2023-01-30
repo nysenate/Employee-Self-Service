@@ -58,4 +58,20 @@ public interface PersonnelTaskAssignmentDao {
      * @param taskId int
      */
     void deactivatePersonnelTaskAssignment(int empId, int taskId);
+
+    /**
+     * Determine if a task has been manually overridden
+     *
+     * @param task
+     * @return boolean. True if the task has been manually overridden
+     */
+    public boolean getManualOverrideStatus(PersonnelTaskAssignment task);
+
+    /**
+     * Determine if a task has been manually overridden
+     * @param empId
+     * @param taskId
+     * @return boolean. True if the task has been manually overridden
+     */
+    public boolean getManualOverrideStatus(Integer empId, Integer taskId);
 }

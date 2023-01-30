@@ -9,6 +9,7 @@ import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -32,6 +33,7 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
     }
 
     protected int assignTasks(int empId, Set<Integer> assignableTaskIds) {
+        Map<Integer, PersonnelTask> personnelTaskMap = buildPersonnelTaskMap(taskService.getPersonnelTasks(false));
 
         Map<Integer, PersonnelTaskAssignment> assignmentMap = getAssignmentMap(empId);
 
@@ -39,6 +41,7 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
 
         // Get active tasks that are not currently assigned to the employee.
         Set<Integer> activeUnassigned = Sets.difference(assignableTaskIds, existingTaskIds);
+
         // Get tasks assigned to the employee that are not active.
         Set<Integer> inactiveAssigned = Sets.difference(existingTaskIds, assignableTaskIds);
 
@@ -61,11 +64,17 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
         Set<Integer> idsToDeactivate = inactiveAssigned.stream()
                 .filter(taskId -> !assignmentMap.get(taskId).isCompleted())
                 .collect(Collectors.toSet());
+
         if (!idsToDeactivate.isEmpty()) {
             logger.info("Deactivating {} {} tasks for emp #{} : {}",
                     idsToDeactivate.size(), getTargetGroup(), empId, idsToDeactivate);
         }
-        idsToDeactivate.forEach(taskId -> assignmentDao.deactivatePersonnelTaskAssignment(empId, taskId));
+        for (Integer taskId: idsToDeactivate) {
+            if (!assignmentDao.getManualOverrideStatus(empId,taskId) && !personnelTaskMap.get(taskId).isActive()) {
+                //only deactivate if it was not manually overridden
+                assignmentDao.deactivatePersonnelTaskAssignment(empId, taskId);
+            }
+        }
 
         return newAssignments.size();
     }
@@ -89,5 +98,13 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
     protected boolean assignmentInGroup(PersonnelTaskAssignment assignment) {
         PersonnelTask task = taskService.getPersonnelTask(assignment.getTaskId());
         return task.getAssignmentGroup() == getTargetGroup();
+    }
+
+    private Map<Integer, PersonnelTask> buildPersonnelTaskMap(List<PersonnelTask> allPersonnelTasks) {
+        HashMap<Integer, PersonnelTask> personnelTaskMap = new HashMap<>();
+        for (PersonnelTask task: allPersonnelTasks) {
+            personnelTaskMap.put(task.getTaskId(), task);
+        }
+        return personnelTaskMap;
     }
 }
