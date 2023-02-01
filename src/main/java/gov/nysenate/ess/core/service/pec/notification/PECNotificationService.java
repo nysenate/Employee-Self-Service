@@ -7,6 +7,7 @@ import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.mail.SendMailService;
 import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
+import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +15,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.mail.internet.MimeMessage;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.ZoneId;
 import java.util.*;
 
 @Service
@@ -27,6 +31,8 @@ public class PECNotificationService {
     private PersonnelTaskAssignmentDao assignmentDao;
     private SendMailService sendMailService;
 
+    private EmployeeInfoService employeeInfoService;
+
     private Map<Integer, PersonnelTask> activeTaskMap;
 
     @Value("${scheduler.pec.notifs.enabled:false}")
@@ -37,31 +43,41 @@ public class PECNotificationService {
 
     private List<String> reportEmails;
 
+    private String instructionURL;
+
+    private int pecTestModeLimit = 5;
+    private int pecTestModeCount = 0;
+
     public PECNotificationService(EmployeeDao employeeDao, PersonnelTaskService taskService,
                                   PersonnelTaskAssignmentDao assignmentDao, SendMailService sendMailService,
-                                  @Value("${report.email}") String reportEmailList) {
+                                  EmployeeInfoService employeeInfoService,
+                                  @Value("${report.email}") String reportEmailList,
+                                  @Value("${domain.url}") String domainURL) {
         this.employeeDao = employeeDao;
         this.taskService = taskService;
         this.assignmentDao = assignmentDao;
         this.sendMailService = sendMailService;
+        this.employeeInfoService = employeeInfoService;
         Map<Integer, PersonnelTask> activeTaskMap = new HashMap<>();
         for (PersonnelTask task : taskService.getPersonnelTasks(true)) {
             activeTaskMap.put(task.getTaskId(), task);
         }
         this.activeTaskMap = activeTaskMap;
-        this.reportEmails = Arrays.asList(reportEmailList.replaceAll(" ","").split(","));
+        this.reportEmails = Arrays.asList(reportEmailList.replaceAll(" ", "").split(","));
+        this.instructionURL = domainURL + "/myinfo/personnel/todo";
     }
 
     @Scheduled(cron = "${scheduler.pec.notifs.cron}")
-    public void runUpdateMethods() throws Exception {
+    public void runUpdateMethods() {
         if (pecNotifsEnabled) {
             runPECNotificationProcess();
         }
     }
 
-    //TODO fix email logic after testing
-    public void runPECNotificationProcess() throws Exception {
+    public void runPECNotificationProcess() {
         logger.info("Starting PEC Notification Process");
+
+        this.pecTestModeCount = 0;
 
         //Document all employees with missing info to report to the admins
         List<Employee> employeesWithMissingEmails = new ArrayList<>();
@@ -71,17 +87,8 @@ public class PECNotificationService {
 
         //Cycle thru all employees
         for (Employee employee : activeEmployees) {
-
-            //Get all assignments for the given employee
-            List<PersonnelTaskAssignment> empAssignments = assignmentDao.getAssignmentsForEmp(employee.getEmployeeId());
-
             //Determine if they have any outstanding active tasks
-            List<PersonnelTaskAssignment> incompleteEmpAssignments = new ArrayList<>();
-            for (PersonnelTaskAssignment assignment : empAssignments) {
-                if (assignment.isActive() && !assignment.isCompleted()) {
-                    incompleteEmpAssignments.add(assignment);
-                }
-            }
+            List<PersonnelTaskAssignment> incompleteEmpAssignments = getIncompleteAssignmentsForEmp(employee);
 
             //Continue processing employee if they have outstanding assignments and a valid email
             if (!incompleteEmpAssignments.isEmpty()) {
@@ -105,40 +112,35 @@ public class PECNotificationService {
         logger.info("Completed PEC Notification Process");
     }
 
-    public void sendInviteEmail(int empID, List<Integer> taskIDs) {
-
-        ArrayList<PersonnelTask> tasks = new ArrayList<>();
-
-        for (Integer taskID : taskIDs) {
-            tasks.add(taskService.getPersonnelTask(taskID));
-        }
+    public void sendInviteEmails(int empID) {
 
         Employee employee = employeeDao.getEmployeeById(empID);
+        List<PersonnelTaskAssignment> incompleteAssignments = getIncompleteAssignmentsForEmp(employee);
 
-        String recipientEmail;
-        if (pecTestMode) {
-            recipientEmail = this.reportEmails.get(0);
+        if (!incompleteAssignments.isEmpty()) {
+            for (PersonnelTaskAssignment incompleteAssignment : incompleteAssignments) {
+
+                if (this.activeTaskMap.containsKey(incompleteAssignment.getTaskId())) {
+                    PersonnelTask task = this.activeTaskMap.get(incompleteAssignment.getTaskId());
+
+                    String recipientEmail = employee.getEmail();
+                    String subject = employee.getFullName() + " You have to complete the task: " + task.getTitle();
+                    String html = getStandardHTMLInstructions();
+                    ArrayList<PersonnelTaskAssignment> incompleteTask = new ArrayList<>();
+                    incompleteTask.add(incompleteAssignment);
+                    html = html + addDueDateInformationHtml(employee, incompleteTask);
+
+                    if (pecTestMode && (pecTestModeLimit >= pecTestModeCount)) {
+                        //Send email to employee
+                        sendEmail(recipientEmail, subject, html);
+                        pecTestModeCount++;
+                    }
+                    else if (!pecTestMode) {
+                        sendEmail(recipientEmail, subject, html);
+                    }
+                }
+            }
         }
-        else {
-            recipientEmail = employee.getEmail();
-        }
-        String subject;
-        String html;
-        if (tasks.size() == 1) {
-            subject = "You have completed the task:" + tasks.get(0).getTitle();
-            html = "<b>Our records indicate you have an outstanding task to complete for personnel.</b><br>\n" +
-                    "You can find instructions to complete them by logging into ESS, " +
-                    "clicking the My Info tab and then the To Do List<br><br>\n\n" +
-                    "<b>You must complete the following tasks: </b><br><br>\n\n";
-        }
-        else {
-            subject = employee.getFullName() + " ,You have multiple pending Personnel tasks";
-            html = "<b>Our records indicate you have an outstanding tasks to complete for personnel.</b><br>\n" +
-                    "You can find instructions to complete them by logging into ESS, " +
-                    "clicking the My Info tab and then the To Do List<br><br>\n\n" +
-                    "<b>You must complete the following tasks: </b><br><br>\n\n";
-        }
-        sendEmail(recipientEmail, subject, html);
     }
 
     public void sendCompletionEmail(int empID, int taskID) {
@@ -146,83 +148,52 @@ public class PECNotificationService {
 
         Employee employee = employeeDao.getEmployeeById(empID);
 
-        String recipientEmail;
-        if (pecTestMode) {
-            recipientEmail = this.reportEmails.get(0);
-        }
-        else {
-            recipientEmail = employee.getEmail();
-        }
-        String subject = "You have completed the task:" + task.getTitle();
-        String html = "<b>Our records have been updated to indicated you have completed " + task.getTitle() + "<b>";
+        String recipientEmail = employee.getEmail();
+
+        String subject = "You have completed the task: " + task.getTitle();
+        String html = "Our records have been updated to indicate you have completed " + task.getTitle();
 
         sendEmail(recipientEmail, subject, html);
     }
 
-    // Determine the email address & content for their email, then send the email
-    private void contructAndSendEmailToTheEmployee(Employee employee, List<PersonnelTaskAssignment> incompleteEmpAssignments) throws Exception {
+    public void resetTestModeCounter() {
+        this.pecTestModeCount = 0;
+    }
 
-        //TODO implement start date data with employee objects for more accurate emails
+    // Determine the email address & content for their email, then send the email
+    private void contructAndSendEmailToTheEmployee(Employee employee, List<PersonnelTaskAssignment> incompleteEmpAssignments) {
 
         //Get basic employee data
-        String recipientEmail;
-        if (pecTestMode) {
-            recipientEmail = this.reportEmails.get(0);
-        }
-        else {
-            recipientEmail = employee.getEmail();
-        }
+        String recipientEmail = employee.getEmail();
 
         String subject = employee.getFullName() + " you have outstanding Personnel Tasks";
 
         //Standard instructions for all tasks
-        String html = "<b>Our records indicate you have outstanding tasks to complete for personnel.</b><br>\n" +
-                "You can find instructions to complete them by logging into ESS, " +
-                "clicking the My Info tab and then the To Do List<br><br>\n\n" +
-                "<b>You must complete the following tasks: </b><br><br>\n\n";
+        String html = getStandardHTMLInstructions();
 
         //Add known time limit text to the emails
-        for (PersonnelTaskAssignment assignment : incompleteEmpAssignments) {
-            PersonnelTask task = this.activeTaskMap.get( assignment.getTaskId() );
+        html = html + addDueDateInformationHtml(employee, incompleteEmpAssignments);
 
-            html = html + task.getTitle() + "<br>\n";
-
-            switch (task.getTaskType()) {
-                case DOCUMENT_ACKNOWLEDGMENT:
-                    html = html + ""; //Time limit is unknown at this time
-                    break;
-                case MOODLE_COURSE:
-                    html = html + " You have 30 days to complete this assignment from your hiring date<br>\n";
-                    break;
-                case VIDEO_CODE_ENTRY:
-                    html = html + ""; //Time limit is unknown at this time
-                    break;
-                case EVERFI_COURSE:
-                    html = html + ""; //Time limit is unknown at this time
-                    break;
-                case ETHICS_COURSE:
-                    html = html + ""; //Time limit is unknown at this time
-                    break;
-                case ETHICS_LIVE_COURSE:
-                    html = html + " You have 90 days to complete this assignment if you were newly hired / are a returning employee. " +
-                "Existing employees must finish this course before the end of the calendar year. These live sessions run once a month.<br>\n";
-                    break;
-                default:
-                    throw new Exception("Unrecognized Personnel Task Type");
-            }
+        if (pecTestMode && (pecTestModeLimit >= pecTestModeCount)) {
+            //Send email to employee
+            sendEmail(recipientEmail, subject, html);
+            pecTestModeCount++;
+        }
+        else if (!pecTestMode) {
+            sendEmail(recipientEmail, subject, html);
         }
 
-        //Send email to employee
-        sendEmail(recipientEmail, subject, html);
     }
 
     private void sendEmail(String to, String subject, String html) {
         try {
+            if (pecTestMode) {
+                to = this.reportEmails.get(0);
+            }
             MimeMessage message = sendMailService.newHtmlMessage(to.trim(),
                     subject, html);
             sendMailService.send(message);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             logger.error("There was an error trying to send the PEC notification email ", e);
         }
     }
@@ -235,9 +206,103 @@ public class PECNotificationService {
 
     private String generateFailedNotifReportString(List<Employee> emps) {
         String employeeListDetails = "";
-        for (Employee employee: emps) {
+        for (Employee employee : emps) {
             employeeListDetails = employeeListDetails + " NAME: " + employee.getFullName() + " EMPID: " + employee.getEmployeeId() + "<br>\n";
         }
         return employeeListDetails;
+    }
+
+    private List<PersonnelTaskAssignment> getIncompleteAssignmentsForEmp(Employee employee) {
+        //Get all assignments for the given employee
+        List<PersonnelTaskAssignment> empAssignments = assignmentDao.getAssignmentsForEmp(employee.getEmployeeId());
+
+        //Determine if they have any outstanding active tasks
+        List<PersonnelTaskAssignment> incompleteEmpAssignments = new ArrayList<>();
+        for (PersonnelTaskAssignment assignment : empAssignments) {
+
+            if (assignment.isActive() && !assignment.isCompleted() &&
+                    this.activeTaskMap.containsKey(assignment.getTaskId())) {
+                incompleteEmpAssignments.add(assignment);
+            }
+        }
+        return incompleteEmpAssignments;
+    }
+
+    private LocalDate getDueDate(LocalDate continuousServiceDate, int daysToAdd) {
+        Date startDate = Date.from(continuousServiceDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        Calendar calendar = new GregorianCalendar(/* remember about timezone! */);
+        calendar.setTime(startDate);
+        calendar.add(Calendar.DATE, daysToAdd);
+        Date dueDate = calendar.getTime();
+        return dueDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+    }
+
+    /**
+     * Find out if the employee's continuous serivce date greater than 90 days from today
+     *
+     * @param continuousServiceDate
+     * @return
+     */
+    private boolean isExistingEmployee(LocalDate continuousServiceDate) {
+        LocalDate ninetyDaysAgo = LocalDate.now(ZoneId.systemDefault()).minus(Period.ofDays(90));
+        return continuousServiceDate.isBefore(ninetyDaysAgo);
+    }
+
+    private String getStandardHTMLInstructions() {
+        return "<b>Our records indicate you have outstanding tasks to complete for Personnel.</b><br>" +
+                "You can find instructions to complete them by logging into ESS, " +
+                "then clicking the My Info tab and then clicking on the To Do List. " +
+                " Or go to this link <a href=\"" + instructionURL + "\">HERE</a><br><br>" +
+                "<b>You must complete the following tasks: </b><br><br>\n\n";
+    }
+
+    private String addDueDateInformationHtml(Employee employee, List<PersonnelTaskAssignment> incompleteEmpAssignments) {
+        LocalDate activeServiceDate =
+                employeeInfoService.getEmployeesMostRecentContinuousServiceDate(employee.getEmployeeId());
+
+        boolean existingEmployee = isExistingEmployee(activeServiceDate);
+
+        LocalDate moodleDueDate = getDueDate(activeServiceDate, 30);
+        //The ethics live due date only applies if they are a new hire
+        LocalDate ethicsLiveNewEmpDueDate = getDueDate(activeServiceDate, 90);
+
+        String html = "";
+        for (PersonnelTaskAssignment assignment : incompleteEmpAssignments) {
+            if (this.activeTaskMap.containsKey(assignment.getTaskId())) {
+                PersonnelTask task = this.activeTaskMap.get(assignment.getTaskId());
+                html = html + "<li>" + task.getTitle() + "</li>\n";
+
+                switch (task.getTaskType()) {
+                    case DOCUMENT_ACKNOWLEDGMENT:
+                        html = html + "<br>"; //Time limit is unknown at this time
+                        break;
+                    case MOODLE_COURSE:
+                        html = html + "You have 30 days to complete this assignment from your hiring date. It is due by " + moodleDueDate + "<br><br>";
+                        break;
+                    case VIDEO_CODE_ENTRY:
+                        html = html + "<br>"; //Time limit is unknown at this time
+                        break;
+                    case EVERFI_COURSE:
+                        html = html + "<br>"; //Time limit is defined by everfi
+                        break;
+                    case ETHICS_COURSE:
+                        html = html + "<br>"; //Time limit is unknown at this time
+                        break;
+                    case ETHICS_LIVE_COURSE:
+                        if (existingEmployee) {
+                            html = html + "You have until the end of the " + LocalDate.now().getYear() +
+                                    " calendar year to complete this course. These live sessions run once a month.<br><br>";
+                        } else {
+                            html = html + "You have 90 days to complete this assignment from your hiring date: "
+                                    + activeServiceDate + ". It is due by: " + ethicsLiveNewEmpDueDate +
+                                    ". These live sessions run once a month.<br><br>";
+                        }
+                        break;
+                    default:
+                        logger.error("" + new Exception("Unrecognized Personnel Task Type"));
+                }
+            }
+        }
+        return html;
     }
 }

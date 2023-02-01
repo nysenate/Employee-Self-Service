@@ -32,6 +32,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -105,6 +106,20 @@ public class EssCachedEmployeeInfoService implements EmployeeInfoService, Cachin
     public RangeSet<LocalDate> getEmployeeActiveDatesService(int empId) {
         TransactionHistory transHistory = transService.getTransHistory(empId);
         return transHistory.getActiveDates();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public LocalDate getEmployeesMostRecentContinuousServiceDate(int empId) {
+        RangeSet<LocalDate> activeServiceDates =
+                getEmployeeActiveDatesService(empId);
+        Set<Range<LocalDate>> descendingSetRange = activeServiceDates.asDescendingSetOfRanges(); //[[2023-01-01..+∞), [2007-02-08..2018-12-15)]
+        Optional<Range<LocalDate>> firstString = descendingSetRange.stream().findFirst();
+        if(firstString.isPresent()){
+            Range<LocalDate> activeServiceRange = firstString.get();
+           return activeServiceRange.lowerEndpoint();
+        }
+        return null;
     }
 
     /** {@inheritDoc} */

@@ -44,10 +44,10 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
     }
 
     /**
-     * Assign Personnel Tasks API
+     * PEC Reminder Notification API
      * --------------------------
      *
-     * Determine personnel tasks for all employees and assign those that are missing.
+     * Determine personnel tasks for all employees and send emails to remind employees to complete them
      *
      * Usage:
      * (POST)   /api/v1/admin/personnel/task/notify
@@ -55,9 +55,29 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
      * @return {@link SimpleResponse}
      */
     @RequestMapping(value = "/notify", method = POST )
-    public SimpleResponse sendNotifications() throws Exception {
+    public SimpleResponse sendNotifications() {
         checkPermission(ADMIN.getPermission());
         pecNotificationService.runPECNotificationProcess();
+        return new SimpleResponse(true,
+                "pec notifications complete",
+                "pec-notifications-complete");
+    }
+
+    /**
+     * PEC notifs Test Mode Count Reset API
+     * --------------------------
+     *
+     * Reset the test counter to continue to receive emails in PEC Test Mode
+     *
+     * Usage:
+     * (POST)   /api/v1/admin/personnel/task/reset/counter
+     *
+     * @return {@link SimpleResponse}
+     */
+    @RequestMapping(value = "/reset/counter", method = POST )
+    public SimpleResponse resetCounter() {
+        checkPermission(ADMIN.getPermission());
+        pecNotificationService.resetTestModeCounter();
         return new SimpleResponse(true,
                 "pec notifications complete",
                 "pec-notifications-complete");

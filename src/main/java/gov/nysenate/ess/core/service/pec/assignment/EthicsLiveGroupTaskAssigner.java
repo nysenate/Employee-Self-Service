@@ -6,6 +6,7 @@ import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignmentGroup;
+import gov.nysenate.ess.core.service.pec.notification.PECNotificationService;
 import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
 import org.springframework.stereotype.Service;
 
@@ -16,8 +17,9 @@ import java.util.stream.Collectors;
 public class EthicsLiveGroupTaskAssigner extends BaseGroupTaskAssigner {
 
     public EthicsLiveGroupTaskAssigner(PersonnelTaskAssignmentDao assignmentDao,
-                                       PersonnelTaskService taskService) {
-        super(assignmentDao, taskService);
+                                       PersonnelTaskService taskService,
+                                       PECNotificationService pecNotificationService) {
+        super(assignmentDao, taskService, pecNotificationService);
     }
 
     @Override

@@ -5,6 +5,7 @@ import com.google.common.collect.Sets;
 import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
+import gov.nysenate.ess.core.service.pec.notification.PECNotificationService;
 import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,10 +23,14 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
     private final PersonnelTaskAssignmentDao assignmentDao;
     private final PersonnelTaskService taskService;
 
+    private final PECNotificationService pecNotificationService;
+
     public BaseGroupTaskAssigner(PersonnelTaskAssignmentDao assignmentDao,
-                                   PersonnelTaskService taskService) {
+                                   PersonnelTaskService taskService,
+                                 PECNotificationService pecNotificationService) {
         this.assignmentDao = assignmentDao;
         this.taskService = taskService;
+        this.pecNotificationService = pecNotificationService;
     }
 
     protected List<PersonnelTask> getActiveGroupTasks() {
@@ -76,6 +81,7 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
             }
         }
 
+        pecNotificationService.sendInviteEmails(empId);
         return newAssignments.size();
     }
 
