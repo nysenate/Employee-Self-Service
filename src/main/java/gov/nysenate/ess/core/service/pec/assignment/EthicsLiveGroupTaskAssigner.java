@@ -57,10 +57,30 @@ public class EthicsLiveGroupTaskAssigner extends BaseGroupTaskAssigner {
             }
         }
         else {
-            //This means they dont have a completed task
-            latestEthicsLiveTaskOpt
-                    .map(PersonnelTask::getTaskId)
-                    .ifPresent(requiredTaskIds::add);
+            //its possible for people to have a deactivated ethics live.
+            // so we need to check if it was assigned but deactivated
+            Set<Integer> assignedEthicsLiveTasks = super.getAssignedIds(empId);
+
+            if (assignedEthicsLiveTasks.isEmpty()) {
+                //This means they dont have a completed task and no previously assigned deactivate task
+                latestEthicsLiveTaskOpt
+                        .map(PersonnelTask::getTaskId)
+                        .ifPresent(requiredTaskIds::add);
+            }
+            else {
+                Map<Integer, PersonnelTaskAssignment> assignmentMap = super.getAssignmentMap(empId);
+                for(Integer taskID: assignedEthicsLiveTasks) {
+                    PersonnelTaskAssignment taskAssignment = assignmentMap.get(taskID);
+                    if (taskID == latestEthicsLiveTaskOpt.get().getTaskId() && !taskAssignment.isActive()) {
+                        continue;
+                    }
+                    else {
+                        latestEthicsLiveTaskOpt
+                                .map(PersonnelTask::getTaskId)
+                                .ifPresent(requiredTaskIds::add);
+                    }
+                }
+            }
         }
 
         return ImmutableSet.copyOf(requiredTaskIds);
