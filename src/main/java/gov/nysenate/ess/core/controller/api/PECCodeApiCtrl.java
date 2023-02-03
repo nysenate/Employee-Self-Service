@@ -14,6 +14,7 @@ import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.ethics.EthicsLiveCourseTask;
 import gov.nysenate.ess.core.model.pec.video.IncorrectPECVideoCodeEx;
 import gov.nysenate.ess.core.model.pec.video.VideoTask;
+import gov.nysenate.ess.core.service.pec.notification.PECNotificationService;
 import gov.nysenate.ess.core.service.pec.task.PersonnelCodeGenerationService;
 import gov.nysenate.ess.core.service.pec.task.PersonnelTaskNotFoundEx;
 import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
@@ -46,16 +47,20 @@ public class PECCodeApiCtrl extends BaseRestApiCtrl {
 
     private final PersonnelCodeGenerationService personnelCodeGenerationService;
 
+    private final PECNotificationService pecNotificationService;
+
     public PECCodeApiCtrl(PersonnelTaskService personnelTaskService,
                           PersonnelTaskAssignmentDao assignedTaskDao,
                           VideoTaskDetailDao videoTaskDetailDao,
                           EthicsLiveCourseTaskDetailDao ethicsLiveCourseTaskDetailDao,
-                          PersonnelCodeGenerationService personnelCodeGenerationService) {
+                          PersonnelCodeGenerationService personnelCodeGenerationService,
+                          PECNotificationService pecNotificationService) {
         this.personnelTaskService = personnelTaskService;
         this.assignedTaskDao = assignedTaskDao;
         this.videoTaskDetailDao = videoTaskDetailDao;
         this.ethicsLiveCourseTaskDetailDao = ethicsLiveCourseTaskDetailDao;
         this.personnelCodeGenerationService = personnelCodeGenerationService;
+        this.pecNotificationService = pecNotificationService;
     }
 
     /**
@@ -115,6 +120,7 @@ public class PECCodeApiCtrl extends BaseRestApiCtrl {
         ethicsLiveCourseTask.verifyCodes(submission.getCodes());
         int authenticatedEmpId = ShiroUtils.getAuthenticatedEmpId();
         assignedTaskDao.setTaskComplete(submission.getEmpId(), ethicsLiveCourseTask.getTaskId(), authenticatedEmpId);
+        pecNotificationService.sendCompletionEmail(submission.getEmpId(), ethicsLiveCourseTask.getTaskId());
         return new SimpleResponse(true, "codes submitted successfully", "code-submission-success");
     }
 
@@ -145,6 +151,7 @@ public class PECCodeApiCtrl extends BaseRestApiCtrl {
         videoTask.verifyCodes(submission.getCodes());
         int authenticatedEmpId = ShiroUtils.getAuthenticatedEmpId();
         assignedTaskDao.setTaskComplete(submission.getEmpId(), videoTask.getTaskId(), authenticatedEmpId);
+        pecNotificationService.sendCompletionEmail(submission.getEmpId(), videoTask.getTaskId());
         return new SimpleResponse(true, "codes submitted successfully", "code-submission-success");
     }
 

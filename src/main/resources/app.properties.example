@@ -235,6 +235,13 @@ scheduler.supply.sfms_synchronization.cron = 0 0 0 * * *
 # Updates travel application values taken from the web
 scheduler.travel.scrape.cron = 0 0 2 * * *
 
+#Determines if we should send out email alerts to every active employee with outstanding tasks or not
+#False by default but true on prod
+scheduler.pec.notifs.enabled = false
+
+#Send out notifs every 2 weeks
+scheduler.pec.notifs.cron = 0 0 8 1,15 * *
+
 # Determines if scheduled polling of course completion records from moodle is enabled.
 scheduler.moodle.sync.enabled = false
 
@@ -291,6 +298,8 @@ report.email =
 
 #Supports comma separated emails
 everfi.report.email =
+
+pec.test.mode = true
 
 # --- Supply Configuration -----------------------------------------------------
 

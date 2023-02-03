@@ -36,8 +36,8 @@ public enum PersonnelTaskAssignmentQuery implements BasicSqlQuery {
 
     INSERT_TASK("" +
             "INSERT INTO ${essSchema}.personnel_task_assignment\n" +
-            "        (emp_id, task_id, timestamp, update_user_id, completed, active)\n" +
-            "VALUES (:empId, :taskId, :timestamp, :updateUserId, :completed, :active)"
+            "        (emp_id, task_id, timestamp, update_user_id, completed, active, manual_override)\n" +
+            "VALUES (:empId, :taskId, :timestamp, :updateUserId, :completed, :active, :manualOverride)"
     ),
 
     UPDATE_TASK("" +
@@ -46,10 +46,14 @@ public enum PersonnelTaskAssignmentQuery implements BasicSqlQuery {
             "WHERE emp_id = :empId AND task_id = :taskId"
     ),
 
+    GET_MANUAL_OVERRIDE_STATUS("" +
+            "SELECT manual_override from ${essSchema}.personnel_task_assignment\n" +
+            "WHERE emp_id = :empId AND task_id = :taskId"),
+
     INSERT_COMPLETE_TASK("" +
             "INSERT INTO ${essSchema}.personnel_task_assignment\n" +
-            "        (emp_id, task_id, timestamp, update_user_id, completed, active)\n" +
-            "VALUES (:empId, :taskId, now(), :updateUserId, TRUE, TRUE)"
+            "        (emp_id, task_id, timestamp, update_user_id, completed, active, manual_override)\n" +
+            "VALUES (:empId, :taskId, now(), :updateUserId, TRUE, TRUE, FALSE)"
     ),
 
     UPDATE_COMPLETE_TASK("" +

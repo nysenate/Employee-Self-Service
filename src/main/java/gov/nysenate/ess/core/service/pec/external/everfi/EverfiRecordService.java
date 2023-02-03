@@ -182,7 +182,7 @@ public class EverfiRecordService implements ESSEverfiRecordService {
                                 boolean completed = progress.getContentStatus().equals("completed");
 
                                 //check to see if assignment exists and then if modified at all
-                                //prevent completed=true & any records where emp_id != update_user_id
+                                //prevent completed=true & any records where emp_id != update_user_id0
                                 try {
                                     PersonnelTaskAssignment currentTaskAssignment =
                                             personnelTaskAssignmentDao.getTaskForEmp(empID,everfiTaskID);
@@ -192,6 +192,9 @@ public class EverfiRecordService implements ESSEverfiRecordService {
                                     }
                                     else if ( currentTaskAssignment.getUpdateEmpId() != null &&
                                             currentTaskAssignment.getEmpId() != currentTaskAssignment.getUpdateEmpId() ) {
+                                        continue;
+                                    }
+                                    else if (currentTaskAssignment.wasManuallyOverridden()) {
                                         continue;
                                     }
                                 }

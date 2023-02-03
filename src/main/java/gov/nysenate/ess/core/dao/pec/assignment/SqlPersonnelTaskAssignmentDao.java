@@ -71,6 +71,18 @@ public class SqlPersonnelTaskAssignmentDao extends SqlBaseDao implements Personn
     }
 
     @Override
+    public boolean getManualOverrideStatus(PersonnelTaskAssignment task) {
+        MapSqlParameterSource params = getManualOverrideStatusParams(task);
+        return Boolean.TRUE.equals(localNamedJdbc.queryForObject(GET_MANUAL_OVERRIDE_STATUS.getSql(schemaMap()), params, Boolean.class));
+    }
+
+    @Override
+    public boolean getManualOverrideStatus(Integer empId, Integer taskId) {
+        MapSqlParameterSource params = getEmpIdTaskIdParams(empId, taskId);
+        return Boolean.TRUE.equals(localNamedJdbc.queryForObject(GET_MANUAL_OVERRIDE_STATUS.getSql(schemaMap()), params, Boolean.class));
+    }
+
+    @Override
     public void setTaskComplete(int empId, int taskId, int updateEmpId) {
         MapSqlParameterSource params = getEmpIdTaskIdParams(empId, taskId);
         params.addValue("updateUserId", updateEmpId);
@@ -101,7 +113,8 @@ public class SqlPersonnelTaskAssignmentDao extends SqlBaseDao implements Personn
                     getNullableInt(rs, "update_user_id"),
                     getLocalDateTime(rs, "timestamp"),
                     rs.getBoolean("completed"),
-                    rs.getBoolean("active")
+                    rs.getBoolean("active"),
+                    rs.getBoolean("manual_override")
             );
 
 
@@ -121,6 +134,7 @@ public class SqlPersonnelTaskAssignmentDao extends SqlBaseDao implements Personn
                 .addValue("updateUserId", task.getUpdateEmpId())
                 .addValue("completed", task.isCompleted())
                 .addValue("active", task.isActive())
+                .addValue("manualOverride", task.wasManuallyOverridden())
                 ;
     }
 
@@ -136,5 +150,10 @@ public class SqlPersonnelTaskAssignmentDao extends SqlBaseDao implements Personn
                 .addValue("taskIdsPresent", queryBuilder.getTaskIds() == null)
                 .addValue("taskIds", queryBuilder.getTaskIds())
                 ;
+    }
+
+    private MapSqlParameterSource getManualOverrideStatusParams(PersonnelTaskAssignment task) {
+        return getEmpIdParams(task.getEmpId())
+                .addValue("taskId", task.getTaskId());
     }
 }

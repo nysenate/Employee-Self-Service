@@ -6,6 +6,7 @@ import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignmentGroup;
+import gov.nysenate.ess.core.service.pec.notification.PECNotificationService;
 import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
 import org.springframework.stereotype.Service;
 
@@ -16,8 +17,9 @@ import java.util.stream.Collectors;
 public class EthicsGroupTaskAssigner extends BaseGroupTaskAssigner {
 
     public EthicsGroupTaskAssigner(PersonnelTaskAssignmentDao assignmentDao,
-                                   PersonnelTaskService taskService) {
-        super(assignmentDao, taskService);
+                                   PersonnelTaskService taskService,
+                                   PECNotificationService pecNotificationService) {
+        super(assignmentDao, taskService, pecNotificationService);
     }
 
     @Override
@@ -33,8 +35,6 @@ public class EthicsGroupTaskAssigner extends BaseGroupTaskAssigner {
     private Set<Integer> getRequiredTaskIds(int empId) {
         Optional<PersonnelTask> latestEthicsTaskOpt = getLatestEthicsTask();
 
-        Optional<PersonnelTask> ethicsLiveTaskOpt = getEthicsLiveCourseTask();
-
         Optional<PersonnelTask> moodleTaskOpt = getMoodleEthicsTask();
 
         Optional<PersonnelTaskAssignment> latestCompletedOpt = getGroupAssignments(empId).stream()
@@ -42,6 +42,12 @@ public class EthicsGroupTaskAssigner extends BaseGroupTaskAssigner {
                 .max(Comparator.comparing(PersonnelTaskAssignment::getUpdateTime));
 
         final Set<Integer> requiredTaskIds = new HashSet<>();
+
+        if (latestCompletedOpt.isEmpty()) {
+            moodleTaskOpt
+                    .map(PersonnelTask::getTaskId)
+                    .ifPresent(requiredTaskIds::add);
+        }
 
         // If there is already a complete ethics task, see if there is a newer task to assign
         if (latestEthicsTaskOpt.isPresent() && latestCompletedOpt.isPresent()) {
@@ -53,31 +59,12 @@ public class EthicsGroupTaskAssigner extends BaseGroupTaskAssigner {
                 requiredTaskIds.add(latestTask.getTaskId());
             }
         } else {
-            // Otherwise, require the ethics live & moodle courses, assuming there is one.
-            ethicsLiveTaskOpt
-                    .map(PersonnelTask::getTaskId)
-                    .ifPresent(requiredTaskIds::add);
             moodleTaskOpt
                     .map(PersonnelTask::getTaskId)
                     .ifPresent(requiredTaskIds::add);
         }
 
         return ImmutableSet.copyOf(requiredTaskIds);
-    }
-
-    private Optional<PersonnelTask> getEthicsLiveCourseTask() {
-        List<PersonnelTask> ethicsLiveTasks = getActiveGroupTasks().stream()
-                .filter(task -> task.getTaskType() == PersonnelTaskType.ETHICS_LIVE_COURSE)
-                .collect(Collectors.toList());
-        switch (ethicsLiveTasks.size()) {
-            case 0:
-                return Optional.empty();
-            case 1:
-                return Optional.of(ethicsLiveTasks.get(0));
-            default:
-                throw new IllegalStateException(
-                        "Expected a single ethics live course task, got " + ethicsLiveTasks.size() + ": " + ethicsLiveTasks);
-        }
     }
 
     private Optional<PersonnelTask> getMoodleEthicsTask() {

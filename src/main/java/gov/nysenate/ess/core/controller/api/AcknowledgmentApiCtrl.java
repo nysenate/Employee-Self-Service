@@ -13,6 +13,7 @@ import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
 import gov.nysenate.ess.core.model.pec.acknowledgment.AckDoc;
 import gov.nysenate.ess.core.model.pec.acknowledgment.AckDocNotFoundEx;
 import gov.nysenate.ess.core.model.pec.acknowledgment.DuplicateAckEx;
+import gov.nysenate.ess.core.service.pec.notification.PECNotificationService;
 import gov.nysenate.ess.core.service.pec.task.PersonnelTaskNotFoundEx;
 import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
 import gov.nysenate.ess.core.service.pec.task.TaskPDFSignatureService;
@@ -57,10 +58,13 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
     private final PersonnelTaskAssignmentDao assignmentDao;
     private final TaskPDFSignatureService signatureService;
 
+    private final PECNotificationService pecNotificationService;
+
     @Autowired
     public AcknowledgmentApiCtrl(PersonnelTaskService taskService,
                                  PersonnelTaskAssignmentDao assignmentDao,
                                  TaskPDFSignatureService signatureService,
+                                 PECNotificationService pecNotificationService,
                                  @Value("${data.dir}") String dataDir,
                                  @Value("${data.ackdoc_subdir}") String ackDocSubdir,
                                  @Value("${resource.path}") String resPath
@@ -68,6 +72,7 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
         this.taskService = taskService;
         this.assignmentDao = assignmentDao;
         this.signatureService = signatureService;
+        this.pecNotificationService = pecNotificationService;
         this.ackDocDir = dataDir + ackDocSubdir;
         this.ackDocResPath = resPath + ackDocSubdir;
     }
@@ -109,7 +114,7 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
 
         // Mark the acknowledgment task as completed
         assignmentDao.setTaskComplete(empId, taskId, authedEmpId);
-
+        pecNotificationService.sendCompletionEmail(empId, taskId);
         return new SimpleResponse(true, "Document Acknowledged", "document-acknowledged");
     }
 
