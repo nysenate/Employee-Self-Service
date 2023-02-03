@@ -41,6 +41,9 @@ public class PECNotificationService {
     @Value("${pec.test.mode:true}")
     private boolean pecTestMode;
 
+    @Value("${all.pec.notifs.enabled:false}")
+    private boolean allPecNotifsEnabled;
+
     private List<String> reportEmails;
 
     private String instructionURL;
@@ -192,7 +195,9 @@ public class PECNotificationService {
             }
             MimeMessage message = sendMailService.newHtmlMessage(to.trim(),
                     subject, html);
-            sendMailService.send(message);
+            if (allPecNotifsEnabled) {
+                sendMailService.send(message);
+            }
         } catch (Exception e) {
             logger.error("There was an error trying to send the PEC notification email ", e);
         }
