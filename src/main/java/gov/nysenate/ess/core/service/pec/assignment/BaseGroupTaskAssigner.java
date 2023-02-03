@@ -63,7 +63,11 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
                             .map(PersonnelTaskAssignment::getTaskId)
                             .collect(Collectors.toList()));
         }
-        newAssignments.forEach(assignmentDao::updateAssignment);
+        for (PersonnelTaskAssignment assignment : newAssignments) {
+            if (!assignmentDao.getManualOverrideStatus(empId,assignment.getTaskId())) {
+                assignmentDao.updateAssignment(assignment);
+            }
+        }
 
         // Deactivate inactive tasks that have not been completed.
         Set<Integer> idsToDeactivate = inactiveAssigned.stream()
