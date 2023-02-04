@@ -54,18 +54,12 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
         List<PersonnelTaskAssignment> newAssignments = activeUnassigned.stream()
                 .map(taskId -> PersonnelTaskAssignment.newTask(empId, taskId))
                 .collect(Collectors.toList());
-        if (!newAssignments.isEmpty()) {
-            logger.info("Assigning {} {} personnel tasks to emp #{} : {}",
-                    newAssignments.size(),
-                    getTargetGroup(),
-                    empId,
-                    newAssignments.stream()
-                            .map(PersonnelTaskAssignment::getTaskId)
-                            .collect(Collectors.toList()));
-        }
+
         for (PersonnelTaskAssignment assignment : newAssignments) {
             if (!assignmentDao.getManualOverrideStatus(empId,assignment.getTaskId())) {
                 assignmentDao.updateAssignment(assignment);
+                logger.info("Assigning {} personnel tasks to emp #{} : Task ID #{}",
+                        getTargetGroup(), empId, assignment.getTaskId() );
             }
         }
 
@@ -73,15 +67,12 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
         Set<Integer> idsToDeactivate = inactiveAssigned.stream()
                 .filter(taskId -> !assignmentMap.get(taskId).isCompleted())
                 .collect(Collectors.toSet());
-
-        if (!idsToDeactivate.isEmpty()) {
-            logger.info("Deactivating {} {} tasks for emp #{} : {}",
-                    idsToDeactivate.size(), getTargetGroup(), empId, idsToDeactivate);
-        }
         for (Integer taskId: idsToDeactivate) {
             if (!assignmentDao.getManualOverrideStatus(empId,taskId) && !personnelTaskMap.get(taskId).isActive()) {
                 //only deactivate if it was not manually overridden
                 assignmentDao.deactivatePersonnelTaskAssignment(empId, taskId);
+                logger.info("Deactivating {} task for emp #{} : Task ID #{}",
+                        getTargetGroup(), empId, idsToDeactivate);
             }
         }
 
