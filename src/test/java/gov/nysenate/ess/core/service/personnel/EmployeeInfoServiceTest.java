@@ -28,6 +28,12 @@ public class EmployeeInfoServiceTest extends BaseTest
     EmployeeInfoService employeeInfoService;
 
     @Test
+    public void continuousServiceTest() {
+        LocalDate continuousServiceDate = employeeInfoService.getEmployeesMostRecentContinuousServiceDate(1719);
+        logger.info("{}", continuousServiceDate);
+    }
+
+    @Test
     public void activeDatesTest() {
         RangeSet<LocalDate> activeDates = employeeInfoService.getEmployeeActiveDatesService(1719);
         logger.info("{}", activeDates.asRanges());
