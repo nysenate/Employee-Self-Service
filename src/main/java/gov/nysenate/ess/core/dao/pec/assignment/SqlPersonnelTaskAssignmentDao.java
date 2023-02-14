@@ -79,7 +79,7 @@ public class SqlPersonnelTaskAssignmentDao extends SqlBaseDao implements Personn
     @Override
     public boolean getManualOverrideStatus(Integer empId, Integer taskId) {
         MapSqlParameterSource params = getEmpIdTaskIdParams(empId, taskId);
-        return Boolean.TRUE.equals(localNamedJdbc.queryForObject(GET_MANUAL_OVERRIDE_STATUS.getSql(schemaMap()), params, Boolean.class));
+        return localNamedJdbc.queryForObject(GET_MANUAL_OVERRIDE_STATUS.getSql(schemaMap()), params, Boolean.class);
     }
 
     @Override

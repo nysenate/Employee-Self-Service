@@ -1,6 +1,7 @@
 package gov.nysenate.ess.core.service.pec.notification;
 
 import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
+import gov.nysenate.ess.core.dao.pec.notification.PECNotificationDao;
 import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
@@ -33,6 +34,8 @@ public class PECNotificationService {
 
     private EmployeeInfoService employeeInfoService;
 
+    private PECNotificationDao pecNotificationDao;
+
     private Map<Integer, PersonnelTask> activeTaskMap;
 
     @Value("${scheduler.pec.notifs.enabled:false}")
@@ -54,6 +57,7 @@ public class PECNotificationService {
     public PECNotificationService(EmployeeDao employeeDao, PersonnelTaskService taskService,
                                   PersonnelTaskAssignmentDao assignmentDao, SendMailService sendMailService,
                                   EmployeeInfoService employeeInfoService,
+                                  PECNotificationDao pecNotificationDao,
                                   @Value("${report.email}") String reportEmailList,
                                   @Value("${domain.url}") String domainURL) {
         this.employeeDao = employeeDao;
@@ -61,6 +65,7 @@ public class PECNotificationService {
         this.assignmentDao = assignmentDao;
         this.sendMailService = sendMailService;
         this.employeeInfoService = employeeInfoService;
+        this.pecNotificationDao = pecNotificationDao;
         Map<Integer, PersonnelTask> activeTaskMap = new HashMap<>();
         for (PersonnelTask task : taskService.getPersonnelTasks(true)) {
             activeTaskMap.put(task.getTaskId(), task);
@@ -115,33 +120,30 @@ public class PECNotificationService {
         logger.info("Completed PEC Notification Process");
     }
 
-    public void sendInviteEmails(int empID) {
-
+    public void sendInviteEmails(int empID, PersonnelTaskAssignment assignment) {
         Employee employee = employeeDao.getEmployeeById(empID);
-        List<PersonnelTaskAssignment> incompleteAssignments = getIncompleteAssignmentsForEmp(employee);
 
-        if (!incompleteAssignments.isEmpty()) {
-            for (PersonnelTaskAssignment incompleteAssignment : incompleteAssignments) {
+        boolean wasNotifSent = pecNotificationDao.wasNotificationSent(empID, assignment.getTaskId());
 
-                if (this.activeTaskMap.containsKey(incompleteAssignment.getTaskId())) {
-                    PersonnelTask task = this.activeTaskMap.get(incompleteAssignment.getTaskId());
+        if (this.activeTaskMap.containsKey(assignment.getTaskId()) && !wasNotifSent) {
+            PersonnelTask task = this.activeTaskMap.get(assignment.getTaskId());
 
-                    String recipientEmail = employee.getEmail();
-                    String subject = employee.getFullName() + " You have to complete the task: " + task.getTitle();
-                    String html = getStandardHTMLInstructions();
-                    ArrayList<PersonnelTaskAssignment> incompleteTask = new ArrayList<>();
-                    incompleteTask.add(incompleteAssignment);
-                    html = html + addDueDateInformationHtml(employee, incompleteTask);
+            String recipientEmail = employee.getEmail();
+            String subject = employee.getFullName() + " You have to complete the task: " + task.getTitle();
+            String html = getStandardHTMLInstructions(employee.getFullName());
+            ArrayList<PersonnelTaskAssignment> incompleteTask = new ArrayList<>();
+            incompleteTask.add(assignment);
+            html = html + addDueDateInformationHtml(employee, incompleteTask);
 
-                    if (pecTestMode && (pecTestModeLimit >= pecTestModeCount)) {
-                        //Send email to employee
-                        sendEmail(recipientEmail, subject, html);
-                        pecTestModeCount++;
-                    }
-                    else if (!pecTestMode) {
-                        sendEmail(recipientEmail, subject, html);
-                    }
-                }
+            if (pecTestMode && (pecTestModeLimit >= pecTestModeCount)) {
+                //Send email to employee
+                sendEmail(recipientEmail, subject, html);
+                pecTestModeCount++;
+            } else if (!pecTestMode) {
+                sendEmail(recipientEmail, subject, html);
+            }
+            if (!pecTestMode) {
+                pecNotificationDao.markNotificationSent( empID, assignment.getTaskId());
             }
         }
     }
@@ -172,7 +174,7 @@ public class PECNotificationService {
         String subject = employee.getFullName() + " you have outstanding Personnel Tasks";
 
         //Standard instructions for all tasks
-        String html = getStandardHTMLInstructions();
+        String html = getStandardHTMLInstructions(employee.getFullName());
 
         //Add known time limit text to the emails
         html = html + addDueDateInformationHtml(employee, incompleteEmpAssignments);
@@ -181,8 +183,7 @@ public class PECNotificationService {
             //Send email to employee
             sendEmail(recipientEmail, subject, html);
             pecTestModeCount++;
-        }
-        else if (!pecTestMode) {
+        } else if (!pecTestMode) {
             sendEmail(recipientEmail, subject, html);
         }
 
@@ -253,8 +254,8 @@ public class PECNotificationService {
         return continuousServiceDate.isBefore(ninetyDaysAgo);
     }
 
-    private String getStandardHTMLInstructions() {
-        return "<b>Our records indicate you have outstanding tasks to complete for Personnel.</b><br>" +
+    private String getStandardHTMLInstructions(String employeeName) {
+        return "<b>" + employeeName + " Our records indicate you have outstanding tasks to complete for Personnel.</b><br>" +
                 "You can find instructions to complete them by logging into ESS, " +
                 "then clicking the My Info tab and then clicking on the To Do List. " +
                 " Or go to this link <a href=\"" + instructionURL + "\">HERE</a><br><br>" +
@@ -308,6 +309,11 @@ public class PECNotificationService {
                 }
             }
         }
+
+        if (pecTestMode) {
+            html = html + "<br> Employee ID: " + employee.getEmployeeId() + "<br> Email: " + employee.getEmail();
+        }
+
         return html;
     }
 }

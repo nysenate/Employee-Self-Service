@@ -9,6 +9,7 @@ import gov.nysenate.ess.core.service.pec.notification.PECNotificationService;
 import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -56,10 +57,18 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
                 .collect(Collectors.toList());
 
         for (PersonnelTaskAssignment assignment : newAssignments) {
-            if (!assignmentDao.getManualOverrideStatus(empId,assignment.getTaskId())) {
+            boolean taskHasBeenManuallyOverridden = false;
+            try {
+                taskHasBeenManuallyOverridden = assignmentDao.getManualOverrideStatus(empId,assignment.getTaskId());
+            }
+            catch (EmptyResultDataAccessException e) {
+                //No need to do anything. It means we are going to update this task in the database
+            }
+            if (!taskHasBeenManuallyOverridden) {
                 assignmentDao.updateAssignment(assignment);
                 logger.info("Assigning {} personnel tasks to emp #{} : Task ID #{}",
                         getTargetGroup(), empId, assignment.getTaskId() );
+                pecNotificationService.sendInviteEmails(empId, assignment);
             }
         }
 
@@ -68,15 +77,20 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
                 .filter(taskId -> !assignmentMap.get(taskId).isCompleted())
                 .collect(Collectors.toSet());
         for (Integer taskId: idsToDeactivate) {
-            if (!assignmentDao.getManualOverrideStatus(empId,taskId) && !personnelTaskMap.get(taskId).isActive()) {
+            boolean taskHasBeenManuallyOverridden = false;
+            try {
+                taskHasBeenManuallyOverridden = !assignmentDao.getManualOverrideStatus(empId,taskId);
+            }
+            catch (EmptyResultDataAccessException e) {
+                //No need to do anything. It means we are going to update this task in the database
+            }
+            if (!taskHasBeenManuallyOverridden && !personnelTaskMap.get(taskId).isActive()) {
                 //only deactivate if it was not manually overridden
                 assignmentDao.deactivatePersonnelTaskAssignment(empId, taskId);
                 logger.info("Deactivating {} task for emp #{} : Task ID #{}",
                         getTargetGroup(), empId, idsToDeactivate);
             }
         }
-
-        pecNotificationService.sendInviteEmails(empId);
         return newAssignments.size();
     }
 
