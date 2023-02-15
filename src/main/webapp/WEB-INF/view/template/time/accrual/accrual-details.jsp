@@ -2,9 +2,7 @@
   <h3 class="content-info">
     <span ng-show="accruals.computed && !accruals.submitted">Projected</span>
     Accrual Usage for {{accruals.payPeriod.startDate | moment:'YYYY'}}
-    Pay Period {{accruals.payPeriod.payPeriodNum +
-        (accruals.payPeriod.endYearSplit ? 'A' : accruals.payPeriod.startYearSplit ? 'B' : 0)
-    }}
+    Pay Period {{accruals.payPeriod.payPeriodNum}}
   </h3>
   <div class="accrual-detail-content col-12-12">
     <div class="col-10-12 accrual-detail-table-container">
