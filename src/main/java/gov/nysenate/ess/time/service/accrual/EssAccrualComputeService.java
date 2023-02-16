@@ -405,21 +405,12 @@ public class EssAccrualComputeService implements AccrualComputeService
             accrualState.setEndDate(fromDate.minusDays(1));
         }
 
-        LocalDate accBeginDt = annualAcc.getEndDate();
-        if (accBeginDt == null) {
-            // If annualAcc.getEndDate is null, use a date around the start of this year instead of the
-            // fromDate which was used previously. fromDate can cause issues in employees with cont service
-            // dates which predate SFMS records (~1992).
-            LocalDate endOfLastYear = LocalDate.of(LocalDate.now().getYear(), 1, 1);
-            accBeginDt = Collections.max(Arrays.asList(endOfLastYear, annualAcc.getContServiceDate()));
-        }
-
-        PayPeriod firstPayPeriod = payPeriodService.getPayPeriod(PayPeriodType.AF, accBeginDt);
+        PayPeriod firstPayPeriod = payPeriodService.getPayPeriod(PayPeriodType.AF, fromDate);
 
         // Create a date range from the end date to the first day after the end date
         // This is done so that the initial values are used if the employee was not active on the end date
         Range<LocalDate> initialRange =
-                Range.closed(accBeginDt, accBeginDt.plusDays(1));
+                Range.closed(accrualState.getEndDate(), accrualState.getEndDate().plusDays(1));
 
         // Set the expected YTD hours from the last PD23ACCUSAGE record
         if (periodAccSum.isPresent()) {
