@@ -8,6 +8,8 @@ import gov.nysenate.ess.core.service.security.authorization.permission.Permissio
 import gov.nysenate.ess.supply.authorization.permission.RequisitionPermission;
 import gov.nysenate.ess.supply.authorization.permission.SupplyPermission;
 import org.apache.shiro.authz.Permission;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -21,6 +23,8 @@ import static gov.nysenate.ess.supply.authorization.permission.SupplyPermission.
 @Component
 public class SupplyPermissionFactory implements PermissionFactory {
 
+    private static final Logger logger = LoggerFactory.getLogger(SupplyPermissionFactory.class);
+
     @Override
     public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum> roles) {
         return roles.stream()
@@ -33,7 +37,11 @@ public class SupplyPermissionFactory implements PermissionFactory {
         List<Permission> permissions = new ArrayList<>();
         if (role.equals(EssRole.SENATE_EMPLOYEE)) {
             permissions.add(RequisitionPermission.forCustomer(employee.getEmployeeId(), RequestMethod.GET));
-            permissions.add(RequisitionPermission.forDestination(employee.getWorkLocation().getLocId().toString(), RequestMethod.GET));
+            if (employee.getWorkLocation() != null) {
+                logger.warn("Employee {} has a null work location, user will not have permission to order supplies " +
+                        "to their work location.", employee.getEmail());
+                permissions.add(RequisitionPermission.forDestination(employee.getWorkLocation().getLocId().toString(), RequestMethod.GET));
+            }
         }
         else if (role.equals(EssRole.SUPPLY_EMPLOYEE)) {
             permissions.add(SupplyPermission.SUPPLY_UI_NAV_MANAGE.getPermission());
