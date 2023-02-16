@@ -411,9 +411,7 @@ public class EssAccrualComputeService implements AccrualComputeService
             // fromDate which was used previously. fromDate can cause issues in employees with cont service
             // dates which predate SFMS records (~1992).
             LocalDate endOfLastYear = LocalDate.of(LocalDate.now().getYear(), 1, 1);
-            accBeginDt = Collections.max(
-                    Arrays.asList(endOfLastYear, annualAcc.getContServiceDate(), fromDate.minusDays(1))
-            );
+            accBeginDt = Collections.max(Arrays.asList(endOfLastYear, annualAcc.getContServiceDate()));
         }
 
         PayPeriod firstPayPeriod = payPeriodService.getPayPeriod(PayPeriodType.AF, accBeginDt);
