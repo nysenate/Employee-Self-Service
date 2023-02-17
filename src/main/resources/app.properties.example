@@ -239,6 +239,9 @@ scheduler.travel.scrape.cron = 0 0 2 * * *
 #False by default but true on prod
 scheduler.pec.notifs.enabled = false
 
+#IF enabled will automatically udpate the DB with new ethics live codes and email the admins
+pec.ethics-code.autogen = true
+
 #Determines if any emails should be sent at all from the PEC Notification Service. This includes test mode.
 all.pec.notifs.enabled = false
 
@@ -301,6 +304,9 @@ report.email =
 
 #Supports comma separated emails
 everfi.report.email =
+
+#Supports comma separated emails
+pec.code.admin.emails =
 
 pec.test.mode = true
 

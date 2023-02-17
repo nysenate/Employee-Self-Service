@@ -125,7 +125,7 @@ public class PECNotificationService {
 
         boolean wasNotifSent = pecNotificationDao.wasNotificationSent(empID, assignment.getTaskId());
 
-        if (this.activeTaskMap.containsKey(assignment.getTaskId()) && !wasNotifSent) {
+        if (this.activeTaskMap.containsKey(assignment.getTaskId()) && !wasNotifSent && !employee.isSenator()) {
             PersonnelTask task = this.activeTaskMap.get(assignment.getTaskId());
 
             String recipientEmail = employee.getEmail();
@@ -189,7 +189,13 @@ public class PECNotificationService {
 
     }
 
-    private void sendEmail(String to, String subject, String html) {
+    /**
+     * Sends emails. Limited by test mode and pec notifs enabled
+     * @param to
+     * @param subject
+     * @param html
+     */
+    public void sendEmail(String to, String subject, String html) {
         try {
             if (pecTestMode) {
                 to = this.reportEmails.get(0);
@@ -315,5 +321,9 @@ public class PECNotificationService {
         }
 
         return html;
+    }
+
+    public Map<Integer, PersonnelTask> getActiveTaskMap() {
+        return activeTaskMap;
     }
 }
