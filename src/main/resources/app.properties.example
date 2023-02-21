@@ -235,6 +235,9 @@ scheduler.supply.sfms_synchronization.cron = 0 0 0 * * *
 # Updates travel application values taken from the web
 scheduler.travel.scrape.cron = 0 0 2 * * *
 
+# Cron to auto generate the codes for ethics live courses
+scheduler.ethics.code.autogen.cron = 0 0 0 1 * *
+
 #Determines if we should send out email alerts to every active employee with outstanding tasks or not on cron
 #False by default but true on prod
 scheduler.pec.notifs.enabled = false
