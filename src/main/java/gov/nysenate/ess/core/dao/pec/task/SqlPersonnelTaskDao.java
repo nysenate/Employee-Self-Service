@@ -109,7 +109,8 @@ public class SqlPersonnelTaskDao extends SqlBaseDao implements PersonnelTaskDao 
                     rs.getString("title"),
                     getLocalDateTime(rs, "effective_date_time"),
                     getLocalDateTime(rs, "end_date_time"),
-                    rs.getBoolean("active")
+                    rs.getBoolean("active"),
+                    rs.getBoolean("notifiable")
             );
 
     private static final RowMapper<EverfiContentID> everfiContentIDRowMapper = (rs, rowNum) ->

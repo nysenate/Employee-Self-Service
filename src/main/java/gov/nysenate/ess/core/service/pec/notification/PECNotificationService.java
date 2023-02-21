@@ -128,22 +128,24 @@ public class PECNotificationService {
         if (this.activeTaskMap.containsKey(assignment.getTaskId()) && !wasNotifSent && !employee.isSenator()) {
             PersonnelTask task = this.activeTaskMap.get(assignment.getTaskId());
 
-            String recipientEmail = employee.getEmail();
-            String subject = employee.getFullName() + " You have to complete the task: " + task.getTitle();
-            String html = getStandardHTMLInstructions(employee.getFullName());
-            ArrayList<PersonnelTaskAssignment> incompleteTask = new ArrayList<>();
-            incompleteTask.add(assignment);
-            html = html + addDueDateInformationHtml(employee, incompleteTask);
+            if (task.isNotifiable()) {
+                String recipientEmail = employee.getEmail();
+                String subject = employee.getFullName() + " You have to complete the task: " + task.getTitle();
+                String html = getStandardHTMLInstructions(employee.getFullName());
+                ArrayList<PersonnelTaskAssignment> incompleteTask = new ArrayList<>();
+                incompleteTask.add(assignment);
+                html = html + addDueDateInformationHtml(employee, incompleteTask);
 
-            if (pecTestMode && (pecTestModeLimit >= pecTestModeCount)) {
-                //Send email to employee
-                sendEmail(recipientEmail, subject, html);
-                pecTestModeCount++;
-            } else if (!pecTestMode) {
-                sendEmail(recipientEmail, subject, html);
-            }
-            if (!pecTestMode) {
-                pecNotificationDao.markNotificationSent( empID, assignment.getTaskId());
+                if (pecTestMode && (pecTestModeLimit >= pecTestModeCount)) {
+                    //Send email to employee
+                    sendEmail(recipientEmail, subject, html);
+                    pecTestModeCount++;
+                } else if (!pecTestMode) {
+                    sendEmail(recipientEmail, subject, html);
+                }
+                if (!pecTestMode) {
+                    pecNotificationDao.markNotificationSent( empID, assignment.getTaskId());
+                }
             }
         }
     }
@@ -158,7 +160,9 @@ public class PECNotificationService {
         String subject = "You have completed the task: " + task.getTitle();
         String html = "Our records have been updated to indicate you have completed " + task.getTitle();
 
-        sendEmail(recipientEmail, subject, html);
+        if (task.isNotifiable()) {
+            sendEmail(recipientEmail, subject, html);
+        }
     }
 
     public void resetTestModeCounter() {
