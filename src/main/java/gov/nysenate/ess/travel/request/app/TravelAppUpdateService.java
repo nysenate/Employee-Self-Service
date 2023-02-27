@@ -83,7 +83,7 @@ public class TravelAppUpdateService {
      * on the returned amendment.
      * <p>
      * Use this once both outbound and return legs have been added to the route so that
-     * milage, per diems, etc can be calculated.
+     * mileage, per diems, etc can be calculated.
      *
      * @param amd   The initial amendment.
      * @param route A Route with both outbound and return legs set. All Route data i.e. mileage, per diems

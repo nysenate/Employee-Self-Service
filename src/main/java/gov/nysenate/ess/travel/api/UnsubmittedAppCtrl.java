@@ -71,7 +71,7 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
         TravelAppEditDto appEditDto = null;
         if (dtoOpt.isPresent()) {
             appEditDto = dtoOpt.get();
-            // Always make sure the travler's department is up to date.
+            // Make sure the traveler's department is up to date.
             appEditDto.setTraveler(new DetailedEmployeeView(
                     employeeInfoService.getEmployee(appEditDto.getTraveler().getEmployeeId())));
         } else {

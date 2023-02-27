@@ -18,7 +18,7 @@ public class TravelAppEditDto implements ViewObject {
     // Apply Amendment that is currently being edited.
     private AmendmentView amendment;
 
-    // Employees the logged in user is allowed to submit apps for.
+    // Set of employees the user is allowed to submit apps for.
     private Set<EmployeeView> allowedTravelers;
     // All Possible event types for the Purpose of Travel
     private List<EventTypeView> validEventTypes;

@@ -12,7 +12,7 @@ import java.util.*;
 public class TravelApplication {
 
     /** Sort amendments by the declaration order of {@link Version} */
-    private final static Comparator<Amendment> amendmentComparator = Comparator.comparing(Amendment::version);
+    private static final Comparator<Amendment> amendmentComparator = Comparator.comparing(Amendment::version);
 
     protected int appId;
     protected Employee traveler;
@@ -72,7 +72,7 @@ public class TravelApplication {
     }
 
     public boolean isApproved() {
-        return status().status().equals(ApprovalStatus.APPROVED);
+        return status().isApproved();
     }
 
     public int getAppId() {

@@ -5,7 +5,7 @@ import java.util.Objects;
 public class TravelApplicationStatus {
 
     protected ApprovalStatus status;
-    // A note about this status. Currently used to explain disapproval reasons.
+    // A note about this status. Currently, used to explain disapproval reasons.
     protected String note;
 
     public TravelApplicationStatus() {
