@@ -144,6 +144,22 @@
             }
         }
 
+        function EthicsCourseLiveTask(task) {
+            PersonnelTask.apply(this, arguments);
+
+            this.getActionUrl = function () {
+                return appProps.ctxPath + "/myinfo/personnel/todo/ethicscourselive/" + task.taskId;
+            };
+
+            this.getCourseUrl = function () {
+                return task.url;
+            };
+
+            this.getIconClass = function () {
+                return 'icon-graduation-cap';
+            }
+        }
+
         /**
          * Parse the task json into the appropriate PersonnelTask
          *
@@ -163,6 +179,8 @@
                     return new EverfiCourse(task);
                 case 'ETHICS_COURSE':
                     return new EthicsCourseTask(task);
+                case 'ETHICS_LIVE_COURSE':
+                    return new EthicsCourseLiveTask(task);
                 default:
                     console.error("Unknown task type '" + taskType + "'!");
                     return new PersonnelTask(task);

@@ -1,0 +1,1 @@
+alter type ess.personnel_task_assignment_group add VALUE 'ETHICS_LIVE';

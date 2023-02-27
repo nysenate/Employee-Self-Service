@@ -13,6 +13,7 @@ import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
 import gov.nysenate.ess.core.model.pec.acknowledgment.AckDoc;
 import gov.nysenate.ess.core.model.pec.acknowledgment.AckDocNotFoundEx;
 import gov.nysenate.ess.core.model.pec.acknowledgment.DuplicateAckEx;
+import gov.nysenate.ess.core.service.pec.notification.PECNotificationService;
 import gov.nysenate.ess.core.service.pec.task.PersonnelTaskNotFoundEx;
 import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
 import gov.nysenate.ess.core.service.pec.task.TaskPDFSignatureService;
@@ -33,6 +34,7 @@ import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import static gov.nysenate.ess.core.model.pec.PersonnelTaskType.DOCUMENT_ACKNOWLEDGMENT;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -56,10 +58,13 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
     private final PersonnelTaskAssignmentDao assignmentDao;
     private final TaskPDFSignatureService signatureService;
 
+    private final PECNotificationService pecNotificationService;
+
     @Autowired
     public AcknowledgmentApiCtrl(PersonnelTaskService taskService,
                                  PersonnelTaskAssignmentDao assignmentDao,
                                  TaskPDFSignatureService signatureService,
+                                 PECNotificationService pecNotificationService,
                                  @Value("${data.dir}") String dataDir,
                                  @Value("${data.ackdoc_subdir}") String ackDocSubdir,
                                  @Value("${resource.path}") String resPath
@@ -67,6 +72,7 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
         this.taskService = taskService;
         this.assignmentDao = assignmentDao;
         this.signatureService = signatureService;
+        this.pecNotificationService = pecNotificationService;
         this.ackDocDir = dataDir + ackDocSubdir;
         this.ackDocResPath = resPath + ackDocSubdir;
     }
@@ -108,7 +114,7 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
 
         // Mark the acknowledgment task as completed
         assignmentDao.setTaskComplete(empId, taskId, authedEmpId);
-
+        pecNotificationService.sendCompletionEmail(empId, taskId);
         return new SimpleResponse(true, "Document Acknowledged", "document-acknowledged");
     }
 
@@ -163,13 +169,13 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
 
     /* --- Internal Methods --- */
 
-    private AckDoc getAckDoc(int taskId, String paramName) {
+    private boolean getAckDoc(int taskId, String paramName) {
         PersonnelTask task = taskService.getPersonnelTask(taskId);
-        if (!(task instanceof AckDoc)) {
+        if (!(task.getTaskType() == DOCUMENT_ACKNOWLEDGMENT)) {
             throw new InvalidRequestParamEx(taskId, paramName, "int",
                     "id must reference a personnel task of type ack doc");
         }
-        return (AckDoc) task;
+        return true;
     }
 
     private Resource loadFileAsResource(File file) throws IOException {

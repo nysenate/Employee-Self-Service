@@ -4,6 +4,7 @@ import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.service.pec.assignment.CsvTaskAssigner;
 import gov.nysenate.ess.core.service.pec.external.PECVideoCSVService;
 import gov.nysenate.ess.core.service.pec.assignment.PersonnelTaskAssigner;
+import gov.nysenate.ess.core.service.pec.notification.PECNotificationService;
 import gov.nysenate.ess.core.service.pec.task.CachedPersonnelTaskService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.AuthorizationException;
@@ -29,13 +30,57 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
     private final CsvTaskAssigner csvTaskAssigner;
     private final CachedPersonnelTaskService cachedPersonnelTaskService;
 
+    private final PECNotificationService pecNotificationService;
+
     @Autowired
     public PersonnelTaskAdminApiCtrl(PersonnelTaskAssigner taskAssigner, PECVideoCSVService pecVideoCSVService,
-                                     CsvTaskAssigner csvTaskAssigner, CachedPersonnelTaskService cachedPersonnelTaskService) {
+                                     CsvTaskAssigner csvTaskAssigner, CachedPersonnelTaskService cachedPersonnelTaskService,
+                                     PECNotificationService pecNotificationService) {
         this.taskAssigner = taskAssigner;
         this.pecVideoCSVService = pecVideoCSVService;
         this.csvTaskAssigner = csvTaskAssigner;
         this.cachedPersonnelTaskService = cachedPersonnelTaskService;
+        this.pecNotificationService = pecNotificationService;
+    }
+
+    /**
+     * PEC Reminder Notification API
+     * --------------------------
+     *
+     * Determine personnel tasks for all employees and send emails to remind employees to complete them
+     *
+     * Usage:
+     * (POST)   /api/v1/admin/personnel/task/notify
+     *
+     * @return {@link SimpleResponse}
+     */
+    @RequestMapping(value = "/notify", method = POST )
+    public SimpleResponse sendNotifications() {
+        checkPermission(ADMIN.getPermission());
+        pecNotificationService.runPECNotificationProcess();
+        return new SimpleResponse(true,
+                "pec notifications complete",
+                "pec-notifications-complete");
+    }
+
+    /**
+     * PEC notifs Test Mode Count Reset API
+     * --------------------------
+     *
+     * Reset the test counter to continue to receive emails in PEC Test Mode
+     *
+     * Usage:
+     * (POST)   /api/v1/admin/personnel/task/reset/counter
+     *
+     * @return {@link SimpleResponse}
+     */
+    @RequestMapping(value = "/reset/counter", method = POST )
+    public SimpleResponse resetCounter() {
+        checkPermission(ADMIN.getPermission());
+        pecNotificationService.resetTestModeCounter();
+        return new SimpleResponse(true,
+                "pec notifications complete",
+                "pec-notifications-complete");
     }
 
     /**
@@ -86,7 +131,7 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
      * Parse Out Personnel Tasks for PEC Videos
      * ----------------------------------
      *
-     * Determine personnel tasks for a single employee and assign those that are missing.
+     * Process personnel task records from csv files
      *
      * Usage:
      * (POST)   /api/v1/admin/personnel/task/csv
@@ -177,17 +222,24 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
      * This api call updates assigned tasks for multiple employees based off of a csv file
      *
      * Usage:
-     * (GET)   /api/v1/admin/personnel/task/overrride/csv/assign
+     * (POST)   /api/v1/admin/personnel/task/override/csv/assign/{sts}
      *
      * Path params:
      *
      * @return {@link SimpleResponse}
      */
-    @RequestMapping(value = "/overrride/csv/assign", method = GET)
-    public SimpleResponse overrideTaskAssignmentFromCSV() throws AuthorizationException, IOException {
+    @RequestMapping(value = "/override/csv/assign/{sts}", method = POST)
+    public SimpleResponse overrideTaskAssignmentFromCSV(@PathVariable boolean sts) throws AuthorizationException, IOException {
         Subject subject = SecurityUtils.getSubject();
         if (subject.hasRole("ADMIN") || subject.hasRole("PERSONNEL_COMPLIANCE_MANAGER") ) {
-            csvTaskAssigner.processCSVForManualAssignments();
+
+            if (sts) {
+                csvTaskAssigner.processCSVForSTSManualAssignments();
+            }
+            else {
+                csvTaskAssigner.processCSVForPersonnelManualAssignments();
+            }
+
             return new SimpleResponse(true,
                     "The batch assignment csv was processed successfully",
                     "employee-task-override");

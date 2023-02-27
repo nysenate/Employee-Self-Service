@@ -10,7 +10,7 @@ import gov.nysenate.ess.core.model.cache.ContentCache;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
-import gov.nysenate.ess.core.model.pec.video.PersonnelTaskAssignmentGroup;
+import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignmentGroup;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.base.CachingService;
 import gov.nysenate.ess.core.service.cache.EhCacheManageService;
@@ -24,7 +24,7 @@ import java.time.Duration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Function;
+import java.util.TreeMap;
 
 /**
  * Implements {@link PersonnelTaskService} using {@link PersonnelTaskDao} and {@link PersonnelTaskDetailDao}
@@ -150,31 +150,32 @@ public class CachedPersonnelTaskService implements PersonnelTaskService, Caching
     /* --- Internal Methods --- */
 
     @SuppressWarnings("unchecked")
-    private ImmutableSortedMap<Integer, PersonnelTask> getTaskMap() {
+    private TreeMap<Integer, PersonnelTask> getTaskMap() {
         taskCache.acquireReadLockOnKey(TASK_MAP_KEY);
         Element result = taskCache.get(TASK_MAP_KEY);
         taskCache.releaseReadLockOnKey(TASK_MAP_KEY);
-        final ImmutableSortedMap<Integer, PersonnelTask> taskMap;
+        final TreeMap<Integer, PersonnelTask> taskMap;
         if (result == null) {
             taskMap = loadTaskMap();
             taskCache.acquireWriteLockOnKey(TASK_MAP_KEY);
             taskCache.put(new Element(TASK_MAP_KEY, taskMap));
             taskCache.releaseWriteLockOnKey(TASK_MAP_KEY);
         } else {
-            taskMap = (ImmutableSortedMap<Integer, PersonnelTask>) result.getObjectValue();
+            taskMap = (TreeMap<Integer, PersonnelTask>) result.getObjectValue();
         }
         return taskMap;
     }
 
-    private ImmutableSortedMap<Integer, PersonnelTask> loadTaskMap() {
-        return taskDao.getAllTasks().stream()
-                .map(this::getDetailedTask)
-                .collect(ImmutableSortedMap.toImmutableSortedMap(
-                        Comparable::compareTo, PersonnelTask::getTaskId, Function.identity())
-                );
+    private TreeMap<Integer, PersonnelTask>loadTaskMap() {
+        List<PersonnelTask> taskList = taskDao.getAllTasks();
+        TreeMap<Integer, PersonnelTask> newTaskMap = new TreeMap<Integer, PersonnelTask>();
+        for (PersonnelTask task: taskList) {
+            newTaskMap.put(task.getTaskId(), task);
+        }
+        return newTaskMap;
     }
 
-    private PersonnelTask getDetailedTask(PersonnelTask basicTask) {
+    public PersonnelTask getDetailedTask(PersonnelTask basicTask) {
         return taskDetailDaoMap.get(basicTask.getTaskType())
                 .getTaskDetails(basicTask);
     }

@@ -24,6 +24,8 @@ public class PersonnelTaskAssignment implements Comparable<PersonnelTaskAssignme
     private final boolean completed;
     private final boolean active;
 
+    private final boolean manual_override;
+
     public PersonnelTaskAssignment(int taskId,
                                    int empId,
                                    Integer updateEmpId,
@@ -36,10 +38,27 @@ public class PersonnelTaskAssignment implements Comparable<PersonnelTaskAssignme
         this.updateTime = updateTime;
         this.completed = completed;
         this.active = active;
+        this.manual_override = false;
+    }
+
+    public PersonnelTaskAssignment(int taskId,
+                                   int empId,
+                                   Integer updateEmpId,
+                                   LocalDateTime updateTime,
+                                   boolean completed,
+                                   boolean active,
+                                   boolean manual_override) {
+        this.taskId = taskId;
+        this.empId = empId;
+        this.updateEmpId = updateEmpId;
+        this.updateTime = updateTime;
+        this.completed = completed;
+        this.active = active;
+        this.manual_override = manual_override;
     }
 
     public static PersonnelTaskAssignment newTask(int empId, int taskId) {
-        return new PersonnelTaskAssignment(taskId, empId, null, null, false, true);
+        return new PersonnelTaskAssignment(taskId, empId, null, null, false, true, false);
     }
 
     /* --- Overrides --- */
@@ -54,7 +73,9 @@ public class PersonnelTaskAssignment implements Comparable<PersonnelTaskAssignme
                 Objects.equal(updateEmpId, that.updateEmpId) &&
                 completed == that.completed &&
                 active == that.active &&
-                Objects.equal(updateTime, that.updateTime);
+                Objects.equal(updateTime, that.updateTime) &&
+                manual_override == that.manual_override;
+
     }
 
     @Override
@@ -79,6 +100,7 @@ public class PersonnelTaskAssignment implements Comparable<PersonnelTaskAssignme
                 .add("updateTime=" + updateTime)
                 .add("completed=" + completed)
                 .add("active=" + active)
+                .add("manual_override=" + manual_override)
                 .toString();
     }
 
@@ -106,5 +128,9 @@ public class PersonnelTaskAssignment implements Comparable<PersonnelTaskAssignme
 
     public boolean isActive() {
         return active;
+    }
+
+    public boolean wasManuallyOverridden() {
+        return manual_override;
     }
 }

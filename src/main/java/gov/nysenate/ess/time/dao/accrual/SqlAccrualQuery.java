@@ -64,6 +64,11 @@ public enum SqlAccrualQuery implements BasicSqlQuery
         "JOIN (SELECT * FROM ${masterSchema}.SL16PERIOD WHERE CDPERIOD = 'AF') per ON att.DTEND = per.DTEND\n" +
         "WHERE att.NUXREFEM = :empId AND per.DTEND BETWEEN :startDate AND :endDate\n" +
         "  AND att.cdstatus = 'A'\n"
+    ),
+
+    GET_SA_NUMINTOTEND(
+            "SELECT NUMINTOTEND\n" +
+                    "FROM ${masterSchema}.pm21personn where NUXREFEM = :empId"
     );
 
     private String sql;

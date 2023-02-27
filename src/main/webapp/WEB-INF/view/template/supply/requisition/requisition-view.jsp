@@ -109,7 +109,7 @@
             <div class="col-4-12 bold">
               Special Instructions:
             </div>
-            <div class="col-8-12">
+            <div class="col-8-12" style="text-align: left;">
               {{selectedVersion.specialInstructions}}
             </div>
           </div>
@@ -209,11 +209,11 @@
             {{selectedVersion.note}}
           </div>
         </div>
-        <div class="grid padding-5" ng-show="selectedVersion.specialInstructions">
+        <div class="grid padding-5" ng-if="selectedVersion.specialInstructions">
           <div class="col-4-12 bold">
             Special Instructions:
           </div>
-          <div class="col-8-12">
+          <div class="col-8-12" style="text-align: left;">
             {{selectedVersion.specialInstructions}}
           </div>
         </div>

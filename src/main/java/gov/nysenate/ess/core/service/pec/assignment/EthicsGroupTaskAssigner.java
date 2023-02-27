@@ -5,7 +5,8 @@ import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
-import gov.nysenate.ess.core.model.pec.video.PersonnelTaskAssignmentGroup;
+import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignmentGroup;
+import gov.nysenate.ess.core.service.pec.notification.PECNotificationService;
 import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
 import org.springframework.stereotype.Service;
 
@@ -16,8 +17,9 @@ import java.util.stream.Collectors;
 public class EthicsGroupTaskAssigner extends BaseGroupTaskAssigner {
 
     public EthicsGroupTaskAssigner(PersonnelTaskAssignmentDao assignmentDao,
-                                   PersonnelTaskService taskService) {
-        super(assignmentDao, taskService);
+                                   PersonnelTaskService taskService,
+                                   PECNotificationService pecNotificationService) {
+        super(assignmentDao, taskService, pecNotificationService);
     }
 
     @Override
@@ -41,6 +43,12 @@ public class EthicsGroupTaskAssigner extends BaseGroupTaskAssigner {
 
         final Set<Integer> requiredTaskIds = new HashSet<>();
 
+        if (latestCompletedOpt.isEmpty()) {
+            moodleTaskOpt
+                    .map(PersonnelTask::getTaskId)
+                    .ifPresent(requiredTaskIds::add);
+        }
+
         // If there is already a complete ethics task, see if there is a newer task to assign
         if (latestEthicsTaskOpt.isPresent() && latestCompletedOpt.isPresent()) {
             PersonnelTaskAssignment latestCompleted = latestCompletedOpt.get();
@@ -51,7 +59,6 @@ public class EthicsGroupTaskAssigner extends BaseGroupTaskAssigner {
                 requiredTaskIds.add(latestTask.getTaskId());
             }
         } else {
-            // Otherwise, require the moodle course, assuming there is one.
             moodleTaskOpt
                     .map(PersonnelTask::getTaskId)
                     .ifPresent(requiredTaskIds::add);

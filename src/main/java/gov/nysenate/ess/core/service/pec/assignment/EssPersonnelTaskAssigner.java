@@ -5,11 +5,12 @@ import com.google.common.collect.Range;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import gov.nysenate.ess.core.dao.pec.task.PersonnelTaskDao;
-import gov.nysenate.ess.core.model.pec.video.PersonnelTaskAssignmentGroup;
+import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignmentGroup;
 import gov.nysenate.ess.core.model.transaction.TransactionCode;
 import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.model.transaction.TransactionHistoryUpdateEvent;
 import gov.nysenate.ess.core.model.transaction.TransactionRecord;
+import gov.nysenate.ess.core.service.pec.task.CachedPersonnelTaskService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
 import org.slf4j.Logger;
@@ -39,6 +40,8 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
     private final EmpTransactionService transactionService;
     private final PersonnelTaskDao personnelTaskDao;
 
+    private final CachedPersonnelTaskService cachedPersonnelTaskService;
+
     @Value("${scheduler.personnel_task.assignment.enabled:true}")
     private boolean scheduledAssignmentEnabled;
 
@@ -49,11 +52,13 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
                                     EmpTransactionService transactionService,
                                     List<GroupTaskAssigner> groupTaskAssigners,
                                     PersonnelTaskDao personnelTaskDao,
+                                    CachedPersonnelTaskService cachedPersonnelTaskService,
                                     EventBus eventBus) {
         this.empInfoService = empInfoService;
         this.transactionService = transactionService;
         this.groupTaskAssigners = groupTaskAssigners;
         this.personnelTaskDao = personnelTaskDao;
+        this.cachedPersonnelTaskService = cachedPersonnelTaskService;
         eventBus.register(this);
     }
 
@@ -63,6 +68,7 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
         Set<Integer> activeEmpIds = empInfoService.getActiveEmpIds();
         activeEmpIds.stream().sorted().forEach(this::assignTasks);
         logger.info("Personnel task assignment completed for all active employees.");
+        cachedPersonnelTaskService.markTasksComplete();
     }
 
     @Override
@@ -102,6 +108,7 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
                 .distinct()
                 .filter(this::needsTaskAssignment)
                 .forEach(this::assignTasks);
+        cachedPersonnelTaskService.markTasksComplete();
     }
 
     /**

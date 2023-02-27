@@ -7,6 +7,9 @@ import gov.nysenate.ess.core.client.response.error.ErrorCode;
 import gov.nysenate.ess.core.client.response.error.ViewObjectErrorResponse;
 import gov.nysenate.ess.core.client.view.DetailedEmployeeView;
 import gov.nysenate.ess.core.client.view.pec.*;
+import gov.nysenate.ess.core.client.view.pec.acknowledgment.AckDocView;
+import gov.nysenate.ess.core.client.view.pec.ethicsLive.EthicsLiveCourseTaskView;
+import gov.nysenate.ess.core.client.view.pec.video.PECVideoView;
 import gov.nysenate.ess.core.dao.pec.assignment.PTAQueryBuilder;
 import gov.nysenate.ess.core.dao.pec.assignment.PTAQueryCompletionStatus;
 import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
@@ -15,7 +18,14 @@ import gov.nysenate.ess.core.model.auth.CorePermission;
 import gov.nysenate.ess.core.model.auth.SimpleEssPermission;
 import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.model.pec.*;
+import gov.nysenate.ess.core.model.pec.acknowledgment.AckDoc;
+import gov.nysenate.ess.core.model.pec.ethics.EthicsCourseTask;
+import gov.nysenate.ess.core.model.pec.ethics.EthicsLiveCourseTask;
+import gov.nysenate.ess.core.model.pec.everfi.EverfiCourseTask;
+import gov.nysenate.ess.core.model.pec.moodle.MoodleCourseTask;
+import gov.nysenate.ess.core.model.pec.video.VideoTask;
 import gov.nysenate.ess.core.service.pec.search.*;
+import gov.nysenate.ess.core.service.pec.task.CachedPersonnelTaskService;
 import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
 import gov.nysenate.ess.core.service.personnel.EmployeeSearchBuilder;
 import gov.nysenate.ess.core.util.LimitOffset;
@@ -23,6 +33,8 @@ import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.core.util.SortOrder;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
@@ -50,20 +62,29 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
 
     private static final Pattern sortPattern = Pattern.compile("^(?<orderBy>[a-zA-Z_]+):(?<sortOrder>[a-zA-Z]+)$");
 
+    @Value("${resource.path}")
+    private String assets;
+
+    @Value("${data.ackdoc_subdir}")
+    private String ackDocPath;
+
+    @Value("${data.pecvid_subdir}")
+    private String pecVidPath;
+
     private final PersonnelTaskService taskService;
     private final PersonnelTaskAssignmentDao taskDao;
     private final EmpTaskSearchService empTaskSearchService;
 
-    private final Map<Class, PersonnelTaskViewFactory> viewFactoryMap;
+    private final CachedPersonnelTaskService cachedPersonnelTaskService;
 
     public PersonnelTaskApiCtrl(PersonnelTaskService taskService,
                                 PersonnelTaskAssignmentDao taskDao,
                                 EmpTaskSearchService empTaskSearchService,
-                                List<PersonnelTaskViewFactory> taskViewFactories) {
+                                CachedPersonnelTaskService cachedPersonnelTaskService) {
         this.taskService = taskService;
         this.taskDao = taskDao;
         this.empTaskSearchService = empTaskSearchService;
-        this.viewFactoryMap = Maps.uniqueIndex(taskViewFactories, PersonnelTaskViewFactory::getTaskClass);
+        this.cachedPersonnelTaskService = cachedPersonnelTaskService;
     }
 
     /** Get Tasks API
@@ -354,11 +375,25 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
     /** Generate a task view for the given task */
     @SuppressWarnings("unchecked")
     private PersonnelTaskView getPersonnelTaskView(PersonnelTask personnelTask) {
-        Class<? extends PersonnelTask> taskClass = personnelTask.getClass();
-        if (!viewFactoryMap.containsKey(taskClass)) {
-            throw new IllegalArgumentException("No view factory exists for PersonnelTasks of class: " + taskClass.getName());
-        }
-        return viewFactoryMap.get(taskClass).getView(personnelTask);
+
+        PersonnelTaskType type = personnelTask.getTaskType();
+
+        return switch (type) {
+            case DOCUMENT_ACKNOWLEDGMENT ->
+                    new AckDocView((AckDoc) cachedPersonnelTaskService.getDetailedTask(personnelTask), assets + ackDocPath);
+            case MOODLE_COURSE ->
+                    new MoodleTaskView((MoodleCourseTask) cachedPersonnelTaskService.getDetailedTask(personnelTask));
+            case VIDEO_CODE_ENTRY ->
+                    new PECVideoView((VideoTask) cachedPersonnelTaskService.getDetailedTask(personnelTask), assets + pecVidPath);
+            case EVERFI_COURSE ->
+                    new EverfiTaskView((EverfiCourseTask) cachedPersonnelTaskService.getDetailedTask(personnelTask));
+            case ETHICS_COURSE ->
+                    new EthicsCourseTaskView((EthicsCourseTask) cachedPersonnelTaskService.getDetailedTask(personnelTask));
+            case ETHICS_LIVE_COURSE ->
+                    new EthicsLiveCourseTaskView((EthicsLiveCourseTask) cachedPersonnelTaskService.getDetailedTask(personnelTask));
+            default -> throw new IllegalArgumentException("No PersonnelTask exists of class: "
+                    + personnelTask.getClass().getName());
+        };
     }
 
     /**

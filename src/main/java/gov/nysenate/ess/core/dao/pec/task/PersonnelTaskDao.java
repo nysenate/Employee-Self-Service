@@ -36,10 +36,20 @@ public interface PersonnelTaskDao {
     /**
      * Get a hash map of everfi content ID's to personnel task ids
      */
-    HashMap<String, Integer> getEverfiContentIDs();
+    HashMap<Integer, String> getEverfiContentIDs();
 
     /**
      * Get a hash map of everfi Assignment ID's to personnel task ids
      */
     HashMap<Integer, Integer> getEverfiAssignmentIDs();
+
+    /**
+     * Gets the ethics code id for any ethics live task
+     */
+    int getEthicsCodeId(int taskId);
+
+    /**
+     * Update the ethics live codes table in the database with new codes
+     */
+    void updateEthicsCode(String code, int ethicsCodeId, int sequenceNo );
 }

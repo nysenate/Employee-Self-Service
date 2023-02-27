@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -38,6 +39,9 @@ public class CsvTaskAssigner {
     private static final Pattern manualAsssignmentCSV =
             Pattern.compile("manual_assignment_V(\\d)");
 
+    private static final Pattern personnelManualAsssignmentCSV =
+            Pattern.compile("personnel_manual_assignment_V(\\d)");
+
 
     @Autowired
     public CsvTaskAssigner(EmployeeDao employeeDao,
@@ -50,7 +54,7 @@ public class CsvTaskAssigner {
         this.csvFileDir = Paths.get(dataDir, "pec_csv_import").toString();
     }
 
-    public void processCSVForManualAssignments() throws IOException {
+    public void processCSVForSTSManualAssignments() throws IOException {
         File[] files = getFilesFromDirectory(csvFileDir);
 
         for (File file : files) {
@@ -58,14 +62,14 @@ public class CsvTaskAssigner {
             Matcher manualMatcher = manualAsssignmentCSV.matcher(fileName);
 
             if (manualMatcher.matches()) {
-                processManualAssignments(file);
+                processSTSManualAssignments(file);
             }
 
         }
     }
 
     //This method assigns and unassigns tasks only
-    private void processManualAssignments (File manualAssignmentCSV) throws IOException {
+    private void processSTSManualAssignments (File manualAssignmentCSV) throws IOException {
         //empID, taskID, active, updateEmpID
 
         Reader reader = Files.newBufferedReader(Paths.get(manualAssignmentCSV.getAbsolutePath()));
@@ -96,6 +100,76 @@ public class CsvTaskAssigner {
                                     taskId,empId,updateEmpID, LocalDateTime.now(),false, active);
 
                     personnelTaskAssignmentDao.updateAssignment(taskToInsertForEmp);
+                }
+
+            }
+            catch (EmployeeNotFoundEx e) {
+                logger.warn("Could not find employee in ESS.  empId: {}\trecord: {}", e.getEmpId(), csvRecord);
+            }
+
+        }
+
+    }
+
+    public void processCSVForPersonnelManualAssignments() throws IOException {
+        File[] files = getFilesFromDirectory(csvFileDir);
+
+        for (File file : files) {
+            String fileName = file.getName().replaceAll(".csv", "").replaceAll(".xlsx", "");
+            Matcher manualMatcher = personnelManualAsssignmentCSV.matcher(fileName);
+
+            if (manualMatcher.matches()) {
+                logger.info("Beginning record processing for file " + fileName);
+                processPersonnelManualAssignments(file);
+            }
+
+        }
+    }
+
+    private void processPersonnelManualAssignments (File manualAssignmentCSV) throws IOException {
+        //NAME, EMAIL, DATE, TASKNO
+
+        Reader reader = Files.newBufferedReader(Paths.get(manualAssignmentCSV.getAbsolutePath()));
+        CSVParser csvParser = new CSVParser(reader, CSVFormat.EXCEL);
+        int count = 0;
+        for (CSVRecord csvRecord : csvParser) {
+
+            if (csvRecord.get(0).toLowerCase().equals("name")) {
+                continue;
+            }
+
+            try {
+                String email = csvRecord.get(1).toLowerCase().trim();
+                int taskId =  Integer.parseInt(csvRecord.get(3));
+                //verify that the employee exists. We don't want bad data in the database
+                Employee employee = employeeDao.getEmployeeByEmail(email);
+                int empId = employee.getEmployeeId();
+                logger.info("Retrieved employee from email: " + email);
+
+                if (!employee.isActive()) {
+                    logger.info("employee: " + empId + " " + email + " is not active");
+                    personnelTaskAssignmentDao.deactivatePersonnelTaskAssignment(empId, taskId);
+                }
+                else {
+                    logger.info("Creating task for emp " + empId + " for task " + taskId);
+                    count++;
+                    logger.info(count + "");
+                    PersonnelTaskAssignment taskToInsertForEmp;
+
+                    try {
+                        PersonnelTaskAssignment personnelTaskAssignment = personnelTaskAssignmentDao.getTaskForEmp(empId, 16);
+
+                        if (personnelTaskAssignment != null) {
+                            taskToInsertForEmp = new PersonnelTaskAssignment(
+                                    taskId, empId, empId, personnelTaskAssignment.getUpdateTime(), personnelTaskAssignment.isCompleted(), true);
+                            personnelTaskAssignmentDao.updateAssignment(taskToInsertForEmp);
+                        }
+                    }
+                    catch (IncorrectResultSizeDataAccessException e) {
+                        taskToInsertForEmp = new PersonnelTaskAssignment(
+                                taskId, empId, empId, LocalDateTime.now(), false, true);
+                        personnelTaskAssignmentDao.updateAssignment(taskToInsertForEmp);
+                    }
                 }
 
             }

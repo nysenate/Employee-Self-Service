@@ -39,7 +39,8 @@ public class SqlPersonnelTaskAssignmentDao extends SqlBaseDao implements Personn
                     patRowMapper
             );
             if (personnelTaskAssignments.isEmpty() || personnelTaskAssignments == null) {
-                throw new IncorrectResultSizeDataAccessException(0);
+                logger.error("FAILED TO GET PERSONNEL TASK ASSIGNMENT WITH ID: " + taskId + " FOR EMPLOYEE: " + empId);
+                throw new PersonnelTaskAssignmentNotFoundEx(empId, taskId);
             }
             else {
                 return personnelTaskAssignments.get(0);
@@ -67,6 +68,18 @@ public class SqlPersonnelTaskAssignmentDao extends SqlBaseDao implements Personn
         } else if (updated != 1) {
             throw new IllegalStateException("Too many updates (" + updated + ") occurred for " + task);
         }
+    }
+
+    @Override
+    public boolean getManualOverrideStatus(PersonnelTaskAssignment task) {
+        MapSqlParameterSource params = getManualOverrideStatusParams(task);
+        return Boolean.TRUE.equals(localNamedJdbc.queryForObject(GET_MANUAL_OVERRIDE_STATUS.getSql(schemaMap()), params, Boolean.class));
+    }
+
+    @Override
+    public boolean getManualOverrideStatus(Integer empId, Integer taskId) {
+        MapSqlParameterSource params = getEmpIdTaskIdParams(empId, taskId);
+        return localNamedJdbc.queryForObject(GET_MANUAL_OVERRIDE_STATUS.getSql(schemaMap()), params, Boolean.class);
     }
 
     @Override
@@ -100,7 +113,8 @@ public class SqlPersonnelTaskAssignmentDao extends SqlBaseDao implements Personn
                     getNullableInt(rs, "update_user_id"),
                     getLocalDateTime(rs, "timestamp"),
                     rs.getBoolean("completed"),
-                    rs.getBoolean("active")
+                    rs.getBoolean("active"),
+                    rs.getBoolean("manual_override")
             );
 
 
@@ -120,6 +134,7 @@ public class SqlPersonnelTaskAssignmentDao extends SqlBaseDao implements Personn
                 .addValue("updateUserId", task.getUpdateEmpId())
                 .addValue("completed", task.isCompleted())
                 .addValue("active", task.isActive())
+                .addValue("manualOverride", task.wasManuallyOverridden())
                 ;
     }
 
@@ -135,5 +150,10 @@ public class SqlPersonnelTaskAssignmentDao extends SqlBaseDao implements Personn
                 .addValue("taskIdsPresent", queryBuilder.getTaskIds() == null)
                 .addValue("taskIds", queryBuilder.getTaskIds())
                 ;
+    }
+
+    private MapSqlParameterSource getManualOverrideStatusParams(PersonnelTaskAssignment task) {
+        return getEmpIdParams(task.getEmpId())
+                .addValue("taskId", task.getTaskId());
     }
 }

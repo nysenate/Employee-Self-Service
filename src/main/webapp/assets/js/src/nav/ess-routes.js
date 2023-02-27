@@ -41,6 +41,10 @@ essApp.config(function ($routeProvider, $locationProvider) {
         templateUrl: ctxPath + '/template/myinfo/personnel/ethicscourse'
     });
 
+    $routeProvider.when(ctxPath + '/myinfo/personnel/todo/ethicscourselive/:taskId', {
+        templateUrl: ctxPath + '/template/myinfo/personnel/ethicscourselive'
+    });
+
     $routeProvider.when(ctxPath + '/myinfo/personnel/todo/video/:videoId', {
         templateUrl: ctxPath + '/template/myinfo/personnel/pec-vid-view'
     });
@@ -107,7 +111,8 @@ essApp.config(function ($routeProvider, $locationProvider) {
     });
 
     $routeProvider.when(ctxPath + '/time/period/calendar', {
-        templateUrl: ctxPath + '/template/time/period/calendar'
+        templateUrl: ctxPath + '/template/time/period/calendar',
+        reloadOnSearch: false
     });
 
     $routeProvider.when(ctxPath + '/time/accrual/history', {

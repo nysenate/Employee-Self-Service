@@ -405,7 +405,7 @@ public class EverfiUserService {
                 try {
                     Integer empid = getEmployeeId(everfiUser);
 
-                    if (empid.intValue() != 99999) {
+                    if (empid.intValue() < 77000 && empid.intValue() != 0) {
                         everfiUserDao.insertEverfiUserIDs(UUID, empid);
                     } else {
                         logger.warn("Everfi user with UUID " + UUID + " empid " + empid + " was improperly retrieved");
