@@ -69,7 +69,7 @@ public class MileagePerDiems {
     }
 
     private boolean isOutboundMileageGreaterThanTheshold() {
-        double outboundMiles = mileagePerDiems.stream()
+        double outboundMiles = legs.stream()
                 .filter(Leg::isOutbound)
                 .mapToDouble(Leg::miles)
                 .sum();
@@ -77,7 +77,7 @@ public class MileagePerDiems {
     }
 
     private boolean isReimbursableMethodOfTravelUsed() {
-        return mileagePerDiems.stream().anyMatch(Leg::qualifiesForMileageReimbursement);
+        return legs.stream().anyMatch(Leg::qualifiesForMileageReimbursement);
     }
 
     /**
