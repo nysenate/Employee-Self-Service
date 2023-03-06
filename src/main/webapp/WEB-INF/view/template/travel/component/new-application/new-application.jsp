@@ -61,6 +61,7 @@
 
     <div ng-if="stateService.isReviewState()">
       <ess-review-edit-form amendment="data.amendment"
+                            traveler="data.traveler"
                             positive-btn-label="Submit Application"
                             positive-callback="submitApplication(amendment)"
                             neutral-callback="toAllowancesState(amendment)"
@@ -97,7 +98,7 @@
            confirm-message="Are you sure you want to cancel your current application? This will delete any data you have entered."
            resolve-button="Cancel Application"
            resolve-class="travel-reject-btn"
-           reject-button="Do not Cancel"
+           reject-button="Keep Working"
            reject-class="travel-neutral-btn">
       </div>
     </modal>
@@ -129,7 +130,7 @@
            title="Submit Travel Application"
            confirm-message="Are you sure you want to submit this travel application?"
            resolve-button="Submit Application"
-           resolve-class="travel-primary-btn"
+           resolve-class="travel-submit-btn"
            reject-button="Cancel"
            reject-class="travel-neutral-btn">
       </div>

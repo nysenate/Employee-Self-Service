@@ -6,9 +6,10 @@ function reviewEditForm($compile, appProps, modals) {
     return {
         restrict: 'E',
         scope: {
-            amendment: '<',               // The application being edited.
+            amendment: '<',         // The application being edited.
+            traveler: '<',          // The traveling employee.
             positiveCallback: '&',  // Callback function called when continuing. Takes a travel app param named 'app'.
-            positiveBtnLabel: '@',   // The label to use for the positive button.
+            positiveBtnLabel: '@',  // The label to use for the positive button.
             neutralCallback: '&',   // Callback function called when moving back. Takes a travel app param named 'app'.
             negativeCallback: '&?', // Callback function called when canceling. Takes a travel app param named 'app'.
             negativeLabel: '@'      // Text to label the negative button. Defaults to 'Cancel'
@@ -16,6 +17,12 @@ function reviewEditForm($compile, appProps, modals) {
         controller: 'AppEditCtrl',
         templateUrl: appProps.ctxPath + '/template/travel/common/app/review-edit-form-directive',
         link: function (scope, elem, attrs) {
+
+            scope.app = {
+                activeAmendment: scope.amendment,
+                traveler: scope.traveler,
+                submittedDateTime: new Date(),
+            };
 
             // Hides the negative button if no callback was provided.
             scope.showNegative = attrs.hasOwnProperty('negativeCallback');

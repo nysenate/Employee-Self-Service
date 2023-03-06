@@ -21,85 +21,87 @@
   <div class="travel-card">
     <form novalidate name="return.form" id="returnForm">
       <div class="travel-card-item">
-        <h3 class="travel-title">Return Segments</h3>
-        <span class="travel-instructions">Enter your return route from the last destination to the origin.</span>
+        <h1 class="">Return Segments</h1>
+        <div class="padding-10">
+          <span style="margin: 5px 10px 5px 10px;">Enter your return route from the last destination to the origin.</span>
 
-        <div class="padding-10" ng-repeat="leg in route.returnLegs">
-          <div>
-            <h2 class="travel-title-small inline-block">Segment {{$index + 1}}</h2>
-            <span class="icon-circle-with-cross travel-cross"
-                  ng-if="$index > 0 && isLastSegment($index)"
-                  ng-click="deleteSegment()"></span>
-          </div>
-
-          <div class="padding-10">
-            <div class="itinerary-address">
-              <label>From</label><br/>
-              <input ess-address-autocomplete
-                     class="travel-input"
-                     name="fromAddress_{{$index}}"
-                     ng-model="leg.from.address.formattedAddressWithCounty"
-                     leg="leg"
-                     callback="setFromAddress(leg, address)"
-                     autocomplete-address-validator
-                     placeholder="From Address"
-                     type="text" size="50" required>
-            </div>
-            <div class="itinerary-date">
-              <label>Travel Date</label><br/>
-              <input datepicker date-validator
-                     class="travel-input"
-                     placeholder="MM/DD/YYYY"
-                     type="text"
-                     from-date="fromDate()"
-                     name="travelDate_{{$index}}"
-                     ng-model="leg.travelDate"
-                     autocomplete="new-password" required>
-            </div>
-            <div class="clear"></div>
-
-            <div class="itinerary-address">
-              <label>To</label><br/>
-              <input ess-address-autocomplete
-                     class="travel-input"
-                     name="toAddress_{{$index}}"
-                     ng-model="leg.to.address.formattedAddressWithCounty"
-                     leg="leg"
-                     callback="setToAddress(leg, address)"
-                     autocomplete-address-validator
-                     placeholder="To Address"
-                     type="text"
-                     size="50"
-                     required>
+          <div class="padding-10" ng-repeat="leg in route.returnLegs">
+            <div>
+              <h2 class="travel-title-small inline-block">Segment {{$index + 1}}</h2>
+              <span class="icon-circle-with-cross travel-cross"
+                    ng-if="$index > 0 && isLastSegment($index)"
+                    ng-click="deleteSegment()"></span>
             </div>
 
-            <div class="itinerary-mot-container">
-              <div class="itinerary-mot">
-                <label>Mode of Transportation:</label><br/>
-                <select mot-validator name="mot_{{$index}}"
-                        class="travel-input"
-                        ng-model="leg.methodOfTravelDisplayName"
-                        ng-options="name for name in methodsOfTravel"
-                        ng-change="motChange(leg, $index, 'returnMotOtherInput_')"
-                        required></select>
-              </div>
-              <div class="itinerary-mot-write-in" ng-if="leg.methodOfTravelDisplayName === 'Other'">
-                <label>Please Specify:</label><br/>
-                <input mot-description-validator
+            <div class="padding-10">
+              <div class="itinerary-address">
+                <label>From</label><br/>
+                <input ess-address-autocomplete
                        class="travel-input"
-                       id="returnMotOtherInput_{{$index}}"
-                       name="motOther_{{$index}}"
-                       type="text"
-                       ng-model="leg.methodOfTravelDescription">
+                       name="fromAddress_{{$index}}"
+                       ng-model="leg.from.address.formattedAddressWithCounty"
+                       leg="leg"
+                       callback="setFromAddress(leg, address)"
+                       autocomplete-address-validator
+                       placeholder="From Address"
+                       type="text" size="50" required>
               </div>
-            </div>
-            <div class="clear"></div>
+              <div class="itinerary-date">
+                <label>Travel Date</label><br/>
+                <input datepicker date-validator
+                       class="travel-input"
+                       placeholder="MM/DD/YYYY"
+                       type="text"
+                       from-date="fromDate()"
+                       name="travelDate_{{$index}}"
+                       ng-model="leg.travelDate"
+                       autocomplete="new-password" required>
+              </div>
+              <div class="clear"></div>
 
+              <div class="itinerary-address">
+                <label>To</label><br/>
+                <input ess-address-autocomplete
+                       class="travel-input"
+                       name="toAddress_{{$index}}"
+                       ng-model="leg.to.address.formattedAddressWithCounty"
+                       leg="leg"
+                       callback="setToAddress(leg, address)"
+                       autocomplete-address-validator
+                       placeholder="To Address"
+                       type="text"
+                       size="50"
+                       required>
+              </div>
+
+              <div class="itinerary-mot-container">
+                <div class="itinerary-mot">
+                  <label>Mode of Transportation:</label><br/>
+                  <select mot-validator name="mot_{{$index}}"
+                          class="travel-input"
+                          ng-model="leg.methodOfTravelDisplayName"
+                          ng-options="name for name in methodsOfTravel"
+                          ng-change="motChange(leg, $index, 'returnMotOtherInput_')"
+                          required></select>
+                </div>
+                <div class="itinerary-mot-write-in" ng-if="leg.methodOfTravelDisplayName === 'Other'">
+                  <label>Please Specify:</label><br/>
+                  <input mot-description-validator
+                         class="travel-input"
+                         id="returnMotOtherInput_{{$index}}"
+                         name="motOther_{{$index}}"
+                         type="text"
+                         ng-model="leg.methodOfTravelDescription">
+                </div>
+              </div>
+              <div class="clear"></div>
+
+            </div>
           </div>
         </div>
 
         <div class="text-align-center">
-          <button class="travel-primary-ghost-btn"
+          <button class="travel-primary-btn"
                   type="button"
                   ng-click="addSegment()">
             <span class="icon-circle-with-plus" style="font-size: large; vertical-align: middle;"></span>
@@ -110,16 +112,16 @@
 
       <div class="travel-button-container">
         <button type="button"
+                class="travel-primary-btn"
+                ng-click="back()">
+          Back
+        </button>
+        <button type="button"
                 class="travel-neutral-btn"
                 ng-click="cancel()">
           {{::negativeLabel || 'Cancel'}}
         </button>
-        <button type="button"
-                class="travel-neutral-btn"
-                ng-click="back()">
-          Back
-        </button>
-        <button type="submit" class="travel-primary-btn"
+        <button type="submit" class="travel-submit-btn"
                 ng-click="next()">
           Next
         </button>

@@ -33,7 +33,7 @@
 }
 
 .travel-card-item {
-  margin: 20px 20px 40px 20px;
+  margin: 0px 0px 30px 0px;
 
   > h3 {
     .travel-title;
@@ -77,6 +77,18 @@
   cursor: pointer;
 }
 
+.travel-submit-btn {
+  .travel-btn;
+  color: white;
+  background: @green;
+  border: 1px solid @green;
+
+  &:hover {
+    background: saturate(@green, 20%);
+    border: 1px solid saturate(@green, 20%);
+  }
+}
+
 .travel-primary-btn {
   .travel-btn;
   color: white;
@@ -100,18 +112,6 @@
   }
 }
 
-.travel-submit-btn {
-  .travel-btn;
-  color: #fff;
-  background: @green;
-  border: none;
-  box-shadow: none;
-
-  &:hover {
-    background: saturate(@green, 20%);
-  }
-}
-
 .travel-reject-btn {
   .travel-btn;
   color: #fff;
@@ -126,13 +126,13 @@
 
 .travel-neutral-btn {
   .travel-btn;
-  color: @gray9;
-  background: #fff;
-  border: 1px solid @gray9;
-  box-shadow: none;
+  color: white;
+  background: @gray;
+  border: 1px solid @gray;
 
   &:hover {
-    background: @gray4;
+    background: lighten(@gray, 10%);
+    border: 1px solid lighten(@gray, 10%);
   }
 }
 
@@ -205,7 +205,7 @@
 }
 
 .asterisk {
-  color: @yellow7;
+  color: @yellow9;
 }
 
 .travel-hero {

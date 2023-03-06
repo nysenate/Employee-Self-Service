@@ -10,7 +10,7 @@
     </p>
   </div>
   <div class="travel-button-container">
-    <button type="submit" class="travel-primary-btn">
+    <button type="submit" class="travel-submit-btn">
       Save County
     </button>
     <button type="button" class="travel-neutral-btn" ng-click="cancel()">

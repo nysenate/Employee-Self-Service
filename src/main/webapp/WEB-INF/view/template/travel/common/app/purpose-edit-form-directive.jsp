@@ -15,8 +15,8 @@
   <div class="travel-card">
     <form ng-cloak name="purpose.form" id="purposeForm" novalidate>
       <div class="travel-card-item">
-        <h3 class="travel-title">Purpose of Travel</h3>
-        <div>
+        <h1 class="">Purpose of Travel</h1>
+        <div class="padding-10">
           <div class="purpose-row">
             <label for="eventTypeSelect">Select your purpose of travel:</label>
             <select id="eventTypeSelect"
@@ -55,9 +55,9 @@
       </div>
 
       <div class="travel-card-item">
-        <h3 class="travel-title">Supporting Documentation <em class="optional">(Optional)</em></h3>
-        <span class="travel-instructions">You may attach any relevant supporting documentation.</span>
-        <div class="text-align-center">
+        <h1 class="">Supporting Documentation <em class="optional">(Optional)</em></h1>
+        <div class="text-align-center padding-10">
+          <span class="">You may attach any relevant supporting documentation.</span>
           <div ng-repeat="attachment in dirtyAmendment.attachments" class="travel-attachment-container">
             <div class="travel-attachment-filename">
               {{attachment.originalName}}
@@ -65,7 +65,7 @@
             </div>
           </div>
           <div class="margin-20">
-            <label for="addAttachment" class="travel-primary-ghost-btn">
+            <label for="addAttachment" class="travel-primary-btn">
               <i class="icon-upload margin-right-10"></i>Attach Document
             </label>
             <input type="file" value='fileInput' id="addAttachment" name="file" multiple style="display:none;">
@@ -76,11 +76,11 @@
       <div class="travel-button-container">
         <button class="travel-neutral-btn"
                 type="button"
-               ng-value="::negativeLabel || 'Cancel'"
-               ng-click="cancel()">
+                ng-value="::negativeLabel || 'Cancel'"
+                ng-click="cancel()">
           {{::negativeLabel || 'Cancel'}}
         </button>
-        <button type="submit" class="travel-primary-btn"
+        <button type="submit" class="travel-submit-btn"
                 ng-click="next()">
           Next
         </button>

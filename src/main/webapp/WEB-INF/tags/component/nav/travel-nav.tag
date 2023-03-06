@@ -10,8 +10,8 @@
     <ess-component-nav:nav-header topicTitle="Travel Menu" colorClass="orange"/>
     <h3 class="main-topic">My Travel</h3>
     <ul class="sub-topic-list">
-      <li class="sub-topic orange"><a href="${ctxPath}/travel/application/new">New Travel Application</a></li>
-      <li class="sub-topic orange"><a href="${ctxPath}/travel/applications">View Travel Applications</a></li>
+      <li class="sub-topic orange"><a href="${ctxPath}/travel/application/new">Submit Travel Application</a></li>
+      <li class="sub-topic orange"><a href="${ctxPath}/travel/applications">Travel History</a></li>
       <%--<li class="sub-topic"><a href="${ctxPath}/travel/config">User Configuration</a></li>--%>
     </ul>
 
