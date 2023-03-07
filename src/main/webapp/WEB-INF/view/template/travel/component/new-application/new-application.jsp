@@ -113,6 +113,7 @@
       <div ess-address-county-modal></div>
     </modal>
 
+    <%--Long trip warning--%>
     <modal modal-id="long-trip-warning">
       <div confirm-modal rejectable="true"
            title="Scheduled trip is longer than 7 days"
@@ -122,6 +123,11 @@
            reject-button="Let me review"
            reject-class="travel-primary-btn">
       </div>
+    </modal>
+
+    <%--Error with one or more travel dates--%>
+    <modal modal-id="travel-date-error-modal">
+      <travel-date-error-modal></travel-date-error-modal>
     </modal>
 
     <%-- Review Modals --%>
