@@ -1,8 +1,8 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.directive('essPurposeEditForm', ['$http', 'appProps', 'TravelAttachmentDelete', purposeEditLink]);
+essTravel.directive('essPurposeEditForm', ['$http', 'appProps', 'TravelAttachmentDelete', 'modals', purposeEditLink]);
 
-function purposeEditLink($http, appProps, attachmentDeleteApi) {
+function purposeEditLink($http, appProps, attachmentDeleteApi, modals) {
     return {
         restrict: 'E',
         scope: {
@@ -53,6 +53,9 @@ function purposeEditLink($http, appProps, attachmentDeleteApi) {
                     console.log(response);
                     // Update dirtyApp attachments
                     scope.dirtyAmendment.attachments = response.data.result.amendment.attachments;
+                }).catch(function (res) {
+                    modals.open("document-upload-error")
+                        .then(scope.closeLoadingModal);
                 }).finally(scope.closeLoadingModal)
             }
 

@@ -169,6 +169,17 @@
       </div>
     </modal>
 
+    <modal modal-id="document-upload-error">
+      <div error-modal
+           title="Unable to Upload Documents">
+        <p>
+          We were unable to save your selected supporting documents.
+          Please make sure all your documents are below the maximum size of 10MB and try again.
+          If you still experience this error contact the helpline at {{helplinePhoneNumber}}.
+        </p>
+      </div>
+    </modal>
+
   </div>
 
 </div>
