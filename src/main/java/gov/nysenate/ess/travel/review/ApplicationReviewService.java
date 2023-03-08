@@ -1,9 +1,13 @@
 package gov.nysenate.ess.travel.review;
 
 import com.google.common.collect.Sets;
+import com.google.common.eventbus.EventBus;
 import gov.nysenate.ess.core.department.Department;
 import gov.nysenate.ess.core.department.DepartmentDao;
 import gov.nysenate.ess.core.model.personnel.Employee;
+import gov.nysenate.ess.travel.notifications.email.events.TravelApprovalEmailEvent;
+import gov.nysenate.ess.travel.notifications.email.events.TravelDisapprovalEmailEvent;
+import gov.nysenate.ess.travel.notifications.email.events.TravelPendingReviewEmailEvent;
 import gov.nysenate.ess.travel.request.app.TravelApplication;
 import gov.nysenate.ess.travel.request.app.TravelApplicationService;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
@@ -31,6 +35,7 @@ public class ApplicationReviewService {
     @Autowired private TravelEmailService emailService;
     @Autowired private DelegationDao delegationDao;
     @Autowired private DepartmentDao departmentDao;
+    @Autowired private EventBus eventBus;
 
     public void approveApplication(ApplicationReview applicationReview, Employee approver, String notes,
                                    TravelRole approverRole) {
@@ -43,9 +48,9 @@ public class ApplicationReviewService {
             // If no one else needs to review, the application is completely approved.
             applicationReview.application().approve();
             travelApplicationService.saveApplication(applicationReview.application());
-            emailService.sendApprovalEmails(applicationReview);
+            eventBus.post(new TravelApprovalEmailEvent(applicationReview));
         } else {
-            emailService.sendPendingReviewEmail(applicationReview);
+            eventBus.post(new TravelPendingReviewEmailEvent(applicationReview));
         }
     }
 
@@ -58,13 +63,13 @@ public class ApplicationReviewService {
 
         applicationReview.application().disapprove(reason);
         travelApplicationService.saveApplication(applicationReview.application());
-        emailService.sendDisapprovalEmails(applicationReview);
+        eventBus.post(new TravelDisapprovalEmailEvent(applicationReview));
     }
 
     public ApplicationReview createApplicationReview(TravelApplication app) {
         TravelRoles roles = travelRoleFactory.travelRolesForEmp(app.getTraveler());
         ApplicationReview appReview = new ApplicationReview(app, roles.apex());
-        emailService.sendPendingReviewEmail(appReview);
+        eventBus.post(new TravelPendingReviewEmailEvent(appReview));
         return appReview;
     }
 

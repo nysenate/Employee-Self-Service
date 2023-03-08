@@ -1,7 +1,10 @@
 package gov.nysenate.ess.travel.request.app;
 
+import com.google.common.eventbus.EventBus;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.util.DateUtils;
+import gov.nysenate.ess.travel.notifications.email.events.TravelAppEditedEmailEvent;
+import gov.nysenate.ess.travel.notifications.email.events.TravelPendingReviewEmailEvent;
 import gov.nysenate.ess.travel.request.allowances.Allowances;
 import gov.nysenate.ess.travel.request.allowances.PerDiem;
 import gov.nysenate.ess.travel.request.allowances.lodging.LodgingPerDiem;
@@ -41,6 +44,7 @@ public class TravelAppUpdateService {
     @Autowired private TravelApplicationService appService;
     @Autowired private ApplicationReviewService appReviewService;
     @Autowired private TravelEmailService emailService;
+    @Autowired private EventBus eventBus;
 
     /**
      * Returns a new Amendment with the provided purpose of travel added to the amendment.
@@ -201,7 +205,7 @@ public class TravelAppUpdateService {
      */
     public TravelApplication editTravelApp(int appId, Amendment amd, Employee user) {
         TravelApplication app = saveAppEdits(appId, amd, user);
-        emailService.sendEditEmails(app);
+        eventBus.post(new TravelAppEditedEmailEvent(app));
         return app;
     }
 
@@ -223,7 +227,7 @@ public class TravelAppUpdateService {
         app.setStatus(new TravelApplicationStatus());
         appService.saveApplication(app);
         ApplicationReview applicationReview = appReviewService.getApplicationReviewByAppId(app.getAppId());
-        emailService.sendPendingReviewEmail(applicationReview);
+        eventBus.post(new TravelPendingReviewEmailEvent(applicationReview));
         return app;
     }
 
