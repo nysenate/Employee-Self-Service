@@ -6,6 +6,7 @@ import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
 import gov.nysenate.ess.core.model.personnel.Employee;
+import gov.nysenate.ess.core.model.personnel.Person;
 import gov.nysenate.ess.core.service.mail.SendMailService;
 import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
@@ -16,11 +17,15 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.mail.internet.MimeMessage;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.nio.file.StandardOpenOption.*;
 
 @Service
 public class PECNotificationService {
@@ -40,13 +45,13 @@ public class PECNotificationService {
     private final Map<Integer, PersonnelTask> activeTaskMap = new HashMap<>();
     private final List<String> reportEmails;
     private final String instructionURL;
+    private final boolean pecTestMode;
     private final double emailLimit;
+    private final Path emailLogPath;
     private double emailCount = 0;
 
     @Value("${scheduler.pec.notifs.enabled:false}")
     private boolean pecNotifsEnabled;
-    @Value("${pec.test.mode:true}")
-    private boolean pecTestMode;
     @Value("${all.pec.notifs.enabled:false}")
     private boolean allPecNotifsEnabled;
 
@@ -55,7 +60,9 @@ public class PECNotificationService {
                                   EmployeeInfoService employeeInfoService,
                                   PECNotificationDao pecNotificationDao,
                                   @Value("${report.email}") String reportEmailList,
-                                  @Value("${domain.url}") String domainURL) {
+                                  @Value("${domain.url}") String domainURL,
+                                  @Value("${pec.test.mode:true}") boolean pecTestMode,
+                                  @Value("${data.dir}") String dataDir) {
         this.employeeDao = employeeDao;
         this.taskService = taskService;
         this.assignmentDao = assignmentDao;
@@ -67,8 +74,9 @@ public class PECNotificationService {
         }
         this.reportEmails = List.of(reportEmailList.replaceAll(" ", "").split(","));
         this.instructionURL = domainURL + "/myinfo/personnel/todo";
+        this.pecTestMode= pecTestMode;
         this.emailLimit = pecTestMode ? 5 : Double.POSITIVE_INFINITY;
-
+        this.emailLogPath = Path.of(dataDir, "emailLog.txt");
     }
 
     @Scheduled(cron = "${scheduler.pec.notifs.cron}")
@@ -157,12 +165,16 @@ public class PECNotificationService {
         if (!allPecNotifsEnabled) {
             return;
         }
+        // Keeps spacing consistent and positive.
+        String spaces = " ".repeat(28 - to.trim().length());
+        String logMessage = "Recipient: %sSubject: %s\n".formatted(to.trim() + spaces, subject);
         if (pecTestMode) {
             to = reportEmails.get(0);
         }
         MimeMessage message = sendMailService.newHtmlMessage(to.trim(), subject, html);
         try {
             sendMailService.send(message);
+            Files.writeString(emailLogPath, logMessage, CREATE, WRITE, APPEND);
         } catch (Exception e) {
             logger.error("There was an error trying to send the PEC notification email ", e);
         }
