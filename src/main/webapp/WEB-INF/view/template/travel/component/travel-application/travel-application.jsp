@@ -41,7 +41,7 @@
         </div>
       </div>
 
-      <div class="travel-button-container">
+      <div class="travel-button-container padding-10">
         <a class="margin-10 margin-right-20" target="_blank"
            ng-href="${ctxPath}/api/v1/travel/application/{{vm.data.app.id}}.pdf">Print</a>
       </div>
