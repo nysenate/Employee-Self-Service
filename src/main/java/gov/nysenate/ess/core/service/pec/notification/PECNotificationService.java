@@ -6,7 +6,6 @@ import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
 import gov.nysenate.ess.core.model.personnel.Employee;
-import gov.nysenate.ess.core.model.personnel.Person;
 import gov.nysenate.ess.core.service.mail.SendMailService;
 import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
@@ -87,32 +86,52 @@ public class PECNotificationService {
     }
 
     public void resetTestModeCounter() {
-        this.emailCount = 0;
+        emailCount = 0;
+    }
+
+    public List<NotificationEmail> getScheduledEmails() {
+        // Document all employees with missing info to report to admins
+        List<Employee> employeesWithMissingEmails = new ArrayList<>();
+        List<NotificationEmail> emailsToSend = new ArrayList<>();
+
+        for (Employee employee : employeeDao.getActiveEmployees()) {
+            List<PersonnelTask> incompleteTasks = getIncompleteTasks(employee);
+            // Determine if they have any outstanding active tasks
+            if (incompleteTasks.isEmpty()) {
+                continue;
+            }
+            // Continue processing employee if they have outstanding assignments and a valid email
+            if (employee.getEmail() == null || employee.getEmail().isEmpty()) {
+                employeesWithMissingEmails.add(employee);
+                logger.warn("Employee %s #%d is missing an email! No notification will be sent to them."
+                        .formatted(employee.getFullName(), employee.getEmployeeId()));
+            } else {
+                emailsToSend.add(getReminderEmail(employee, incompleteTasks));
+            }
+        }
+        if (!employeesWithMissingEmails.isEmpty()) {
+            String html = getMissingEmailHtml(employeesWithMissingEmails);
+            for (String email : reportEmails) {
+                emailsToSend.add(new NotificationEmail(email, "Employees With Missing Emails", html));
+            }
+        }
+        return emailsToSend;
+    }
+
+    private static String getMissingEmailHtml(List<Employee> employeesWithMissingEmails) {
+        return employeesWithMissingEmails.stream()
+                .map(employee -> " NAME: " + employee.getFullName()+ " EMPID: " + employee.getEmployeeId() + "<br>\n")
+                .collect(Collectors.joining());
     }
 
     public void runPECNotificationProcess() {
         logger.info("Starting PEC Notification Process");
-        emailCount = 0;
-        // Document all employees with missing info to report to admins
-        List<Employee> employeesWithMissingEmails = new ArrayList<>();
-
-        for (Employee employee : employeeDao.getActiveEmployees()) {
-            // Determine if they have any outstanding active tasks
-            List<PersonnelTask> incompleteEmpTasks = getIncompleteTasks(employee);
-
-            // Continue processing employee if they have outstanding assignments and a valid email
-            if (!incompleteEmpTasks.isEmpty()) {
-                if (employee.getEmail() == null || employee.getEmail().isEmpty()) {
-                    employeesWithMissingEmails.add(employee);
-                    logger.warn("Employee %s #%d is missing an email! No notification will be sent to them."
-                            .formatted(employee.getFullName(), employee.getEmployeeId()));
-                } else {
-                    constructAndSendNotifEmail(employee, incompleteEmpTasks);
-                }
+        resetTestModeCounter();
+        for (var email : getScheduledEmails()) {
+            if (emailLimit >= emailCount) {
+                sendEmail(email.to(), email.subject(), email.html());
+                emailCount++;
             }
-        }
-        if (!employeesWithMissingEmails.isEmpty()) {
-            sendFailedNotifsToReportEmails(employeesWithMissingEmails);
         }
         logger.info("Completed PEC Notification Process");
     }
@@ -149,13 +168,10 @@ public class PECNotificationService {
         sendEmail(employee.getEmail(), subject, html);
     }
 
-    private void constructAndSendNotifEmail(Employee employee, List<PersonnelTask> incompleteEmpTasks) {
+    private NotificationEmail getReminderEmail(Employee employee, List<PersonnelTask> incompleteEmpTasks) {
         String subject = "You have outstanding Personnel Tasks.";
         String html = dueDateInformationHtml(employee, incompleteEmpTasks);
-        if (emailLimit >= emailCount) {
-            sendEmail(employee.getEmail(), subject, html);
-            emailCount++;
-        }
+        return new NotificationEmail(employee.getEmail(), subject, html);
     }
 
     /**
@@ -166,7 +182,7 @@ public class PECNotificationService {
             return;
         }
         // Keeps spacing consistent and positive.
-        String spaces = " ".repeat(28 - to.trim().length());
+        String spaces = " ".repeat(Math.max(28 - to.trim().length(), 1));
         String logMessage = "Recipient: %sSubject: %s\n".formatted(to.trim() + spaces, subject);
         if (pecTestMode) {
             to = reportEmails.get(0);
@@ -177,15 +193,6 @@ public class PECNotificationService {
             Files.writeString(emailLogPath, logMessage, CREATE, WRITE, APPEND);
         } catch (Exception e) {
             logger.error("There was an error trying to send the PEC notification email ", e);
-        }
-    }
-
-    private void sendFailedNotifsToReportEmails(List<Employee> employeesWithMissingEmails) {
-        String html = employeesWithMissingEmails.stream()
-                .map(employee -> " NAME: " + employee.getFullName()+ " EMPID: " + employee.getEmployeeId() + "<br>\n")
-                .collect(Collectors.joining());
-        for (String email : reportEmails) {
-            sendEmail(email, "Employees With Missing Emails", html);
         }
     }
 
