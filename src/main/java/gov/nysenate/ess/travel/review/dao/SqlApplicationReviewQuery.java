@@ -23,14 +23,14 @@ enum SqlApplicationReviewQuery implements BasicSqlQuery {
             AND app_review.next_reviewer_role = :role
             """
     ),
-    PENDING_REVIEWS_FOR_DEPT_IDS("""
+    PENDING_REVIEWS_FOR_DEPT_HD("""
             SELECT app_review.app_review_id, app_review.app_id, app_review.traveler_role,
-                   app_review.next_reviewer_role, is_shared, app.status, app.traveler_department_id
+              app_review.next_reviewer_role, is_shared
             FROM ${travelSchema}.app_review
-                     JOIN ${travelSchema}.app ON app_review.app_id = app.app_id
+              JOIN ${travelSchema}.app ON app_review.app_id = app.app_id
             WHERE app.status = 'PENDING'
               AND app_review.next_reviewer_role = 'DEPARTMENT_HEAD'
-              AND app.traveler_department_id IN (:departmentIds) 
+              AND app.traveler_dept_head_emp_id IN (:empIds)
             """
     ),
     APP_REVIEW_SELECT(
@@ -65,10 +65,7 @@ enum SqlApplicationReviewQuery implements BasicSqlQuery {
                     "  FROM ${travelSchema}.app_review_action action\n" +
                     "  WHERE action.role = :role\n" +
                     "AND action.app_review_id = app_review.app_review_id)\n" +
-                    "AND app.traveler_department_id IN\n" +
-                    "  (SELECT department_id\n" +
-                    "  FROM ${essSchema}.department\n" +
-                    "  WHERE head_emp_id = :headEmpId)"
+                    "AND app.traveler_dept_head_emp_id = :empId"
     ),
     SELECT_APPLICATION_REVIEW_BY_ID(
             APP_REVIEW_SELECT.getSql() +

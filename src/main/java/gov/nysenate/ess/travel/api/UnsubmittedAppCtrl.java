@@ -5,6 +5,7 @@ import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.client.response.error.ErrorCode;
 import gov.nysenate.ess.core.client.response.error.ErrorResponse;
 import gov.nysenate.ess.core.client.view.DetailedEmployeeView;
+import gov.nysenate.ess.core.client.view.EmployeeView;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.model.personnel.Employee;
@@ -22,6 +23,7 @@ import gov.nysenate.ess.travel.request.allowances.mileage.MileagePerDiemsView;
 import gov.nysenate.ess.travel.request.amendment.Amendment;
 import gov.nysenate.ess.travel.request.app.*;
 import gov.nysenate.ess.travel.request.attachment.Attachment;
+import gov.nysenate.ess.travel.request.department.SqlDepartmentHeadDao;
 import gov.nysenate.ess.travel.request.route.*;
 import gov.nysenate.ess.travel.provider.ProviderException;
 import gov.nysenate.ess.travel.request.unsubmitted.UnsubmittedAppDao;
@@ -53,6 +55,7 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
     @Autowired private RouteViewValidator routeViewValidator;
     @Autowired private TravelAppUpdateService appUpdateService;
     @Autowired private AttachmentService attachmentService;
+    @Autowired private SqlDepartmentHeadDao departmentHeadDao;
 
     /**
      * Get an unsubmitted app API
@@ -77,11 +80,18 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
         } else {
             appEditDto = dtoOpt.orElseGet(() -> {
                 Amendment amd = new Amendment.Builder().build();
-                return new TravelAppEditDto(new DetailedEmployeeView(user), new AmendmentView(amd));
+                return new TravelAppEditDto(
+                        new DetailedEmployeeView(user),
+                        new AmendmentView(amd),
+                        departmentHeadDao.defaultDepartmentHead(user.getEmployeeId())
+                );
             });
         }
         appEditDto.setAllowedTravelers(allowedTravelersService.forEmp(user));
-        unsubmittedAppDao.save(getSubjectEmployeeId(), appEditDto.getTraveler(), appEditDto.getAmendment());
+        appEditDto.setPossibleDepartmentHeads(employeeInfoService.getAllEmployees(true).stream()
+                .map(EmployeeView::new)
+                .collect(Collectors.toSet()));
+        unsubmittedAppDao.save(getSubjectEmployeeId(), appEditDto.getTraveler(), appEditDto.getAmendment(), appEditDto.getTravelerDeptHeadEmpId());
         return new ViewObjectResponse<>(appEditDto);
     }
 
@@ -130,6 +140,10 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
                         dto.setTraveler(new DetailedEmployeeView(employeeInfoService.getEmployee(travelerEmpId)));
                     }
                     break;
+                case "travelerDeptHeadEmpId":
+                    int travelerDeptHeadEmpId = Integer.valueOf(patch.getValue());
+                    dto.setTravelerDeptHeadEmpId(travelerDeptHeadEmpId);
+                    break;
                 case "purposeOfTravel":
                     PurposeOfTravelView potView = OutputUtils.jsonToObject(patch.getValue(), PurposeOfTravelView.class);
                     amendment = appUpdateService.updatePurposeOfTravel(amendment, potView.toPurposeOfTravel());
@@ -166,7 +180,7 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
 
         AmendmentView amendmentView = new AmendmentView(amendment);
         // Save after all changes are applied.
-        unsubmittedAppDao.save(user.getEmployeeId(), dto.getTraveler(), amendmentView);
+        unsubmittedAppDao.save(user.getEmployeeId(), dto.getTraveler(), amendmentView, dto.getTravelerDeptHeadEmpId());
 
         dto.setAmendment(amendmentView);
         return new ViewObjectResponse<>(dto);
@@ -185,7 +199,7 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
         TravelAppEditDto dto = findApp(getSubjectEmployeeId());
 
         TravelApplication app = appUpdateService.submitTravelApplication(
-                dto.getAmendment().toAmendment(), dto.getTraveler().toEmployee(), user);
+                dto.getAmendment().toAmendment(), dto.getTraveler().toEmployee(), user, dto.getTravelerDeptHeadEmpId());
         unsubmittedAppDao.delete(user.getEmployeeId());
         return new ViewObjectResponse<>(new TravelApplicationView(app));
     }
@@ -208,7 +222,7 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
                 .build();
 
         AmendmentView amdView = new AmendmentView(amd);
-        unsubmittedAppDao.save(getSubjectEmployeeId(), dto.getTraveler(), amdView);
+        unsubmittedAppDao.save(getSubjectEmployeeId(), dto.getTraveler(), amdView, dto.getTravelerDeptHeadEmpId());
         dto.setAmendment(amdView);
         return new ViewObjectResponse<>(dto);
     }
@@ -236,7 +250,7 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
                 .build();
 
         AmendmentView amdView = new AmendmentView(amd);
-        unsubmittedAppDao.save(getSubjectEmployeeId(), dto.getTraveler(), amdView);
+        unsubmittedAppDao.save(getSubjectEmployeeId(), dto.getTraveler(), amdView, dto.getTravelerDeptHeadEmpId());
         dto.setAmendment(amdView);
         return new ViewObjectResponse<>(dto);
     }

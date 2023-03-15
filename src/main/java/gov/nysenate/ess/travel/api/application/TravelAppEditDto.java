@@ -15,24 +15,23 @@ public class TravelAppEditDto implements ViewObject {
 
     // This field can be used to update the application traveler when creating a new travel application.
     private DetailedEmployeeView traveler;
+    private int travelerDeptHeadEmpId;
     // Apply Amendment that is currently being edited.
     private AmendmentView amendment;
 
     // Set of employees the user is allowed to submit apps for.
     private Set<EmployeeView> allowedTravelers;
+    private Set<EmployeeView> possibleDepartmentHeads;
     // All Possible event types for the Purpose of Travel
     private List<EventTypeView> validEventTypes;
 
     public TravelAppEditDto() {
     }
 
-    public TravelAppEditDto(DetailedEmployeeView travelerView) {
-        this(travelerView, new AmendmentView());
-    }
-
-    public TravelAppEditDto(DetailedEmployeeView travelerView, AmendmentView amendmentView) {
-        this.traveler = travelerView;
+    public TravelAppEditDto(DetailedEmployeeView traveler, AmendmentView amendmentView, int travelerDeptHeadEmpId) {
+        this.traveler = traveler;
         this.amendment = amendmentView;
+        this.travelerDeptHeadEmpId = travelerDeptHeadEmpId;
         this.validEventTypes = EnumSet.allOf(EventType.class).stream().map(EventTypeView::new).collect(Collectors.toList());
     }
 
@@ -44,6 +43,10 @@ public class TravelAppEditDto implements ViewObject {
 
     public DetailedEmployeeView getTraveler() {
         return traveler;
+    }
+
+    public int getTravelerDeptHeadEmpId() {
+        return travelerDeptHeadEmpId;
     }
 
     public AmendmentView getAmendment() {
@@ -58,12 +61,24 @@ public class TravelAppEditDto implements ViewObject {
         this.traveler = traveler;
     }
 
+    public void setTravelerDeptHeadEmpId(int travelerDeptHeadEmpId) {
+        this.travelerDeptHeadEmpId = travelerDeptHeadEmpId;
+    }
+
     public void setAmendment(AmendmentView amendment) {
         this.amendment = amendment;
     }
 
     public List<EventTypeView> getValidEventTypes() {
         return validEventTypes;
+    }
+
+    public Set<EmployeeView> getPossibleDepartmentHeads() {
+        return possibleDepartmentHeads;
+    }
+
+    public void setPossibleDepartmentHeads(Set<EmployeeView> possibleDepartmentHeads) {
+        this.possibleDepartmentHeads = possibleDepartmentHeads;
     }
 
     @Override

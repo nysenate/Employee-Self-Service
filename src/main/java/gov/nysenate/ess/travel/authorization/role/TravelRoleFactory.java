@@ -2,13 +2,12 @@ package gov.nysenate.ess.travel.authorization.role;
 
 import com.google.common.collect.ImmutableList;
 import gov.nysenate.ess.core.dao.security.authorization.RoleDao;
-import gov.nysenate.ess.core.department.DepartmentDao;
 import gov.nysenate.ess.core.model.auth.EssRole;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.security.authorization.role.RoleFactory;
-import gov.nysenate.ess.time.service.personnel.SupervisorInfoService;
 import gov.nysenate.ess.travel.delegate.Delegation;
 import gov.nysenate.ess.travel.delegate.DelegationDao;
+import gov.nysenate.ess.travel.request.department.SqlDepartmentHeadDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,13 +25,13 @@ public class TravelRoleFactory implements RoleFactory {
 
     @Autowired private RoleDao essRoleDao;
     @Autowired private DelegationDao delegateDao;
-    @Autowired private DepartmentDao departmentDao;
+    @Autowired private SqlDepartmentHeadDao departmentHeadDao;
 
     @Override
     public Stream<Enum> getRoles(Employee employee) {
-        // Add TravelRole.DELEGATE role if user has delegated roles.
         TravelRoles roles = travelRolesForEmp(employee);
         if (!roles.delegate().isEmpty()) {
+            // Add TravelRole.DELEGATE role if user has delegated roles.
             ImmutableList<TravelRole> delegatedRoles = new ImmutableList.Builder<TravelRole>()
                     .addAll(roles.delegate())
                     .add(TravelRole.DELEGATE)
@@ -63,10 +62,6 @@ public class TravelRoleFactory implements RoleFactory {
         // TRAVEL_ADMIN, SECRETARY_OF_SENATE, and MAJORITY_LEADER roles are stored here.
         Set<EssRole> empRoles = essRoleDao.getRoles(employee);
 
-        // The DEPARTMENT_HEAD role is store separately.
-        if (departmentDao.isEmployeeADepartmentHead(employee.getEmployeeId())) {
-            roles.add(TravelRole.DEPARTMENT_HEAD);
-        }
         if (empRoles.contains(EssRole.TRAVEL_ADMIN)) {
             roles.add(TravelRole.TRAVEL_ADMIN);
         }
@@ -76,7 +71,10 @@ public class TravelRoleFactory implements RoleFactory {
         if (empRoles.contains(EssRole.MAJORITY_LEADER)) {
             roles.add(TravelRole.MAJORITY_LEADER);
         }
-
+        // The DEPARTMENT_HEAD role is store separately.
+        if (departmentHeadDao.isDepartmentHead(employee.getEmployeeId())) {
+            roles.add(TravelRole.DEPARTMENT_HEAD);
+        }
         return roles;
     }
 

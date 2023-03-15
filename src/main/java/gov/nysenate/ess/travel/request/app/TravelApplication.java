@@ -16,7 +16,7 @@ public class TravelApplication {
 
     protected int appId;
     protected Employee traveler;
-    protected int travelerDepartmentId;
+    protected int travelerDeptHeadEmpId;
 
     /**
      * The Review Status of this application.
@@ -25,16 +25,16 @@ public class TravelApplication {
     private TravelApplicationStatus status;
     protected SortedSet<Amendment> amendments;
 
-    public TravelApplication(Employee traveler, Amendment amendment) {
-        this(0, traveler, traveler.getDepartment().getId(), new TravelApplicationStatus(), Lists.newArrayList(amendment));
+    public TravelApplication(Employee traveler, Amendment amendment, int travelerDeptHeadEmpId) {
+        this(0, traveler, travelerDeptHeadEmpId, new TravelApplicationStatus(), Lists.newArrayList(amendment));
     }
 
-    public TravelApplication(int id, Employee traveler, int travelerDepartmentId,
+    public TravelApplication(int id, Employee traveler, int travelerDeptHeadEmpId,
                              TravelApplicationStatus status, Collection<Amendment> amendments) {
         Preconditions.checkArgument(!amendments.isEmpty());
         this.appId = id;
         this.traveler = Preconditions.checkNotNull(traveler, "Travel Application requires a non null traveler.");
-        this.travelerDepartmentId = travelerDepartmentId;
+        this.travelerDeptHeadEmpId = travelerDeptHeadEmpId;
         this.status = status;
         this.amendments = new TreeSet<>(amendmentComparator);
         this.amendments.addAll(amendments);
@@ -83,8 +83,8 @@ public class TravelApplication {
         return traveler;
     }
 
-    public int getTravelerDepartmentId() {
-        return travelerDepartmentId;
+    public int getTravelerDeptHeadEmpId() {
+        return travelerDeptHeadEmpId;
     }
 
     public LocalDateTime getSubmittedDateTime() {

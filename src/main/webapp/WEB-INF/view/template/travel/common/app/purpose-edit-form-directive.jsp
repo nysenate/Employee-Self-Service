@@ -2,11 +2,20 @@
   <div ng-show="purpose.form.$submitted && !purpose.form.$valid" class="margin: 10px 0px;">
     <ess-notification level="error">
       <ul>
-        <li ng-if="purpose.form.$error.eventTypeRequired">A purpose of travel is required</li>
-        <li ng-if="purpose.form.$error.eventNameRequired">Name of the
-          {{dirtyAmendment.purposeOfTravel.eventType.displayName}} is required.
+        <li ng-if="purpose.form.$error.travelerRequired">
+          A traveler is required.
         </li>
-        <li ng-if="purpose.form.$error.additionalPurposeRequired">A description of your purpose of travel is required.
+        <li ng-if="purpose.form.$error.departmentHeadRequired">
+          A department head is required.
+        </li>
+        <li ng-if="purpose.form.$error.eventTypeRequired">
+          A purpose of travel is required.
+        </li>
+        <li ng-if="purpose.form.$error.eventNameRequired">
+          Name of the {{dirtyAmendment.purposeOfTravel.eventType.displayName}} is required.
+        </li>
+        <li ng-if="purpose.form.$error.additionalPurposeRequired">
+          A description of your purpose of travel is required.
         </li>
       </ul>
     </ess-notification>
@@ -14,6 +23,35 @@
 
   <div class="travel-card">
     <form ng-cloak name="purpose.form" id="purposeForm" novalidate>
+      <div class="travel-card-item">
+        <h1>Traveler Info</h1>
+        <div class="padding-10">
+          <div class="purpose-row">
+            <label>Travel application on behalf of:</label>
+            <ui-select ng-model="dto.traveler" style="min-width: 200px;" class="travel-ui-select-input" traveler-validator>
+              <ui-select-match>
+                <span ng-bind="$select.selected.fullName"></span>
+              </ui-select-match>
+              <ui-select-choices repeat="emp in dto.allowedTravelers | filter: $select.search track by emp.employeeId">
+                <div ng-bind-html="emp.fullName"></div>
+              </ui-select-choices>
+            </ui-select>
+          </div>
+          <div class="purpose-row">
+            <label>Traveler Department Head:</label>
+            <ui-select ng-model="dto.travelerDeptHeadEmpId" style="min-width: 200px;" class="travel-ui-select-input"
+                       department-head-validator>
+              <ui-select-match>
+                <span ng-bind="$select.selected.fullName"></span>
+              </ui-select-match>
+              <ui-select-choices
+                  repeat="emp.employeeId as emp in dto.possibleDepartmentHeads | filter: $select.search track by emp.employeeId">
+                <div ng-bind-html="emp.fullName"></div>
+              </ui-select-choices>
+            </ui-select>
+          </div>
+        </div>
+      </div>
       <div class="travel-card-item">
         <h1 class="">Purpose of Travel</h1>
         <div class="padding-10">

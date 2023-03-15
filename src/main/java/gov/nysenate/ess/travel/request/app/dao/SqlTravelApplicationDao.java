@@ -108,14 +108,14 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
                 .collect(Collectors.toList());
 
         return new TravelApplication(view.appId, traveler,
-                view.travelerDepartmentId, view.status, amds);
+                view.travelerDeptHeadEmpId, view.status, amds);
     }
 
     private MapSqlParameterSource travelAppParams(TravelApplication app) {
         return new MapSqlParameterSource()
                 .addValue("appId", app.getAppId())
                 .addValue("travelerId", app.getTraveler().getEmployeeId())
-                .addValue("travelerDepartmentId", app.getTravelerDepartmentId())
+                .addValue("travelerDeptHeadEmpId", app.getTravelerDeptHeadEmpId())
                 .addValue("submittedById", app.getSubmittedBy().getEmployeeId())
                 .addValue("status", app.status().status().name())
                 .addValue("note", app.status().note());

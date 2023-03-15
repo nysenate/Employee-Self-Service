@@ -23,11 +23,11 @@ public interface ApplicationReviewDao {
     List<ApplicationReview> pendingReviewsForRole(TravelRole role);
 
     /**
-     * Retrieve AppReviews which are pending review any of the given departmentIds.
-     * @param departmentIds
+     * Retrieve AppReviews which are pending review by a Department head with one of the given emp ids.
+     * @param empIds
      * @return
      */
-    List<ApplicationReview> pendingReviewsForDeptIds(Collection<Integer> departmentIds);
+    List<ApplicationReview> pendingReviewsForDeptHd(Collection<Integer> empIds);
 
     /**
      * Gets all reviews that have been shared, have not been disapproved,

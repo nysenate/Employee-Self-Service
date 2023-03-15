@@ -251,12 +251,6 @@ all.pec.notifs.enabled = false
 #Send out notifs every 2 weeks
 scheduler.pec.notifs.cron = 0 0 8 1,15 * *
 
-# The schedule for updating Department data in ESS.
-scheduler.ess.department.update = 0 0 1 * * *
-
-# The schedule for checking for departments missing a department head.
-scheduler.ess.department.check_dept_heads = 0 0 6 * * *
-
 # Determines if scheduled polling of course completion records from moodle is enabled.
 scheduler.moodle.sync.enabled = false
 

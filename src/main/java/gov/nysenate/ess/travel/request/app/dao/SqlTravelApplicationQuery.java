@@ -5,12 +5,12 @@ import gov.nysenate.ess.core.dao.base.DbVendor;
 
 enum SqlTravelApplicationQuery implements BasicSqlQuery {
     INSERT_APP(
-            "INSERT INTO ${travelSchema}.app(traveler_id, submitted_by_id, status, status_note, traveler_department_id) \n" +
-                    "VALUES (:travelerId, :submittedById, :status, :note, :travelerDepartmentId)"
+            "INSERT INTO ${travelSchema}.app(traveler_id, submitted_by_id, status, status_note, traveler_dept_head_emp_id) \n" +
+                    "VALUES (:travelerId, :submittedById, :status, :note, :travelerDeptHeadEmpId)"
     ),
     UPDATE_APP(
             "UPDATE ${travelSchema}.app \n" +
-                    "SET status = :status, status_note = :note \n" +
+                    "SET status = :status, status_note = :note, traveler_dept_head_emp_id = :travelerDeptHeadEmpId \n" +
                     "WHERE app_id = :appId"
     ),
     INSERT_AMENDMENT(
@@ -19,7 +19,7 @@ enum SqlTravelApplicationQuery implements BasicSqlQuery {
                     "VALUES (:appId, :version, :eventType, :eventName, :additionalPurpose, :createdBy)"
     ),
     TRAVEL_APP_SELECT(
-            "SELECT app.app_id, app.traveler_id, app.status, app.status_note, app.traveler_department_id,\n" +
+            "SELECT app.app_id, app.traveler_id, app.status, app.status_note, app.traveler_dept_head_emp_id,\n" +
                     " amendment.amendment_id, amendment.app_id, amendment.version,\n" +
                     " amendment.event_type, amendment.event_name, amendment.additional_purpose,\n" +
                     " amendment.created_date_time, amendment.created_by\n" +

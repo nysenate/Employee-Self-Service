@@ -53,3 +53,25 @@ essTravel.directive('additionalPurposeValidator', function () {
         }
     }
 });
+
+essTravel.directive('travelerValidator', function () {
+    return {
+        require: 'ngModel',
+        link: function (scope, elm, attrs, ctrl) {
+            ctrl.$validators.travelerRequired = function (modelValue, viewValue) {
+                return modelValue;
+            };
+        }
+    }
+});
+
+essTravel.directive('departmentHeadValidator', function () {
+    return {
+        require: 'ngModel',
+        link: function (scope, elm, attrs, ctrl) {
+            ctrl.$validators.departmentHeadRequired = function (modelValue, viewValue) {
+                return modelValue;
+            };
+        }
+    }
+});

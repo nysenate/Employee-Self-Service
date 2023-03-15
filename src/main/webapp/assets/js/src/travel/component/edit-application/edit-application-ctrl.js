@@ -25,8 +25,8 @@ function editAppCtrl($scope, locationService, modals, stateService, appPatchApi,
         }, $scope.handleErrorResponse);
     })();
 
-    vm.savePurpose = function (amendment) {
-        vm.dto.amendment = amendment;
+    vm.savePurpose = function (dto) {
+        vm.dto = dto;
         stateService.setOutboundState();
     };
 

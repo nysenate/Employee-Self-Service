@@ -13,7 +13,7 @@ class TravelAppRepositoryView {
 
     public int appId;
     public int travelerEmpId;
-    public int travelerDepartmentId;
+    public int travelerDeptHeadEmpId;
     public TravelApplicationStatus status;
     public List<AmendmentRepositoryView> amendmentViews;
 
@@ -23,12 +23,12 @@ class TravelAppRepositoryView {
 
     public TravelAppRepositoryView(int appId,
                                    int travelerEmpId,
-                                   int travelerDepartmentId,
+                                   int travelerDeptHeadEmpId,
                                    TravelApplicationStatus status,
                                    List<AmendmentRepositoryView> amendmentViews) {
         this.appId = appId;
         this.travelerEmpId = travelerEmpId;
-        this.travelerDepartmentId = travelerDepartmentId;
+        this.travelerDeptHeadEmpId = travelerDeptHeadEmpId;
         this.status = status;
         this.amendmentViews = amendmentViews;
     }

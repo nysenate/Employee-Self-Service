@@ -61,9 +61,12 @@ public class SqlApplicationReviewDao extends SqlBaseDao implements ApplicationRe
     }
 
     @Override
-    public List<ApplicationReview> pendingReviewsForDeptIds(Collection<Integer> departmentIds) {
-        var params = new MapSqlParameterSource("departmentIds", departmentIds);
-        var sql = SqlApplicationReviewQuery.PENDING_REVIEWS_FOR_DEPT_IDS.getSql(schemaMap());
+    public List<ApplicationReview> pendingReviewsForDeptHd(Collection<Integer> empIds) {
+        if (empIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+        var params = new MapSqlParameterSource("empIds", empIds);
+        var sql = SqlApplicationReviewQuery.PENDING_REVIEWS_FOR_DEPT_HD.getSql(schemaMap());
         var repViews = localNamedJdbc.query(sql, params, new ApplicationReviewRowMapper());
         return populateRepViews(repViews);
     }
@@ -120,7 +123,7 @@ public class SqlApplicationReviewDao extends SqlBaseDao implements ApplicationRe
     public List<ApplicationReview> reviewHistoryForDeptHead(Employee departmentHead) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("role", TravelRole.DEPARTMENT_HEAD.name())
-                .addValue("headEmpId", departmentHead.getEmployeeId());
+                .addValue("empId", departmentHead.getEmployeeId());
         String sql = SqlApplicationReviewQuery.SELECT_APP_REVIEW_HISTORY_FOR_DEPT_HD.getSql(schemaMap());
         var views = localNamedJdbc.query(sql, params, new ApplicationReviewRowMapper());
         return populateRepViews(views);

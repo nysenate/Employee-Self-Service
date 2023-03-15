@@ -240,7 +240,7 @@ public class TravelAppUpdateService {
      * @param submitter The employee who is submitting the application.
      * @return
      */
-    public TravelApplication submitTravelApplication(Amendment amd, Employee traveler, Employee submitter) {
+    public TravelApplication submitTravelApplication(Amendment amd, Employee traveler, Employee submitter, int travelerDeptHeadEmpId) {
         amd = new Amendment.Builder(amd)
                 .withAmendmentId(0)
                 .withVersion(Version.A)
@@ -248,7 +248,7 @@ public class TravelAppUpdateService {
                 .withCreatedDateTime(LocalDateTime.now())
                 .build();
 
-        TravelApplication app = new TravelApplication(traveler, amd);
+        TravelApplication app = new TravelApplication(traveler, amd, travelerDeptHeadEmpId);
         appService.saveApplication(app);
 
         ApplicationReview appReview = appReviewService.createApplicationReview(app);

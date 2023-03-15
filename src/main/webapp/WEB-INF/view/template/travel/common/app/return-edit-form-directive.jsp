@@ -55,7 +55,7 @@
                        from-date="fromDate()"
                        name="travelDate_{{$index}}"
                        ng-model="leg.travelDate"
-                       autocomplete="new-password" required>
+                       autocomplete="off" required>
               </div>
               <div class="clear"></div>
 

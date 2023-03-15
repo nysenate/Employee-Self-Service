@@ -4,6 +4,7 @@ import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.client.view.DetailedEmployeeView;
+import gov.nysenate.ess.core.client.view.EmployeeView;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
@@ -15,6 +16,8 @@ import gov.nysenate.ess.travel.request.app.TravelApplicationService;
 import gov.nysenate.ess.travel.request.route.RouteViewValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -52,7 +55,11 @@ public class TravelAppEditCtrl extends BaseRestApiCtrl {
 
         TravelAppEditDto editDto = new TravelAppEditDto(
                 new DetailedEmployeeView(app.getTraveler()),
-                new AmendmentView(editAmd));
+                new AmendmentView(editAmd),
+                app.getTravelerDeptHeadEmpId());
+        editDto.setPossibleDepartmentHeads(employeeInfoService.getAllEmployees(true).stream()
+                .map(EmployeeView::new)
+                .collect(Collectors.toSet()));
         return new ViewObjectResponse<>(editDto);
     }
 
@@ -103,8 +110,7 @@ public class TravelAppEditCtrl extends BaseRestApiCtrl {
                 appDto.getAmendment().getRoute().toRoute());
 
         // Create a new TravelAppEditDto to ensure allowedTravelers and eventTypes are populated correctly.
-        appDto = new TravelAppEditDto(appDto.getTraveler());
-        appDto.setAmendment(new AmendmentView(amd));
+        appDto = new TravelAppEditDto(appDto.getTraveler(), new AmendmentView(amd), app.getTravelerDeptHeadEmpId());
         appDto.setAllowedTravelers(allowedTravelersService.forEmpId(getSubjectEmployeeId()));
         return new ViewObjectResponse<>(appDto);
     }
@@ -129,8 +135,7 @@ public class TravelAppEditCtrl extends BaseRestApiCtrl {
         amd = appUpdateService.updateMileagePerDiems(amd, appDto.getAmendment().getRoute().getMileagePerDiems().toMileagePerDiems());
 
         // Create a new TravelAppEditDto to ensure allowedTravelers and eventTypes are populated correctly.
-        appDto = new TravelAppEditDto(appDto.getTraveler());
-        appDto.setAmendment(new AmendmentView(amd));
+        appDto = new TravelAppEditDto(appDto.getTraveler(), new AmendmentView(amd), app.getTravelerDeptHeadEmpId());
         appDto.setAllowedTravelers(allowedTravelersService.forEmpId(getSubjectEmployeeId()));
         return new ViewObjectResponse<>(appDto);
     }

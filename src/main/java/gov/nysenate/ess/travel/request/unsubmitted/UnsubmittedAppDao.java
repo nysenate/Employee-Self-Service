@@ -64,11 +64,12 @@ public class UnsubmittedAppDao extends SqlBaseDao {
      * @param travelerView The traveler.
      * @param amendmentView The amendment data to save.
      */
-    public void save(int userId, EmployeeView travelerView, AmendmentView amendmentView) {
+    public void save(int userId, EmployeeView travelerView, AmendmentView amendmentView, int travelerDeptHeadEmpId) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("userId", userId)
                 .addValue("travelerJson", serializeTraveler(travelerView))
-                .addValue("amendmentJson", serializeAmendment(amendmentView));
+                .addValue("amendmentJson", serializeAmendment(amendmentView))
+                .addValue("travelerDeptHeadEmpId", travelerDeptHeadEmpId == 0 ? null : travelerDeptHeadEmpId);
         boolean isUpdated = update(params);
         if (!isUpdated) {
             insert(params);
@@ -116,18 +117,18 @@ public class UnsubmittedAppDao extends SqlBaseDao {
 
     private enum SqlUnsubmittedAppQuery implements BasicSqlQuery {
         FIND(
-                "SELECT user_id, traveler_json, amendment_json\n" +
+                "SELECT user_id, traveler_json, amendment_json, traveler_dept_head_emp_id\n" +
                         "FROM ${travelSchema}.unsubmitted_app\n" +
                         "WHERE user_id = :userId;"
         ),
         UPDATE(
                 "UPDATE ${travelSchema}.unsubmitted_app\n" +
-                        "SET amendment_json = :amendmentJson, traveler_json = :travelerJson \n" +
+                        "SET amendment_json = :amendmentJson, traveler_json = :travelerJson, traveler_dept_head_emp_id = :travelerDeptHeadEmpId \n" +
                         "WHERE user_id = :userId"
         ),
         INSERT(
-                "INSERT INTO ${travelSchema}.unsubmitted_app(user_id, traveler_json, amendment_json)\n" +
-                        "VALUES(:userId, :travelerJson, :amendmentJson)"
+                "INSERT INTO ${travelSchema}.unsubmitted_app(user_id, traveler_json, amendment_json, traveler_dept_head_emp_id)\n" +
+                        "VALUES(:userId, :travelerJson, :amendmentJson, :travelerDeptHeadEmpId)"
         ),
         DELETE(
                 "DELETE FROM ${travelSchema}.unsubmitted_app\n" +
@@ -158,7 +159,7 @@ public class UnsubmittedAppDao extends SqlBaseDao {
             try {
                 AmendmentView amendmentView = deserializeAmendment(rs.getString("amendment_json"));
                 DetailedEmployeeView travelerView = deserializeTraveler(rs.getString("traveler_json"));
-                return new TravelAppEditDto(travelerView, amendmentView);
+                return new TravelAppEditDto(travelerView, amendmentView, rs.getInt("traveler_dept_head_emp_id"));
             } catch (IOException e) {
                 logger.error("Error retrieving data from the unsubmitted_app table.", e);
                 return null;

@@ -19,7 +19,10 @@ function travelAppController($scope, $window, appProps, modals, locationService,
         traveler: undefined,
         amendment: undefined,
         allowedTravelers: [],
-        eventTypes: []
+        travelerDeptHeadEmpId: undefined,
+        possibleDepartmentHeads: [],
+        defaultDepartmentHead: undefined,
+        eventTypes: [],
     };
 
     this.$onInit = function () {
@@ -41,15 +44,9 @@ function travelAppController($scope, $window, appProps, modals, locationService,
                 $scope.data.eventTypes = response.result.validEventTypes;
                 $scope.data.traveler = response.result.traveler;
                 $scope.data.amendment = response.result.amendment;
+                $scope.data.possibleDepartmentHeads = response.result.possibleDepartmentHeads;
+                $scope.data.travelerDeptHeadEmpId = response.result.travelerDeptHeadEmpId;
 
-                // Cant place a new app if department or department head are missing
-                if (invalidDepartmentData($scope.data.traveler.department)) {
-                    modals.open('missing-department-data')
-                        .then(function () {
-                            cancelApplication();
-                            locationService.go("/travel", true);
-                        });
-                }
                 if (hasUncompleteApplication()) {
                     modals.open('ess-continue-saved-app-modal')
                         .catch(function () { // Restart application on modal rejection.
@@ -61,16 +58,16 @@ function travelAppController($scope, $window, appProps, modals, locationService,
             function hasUncompleteApplication() {
                 return $scope.data.amendment.purposeOfTravel && ($scope.data.amendment.purposeOfTravel.eventType !== null);
             }
-
-            function invalidDepartmentData(department) {
-                return department.id === 0 || department.headEmpId === 0;
-            }
         }
     };
 
-    $scope.savePurpose = function (amendment) {
+    $scope.savePurpose = function (dto) {
         unsubmittedAppApi.update({},
-                                 {purposeOfTravel: JSON.stringify(amendment.purposeOfTravel), traveler: $scope.data.traveler.employeeId},
+                                 {
+                                     purposeOfTravel: JSON.stringify(dto.amendment.purposeOfTravel),
+                                     traveler: dto.traveler.employeeId,
+                                     travelerDeptHeadEmpId: dto.travelerDeptHeadEmpId
+                                 },
                                  function (response) {
             $scope.data.traveler = response.result.traveler;
             $scope.data.amendment = response.result.amendment;

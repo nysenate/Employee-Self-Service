@@ -2,24 +2,6 @@
   <div class="travel-hero">
     <h2>Travel Application</h2>
   </div>
-  <div class="content-container content-controls">
-    <div class="padding-10 text-align-center">
-      Travel application on behalf of:
-      <span ng-if="!stateService.isReviewState()">
-        <ui-select ng-model="data.traveler" style="min-width: 200px;">
-          <ui-select-match>
-            <span ng-bind="$select.selected.fullName"></span>
-          </ui-select-match>
-          <ui-select-choices repeat="emp in data.allowedTravelers | filter: $select.search track by emp.employeeId">
-            <div ng-bind-html="emp.fullName"></div>
-          </ui-select-choices>
-        </ui-select>
-      </span>
-      <span ng-if="stateService.isReviewState()">
-        {{data.traveler.fullName}}
-      </span>
-    </div>
-  </div>
 
   <ess-new-app-breadcrumbs></ess-new-app-breadcrumbs>
 
@@ -27,9 +9,9 @@
 
   <div ng-if="data.amendment">
     <div ng-if="stateService.isPurposeState()">
-      <ess-purpose-edit-form amendment="data.amendment"
+      <ess-purpose-edit-form dto="data"
                              event-types="data.eventTypes"
-                             positive-callback="savePurpose(amendment)"
+                             positive-callback="savePurpose(dto)"
                              negative-callback="cancel(amendment)">
       </ess-purpose-edit-form>
     </div>
@@ -75,20 +57,6 @@
     <%--Continue application modal--%>
     <modal modal-id="ess-continue-saved-app-modal">
       <div ess-continue-saved-app-modal></div>
-    </modal>
-
-    <modal modal-id="missing-department-data">
-      <div confirm-modal rejectable="false"
-           title="Unable to create Travel application"
-      <%--           confirm-message="Unable to create a Travel Application due to incomplete department data in your employee records.--%>
-      <%--                            Please contact the STS Helpline at {{helplinePhoneNumber}} with any questions or concerns."--%>
-           resolve-button="Okay">
-        <p>
-          Unable to create a Travel Application due to missing department data in your employee records.
-          <br/>
-          Please contact the STS Helpline at {{helplinePhoneNumber}} with any questions or concerns.
-        </p>
-      </div>
     </modal>
 
     <%--Cancel Modal--%>

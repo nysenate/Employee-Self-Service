@@ -3,8 +3,6 @@ package gov.nysenate.ess.travel.notifications.email;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import gov.nysenate.ess.core.dao.security.authorization.RoleDao;
-import gov.nysenate.ess.core.department.Department;
-import gov.nysenate.ess.core.department.DepartmentDao;
 import gov.nysenate.ess.core.model.auth.EssRole;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
@@ -23,17 +21,14 @@ import java.util.Set;
 public class TravelEmailRecipients {
 
     private EmployeeInfoService employeeInfoService;
-    private DepartmentDao departmentDao;
     private DelegationDao delegationDao;
     private RoleDao roleDao;
 
     @Autowired
     public TravelEmailRecipients(EmployeeInfoService employeeInfoService,
-                                 DepartmentDao departmentDao,
                                  DelegationDao delegationDao,
                                  RoleDao roleDao) {
         this.employeeInfoService = employeeInfoService;
-        this.departmentDao = departmentDao;
         this.delegationDao = delegationDao;
         this.roleDao = roleDao;
     }
@@ -60,8 +55,7 @@ public class TravelEmailRecipients {
 
         switch (appReview.nextReviewerRole()) {
             case DEPARTMENT_HEAD:
-                Department travelerDept = departmentDao.getDepartment(appReview.application().getTravelerDepartmentId());
-                Employee deptHead = employeeInfoService.getEmployee(travelerDept.getHeadEmpId());
+                Employee deptHead = employeeInfoService.getEmployee(appReview.application().getTravelerDeptHeadEmpId());
                 recipients.add(deptHead);
                 recipients.addAll(employeeDelegates(deptHead));
                 break;

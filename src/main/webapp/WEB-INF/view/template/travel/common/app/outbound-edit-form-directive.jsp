@@ -54,7 +54,7 @@
                        ng-model="leg.travelDate"
                        placeholder="MM/DD/YYYY"
                        type="text" size="13"
-                       autocomplete="new-password" required>
+                       autocomplete="off" required>
               </div>
               <div class="clear"></div>
 

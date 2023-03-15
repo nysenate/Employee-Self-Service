@@ -6,8 +6,8 @@ function purposeEditLink($http, appProps, attachmentDeleteApi, modals) {
     return {
         restrict: 'E',
         scope: {
-            amendment: '<',         // The amendment being edited.
-            eventTypes: '<',         // Valid Purpose of Travel event types.
+            dto: '<',               // The TravelAppEditDto being edited.
+            eventTypes: '<',        // Valid Purpose of Travel event types.
             positiveCallback: '&',  // Callback function called when continuing. Takes a travel app param named 'amendment'.
             negativeCallback: '&',  // Callback function called when canceling. Takes a travel app param named 'amendment'.
             negativeLabel: '@'      // Text to label the negative button. Defaults to 'Cancel'
@@ -16,12 +16,13 @@ function purposeEditLink($http, appProps, attachmentDeleteApi, modals) {
         templateUrl: appProps.ctxPath + '/template/travel/common/app/purpose-edit-form-directive',
         link: function (scope, elem, attrs) {
 
-            scope.dirtyAmendment = angular.copy(scope.amendment);
+            scope.dirtyAmendment = angular.copy(scope.dto.amendment);
 
             scope.next = function () {
                 scope.setInvalidFormElementsTouched(scope.purpose.form);
                 if (scope.purpose.form.$valid) {
-                    scope.positiveCallback({amendment: scope.dirtyAmendment});
+                    scope.dto.amendment = scope.dirtyAmendment
+                    scope.positiveCallback({dto: scope.dto});
                 }
             };
 
