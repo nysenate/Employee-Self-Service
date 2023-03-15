@@ -36,8 +36,8 @@ public enum PersonnelTaskAssignmentQuery implements BasicSqlQuery {
 
     INSERT_TASK("" +
             "INSERT INTO ${essSchema}.personnel_task_assignment\n" +
-            "        (emp_id, task_id, timestamp, update_user_id, completed, active, manual_override)\n" +
-            "VALUES (:empId, :taskId, :timestamp, :updateUserId, :completed, :active, :manualOverride)"
+            "        (emp_id, task_id, timestamp, update_user_id, completed, active, manual_override, assignment_date, due_date)\n" +
+            "VALUES (:empId, :taskId, :timestamp, :updateUserId, :completed, :active, :manualOverride, :assignmentDate, :dueDate)"
     ),
 
     UPDATE_TASK("" +

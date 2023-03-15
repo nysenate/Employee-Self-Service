@@ -244,7 +244,7 @@ public class PECNotificationService {
         return incompleteEmpAssignments;
     }
 
-    private LocalDate getDueDate(LocalDate continuousServiceDate, int daysToAdd) {
+    public LocalDate getDueDate(LocalDate continuousServiceDate, int daysToAdd) {
         Date startDate = Date.from(continuousServiceDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
         Calendar calendar = new GregorianCalendar(/* remember about timezone! */);
         calendar.setTime(startDate);
@@ -253,13 +253,17 @@ public class PECNotificationService {
         return dueDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     }
 
+    public LocalDate getConitnuousServiceDate(int empId) {
+        return employeeInfoService.getEmployeesMostRecentContinuousServiceDate(empId);
+    }
+
     /**
      * Find out if the employee's continuous serivce date greater than 90 days from today
      *
      * @param continuousServiceDate
      * @return
      */
-    private boolean isExistingEmployee(LocalDate continuousServiceDate) {
+    public boolean isExistingEmployee(LocalDate continuousServiceDate) {
         LocalDate ninetyDaysAgo = LocalDate.now(ZoneId.systemDefault()).minus(Period.ofDays(90));
         return continuousServiceDate.isBefore(ninetyDaysAgo);
     }

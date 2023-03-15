@@ -97,7 +97,7 @@ public class CsvTaskAssigner {
                     logger.info("Creating task for emp " + empId + " for task " + taskId);
                     PersonnelTaskAssignment taskToInsertForEmp =
                             new PersonnelTaskAssignment(
-                                    taskId,empId,updateEmpID, LocalDateTime.now(),false, active);
+                                    taskId,empId,updateEmpID, LocalDateTime.now(),false, active, LocalDateTime.now(), null);
 
                     personnelTaskAssignmentDao.updateAssignment(taskToInsertForEmp);
                 }
@@ -161,13 +161,13 @@ public class CsvTaskAssigner {
 
                         if (personnelTaskAssignment != null) {
                             taskToInsertForEmp = new PersonnelTaskAssignment(
-                                    taskId, empId, empId, personnelTaskAssignment.getUpdateTime(), personnelTaskAssignment.isCompleted(), true);
+                                    taskId, empId, empId, personnelTaskAssignment.getUpdateTime(), personnelTaskAssignment.isCompleted(), true, LocalDateTime.now(), null);
                             personnelTaskAssignmentDao.updateAssignment(taskToInsertForEmp);
                         }
                     }
                     catch (IncorrectResultSizeDataAccessException e) {
                         taskToInsertForEmp = new PersonnelTaskAssignment(
-                                taskId, empId, empId, LocalDateTime.now(), false, true);
+                                taskId, empId, empId, LocalDateTime.now(), false, true, LocalDateTime.now(), null);
                         personnelTaskAssignmentDao.updateAssignment(taskToInsertForEmp);
                     }
                 }

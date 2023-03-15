@@ -5,12 +5,15 @@ import com.google.common.collect.Sets;
 import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
+import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
 import gov.nysenate.ess.core.service.pec.notification.PECNotificationService;
 import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,10 +68,29 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
                 //No need to do anything. It means we are going to update this task in the database
             }
             if (!taskHasBeenManuallyOverridden) {
-                assignmentDao.updateAssignment(assignment);
+                //Get assignment due date
+                LocalDate continuousServiceDate = pecNotificationService.getConitnuousServiceDate(empId);
+                PersonnelTaskType taskType = personnelTaskMap.get( assignment.getTaskId() ).getTaskType();
+
+                LocalDateTime dueDate = null;
+                if (taskType == PersonnelTaskType.MOODLE_COURSE) {
+                    dueDate = pecNotificationService.getDueDate(continuousServiceDate,30).atTime(0,0);
+                } else if (taskType == PersonnelTaskType.ETHICS_LIVE_COURSE) {
+                    if (pecNotificationService.isExistingEmployee(continuousServiceDate)) {
+                        dueDate = LocalDate.of(LocalDate.now().getYear(), 12,31).atTime(0,0);
+                    }
+                    else {
+                        dueDate = pecNotificationService.getDueDate(continuousServiceDate,90).atTime(0,0);
+                    }
+                }
+                PersonnelTaskAssignment assignmentWithDueDate = new PersonnelTaskAssignment(
+                        assignment.getTaskId(),assignment.getEmpId(), assignment.getUpdateEmpId(),
+                        assignment.getUpdateTime(), assignment.isCompleted(), assignment.isActive(),
+                        LocalDateTime.now(), dueDate);
+                assignmentDao.updateAssignment(assignmentWithDueDate);
                 logger.info("Assigning {} personnel tasks to emp #{} : Task ID #{}",
                         getTargetGroup(), empId, assignment.getTaskId() );
-                pecNotificationService.sendInviteEmails(empId, assignment);
+                pecNotificationService.sendInviteEmails(empId, assignmentWithDueDate);
             }
         }
 
