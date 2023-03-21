@@ -208,7 +208,9 @@ public class EverfiRecordService implements ESSEverfiRecordService {
                                         empID,
                                         completedAt,
                                         completed,
-                                        active
+                                        active,
+                                        LocalDateTime.now(),
+                                        null
                                 );
                                 personnelTaskAssignmentDao.updateAssignment(taskToInsert);
 
@@ -219,7 +221,9 @@ public class EverfiRecordService implements ESSEverfiRecordService {
                                             empID,
                                             completedAt,
                                             true,
-                                            active
+                                            active,
+                                            LocalDateTime.now(),
+                                            null
                                     );
                                     personnelTaskAssignmentDao.updateAssignment(ackDocCompletionTask);
                                 }

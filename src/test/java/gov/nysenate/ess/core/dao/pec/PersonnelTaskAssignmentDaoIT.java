@@ -53,10 +53,12 @@ public class PersonnelTaskAssignmentDaoIT extends BaseTest {
         // Verify that initial assignment is present
         assignments = assignmentDao.getAssignmentsForEmp(empId);
         assertEquals(1, assignments.size());
-        assertEquals(initialAssignment, assignments.get(0));
+
+        boolean isSameAssignment = initialAssignment.equals(assignments.get(0));
+        assertEquals(isSameAssignment, true);
         // Update the initial assignment with different data
         final PersonnelTaskAssignment updatedTask =
-                new PersonnelTaskAssignment(taskId, empId, empId, LocalDateTime.now(), true, true);
+                new PersonnelTaskAssignment(taskId, empId, empId, LocalDateTime.now(), true, true, null, null);
         assertNotEquals(initialAssignment, updatedTask);
         assignmentDao.updateAssignment(updatedTask);
         // Ensure that it was updated
@@ -80,7 +82,7 @@ public class PersonnelTaskAssignmentDaoIT extends BaseTest {
             for (int empId : bogusEmpIds) {
                 LocalDateTime timestamp = completedValue ? LocalDateTime.now() : null;
                 assignListBuilder.add(new PersonnelTaskAssignment(
-                        dummyTask.getTaskId(), empId, null, timestamp, completedValue, true));
+                        dummyTask.getTaskId(), empId, null, timestamp, completedValue, true, LocalDateTime.now(), null));
                 completedValue = !completedValue;
             }
         }

@@ -26,12 +26,18 @@ public class PersonnelTaskAssignment implements Comparable<PersonnelTaskAssignme
 
     private final boolean manual_override;
 
+    private final LocalDateTime assignmentDate;
+    private final LocalDateTime dueDate;
+
+
     public PersonnelTaskAssignment(int taskId,
                                    int empId,
                                    Integer updateEmpId,
                                    LocalDateTime updateTime,
                                    boolean completed,
-                                   boolean active) {
+                                   boolean active,
+                                   LocalDateTime assignmentDate,
+                                   LocalDateTime dueDate) {
         this.taskId = taskId;
         this.empId = empId;
         this.updateEmpId = updateEmpId;
@@ -39,6 +45,8 @@ public class PersonnelTaskAssignment implements Comparable<PersonnelTaskAssignme
         this.completed = completed;
         this.active = active;
         this.manual_override = false;
+        this.assignmentDate = assignmentDate;
+        this.dueDate = dueDate;
     }
 
     public PersonnelTaskAssignment(int taskId,
@@ -47,7 +55,9 @@ public class PersonnelTaskAssignment implements Comparable<PersonnelTaskAssignme
                                    LocalDateTime updateTime,
                                    boolean completed,
                                    boolean active,
-                                   boolean manual_override) {
+                                   boolean manual_override,
+                                   LocalDateTime assignmentDate,
+                                   LocalDateTime dueDate) {
         this.taskId = taskId;
         this.empId = empId;
         this.updateEmpId = updateEmpId;
@@ -55,10 +65,12 @@ public class PersonnelTaskAssignment implements Comparable<PersonnelTaskAssignme
         this.completed = completed;
         this.active = active;
         this.manual_override = manual_override;
+        this.assignmentDate = assignmentDate;
+        this.dueDate = dueDate;
     }
 
     public static PersonnelTaskAssignment newTask(int empId, int taskId) {
-        return new PersonnelTaskAssignment(taskId, empId, null, null, false, true, false);
+        return new PersonnelTaskAssignment(taskId, empId, null, null, false, true, false, null, null);
     }
 
     /* --- Overrides --- */
@@ -75,7 +87,6 @@ public class PersonnelTaskAssignment implements Comparable<PersonnelTaskAssignme
                 active == that.active &&
                 Objects.equal(updateTime, that.updateTime) &&
                 manual_override == that.manual_override;
-
     }
 
     @Override
@@ -101,6 +112,8 @@ public class PersonnelTaskAssignment implements Comparable<PersonnelTaskAssignme
                 .add("completed=" + completed)
                 .add("active=" + active)
                 .add("manual_override=" + manual_override)
+                .add("assignmentDate=" + assignmentDate)
+                .add("dueDate=" + dueDate)
                 .toString();
     }
 
@@ -132,5 +145,13 @@ public class PersonnelTaskAssignment implements Comparable<PersonnelTaskAssignme
 
     public boolean wasManuallyOverridden() {
         return manual_override;
+    }
+
+    public LocalDateTime getAssignmentDate() {
+        return assignmentDate;
+    }
+
+    public LocalDateTime getDueDate() {
+        return dueDate;
     }
 }
