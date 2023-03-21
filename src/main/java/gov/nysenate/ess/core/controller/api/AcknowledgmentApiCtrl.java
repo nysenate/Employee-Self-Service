@@ -114,7 +114,7 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
 
         // Mark the acknowledgment task as completed
         assignmentDao.setTaskComplete(empId, taskId, authedEmpId);
-        pecNotificationService.sendCompletionEmail(empId, taskId);
+        pecNotificationService.sendCompletionEmail(empId, taskService.getPersonnelTask(taskId));
         return new SimpleResponse(true, "Document Acknowledged", "document-acknowledged");
     }
 

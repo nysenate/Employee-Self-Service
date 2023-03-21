@@ -114,6 +114,7 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
     /**
      * Handles scheduled task assignments.
      */
+    // TODO: HERE FOR INVITE ASSIGNMENT
     @Scheduled(cron = "${scheduler.personnel_task.assignment.cron:0 0 3 * * *}")
     public void scheduledPersonnelTaskAssignment() {
         if (scheduledAssignmentEnabled) {
@@ -129,7 +130,7 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
     private boolean needsTaskAssignment(int empId) {
         TransactionHistory transHistory = transactionService.getTransHistory(empId);
         Range<LocalDate> presentAndFuture = Range.atLeast(LocalDate.now());
-        // They are are eligible if they are currently active, or will be active in the future.
+        // They are eligible if they are currently active, or will be active in the future.
         return transHistory.getActiveDates().intersects(presentAndFuture);
     }
 

@@ -2,9 +2,7 @@ package gov.nysenate.ess.core.service.pec.notification;
 
 import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
 import gov.nysenate.ess.core.dao.pec.notification.PECNotificationDao;
-import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
-import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.mail.SendMailService;
 import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
@@ -35,8 +33,6 @@ public class PECNotificationService {
             "Or, go to this link <a href=\"%s\">HERE</a><br><br>" +
             "<b>You must complete the following tasks: </b><br><br>\n\n";
 
-    private final EmployeeDao employeeDao;
-    private final PersonnelTaskService taskService;
     private final PersonnelTaskAssignmentDao assignmentDao;
     private final SendMailService sendMailService;
     private final EmployeeInfoService employeeInfoService;
@@ -54,7 +50,7 @@ public class PECNotificationService {
     @Value("${all.pec.notifs.enabled:false}")
     private boolean allPecNotifsEnabled;
 
-    public PECNotificationService(EmployeeDao employeeDao, PersonnelTaskService taskService,
+    public PECNotificationService(PersonnelTaskService taskService,
                                   PersonnelTaskAssignmentDao assignmentDao, SendMailService sendMailService,
                                   EmployeeInfoService employeeInfoService,
                                   PECNotificationDao pecNotificationDao,
@@ -62,8 +58,6 @@ public class PECNotificationService {
                                   @Value("${domain.url}") String domainURL,
                                   @Value("${pec.test.mode:true}") boolean pecTestMode,
                                   @Value("${data.dir}") String dataDir) {
-        this.employeeDao = employeeDao;
-        this.taskService = taskService;
         this.assignmentDao = assignmentDao;
         this.sendMailService = sendMailService;
         this.employeeInfoService = employeeInfoService;
@@ -89,14 +83,18 @@ public class PECNotificationService {
         emailCount = 0;
     }
 
-    public List<NotificationEmail> getScheduledEmails() {
+    /**
+     * Fetches data on emails that would be sent right now, if the relevant cron ran.
+     * @param sendAdminEmails whether to send emails about employees with missing emails.
+     * @return List of email information.
+     */
+    public List<EmployeeEmail> getScheduledEmails(boolean sendAdminEmails) {
         // Document all employees with missing info to report to admins
         List<Employee> employeesWithMissingEmails = new ArrayList<>();
-        List<NotificationEmail> emailsToSend = new ArrayList<>();
+        List<EmployeeEmail> emailsToSend = new ArrayList<>();
 
-        for (Employee employee : employeeDao.getActiveEmployees()) {
+        for (Employee employee : employeeInfoService.getAllEmployees(true)) {
             List<PersonnelTask> incompleteTasks = getIncompleteTasks(employee);
-            // Determine if they have any outstanding active tasks
             if (incompleteTasks.isEmpty()) {
                 continue;
             }
@@ -106,13 +104,13 @@ public class PECNotificationService {
                 logger.warn("Employee %s #%d is missing an email! No notification will be sent to them."
                         .formatted(employee.getFullName(), employee.getEmployeeId()));
             } else {
-                emailsToSend.add(getReminderEmail(employee, incompleteTasks));
+                emailsToSend.add(new EmployeeEmail(employee, EmailType.REMINDER, incompleteTasks));
             }
         }
-        if (!employeesWithMissingEmails.isEmpty()) {
+        if (!employeesWithMissingEmails.isEmpty() && sendAdminEmails) {
             String html = getMissingEmailHtml(employeesWithMissingEmails);
-            for (String email : reportEmails) {
-                emailsToSend.add(new NotificationEmail(email, "Employees With Missing Emails", html));
+            for (String adminEmail : reportEmails) {
+                sendEmail(new NotificationEmail(adminEmail, EmailType.REPORT_MISSING), html);
             }
         }
         return emailsToSend;
@@ -124,70 +122,65 @@ public class PECNotificationService {
                 .collect(Collectors.joining());
     }
 
+    /**
+     * The actual scheduled process. Will fetch and send out emails.
+     */
     public void runPECNotificationProcess() {
         logger.info("Starting PEC Notification Process");
         resetTestModeCounter();
-        for (var email : getScheduledEmails()) {
+        for (var emailInfo : getScheduledEmails(true)) {
             if (emailLimit >= emailCount) {
-                sendEmail(email.to(), email.subject(), email.html());
+                sendEmail(emailInfo, dueDateInformationHtml(emailInfo));
                 emailCount++;
             }
         }
         logger.info("Completed PEC Notification Process");
     }
 
-    public void sendInviteEmails(int empId, PersonnelTaskAssignment assignment) {
-        Employee employee = employeeDao.getEmployeeById(empId);
-        boolean wasNotifSent = pecNotificationDao.wasNotificationSent(empId, assignment.getTaskId());
-        PersonnelTask task = activeTaskMap.get(assignment.getTaskId());
+    public void sendInviteEmail(int empId, PersonnelTask task) {
+        Employee employee = employeeInfoService.getEmployee(empId);
+        boolean wasNotifSent = pecNotificationDao.wasNotificationSent(empId, task.getTaskId());
 
-        if (task == null || wasNotifSent || employee.isSenator() || !task.isNotifiable()) {
+        if (!task.isActive() || wasNotifSent || employee.isSenator() || !task.isNotifiable()) {
             return;
         }
 
-        String subject = "You have to complete the task: " + task.getTitle();
-        String html = dueDateInformationHtml(employee, List.of(task));
-
         if (emailLimit >= emailCount) {
-            sendEmail(employee.getEmail(), subject, html);
+            var emailInfo = new EmployeeEmail(employee, EmailType.INVITE, task);
+            sendEmail(emailInfo, dueDateInformationHtml(emailInfo));
             emailCount++;
         }
         if (!pecTestMode) {
-            pecNotificationDao.markNotificationSent(empId, assignment.getTaskId());
+            // TODO: skip this if we're just generating an email to look at
+            pecNotificationDao.markNotificationSent(empId, task.getTaskId());
         }
     }
 
-    public void sendCompletionEmail(int empID, int taskID) {
-        PersonnelTask task = taskService.getPersonnelTask(taskID);
+    public void sendCompletionEmail(int empId, PersonnelTask task) {
         if (!task.isNotifiable()) {
             return;
         }
-        Employee employee = employeeDao.getEmployeeById(empID);
-        String subject = "You have completed the task: " + task.getTitle();
+        Employee employee = employeeInfoService.getEmployee(empId);;
+        var emailInfo = new EmployeeEmail(employee, EmailType.COMPLETION, task);
         String html = "Our records have been updated to indicate you have completed " + task.getTitle();
-        sendEmail(employee.getEmail(), subject, html);
-    }
-
-    private NotificationEmail getReminderEmail(Employee employee, List<PersonnelTask> incompleteEmpTasks) {
-        String subject = "You have outstanding Personnel Tasks.";
-        String html = dueDateInformationHtml(employee, incompleteEmpTasks);
-        return new NotificationEmail(employee.getEmail(), subject, html);
+        sendEmail(emailInfo, html);
     }
 
     /**
      * Sends emails. Limited by test mode and PEC notifs enabled.
      */
-    public void sendEmail(String to, String subject, String html) {
+    public void sendEmail(NotificationEmail emailInfo, String html) {
         if (!allPecNotifsEnabled) {
             return;
         }
+        String address = emailInfo.sendTo().trim();
         // Keeps spacing consistent and positive.
-        String spaces = " ".repeat(Math.max(28 - to.trim().length(), 1));
-        String logMessage = "Recipient: %sSubject: %s\n".formatted(to.trim() + spaces, subject);
+        String spaces = " ".repeat(Math.max(28 - address.length(), 1));
+        String logMessage = "Recipient: %sSubject: %s\n".formatted(address + spaces, emailInfo.subject());
         if (pecTestMode) {
-            to = reportEmails.get(0);
+            address = reportEmails.get(0);
         }
-        MimeMessage message = sendMailService.newHtmlMessage(to.trim(), subject, html);
+        MimeMessage message = sendMailService.newHtmlMessage(address, emailInfo.subject(), html);
         try {
             sendMailService.send(message);
             Files.writeString(emailLogPath, logMessage, CREATE, WRITE, APPEND);
@@ -203,11 +196,12 @@ public class PECNotificationService {
                 .filter(Objects::nonNull).collect(Collectors.toList());
     }
 
-    private String dueDateInformationHtml(Employee employee, List<PersonnelTask> incompleteEmpTasks) {
+    private String dueDateInformationHtml(EmployeeEmail emailInfo) {
+        Employee employee = emailInfo.getEmployee();
         LocalDate activeServiceDate =
                 employeeInfoService.getEmployeesMostRecentContinuousServiceDate(employee.getEmployeeId());
         String html = standardHtml.formatted(employee.getFullName(), instructionURL) +
-                incompleteEmpTasks.stream().map(task -> getHtml(task, activeServiceDate)).collect(Collectors.joining());
+                emailInfo.tasks().stream().map(task -> getHtml(task, activeServiceDate)).collect(Collectors.joining());
         if (pecTestMode) {
             html += "<br> Employee ID: #" + employee.getEmployeeId() + "<br> Email: " + employee.getEmail();
         }

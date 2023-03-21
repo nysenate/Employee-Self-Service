@@ -62,13 +62,14 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
                 taskHasBeenManuallyOverridden = assignmentDao.getManualOverrideStatus(empId,assignment.getTaskId());
             }
             catch (EmptyResultDataAccessException e) {
-                //No need to do anything. It means we are going to update this task in the database
+                // No need to do anything. It means we are going to update this task in the database
             }
             if (!taskHasBeenManuallyOverridden) {
                 assignmentDao.updateAssignment(assignment);
                 logger.info("Assigning {} personnel tasks to emp #{} : Task ID #{}",
-                        getTargetGroup(), empId, assignment.getTaskId() );
-                pecNotificationService.sendInviteEmails(empId, assignment);
+                        getTargetGroup(), empId, assignment.getTaskId());
+                // TODO: TARGET HERE
+                pecNotificationService.sendInviteEmail(empId, personnelTaskMap.get(assignment.getTaskId()));
             }
         }
 
@@ -82,7 +83,7 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
                 taskHasBeenManuallyOverridden = !assignmentDao.getManualOverrideStatus(empId,taskId);
             }
             catch (EmptyResultDataAccessException e) {
-                //No need to do anything. It means we are going to update this task in the database
+                // No need to do anything. It means we are going to update this task in the database
             }
             if (!taskHasBeenManuallyOverridden && !personnelTaskMap.get(taskId).isActive()) {
                 //only deactivate if it was not manually overridden

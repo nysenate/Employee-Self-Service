@@ -149,7 +149,7 @@ public class PECCodeApiCtrl extends BaseRestApiCtrl {
         ethicsLiveCourseTask.verifyCodes(submission.getCodes());
         int authenticatedEmpId = ShiroUtils.getAuthenticatedEmpId();
         assignedTaskDao.setTaskComplete(submission.getEmpId(), ethicsLiveCourseTask.getTaskId(), authenticatedEmpId);
-        pecNotificationService.sendCompletionEmail(submission.getEmpId(), ethicsLiveCourseTask.getTaskId());
+        pecNotificationService.sendCompletionEmail(submission.getEmpId(), ethicsLiveCourseTask);
         return new SimpleResponse(true, "codes submitted successfully", "code-submission-success");
     }
 
@@ -180,7 +180,7 @@ public class PECCodeApiCtrl extends BaseRestApiCtrl {
         videoTask.verifyCodes(submission.getCodes());
         int authenticatedEmpId = ShiroUtils.getAuthenticatedEmpId();
         assignedTaskDao.setTaskComplete(submission.getEmpId(), videoTask.getTaskId(), authenticatedEmpId);
-        pecNotificationService.sendCompletionEmail(submission.getEmpId(), videoTask.getTaskId());
+        pecNotificationService.sendCompletionEmail(submission.getEmpId(), videoTask);
         return new SimpleResponse(true, "codes submitted successfully", "code-submission-success");
     }
 

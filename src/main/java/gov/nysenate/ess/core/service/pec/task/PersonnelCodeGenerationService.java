@@ -4,6 +4,8 @@ import gov.nysenate.ess.core.dao.pec.task.PersonnelTaskDao;
 import gov.nysenate.ess.core.dao.pec.task.detail.EthicsLiveCourseTaskDetailDao;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
+import gov.nysenate.ess.core.service.pec.notification.EmailType;
+import gov.nysenate.ess.core.service.pec.notification.NotificationEmail;
 import gov.nysenate.ess.core.service.pec.notification.PECNotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -91,14 +93,13 @@ public class PersonnelCodeGenerationService {
     }
 
     public void sendEmailsToAdmins(PersonnelTask task, String code1, String code2) {
-        String subject = "New Codes for Ethics Live Course: " + task.getTitle();
         String html = "The new codes are <br> CODE 1: " + code1 + "<br>" + "CODE 2: " + code2;
         for (String email : pecCodeAdminEmails) {
-            pecNotificationService.sendEmail(email,subject,html);
+            pecNotificationService.sendEmail(new NotificationEmail(email, EmailType.ADMIN_CODES, task), html);
         }
     }
 
-    //Returns a 6 digit code coprised of numbers and letters
+    //Returns a 6 digit code comprised of numbers and letters
     public String createCode() {
         String code = "";
         for (int i=0; i<6; i++) {
