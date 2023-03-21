@@ -101,7 +101,7 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
         for (Integer taskId: idsToDeactivate) {
             boolean taskHasBeenManuallyOverridden = false;
             try {
-                taskHasBeenManuallyOverridden = !assignmentDao.getManualOverrideStatus(empId,taskId);
+                taskHasBeenManuallyOverridden = assignmentDao.getManualOverrideStatus(empId,taskId);
             }
             catch (EmptyResultDataAccessException e) {
                 //No need to do anything. It means we are going to update this task in the database
