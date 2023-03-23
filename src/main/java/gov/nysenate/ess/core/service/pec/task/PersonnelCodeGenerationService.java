@@ -1,12 +1,11 @@
 package gov.nysenate.ess.core.service.pec.task;
 
 import gov.nysenate.ess.core.dao.pec.task.PersonnelTaskDao;
-import gov.nysenate.ess.core.dao.pec.task.detail.EthicsLiveCourseTaskDetailDao;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
 import gov.nysenate.ess.core.service.pec.notification.EmailType;
-import gov.nysenate.ess.core.service.pec.notification.NotificationEmail;
 import gov.nysenate.ess.core.service.pec.notification.PECNotificationService;
+import gov.nysenate.ess.core.service.pec.notification.ReportEmail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -95,7 +94,7 @@ public class PersonnelCodeGenerationService {
     public void sendEmailsToAdmins(PersonnelTask task, String code1, String code2) {
         String html = "The new codes are <br> CODE 1: " + code1 + "<br>" + "CODE 2: " + code2;
         for (String email : pecCodeAdminEmails) {
-            pecNotificationService.sendEmail(new NotificationEmail(email, EmailType.ADMIN_CODES, task), html);
+            pecNotificationService.sendEmail(new ReportEmail(email, EmailType.ADMIN_CODES, task, html));
         }
     }
 

@@ -14,10 +14,9 @@ import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.time.Period;
+import java.time.ZoneId;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
@@ -69,31 +68,32 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
             }
             if (!taskHasBeenManuallyOverridden) {
                 //Get assignment due date
-                LocalDate continuousServiceDate = pecNotificationService.getConitnuousServiceDate(empId);
+                LocalDate continuousServiceDate = pecNotificationService.getContinuousServiceDate(empId);
                 PersonnelTaskType taskType = personnelTaskMap.get( assignment.getTaskId() ).getTaskType();
 
                 LocalDateTime dueDate = null;
                 if (taskType == PersonnelTaskType.MOODLE_COURSE) {
-                    dueDate = pecNotificationService.getDueDate(continuousServiceDate,30).atTime(0,0);
+                    dueDate = getDueDate(continuousServiceDate,30).atStartOfDay();
                 } else if (taskType == PersonnelTaskType.ETHICS_LIVE_COURSE) {
-                    if (pecNotificationService.isExistingEmployee(continuousServiceDate)) {
-                        dueDate = LocalDate.of(LocalDate.now().getYear(), 12,31).atTime(0,0);
+                    LocalDate ninetyDaysAgo = LocalDate.now(ZoneId.systemDefault()).minus(Period.ofDays(90));
+                    // Checks whether this is an old employee.
+                    if (continuousServiceDate.isBefore(ninetyDaysAgo)) {
+                        dueDate = LocalDate.of(LocalDate.now().getYear(), 12,31).atStartOfDay();
                     }
                     else {
-                        dueDate = pecNotificationService.getDueDate(continuousServiceDate,90).atTime(0,0);
+                        dueDate = getDueDate(continuousServiceDate,90).atStartOfDay();
                     }
                 }
                 PersonnelTaskAssignment assignmentWithDueDate = new PersonnelTaskAssignment(
-                        assignment.getTaskId(),assignment.getEmpId(), assignment.getUpdateEmpId(),
+                        assignment.getTaskId(), assignment.getEmpId(), assignment.getUpdateEmpId(),
                         assignment.getUpdateTime(), assignment.isCompleted(), assignment.isActive(),
                         LocalDateTime.now(), dueDate);
                 assignmentDao.updateAssignment(assignmentWithDueDate);
                 logger.info("Assigning {} personnel tasks to emp #{} : Task ID #{}",
                         getTargetGroup(), empId, assignment.getTaskId());
                 // TODO: TARGET HERE
-                pecNotificationService.sendInviteEmail(empId, personnelTaskMap.get(assignment.getTaskId()));
-                        getTargetGroup(), empId, assignment.getTaskId() );
-                pecNotificationService.sendInviteEmails(empId, assignmentWithDueDate);
+                PersonnelTask task = personnelTaskMap.get(assignmentWithDueDate.getTaskId());
+                pecNotificationService.sendInviteEmail(empId, task, dueDate == null ? null : dueDate.toLocalDate());
             }
         }
 
@@ -140,11 +140,19 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
         return task.getAssignmentGroup() == getTargetGroup();
     }
 
-    private Map<Integer, PersonnelTask> buildPersonnelTaskMap(List<PersonnelTask> allPersonnelTasks) {
+    private static Map<Integer, PersonnelTask> buildPersonnelTaskMap(List<PersonnelTask> allPersonnelTasks) {
         HashMap<Integer, PersonnelTask> personnelTaskMap = new HashMap<>();
         for (PersonnelTask task: allPersonnelTasks) {
             personnelTaskMap.put(task.getTaskId(), task);
         }
         return personnelTaskMap;
+    }
+
+    private static LocalDate getDueDate(LocalDate continuousServiceDate, int daysToAdd) {
+        Date startDate = Date.from(continuousServiceDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        Calendar calendar = new GregorianCalendar(/* remember about timezone! */);
+        calendar.setTime(startDate);
+        calendar.add(Calendar.DATE, daysToAdd);
+        return calendar.getTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     }
 }
