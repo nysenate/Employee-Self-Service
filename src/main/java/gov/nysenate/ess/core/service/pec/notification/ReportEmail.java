@@ -23,6 +23,11 @@ public class ReportEmail extends NotificationEmail {
     }
 
     @Override
+    public boolean isLimited() {
+        return false;
+    }
+
+    @Override
     public List<PersonnelTask> tasks() {
         return tasks;
     }

@@ -6,6 +6,7 @@ import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
+import gov.nysenate.ess.core.service.pec.notification.EmployeeEmail;
 import gov.nysenate.ess.core.service.pec.notification.PECNotificationService;
 import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
 import org.slf4j.Logger;
@@ -25,11 +26,10 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
 
     private final PersonnelTaskAssignmentDao assignmentDao;
     private final PersonnelTaskService taskService;
-
     private final PECNotificationService pecNotificationService;
 
     public BaseGroupTaskAssigner(PersonnelTaskAssignmentDao assignmentDao,
-                                   PersonnelTaskService taskService,
+                                 PersonnelTaskService taskService,
                                  PECNotificationService pecNotificationService) {
         this.assignmentDao = assignmentDao;
         this.taskService = taskService;
@@ -40,83 +40,64 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
         return taskService.getActiveTasksInGroup(getTargetGroup());
     }
 
+    private void removeManualOverrides(Set<Integer> taskIds, int empId) {
+        taskIds.removeIf(taskId -> {
+            try {
+                return assignmentDao.getManualOverrideStatus(empId, taskId);
+            }
+            catch (EmptyResultDataAccessException e) {
+                return false;
+            }
+        });
+    }
+
     protected int assignTasks(int empId, Set<Integer> assignableTaskIds) {
+        return assignTasks(empId, assignableTaskIds, true).size();
+    }
+
+    protected List<EmployeeEmail> assignTasks(int empId, Set<Integer> assignableTaskIds, boolean sendUpdates) {
+        var emails = new LinkedList<EmployeeEmail>();
         Map<Integer, PersonnelTask> personnelTaskMap = buildPersonnelTaskMap(taskService.getPersonnelTasks(false));
-
         Map<Integer, PersonnelTaskAssignment> assignmentMap = getAssignmentMap(empId);
-
         Set<Integer> existingTaskIds = assignmentMap.keySet();
+        removeManualOverrides(assignableTaskIds, empId);
+        removeManualOverrides(existingTaskIds, empId);
 
         // Get active tasks that are not currently assigned to the employee.
-        Set<Integer> activeUnassigned = Sets.difference(assignableTaskIds, existingTaskIds);
+        Set<PersonnelTask> activeUnassigned = Sets.difference(assignableTaskIds, existingTaskIds)
+                .stream().map(personnelTaskMap::get).collect(Collectors.toSet());
 
-        // Get tasks assigned to the employee that are not active.
-        Set<Integer> inactiveAssigned = Sets.difference(existingTaskIds, assignableTaskIds);
-
-        // Assign new tasks for active unassigned.
-        List<PersonnelTaskAssignment> newAssignments = activeUnassigned.stream()
-                .map(taskId -> PersonnelTaskAssignment.newTask(empId, taskId))
-                .collect(Collectors.toList());
-
-        for (PersonnelTaskAssignment assignment : newAssignments) {
-            boolean taskHasBeenManuallyOverridden = false;
-            try {
-                taskHasBeenManuallyOverridden = assignmentDao.getManualOverrideStatus(empId,assignment.getTaskId());
+        for (PersonnelTask task : activeUnassigned) {
+            LocalDate continuousServiceDate = pecNotificationService.getContinuousServiceDate(empId);
+            var assignmentWithDueDate = getAssignment(empId, task, continuousServiceDate);
+            var emailOpt = pecNotificationService.getInviteEmail(empId, task, assignmentWithDueDate.getDueDate());
+            if (emailOpt.isEmpty()) {
+                continue;
             }
-            catch (EmptyResultDataAccessException e) {
-                // No need to do anything. It means we are going to update this task in the database
-            }
-            if (!taskHasBeenManuallyOverridden) {
-                //Get assignment due date
-                LocalDate continuousServiceDate = pecNotificationService.getContinuousServiceDate(empId);
-                PersonnelTaskType taskType = personnelTaskMap.get( assignment.getTaskId() ).getTaskType();
-
-                LocalDateTime dueDate = null;
-                if (taskType == PersonnelTaskType.MOODLE_COURSE) {
-                    dueDate = getDueDate(continuousServiceDate,30).atStartOfDay();
-                } else if (taskType == PersonnelTaskType.ETHICS_LIVE_COURSE) {
-                    LocalDate ninetyDaysAgo = LocalDate.now(ZoneId.systemDefault()).minus(Period.ofDays(90));
-                    // Checks whether this is an old employee.
-                    if (continuousServiceDate.isBefore(ninetyDaysAgo)) {
-                        dueDate = LocalDate.of(LocalDate.now().getYear(), 12,31).atStartOfDay();
-                    }
-                    else {
-                        dueDate = getDueDate(continuousServiceDate,90).atStartOfDay();
-                    }
-                }
-                PersonnelTaskAssignment assignmentWithDueDate = new PersonnelTaskAssignment(
-                        assignment.getTaskId(), assignment.getEmpId(), assignment.getUpdateEmpId(),
-                        assignment.getUpdateTime(), assignment.isCompleted(), assignment.isActive(),
-                        LocalDateTime.now(), dueDate);
+            emails.add(emailOpt.get());
+            if (sendUpdates) {
                 assignmentDao.updateAssignment(assignmentWithDueDate);
                 logger.info("Assigning {} personnel tasks to emp #{} : Task ID #{}",
-                        getTargetGroup(), empId, assignment.getTaskId());
-                // TODO: TARGET HERE
-                PersonnelTask task = personnelTaskMap.get(assignmentWithDueDate.getTaskId());
-                pecNotificationService.sendInviteEmail(empId, task, dueDate == null ? null : dueDate.toLocalDate());
+                        getTargetGroup(), empId, task.getTaskId());
+                pecNotificationService.sendInviteEmail(emails.getLast());
             }
+        }
+        if (!sendUpdates) {
+            return emails;
         }
 
+        // Get tasks assigned to the employee that are not active.
+        Set<PersonnelTask> inactiveAssigned = Sets.difference(existingTaskIds, assignableTaskIds)
+                .stream().filter(taskId -> !assignmentMap.get(taskId).isCompleted())
+                .map(personnelTaskMap::get)
+                .filter(task -> !task.isActive()).collect(Collectors.toSet());
         // Deactivate inactive tasks that have not been completed.
-        Set<Integer> idsToDeactivate = inactiveAssigned.stream()
-                .filter(taskId -> !assignmentMap.get(taskId).isCompleted())
-                .collect(Collectors.toSet());
-        for (Integer taskId: idsToDeactivate) {
-            boolean taskHasBeenManuallyOverridden = false;
-            try {
-                taskHasBeenManuallyOverridden = assignmentDao.getManualOverrideStatus(empId,taskId);
-            }
-            catch (EmptyResultDataAccessException e) {
-                // No need to do anything. It means we are going to update this task in the database
-            }
-            if (!taskHasBeenManuallyOverridden && !personnelTaskMap.get(taskId).isActive()) {
-                //only deactivate if it was not manually overridden
-                assignmentDao.deactivatePersonnelTaskAssignment(empId, taskId);
-                logger.info("Deactivating {} task for emp #{} : Task ID #{}",
-                        getTargetGroup(), empId, idsToDeactivate);
-            }
+        for (PersonnelTask task : inactiveAssigned) {
+            assignmentDao.deactivatePersonnelTaskAssignment(empId, task.getTaskId());
+            logger.info("Deactivating {} task for emp #{} : Task ID #{}",
+                    getTargetGroup(), empId, task.getTaskId());
         }
-        return newAssignments.size();
+        return emails;
     }
 
     protected List<PersonnelTaskAssignment> getGroupAssignments(int empId) {
@@ -148,8 +129,36 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
         return personnelTaskMap;
     }
 
-    private static LocalDate getDueDate(LocalDate continuousServiceDate, int daysToAdd) {
-        Date startDate = Date.from(continuousServiceDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+    private static PersonnelTaskAssignment getAssignment(Integer empId,
+                                                         PersonnelTask task,
+                                                         LocalDate continuousServiceDate) {
+        var assignment = PersonnelTaskAssignment.newTask(empId, task.getTaskId());
+        LocalDate dueDate = getDueDate(continuousServiceDate, task.getTaskType());
+        return new PersonnelTaskAssignment(
+                assignment.getTaskId(), assignment.getEmpId(), assignment.getUpdateEmpId(),
+                assignment.getUpdateTime(), assignment.isCompleted(), assignment.isActive(),
+                LocalDateTime.now(), dueDate == null ? null : dueDate.atStartOfDay());
+    }
+
+    private static LocalDate getDueDate(LocalDate continuousServiceDate, PersonnelTaskType type) {
+        LocalDate dueDate = null;
+        if (type == PersonnelTaskType.MOODLE_COURSE) {
+            dueDate = addDays(continuousServiceDate,30);
+        } else if (type == PersonnelTaskType.ETHICS_LIVE_COURSE) {
+            LocalDate ninetyDaysAgo = LocalDate.now(ZoneId.systemDefault()).minus(Period.ofDays(90));
+            // Checks whether this is an old employee.
+            if (continuousServiceDate.isBefore(ninetyDaysAgo)) {
+                dueDate = LocalDate.of(LocalDate.now().getYear(), 12,31);
+            }
+            else {
+                dueDate = addDays(continuousServiceDate,90);
+            }
+        }
+        return dueDate;
+    }
+
+    private static LocalDate addDays(LocalDate baseDate, int daysToAdd) {
+        Date startDate = Date.from(baseDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
         Calendar calendar = new GregorianCalendar(/* remember about timezone! */);
         calendar.setTime(startDate);
         calendar.add(Calendar.DATE, daysToAdd);

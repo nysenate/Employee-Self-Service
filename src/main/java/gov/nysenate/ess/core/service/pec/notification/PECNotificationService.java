@@ -18,10 +18,8 @@ import javax.mail.internet.MimeMessage;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.nio.file.StandardOpenOption.*;
@@ -121,32 +119,29 @@ public class PECNotificationService {
     public void runPECNotificationProcess() {
         logger.info("Starting PEC Notification Process");
         resetTestModeCounter();
-        for (var emailInfo : getScheduledEmails(true)) {
-            if (emailLimit >= emailCount) {
-                sendEmail(emailInfo);
-                emailCount++;
-            }
-        }
+        getScheduledEmails(true).forEach(this::sendEmail);
         logger.info("Completed PEC Notification Process");
     }
 
-    public void sendInviteEmail(int empId, PersonnelTask task, LocalDate dueDate) {
+    public Optional<EmployeeEmail> getInviteEmail(int empId, PersonnelTask task, LocalDateTime dueDate) {
         Employee employee = employeeInfoService.getEmployee(empId);
         boolean wasNotifSent = pecNotificationDao.wasNotificationSent(empId, task.getTaskId());
 
+        // TODO: IsNotifiable should be handled generally
         if (!task.isActive() || wasNotifSent || employee.isSenator() || !task.isNotifiable()) {
-            return;
+            return Optional.empty();
         }
 
-        if (emailLimit >= emailCount) {
-            var emailInfo = new EmployeeEmail(employee, EmailType.INVITE,
-                    Map.of(task, dueDate), pecTestMode);
-            sendEmail(emailInfo);
-            emailCount++;
-        }
+        Map<PersonnelTask, LocalDate> taskMap = new HashMap<>();
+        taskMap.put(task, dueDate == null ? null : dueDate.toLocalDate());
+        return Optional.of(new EmployeeEmail(employee, EmailType.INVITE, taskMap, pecTestMode));
+    }
+
+    public void sendInviteEmail(EmployeeEmail email) {
+        sendEmail(email);
         if (!pecTestMode) {
-            // TODO: skip this if we're just generating an email to look at
-            pecNotificationDao.markNotificationSent(empId, task.getTaskId());
+            pecNotificationDao.markNotificationSent(email.getEmployee().getEmployeeId(),
+                    email.tasks().get(0).getTaskId());
         }
     }
 
@@ -165,6 +160,12 @@ public class PECNotificationService {
     public void sendEmail(NotificationEmail emailInfo) {
         if (!allPecNotifsEnabled) {
             return;
+        }
+        if (emailInfo.isLimited() && emailLimit < emailCount) {
+            return;
+        }
+        else {
+            emailCount++;
         }
         String address = emailInfo.sendTo().trim();
         // Keeps spacing consistent and positive.

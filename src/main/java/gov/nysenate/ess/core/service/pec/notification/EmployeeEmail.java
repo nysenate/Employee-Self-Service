@@ -52,6 +52,11 @@ public class EmployeeEmail extends NotificationEmail {
     }
 
     @Override
+    public boolean isLimited() {
+        return true;
+    }
+
+    @Override
     public List<PersonnelTask> tasks() {
         return new ArrayList<>(taskMap.keySet());
     }
