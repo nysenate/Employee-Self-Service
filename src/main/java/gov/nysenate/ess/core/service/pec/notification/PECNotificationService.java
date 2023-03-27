@@ -16,9 +16,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.mail.internet.MimeMessage;
-import java.time.LocalDate;
-import java.time.Period;
-import java.time.ZoneId;
+import java.time.*;
 import java.util.*;
 
 @Service
@@ -244,7 +242,7 @@ public class PECNotificationService {
         return incompleteEmpAssignments;
     }
 
-    private LocalDate getDueDate(LocalDate continuousServiceDate, int daysToAdd) {
+    public LocalDate getDueDate(LocalDate continuousServiceDate, int daysToAdd) {
         Date startDate = Date.from(continuousServiceDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
         Calendar calendar = new GregorianCalendar(/* remember about timezone! */);
         calendar.setTime(startDate);
@@ -253,13 +251,17 @@ public class PECNotificationService {
         return dueDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     }
 
+    public LocalDate getConitnuousServiceDate(int empId) {
+        return employeeInfoService.getEmployeesMostRecentContinuousServiceDate(empId);
+    }
+
     /**
      * Find out if the employee's continuous serivce date greater than 90 days from today
      *
      * @param continuousServiceDate
      * @return
      */
-    private boolean isExistingEmployee(LocalDate continuousServiceDate) {
+    public boolean isExistingEmployee(LocalDate continuousServiceDate) {
         LocalDate ninetyDaysAgo = LocalDate.now(ZoneId.systemDefault()).minus(Period.ofDays(90));
         return continuousServiceDate.isBefore(ninetyDaysAgo);
     }
@@ -329,5 +331,60 @@ public class PECNotificationService {
 
     public Map<Integer, PersonnelTask> getActiveTaskMap() {
         return activeTaskMap;
+    }
+
+    public void generateDueDatesForExistingTaskAssignments () {
+
+        //cycle thru employees
+        //get tasks
+        //if task 5 and 16 get continuous service / calc due date
+        //skip if task already has dates
+        //update tasks in database
+        logger.info("Beginning Date Assignment Processing");
+
+        Set<Employee> employees = employeeDao.getActiveEmployees();
+
+        for (Employee emp : employees) {
+            List<PersonnelTaskAssignment> empAssignments = assignmentDao.getAssignmentsForEmp(emp.getEmployeeId());
+            for (PersonnelTaskAssignment assignment : empAssignments) {
+
+                //Only updating these 2 tasks. Skip if they already have a due date, is not active, or is completed
+                if ((assignment.getTaskId() == 5 || assignment.getTaskId() == 16)
+                        && assignment.isActive() && !assignment.isCompleted()
+                        && assignment.getDueDate() == null) {
+
+                    LocalDate contServiceDate = getConitnuousServiceDate(assignment.getEmpId());
+
+                    PersonnelTaskAssignment updatedAssignment;
+
+                    if (assignment.getTaskId() == 5) {
+                        updatedAssignment = new PersonnelTaskAssignment(
+                                assignment.getTaskId(), assignment.getEmpId(), assignment.getUpdateEmpId(),
+                                assignment.getUpdateTime(), assignment.isCompleted(), assignment.isActive(),
+                                assignment.wasManuallyOverridden(),
+                                LocalDateTime.of(contServiceDate, LocalTime.of(0,0)),
+                                LocalDateTime.of(getDueDate(contServiceDate, 30), LocalTime.of(0,0))
+                        );
+                        assignmentDao.updateAssignmentDates(updatedAssignment);
+                        logger.info("Completed update for Emp: " + assignment.getEmpId() + ". Updated Task ID 5");
+                    }
+                    else if (assignment.getTaskId() == 16) {
+                        updatedAssignment = new PersonnelTaskAssignment(
+                                assignment.getTaskId(), assignment.getEmpId(), assignment.getUpdateEmpId(),
+                                assignment.getUpdateTime(), assignment.isCompleted(), assignment.isActive(),
+                                assignment.wasManuallyOverridden(),
+                                LocalDateTime.of(contServiceDate, LocalTime.of(0,0)),
+                                LocalDateTime.of(getDueDate(contServiceDate, 90), LocalTime.of(0,0))
+                        );
+                        assignmentDao.updateAssignmentDates(updatedAssignment);
+                        logger.info("Completed update for Emp: " + assignment.getEmpId() + ". Updated Task ID 16");
+                    }
+
+                }
+
+            }
+        }
+
+        logger.info("Completed Date Assignment Processing");
     }
 }

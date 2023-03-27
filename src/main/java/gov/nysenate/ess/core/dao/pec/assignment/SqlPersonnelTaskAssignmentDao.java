@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,8 +65,23 @@ public class SqlPersonnelTaskAssignmentDao extends SqlBaseDao implements Personn
         MapSqlParameterSource params = getPATParams(task);
         int updated = localNamedJdbc.update(UPDATE_TASK.getSql(schemaMap()), params);
         if (updated == 0) {
+            params.addValue("assignmentDate", LocalDateTime.now());
+            params.addValue("dueDate", task.getDueDate());
             localNamedJdbc.update(INSERT_TASK.getSql(schemaMap()), params);
         } else if (updated != 1) {
+            throw new IllegalStateException("Too many updates (" + updated + ") occurred for " + task);
+        }
+    }
+
+    @Override
+    public void updateAssignmentDates(PersonnelTaskAssignment task) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("assignmentDate", task.getAssignmentDate());
+        params.addValue("dueDate", task.getDueDate());
+        params.addValue("empId", task.getEmpId());
+        params.addValue("taskId", task.getTaskId());
+        int updated = localNamedJdbc.update(UPDATE_TASK_DATES.getSql(schemaMap()), params);
+        if (updated != 1) {
             throw new IllegalStateException("Too many updates (" + updated + ") occurred for " + task);
         }
     }
@@ -114,7 +130,9 @@ public class SqlPersonnelTaskAssignmentDao extends SqlBaseDao implements Personn
                     getLocalDateTime(rs, "timestamp"),
                     rs.getBoolean("completed"),
                     rs.getBoolean("active"),
-                    rs.getBoolean("manual_override")
+                    rs.getBoolean("manual_override"),
+                    getLocalDateTime(rs, "assignment_date"),
+                    getLocalDateTime(rs, "due_date")
             );
 
 

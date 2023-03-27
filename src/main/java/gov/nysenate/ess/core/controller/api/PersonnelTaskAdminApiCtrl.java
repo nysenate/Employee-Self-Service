@@ -84,6 +84,26 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
     }
 
     /**
+     * PEC Assignment & Due Dates For Moodle & Ethics Live
+     * ---------------------------------------------------
+     *
+     * This Api call will generate the assignment date and due dates for moodle and ethics live course for employees
+     *
+     * Usage:
+     * (POST)   /api/v1/admin/personnel/task/generate/taskdates
+     *
+     * @return {@link SimpleResponse}
+     */
+    @RequestMapping(value = "/generate/taskdates", method = POST )
+    public SimpleResponse generateTaskDates() {
+        checkPermission(ADMIN.getPermission());
+        pecNotificationService.generateDueDatesForExistingTaskAssignments();
+        return new SimpleResponse(true,
+                "pec task date generation complete",
+                "pec-task-date-generation-complete");
+    }
+
+    /**
      * Assign Personnel Tasks API
      * --------------------------
      *

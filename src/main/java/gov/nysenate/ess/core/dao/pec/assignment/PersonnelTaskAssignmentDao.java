@@ -43,6 +43,12 @@ public interface PersonnelTaskAssignmentDao {
     void updateAssignment(PersonnelTaskAssignment task);
 
     /**
+     * Only updates assignment dates and due dates for task assignments that are already in the database
+     * @param task
+     */
+    void updateAssignmentDates(PersonnelTaskAssignment task);
+
+    /**
      * Mark a task as completed for the given employee.
      *
      * @param empId int
