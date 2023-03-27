@@ -15,17 +15,35 @@ essTravel.directive('essAppStatus', ['appProps', function (appProps) {
             var app = $scope.essAppStatus;
 
             $scope.statusClass = function () {
-                return app.status.isPending ? 'travel-highlight-text'
-                                            : app.status.isApproved ? 'approved-text'
-                                                                    : app.status.isDisapproved ? 'disapproved-text'
-                                                                                               : '';
+                if (app.status.isPending) {
+                    return 'travel-highlight-text';
+                }
+                else if (app.status.isApproved) {
+                    return 'approved-text';
+                }
+                else if (app.status.isDisapproved) {
+                    return 'disapproved-text';
+                }
+                else if (app.status.isNotApplicable) {
+                    return 'travel-text bold';
+                }
+                return '';
             };
 
             $scope.statusDescription = function () {
-                return app.status.isPending ? 'Pending'
-                                            : app.status.isApproved ? 'Approved'
-                                                                    : app.status.isDisapproved ? 'Disapproved'
-                                                                                               : '';
+                if (app.status.isPending) {
+                    return 'Pending';
+                }
+                else if (app.status.isApproved) {
+                    return 'Approved';
+                }
+                else if (app.status.isDisapproved) {
+                    return 'Disapproved';
+                }
+                else if (app.status.isNotApplicable) {
+                    return 'Not Applicable';
+                }
+                return '';
             };
 
             $elem.addClass($scope.statusClass());

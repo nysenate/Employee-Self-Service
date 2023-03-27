@@ -1,5 +1,6 @@
 package gov.nysenate.ess.travel.api.application;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.travel.request.app.ApprovalStatus;
@@ -13,6 +14,8 @@ public class TravelApplicationStatusView implements ViewObject {
     private boolean isApproved;
     @JsonProperty("isDisapproved")
     private boolean isDisapproved;
+    @JsonProperty("isNotApplicable")
+    private boolean isNotApplicable;
     private String note;
 
     public TravelApplicationStatusView() {
@@ -22,6 +25,7 @@ public class TravelApplicationStatusView implements ViewObject {
         isPending = status.isPending();
         isApproved = status.isApproved();
         isDisapproved = status.isDisapproved();
+        isNotApplicable = status.isNotApplicable();
         note = status.note();
     }
 
@@ -29,6 +33,7 @@ public class TravelApplicationStatusView implements ViewObject {
         ApprovalStatus status = isPending ? ApprovalStatus.PENDING
                 : isApproved ? ApprovalStatus.APPROVED
                 : isDisapproved ? ApprovalStatus.DISAPPROVED
+                : isNotApplicable ? ApprovalStatus.NOT_APPLICABLE
                 : null;
         if (status == null) {
             throw new IllegalArgumentException("TravelApplicationStatus ApplicationStatus cannot be null." +
@@ -38,16 +43,24 @@ public class TravelApplicationStatusView implements ViewObject {
         return new TravelApplicationStatus(status, note);
     }
 
+    @JsonIgnore
     public boolean isPending() {
         return isPending;
     }
 
+    @JsonIgnore
     public boolean isApproved() {
         return isApproved;
     }
 
+    @JsonIgnore
     public boolean isDisapproved() {
         return isDisapproved;
+    }
+
+    @JsonIgnore
+    public boolean isNotApplicable() {
+        return isNotApplicable;
     }
 
     public String getNote() {

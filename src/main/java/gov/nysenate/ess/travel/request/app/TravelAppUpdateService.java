@@ -224,7 +224,7 @@ public class TravelAppUpdateService {
 
     public TravelApplication resubmitApp(int appId, Amendment amd, Employee user) {
         TravelApplication app = saveAppEdits(appId, amd, user);
-        app.setStatus(new TravelApplicationStatus());
+        app.setStatus(new TravelApplicationStatus(ApprovalStatus.PENDING));
         appService.saveApplication(app);
         ApplicationReview applicationReview = appReviewService.getApplicationReviewByAppId(app.getAppId());
         eventBus.post(new TravelPendingReviewEmailEvent(applicationReview));

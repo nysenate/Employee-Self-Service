@@ -26,7 +26,7 @@ public class TravelApplication {
     protected SortedSet<Amendment> amendments;
 
     public TravelApplication(Employee traveler, Amendment amendment, int travelerDeptHeadEmpId) {
-        this(0, traveler, travelerDeptHeadEmpId, new TravelApplicationStatus(), Lists.newArrayList(amendment));
+        this(0, traveler, travelerDeptHeadEmpId, new TravelApplicationStatus(ApprovalStatus.PENDING), Lists.newArrayList(amendment));
     }
 
     public TravelApplication(int id, Employee traveler, int travelerDeptHeadEmpId,

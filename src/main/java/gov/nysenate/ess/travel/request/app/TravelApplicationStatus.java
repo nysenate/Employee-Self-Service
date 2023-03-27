@@ -8,8 +8,8 @@ public class TravelApplicationStatus {
     // A note about this status. Currently, used to explain disapproval reasons.
     protected String note;
 
-    public TravelApplicationStatus() {
-        status = ApprovalStatus.PENDING;
+    public TravelApplicationStatus(ApprovalStatus status) {
+        this(status, "");
     }
 
     public TravelApplicationStatus(ApprovalStatus status, String note) {
@@ -31,6 +31,10 @@ public class TravelApplicationStatus {
 
     public boolean isDisapproved() {
         return status == ApprovalStatus.DISAPPROVED;
+    }
+
+    public boolean isNotApplicable() {
+        return status == ApprovalStatus.NOT_APPLICABLE;
     }
 
     public ApprovalStatus status() {
