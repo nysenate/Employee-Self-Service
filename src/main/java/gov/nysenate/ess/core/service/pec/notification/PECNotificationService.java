@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static gov.nysenate.ess.core.service.pec.notification.EmailType.*;
 import static java.nio.file.StandardOpenOption.*;
 
 @Service
@@ -78,6 +79,7 @@ public class PECNotificationService {
 
     /**
      * Fetches data on emails that would be sent right now, if the relevant cron ran.
+     * Notably does NOT include invite emails.
      * @param sendAdminEmails whether to send emails about employees with missing emails.
      * @return List of email information.
      */
@@ -85,8 +87,9 @@ public class PECNotificationService {
         // Document all employees with missing info to report to admins
         List<Employee> employeesWithMissingEmails = new ArrayList<>();
         List<EmployeeEmail> emailsToSend = new ArrayList<>();
-
-        for (Employee employee : employeeInfoService.getAllEmployees(true)) {
+        List<Employee> employees = employeeInfoService.getAllEmployees(true).stream()
+                .filter(emp -> !emp.isSenator()).collect(Collectors.toList());
+        for (Employee employee : employees) {
             List<PersonnelTaskAssignment> incompleteTaskAssignments = getIncompleteTaskAssignments(employee);
             if (incompleteTaskAssignments.isEmpty()) {
                 continue;
@@ -97,17 +100,18 @@ public class PECNotificationService {
                 logger.warn("Employee %s #%d is missing an email! No notification will be sent to them."
                         .formatted(employee.getFullName(), employee.getEmployeeId()));
             } else {
-                Map<PersonnelTask, LocalDate> taskMap = incompleteTaskAssignments.stream()
-                        .collect(Collectors.toMap(
-                                assignment -> activeTaskMap.get(assignment.getTaskId()),
-                                assignment -> assignment.getDueDate().toLocalDate()));
-                emailsToSend.add(new EmployeeEmail(employee, EmailType.REMINDER, taskMap, pecTestMode));
+                Map<PersonnelTask, LocalDate> taskMap = new HashMap<>();
+                for (var assignment : incompleteTaskAssignments) {
+                    LocalDate date = assignment.getDueDate() == null ? null : assignment.getDueDate().toLocalDate();
+                    taskMap.put(activeTaskMap.get(assignment.getTaskId()), date);
+                }
+                emailsToSend.add(new EmployeeEmail(employee, REMINDER, taskMap, pecTestMode));
             }
         }
         if (!employeesWithMissingEmails.isEmpty() && sendAdminEmails) {
             String html = PecEmailUtils.getMissingEmailHtml(employeesWithMissingEmails);
             for (String adminEmail : reportEmails) {
-                sendEmail(new ReportEmail(adminEmail, EmailType.REPORT_MISSING, html));
+                sendEmail(new ReportEmail(adminEmail, REPORT_MISSING, html));
             }
         }
         return emailsToSend;
@@ -127,14 +131,13 @@ public class PECNotificationService {
         Employee employee = employeeInfoService.getEmployee(empId);
         boolean wasNotifSent = pecNotificationDao.wasNotificationSent(empId, task.getTaskId());
 
-        // TODO: IsNotifiable should be handled generally
         if (!task.isActive() || wasNotifSent || employee.isSenator() || !task.isNotifiable()) {
             return Optional.empty();
         }
 
         Map<PersonnelTask, LocalDate> taskMap = new HashMap<>();
         taskMap.put(task, dueDate == null ? null : dueDate.toLocalDate());
-        return Optional.of(new EmployeeEmail(employee, EmailType.INVITE, taskMap, pecTestMode));
+        return Optional.of(new EmployeeEmail(employee, INVITE, taskMap, pecTestMode));
     }
 
     public void sendInviteEmail(EmployeeEmail email) {
@@ -150,7 +153,7 @@ public class PECNotificationService {
             return;
         }
         Employee employee = employeeInfoService.getEmployee(empId);
-        var emailInfo = new EmployeeEmail(employee, EmailType.COMPLETION, task);
+        var emailInfo = new EmployeeEmail(employee, COMPLETION, task);
         sendEmail(emailInfo);
     }
 
@@ -158,13 +161,13 @@ public class PECNotificationService {
      * Sends emails. Limited by test mode and PEC notifs enabled.
      */
     public void sendEmail(NotificationEmail emailInfo) {
-        if (!allPecNotifsEnabled) {
+        if (!allPecNotifsEnabled && emailInfo.type() != ADMIN_CODES) {
             return;
         }
-        if (emailInfo.isLimited() && emailLimit < emailCount) {
-            return;
-        }
-        else {
+        if (emailInfo.type() == INVITE || emailInfo.type() == REMINDER) {
+            if (emailCount >= emailLimit) {
+                return;
+            }
             emailCount++;
         }
         String address = emailInfo.sendTo().trim();

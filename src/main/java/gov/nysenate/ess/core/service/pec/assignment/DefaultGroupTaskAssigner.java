@@ -24,13 +24,7 @@ public class DefaultGroupTaskAssigner extends BaseGroupTaskAssigner {
     }
 
     @Override
-    public int assignGroupTasks(int empId) {
-        Set<Integer> activeTaskIds = getActiveDefaultTaskIds();
-
-        return assignTasks(empId, activeTaskIds);
-    }
-
-    private Set<Integer> getActiveDefaultTaskIds() {
+    public Set<Integer> getRequiredTaskIds(int empId) {
         return getActiveGroupTasks().stream()
                 .map(PersonnelTask::getTaskId)
                 .collect(Collectors.toSet());

@@ -10,6 +10,7 @@ import gov.nysenate.ess.core.model.transaction.TransactionCode;
 import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.model.transaction.TransactionHistoryUpdateEvent;
 import gov.nysenate.ess.core.model.transaction.TransactionRecord;
+import gov.nysenate.ess.core.service.pec.notification.EmployeeEmail;
 import gov.nysenate.ess.core.service.pec.task.CachedPersonnelTaskService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
@@ -20,6 +21,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -72,6 +74,20 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
     }
 
     @Override
+    public List<EmployeeEmail> getInviteEmails() {
+        var emails = new ArrayList<EmployeeEmail>();
+        for (int empId : empInfoService.getActiveEmpIds()) {
+            if (!needsTaskAssignment(empId)) {
+                continue;
+            }
+            for (var assigner : groupTaskAssigners) {
+                emails.addAll(assigner.getGroupInviteEmails(empId));
+            }
+        }
+        return emails;
+    }
+
+    @Override
     public void assignTasks(int empId) {
         if (needsTaskAssignment(empId)) {
             logger.info("Performing task assignment for emp #{} ...", empId);
@@ -114,7 +130,6 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
     /**
      * Handles scheduled task assignments.
      */
-    // TODO: HERE FOR INVITE ASSIGNMENT
     @Scheduled(cron = "${scheduler.personnel_task.assignment.cron:0 0 3 * * *}")
     public void scheduledPersonnelTaskAssignment() {
         if (scheduledAssignmentEnabled) {
@@ -133,5 +148,4 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
         // They are eligible if they are currently active, or will be active in the future.
         return transHistory.getActiveDates().intersects(presentAndFuture);
     }
-
 }

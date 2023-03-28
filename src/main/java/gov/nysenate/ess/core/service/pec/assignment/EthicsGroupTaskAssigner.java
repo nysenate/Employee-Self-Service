@@ -4,8 +4,8 @@ import com.google.common.collect.ImmutableSet;
 import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
-import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignmentGroup;
+import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
 import gov.nysenate.ess.core.service.pec.notification.PECNotificationService;
 import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
 import org.springframework.stereotype.Service;
@@ -27,12 +27,7 @@ public class EthicsGroupTaskAssigner extends BaseGroupTaskAssigner {
         return PersonnelTaskAssignmentGroup.ETHICS;
     }
 
-    @Override
-    public int assignGroupTasks(int empId) {
-        return assignTasks(empId, getRequiredTaskIds(empId));
-    }
-
-    private Set<Integer> getRequiredTaskIds(int empId) {
+    public Set<Integer> getRequiredTaskIds(int empId) {
         Optional<PersonnelTask> latestEthicsTaskOpt = getLatestEthicsTask();
 
         Optional<PersonnelTask> moodleTaskOpt = getMoodleEthicsTask();
@@ -71,15 +66,12 @@ public class EthicsGroupTaskAssigner extends BaseGroupTaskAssigner {
         List<PersonnelTask> moodleTasks = getActiveGroupTasks().stream()
                 .filter(task -> task.getTaskType() == PersonnelTaskType.MOODLE_COURSE)
                 .collect(Collectors.toList());
-        switch (moodleTasks.size()) {
-            case 0:
-                return Optional.empty();
-            case 1:
-                return Optional.of(moodleTasks.get(0));
-            default:
-                throw new IllegalStateException(
-                        "Expected a single moodle ethics task, got " + moodleTasks.size() + ": " + moodleTasks);
-        }
+        return switch (moodleTasks.size()) {
+            case 0 -> Optional.empty();
+            case 1 -> Optional.of(moodleTasks.get(0));
+            default -> throw new IllegalStateException(
+                    "Expected a single moodle ethics task, got " + moodleTasks.size() + ": " + moodleTasks);
+        };
     }
 
     private Optional<PersonnelTask> getLatestEthicsTask() {

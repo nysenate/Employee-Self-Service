@@ -1,11 +1,13 @@
 package gov.nysenate.ess.core.controller.api;
 
+import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.service.pec.assignment.CsvTaskAssigner;
-import gov.nysenate.ess.core.service.pec.external.PECVideoCSVService;
 import gov.nysenate.ess.core.service.pec.assignment.PersonnelTaskAssigner;
+import gov.nysenate.ess.core.service.pec.external.PECVideoCSVService;
 import gov.nysenate.ess.core.service.pec.notification.PECNotificationService;
 import gov.nysenate.ess.core.service.pec.task.CachedPersonnelTaskService;
+import gov.nysenate.ess.core.service.pec.view.EmployeeEmailView;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.subject.Subject;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.util.stream.Collectors;
 
 import static gov.nysenate.ess.core.model.auth.SimpleEssPermission.ADMIN;
 import static gov.nysenate.ess.core.model.auth.SimpleEssPermission.RUN_PERSONNEL_TASK_ASSIGNER;
@@ -54,7 +57,7 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
      *
      * @return {@link SimpleResponse}
      */
-    @RequestMapping(value = "/notify", method = POST )
+    @RequestMapping(value = "/notify", method = POST)
     public SimpleResponse sendNotifications() {
         checkPermission(ADMIN.getPermission());
         pecNotificationService.runPECNotificationProcess();
@@ -74,7 +77,7 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
      *
      * @return {@link SimpleResponse}
      */
-    @RequestMapping(value = "/reset/counter", method = POST )
+    @RequestMapping(value = "/reset/counter", method = POST)
     public SimpleResponse resetCounter() {
         checkPermission(ADMIN.getPermission());
         pecNotificationService.resetTestModeCounter();
@@ -101,6 +104,36 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
         return new SimpleResponse(true,
                 "task assignment complete",
                 "task-assignment-complete");
+    }
+
+    /**
+     * Get Invite Emails API
+     * --------------------------
+     * Determine personnel tasks for all employees and assign those that are missing.
+     * Usage:
+     * (GET)   /api/v1/admin/personnel/task/scheduledInviteEmails
+     * @return {@link SimpleResponse}
+     */
+    @RequestMapping(value = "/scheduledInviteEmails", method = GET)
+    public ListViewResponse<EmployeeEmailView> getScheduledInviteEmails() {
+        checkPermission(RUN_PERSONNEL_TASK_ASSIGNER.getPermission());
+        return ListViewResponse.of(taskAssigner.getInviteEmails().stream()
+                .map(EmployeeEmailView::new).collect(Collectors.toList()));
+    }
+
+    /**
+     * Get ReminderEmails API
+     * --------------------------
+     * Determine personnel tasks for all employees and assign those that are missing.
+     * Usage:
+     * (GET)   /api/v1/admin/personnel/task/scheduledReminderEmails
+     * @return {@link SimpleResponse}
+     */
+    @RequestMapping(value = "/scheduledReminderEmails", method = GET)
+    public ListViewResponse<EmployeeEmailView> getScheduledReminderEmails() {
+        checkPermission(RUN_PERSONNEL_TASK_ASSIGNER.getPermission());
+        return ListViewResponse.of(pecNotificationService.getScheduledEmails(false).stream()
+                .map(EmployeeEmailView::new).collect(Collectors.toList()));
     }
 
     /**

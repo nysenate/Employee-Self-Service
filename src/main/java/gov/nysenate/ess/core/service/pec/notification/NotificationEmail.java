@@ -29,7 +29,9 @@ public abstract class NotificationEmail {
         return html;
     }
 
-    public abstract boolean isLimited();
+    public EmailType type() {
+        return type;
+    }
 
     public abstract List<PersonnelTask> tasks();
 }

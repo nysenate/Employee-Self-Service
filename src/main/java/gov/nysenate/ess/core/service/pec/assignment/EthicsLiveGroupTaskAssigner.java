@@ -4,14 +4,12 @@ import com.google.common.collect.ImmutableSet;
 import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
-import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignmentGroup;
 import gov.nysenate.ess.core.service.pec.notification.PECNotificationService;
 import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class EthicsLiveGroupTaskAssigner extends BaseGroupTaskAssigner {
@@ -27,12 +25,7 @@ public class EthicsLiveGroupTaskAssigner extends BaseGroupTaskAssigner {
         return PersonnelTaskAssignmentGroup.ETHICS_LIVE;
     }
 
-    @Override
-    public int assignGroupTasks(int empId) {
-        return assignTasks(empId, getRequiredTaskIds(empId));
-    }
-
-    private Set<Integer> getRequiredTaskIds(int empId) {
+    public Set<Integer> getRequiredTaskIds(int empId) {
         //Get the latest task
         Optional<PersonnelTask> latestEthicsLiveTaskOpt = getLatestEthicsTask();
         //See what the employees latest completed task was
@@ -71,10 +64,7 @@ public class EthicsLiveGroupTaskAssigner extends BaseGroupTaskAssigner {
                 Map<Integer, PersonnelTaskAssignment> assignmentMap = super.getAssignmentMap(empId);
                 for(Integer taskID: assignedEthicsLiveTasks) {
                     PersonnelTaskAssignment taskAssignment = assignmentMap.get(taskID);
-                    if (taskID == latestEthicsLiveTaskOpt.get().getTaskId() && !taskAssignment.isActive()) {
-                        continue;
-                    }
-                    else {
+                    if (taskID != latestEthicsLiveTaskOpt.get().getTaskId() || taskAssignment.isActive()) {
                         latestEthicsLiveTaskOpt
                                 .map(PersonnelTask::getTaskId)
                                 .ifPresent(requiredTaskIds::add);

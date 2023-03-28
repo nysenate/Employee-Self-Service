@@ -36,32 +36,27 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
         this.pecNotificationService = pecNotificationService;
     }
 
+    @Override
+    public int assignGroupTasks(int empId) {
+        return assignTasks(empId, getRequiredTaskIds(empId), true).size();
+    }
+
+    @Override
+    public List<EmployeeEmail> getGroupInviteEmails(int empId) {
+        return assignTasks(empId, getRequiredTaskIds(empId), false);
+    }
+
     protected List<PersonnelTask> getActiveGroupTasks() {
         return taskService.getActiveTasksInGroup(getTargetGroup());
     }
 
-    private void removeManualOverrides(Set<Integer> taskIds, int empId) {
-        taskIds.removeIf(taskId -> {
-            try {
-                return assignmentDao.getManualOverrideStatus(empId, taskId);
-            }
-            catch (EmptyResultDataAccessException e) {
-                return false;
-            }
-        });
-    }
-
-    protected int assignTasks(int empId, Set<Integer> assignableTaskIds) {
-        return assignTasks(empId, assignableTaskIds, true).size();
-    }
-
-    protected List<EmployeeEmail> assignTasks(int empId, Set<Integer> assignableTaskIds, boolean sendUpdates) {
+    private List<EmployeeEmail> assignTasks(int empId, Set<Integer> assignableTaskIds, boolean sendUpdates) {
         var emails = new LinkedList<EmployeeEmail>();
         Map<Integer, PersonnelTask> personnelTaskMap = buildPersonnelTaskMap(taskService.getPersonnelTasks(false));
         Map<Integer, PersonnelTaskAssignment> assignmentMap = getAssignmentMap(empId);
         Set<Integer> existingTaskIds = assignmentMap.keySet();
-        removeManualOverrides(assignableTaskIds, empId);
-        removeManualOverrides(existingTaskIds, empId);
+        assignableTaskIds = removeManualOverrides(assignableTaskIds, empId);
+        existingTaskIds = removeManualOverrides(existingTaskIds, empId);
 
         // Get active tasks that are not currently assigned to the employee.
         Set<PersonnelTask> activeUnassigned = Sets.difference(assignableTaskIds, existingTaskIds)
@@ -116,9 +111,23 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
                 .collect(Collectors.toSet());
     }
 
-    protected boolean assignmentInGroup(PersonnelTaskAssignment assignment) {
+    private boolean assignmentInGroup(PersonnelTaskAssignment assignment) {
         PersonnelTask task = taskService.getPersonnelTask(assignment.getTaskId());
         return task.getAssignmentGroup() == getTargetGroup();
+    }
+
+    private Set<Integer> removeManualOverrides(Set<Integer> taskIds, int empId) {
+        // In case the set is immutable.
+        taskIds = new HashSet<>(taskIds);
+        taskIds.removeIf(taskId -> {
+            try {
+                return assignmentDao.getManualOverrideStatus(empId, taskId);
+            }
+            catch (EmptyResultDataAccessException e) {
+                return false;
+            }
+        });
+        return taskIds;
     }
 
     private static Map<Integer, PersonnelTask> buildPersonnelTaskMap(List<PersonnelTask> allPersonnelTasks) {
