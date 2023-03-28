@@ -74,6 +74,19 @@ public class SqlPersonnelTaskAssignmentDao extends SqlBaseDao implements Personn
     }
 
     @Override
+    public void updateAssignmentDates(PersonnelTaskAssignment task) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("assignmentDate", task.getAssignmentDate());
+        params.addValue("dueDate", task.getDueDate());
+        params.addValue("empId", task.getEmpId());
+        params.addValue("taskId", task.getTaskId());
+        int updated = localNamedJdbc.update(UPDATE_TASK_DATES.getSql(schemaMap()), params);
+        if (updated != 1) {
+            throw new IllegalStateException("Too many updates (" + updated + ") occurred for " + task);
+        }
+    }
+
+    @Override
     public boolean getManualOverrideStatus(PersonnelTaskAssignment task) {
         MapSqlParameterSource params = getManualOverrideStatusParams(task);
         return Boolean.TRUE.equals(localNamedJdbc.queryForObject(GET_MANUAL_OVERRIDE_STATUS.getSql(schemaMap()), params, Boolean.class));

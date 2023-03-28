@@ -46,6 +46,12 @@ public enum PersonnelTaskAssignmentQuery implements BasicSqlQuery {
             "WHERE emp_id = :empId AND task_id = :taskId"
     ),
 
+    UPDATE_TASK_DATES ("" +
+            "UPDATE ${essSchema}.personnel_task_assignment\n" +
+            "SET assignment_date = :assignmentDate, due_date = :dueDate\n" +
+            "WHERE emp_id = :empId AND task_id = :taskId"
+    ),
+
     GET_MANUAL_OVERRIDE_STATUS("" +
             "SELECT manual_override from ${essSchema}.personnel_task_assignment\n" +
             "WHERE emp_id = :empId AND task_id = :taskId"),
