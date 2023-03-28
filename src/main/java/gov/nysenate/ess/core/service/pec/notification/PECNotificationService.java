@@ -329,6 +329,10 @@ public class PECNotificationService {
         return html;
     }
 
+    public LocalDateTime getEndOfTheYear() {
+        return LocalDateTime.of(LocalDate.now().getYear(),12,31,0,0);
+    }
+
     public Map<Integer, PersonnelTask> getActiveTaskMap() {
         return activeTaskMap;
     }
@@ -369,13 +373,24 @@ public class PECNotificationService {
                         logger.info("Completed update for Emp: " + assignment.getEmpId() + ". Updated Task ID 5");
                     }
                     else if (assignment.getTaskId() == 16) {
-                        updatedAssignment = new PersonnelTaskAssignment(
-                                assignment.getTaskId(), assignment.getEmpId(), assignment.getUpdateEmpId(),
-                                assignment.getUpdateTime(), assignment.isCompleted(), assignment.isActive(),
-                                assignment.wasManuallyOverridden(),
-                                LocalDateTime.of(contServiceDate, LocalTime.of(0,0)),
-                                LocalDateTime.of(getDueDate(contServiceDate, 90), LocalTime.of(0,0))
-                        );
+
+                        if (isExistingEmployee(contServiceDate)) {
+                            updatedAssignment = new PersonnelTaskAssignment(
+                                    assignment.getTaskId(), assignment.getEmpId(), assignment.getUpdateEmpId(),
+                                    assignment.getUpdateTime(), assignment.isCompleted(), assignment.isActive(),
+                                    assignment.wasManuallyOverridden(),
+                                    LocalDateTime.of(contServiceDate, LocalTime.of(0,0)),
+                                    getEndOfTheYear());
+                        }
+                        else {
+                            updatedAssignment = new PersonnelTaskAssignment(
+                                    assignment.getTaskId(), assignment.getEmpId(), assignment.getUpdateEmpId(),
+                                    assignment.getUpdateTime(), assignment.isCompleted(), assignment.isActive(),
+                                    assignment.wasManuallyOverridden(),
+                                    LocalDateTime.of(contServiceDate, LocalTime.of(0,0)),
+                                    LocalDateTime.of(getDueDate(contServiceDate, 90), LocalTime.of(0,0))
+                            );
+                        }
                         assignmentDao.updateAssignmentDates(updatedAssignment);
                         logger.info("Completed update for Emp: " + assignment.getEmpId() + ". Updated Task ID 16");
                     }
