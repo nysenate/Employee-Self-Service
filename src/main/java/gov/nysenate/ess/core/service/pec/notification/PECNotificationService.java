@@ -7,7 +7,6 @@ import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.mail.SendMailService;
 import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
-import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,7 +14,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.mail.internet.MimeMessage;
-import java.time.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
@@ -23,7 +21,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static gov.nysenate.ess.core.service.pec.notification.EmailType.*;
+import static gov.nysenate.ess.core.service.pec.notification.PecEmailType.*;
 import static java.nio.file.StandardOpenOption.*;
 
 @Service
@@ -32,7 +30,7 @@ public class PECNotificationService {
 
     private final PersonnelTaskAssignmentDao assignmentDao;
     private final SendMailService sendMailService;
-    private final EmployeeInfoService employeeInfoService;
+    private final PecEmailUtils pecEmailUtils;
     private final PECNotificationDao pecNotificationDao;
     private final Map<Integer, PersonnelTask> activeTaskMap = new HashMap<>();
     private final List<String> reportEmails;
@@ -48,20 +46,20 @@ public class PECNotificationService {
 
     public PECNotificationService(PersonnelTaskService taskService,
                                   PersonnelTaskAssignmentDao assignmentDao, SendMailService sendMailService,
-                                  EmployeeInfoService employeeInfoService,
+                                  PecEmailUtils pecEmailUtils,
                                   PECNotificationDao pecNotificationDao,
                                   @Value("${report.email}") String reportEmailList,
                                   @Value("${pec.test.mode:true}") boolean pecTestMode,
                                   @Value("${data.dir}") String dataDir) {
         this.assignmentDao = assignmentDao;
         this.sendMailService = sendMailService;
-        this.employeeInfoService = employeeInfoService;
+        this.pecEmailUtils = pecEmailUtils;
         this.pecNotificationDao = pecNotificationDao;
         for (PersonnelTask task : taskService.getPersonnelTasks(true)) {
             activeTaskMap.put(task.getTaskId(), task);
         }
         this.reportEmails = List.of(reportEmailList.replaceAll(" ", "").split(","));
-        this.pecTestMode= pecTestMode;
+        this.pecTestMode = pecTestMode;
         this.emailLimit = pecTestMode ? 5 : Double.POSITIVE_INFINITY;
         this.emailLogPath = Path.of(dataDir, "emailLog.txt");
     }
@@ -71,11 +69,6 @@ public class PECNotificationService {
         if (pecNotifsEnabled) {
             runPECNotificationProcess();
         }
-    }
-
-    // TODO: test and remove?
-    public void resetTestModeCounter() {
-        emailCount = 0;
     }
 
     /**
@@ -88,9 +81,7 @@ public class PECNotificationService {
         // Document all employees with missing info to report to admins
         List<Employee> employeesWithMissingEmails = new ArrayList<>();
         List<EmployeeEmail> emailsToSend = new ArrayList<>();
-        List<Employee> employees = employeeInfoService.getAllEmployees(true).stream()
-                .filter(emp -> !emp.isSenator()).collect(Collectors.toList());
-        for (Employee employee : employees) {
+        for (Employee employee : pecEmailUtils.getActiveNonSenatorEmployees()) {
             List<PersonnelTaskAssignment> incompleteTaskAssignments = getIncompleteTaskAssignments(employee);
             if (incompleteTaskAssignments.isEmpty()) {
                 continue;
@@ -106,14 +97,13 @@ public class PECNotificationService {
                     LocalDate date = assignment.getDueDate() == null ? null : assignment.getDueDate().toLocalDate();
                     taskMap.put(activeTaskMap.get(assignment.getTaskId()), date);
                 }
-                emailsToSend.add(new EmployeeEmail(employee, REMINDER, taskMap, pecTestMode));
+                emailsToSend.add(new EmployeeEmail(employee, REMINDER, taskMap));
             }
         }
         if (!employeesWithMissingEmails.isEmpty() && sendAdminEmails) {
             String html = PecEmailUtils.getMissingEmailHtml(employeesWithMissingEmails);
-            for (String adminEmail : reportEmails) {
-                sendEmail(new ReportEmail(adminEmail, REPORT_MISSING, html));
-            }
+            pecEmailUtils.getEmails(reportEmails, REPORT_MISSING, html)
+                    .forEach(this::sendEmail);
         }
         return emailsToSend;
     }
@@ -123,46 +113,32 @@ public class PECNotificationService {
      */
     public void runPECNotificationProcess() {
         logger.info("Starting PEC Notification Process");
-        resetTestModeCounter();
+        emailCount = 0;
         getScheduledEmails(true).forEach(this::sendEmail);
         logger.info("Completed PEC Notification Process");
     }
 
     public Optional<EmployeeEmail> getInviteEmail(int empId, PersonnelTask task, LocalDateTime dueDate) {
-        Employee employee = employeeInfoService.getEmployee(empId);
         boolean wasNotifSent = pecNotificationDao.wasNotificationSent(empId, task.getTaskId());
-
-        if (!task.isActive() || wasNotifSent || employee.isSenator() || !task.isNotifiable()) {
+        if (!task.isActive() || wasNotifSent || !task.isNotifiable()) {
             return Optional.empty();
         }
-
-        Map<PersonnelTask, LocalDate> taskMap = new HashMap<>();
-        taskMap.put(task, dueDate == null ? null : dueDate.toLocalDate());
-        return Optional.of(new EmployeeEmail(employee, INVITE, taskMap, pecTestMode));
-    }
-
-    public void sendInviteEmail(EmployeeEmail email) {
-        sendEmail(email);
-        if (!pecTestMode) {
-            pecNotificationDao.markNotificationSent(email.getEmployee().getEmployeeId(),
-                    email.tasks().get(0).getTaskId());
-        }
+        return Optional.ofNullable(pecEmailUtils.getEmail(empId, INVITE, task, dueDate));
     }
 
     public void sendCompletionEmail(int empId, PersonnelTask task) {
         if (!task.isNotifiable()) {
             return;
         }
-        Employee employee = employeeInfoService.getEmployee(empId);
-        var emailInfo = new EmployeeEmail(employee, COMPLETION, task);
-        sendEmail(emailInfo);
+        sendEmail(pecEmailUtils.getEmail(empId, COMPLETION, task, null));
     }
 
     /**
      * Sends emails. Limited by test mode and PEC notifs enabled.
      */
-    public void sendEmail(NotificationEmail emailInfo) {
-        if (!allPecNotifsEnabled && emailInfo.type() != ADMIN_CODES) {
+    public void sendEmail(EmployeeEmail emailInfo) {
+        if (emailInfo.getEmployee().isSenator() ||
+                (!allPecNotifsEnabled && emailInfo.type() != ADMIN_CODES)) {
             return;
         }
         if (emailInfo.type() == INVITE || emailInfo.type() == REMINDER) {
@@ -171,26 +147,26 @@ public class PECNotificationService {
             }
             emailCount++;
         }
-        String address = emailInfo.sendTo().trim();
+        pecEmailUtils.addStandardHtml(emailInfo);
+        String address = emailInfo.getEmployee().getEmail();
         // Keeps spacing consistent and positive.
         String spaces = " ".repeat(Math.max(28 - address.length(), 1));
         String logMessage = "Recipient: %sSubject: %s\n".formatted(address + spaces, emailInfo.subject());
         if (pecTestMode) {
             address = reportEmails.get(0);
         }
-        MimeMessage message = sendMailService.newHtmlMessage(address, emailInfo.subject(), emailInfo.html);
+        MimeMessage message = sendMailService.newHtmlMessage(address, emailInfo.subject(), emailInfo.html());
         try {
             sendMailService.send(message);
             Files.writeString(emailLogPath, logMessage, CREATE, WRITE, APPEND);
+            if (emailInfo.type() == INVITE && !pecTestMode) {
+                pecNotificationDao.markNotificationSent(
+                        emailInfo.getEmployee().getEmployeeId(),
+                        emailInfo.first().getTaskId());
+            }
         } catch (Exception e) {
             logger.error("There was an error trying to send the PEC notification email ", e);
         }
-    }
-
-    // TODO: BaseGroupTaskAssigner should really just have an EmployeeInfoService,
-    //  getting this information isn't this class' responsibility.
-    public LocalDate getContinuousServiceDate(int empId) {
-        return employeeInfoService.getEmployeesMostRecentContinuousServiceDate(empId);
     }
 
     private List<PersonnelTaskAssignment> getIncompleteTaskAssignments(Employee employee) {
@@ -200,77 +176,7 @@ public class PECNotificationService {
                 .collect(Collectors.toList());
     }
 
-    public LocalDateTime getEndOfTheYear() {
-        return LocalDateTime.of(LocalDate.now().getYear(),12,31,0,0);
-    }
-
     public Map<Integer, PersonnelTask> getActiveTaskMap() {
         return activeTaskMap;
-    }
-
-    public void generateDueDatesForExistingTaskAssignments () {
-
-        //cycle thru employees
-        //get tasks
-        //if task 5 and 16 get continuous service / calc due date
-        //skip if task already has dates
-        //update tasks in database
-        logger.info("Beginning Date Assignment Processing");
-
-        Set<Employee> employees = employeeDao.getActiveEmployees();
-
-        for (Employee emp : employees) {
-            List<PersonnelTaskAssignment> empAssignments = assignmentDao.getAssignmentsForEmp(emp.getEmployeeId());
-            for (PersonnelTaskAssignment assignment : empAssignments) {
-
-                //Only updating these 2 tasks. Skip if they already have a due date, is not active, or is completed
-                if ((assignment.getTaskId() == 5 || assignment.getTaskId() == 16)
-                        && assignment.isActive() && !assignment.isCompleted()
-                        && assignment.getDueDate() == null) {
-
-                    LocalDate contServiceDate = getConitnuousServiceDate(assignment.getEmpId());
-
-                    PersonnelTaskAssignment updatedAssignment;
-
-                    if (assignment.getTaskId() == 5) {
-                        updatedAssignment = new PersonnelTaskAssignment(
-                                assignment.getTaskId(), assignment.getEmpId(), assignment.getUpdateEmpId(),
-                                assignment.getUpdateTime(), assignment.isCompleted(), assignment.isActive(),
-                                assignment.wasManuallyOverridden(),
-                                LocalDateTime.of(contServiceDate, LocalTime.of(0,0)),
-                                LocalDateTime.of(getDueDate(contServiceDate, 30), LocalTime.of(0,0))
-                        );
-                        assignmentDao.updateAssignmentDates(updatedAssignment);
-                        logger.info("Completed update for Emp: " + assignment.getEmpId() + ". Updated Task ID 5");
-                    }
-                    else if (assignment.getTaskId() == 16) {
-
-                        if (isExistingEmployee(contServiceDate)) {
-                            updatedAssignment = new PersonnelTaskAssignment(
-                                    assignment.getTaskId(), assignment.getEmpId(), assignment.getUpdateEmpId(),
-                                    assignment.getUpdateTime(), assignment.isCompleted(), assignment.isActive(),
-                                    assignment.wasManuallyOverridden(),
-                                    LocalDateTime.of(contServiceDate, LocalTime.of(0,0)),
-                                    getEndOfTheYear());
-                        }
-                        else {
-                            updatedAssignment = new PersonnelTaskAssignment(
-                                    assignment.getTaskId(), assignment.getEmpId(), assignment.getUpdateEmpId(),
-                                    assignment.getUpdateTime(), assignment.isCompleted(), assignment.isActive(),
-                                    assignment.wasManuallyOverridden(),
-                                    LocalDateTime.of(contServiceDate, LocalTime.of(0,0)),
-                                    LocalDateTime.of(getDueDate(contServiceDate, 90), LocalTime.of(0,0))
-                            );
-                        }
-                        assignmentDao.updateAssignmentDates(updatedAssignment);
-                        logger.info("Completed update for Emp: " + assignment.getEmpId() + ". Updated Task ID 16");
-                    }
-
-                }
-
-            }
-        }
-
-        logger.info("Completed Date Assignment Processing");
     }
 }

@@ -4,8 +4,11 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Range;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
 import gov.nysenate.ess.core.dao.pec.task.PersonnelTaskDao;
+import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignmentGroup;
+import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
 import gov.nysenate.ess.core.model.transaction.TransactionCode;
 import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.model.transaction.TransactionHistoryUpdateEvent;
@@ -41,6 +44,7 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
     private final EmployeeInfoService empInfoService;
     private final EmpTransactionService transactionService;
     private final PersonnelTaskDao personnelTaskDao;
+    private final PersonnelTaskAssignmentDao assignmentDao;
 
     private final CachedPersonnelTaskService cachedPersonnelTaskService;
 
@@ -55,11 +59,13 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
                                     List<GroupTaskAssigner> groupTaskAssigners,
                                     PersonnelTaskDao personnelTaskDao,
                                     CachedPersonnelTaskService cachedPersonnelTaskService,
+                                    PersonnelTaskAssignmentDao assignmentDao,
                                     EventBus eventBus) {
         this.empInfoService = empInfoService;
         this.transactionService = transactionService;
         this.groupTaskAssigners = groupTaskAssigners;
         this.personnelTaskDao = personnelTaskDao;
+        this.assignmentDao = assignmentDao;
         this.cachedPersonnelTaskService = cachedPersonnelTaskService;
         eventBus.register(this);
     }
@@ -110,6 +116,34 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
     @Override
     public void updateAssignedTaskAssignment(int empID, int updateEmpID, boolean assigned, int taskID) {
         personnelTaskDao.updatePersonnelAssignedTaskAssignment(empID,updateEmpID,assigned,taskID);
+    }
+
+    @Override
+    public void generateDueDatesForExistingTaskAssignments() {
+        logger.info("Beginning Date Assignment Processing");
+        for (Integer empId : empInfoService.getActiveEmpIds()) {
+            List<PersonnelTaskAssignment> empAssignments = assignmentDao.getAssignmentsForEmp(empId);
+            for (PersonnelTaskAssignment assignment : empAssignments) {
+                if (!assignment.isActive() || assignment.isCompleted() || assignment.getDueDate() != null) {
+                    continue;
+                }
+                PersonnelTaskType type;
+                if (assignment.getTaskId() == 5) {
+                    type = PersonnelTaskType.MOODLE_COURSE;
+                }
+                else if (assignment.getTaskId() == 16) {
+                    type = PersonnelTaskType.ETHICS_LIVE_COURSE;
+                }
+                else {
+                    continue;
+                }
+                LocalDate continuousServiceDate = empInfoService.getEmployeesMostRecentContinuousServiceDate(empId);
+                assignmentDao.updateAssignmentDates(assignment.withDates(continuousServiceDate, type, false));
+                logger.info("Completed update for Emp: " + assignment.getEmpId() +
+                        ". Updated Task ID " + assignment.getTaskId());
+            }
+            logger.info("Completed Date Assignment Processing");
+        }
     }
 
     /**

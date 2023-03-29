@@ -67,26 +67,6 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
     }
 
     /**
-     * PEC notifs Test Mode Count Reset API
-     * --------------------------
-     *
-     * Reset the test counter to continue to receive emails in PEC Test Mode
-     *
-     * Usage:
-     * (POST)   /api/v1/admin/personnel/task/reset/counter
-     *
-     * @return {@link SimpleResponse}
-     */
-    @RequestMapping(value = "/reset/counter", method = POST)
-    public SimpleResponse resetCounter() {
-        checkPermission(ADMIN.getPermission());
-        pecNotificationService.resetTestModeCounter();
-        return new SimpleResponse(true,
-                "pec notifications complete",
-                "pec-notifications-complete");
-    }
-
-    /**
      * PEC Assignment & Due Dates For Moodle & Ethics Live
      * ---------------------------------------------------
      *
@@ -100,7 +80,7 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/generate/taskdates", method = POST )
     public SimpleResponse generateTaskDates() {
         checkPermission(ADMIN.getPermission());
-        pecNotificationService.generateDueDatesForExistingTaskAssignments();
+        taskAssigner.generateDueDatesForExistingTaskAssignments();
         return new SimpleResponse(true,
                 "pec task date generation complete",
                 "pec-task-date-generation-complete");

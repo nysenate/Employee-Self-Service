@@ -36,4 +36,9 @@ public interface PersonnelTaskAssigner {
      * Updates a tasks assignment status for a task assigned to an employee
      */
     void updateAssignedTaskAssignment(int empID, int updateEmpID, boolean assigned, int taskID);
+
+    /**
+     * Assigns due dates to active, incomplete tasks in the database.
+     */
+    void generateDueDatesForExistingTaskAssignments();
 }

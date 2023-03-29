@@ -1,13 +1,11 @@
 package gov.nysenate.ess.core.service.pec.task;
 
 import gov.nysenate.ess.core.dao.pec.task.PersonnelTaskDao;
-import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
-import gov.nysenate.ess.core.model.personnel.Employee;
-import gov.nysenate.ess.core.service.pec.notification.EmailType;
+import gov.nysenate.ess.core.service.pec.notification.PecEmailType;
 import gov.nysenate.ess.core.service.pec.notification.PECNotificationService;
-import gov.nysenate.ess.core.service.pec.notification.ReportEmail;
+import gov.nysenate.ess.core.service.pec.notification.PecEmailUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -24,7 +22,7 @@ public class PersonnelCodeGenerationService {
 
     PersonnelTaskDao personnelTaskDao;
 
-    EmployeeDao employeeDao;
+    PecEmailUtils emailUtils;
 
     @Value("${pec.ethics-code.autogen:false}")
     private boolean pecEthicsCodeAutogen;
@@ -46,11 +44,11 @@ public class PersonnelCodeGenerationService {
     @Autowired
     public PersonnelCodeGenerationService(PECNotificationService pecNotificationService,
                                           PersonnelTaskDao personnelTaskDao,
-                                          EmployeeDao employeeDao,
+                                          PecEmailUtils emailUtils,
                                           @Value("${pec.code.admin.emails}") String pecCodeAdminEmails) {
         this.pecNotificationService = pecNotificationService;
         this.personnelTaskDao = personnelTaskDao;
-        this.employeeDao = employeeDao;
+        this.emailUtils = emailUtils;
         this.pecCodeAdminEmails = Arrays.asList(pecCodeAdminEmails.replaceAll(" ", "").split(","));
         this.activeTaskMap = pecNotificationService.getActiveTaskMap();
     }
@@ -98,14 +96,9 @@ public class PersonnelCodeGenerationService {
     }
 
     public void sendEmailsToAdmins(PersonnelTask task, String code1, String code2) {
-        String subject = "New Codes for Ethics Live Course: " + task.getTitle();
         String html = "The new codes are <br> CODE 1: " + code1 + "<br>" + "CODE 2: " + code2;
-        for (String email : pecCodeAdminEmails) {
-            pecNotificationService.sendEmail(new ReportEmail(email, EmailType.ADMIN_CODES, task, html));
-            Employee employee = employeeDao.getEmployeeByEmail(email);
-            String subject = "Dear " + employee.getFirstName() + ", The New Codes For Ethics Live Course: " + task.getTitle();
-            pecNotificationService.sendEmail(email,subject,html);
-        }
+        emailUtils.getEmails(pecCodeAdminEmails, PecEmailType.ADMIN_CODES, html, task)
+                .forEach(email -> pecNotificationService.sendEmail(email));
     }
 
     //Returns a 6 digit code comprised of numbers and letters

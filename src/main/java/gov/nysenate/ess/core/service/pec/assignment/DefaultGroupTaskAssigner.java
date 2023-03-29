@@ -5,6 +5,7 @@ import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignmentGroup;
 import gov.nysenate.ess.core.service.pec.notification.PECNotificationService;
 import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
+import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
@@ -14,8 +15,10 @@ import java.util.stream.Collectors;
 public class DefaultGroupTaskAssigner extends BaseGroupTaskAssigner {
 
     public DefaultGroupTaskAssigner(PersonnelTaskAssignmentDao assignmentDao,
-                                    PersonnelTaskService taskService, PECNotificationService pecNotificationService) {
-        super(assignmentDao, taskService, pecNotificationService);
+                                    PersonnelTaskService taskService,
+                                    PECNotificationService pecNotificationService,
+                                    EmployeeInfoService employeeInfoService) {
+        super(assignmentDao, taskService, pecNotificationService, employeeInfoService);
     }
 
     @Override

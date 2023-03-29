@@ -5,18 +5,15 @@ import com.google.common.collect.Sets;
 import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
-import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
 import gov.nysenate.ess.core.service.pec.notification.EmployeeEmail;
 import gov.nysenate.ess.core.service.pec.notification.PECNotificationService;
 import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
+import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.Period;
-import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -27,13 +24,16 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
     private final PersonnelTaskAssignmentDao assignmentDao;
     private final PersonnelTaskService taskService;
     private final PECNotificationService pecNotificationService;
+    private final EmployeeInfoService employeeInfoService;
 
     public BaseGroupTaskAssigner(PersonnelTaskAssignmentDao assignmentDao,
                                  PersonnelTaskService taskService,
-                                 PECNotificationService pecNotificationService) {
+                                 PECNotificationService pecNotificationService,
+                                 EmployeeInfoService employeeInfoService) {
         this.assignmentDao = assignmentDao;
         this.taskService = taskService;
         this.pecNotificationService = pecNotificationService;
+        this.employeeInfoService = employeeInfoService;
     }
 
     @Override
@@ -63,8 +63,10 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
                 .stream().map(personnelTaskMap::get).collect(Collectors.toSet());
 
         for (PersonnelTask task : activeUnassigned) {
-            LocalDate continuousServiceDate = pecNotificationService.getContinuousServiceDate(empId);
-            var assignmentWithDueDate = getAssignment(empId, task, continuousServiceDate);
+            LocalDate continuousServiceDate = employeeInfoService.getEmployeesMostRecentContinuousServiceDate(empId);
+
+            PersonnelTaskAssignment assignmentWithDueDate = PersonnelTaskAssignment.newTask(empId, task.getTaskId())
+                    .withDates(continuousServiceDate, task.getTaskType(), true);
             var emailOpt = pecNotificationService.getInviteEmail(empId, task, assignmentWithDueDate.getDueDate());
             if (emailOpt.isEmpty()) {
                 continue;
@@ -74,7 +76,7 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
                 assignmentDao.updateAssignment(assignmentWithDueDate);
                 logger.info("Assigning {} personnel tasks to emp #{} : Task ID #{}",
                         getTargetGroup(), empId, task.getTaskId());
-                pecNotificationService.sendInviteEmail(emails.getLast());
+                pecNotificationService.sendEmail(emailOpt.get());
             }
         }
         if (!sendUpdates) {
@@ -136,41 +138,5 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
             personnelTaskMap.put(task.getTaskId(), task);
         }
         return personnelTaskMap;
-    }
-
-    private static PersonnelTaskAssignment getAssignment(Integer empId,
-                                                         PersonnelTask task,
-                                                         LocalDate continuousServiceDate) {
-        var assignment = PersonnelTaskAssignment.newTask(empId, task.getTaskId());
-        LocalDate dueDate = getDueDate(continuousServiceDate, task.getTaskType());
-        return new PersonnelTaskAssignment(
-                assignment.getTaskId(), assignment.getEmpId(), assignment.getUpdateEmpId(),
-                assignment.getUpdateTime(), assignment.isCompleted(), assignment.isActive(),
-                LocalDateTime.now(), dueDate == null ? null : dueDate.atStartOfDay());
-    }
-
-    private static LocalDate getDueDate(LocalDate continuousServiceDate, PersonnelTaskType type) {
-        LocalDate dueDate = null;
-        if (type == PersonnelTaskType.MOODLE_COURSE) {
-            dueDate = addDays(continuousServiceDate,30);
-        } else if (type == PersonnelTaskType.ETHICS_LIVE_COURSE) {
-            LocalDate ninetyDaysAgo = LocalDate.now(ZoneId.systemDefault()).minus(Period.ofDays(90));
-            // Checks whether this is an old employee.
-            if (continuousServiceDate.isBefore(ninetyDaysAgo)) {
-                dueDate = LocalDate.of(LocalDate.now().getYear(), 12,31);
-            }
-            else {
-                dueDate = addDays(continuousServiceDate,90);
-            }
-        }
-        return dueDate;
-    }
-
-    private static LocalDate addDays(LocalDate baseDate, int daysToAdd) {
-        Date startDate = Date.from(baseDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
-        Calendar calendar = new GregorianCalendar(/* remember about timezone! */);
-        calendar.setTime(startDate);
-        calendar.add(Calendar.DATE, daysToAdd);
-        return calendar.getTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     }
 }

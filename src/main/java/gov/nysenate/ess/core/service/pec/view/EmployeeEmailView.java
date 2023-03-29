@@ -13,7 +13,8 @@ public class EmployeeEmailView implements ViewObject {
 
     public EmployeeEmailView(EmployeeEmail email) {
         this.employee = new EmployeeView(email.getEmployee());
-        this.tasks = email.tasks().stream().map(PersonnelTask::getTitle).collect(Collectors.joining(", "));
+        this.tasks = email.taskMap().keySet().stream().map(PersonnelTask::getTitle)
+                .collect(Collectors.joining(", "));
     }
 
     @Override

@@ -2,7 +2,9 @@ package gov.nysenate.ess.core.model.pec;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.ComparisonChain;
+import gov.nysenate.ess.core.util.DateUtils;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.StringJoiner;
 
@@ -153,5 +155,22 @@ public class PersonnelTaskAssignment implements Comparable<PersonnelTaskAssignme
 
     public LocalDateTime getDueDate() {
         return dueDate;
+    }
+
+    /**
+     * Returns a new PersonnelTaskAssignment that's a copy of this one,
+     * but with assignment and due date added.
+     * @param continuousServiceDate of the related employee.
+     * @param type of the related task.
+     * @param isNew if this is a newly created assignment.
+     * @return a new PersonnelTaskAssignment with the proper dates.
+     */
+    public PersonnelTaskAssignment withDates(LocalDate continuousServiceDate, PersonnelTaskType type, boolean isNew) {
+        LocalDateTime assignmentDateTime = (isNew ? LocalDate.now() : continuousServiceDate).atStartOfDay();
+        LocalDate dueDate = DateUtils.getDueDate(continuousServiceDate, type);
+        return new PersonnelTaskAssignment(
+                getTaskId(), getEmpId(), getUpdateEmpId(),
+                getUpdateTime(), isCompleted(), isActive(),
+                assignmentDateTime, dueDate == null ? null : dueDate.atStartOfDay());
     }
 }
