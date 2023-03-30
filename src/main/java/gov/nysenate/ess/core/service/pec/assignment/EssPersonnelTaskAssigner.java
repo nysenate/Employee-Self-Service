@@ -142,8 +142,8 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
                 logger.info("Completed update for Emp: " + assignment.getEmpId() +
                         ". Updated Task ID " + assignment.getTaskId());
             }
-            logger.info("Completed Date Assignment Processing");
         }
+        logger.info("Completed Date Assignment Processing");
     }
 
     /**
