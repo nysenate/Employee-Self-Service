@@ -19,7 +19,7 @@
 </p>
 <p>
     The Travel Application for ${view.travelerFullName} on ${view.datesOfTravel}
-    has been <strong>approved</strong>.
+    has been <strong>approved</strong>. Confirming paperwork is in route.
 </p>
 <p>
     <a href="${domainUrl}/travel/application/${view.appId}">Click here</a> to view this Travel Application.
