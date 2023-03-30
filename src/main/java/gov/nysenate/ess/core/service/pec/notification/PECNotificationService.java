@@ -14,6 +14,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.mail.internet.MimeMessage;
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
@@ -50,7 +51,8 @@ public class PECNotificationService {
                                   PECNotificationDao pecNotificationDao,
                                   @Value("${report.email}") String reportEmailList,
                                   @Value("${pec.test.mode:true}") boolean pecTestMode,
-                                  @Value("${data.dir}") String dataDir) {
+                                  @Value("${data.dir}") String dataDir,
+                                  @Value("${log.dir:log}") String logDir) {
         this.assignmentDao = assignmentDao;
         this.sendMailService = sendMailService;
         this.pecEmailUtils = pecEmailUtils;
@@ -61,7 +63,8 @@ public class PECNotificationService {
         this.reportEmails = List.of(reportEmailList.replaceAll(" ", "").split(","));
         this.pecTestMode = pecTestMode;
         this.emailLimit = pecTestMode ? 5 : Double.POSITIVE_INFINITY;
-        this.emailLogPath = Path.of(dataDir, "emailLog.txt");
+        new File(dataDir + "/" + logDir).mkdir();
+        this.emailLogPath = Path.of(dataDir, logDir, "emailLog.txt");
     }
 
     @Scheduled(cron = "${scheduler.pec.notifs.cron}")
