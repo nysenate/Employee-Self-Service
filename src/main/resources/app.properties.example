@@ -183,18 +183,18 @@ cache.poll.delay.accruals = 60000
 
 # --- URL Configuration -------------------------------------------------------
 
-# The url path to be used for accessing resources (css/js)
+# The URL path to be used for accessing resources (css/js)
 resource.path = /assets/
 
 # The directory in which the actual css/js subdirectories are contained
 resource.location = /assets/
 
-# Url Details
+# URL Details
 
 login.url = /login
 login.success.url = /time/record/entry
 
-# Sfms Report Base Url
+# SFMS report base URL
 sfms.report.base.url = http://nysasprd.nysenate.gov:7778/reports/rwservlet
 
 # LegEthics Training URL
@@ -308,11 +308,11 @@ application.version=@project.version@
 
 # --- Slack Configuration -----------------------------------------------------
 
-# The webhook url used to send slack messages.  See Setup Instructions at:
-# https://nysstech.slack.com/services/3391217030
+# The webhook URL used to send Slack messages.  See setup instructions at:
+#   https://nysstech.slack.com/services/3391217030
 slack.webhook.url =
 
-# Limit the number of lines output for slack notifications (default 5)
+# Limit the number of lines of output for Slack notifications (default: 5)
 slack.notification.line.limit = 5
 
 # --- Error Report Email Configuration ----------------------------------------
@@ -332,21 +332,21 @@ pec.test.mode = true
 # new requisitions are submitted.
 supply.requisition.notification.list =
 
-# Comma separated list of commodity codes which do not need to be reconciled.
+# Comma-separated list of commodity codes which do not need to be reconciled.
 supply.reconciliation.ignore.list = E69, E710, E912, E1013, E1015, E1215
 
 # --- Google Maps Configuration -----------------------------------------------
 google.maps.api.key =
 
 # --- Travel Integration links ------------------------------------------------
-# GSA API base url
+# GSA API base URL
 travel.gsa.api.url_base = https://api.gsa.gov/travel/perdiem/v2/rates/
 travel.gsa.api.key =
 
-# Url used to scrape IRS mileage rates
+# URL used to scrape IRS mileage rates
 travel.irs.url = https://www.irs.gov/tax-professionals/standard-mileage-rates
 
-# Sage API base url
+# Sage API base URL
 sage.api.url = https://pubgeo.nysenate.gov/api/v2
 
 # --- Senate Info -------------------------------------------------------------
