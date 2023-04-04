@@ -23,6 +23,8 @@ function editAppCtrl($scope, locationService, modals, stateService, appPatchApi,
         appEditApi.get({id: vm.appId, role: vm.activeRole}, function (response) {
             vm.dto = response.result;
         }, $scope.handleErrorResponse);
+
+        console.log(vm);
     })();
 
     vm.savePurpose = function (dto) {
@@ -59,7 +61,7 @@ function editAppCtrl($scope, locationService, modals, stateService, appPatchApi,
         function success(response) {
             vm.dto = response.result;
             vm.closeLoadingModal();
-            if (vm.activeRole === 'TRAVEL_ADMIN') {
+            if (vm.activeRole === 'TRAVEL_ADMIN' || vm.activeRole === 'SECRETARY_OF_THE_SENATE') {
                 stateService.setOverridesState();
             } else {
                 stateService.setReviewState();

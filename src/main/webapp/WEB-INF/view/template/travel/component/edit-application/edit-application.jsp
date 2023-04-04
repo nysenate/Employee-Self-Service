@@ -9,8 +9,8 @@
     </div>
   </div>
 
-  <ess-new-app-breadcrumbs ng-if="vm.activeRole !== 'TRAVEL_ADMIN'"/>
-  <ess-edit-app-breadcrumbs ng-if="vm.activeRole === 'TRAVEL_ADMIN'"/>
+  <ess-new-app-breadcrumbs ng-if="vm.activeRole !== 'TRAVEL_ADMIN' && vm.activeRole !== 'SECRETARY_OF_THE_SENATE'"/>
+  <ess-edit-app-breadcrumbs ng-if="vm.activeRole === 'TRAVEL_ADMIN' || vm.activeRole === 'SECRETARY_OF_THE_SENATE'"/>
 
   <div ng-if="vm.dto">
     <div ng-if="vm.stateService.isPurposeState()">
@@ -62,7 +62,7 @@
 
     <div ng-if="vm.stateService.isReviewState()">
       <ess-review-edit-form
-          ng-if="vm.activeRole === 'TRAVEL_ADMIN'"
+          ng-if="vm.activeRole === 'TRAVEL_ADMIN' || vm.activeRole === 'SECRETARY_OF_THE_SENATE'"
           amendment="vm.dto.amendment"
           traveler="vm.dto.traveler"
           positive-btn-label="Save Edits"
@@ -74,6 +74,7 @@
       <ess-review-edit-form
           ng-if="vm.activeRole === 'NONE'"
           amendment="vm.dto.amendment"
+          traveler="vm.dto.traveler"
           positive-btn-label="Save and Resubmit"
           positive-callback="vm.saveEdits(amendment)"
           neutral-callback="vm.toOverridesState(amendment)"
