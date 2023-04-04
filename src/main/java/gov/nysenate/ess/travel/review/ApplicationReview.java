@@ -39,7 +39,7 @@ public class ApplicationReview {
         } else if (travelerRole == TravelRole.DEPARTMENT_HEAD) {
             reviewerStrategy = new DepartmentHeadReviewerStrategy();
         } else if (travelerRole == TravelRole.TRAVEL_ADMIN) {
-            reviewerStrategy = new DeaReviewerStrategy();
+            reviewerStrategy = new TravelAdminReviewerStrategy();
         } else if (travelerRole == TravelRole.SECRETARY_OF_THE_SENATE) {
             reviewerStrategy = new SosReviewerStrategy();
         }

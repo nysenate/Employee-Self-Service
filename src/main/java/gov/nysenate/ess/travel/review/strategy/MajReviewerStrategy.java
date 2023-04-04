@@ -9,6 +9,7 @@ public class MajReviewerStrategy implements ReviewerStrategy {
 
     private static final List<TravelRole> order = Lists.newArrayList(
             TravelRole.TRAVEL_ADMIN,
+            TravelRole.SECRETARY_OF_THE_SENATE,
             TravelRole.NONE);
 
     @Override

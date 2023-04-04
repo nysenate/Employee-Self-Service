@@ -65,7 +65,9 @@ public class TravelEmailRecipients {
                 break;
 
             case SECRETARY_OF_THE_SENATE:
-                recipients.addAll(essRoleRecipients(EssRole.SECRETARY_OF_SENATE));
+                // For initial travel v2.0, the TRAVEL_ADMIN and SOS roles will be held by the same people
+                // So it's not necessary to email them again right after they approve it.
+//                recipients.addAll(essRoleRecipients(EssRole.SECRETARY_OF_SENATE));
                 break;
 
             case MAJORITY_LEADER:
