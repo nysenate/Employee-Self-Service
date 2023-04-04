@@ -56,7 +56,7 @@ public class PECNotificationService {
                                   @Value("${report.email}") String reportEmailList,
                                   @Value("${pec.test.mode:true}") boolean pecTestMode,
                                   @Value("${data.dir}") String dataDir,
-                                  @Value("${log.dir:log}") String logDir) {
+                                  @Value("${data.log_subdir:log}") String logDir) {
         this.assignmentDao = assignmentDao;
         this.sendMailService = sendMailService;
         this.pecEmailUtils = pecEmailUtils;
