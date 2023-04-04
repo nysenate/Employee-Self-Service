@@ -116,11 +116,12 @@ public class PecEmailUtils {
         var html = new StringBuilder("<ul>");
         for (var entry : taskDateMap.entrySet()) {
             html.append("<li>").append(entry.getKey().getTitle());
-            String fragment = taskDueDateMap
-                    .getOrDefault(entry.getKey().getTaskType(), date -> "")
-                    .apply(entry.getValue());
-            if (!fragment.isEmpty()) {
-                html.append(": ").append(fragment);
+            var func = taskDueDateMap.get(entry.getKey().getTaskType());;
+            if (func != null) {
+                html.append(": ").append(func.apply(entry.getValue()));
+                if (LocalDate.now().isAfter(entry.getValue())) {
+                    html.append("<b>").append("This is past its due date.").append("</b>");
+                }
             }
             html.append("</li>");
         }
