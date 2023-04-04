@@ -10,6 +10,7 @@ import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -17,8 +18,11 @@ import javax.mail.internet.MimeMessage;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -122,8 +126,12 @@ public class PECNotificationService {
     }
 
     public Optional<EmployeeEmail> getInviteEmail(int empId, PersonnelTask task, LocalDateTime dueDate) {
-        boolean wasNotifSent = pecNotificationDao.wasNotificationSent(empId, task.getTaskId());
-        if (!task.isActive() || wasNotifSent || !task.isNotifiable()) {
+        boolean wasNotifSent = false;
+        try {
+            wasNotifSent = pecNotificationDao.wasNotificationSent(empId, task.getTaskId());
+        }
+        catch (EmptyResultDataAccessException ignored) {}
+        if (wasNotifSent || !task.isNotifiable()) {
             return Optional.empty();
         }
         return Optional.ofNullable(pecEmailUtils.getEmail(empId, INVITE, task, dueDate));
@@ -176,7 +184,19 @@ public class PECNotificationService {
         return assignmentDao.getAssignmentsForEmp(employee.getEmployeeId()).stream()
                 .filter(assignment -> assignment.isActive() && !assignment.isCompleted())
                 .filter(assignment -> activeTaskMap.containsKey(assignment.getTaskId()))
+                .filter(assignment -> shouldSend(assignment.getDueDate()))
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Emails should send weekly, unless the due date is within a week.
+     * Then, they should be sent daily.
+     */
+    private static boolean shouldSend(LocalDateTime dueDate) {
+        if (LocalDate.now().getDayOfWeek() == DayOfWeek.MONDAY) {
+            return true;
+        }
+        return dueDate != null && ChronoUnit.DAYS.between(LocalDateTime.now(), dueDate) <= 7;
     }
 
     public Map<Integer, PersonnelTask> getActiveTaskMap() {

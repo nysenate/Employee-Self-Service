@@ -51,7 +51,10 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
     }
 
     private List<EmployeeEmail> assignTasks(int empId, Set<Integer> assignableTaskIds, boolean sendUpdates) {
-        var emails = new LinkedList<EmployeeEmail>();
+        if (employeeInfoService.getEmployee(empId).isSenator()) {
+            return List.of();
+        }
+        var emails = new ArrayList<EmployeeEmail>();
         Map<Integer, PersonnelTask> personnelTaskMap = buildPersonnelTaskMap(taskService.getPersonnelTasks(false));
         Map<Integer, PersonnelTaskAssignment> assignmentMap = getAssignmentMap(empId);
         Set<Integer> existingTaskIds = assignmentMap.keySet();
@@ -68,15 +71,12 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
             PersonnelTaskAssignment assignmentWithDueDate = PersonnelTaskAssignment.newTask(empId, task.getTaskId())
                     .withDates(continuousServiceDate, task.getTaskType(), true);
             var emailOpt = pecNotificationService.getInviteEmail(empId, task, assignmentWithDueDate.getDueDate());
-            if (emailOpt.isEmpty()) {
-                continue;
-            }
-            emails.add(emailOpt.get());
+            emailOpt.ifPresent(emails::add);
             if (sendUpdates) {
                 assignmentDao.updateAssignment(assignmentWithDueDate);
                 logger.info("Assigning {} personnel tasks to emp #{} : Task ID #{}",
                         getTargetGroup(), empId, task.getTaskId());
-                pecNotificationService.sendEmail(emailOpt.get());
+                emailOpt.ifPresent(pecNotificationService::sendEmail);
             }
         }
         if (!sendUpdates) {

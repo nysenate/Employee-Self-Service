@@ -77,7 +77,7 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
      *
      * @return {@link SimpleResponse}
      */
-    @RequestMapping(value = "/generate/taskdates", method = POST )
+    @RequestMapping(value = "/generate/taskdates", method = POST)
     public SimpleResponse generateTaskDates() {
         checkPermission(ADMIN.getPermission());
         taskAssigner.generateDueDatesForExistingTaskAssignments();
@@ -112,7 +112,7 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
      * Determine personnel tasks for all employees and assign those that are missing.
      * Usage:
      * (GET)   /api/v1/admin/personnel/task/scheduledInviteEmails
-     * @return {@link SimpleResponse}
+     * @return {@link ListViewResponse<EmployeeEmailView>}
      */
     @RequestMapping(value = "/scheduledInviteEmails", method = GET)
     public ListViewResponse<EmployeeEmailView> getScheduledInviteEmails() {
@@ -127,13 +127,28 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
      * Determine personnel tasks for all employees and assign those that are missing.
      * Usage:
      * (GET)   /api/v1/admin/personnel/task/scheduledReminderEmails
-     * @return {@link SimpleResponse}
+     * @return {@link ListViewResponse<EmployeeEmailView>}
      */
     @RequestMapping(value = "/scheduledReminderEmails", method = GET)
     public ListViewResponse<EmployeeEmailView> getScheduledReminderEmails() {
         checkPermission(RUN_PERSONNEL_TASK_ASSIGNER.getPermission());
         return ListViewResponse.of(pecNotificationService.getScheduledEmails(false).stream()
                 .map(EmployeeEmailView::new).collect(Collectors.toList()));
+    }
+
+    /**
+     * Warm task cache API
+     * --------------------------
+     * Clears and warms the task cache to update from database.
+     * Usage:
+     * (GET)   /api/v1/admin/personnel/task/warmTaskCache
+     * @return {@link SimpleResponse}
+     */
+    @RequestMapping(value = "/warmTaskCache", method = GET)
+    public SimpleResponse warmTaskCache() {
+        checkPermission(ADMIN.getPermission());
+        cachedPersonnelTaskService.warmCache();
+        return new SimpleResponse(true, "Task cache warmed", "warm-task-cache");
     }
 
     /**
