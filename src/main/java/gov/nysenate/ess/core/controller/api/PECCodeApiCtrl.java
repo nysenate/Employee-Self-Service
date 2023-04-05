@@ -81,8 +81,8 @@ public class PECCodeApiCtrl extends BaseRestApiCtrl {
         Subject subject = SecurityUtils.getSubject();
         if (subject.hasRole("ADMIN") || subject.hasRole("PERSONNEL_COMPLIANCE_MANAGER") ) {
 
-            String code1 = personnelCodeGenerationService.createCode();
-            String code2 = personnelCodeGenerationService.createCode();
+            String code1 = PersonnelCodeGenerationService.createCode();
+            String code2 = PersonnelCodeGenerationService.createCode();
 
             return new SimpleResponse(true,
                     "The new codes were generated successfully. " + "Code 1: " + code1 + " Code 2: " + code2,

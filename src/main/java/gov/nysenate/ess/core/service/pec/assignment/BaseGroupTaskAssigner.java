@@ -5,6 +5,7 @@ import com.google.common.collect.Sets;
 import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
+import gov.nysenate.ess.core.service.pec.notification.AssignmentWithTask;
 import gov.nysenate.ess.core.service.pec.notification.EmployeeEmail;
 import gov.nysenate.ess.core.service.pec.notification.PECNotificationService;
 import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
@@ -70,7 +71,8 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
 
             PersonnelTaskAssignment assignmentWithDueDate = PersonnelTaskAssignment.newTask(empId, task.getTaskId())
                     .withDates(continuousServiceDate, task.getTaskType(), true);
-            var emailOpt = pecNotificationService.getInviteEmail(empId, task, assignmentWithDueDate.getDueDate());
+            var data = new AssignmentWithTask(assignmentWithDueDate, task);
+            var emailOpt = pecNotificationService.getInviteEmail(data);
             emailOpt.ifPresent(emails::add);
             if (sendUpdates) {
                 assignmentDao.updateAssignment(assignmentWithDueDate);

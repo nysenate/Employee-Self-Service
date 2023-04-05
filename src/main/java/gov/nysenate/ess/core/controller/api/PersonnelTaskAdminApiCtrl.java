@@ -144,7 +144,7 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
      * (GET)   /api/v1/admin/personnel/task/warmTaskCache
      * @return {@link SimpleResponse}
      */
-    @RequestMapping(value = "/warmTaskCache", method = GET)
+    @RequestMapping(value = "/warmTaskCache", method = POST)
     public SimpleResponse warmTaskCache() {
         checkPermission(ADMIN.getPermission());
         cachedPersonnelTaskService.warmCache();
