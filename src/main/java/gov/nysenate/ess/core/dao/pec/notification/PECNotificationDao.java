@@ -8,12 +8,12 @@ public interface PECNotificationDao {
      * @param taskId
      * @return
      */
-    public boolean wasNotificationSent(int empId ,int taskId);
+    boolean wasNotificationSent(int empId, int taskId);
 
     /**
      * Update the database to show that the notification has been sent and with a timestamp
      * @param empId
      * @param taskId
      */
-    public void markNotificationSent(int empId ,int taskId);
+    void markNotificationSent(int empId, int taskId);
 }

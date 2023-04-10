@@ -24,5 +24,4 @@ public class AssignmentWithTask {
     public PersonnelTask task() {
         return task;
     }
-
 }

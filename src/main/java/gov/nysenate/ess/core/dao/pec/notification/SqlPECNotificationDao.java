@@ -12,7 +12,7 @@ public class SqlPECNotificationDao extends SqlBaseDao implements PECNotification
 
     /** {@inheritDoc} */
     @Override
-    public boolean wasNotificationSent(int empId ,int taskId) {
+    public boolean wasNotificationSent(int empId, int taskId) {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("taskId", taskId);
         params.addValue("empId", empId);
@@ -21,11 +21,10 @@ public class SqlPECNotificationDao extends SqlBaseDao implements PECNotification
 
     /** {@inheritDoc} */
     @Override
-    public void markNotificationSent(int empId ,int taskId) {
+    public void markNotificationSent(int empId, int taskId) {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("taskId", taskId);
         params.addValue("empId", empId);
         localNamedJdbc.update(MARK_NOTIFICAION_SENT.getSql(schemaMap()), params);
     }
-
 }
