@@ -8,7 +8,6 @@ import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -72,26 +71,23 @@ public class PECNotificationService {
      * @param sendAdminEmails whether to send emails about employees with missing emails.
      * @return List of email information.
      */
-    public List<EmployeeEmail> getScheduledEmails(boolean sendAdminEmails) {
+    public List<EmployeeEmail> getReminderEmails(boolean sendAdminEmails) {
         // Document all employees with missing info to report to admins
         List<String> missingEmails = new ArrayList<>();
         List<EmployeeEmail> emailsToSend = new ArrayList<>();
-        for (Employee employee : pecEmailUtils.getActiveNonSenatorEmployees()) {
-            List<AssignmentWithTask> dataList = pecEmailUtils.getNotifiableAssignments(employee);
-            if (dataList.isEmpty()) {
-                continue;
-            }
+        for (var entry : pecEmailUtils.getNotifiableTaskMap(false).entrySet()) {
             // Continue processing employee if they have outstanding assignments and a valid email
+            Employee employee = entry.getKey();
             if (Strings.isBlank(employee.getEmail())) {
                 missingEmails.add("NAME: " + employee.getFullName() +  " EMPID: " + employee.getEmployeeId());
                 logger.warn("Employee %s #%d is missing an email! No notification will be sent to them."
                         .formatted(employee.getFullName(), employee.getEmployeeId()));
             } else {
-                emailsToSend.add(pecEmailUtils.getEmail(REMINDER, dataList));
+                emailsToSend.add(pecEmailUtils.getEmail(REMINDER, employee, entry.getValue()));
             }
         }
         if (!missingEmails.isEmpty() && sendAdminEmails) {
-            pecEmailUtils.getEmails(reportEmails, REPORT_MISSING, Optional.empty(), missingEmails.toArray(new String[] {}))
+            pecEmailUtils.getEmails(reportEmails, REPORT_MISSING, Optional.empty(), missingEmails)
                     .forEach(this::sendEmail);
         }
         return emailsToSend;
@@ -103,32 +99,30 @@ public class PECNotificationService {
     public void runPECNotificationProcess() {
         logger.info("Starting PEC Notification Process");
         emailCount = 0;
-        getScheduledEmails(true).forEach(this::sendEmail);
+        getReminderEmails(true).forEach(this::sendEmail);
+        getInviteEmails().forEach(this::sendEmail);
         logger.info("Completed PEC Notification Process");
     }
 
-    public Optional<EmployeeEmail> getInviteEmail(AssignmentWithTask data) {
-        var task = data.task();
-        boolean wasNotifSent = false;
-        try {
-            wasNotifSent = pecNotificationDao.wasNotificationSent(data.assignment().getEmpId(), task.getTaskId());
+    public List<EmployeeEmail> getInviteEmails() {
+        var emails = new ArrayList<EmployeeEmail>();
+        for (var entry : pecEmailUtils.getNotifiableTaskMap(true).entrySet()) {
+            for (var taskPair : entry.getValue()) {
+                emails.add(pecEmailUtils.getEmail(INVITE, Optional.of(entry.getKey()), taskPair));
+            }
         }
-        catch (EmptyResultDataAccessException ignored) {}
-        if (wasNotifSent || !task.isNotifiable()) {
-            return Optional.empty();
-        }
-        return Optional.ofNullable(pecEmailUtils.getEmail(INVITE, data));
+        return emails;
     }
 
     public void sendCompletionEmail(int empId, PersonnelTask task) {
         if (!task.isNotifiable()) {
             return;
         }
-        sendEmail(pecEmailUtils.getEmail(COMPLETION, new AssignmentWithTask(empId, task)));
+        sendEmail(pecEmailUtils.getEmail(COMPLETION, Optional.empty(), new AssignmentWithTask(empId, task)));
     }
 
     public void sendCodeEmail(List<String> emails, String code1, String code2, PersonnelTask task) {
-        pecEmailUtils.getEmails(emails, ADMIN_CODES, Optional.of(task), code1, code2)
+        pecEmailUtils.getEmails(emails, ADMIN_CODES, Optional.of(task), List.of(code1, code2))
                 .forEach(this::sendEmail);
     }
 
@@ -160,7 +154,6 @@ public class PECNotificationService {
         try {
             sendMailService.send(message);
             Files.writeString(emailLogPath, logMessage, CREATE, WRITE, APPEND);
-            // TODO: emails isn't sent, but assignment is made
             if (emailInfo.type() == INVITE) {
                 pecNotificationDao.markNotificationSent(
                         emailInfo.employee().getEmployeeId(),

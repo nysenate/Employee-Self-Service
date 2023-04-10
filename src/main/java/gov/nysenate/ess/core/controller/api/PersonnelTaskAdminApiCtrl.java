@@ -117,7 +117,7 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/scheduledInviteEmails", method = GET)
     public ListViewResponse<EmployeeEmailView> getScheduledInviteEmails() {
         checkPermission(RUN_PERSONNEL_TASK_ASSIGNER.getPermission());
-        return ListViewResponse.of(taskAssigner.getInviteEmails().stream()
+        return ListViewResponse.of(pecNotificationService.getInviteEmails().stream()
                 .map(EmployeeEmailView::new).collect(Collectors.toList()));
     }
 
@@ -132,7 +132,7 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/scheduledReminderEmails", method = GET)
     public ListViewResponse<EmployeeEmailView> getScheduledReminderEmails() {
         checkPermission(RUN_PERSONNEL_TASK_ASSIGNER.getPermission());
-        return ListViewResponse.of(pecNotificationService.getScheduledEmails(false).stream()
+        return ListViewResponse.of(pecNotificationService.getReminderEmails(false).stream()
                 .map(EmployeeEmailView::new).collect(Collectors.toList()));
     }
 

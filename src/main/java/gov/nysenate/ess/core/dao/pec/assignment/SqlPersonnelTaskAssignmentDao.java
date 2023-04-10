@@ -1,11 +1,15 @@
 package gov.nysenate.ess.core.dao.pec.assignment;
 
+import gov.nysenate.ess.core.dao.base.BasicSqlQuery;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
+import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
+import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignmentGroup;
+import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
+import gov.nysenate.ess.core.service.pec.notification.AssignmentWithTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
@@ -49,6 +53,12 @@ public class SqlPersonnelTaskAssignmentDao extends SqlBaseDao implements Personn
         } catch (EmptyResultDataAccessException ex) {
             throw new PersonnelTaskAssignmentNotFoundEx(empId, taskId);
         }
+    }
+
+    @Override
+    public List<AssignmentWithTask> getNotifiableAssignmentsWithTasks(boolean invitableOnly) {
+        BasicSqlQuery sql = invitableOnly ? SELECT_INVITABLE_ASSIGNMENTS : SELECT_NOTIFIABLE_ASSIGNMENTS;
+        return localNamedJdbc.query(sql.getSql(schemaMap()), assignTaskMapper);
     }
 
     @Override
@@ -135,6 +145,20 @@ public class SqlPersonnelTaskAssignmentDao extends SqlBaseDao implements Personn
                     getLocalDateTime(rs, "due_date")
             );
 
+    private static final RowMapper<PersonnelTask> taskRowMapper = (rs, rowNum) ->
+            new PersonnelTask(
+                    rs.getInt("task_id"),
+                    PersonnelTaskType.valueOf(rs.getString("task_type")),
+                    PersonnelTaskAssignmentGroup.valueOf(rs.getString("assignment_group")),
+                    rs.getString("title"),
+                    getLocalDateTime(rs, "effective_date_time"),
+                    getLocalDateTime(rs, "end_date_time"),
+                    rs.getBoolean("active"),
+                    rs.getBoolean("notifiable")
+            );
+
+    private static final RowMapper<AssignmentWithTask> assignTaskMapper = (rs, rowNum) ->
+            new AssignmentWithTask(patRowMapper.mapRow(rs, rowNum), taskRowMapper.mapRow(rs, rowNum));
 
     private MapSqlParameterSource getEmpIdParams(int empId) {
         return new MapSqlParameterSource("empId", empId);

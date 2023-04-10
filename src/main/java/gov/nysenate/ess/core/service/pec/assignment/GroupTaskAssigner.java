@@ -25,11 +25,6 @@ public interface GroupTaskAssigner {
     int assignGroupTasks(int empId);
 
     /**
-     * Gets a list of invite emails that would be sent for tasks in this group.
-     */
-    List<EmployeeEmail> getGroupInviteEmails(int empId);
-
-    /**
      * Returns a Set of task IDs that are in this group for this employee.
      */
     Set<Integer> getRequiredTaskIds(int empId);

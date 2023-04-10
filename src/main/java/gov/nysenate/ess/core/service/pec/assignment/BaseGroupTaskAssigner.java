@@ -5,9 +5,6 @@ import com.google.common.collect.Sets;
 import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
-import gov.nysenate.ess.core.service.pec.notification.AssignmentWithTask;
-import gov.nysenate.ess.core.service.pec.notification.EmployeeEmail;
-import gov.nysenate.ess.core.service.pec.notification.PECNotificationService;
 import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import org.slf4j.Logger;
@@ -24,38 +21,30 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
 
     private final PersonnelTaskAssignmentDao assignmentDao;
     private final PersonnelTaskService taskService;
-    private final PECNotificationService pecNotificationService;
+
     private final EmployeeInfoService employeeInfoService;
 
     public BaseGroupTaskAssigner(PersonnelTaskAssignmentDao assignmentDao,
                                  PersonnelTaskService taskService,
-                                 PECNotificationService pecNotificationService,
                                  EmployeeInfoService employeeInfoService) {
         this.assignmentDao = assignmentDao;
         this.taskService = taskService;
-        this.pecNotificationService = pecNotificationService;
         this.employeeInfoService = employeeInfoService;
     }
 
     @Override
     public int assignGroupTasks(int empId) {
-        return assignTasks(empId, getRequiredTaskIds(empId), true).size();
-    }
-
-    @Override
-    public List<EmployeeEmail> getGroupInviteEmails(int empId) {
-        return assignTasks(empId, getRequiredTaskIds(empId), false);
+        return assignTasks(empId, getRequiredTaskIds(empId));
     }
 
     protected List<PersonnelTask> getActiveGroupTasks() {
         return taskService.getActiveTasksInGroup(getTargetGroup());
     }
 
-    private List<EmployeeEmail> assignTasks(int empId, Set<Integer> assignableTaskIds, boolean sendUpdates) {
+    private int assignTasks(int empId, Set<Integer> assignableTaskIds) {
         if (employeeInfoService.getEmployee(empId).isSenator()) {
-            return List.of();
+            return 0;
         }
-        var emails = new ArrayList<EmployeeEmail>();
         Map<Integer, PersonnelTask> personnelTaskMap = buildPersonnelTaskMap(taskService.getPersonnelTasks(false));
         Map<Integer, PersonnelTaskAssignment> assignmentMap = getAssignmentMap(empId);
         Set<Integer> existingTaskIds = assignmentMap.keySet();
@@ -71,18 +60,9 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
 
             PersonnelTaskAssignment assignmentWithDueDate = PersonnelTaskAssignment.newTask(empId, task.getTaskId())
                     .withDates(continuousServiceDate, task.getTaskType(), true);
-            var data = new AssignmentWithTask(assignmentWithDueDate, task);
-            var emailOpt = pecNotificationService.getInviteEmail(data);
-            emailOpt.ifPresent(emails::add);
-            if (sendUpdates) {
-                assignmentDao.updateAssignment(assignmentWithDueDate);
-                logger.info("Assigning {} personnel tasks to emp #{} : Task ID #{}",
-                        getTargetGroup(), empId, task.getTaskId());
-                emailOpt.ifPresent(pecNotificationService::sendEmail);
-            }
-        }
-        if (!sendUpdates) {
-            return emails;
+            assignmentDao.updateAssignment(assignmentWithDueDate);
+            logger.info("Assigning {} personnel tasks to emp #{} : Task ID #{}",
+                    getTargetGroup(), empId, task.getTaskId());
         }
 
         // Get tasks assigned to the employee that are not active.
@@ -96,7 +76,7 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
             logger.info("Deactivating {} task for emp #{} : Task ID #{}",
                     getTargetGroup(), empId, task.getTaskId());
         }
-        return emails;
+        return activeUnassigned.size();
     }
 
     protected List<PersonnelTaskAssignment> getGroupAssignments(int empId) {

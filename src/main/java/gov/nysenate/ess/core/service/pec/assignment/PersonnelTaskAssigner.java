@@ -16,11 +16,6 @@ public interface PersonnelTaskAssigner {
     void assignTasks();
 
     /**
-     * Returns a list of invite emails that would be sent if assignment is run.
-     */
-    List<EmployeeEmail> getInviteEmails();
-
-    /**
      * Generates tasks for unassigned active personnel tasks for a single active employee.
      *
      * @param empId int - employee id of the chosen employee.

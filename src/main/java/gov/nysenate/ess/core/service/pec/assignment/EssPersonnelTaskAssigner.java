@@ -14,6 +14,7 @@ import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.model.transaction.TransactionHistoryUpdateEvent;
 import gov.nysenate.ess.core.model.transaction.TransactionRecord;
 import gov.nysenate.ess.core.service.pec.notification.EmployeeEmail;
+import gov.nysenate.ess.core.service.pec.notification.PECNotificationService;
 import gov.nysenate.ess.core.service.pec.task.CachedPersonnelTaskService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
@@ -45,6 +46,7 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
     private final EmpTransactionService transactionService;
     private final PersonnelTaskDao personnelTaskDao;
     private final PersonnelTaskAssignmentDao assignmentDao;
+    private final PECNotificationService pecNotificationService;
 
     private final CachedPersonnelTaskService cachedPersonnelTaskService;
 
@@ -60,6 +62,7 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
                                     PersonnelTaskDao personnelTaskDao,
                                     CachedPersonnelTaskService cachedPersonnelTaskService,
                                     PersonnelTaskAssignmentDao assignmentDao,
+                                    PECNotificationService pecNotificationService,
                                     EventBus eventBus) {
         this.empInfoService = empInfoService;
         this.transactionService = transactionService;
@@ -67,6 +70,7 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
         this.personnelTaskDao = personnelTaskDao;
         this.assignmentDao = assignmentDao;
         this.cachedPersonnelTaskService = cachedPersonnelTaskService;
+        this.pecNotificationService = pecNotificationService;
         eventBus.register(this);
     }
 
@@ -75,22 +79,10 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
         logger.info("Determining and assigning personnel tasks for all active employees...");
         Set<Integer> activeEmpIds = empInfoService.getActiveEmpIds();
         activeEmpIds.stream().sorted().forEach(this::assignTasks);
+        // TODO: do we want to send emails right after they are assigned?
+        pecNotificationService.getInviteEmails().forEach(pecNotificationService::sendEmail);
         logger.info("Personnel task assignment completed for all active employees.");
         cachedPersonnelTaskService.markTasksComplete();
-    }
-
-    @Override
-    public List<EmployeeEmail> getInviteEmails() {
-        var emails = new ArrayList<EmployeeEmail>();
-        for (int empId : empInfoService.getActiveEmpIds()) {
-            if (!needsTaskAssignment(empId)) {
-                continue;
-            }
-            for (var assigner : groupTaskAssigners) {
-                emails.addAll(assigner.getGroupInviteEmails(empId));
-            }
-        }
-        return emails;
     }
 
     @Override
