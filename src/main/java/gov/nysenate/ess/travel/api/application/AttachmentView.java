@@ -3,6 +3,8 @@ package gov.nysenate.ess.travel.api.application;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.travel.request.attachment.Attachment;
 
+import java.util.UUID;
+
 public class AttachmentView implements ViewObject {
 
     String filename;
@@ -19,7 +21,7 @@ public class AttachmentView implements ViewObject {
     }
 
     public Attachment toAttachment() {
-        return new Attachment(filename, originalName, contentType);
+        return new Attachment(UUID.fromString(filename), originalName, contentType);
     }
 
     public String getFilename() {

@@ -52,7 +52,7 @@ public class SqlAmendmentDao extends SqlBaseDao {
         Allowances allowances = allowancesDao.selectAllowances(amdView.amendmentId);
         MealPerDiems mpds = mealPerDiemsDao.selectMealPerDiems(amdView.amendmentId);
         LodgingPerDiems lpds = lodgingPerDiemsDao.selectLodgingPerDiems(amdView.amendmentId);
-        List<Attachment> attachments = attachmentDao.selectAttachments(amdView.amendmentId);
+        List<Attachment> attachments = attachmentDao.selectAmendmentAttachments(amdView.amendmentId);
         Employee createdBy = employeeInfoService.getEmployee(amdView.createdByEmpId);
         return new Amendment.Builder()
                 .withAmendmentId(amdView.amendmentId)
@@ -79,7 +79,7 @@ public class SqlAmendmentDao extends SqlBaseDao {
         allowancesDao.saveAllowances(amd.allowances(), amd.amendmentId());
         mealPerDiemsDao.saveMealPerDiems(amd.mealPerDiems(), amd.amendmentId());
         lodgingPerDiemsDao.saveLodgingPerDiems(amd.lodgingPerDiems(), amd.amendmentId());
-        attachmentDao.saveAttachments(amd.attachments(), amd.amendmentId());
+        attachmentDao.saveAmendmentAttachments(amd.attachments(), amd.amendmentId());
     }
 
     private void insertAmendment(Amendment amd, int appId) {
