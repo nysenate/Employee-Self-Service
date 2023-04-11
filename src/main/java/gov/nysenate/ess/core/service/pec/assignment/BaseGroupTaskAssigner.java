@@ -5,6 +5,7 @@ import com.google.common.collect.Sets;
 import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
+import gov.nysenate.ess.core.service.pec.notification.AssignmentWithTask;
 import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import org.slf4j.Logger;
@@ -33,17 +34,18 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
     }
 
     @Override
-    public int assignGroupTasks(int empId) {
-        return assignTasks(empId, getRequiredTaskIds(empId));
+    public List<AssignmentWithTask> assignGroupTasks(int empId, boolean updateDb) {
+        return assignTasks(empId, getRequiredTaskIds(empId), updateDb);
     }
 
     protected List<PersonnelTask> getActiveGroupTasks() {
         return taskService.getActiveTasksInGroup(getTargetGroup());
     }
 
-    private int assignTasks(int empId, Set<Integer> assignableTaskIds) {
+    private List<AssignmentWithTask> assignTasks(int empId, Set<Integer> assignableTaskIds, boolean updateDb) {
+        var taskData = new ArrayList<AssignmentWithTask>();
         if (employeeInfoService.getEmployee(empId).isSenator()) {
-            return 0;
+            return taskData;
         }
         Map<Integer, PersonnelTask> personnelTaskMap = buildPersonnelTaskMap(taskService.getPersonnelTasks(false));
         Map<Integer, PersonnelTaskAssignment> assignmentMap = getAssignmentMap(empId);
@@ -60,9 +62,15 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
 
             PersonnelTaskAssignment assignmentWithDueDate = PersonnelTaskAssignment.newTask(empId, task.getTaskId())
                     .withDates(continuousServiceDate, task.getTaskType(), true);
-            assignmentDao.updateAssignment(assignmentWithDueDate);
-            logger.info("Assigning {} personnel tasks to emp #{} : Task ID #{}",
-                    getTargetGroup(), empId, task.getTaskId());
+            taskData.add(new AssignmentWithTask(assignmentWithDueDate, task));
+            if (updateDb) {
+                assignmentDao.updateAssignment(assignmentWithDueDate);
+                logger.info("Assigning {} personnel tasks to emp #{} : Task ID #{}",
+                        getTargetGroup(), empId, task.getTaskId());
+            }
+        }
+        if (!updateDb) {
+            return taskData;
         }
 
         // Get tasks assigned to the employee that are not active.
@@ -76,7 +84,7 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
             logger.info("Deactivating {} task for emp #{} : Task ID #{}",
                     getTargetGroup(), empId, task.getTaskId());
         }
-        return activeUnassigned.size();
+        return taskData;
     }
 
     protected List<PersonnelTaskAssignment> getGroupAssignments(int empId) {

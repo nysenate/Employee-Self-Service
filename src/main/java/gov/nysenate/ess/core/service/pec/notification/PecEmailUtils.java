@@ -39,7 +39,7 @@ class PecEmailUtils {
      * Constructs an email, fetching the Employee data if needed.
      */
     public EmployeeEmail getEmail(PecEmailType type, Optional<Employee> employeeOpt, AssignmentWithTask data) {
-        Employee employee = employeeOpt.orElse(employeeInfoService.getEmployee(data.assignment().getEmpId()));
+        Employee employee = employeeOpt.orElseGet(() -> employeeInfoService.getEmployee(data.assignment().getEmpId()));
         return getEmail(type, employee, List.of(data));
     }
 
@@ -53,11 +53,9 @@ class PecEmailUtils {
         var emails = new ArrayList<EmployeeEmail>();
         for (String address : addresses) {
             Employee emp = employeeDao.getEmployeeByEmail(address);
-            if (!emp.isSenator()) {
-                var dataList = new ArrayList<AssignmentWithTask>();
-                taskOpt.ifPresent(task -> dataList.add(new AssignmentWithTask(emp.getEmployeeId(), task)));
-                emails.add(new EmployeeEmail(emp, type, dataList, extraData.toArray(new String[0])));
-            }
+            var dataList = new ArrayList<AssignmentWithTask>();
+            taskOpt.ifPresent(task -> dataList.add(new AssignmentWithTask(emp.getEmployeeId(), task)));
+            emails.add(new EmployeeEmail(emp, type, dataList, extraData.toArray(new String[0])));
         }
         return emails;
     }

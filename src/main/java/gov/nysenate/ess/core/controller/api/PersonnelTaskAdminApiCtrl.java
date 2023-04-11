@@ -49,21 +49,33 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
     /**
      * PEC Reminder Notification API
      * --------------------------
-     *
      * Determine personnel tasks for all employees and send emails to remind employees to complete them
-     *
      * Usage:
      * (POST)   /api/v1/admin/personnel/task/notify
-     *
      * @return {@link SimpleResponse}
      */
     @RequestMapping(value = "/notify", method = POST)
     public SimpleResponse sendNotifications() {
         checkPermission(ADMIN.getPermission());
-        pecNotificationService.runPECNotificationProcess();
+        pecNotificationService.sendReminderEmails();
         return new SimpleResponse(true,
                 "pec notifications complete",
                 "pec-notifications-complete");
+    }
+
+    /**
+     * PEC Send Invites API
+     * --------------------------
+     * Send invites to all necessary employees.
+     * Usage:
+     * (POST)   /api/v1/admin/personnel/task/sendInvites
+     * @return {@link SimpleResponse}
+     */
+    @RequestMapping(value = "/sendInvites", method = POST)
+    public SimpleResponse sendInvites() {
+        checkPermission(ADMIN.getPermission());
+        pecNotificationService.sendInviteEmails();
+        return new SimpleResponse(true, "Invite emails sent!", "send-invites");
     }
 
     /**
@@ -100,7 +112,8 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/assign", method = POST)
     public SimpleResponse assignTasks() {
         checkPermission(RUN_PERSONNEL_TASK_ASSIGNER.getPermission());
-        taskAssigner.assignTasks();
+        taskAssigner.assignTasks(true);
+        pecNotificationService.sendInviteEmails();
         return new SimpleResponse(true,
                 "task assignment complete",
                 "task-assignment-complete");
@@ -117,7 +130,8 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/scheduledInviteEmails", method = GET)
     public ListViewResponse<EmployeeEmailView> getScheduledInviteEmails() {
         checkPermission(RUN_PERSONNEL_TASK_ASSIGNER.getPermission());
-        return ListViewResponse.of(pecNotificationService.getInviteEmails().stream()
+        var assignableTasks = taskAssigner.assignTasks(false);
+        return ListViewResponse.of(pecNotificationService.getInviteEmails(assignableTasks).stream()
                 .map(EmployeeEmailView::new).collect(Collectors.toList()));
     }
 
@@ -132,23 +146,8 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/scheduledReminderEmails", method = GET)
     public ListViewResponse<EmployeeEmailView> getScheduledReminderEmails() {
         checkPermission(RUN_PERSONNEL_TASK_ASSIGNER.getPermission());
-        return ListViewResponse.of(pecNotificationService.getReminderEmails(false).stream()
-                .map(EmployeeEmailView::new).collect(Collectors.toList()));
-    }
-
-    /**
-     * Warm task cache API
-     * --------------------------
-     * Clears and warms the task cache to update from database.
-     * Usage:
-     * (GET)   /api/v1/admin/personnel/task/warmTaskCache
-     * @return {@link SimpleResponse}
-     */
-    @RequestMapping(value = "/warmTaskCache", method = POST)
-    public SimpleResponse warmTaskCache() {
-        checkPermission(ADMIN.getPermission());
-        cachedPersonnelTaskService.warmCache();
-        return new SimpleResponse(true, "Task cache warmed", "warm-task-cache");
+        return ListViewResponse.of(pecNotificationService.getReminderEmails(false)
+                .stream().map(EmployeeEmailView::new).collect(Collectors.toList()));
     }
 
     /**
@@ -169,7 +168,8 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
     public SimpleResponse assignTasksForEmp(@PathVariable int empId) {
         checkPermission(RUN_PERSONNEL_TASK_ASSIGNER.getPermission());
         ensureEmpIdActive(empId, "empId");
-        taskAssigner.assignTasks(empId);
+        taskAssigner.assignTasks(empId, true);
+        pecNotificationService.sendInviteEmails();
         return new SimpleResponse(true,
                 "task assignment complete for emp#" + empId,
                 "task-assignment-complete");

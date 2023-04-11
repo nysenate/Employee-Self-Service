@@ -2,10 +2,12 @@ package gov.nysenate.ess.core.service.pec.assignment;
 
 import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignmentGroup;
+import gov.nysenate.ess.core.service.pec.notification.AssignmentWithTask;
 import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -26,8 +28,8 @@ public class DynamicGroupTaskAssigner extends BaseGroupTaskAssigner {
     }
 
     @Override
-    public int assignGroupTasks(int empId) {
-        return 0;
+    public List<AssignmentWithTask> assignGroupTasks(int empId, boolean updateDb) {
+        return List.of();
     }
 
     @Override

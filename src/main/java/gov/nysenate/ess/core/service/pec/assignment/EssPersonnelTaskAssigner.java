@@ -13,21 +13,18 @@ import gov.nysenate.ess.core.model.transaction.TransactionCode;
 import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.model.transaction.TransactionHistoryUpdateEvent;
 import gov.nysenate.ess.core.model.transaction.TransactionRecord;
-import gov.nysenate.ess.core.service.pec.notification.EmployeeEmail;
-import gov.nysenate.ess.core.service.pec.notification.PECNotificationService;
+import gov.nysenate.ess.core.service.pec.notification.AssignmentWithTask;
 import gov.nysenate.ess.core.service.pec.task.CachedPersonnelTaskService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static gov.nysenate.ess.core.model.transaction.TransactionCode.APP;
 import static gov.nysenate.ess.core.model.transaction.TransactionCode.RTP;
@@ -37,7 +34,6 @@ import static gov.nysenate.ess.core.model.transaction.TransactionCode.RTP;
  */
 @Service
 public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
-
     private static final Logger logger = LoggerFactory.getLogger(EssPersonnelTaskAssigner.class);
 
     private static final ImmutableSet<TransactionCode> newEmpCodes = ImmutableSet.of(APP, RTP);
@@ -46,12 +42,7 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
     private final EmpTransactionService transactionService;
     private final PersonnelTaskDao personnelTaskDao;
     private final PersonnelTaskAssignmentDao assignmentDao;
-    private final PECNotificationService pecNotificationService;
-
     private final CachedPersonnelTaskService cachedPersonnelTaskService;
-
-    @Value("${scheduler.personnel_task.assignment.enabled:true}")
-    private boolean scheduledAssignmentEnabled;
 
     /** Classes which handle assignment for different {@link PersonnelTaskAssignmentGroup} */
     private final List<GroupTaskAssigner> groupTaskAssigners;
@@ -62,7 +53,6 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
                                     PersonnelTaskDao personnelTaskDao,
                                     CachedPersonnelTaskService cachedPersonnelTaskService,
                                     PersonnelTaskAssignmentDao assignmentDao,
-                                    PECNotificationService pecNotificationService,
                                     EventBus eventBus) {
         this.empInfoService = empInfoService;
         this.transactionService = transactionService;
@@ -70,30 +60,36 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
         this.personnelTaskDao = personnelTaskDao;
         this.assignmentDao = assignmentDao;
         this.cachedPersonnelTaskService = cachedPersonnelTaskService;
-        this.pecNotificationService = pecNotificationService;
         eventBus.register(this);
     }
 
     @Override
-    public void assignTasks() {
-        logger.info("Determining and assigning personnel tasks for all active employees...");
+    public List<AssignmentWithTask> assignTasks(boolean updateDb) {
+        cachedPersonnelTaskService.warmCache();
+        if (updateDb) {
+            logger.info("Determining and assigning personnel tasks for all active employees...");
+        }
         Set<Integer> activeEmpIds = empInfoService.getActiveEmpIds();
-        activeEmpIds.stream().sorted().forEach(this::assignTasks);
-        // TODO: do we want to send emails right after they are assigned?
-        pecNotificationService.getInviteEmails().forEach(pecNotificationService::sendEmail);
-        logger.info("Personnel task assignment completed for all active employees.");
-        cachedPersonnelTaskService.markTasksComplete();
+        var result = activeEmpIds.stream().sorted()
+                .map(empId -> assignTasks(empId, updateDb))
+                .flatMap(List::stream).collect(Collectors.toList());
+        if (updateDb) {
+            logger.info("Personnel task assignment completed for all active employees.");
+            cachedPersonnelTaskService.markTasksComplete();
+        }
+        return result;
     }
 
     @Override
-    public void assignTasks(int empId) {
+    public List<AssignmentWithTask> assignTasks(int empId, boolean updateDb) {
         if (needsTaskAssignment(empId)) {
-            logger.info("Performing task assignment for emp #{} ...", empId);
-            groupTaskAssigners.forEach(groupAssigner -> groupAssigner.assignGroupTasks(empId));
-            logger.info("Completed task assignment for emp #{}.", empId);
+            return groupTaskAssigners.stream()
+                    .map(groupAssigner -> groupAssigner.assignGroupTasks(empId, updateDb))
+                    .flatMap(List::stream).collect(Collectors.toList());
         }
         else {
             logger.info("Skipping task assignment for ineligible emp #{}", empId);
+            return List.of();
         }
     }
 
@@ -148,19 +144,8 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
                 .filter(rec -> newEmpCodes.contains(rec.getTransCode()))
                 .map(TransactionRecord::getEmployeeId)
                 .distinct()
-                .filter(this::needsTaskAssignment)
-                .forEach(this::assignTasks);
+                .forEach(empId -> assignTasks(empId, true));
         cachedPersonnelTaskService.markTasksComplete();
-    }
-
-    /**
-     * Handles scheduled task assignments.
-     */
-    @Scheduled(cron = "${scheduler.personnel_task.assignment.cron:0 0 3 * * *}")
-    public void scheduledPersonnelTaskAssignment() {
-        if (scheduledAssignmentEnabled) {
-            assignTasks();
-        }
     }
 
     /* --- Internal Methods --- */

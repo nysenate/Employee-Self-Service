@@ -18,6 +18,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static gov.nysenate.ess.core.service.pec.notification.PecEmailType.*;
 import static java.nio.file.StandardOpenOption.*;
@@ -61,7 +62,7 @@ public class PECNotificationService {
     @Scheduled(cron = "${scheduler.pec.notifs.cron}")
     public void runUpdateMethods() {
         if (pecNotifsEnabled) {
-            runPECNotificationProcess();
+            sendReminderEmails();
         }
     }
 
@@ -96,22 +97,29 @@ public class PECNotificationService {
     /**
      * The actual scheduled process. Will fetch and send out emails.
      */
-    public void runPECNotificationProcess() {
-        logger.info("Starting PEC Notification Process");
+    public void sendReminderEmails() {
+        logger.info("Starting PEC Reminder Process");
         emailCount = 0;
         getReminderEmails(true).forEach(this::sendEmail);
-        getInviteEmails().forEach(this::sendEmail);
-        logger.info("Completed PEC Notification Process");
+        logger.info("Completed PEC Reminder Process");
     }
 
-    public List<EmployeeEmail> getInviteEmails() {
-        var emails = new ArrayList<EmployeeEmail>();
+    public void sendInviteEmails() {
+        getInviteEmails(List.of()).forEach(this::sendEmail);
+    }
+
+    public List<EmployeeEmail> getInviteEmails(List<AssignmentWithTask> toAssign) {
+        var emailsAfterAssignment = toAssign.stream().filter(data -> data.task().isNotifiable())
+                .map(task -> pecEmailUtils.getEmail(INVITE, Optional.empty(), task))
+                .collect(Collectors.toList());
+        var emailsInQueue = new ArrayList<EmployeeEmail>();
         for (var entry : pecEmailUtils.getNotifiableTaskMap(true).entrySet()) {
             for (var taskPair : entry.getValue()) {
-                emails.add(pecEmailUtils.getEmail(INVITE, Optional.of(entry.getKey()), taskPair));
+                emailsInQueue.add(pecEmailUtils.getEmail(INVITE, Optional.of(entry.getKey()), taskPair));
             }
         }
-        return emails;
+        emailsInQueue.addAll(emailsAfterAssignment);
+        return emailsInQueue;
     }
 
     public void sendCompletionEmail(int empId, PersonnelTask task) {
