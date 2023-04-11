@@ -20,7 +20,7 @@ function reviewController($scope, $q, modals, locationService, appReviewApi, rol
     vm.userRoles = [];
     vm.activeRole = {};
 
-    (function init() {
+    function init() {
         roleService.roles()
             .then(function (response) {
                 vm.userRoles = _.uniq(response.allRoles, function (r) { return r.name}); // Unique roles.
@@ -35,7 +35,7 @@ function reviewController($scope, $q, modals, locationService, appReviewApi, rol
                         vm.isLoading = false;
                     })
             });
-    })();
+    }
 
     /**
      * Get ApplicationReviews pending review by all of the users roles.
@@ -80,7 +80,9 @@ function reviewController($scope, $q, modals, locationService, appReviewApi, rol
     }
 
     function setInitialRole() {
-        vm.activeRole = vm.userRoles[vm.userRoles.length - 1];
+        if (vm.activeRole.name == undefined) {
+            vm.activeRole = vm.userRoles[vm.userRoles.length - 1];
+        }
     }
 
     // Update the `toReview` array to the reviews associated with the selected role.
@@ -119,7 +121,7 @@ function reviewController($scope, $q, modals, locationService, appReviewApi, rol
         if (review) {
             locationService.setSearchParam(APP_ID_SEARCH_PARAM, review.travelApplication.id);
             vm.modalPromise = modals.open("app-review-action-modal", {review: review, role: vm.activeRole}, true)
-                .then(reload)
+                .then(init)
                 .finally(resetAppIdParam);
         } else {
             resetAppIdParam();
@@ -129,10 +131,6 @@ function reviewController($scope, $q, modals, locationService, appReviewApi, rol
     vm.onActiveRoleChange = function () {
         updateToReview(vm.activeRole);
     };
-
-    function reload() {
-        locationService.go("/travel/manage/review", true);
-    }
 
     function getAppIdParam() {
         return locationService.getSearchParam(APP_ID_SEARCH_PARAM);
@@ -157,4 +155,6 @@ function reviewController($scope, $q, modals, locationService, appReviewApi, rol
             locationService.go("/travel/application/edit", false, {appId: appId, role: vm.activeRole.name});
         });
     }
+
+    init();
 }

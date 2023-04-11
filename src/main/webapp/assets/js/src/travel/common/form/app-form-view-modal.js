@@ -11,7 +11,6 @@ essTravel.directive('appFormViewModal', ['appProps', function (appProps) {
 function appFormView($scope, modals) {
 
     $scope.app = modals.params();
-    console.log($scope.app);
 
     $scope.exit = function () {
         modals.resolve();
