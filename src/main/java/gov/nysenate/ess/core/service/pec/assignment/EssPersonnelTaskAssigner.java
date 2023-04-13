@@ -35,8 +35,8 @@ import static gov.nysenate.ess.core.model.transaction.TransactionCode.RTP;
 @Service
 public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
     private static final Logger logger = LoggerFactory.getLogger(EssPersonnelTaskAssigner.class);
-
     private static final ImmutableSet<TransactionCode> newEmpCodes = ImmutableSet.of(APP, RTP);
+    private static final Set<Integer> empIdsSkipAssignment = Set.of(7689, 9268, 12867);
 
     private final EmployeeInfoService empInfoService;
     private final EmpTransactionService transactionService;
@@ -75,7 +75,6 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
                 .flatMap(List::stream).collect(Collectors.toList());
         if (updateDb) {
             logger.info("Personnel task assignment completed for all active employees.");
-            cachedPersonnelTaskService.markTasksComplete();
         }
         return result;
     }
@@ -145,7 +144,6 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
                 .map(TransactionRecord::getEmployeeId)
                 .distinct()
                 .forEach(empId -> assignTasks(empId, true));
-        cachedPersonnelTaskService.markTasksComplete();
     }
 
     /* --- Internal Methods --- */
@@ -154,6 +152,9 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
      * Determine if the employee is eligible for task assignment.
      */
     private boolean needsTaskAssignment(int empId) {
+        if (empIdsSkipAssignment.contains(empId) || empInfoService.getEmployee(empId).isSenator()) {
+            return false;
+        }
         TransactionHistory transHistory = transactionService.getTransHistory(empId);
         Range<LocalDate> presentAndFuture = Range.atLeast(LocalDate.now());
         // They are eligible if they are currently active, or will be active in the future.

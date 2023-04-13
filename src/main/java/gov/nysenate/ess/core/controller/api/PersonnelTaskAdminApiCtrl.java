@@ -296,27 +296,4 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
                 "You do not have permission to execute this api functionality",
                 "employee-task-override");
     }
-
-
-    /**
-     * Mark Specific Individuals Complete
-     * ----------------------------------
-     *
-     * Mark specific employees Personnel task assignments complete
-     *
-     * Usage:
-     * (POST)   /api/v1/admin/personnel/task/mark/complete
-     *
-     * Path params:
-     *
-     * @return {@link SimpleResponse}
-     */
-    @RequestMapping(value = "/mark/complete", method = POST)
-    public SimpleResponse markTasksComplete() {
-        checkPermission(ADMIN.getPermission());
-        cachedPersonnelTaskService.markTasksComplete();
-        return new SimpleResponse(true,
-                "The tasks have been marked complete",
-                "tasks-marked-complete");
-    }
 }

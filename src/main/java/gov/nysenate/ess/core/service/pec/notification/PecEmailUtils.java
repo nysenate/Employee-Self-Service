@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -83,11 +82,12 @@ class PecEmailUtils {
     }
 
     /**
-     * Emails should send weekly, unless the due date is within a week.
-     * Then, they should be sent daily.
+     * Emails should send biweekly, unless the due date is within a week.
+     * Then, they should be sent whenever this method is called.
      */
     private static boolean shouldSendReminder(LocalDateTime dueDate) {
-        if (LocalDate.now().getDayOfWeek() == DayOfWeek.MONDAY) {
+        int currDay = LocalDate.now().getDayOfMonth();
+        if (currDay == 1 || currDay == 15) {
             return true;
         }
         return dueDate != null && ChronoUnit.DAYS.between(LocalDateTime.now(), dueDate) <= 7;

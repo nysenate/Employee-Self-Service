@@ -258,7 +258,7 @@ pec.ethics-code.autogen = true
 all.pec.notifs.enabled = false
 
 # Determines when PEC notifications are sent out (default: every day)
-scheduler.pec.notifs.cron = 0 0 8 * * *
+scheduler.pec.notifs.cron = 0 0 22 * * *
 
 # Determines if scheduled polling of course completion records from Moodle
 # is enabled.

@@ -44,9 +44,6 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
 
     private List<AssignmentWithTask> assignTasks(int empId, Set<Integer> assignableTaskIds, boolean updateDb) {
         var taskData = new ArrayList<AssignmentWithTask>();
-        if (employeeInfoService.getEmployee(empId).isSenator()) {
-            return taskData;
-        }
         Map<Integer, PersonnelTask> personnelTaskMap = buildPersonnelTaskMap(taskService.getPersonnelTasks(false));
         Map<Integer, PersonnelTaskAssignment> assignmentMap = getAssignmentMap(empId);
         Set<Integer> existingTaskIds = assignmentMap.keySet();
