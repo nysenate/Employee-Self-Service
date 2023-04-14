@@ -5,17 +5,15 @@ import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.client.response.error.ErrorCode;
 import gov.nysenate.ess.core.client.response.error.ErrorResponse;
 import gov.nysenate.ess.core.client.view.DetailedEmployeeView;
-import gov.nysenate.ess.core.client.view.EmployeeView;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.util.OutputUtils;
 import gov.nysenate.ess.travel.allowedtravelers.AllowedTravelersService;
-import gov.nysenate.ess.travel.api.application.AmendmentView;
-import gov.nysenate.ess.travel.api.application.PurposeOfTravelView;
-import gov.nysenate.ess.travel.api.application.TravelAppEditDto;
-import gov.nysenate.ess.travel.api.application.TravelApplicationView;
+import gov.nysenate.ess.travel.api.application.*;
+import gov.nysenate.ess.travel.employee.TravelEmployee;
+import gov.nysenate.ess.travel.employee.TravelEmployeeService;
 import gov.nysenate.ess.travel.request.allowances.AllowancesView;
 import gov.nysenate.ess.travel.request.allowances.lodging.LodgingPerDiemsView;
 import gov.nysenate.ess.travel.request.allowances.meal.MealPerDiemsView;
@@ -37,10 +35,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -56,6 +51,7 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
     @Autowired private TravelAppUpdateService appUpdateService;
     @Autowired private AttachmentService attachmentService;
     @Autowired private SqlDepartmentHeadDao departmentHeadDao;
+    @Autowired private TravelEmployeeService travelEmployeeService;
 
     /**
      * Get an unsubmitted app API
@@ -87,10 +83,10 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
                 );
             });
         }
-        appEditDto.setAllowedTravelers(allowedTravelersService.forEmp(user));
-        appEditDto.setPossibleDepartmentHeads(employeeInfoService.getAllEmployees(true).stream()
-                .map(EmployeeView::new)
-                .collect(Collectors.toSet()));
+        Set<Employee> allowedTravelerEmps = allowedTravelersService.forEmp(user);
+        Set<TravelEmployee> allowedTravelers = travelEmployeeService.getTravelEmployees(allowedTravelerEmps);
+        appEditDto.setAllowedTravelers(allowedTravelers);
+
         unsubmittedAppDao.save(getSubjectEmployeeId(), appEditDto.getTraveler(), appEditDto.getAmendment(), appEditDto.getTravelerDeptHeadEmpId());
         return new ViewObjectResponse<>(appEditDto);
     }

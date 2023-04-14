@@ -7,7 +7,8 @@ import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.security.authorization.role.RoleFactory;
 import gov.nysenate.ess.travel.delegate.Delegation;
 import gov.nysenate.ess.travel.delegate.DelegationDao;
-import gov.nysenate.ess.travel.request.department.SqlDepartmentHeadDao;
+import gov.nysenate.ess.travel.employee.TravelEmployee;
+import gov.nysenate.ess.travel.employee.TravelEmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +26,7 @@ public class TravelRoleFactory implements RoleFactory {
 
     @Autowired private RoleDao essRoleDao;
     @Autowired private DelegationDao delegateDao;
-    @Autowired private SqlDepartmentHeadDao departmentHeadDao;
+    @Autowired private TravelEmployeeService travelEmployeeService;
 
     @Override
     public Stream<Enum> getRoles(Employee employee) {
@@ -62,6 +63,8 @@ public class TravelRoleFactory implements RoleFactory {
         // TRAVEL_ADMIN, SECRETARY_OF_SENATE, and MAJORITY_LEADER roles are stored here.
         Set<EssRole> empRoles = essRoleDao.getRoles(employee);
 
+        TravelEmployee travelEmployee = travelEmployeeService.getTravelEmployee(employee);
+
         if (empRoles.contains(EssRole.TRAVEL_ADMIN)) {
             roles.add(TravelRole.TRAVEL_ADMIN);
         }
@@ -71,8 +74,8 @@ public class TravelRoleFactory implements RoleFactory {
         if (empRoles.contains(EssRole.MAJORITY_LEADER)) {
             roles.add(TravelRole.MAJORITY_LEADER);
         }
-        // The DEPARTMENT_HEAD role is store separately.
-        if (departmentHeadDao.isDepartmentHead(employee.getEmployeeId())) {
+        // The DEPARTMENT_HEAD role is calculated separately.
+        if (travelEmployee.isDepartmentHead()) {
             roles.add(TravelRole.DEPARTMENT_HEAD);
         }
         return roles;

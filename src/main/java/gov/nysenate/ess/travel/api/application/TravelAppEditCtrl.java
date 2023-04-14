@@ -9,6 +9,8 @@ import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.travel.allowedtravelers.AllowedTravelersService;
+import gov.nysenate.ess.travel.employee.TravelEmployee;
+import gov.nysenate.ess.travel.employee.TravelEmployeeService;
 import gov.nysenate.ess.travel.request.amendment.Amendment;
 import gov.nysenate.ess.travel.request.app.TravelAppUpdateService;
 import gov.nysenate.ess.travel.request.app.TravelApplication;
@@ -17,6 +19,7 @@ import gov.nysenate.ess.travel.request.route.RouteViewValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -29,6 +32,7 @@ public class TravelAppEditCtrl extends BaseRestApiCtrl {
     @Autowired private TravelAppUpdateService appUpdateService;
     @Autowired private AllowedTravelersService allowedTravelersService;
     @Autowired private EmployeeInfoService employeeInfoService;
+    @Autowired private TravelEmployeeService travelEmployeeService;
 
     /**
      * Call this when starting to edit an application.
@@ -57,9 +61,10 @@ public class TravelAppEditCtrl extends BaseRestApiCtrl {
                 new DetailedEmployeeView(app.getTraveler()),
                 new AmendmentView(editAmd),
                 app.getTravelerDeptHeadEmpId());
-        editDto.setPossibleDepartmentHeads(employeeInfoService.getAllEmployees(true).stream()
-                .map(EmployeeView::new)
-                .collect(Collectors.toSet()));
+
+        Set<Employee> allowedTravelerEmps = allowedTravelersService.forEmpId(getSubjectEmployeeId());
+        Set<TravelEmployee> allowedTravelers = travelEmployeeService.getTravelEmployees(allowedTravelerEmps);
+        editDto.setAllowedTravelers(allowedTravelers);
         return new ViewObjectResponse<>(editDto);
     }
 
@@ -111,7 +116,9 @@ public class TravelAppEditCtrl extends BaseRestApiCtrl {
 
         // Create a new TravelAppEditDto to ensure allowedTravelers and eventTypes are populated correctly.
         appDto = new TravelAppEditDto(appDto.getTraveler(), new AmendmentView(amd), app.getTravelerDeptHeadEmpId());
-        appDto.setAllowedTravelers(allowedTravelersService.forEmpId(getSubjectEmployeeId()));
+        Set<Employee> allowedTravelerEmps = allowedTravelersService.forEmpId(getSubjectEmployeeId());
+        Set<TravelEmployee> allowedTravelers = travelEmployeeService.getTravelEmployees(allowedTravelerEmps);
+        appDto.setAllowedTravelers(allowedTravelers);
         return new ViewObjectResponse<>(appDto);
     }
 
@@ -136,7 +143,9 @@ public class TravelAppEditCtrl extends BaseRestApiCtrl {
 
         // Create a new TravelAppEditDto to ensure allowedTravelers and eventTypes are populated correctly.
         appDto = new TravelAppEditDto(appDto.getTraveler(), new AmendmentView(amd), app.getTravelerDeptHeadEmpId());
-        appDto.setAllowedTravelers(allowedTravelersService.forEmpId(getSubjectEmployeeId()));
+        Set<Employee> allowedTravelerEmps = allowedTravelersService.forEmpId(getSubjectEmployeeId());
+        Set<TravelEmployee> allowedTravelers = travelEmployeeService.getTravelEmployees(allowedTravelerEmps);
+        appDto.setAllowedTravelers(allowedTravelers);
         return new ViewObjectResponse<>(appDto);
     }
 }

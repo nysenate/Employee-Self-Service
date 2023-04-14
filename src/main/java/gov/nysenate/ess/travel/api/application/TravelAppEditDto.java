@@ -5,6 +5,8 @@ import gov.nysenate.ess.core.client.view.EmployeeView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.travel.EventType;
+import gov.nysenate.ess.travel.employee.TravelEmployee;
+import gov.nysenate.ess.travel.employee.TravelEmployeeView;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -19,9 +21,7 @@ public class TravelAppEditDto implements ViewObject {
     // Apply Amendment that is currently being edited.
     private AmendmentView amendment;
 
-    // Set of employees the user is allowed to submit apps for.
-    private Set<EmployeeView> allowedTravelers;
-    private Set<EmployeeView> possibleDepartmentHeads;
+    private Set<TravelEmployeeView> allowedTravelers;
     // All Possible event types for the Purpose of Travel
     private List<EventTypeView> validEventTypes;
 
@@ -35,9 +35,9 @@ public class TravelAppEditDto implements ViewObject {
         this.validEventTypes = EnumSet.allOf(EventType.class).stream().map(EventTypeView::new).collect(Collectors.toList());
     }
 
-    public void setAllowedTravelers(Set<Employee> allowedTravelers) {
+    public void setAllowedTravelers(Set<TravelEmployee> allowedTravelers) {
         this.allowedTravelers = allowedTravelers.stream()
-                .map(EmployeeView::new)
+                .map(TravelEmployeeView::new)
                 .collect(Collectors.toSet());
     }
 
@@ -53,7 +53,7 @@ public class TravelAppEditDto implements ViewObject {
         return amendment;
     }
 
-    public Set<EmployeeView> getAllowedTravelers() {
+    public Set<TravelEmployeeView> getAllowedTravelers() {
         return allowedTravelers;
     }
 
@@ -71,14 +71,6 @@ public class TravelAppEditDto implements ViewObject {
 
     public List<EventTypeView> getValidEventTypes() {
         return validEventTypes;
-    }
-
-    public Set<EmployeeView> getPossibleDepartmentHeads() {
-        return possibleDepartmentHeads;
-    }
-
-    public void setPossibleDepartmentHeads(Set<EmployeeView> possibleDepartmentHeads) {
-        this.possibleDepartmentHeads = possibleDepartmentHeads;
     }
 
     @Override
