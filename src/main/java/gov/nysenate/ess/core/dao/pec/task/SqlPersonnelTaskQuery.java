@@ -33,7 +33,14 @@ public enum SqlPersonnelTaskQuery implements BasicSqlQuery {
     SELECT_EVERFI_ASSIGNMENT_IDS(
             "SELECT *\n" +
                     "FROM ${essSchema}.everfi_course_assignment_id"
-    );
+    ),
+    SELECT_ETHICS_LIVE_COURSE_CODE_INFO(
+            "SELECT ethics_code_id\n" +
+                    "FROM ${essSchema}.ethics_live_course where task_id = :taskId"
+    ),
+    UPDATE_ETHICS_CODE("" +
+            "UPDATE ${essSchema}.ethics_code SET code = :code " +
+            "WHERE ethics_code_id = :codeId AND sequence_no = :sequence_no");
 
     private final String sql;
 

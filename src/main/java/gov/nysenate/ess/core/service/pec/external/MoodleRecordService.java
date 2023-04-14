@@ -121,7 +121,9 @@ public class MoodleRecordService implements ESSMoodleRecordService {
                     employee.getEmployeeId(),
                     moodleEmployeeRecord.getCompletedTime(),
                     moodleEmployeeRecord.didEmployeeCompleteCourse(),
-                    true
+                    true,
+                    LocalDateTime.now(),
+                    null
                     );
             personnelTaskAssignmentDao.updateAssignment(taskToInsert);
         }

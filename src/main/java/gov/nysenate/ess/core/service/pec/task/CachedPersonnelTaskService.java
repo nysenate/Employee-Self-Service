@@ -1,6 +1,9 @@
 package gov.nysenate.ess.core.service.pec.task;
 
-import com.google.common.collect.*;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
 import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
 import gov.nysenate.ess.core.dao.pec.task.PersonnelTaskDao;
@@ -8,10 +11,8 @@ import gov.nysenate.ess.core.dao.pec.task.detail.PersonnelTaskDetailDao;
 import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
 import gov.nysenate.ess.core.model.cache.ContentCache;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
-import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
-import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignmentGroup;
-import gov.nysenate.ess.core.model.personnel.Employee;
+import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
 import gov.nysenate.ess.core.service.base.CachingService;
 import gov.nysenate.ess.core.service.cache.EhCacheManageService;
 import net.sf.ehcache.Cache;
@@ -21,7 +22,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
@@ -116,35 +116,6 @@ public class CachedPersonnelTaskService implements PersonnelTaskService, Caching
         evictCache();
         logger.info("Warming personnel task cache...");
         getPersonnelTasks(false);
-    }
-
-    public void markTasksComplete() {
-        logger.info("Beginning the process of marking specific employees tasks complete");
-        Set<Employee> employees = employeeDao.getActiveEmployees();
-        Set<Employee> employeesToMarkComplete = new HashSet<>();
-        employeesToMarkComplete.add(employeeDao.getEmployeeById(7689));
-        employeesToMarkComplete.add(employeeDao.getEmployeeById(9268));
-        employeesToMarkComplete.add(employeeDao.getEmployeeById(12867));
-
-        for (Employee employee : employees) {
-            if (employee.isSenator()) {
-                employeesToMarkComplete.add(employee);
-            }
-        }
-
-        for (Employee employee : employeesToMarkComplete) {
-
-            List<PersonnelTaskAssignment> assignments =
-                    personnelTaskAssignmentDao.getAssignmentsForEmp(employee.getEmployeeId());
-
-            for (PersonnelTaskAssignment assignment : assignments) {
-                if (!assignment.isCompleted()) {
-                    personnelTaskAssignmentDao.setTaskComplete(
-                            employee.getEmployeeId(), assignment.getTaskId(), employee.getEmployeeId());
-                }
-            }
-        }
-        logger.info("Finished the process of marking specific employees tasks complete");
     }
 
     /* --- Internal Methods --- */

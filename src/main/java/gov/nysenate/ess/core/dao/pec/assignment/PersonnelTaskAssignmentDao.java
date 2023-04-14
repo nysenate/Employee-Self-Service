@@ -1,6 +1,7 @@
 package gov.nysenate.ess.core.dao.pec.assignment;
 
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
+import gov.nysenate.ess.core.service.pec.notification.AssignmentWithTask;
 
 import java.util.List;
 
@@ -28,6 +29,13 @@ public interface PersonnelTaskAssignmentDao {
     PersonnelTaskAssignment getTaskForEmp(int empId, int taskId) throws PersonnelTaskAssignmentNotFoundEx;
 
     /**
+     * Get all assignment-task pairs that may require notification.
+     * @param invitableOnly if only invitable pairs should be returned.
+     * @return the relevant AssignmentWithTasks.
+     */
+    List<AssignmentWithTask> getNotifiableAssignmentsWithTasks(boolean invitableOnly);
+
+    /**
      * Get a list of tasks matching the given query
      *
      * @param query {@link PTAQueryBuilder}
@@ -41,6 +49,12 @@ public interface PersonnelTaskAssignmentDao {
      * @param task {@link PersonnelTaskAssignment}
      */
     void updateAssignment(PersonnelTaskAssignment task);
+
+    /**
+     * Only updates assignment dates and due dates for task assignments that are already in the database
+     * @param task
+     */
+    void updateAssignmentDates(PersonnelTaskAssignment task);
 
     /**
      * Mark a task as completed for the given employee.
@@ -65,7 +79,7 @@ public interface PersonnelTaskAssignmentDao {
      * @param task
      * @return boolean. True if the task has been manually overridden
      */
-    public boolean getManualOverrideStatus(PersonnelTaskAssignment task);
+    boolean getManualOverrideStatus(PersonnelTaskAssignment task);
 
     /**
      * Determine if a task has been manually overridden
@@ -73,5 +87,5 @@ public interface PersonnelTaskAssignmentDao {
      * @param taskId
      * @return boolean. True if the task has been manually overridden
      */
-    public boolean getManualOverrideStatus(Integer empId, Integer taskId);
+    boolean getManualOverrideStatus(Integer empId, Integer taskId);
 }

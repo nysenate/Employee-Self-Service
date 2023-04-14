@@ -341,7 +341,9 @@ public class PECVideoCSVService {
                 employee.getEmployeeId(),
                 dateTime,
                 true,
-                true
+                true,
+                LocalDateTime.now(),
+                null
         );
         personnelTaskAssignmentDao.updateAssignment(taskToInsert);
     }

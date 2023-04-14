@@ -37,9 +37,10 @@ public class SupplyPermissionFactory implements PermissionFactory {
         List<Permission> permissions = new ArrayList<>();
         if (role.equals(EssRole.SENATE_EMPLOYEE)) {
             permissions.add(RequisitionPermission.forCustomer(employee.getEmployeeId(), RequestMethod.GET));
-            if (employee.getWorkLocation() != null) {
+            if (employee.getWorkLocation() == null) {
                 logger.warn("Employee {} has a null work location, user will not have permission to order supplies " +
                         "to their work location.", employee.getEmail());
+            } else {
                 permissions.add(RequisitionPermission.forDestination(employee.getWorkLocation().getLocId().toString(), RequestMethod.GET));
             }
         }

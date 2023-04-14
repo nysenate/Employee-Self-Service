@@ -1,15 +1,20 @@
 package gov.nysenate.ess.core.dao.pec.assignment;
 
+import gov.nysenate.ess.core.dao.base.BasicSqlQuery;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
+import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
+import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignmentGroup;
+import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
+import gov.nysenate.ess.core.service.pec.notification.AssignmentWithTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,6 +56,12 @@ public class SqlPersonnelTaskAssignmentDao extends SqlBaseDao implements Personn
     }
 
     @Override
+    public List<AssignmentWithTask> getNotifiableAssignmentsWithTasks(boolean invitableOnly) {
+        BasicSqlQuery sql = invitableOnly ? SELECT_INVITABLE_ASSIGNMENTS : SELECT_NOTIFIABLE_ASSIGNMENTS;
+        return localNamedJdbc.query(sql.getSql(schemaMap()), assignTaskMapper);
+    }
+
+    @Override
     public List<PersonnelTaskAssignment> getTasks(PTAQueryBuilder query) {
         return localNamedJdbc.query(
                 SELECT_TASKS_QUERY.getSql(schemaMap()),
@@ -64,8 +75,23 @@ public class SqlPersonnelTaskAssignmentDao extends SqlBaseDao implements Personn
         MapSqlParameterSource params = getPATParams(task);
         int updated = localNamedJdbc.update(UPDATE_TASK.getSql(schemaMap()), params);
         if (updated == 0) {
+            params.addValue("assignmentDate", LocalDateTime.now());
+            params.addValue("dueDate", task.getDueDate());
             localNamedJdbc.update(INSERT_TASK.getSql(schemaMap()), params);
         } else if (updated != 1) {
+            throw new IllegalStateException("Too many updates (" + updated + ") occurred for " + task);
+        }
+    }
+
+    @Override
+    public void updateAssignmentDates(PersonnelTaskAssignment task) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("assignmentDate", task.getAssignmentDate());
+        params.addValue("dueDate", task.getDueDate());
+        params.addValue("empId", task.getEmpId());
+        params.addValue("taskId", task.getTaskId());
+        int updated = localNamedJdbc.update(UPDATE_TASK_DATES.getSql(schemaMap()), params);
+        if (updated != 1) {
             throw new IllegalStateException("Too many updates (" + updated + ") occurred for " + task);
         }
     }
@@ -114,9 +140,25 @@ public class SqlPersonnelTaskAssignmentDao extends SqlBaseDao implements Personn
                     getLocalDateTime(rs, "timestamp"),
                     rs.getBoolean("completed"),
                     rs.getBoolean("active"),
-                    rs.getBoolean("manual_override")
+                    rs.getBoolean("manual_override"),
+                    getLocalDateTime(rs, "assignment_date"),
+                    getLocalDateTime(rs, "due_date")
             );
 
+    private static final RowMapper<PersonnelTask> taskRowMapper = (rs, rowNum) ->
+            new PersonnelTask(
+                    rs.getInt("task_id"),
+                    PersonnelTaskType.valueOf(rs.getString("task_type")),
+                    PersonnelTaskAssignmentGroup.valueOf(rs.getString("assignment_group")),
+                    rs.getString("title"),
+                    getLocalDateTime(rs, "effective_date_time"),
+                    getLocalDateTime(rs, "end_date_time"),
+                    rs.getBoolean("active"),
+                    rs.getBoolean("notifiable")
+            );
+
+    private static final RowMapper<AssignmentWithTask> assignTaskMapper = (rs, rowNum) ->
+            new AssignmentWithTask(patRowMapper.mapRow(rs, rowNum), taskRowMapper.mapRow(rs, rowNum));
 
     private MapSqlParameterSource getEmpIdParams(int empId) {
         return new MapSqlParameterSource("empId", empId);

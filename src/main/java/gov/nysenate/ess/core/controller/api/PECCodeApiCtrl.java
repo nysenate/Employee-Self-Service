@@ -81,12 +81,41 @@ public class PECCodeApiCtrl extends BaseRestApiCtrl {
         Subject subject = SecurityUtils.getSubject();
         if (subject.hasRole("ADMIN") || subject.hasRole("PERSONNEL_COMPLIANCE_MANAGER") ) {
 
-            String code1 = personnelCodeGenerationService.createCode();
-            String code2 = personnelCodeGenerationService.createCode();
+            String code1 = PersonnelCodeGenerationService.createCode();
+            String code2 = PersonnelCodeGenerationService.createCode();
 
             return new SimpleResponse(true,
                     "The new codes were generated successfully. " + "Code 1: " + code1 + " Code 2: " + code2,
-                    "employee-task-override");
+                    "manual-code-generation");
+        }
+        return new SimpleResponse(false,
+                "You do not have permission to execute this api functionality",
+                "employee-task-override");
+    }
+
+    /**
+     * Update Personnel Task Assignment API
+     * ------------------------------------
+     *
+     * Create new codes to be used for personnel ethics tasks
+     *
+     * Usage:
+     * (POST)   /api/v1/personnel/task/codes/autogen
+     *
+     * Path params:
+     *
+     * @return {@link SimpleResponse}
+     */
+    @RequestMapping(value = "/codes/autogen", method = POST)
+    public SimpleResponse autoGenerateNewCodes() throws AuthorizationException {
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.hasRole("ADMIN") || subject.hasRole("PERSONNEL_COMPLIANCE_MANAGER") ) {
+
+            personnelCodeGenerationService.handleCodeChangesForEthicsLiveCourses();
+
+            return new SimpleResponse(true,
+                    "The ethics live code auto generation was successful",
+                    "ethics-live-autogen");
         }
         return new SimpleResponse(false,
                 "You do not have permission to execute this api functionality",
@@ -120,7 +149,7 @@ public class PECCodeApiCtrl extends BaseRestApiCtrl {
         ethicsLiveCourseTask.verifyCodes(submission.getCodes());
         int authenticatedEmpId = ShiroUtils.getAuthenticatedEmpId();
         assignedTaskDao.setTaskComplete(submission.getEmpId(), ethicsLiveCourseTask.getTaskId(), authenticatedEmpId);
-        pecNotificationService.sendCompletionEmail(submission.getEmpId(), ethicsLiveCourseTask.getTaskId());
+        pecNotificationService.sendCompletionEmail(submission.getEmpId(), ethicsLiveCourseTask);
         return new SimpleResponse(true, "codes submitted successfully", "code-submission-success");
     }
 
@@ -151,7 +180,7 @@ public class PECCodeApiCtrl extends BaseRestApiCtrl {
         videoTask.verifyCodes(submission.getCodes());
         int authenticatedEmpId = ShiroUtils.getAuthenticatedEmpId();
         assignedTaskDao.setTaskComplete(submission.getEmpId(), videoTask.getTaskId(), authenticatedEmpId);
-        pecNotificationService.sendCompletionEmail(submission.getEmpId(), videoTask.getTaskId());
+        pecNotificationService.sendCompletionEmail(submission.getEmpId(), videoTask);
         return new SimpleResponse(true, "codes submitted successfully", "code-submission-success");
     }
 
