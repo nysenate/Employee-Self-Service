@@ -11,6 +11,9 @@ public class DepartmentView implements ViewObject {
     private EmployeeView head;
     private Set<EmployeeView> subordinates;
 
+    public DepartmentView() {
+    }
+
     public DepartmentView(Department department) {
         this.head = new EmployeeView(department.getHead());
         this.subordinates = department.getSubordinates().stream()
@@ -24,6 +27,14 @@ public class DepartmentView implements ViewObject {
 
     public Set<EmployeeView> getSubordinates() {
         return subordinates;
+    }
+
+    public void setHead(EmployeeView head) {
+        this.head = head;
+    }
+
+    public void setSubordinates(Set<EmployeeView> subordinates) {
+        this.subordinates = subordinates;
     }
 
     @Override

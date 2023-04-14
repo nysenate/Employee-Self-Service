@@ -65,6 +65,23 @@ function purposeEditLink($http, appProps, attachmentDeleteApi, modals) {
                     scope.dirtyAmendment.attachments = response.result.amendment.attachments;
                 })
             };
+
+            scope.onTravelerSelected = function (traveler) {
+                for (var i = 0; i < scope.dto.allowedTravelers.length; i++) {
+                    var allowedTraveler = scope.dto.allowedTravelers[i];
+                    if (allowedTraveler.employeeId === traveler.employeeId) {
+                        if (allowedTraveler.department == null || allowedTraveler.department.head.employeeId === traveler.employeeId) {
+                            scope.departmentHead = null;
+                            scope.dto.travelerDeptHeadEmpId = null;
+                        } else {
+                            scope.departmentHead = allowedTraveler.department.head;
+                            scope.dto.travelerDeptHeadEmpId = scope.departmentHead.employeeId;
+                        }
+                    }
+                }
+            }
+
+            scope.onTravelerSelected(scope.dto.traveler);
         }
     }
 }

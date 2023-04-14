@@ -12,6 +12,10 @@ public class TravelEmployeeView extends EmployeeView implements ViewObject {
     private boolean isDepartmentHead;
     private DepartmentView department;
 
+    public TravelEmployeeView() {
+        super();
+    }
+
     public TravelEmployeeView(TravelEmployee travelEmployee) {
         super(travelEmployee);
         this.isDepartmentHead = travelEmployee.isDepartmentHead();

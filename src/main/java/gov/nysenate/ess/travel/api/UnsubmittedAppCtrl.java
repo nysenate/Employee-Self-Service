@@ -85,7 +85,7 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
         }
         Set<Employee> allowedTravelerEmps = allowedTravelersService.forEmp(user);
         Set<TravelEmployee> allowedTravelers = travelEmployeeService.getTravelEmployees(allowedTravelerEmps);
-        appEditDto.setAllowedTravelers(allowedTravelers);
+        appEditDto.setAllowedTravelerViews(allowedTravelers);
 
         unsubmittedAppDao.save(getSubjectEmployeeId(), appEditDto.getTraveler(), appEditDto.getAmendment(), appEditDto.getTravelerDeptHeadEmpId());
         return new ViewObjectResponse<>(appEditDto);
@@ -137,7 +137,9 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
                     }
                     break;
                 case "travelerDeptHeadEmpId":
-                    int travelerDeptHeadEmpId = Integer.valueOf(patch.getValue());
+                    Integer travelerDeptHeadEmpId = Optional.ofNullable(patch.getValue())
+                            .map(Integer::valueOf)
+                            .orElse(null);
                     dto.setTravelerDeptHeadEmpId(travelerDeptHeadEmpId);
                     break;
                 case "purposeOfTravel":

@@ -1,9 +1,7 @@
 package gov.nysenate.ess.travel.api.application;
 
 import gov.nysenate.ess.core.client.view.DetailedEmployeeView;
-import gov.nysenate.ess.core.client.view.EmployeeView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
-import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.travel.EventType;
 import gov.nysenate.ess.travel.employee.TravelEmployee;
 import gov.nysenate.ess.travel.employee.TravelEmployeeView;
@@ -35,7 +33,7 @@ public class TravelAppEditDto implements ViewObject {
         this.validEventTypes = EnumSet.allOf(EventType.class).stream().map(EventTypeView::new).collect(Collectors.toList());
     }
 
-    public void setAllowedTravelers(Set<TravelEmployee> allowedTravelers) {
+    public void setAllowedTravelerViews(Set<TravelEmployee> allowedTravelers) {
         this.allowedTravelers = allowedTravelers.stream()
                 .map(TravelEmployeeView::new)
                 .collect(Collectors.toSet());
@@ -61,12 +59,16 @@ public class TravelAppEditDto implements ViewObject {
         this.traveler = traveler;
     }
 
-    public void setTravelerDeptHeadEmpId(int travelerDeptHeadEmpId) {
+    public void setTravelerDeptHeadEmpId(Integer travelerDeptHeadEmpId) {
         this.travelerDeptHeadEmpId = travelerDeptHeadEmpId;
     }
 
     public void setAmendment(AmendmentView amendment) {
         this.amendment = amendment;
+    }
+
+    public void setAllowedTravelers(Set<TravelEmployeeView> allowedTravelers) {
+        this.allowedTravelers = allowedTravelers;
     }
 
     public List<EventTypeView> getValidEventTypes() {

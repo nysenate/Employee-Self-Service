@@ -28,7 +28,7 @@
         <div class="padding-10">
           <div class="purpose-row">
             <label>Travel application on behalf of:</label>
-            <ui-select ng-model="dto.traveler" style="min-width: 200px;" class="travel-ui-select-input" traveler-validator>
+            <ui-select ng-model="dto.traveler" style="min-width: 200px;" class="travel-ui-select-input" on-select="onTravelerSelected($item)" traveler-validator>
               <ui-select-match>
                 <span ng-bind="$select.selected.fullName"></span>
               </ui-select-match>
@@ -37,18 +37,9 @@
               </ui-select-choices>
             </ui-select>
           </div>
-          <div class="purpose-row">
+          <div class="purpose-row" ng-if="departmentHead !== null">
             <label>Traveler Department Head:</label>
-            <ui-select ng-model="dto.travelerDeptHeadEmpId" style="min-width: 200px;" class="travel-ui-select-input"
-                       department-head-validator>
-              <ui-select-match>
-                <span ng-bind="$select.selected.fullName"></span>
-              </ui-select-match>
-              <ui-select-choices
-                  repeat="emp.employeeId as emp in dto.possibleDepartmentHeads | filter: $select.search track by emp.employeeId">
-                <div ng-bind-html="emp.fullName"></div>
-              </ui-select-choices>
-            </ui-select>
+            <span class="padding-left-10">{{departmentHead.fullName}}</span>
           </div>
         </div>
       </div>
