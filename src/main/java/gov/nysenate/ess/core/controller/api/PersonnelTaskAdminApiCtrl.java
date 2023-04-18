@@ -198,7 +198,7 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
     }
 
     /**
-     * Update Personnel Task Assignment API
+     * Personnel Task Assignment Completion Override API
      * ------------------------------------
      *
      * Updates the Completion status of a task for an employee
@@ -224,6 +224,40 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
             return new SimpleResponse(true,
                     "Task assignment " + taskID + " was updated for Employee " + empID +
                             " by employee " + updateEmpID + ". Its completion status is " + completed,
+                    "employee-task-override");
+        }
+        return new SimpleResponse(false,
+                "You do not have permission to execute this api functionality",
+                "employee-task-override");
+    }
+
+    /**
+     * Personnel Task Assignment activation Override API
+     * ------------------------------------
+     *
+     * Updates the activation status of a task for an employee
+     *
+     * Usage:
+     * (GET)   /api/v1/admin/personnel/task/overrride/activation/{updateEmpID}/{taskID}/{activeStatus}/{empID}
+     *
+     * Path params:
+     *
+     * @return {@link SimpleResponse}
+     */
+    @RequestMapping(value = "/overrride/activation/{updateEmpID}/{taskID}/{activeStatus}/{empID}", method = GET)
+    public SimpleResponse overrideTaskActivation(@PathVariable int updateEmpID,
+                                                 @PathVariable int taskID,
+                                                 @PathVariable boolean activeStatus,
+                                                 @PathVariable int empID) throws AuthorizationException {
+        Subject subject = SecurityUtils.getSubject();
+
+        boolean isAdmin = subject.hasRole("ADMIN");
+        boolean isPecManager = subject.hasRole("PERSONNEL_COMPLIANCE_MANAGER");
+        if ( isPecManager || isAdmin ) {
+            taskAssigner.updateAssignedTaskActiveStatus(empID,updateEmpID,activeStatus,taskID);
+            return new SimpleResponse(true,
+                    "Task assignment " + taskID + " was updated for Employee " + empID +
+                            " by employee " + updateEmpID + ". Its active status is " + activeStatus,
                     "employee-task-override");
         }
         return new SimpleResponse(false,

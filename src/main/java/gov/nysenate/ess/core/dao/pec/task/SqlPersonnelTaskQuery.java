@@ -21,6 +21,11 @@ public enum SqlPersonnelTaskQuery implements BasicSqlQuery {
             "SET timestamp = now(), update_user_id = :updateUserId, completed = :completed, manual_override = :manualOverride\n" +
             "WHERE emp_id = :empId AND task_id = :taskId"
     ),
+    UPDATE_TASK_ACTIVE_STATUS("" +
+            "UPDATE ${essSchema}.personnel_task_assignment\n" +
+            "SET timestamp = now(), update_user_id = :updateUserId, active = :activeStatus, manual_override = :manualOverride\n" +
+            "WHERE emp_id = :empId AND task_id = :taskId"
+    ),
     UPDATE_TASK_ASSIGNMENT(
             "update ${essSchema}.personnel_task_assignment set active = ?, " +
                     "update_user_id = ?, manual_override = ?, where emp_id = ? and task_id = ?"
