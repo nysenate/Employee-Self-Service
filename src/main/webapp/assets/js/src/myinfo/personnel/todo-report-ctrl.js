@@ -1,9 +1,9 @@
 (function () {
     angular.module('essMyInfo')
         .controller('TodoReportCtrl',
-                    ['$scope', '$httpParamSerializer', 'TaskUtils', 'EmpPATSearchApi', 'PaginationModel', 'appProps', 'modals', 'UpdatePersonnelTaskAssignmentApi', todoCtrl]);
+                    ['$scope', '$httpParamSerializer', 'TaskUtils', 'EmpPATSearchApi', 'PaginationModel', 'appProps', 'modals', 'UpdatePersonnelTaskAssignmentCompletionApi', 'UpdatePersonnelTaskAssignmentActiveStatusApi', todoCtrl]);
 
-    function todoCtrl($scope, $httpParamSerializer, taskUtils, searchApi, pagination, appProps, modals, UpdatePersonnelTaskAssignmentApi) {
+    function todoCtrl($scope, $httpParamSerializer, taskUtils, searchApi, pagination, appProps, modals, UpdatePersonnelTaskAssignmentCompletionApi, UpdatePersonnelTaskAssignmentActiveStatusApi) {
 
         var itemsPerPage = 10;
 
@@ -96,6 +96,7 @@
         $scope.getSortClass = getSortClass;
         $scope.toggleOrder = toggleOrder;
         $scope.overrideEmpTaskCompletion = overrideEmpTaskCompletion;
+        $scope.overrideEmpTaskActiveStatus = overrideEmpTaskActiveStatus;
         $scope.getOverrideTaskEmpName = getOverrideTaskEmpName;
         $scope.getOverrideTaskTitle = getOverrideTaskTitle;
         $scope.submitTaskOverride = submitTaskOverride;
@@ -330,7 +331,14 @@
             modals.open('task-override-dialog');
         }
 
-        function submitTaskOverride() {
+        function overrideEmpTaskActiveStatus(taskId, taskName) {
+            selectedEmpName = $scope.state.results[$scope.state.iSelResult].employee.fullName;
+            selectedTaskName = taskName;
+            selectedTaskId = taskId;
+            modals.open('task-active-status-override-dialog');
+        }
+
+        function submitTaskOverride(changingActiveStatus) {
             modals.resolve();
 
             var selectedEmpId = $scope.state.results[$scope.state.iSelResult].employee.employeeId;
@@ -355,7 +363,13 @@
                 updateEmpID: appProps.user.employeeId
             };
 
-            UpdatePersonnelTaskAssignmentApi.get(params).$promise.catch($scope.handleErrorResponse);
+            if (changingActiveStatus) {
+                UpdatePersonnelTaskAssignmentActiveStatusApi.get(params).$promise.catch($scope.handleErrorResponse);
+            }
+            else {
+                UpdatePersonnelTaskAssignmentCompletionApi.get(params).$promise.catch($scope.handleErrorResponse);
+            }
+
 
             resetTaskOverrideVars();
             init();

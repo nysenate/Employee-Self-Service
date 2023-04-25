@@ -28,6 +28,11 @@ public interface PersonnelTaskAssigner {
     void updateAssignedTaskCompletion(int empID, int updateEmpID, boolean completed, int taskID);
 
     /**
+     * Updates a tasks active status assigned to an employee
+     */
+    void updateAssignedTaskActiveStatus(int empID, int updateEmpID, boolean activeStatus, int taskID);
+
+    /**
      * Updates a tasks assignment status for a task assigned to an employee
      */
     void updateAssignedTaskAssignment(int empID, int updateEmpID, boolean assigned, int taskID);

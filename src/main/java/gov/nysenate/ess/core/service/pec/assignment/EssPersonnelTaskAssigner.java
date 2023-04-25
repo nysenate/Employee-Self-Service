@@ -101,6 +101,14 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
     }
 
     @Override
+    public void updateAssignedTaskActiveStatus(int empID, int updateEmpID, boolean activeStatus, int taskID) {
+        personnelTaskDao.updatePersonnelAssignedActiveStatus(empID, updateEmpID, activeStatus, taskID);
+
+        logger.info("Task assignment " + taskID + " was updated for Employee " + empID +
+                " by employee " + updateEmpID + ". Its active status status is " + activeStatus);
+    }
+
+    @Override
     public void updateAssignedTaskAssignment(int empID, int updateEmpID, boolean assigned, int taskID) {
         personnelTaskDao.updatePersonnelAssignedTaskAssignment(empID,updateEmpID,assigned,taskID);
     }

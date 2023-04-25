@@ -75,9 +75,11 @@ public class EverfiRecordService implements ESSEverfiRecordService {
     /** {@inheritDoc} */
     @Scheduled(cron = "${scheduler.everfi.task.sync.cron}") //At the top of every hour every day
     public void getUpdatesFromEverfi() throws IOException {
-        final LocalDateTime jan1970 = LocalDateTime.of(1970, 1, 1, 0, 0, 0, 0);
-        refreshCaches();
-        contactEverfiForUserRecords(jan1970.toString() + ":00.000");
+        if (everfiSyncEnabled) {
+            final LocalDateTime jan2023 = LocalDateTime.of(2023, 1, 1, 0, 0, 0, 0);
+            refreshCaches();
+            contactEverfiForUserRecords(jan2023.toString() + ":00.000");
+        }
     }
 
     /** {@inheritDoc} */
