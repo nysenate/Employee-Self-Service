@@ -49,13 +49,26 @@ public class SqlPersonnelTaskDao extends SqlBaseDao implements PersonnelTaskDao 
         updateParams.addValue("completed",completed);
         updateParams.addValue("empId",empID);
         updateParams.addValue("taskId",taskID);
+        updateParams.addValue("manualOverride",true);
 
         int value = localNamedJdbc.update(UPDATE_TASK_COMPLETION.getSql(schemaMap()), updateParams );
     }
 
     @Override
+    public void updatePersonnelAssignedActiveStatus(int empID, int updateEmpID, boolean activeStatus, int taskID) {
+        MapSqlParameterSource updateParams = new MapSqlParameterSource();
+        updateParams.addValue("updateUserId",updateEmpID);
+        updateParams.addValue("activeStatus",activeStatus);
+        updateParams.addValue("empId",empID);
+        updateParams.addValue("taskId",taskID);
+        updateParams.addValue("manualOverride",true);
+
+        int value = localNamedJdbc.update(UPDATE_TASK_ACTIVE_STATUS.getSql(schemaMap()), updateParams );
+    }
+
+    @Override
     public void updatePersonnelAssignedTaskAssignment(int empID, int updateEmpID, boolean assigned, int taskID) {
-        localJdbc.update(UPDATE_TASK_ASSIGNMENT.getSql(schemaMap()), assigned,updateEmpID,empID,taskID );
+        localJdbc.update(UPDATE_TASK_ASSIGNMENT.getSql(schemaMap()), assigned,updateEmpID,true,empID,taskID );
     }
 
     @Override
@@ -84,6 +97,22 @@ public class SqlPersonnelTaskDao extends SqlBaseDao implements PersonnelTaskDao 
         return everfiAssignmentIDMap;
     }
 
+    @Override
+    public int getEthicsCodeId(int taskId) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("taskId",taskId);
+        return localNamedJdbc.queryForObject(SELECT_ETHICS_LIVE_COURSE_CODE_INFO.getSql(schemaMap()), params, Integer.class);
+    }
+
+    @Override
+    public void updateEthicsCode(String code, int ethicsCodeId, int sequenceNo ) {
+        MapSqlParameterSource updateParams = new MapSqlParameterSource();
+        updateParams.addValue("code",code);
+        updateParams.addValue("codeId",ethicsCodeId);
+        updateParams.addValue("sequence_no",sequenceNo);
+        localNamedJdbc.update(UPDATE_ETHICS_CODE.getSql(schemaMap()), updateParams );
+    }
+
     private static final RowMapper<PersonnelTask> taskRowMapper = (rs, rowNum) ->
             new PersonnelTask(
                     rs.getInt("task_id"),
@@ -92,7 +121,8 @@ public class SqlPersonnelTaskDao extends SqlBaseDao implements PersonnelTaskDao 
                     rs.getString("title"),
                     getLocalDateTime(rs, "effective_date_time"),
                     getLocalDateTime(rs, "end_date_time"),
-                    rs.getBoolean("active")
+                    rs.getBoolean("active"),
+                    rs.getBoolean("notifiable")
             );
 
     private static final RowMapper<EverfiContentID> everfiContentIDRowMapper = (rs, rowNum) ->

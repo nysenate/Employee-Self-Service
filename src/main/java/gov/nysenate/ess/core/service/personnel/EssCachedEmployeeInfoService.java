@@ -3,6 +3,7 @@ package gov.nysenate.ess.core.service.personnel;
 import com.google.common.collect.DiscreteDomain;
 import com.google.common.collect.Range;
 import com.google.common.collect.RangeSet;
+import com.google.common.eventbus.EventBus;
 import gov.nysenate.ess.core.annotation.WorkInProgress;
 import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
 import gov.nysenate.ess.core.dao.unit.LocationDao;
@@ -86,6 +87,20 @@ public class EssCachedEmployeeInfoService extends EmployeeIdCache<Employee>
     public RangeSet<LocalDate> getEmployeeActiveDatesService(int empId) {
         TransactionHistory transHistory = transService.getTransHistory(empId);
         return transHistory.getActiveDates();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public LocalDate getEmployeesMostRecentContinuousServiceDate(int empId) {
+        RangeSet<LocalDate> activeServiceDates =
+                getEmployeeActiveDatesService(empId);
+        Set<Range<LocalDate>> descendingSetRange = activeServiceDates.asDescendingSetOfRanges(); //[[2023-01-01..+∞), [2007-02-08..2018-12-15)]
+        Optional<Range<LocalDate>> firstString = descendingSetRange.stream().findFirst();
+        if(firstString.isPresent()){
+            Range<LocalDate> activeServiceRange = firstString.get();
+           return activeServiceRange.lowerEndpoint();
+        }
+        return null;
     }
 
     /** {@inheritDoc} */

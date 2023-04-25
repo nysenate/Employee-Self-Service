@@ -1,0 +1,2 @@
+alter table ess.personnel_task_assignment add column "first_notification_sent" BOOLEAN NOT NULL DEFAULT FALSE;
+alter table ess.personnel_task_assignment add column "first_notification_time" timestamp default null;

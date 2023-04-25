@@ -203,7 +203,7 @@ public class EssAuthenticationFilter extends AuthenticationFilter
         SenateLdapPerson user = (SenateLdapPerson) subject.getPrincipal();
         String redirectUrl = getSuccessRedirectUrl(request);
 
-        AuthenticationResponse authResponse = new AuthenticationResponse(authStatus, user.getUid(), redirectUrl);
+        AuthenticationResponse authResponse = new AuthenticationResponse(authStatus, user.getUid(), user.getEmployeeId(), redirectUrl);
         HttpResponseUtils.writeHttpResponse((HttpServletRequest) request, (HttpServletResponse) response, authResponse);
         response.flushBuffer();
 
@@ -223,7 +223,7 @@ public class EssAuthenticationFilter extends AuthenticationFilter
         String user = (String) token.getPrincipal();
         String redirectUrl = getLoginUrl();
 
-        AuthenticationResponse authResponse = new AuthenticationResponse(authStatus, user, redirectUrl);
+        AuthenticationResponse authResponse = new AuthenticationResponse(authStatus, user, 0, redirectUrl);
         HttpResponseUtils.writeHttpResponse((HttpServletRequest) request, (HttpServletResponse) response, authResponse);
 
         logger.debug("Login failure for user {} with status {}", user, authStatus);

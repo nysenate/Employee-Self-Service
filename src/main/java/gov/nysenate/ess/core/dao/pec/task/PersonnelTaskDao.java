@@ -29,6 +29,11 @@ public interface PersonnelTaskDao {
     void updatePersonnelAssignedTaskCompletion(int empID, int updateEmpID, boolean completed, int taskID);
 
     /**
+     * Update a personnel assigned task active status
+     */
+    void updatePersonnelAssignedActiveStatus(int empID, int updateEmpID, boolean activeStatus, int taskID);
+
+    /**
      * Update a personnel assigned task
      */
     void updatePersonnelAssignedTaskAssignment(int empID, int updateEmpID, boolean assigned, int taskID);
@@ -42,4 +47,14 @@ public interface PersonnelTaskDao {
      * Get a hash map of everfi Assignment ID's to personnel task ids
      */
     HashMap<Integer, Integer> getEverfiAssignmentIDs();
+
+    /**
+     * Gets the ethics code id for any ethics live task
+     */
+    int getEthicsCodeId(int taskId);
+
+    /**
+     * Update the ethics live codes table in the database with new codes
+     */
+    void updateEthicsCode(String code, int ethicsCodeId, int sequenceNo );
 }

@@ -2,7 +2,9 @@ package gov.nysenate.ess.core.model.pec;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.ComparisonChain;
+import gov.nysenate.ess.core.util.DateUtils;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.StringJoiner;
 
@@ -24,22 +26,53 @@ public class PersonnelTaskAssignment implements Comparable<PersonnelTaskAssignme
     private final boolean completed;
     private final boolean active;
 
+    private final boolean manual_override;
+
+    private final LocalDateTime assignmentDate;
+    private final LocalDateTime dueDate;
+
+
     public PersonnelTaskAssignment(int taskId,
                                    int empId,
                                    Integer updateEmpId,
                                    LocalDateTime updateTime,
                                    boolean completed,
-                                   boolean active) {
+                                   boolean active,
+                                   LocalDateTime assignmentDate,
+                                   LocalDateTime dueDate) {
         this.taskId = taskId;
         this.empId = empId;
         this.updateEmpId = updateEmpId;
         this.updateTime = updateTime;
         this.completed = completed;
         this.active = active;
+        this.manual_override = false;
+        this.assignmentDate = assignmentDate;
+        this.dueDate = dueDate;
+    }
+
+    public PersonnelTaskAssignment(int taskId,
+                                   int empId,
+                                   Integer updateEmpId,
+                                   LocalDateTime updateTime,
+                                   boolean completed,
+                                   boolean active,
+                                   boolean manual_override,
+                                   LocalDateTime assignmentDate,
+                                   LocalDateTime dueDate) {
+        this.taskId = taskId;
+        this.empId = empId;
+        this.updateEmpId = updateEmpId;
+        this.updateTime = updateTime;
+        this.completed = completed;
+        this.active = active;
+        this.manual_override = manual_override;
+        this.assignmentDate = assignmentDate;
+        this.dueDate = dueDate;
     }
 
     public static PersonnelTaskAssignment newTask(int empId, int taskId) {
-        return new PersonnelTaskAssignment(taskId, empId, null, null, false, true);
+        return new PersonnelTaskAssignment(taskId, empId, null, null, false, true, false, null, null);
     }
 
     /* --- Overrides --- */
@@ -54,7 +87,8 @@ public class PersonnelTaskAssignment implements Comparable<PersonnelTaskAssignme
                 Objects.equal(updateEmpId, that.updateEmpId) &&
                 completed == that.completed &&
                 active == that.active &&
-                Objects.equal(updateTime, that.updateTime);
+                Objects.equal(updateTime, that.updateTime) &&
+                manual_override == that.manual_override;
     }
 
     @Override
@@ -79,6 +113,9 @@ public class PersonnelTaskAssignment implements Comparable<PersonnelTaskAssignme
                 .add("updateTime=" + updateTime)
                 .add("completed=" + completed)
                 .add("active=" + active)
+                .add("manual_override=" + manual_override)
+                .add("assignmentDate=" + assignmentDate)
+                .add("dueDate=" + dueDate)
                 .toString();
     }
 
@@ -106,5 +143,34 @@ public class PersonnelTaskAssignment implements Comparable<PersonnelTaskAssignme
 
     public boolean isActive() {
         return active;
+    }
+
+    public boolean wasManuallyOverridden() {
+        return manual_override;
+    }
+
+    public LocalDateTime getAssignmentDate() {
+        return assignmentDate;
+    }
+
+    public LocalDateTime getDueDate() {
+        return dueDate;
+    }
+
+    /**
+     * Returns a new PersonnelTaskAssignment that's a copy of this one,
+     * but with assignment and due date added.
+     * @param continuousServiceDate of the related employee.
+     * @param type of the related task.
+     * @param isNew if this is a newly created assignment.
+     * @return a new PersonnelTaskAssignment with the proper dates.
+     */
+    public PersonnelTaskAssignment withDates(LocalDate continuousServiceDate, PersonnelTaskType type, boolean isNew) {
+        LocalDateTime assignmentDateTime = (isNew ? LocalDate.now() : continuousServiceDate).atStartOfDay();
+        LocalDate dueDate = DateUtils.getDueDate(continuousServiceDate, type);
+        return new PersonnelTaskAssignment(
+                getTaskId(), getEmpId(), getUpdateEmpId(),
+                getUpdateTime(), isCompleted(), isActive(),
+                assignmentDateTime, dueDate == null ? null : dueDate.atStartOfDay());
     }
 }

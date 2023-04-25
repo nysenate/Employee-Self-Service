@@ -5,7 +5,7 @@
 # Runtime level (dev/test/prod)
 runtime.level = dev
 
-# --- Data Directory -------------------------------------------------
+# --- Data Directory ----------------------------------------------------------
 
 # Directory where ess data is stored that is not included in the webapp root
 data.dir = /data/ess/
@@ -14,19 +14,24 @@ data.dir = /data/ess/
 # Used to determine fs location and request routing for ack docs.
 data.ackdoc_subdir = ack_docs/
 
-# Subdirectory where travel request attachments are stored.
+# Subdirectory where travel request attachments are stored (needs "tomcat"
+# ownership)
 data.travel.attachments.dir = travel_request_attachments/
 
 # Subdirectory where Personnel Employee Compliance videos are stored
 data.pecvid_subdir = pec_videos/
 
-#Subdirectory where downloaded Personnel Employee Compliance pdfs are stored
+# Subdirectory where downloaded Personnel Employee Compliance pdfs are stored
+# (needs "tomcat" ownership)
 data.pdf_subdir = pec_pdfs/
+
+# Subdirectory where log files are stored (needs "tomcat" ownership)
+data.log_subdir = log/
 
 # --- Domain Configuration ----------------------------------------------------
 
-# The domain url and context path that ess is hosted on (used for generating links)
-# do not use a trailing slash
+# The domain URL and context path that ESS is hosted on (used for generating
+# links).  Do not use a trailing slash.
 domain.url = http://localhost:8080
 
 # --- Security Settings -------------------------------------------------------
@@ -39,26 +44,28 @@ auth.enabled = true
 auth.master.pass =
 
 # LDAP Configuration
-# Ldap server url.  Include protocol(typically ldap://) and port(typically :389).
+# LDAP server URL. Include protocol (eg. ldap://) and port (eg. :389).
 ldap.url =
-# Ldap search base that includes all users
+# LDAP search base that includes all users
 ldap.base =
-# Distinguished name of an ldap user.  This dn will be used to make queries across all users
+# Distinguished name of an LDAP service user.  This dn will be used to make
+# queries across all users.
 ldap.user.dn =
-# Ldap password for the app's ldap user
+# LDAP password for the LDAP service login
 ldap.user.pass =
 
 
 # Number of bytes generated for XSRF token
 xsrf.token.bytes = 128
 
-# If enabled will restrict all users from departments outside of the specified whitelist
-# (default: false)
+# If enabled will restrict all users from departments outside of the
+# specified whitelist (default: false)
 restrict.department.enabled = false
 
 # If departmental restriction is enabled,
 # only the responsibility center heads listed below can use the application.
-# Takes a comma separated list of resp center codes, short names, or full names.  Case insensitive.
+# Takes a comma-separated list of responsibility center codes (RCHs),
+# short names, or full names.  Case insensitive.
 # (example: STSBAC,Senate Technology Services)
 restrict.department.whitelist =
 
@@ -165,24 +172,24 @@ cache.poll.delay.employees = 60000
 cache.poll.delay.supervisors = 60000
 # Delay (ms) during which the time records cache is refreshed from the DB.
 cache.poll.delay.timerecords = 60000
-# Delay (ms) during which the annual accrual record cache is refreshed from the DB.
+# Delay (ms) during which the annual accrual record cache is refreshed from DB.
 cache.poll.delay.accruals = 60000
 
 
 # --- URL Configuration -------------------------------------------------------
 
-# The url path to be used for accessing resources (css/js)
+# The URL path to be used for accessing resources (css/js)
 resource.path = /assets/
 
 # The directory in which the actual css/js subdirectories are contained
 resource.location = /assets/
 
-# Url Details
+# URL Details
 
 login.url = /login
 login.success.url = /time/record/entry
 
-# Sfms Report Base Url
+# SFMS report base URL
 sfms.report.base.url = http://nysasprd.nysenate.gov:7778/reports/rwservlet
 
 # LegEthics Training URL
@@ -201,7 +208,7 @@ pec.2020_sexual_harassment_ack_task_id =
 pec.import.ethics_2021_video_task_id =
 pec.nysenate.seal =
 
-# --- PEC Everfi Config --------------------------------------------------
+# --- PEC Everfi Config -------------------------------------------------------
 
 # The client id and client secret needed for accessing the Everfi API.
 pec.everfi.client.id =
@@ -211,14 +218,14 @@ pec.everfi.bad.email.report.enabled = false
 # --- Scheduling Configuration ------------------------------------------------
 
 # Determines if the scheduled ensure all time records function will run
-# (Default: false)
+# (default: false)
 scheduler.timerecord.ensureall.enabled = false
 
-# Cron expressions that dictate scheduling for scheduled services
+# Cron expressions that dictate the timing for scheduled services
 # Format "{second} {minute} {hour} {day of month} {month} {day of week}"
 
-# Determines when the function that checks/generates time records for all employees runs
-# (Default every night at midnight: 0 0 0 * * *)
+# Determines when the function that checks/generates time records for all
+# employees runs (default: every night at midnight: 0 0 0 * * *)
 scheduler.timerecord.ensureall.cron = 0 0 0 * * *
 
 # Determines if the supply SFMS synchronization process will run
@@ -230,38 +237,59 @@ scheduler.supply.sfms_synchronization.cron = 0 0 0 * * *
 # Updates travel application values taken from the web
 scheduler.travel.scrape.cron = 0 0 2 * * *
 
-# Determines if scheduled polling of course completion records from moodle is enabled.
+# Determines when to auto-generate the codes for Ethics Live courses
+scheduler.ethics.code.autogen.cron = 0 0 0 1 * *
+
+# Determines whether or not we should send out email alerts to every active
+# employee with outstanding tasks. (default: false)
+scheduler.pec.notifs.enabled = false
+
+# If enabled, will automatically update the DB with new Ethics Live codes
+# and email the admins.
+pec.ethics-code.autogen = true
+
+# Determines if any emails should be sent at all from the PEC Notification
+# Service. This includes test mode.
+all.pec.notifs.enabled = false
+
+# Determines when PEC notifications are sent out (default: every day)
+scheduler.pec.notifs.cron = 0 0 22 * * *
+
+# Determines if scheduled polling of course completion records from Moodle
+# is enabled.
 scheduler.moodle.sync.enabled = false
 
-#Determines whether or not we automatically scrape from Everfi
+# Determines whether or not we automatically scrape from Everfi
 scheduler.everfi.sync.enabled = false
 
-#Default pull Moodle records every hour or so
+# Determines when Moodle records are pulled
 scheduler.moodle.task.sync.cron = 0 30 * * * *
 
-#Default of every hour on the top of the hour to pull Everfi records
+# Determines when Everfi records are pulled (default: at the top of every hour)
 scheduler.everfi.task.sync.cron = 0 0 * * * *
 
-# Schedules when users are added to everfi / ids stored in the db
+# Determines when users are added to Everfi / ids stored in the db
 scheduler.everfi.user.update.cron = 0 0 23 * * *
 
-# Schedules when the Department category label is updated. Should be done before users are updated
+# Determines when the Department category label is updated. Should be done
+# before users are updated.
 scheduler.everfi.category.update.cron = 0 0 22 * * *
 
 # Determines if scheduled personnel task assignment is enabled.
 scheduler.personnel_task.assignment.enabled = true
 
-# The schedule for personnel task assigment. (Default every day at 1AM)
+# Schedule for personnel task assigment. (Default every day at 1AM)
 scheduler.personnel_task.assignment.cron = 0 0 3 * * *
 
 # --- Timeout Configuration ---------------------------------------------------
 
-#timeout in secs
+# Session timeout in seconds.
 timeout = 900
 
 # --- Image Folder URL --------------------------------------------------------
 
-#absolute path prefix for images
+# URL path prefix for Supply images.  A full URL might be:
+# https://ess.nysenate.gov/assets/supply_photos/PENCIL-SHARP-EL.jpg
 image.url = /assets/supply_photos
 
 # --- Web Cache ---------------------------------------------------------------
@@ -275,41 +303,48 @@ application.version=@project.version@
 
 # --- Slack Configuration -----------------------------------------------------
 
-# The webhook url used to send slack messages.  See Setup Instructions at https://nysstech.slack.com/services/3391217030
+# The webhook URL used to send Slack messages.  See setup instructions at:
+#   https://nysstech.slack.com/services/3391217030
 slack.webhook.url =
 
-# Limit the number of lines output for slack notifications (default 5)
+# Limit the number of lines of output for Slack notifications (default: 5)
 slack.notification.line.limit = 5
 
-# --- Error Report EmailConfiguration -----------------------------------------------------
+# --- Error Report Email Configuration ----------------------------------------
 report.email =
 
-#Supports comma separated emails
+# Supports comma-separated emails
 everfi.report.email =
 
-# --- Supply Configuration -----------------------------------------------------
+# Supports comma-separated emails
+pec.code.admin.emails =
 
-# A comma separated list of emails that will receive a notification when new requisitions are submitted.
+pec.test.mode = true
+
+# --- Supply Configuration ----------------------------------------------------
+
+# A comma-separated list of emails that will receive a notification when
+# new requisitions are submitted.
 supply.requisition.notification.list =
 
-# Comma separated list of commodity codes which do not need to be reconciled.
+# Comma-separated list of commodity codes which do not need to be reconciled.
 supply.reconciliation.ignore.list = E69, E710, E912, E1013, E1015, E1215
 
-# --- Google Maps Configuration -------------------------------------------------------
+# --- Google Maps Configuration -----------------------------------------------
 google.maps.api.key =
 
-# --- Travel Integration links --------------------------------------------------------
-# GSA API base url
+# --- Travel Integration links ------------------------------------------------
+# GSA API base URL
 travel.gsa.api.url_base = https://api.gsa.gov/travel/perdiem/v2/rates/
 travel.gsa.api.key =
 
-# Url used to scrape IRS mileage rates
+# URL used to scrape IRS mileage rates
 travel.irs.url = https://www.irs.gov/tax-professionals/standard-mileage-rates
 
-# Sage API base url
+# Sage API base URL
 sage.api.url = https://pubgeo.nysenate.gov/api/v2
 
-# --- Senate Info -----------------------------------------------------------
+# --- Senate Info -------------------------------------------------------------
 
 # The senate helpline phone number
 helpline.phone.number =

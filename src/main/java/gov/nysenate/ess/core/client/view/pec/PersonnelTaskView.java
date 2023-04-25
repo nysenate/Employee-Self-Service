@@ -15,6 +15,7 @@ public class PersonnelTaskView implements ViewObject {
     private final LocalDateTime effectiveDateTime;
     private final LocalDateTime endDateTime;
     private final boolean active;
+    private final boolean notifiable;
 
     public PersonnelTaskView(PersonnelTask task) {
         this.taskId = task.getTaskId();
@@ -23,6 +24,7 @@ public class PersonnelTaskView implements ViewObject {
         this.effectiveDateTime = task.getEffectiveDateTime();
         this.endDateTime = task.getEndDateTime();
         this.active = task.isActive();
+        this.notifiable = task.isNotifiable();
     }
 
     @Override
@@ -55,5 +57,9 @@ public class PersonnelTaskView implements ViewObject {
 
     public boolean isActive() {
         return active;
+    }
+
+    public boolean isNotifiable() {
+        return notifiable;
     }
 }

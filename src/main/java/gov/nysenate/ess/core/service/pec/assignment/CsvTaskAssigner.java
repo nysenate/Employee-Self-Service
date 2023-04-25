@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -96,7 +97,7 @@ public class CsvTaskAssigner {
                     logger.info("Creating task for emp " + empId + " for task " + taskId);
                     PersonnelTaskAssignment taskToInsertForEmp =
                             new PersonnelTaskAssignment(
-                                    taskId,empId,updateEmpID, LocalDateTime.now(),false, active);
+                                    taskId,empId,updateEmpID, LocalDateTime.now(),false, active, LocalDateTime.now(), null);
 
                     personnelTaskAssignmentDao.updateAssignment(taskToInsertForEmp);
                 }
@@ -153,11 +154,22 @@ public class CsvTaskAssigner {
                     logger.info("Creating task for emp " + empId + " for task " + taskId);
                     count++;
                     logger.info(count + "");
-                    PersonnelTaskAssignment taskToInsertForEmp =
-                            new PersonnelTaskAssignment(
-                                    taskId,empId,empId, LocalDateTime.now(),false, true);
+                    PersonnelTaskAssignment taskToInsertForEmp;
 
-                    personnelTaskAssignmentDao.updateAssignment(taskToInsertForEmp);
+                    try {
+                        PersonnelTaskAssignment personnelTaskAssignment = personnelTaskAssignmentDao.getTaskForEmp(empId, 16);
+
+                        if (personnelTaskAssignment != null) {
+                            taskToInsertForEmp = new PersonnelTaskAssignment(
+                                    taskId, empId, empId, personnelTaskAssignment.getUpdateTime(), personnelTaskAssignment.isCompleted(), true, LocalDateTime.now(), null);
+                            personnelTaskAssignmentDao.updateAssignment(taskToInsertForEmp);
+                        }
+                    }
+                    catch (IncorrectResultSizeDataAccessException e) {
+                        taskToInsertForEmp = new PersonnelTaskAssignment(
+                                taskId, empId, empId, LocalDateTime.now(), false, true, LocalDateTime.now(), null);
+                        personnelTaskAssignmentDao.updateAssignment(taskToInsertForEmp);
+                    }
                 }
 
             }

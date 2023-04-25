@@ -1,13 +1,17 @@
 package gov.nysenate.ess.core.controller.api;
 
+import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
 import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.pec.assignment.CsvTaskAssigner;
-import gov.nysenate.ess.core.service.pec.external.PECVideoCSVService;
 import gov.nysenate.ess.core.service.pec.assignment.PersonnelTaskAssigner;
+import gov.nysenate.ess.core.service.pec.external.PECVideoCSVService;
+import gov.nysenate.ess.core.service.pec.notification.PECNotificationService;
+import gov.nysenate.ess.core.service.pec.task.CachedPersonnelTaskService;
+import gov.nysenate.ess.core.service.pec.view.EmployeeEmailView;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.subject.Subject;
@@ -19,9 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 import static gov.nysenate.ess.core.model.auth.SimpleEssPermission.ADMIN;
 import static gov.nysenate.ess.core.model.auth.SimpleEssPermission.RUN_PERSONNEL_TASK_ASSIGNER;
@@ -31,23 +33,75 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 @RestController
 @RequestMapping(BaseRestApiCtrl.ADMIN_REST_PATH + "/personnel/task")
 public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
-    private static final Logger logger = LoggerFactory.getLogger(PersonnelTaskAdminApiCtrl.class);
 
     private final PersonnelTaskAssigner taskAssigner;
     private final PECVideoCSVService pecVideoCSVService;
     private final CsvTaskAssigner csvTaskAssigner;
-    private final EmployeeDao employeeDao;
-    private final PersonnelTaskAssignmentDao personnelTaskAssignmentDao;
+    private final CachedPersonnelTaskService cachedPersonnelTaskService;
+
+    private final PECNotificationService pecNotificationService;
 
     @Autowired
     public PersonnelTaskAdminApiCtrl(PersonnelTaskAssigner taskAssigner, PECVideoCSVService pecVideoCSVService,
-                                     CsvTaskAssigner csvTaskAssigner, EmployeeDao employeeDao,
-                                     PersonnelTaskAssignmentDao personnelTaskAssignmentDao) {
+                                     CsvTaskAssigner csvTaskAssigner, CachedPersonnelTaskService cachedPersonnelTaskService,
+                                     PECNotificationService pecNotificationService) {
         this.taskAssigner = taskAssigner;
         this.pecVideoCSVService = pecVideoCSVService;
         this.csvTaskAssigner = csvTaskAssigner;
-        this.employeeDao = employeeDao;
-        this.personnelTaskAssignmentDao = personnelTaskAssignmentDao;
+        this.cachedPersonnelTaskService = cachedPersonnelTaskService;
+        this.pecNotificationService = pecNotificationService;
+    }
+
+    /**
+     * PEC Reminder Notification API
+     * --------------------------
+     * Determine personnel tasks for all employees and send emails to remind employees to complete them
+     * Usage:
+     * (POST)   /api/v1/admin/personnel/task/notify
+     * @return {@link SimpleResponse}
+     */
+    @RequestMapping(value = "/notify", method = POST)
+    public SimpleResponse sendNotifications() {
+        checkPermission(ADMIN.getPermission());
+        pecNotificationService.sendReminderEmails();
+        return new SimpleResponse(true,
+                "pec notifications complete",
+                "pec-notifications-complete");
+    }
+
+    /**
+     * PEC Send Invites API
+     * --------------------------
+     * Send invites to all necessary employees.
+     * Usage:
+     * (POST)   /api/v1/admin/personnel/task/sendInvites
+     * @return {@link SimpleResponse}
+     */
+    @RequestMapping(value = "/sendInvites", method = POST)
+    public SimpleResponse sendInvites() {
+        checkPermission(ADMIN.getPermission());
+        pecNotificationService.sendInviteEmails();
+        return new SimpleResponse(true, "Invite emails sent!", "send-invites");
+    }
+
+    /**
+     * PEC Assignment & Due Dates For Moodle & Ethics Live
+     * ---------------------------------------------------
+     *
+     * This Api call will generate the assignment date and due dates for moodle and ethics live course for employees
+     *
+     * Usage:
+     * (POST)   /api/v1/admin/personnel/task/generate/taskdates
+     *
+     * @return {@link SimpleResponse}
+     */
+    @RequestMapping(value = "/generate/taskdates", method = POST)
+    public SimpleResponse generateTaskDates() {
+        checkPermission(ADMIN.getPermission());
+        taskAssigner.generateDueDatesForExistingTaskAssignments();
+        return new SimpleResponse(true,
+                "pec task date generation complete",
+                "pec-task-date-generation-complete");
     }
 
     /**
@@ -64,10 +118,42 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/assign", method = POST)
     public SimpleResponse assignTasks() {
         checkPermission(RUN_PERSONNEL_TASK_ASSIGNER.getPermission());
-        taskAssigner.assignTasks();
+        taskAssigner.assignTasks(true);
+        pecNotificationService.sendInviteEmails();
         return new SimpleResponse(true,
                 "task assignment complete",
                 "task-assignment-complete");
+    }
+
+    /**
+     * Get Invite Emails API
+     * --------------------------
+     * Determine personnel tasks for all employees and assign those that are missing.
+     * Usage:
+     * (GET)   /api/v1/admin/personnel/task/scheduledInviteEmails
+     * @return {@link ListViewResponse<EmployeeEmailView>}
+     */
+    @RequestMapping(value = "/scheduledInviteEmails", method = GET)
+    public ListViewResponse<EmployeeEmailView> getScheduledInviteEmails() {
+        checkPermission(RUN_PERSONNEL_TASK_ASSIGNER.getPermission());
+        var assignableTasks = taskAssigner.assignTasks(false);
+        return ListViewResponse.of(pecNotificationService.getInviteEmails(assignableTasks).stream()
+                .map(EmployeeEmailView::new).collect(Collectors.toList()));
+    }
+
+    /**
+     * Get ReminderEmails API
+     * --------------------------
+     * Determine personnel tasks for all employees and assign those that are missing.
+     * Usage:
+     * (GET)   /api/v1/admin/personnel/task/scheduledReminderEmails
+     * @return {@link ListViewResponse<EmployeeEmailView>}
+     */
+    @RequestMapping(value = "/scheduledReminderEmails", method = GET)
+    public ListViewResponse<EmployeeEmailView> getScheduledReminderEmails() {
+        checkPermission(RUN_PERSONNEL_TASK_ASSIGNER.getPermission());
+        return ListViewResponse.of(pecNotificationService.getReminderEmails(false)
+                .stream().map(EmployeeEmailView::new).collect(Collectors.toList()));
     }
 
     /**
@@ -88,7 +174,8 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
     public SimpleResponse assignTasksForEmp(@PathVariable int empId) {
         checkPermission(RUN_PERSONNEL_TASK_ASSIGNER.getPermission());
         ensureEmpIdActive(empId, "empId");
-        taskAssigner.assignTasks(empId);
+        taskAssigner.assignTasks(empId, true);
+        pecNotificationService.sendInviteEmails();
         return new SimpleResponse(true,
                 "task assignment complete for emp#" + empId,
                 "task-assignment-complete");
@@ -117,7 +204,7 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
     }
 
     /**
-     * Update Personnel Task Assignment API
+     * Personnel Task Assignment Completion Override API
      * ------------------------------------
      *
      * Updates the Completion status of a task for an employee
@@ -143,6 +230,40 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
             return new SimpleResponse(true,
                     "Task assignment " + taskID + " was updated for Employee " + empID +
                             " by employee " + updateEmpID + ". Its completion status is " + completed,
+                    "employee-task-override");
+        }
+        return new SimpleResponse(false,
+                "You do not have permission to execute this api functionality",
+                "employee-task-override");
+    }
+
+    /**
+     * Personnel Task Assignment activation Override API
+     * ------------------------------------
+     *
+     * Updates the activation status of a task for an employee
+     *
+     * Usage:
+     * (GET)   /api/v1/admin/personnel/task/overrride/activation/{updateEmpID}/{taskID}/{activeStatus}/{empID}
+     *
+     * Path params:
+     *
+     * @return {@link SimpleResponse}
+     */
+    @RequestMapping(value = "/overrride/activation/{updateEmpID}/{taskID}/{activeStatus}/{empID}", method = GET)
+    public SimpleResponse overrideTaskActivation(@PathVariable int updateEmpID,
+                                                 @PathVariable int taskID,
+                                                 @PathVariable boolean activeStatus,
+                                                 @PathVariable int empID) throws AuthorizationException {
+        Subject subject = SecurityUtils.getSubject();
+
+        boolean isAdmin = subject.hasRole("ADMIN");
+        boolean isPecManager = subject.hasRole("PERSONNEL_COMPLIANCE_MANAGER");
+        if ( isPecManager || isAdmin ) {
+            taskAssigner.updateAssignedTaskActiveStatus(empID,updateEmpID,activeStatus,taskID);
+            return new SimpleResponse(true,
+                    "Task assignment " + taskID + " was updated for Employee " + empID +
+                            " by employee " + updateEmpID + ". Its active status is " + activeStatus,
                     "employee-task-override");
         }
         return new SimpleResponse(false,
@@ -233,30 +354,7 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/mark/complete", method = POST)
     public SimpleResponse markTasksComplete() {
         checkPermission(ADMIN.getPermission());
-        logger.info("Beginning the process of marking specific employees tasks complete");
-        Set<Employee> employees = employeeDao.getActiveEmployees();
-        Set<Employee> employeesToMarkComplete = new HashSet<>();
-        employeesToMarkComplete.add(employeeDao.getEmployeeById(7689));
-        employeesToMarkComplete.add(employeeDao.getEmployeeById(9268));
-        employeesToMarkComplete.add(employeeDao.getEmployeeById(12867));
-
-        for (Employee employee : employees) {
-            if (employee.isSenator()) {
-                employeesToMarkComplete.add(employee);
-            }
-        }
-
-        for (Employee employee : employeesToMarkComplete) {
-            List<PersonnelTaskAssignment> assignments =
-                    personnelTaskAssignmentDao.getAssignmentsForEmp(employee.getEmployeeId());
-            for (PersonnelTaskAssignment assignment : assignments) {
-                if (!assignment.isCompleted()) {
-                    personnelTaskAssignmentDao.setTaskComplete(
-                            employee.getEmployeeId(), assignment.getTaskId(), employee.getEmployeeId());
-                }
-            }
-        }
-        logger.info("Finished the process of marking specific employees tasks complete");
+        cachedPersonnelTaskService.markTasksComplete();
         return new SimpleResponse(true,
                 "The tasks have been marked complete",
                 "tasks-marked-complete");

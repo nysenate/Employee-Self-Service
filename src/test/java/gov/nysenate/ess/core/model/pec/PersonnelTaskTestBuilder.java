@@ -24,13 +24,16 @@ public class PersonnelTaskTestBuilder {
     private LocalDateTime endDateTime;
     private boolean active;
 
+    private boolean notifiable;
+
     public PersonnelTaskTestBuilder(int taskId,
                                     PersonnelTaskType taskType,
                                     PersonnelTaskAssignmentGroup assignmentGroup,
                                     String title,
                                     LocalDateTime effectiveDateTime,
                                     LocalDateTime endDateTime,
-                                    boolean active) {
+                                    boolean active,
+                                    boolean notifiable) {
         this.taskId = taskId;
         this.taskType = taskType;
         this.assignmentGroup = assignmentGroup;
@@ -38,6 +41,7 @@ public class PersonnelTaskTestBuilder {
         this.effectiveDateTime = effectiveDateTime;
         this.endDateTime = endDateTime;
         this.active = active;
+        this.notifiable = notifiable;
     }
 
     public PersonnelTaskTestBuilder() {
@@ -48,7 +52,8 @@ public class PersonnelTaskTestBuilder {
                 null,
                 DateUtils.LONG_AGO.atStartOfDay(),
                 null,
-                true
+                true,
+                false
         );
         this.title = "This is a test task # " + this.testTaskNumber + ", please report to helpline if seen";
     }
@@ -61,7 +66,8 @@ public class PersonnelTaskTestBuilder {
                 task.getTitle(),
                 task.getEffectiveDateTime(),
                 task.getEndDateTime(),
-                task.isActive()
+                task.isActive(),
+                task.isNotifiable()
         );
     }
 
@@ -73,7 +79,8 @@ public class PersonnelTaskTestBuilder {
                 title,
                 effectiveDateTime,
                 endDateTime,
-                active
+                active,
+                notifiable
         );
     }
 

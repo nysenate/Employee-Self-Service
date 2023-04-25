@@ -5,13 +5,15 @@ import com.google.common.collect.Sets;
 import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
+import gov.nysenate.ess.core.service.pec.notification.AssignmentWithTask;
 import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
+import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.EmptyResultDataAccessException;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
@@ -21,53 +23,65 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
     private final PersonnelTaskAssignmentDao assignmentDao;
     private final PersonnelTaskService taskService;
 
+    private final EmployeeInfoService employeeInfoService;
+
     public BaseGroupTaskAssigner(PersonnelTaskAssignmentDao assignmentDao,
-                                   PersonnelTaskService taskService) {
+                                 PersonnelTaskService taskService,
+                                 EmployeeInfoService employeeInfoService) {
         this.assignmentDao = assignmentDao;
         this.taskService = taskService;
+        this.employeeInfoService = employeeInfoService;
+    }
+
+    @Override
+    public List<AssignmentWithTask> assignGroupTasks(int empId, boolean updateDb) {
+        return assignTasks(empId, getRequiredTaskIds(empId), updateDb);
     }
 
     protected List<PersonnelTask> getActiveGroupTasks() {
         return taskService.getActiveTasksInGroup(getTargetGroup());
     }
 
-    protected int assignTasks(int empId, Set<Integer> assignableTaskIds) {
-
+    private List<AssignmentWithTask> assignTasks(int empId, Set<Integer> assignableTaskIds, boolean updateDb) {
+        var taskData = new ArrayList<AssignmentWithTask>();
+        Map<Integer, PersonnelTask> personnelTaskMap = buildPersonnelTaskMap(taskService.getPersonnelTasks(false));
         Map<Integer, PersonnelTaskAssignment> assignmentMap = getAssignmentMap(empId);
-
         Set<Integer> existingTaskIds = assignmentMap.keySet();
+        assignableTaskIds = removeManualOverrides(assignableTaskIds, empId);
+        existingTaskIds = removeManualOverrides(existingTaskIds, empId);
 
         // Get active tasks that are not currently assigned to the employee.
-        Set<Integer> activeUnassigned = Sets.difference(assignableTaskIds, existingTaskIds);
+        Set<PersonnelTask> activeUnassigned = Sets.difference(assignableTaskIds, existingTaskIds)
+                .stream().map(personnelTaskMap::get).collect(Collectors.toSet());
+
+        for (PersonnelTask task : activeUnassigned) {
+            LocalDate continuousServiceDate = employeeInfoService.getEmployeesMostRecentContinuousServiceDate(empId);
+
+            PersonnelTaskAssignment assignmentWithDueDate = PersonnelTaskAssignment.newTask(empId, task.getTaskId())
+                    .withDates(continuousServiceDate, task.getTaskType(), true);
+            taskData.add(new AssignmentWithTask(assignmentWithDueDate, task));
+            if (updateDb) {
+                assignmentDao.updateAssignment(assignmentWithDueDate);
+                logger.info("Assigning {} personnel tasks to emp #{} : Task ID #{}",
+                        getTargetGroup(), empId, task.getTaskId());
+            }
+        }
+        if (!updateDb) {
+            return taskData;
+        }
+
         // Get tasks assigned to the employee that are not active.
-        Set<Integer> inactiveAssigned = Sets.difference(existingTaskIds, assignableTaskIds);
-
-        // Assign new tasks for active unassigned.
-        List<PersonnelTaskAssignment> newAssignments = activeUnassigned.stream()
-                .map(taskId -> PersonnelTaskAssignment.newTask(empId, taskId))
-                .collect(Collectors.toList());
-        if (!newAssignments.isEmpty()) {
-            logger.info("Assigning {} {} personnel tasks to emp #{} : {}",
-                    newAssignments.size(),
-                    getTargetGroup(),
-                    empId,
-                    newAssignments.stream()
-                            .map(PersonnelTaskAssignment::getTaskId)
-                            .collect(Collectors.toList()));
-        }
-        newAssignments.forEach(assignmentDao::updateAssignment);
-
+        Set<PersonnelTask> inactiveAssigned = Sets.difference(existingTaskIds, assignableTaskIds)
+                .stream().filter(taskId -> !assignmentMap.get(taskId).isCompleted())
+                .map(personnelTaskMap::get)
+                .filter(task -> !task.isActive()).collect(Collectors.toSet());
         // Deactivate inactive tasks that have not been completed.
-        Set<Integer> idsToDeactivate = inactiveAssigned.stream()
-                .filter(taskId -> !assignmentMap.get(taskId).isCompleted())
-                .collect(Collectors.toSet());
-        if (!idsToDeactivate.isEmpty()) {
-            logger.info("Deactivating {} {} tasks for emp #{} : {}",
-                    idsToDeactivate.size(), getTargetGroup(), empId, idsToDeactivate);
+        for (PersonnelTask task : inactiveAssigned) {
+            assignmentDao.deactivatePersonnelTaskAssignment(empId, task.getTaskId());
+            logger.info("Deactivating {} task for emp #{} : Task ID #{}",
+                    getTargetGroup(), empId, task.getTaskId());
         }
-        idsToDeactivate.forEach(taskId -> assignmentDao.deactivatePersonnelTaskAssignment(empId, taskId));
-
-        return newAssignments.size();
+        return taskData;
     }
 
     protected List<PersonnelTaskAssignment> getGroupAssignments(int empId) {
@@ -86,8 +100,30 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
                 .collect(Collectors.toSet());
     }
 
-    protected boolean assignmentInGroup(PersonnelTaskAssignment assignment) {
+    private boolean assignmentInGroup(PersonnelTaskAssignment assignment) {
         PersonnelTask task = taskService.getPersonnelTask(assignment.getTaskId());
         return task.getAssignmentGroup() == getTargetGroup();
+    }
+
+    private Set<Integer> removeManualOverrides(Set<Integer> taskIds, int empId) {
+        // In case the set is immutable.
+        taskIds = new HashSet<>(taskIds);
+        taskIds.removeIf(taskId -> {
+            try {
+                return assignmentDao.getManualOverrideStatus(empId, taskId);
+            }
+            catch (EmptyResultDataAccessException e) {
+                return false;
+            }
+        });
+        return taskIds;
+    }
+
+    private static Map<Integer, PersonnelTask> buildPersonnelTaskMap(List<PersonnelTask> allPersonnelTasks) {
+        HashMap<Integer, PersonnelTask> personnelTaskMap = new HashMap<>();
+        for (PersonnelTask task: allPersonnelTasks) {
+            personnelTaskMap.put(task.getTaskId(), task);
+        }
+        return personnelTaskMap;
     }
 }

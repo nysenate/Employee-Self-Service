@@ -111,7 +111,8 @@ essApp.config(function ($routeProvider, $locationProvider) {
     });
 
     $routeProvider.when(ctxPath + '/time/period/calendar', {
-        templateUrl: ctxPath + '/template/time/period/calendar'
+        templateUrl: ctxPath + '/template/time/period/calendar',
+        reloadOnSearch: false
     });
 
     $routeProvider.when(ctxPath + '/time/accrual/history', {

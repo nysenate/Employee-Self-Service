@@ -409,8 +409,15 @@ public class EssAccrualComputeService implements AccrualComputeService
 
         // Create a date range from the end date to the first day after the end date
         // This is done so that the initial values are used if the employee was not active on the end date
-        Range<LocalDate> initialRange =
-                Range.closed(accrualState.getEndDate(), accrualState.getEndDate().plusDays(1));
+        Range<LocalDate> initialRange = Range.closed(accrualState.getEndDate(), accrualState.getEndDate().plusDays(1));
+
+        if (annualAcc.getEndDate() == null && fromDate.isBefore(LocalDate.of(1992, 1, 1))) {
+            // SFMS records only go back to 1992. If using dates from before that, adjust them to the start of this
+            // year instead. Fixes an edge case for employees with a continuous service date before 1992.
+            LocalDate startOfYear = LocalDate.of(LocalDate.now().getYear(), 1, 1);
+            firstPayPeriod = payPeriodService.getPayPeriod(PayPeriodType.AF, startOfYear);
+            initialRange = Range.closed(startOfYear, startOfYear.plusDays(1));
+        }
 
         // Set the expected YTD hours from the last PD23ACCUSAGE record
         if (periodAccSum.isPresent()) {
