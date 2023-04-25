@@ -164,8 +164,8 @@ public class MoodleRecordService implements ESSMoodleRecordService {
         }
         logger.info("Beginning Moodle Record Cron");
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime theYear2000 = LocalDateTime.of(2000,1,1,0,0);
-        JsonNode json = contactMoodleForRecords( theYear2000, now, "Senate");
+        LocalDateTime theYear2023 = LocalDateTime.of(2023,1,1,0,0);
+        JsonNode json = contactMoodleForRecords( theYear2023, now, "Senate");
         processMoodleEmployeeRecords(getMoodleRecordsFromJson(json.toString()));
         logger.info("Completed Moodle Record Cron");
     }

@@ -29,6 +29,7 @@ public class MoodleApiCtrl extends BaseRestApiCtrl {
     private MoodleRecordService moodleRecordService;
     private PersonnelTaskAssignmentDao personnelTaskAssignmentDao;
     final LocalDateTime jan1970 = LocalDateTime.of(1970,1,1,0,0);
+    final LocalDateTime jan2023 = LocalDateTime.of(2023,1,1,0,0);
     final LocalDateTime tomorrow = LocalDateTime.now().plusDays(1);
 
     private static final Logger logger = LoggerFactory.getLogger(MoodleApiCtrl.class);
@@ -72,6 +73,9 @@ public class MoodleApiCtrl extends BaseRestApiCtrl {
         //Set From
         if (from.equals("1970")) {
             ldtFrom = jan1970;
+        }
+        else if (from.equals("2023")) {
+            ldtFrom = jan2023;
         }
         else {
             ldtFrom = stringToLocalDateTime(from);
