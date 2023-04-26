@@ -356,7 +356,7 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
 
     /**
      * Generate a detailed task view from the given task.
-     * This involves loading task details and packinging it with the task.
+     * This involves loading task details and packaging it with the task.
      */
     private DetailPersonnelTaskAssignmentView getDetailedTaskView(
             PersonnelTaskAssignment taskAssignment) {

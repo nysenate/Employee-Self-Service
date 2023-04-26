@@ -6,8 +6,8 @@ import com.google.common.collect.Maps;
 import gov.nysenate.ess.core.dao.pec.task.PersonnelTaskDao;
 import gov.nysenate.ess.core.dao.pec.task.detail.PersonnelTaskDetailDao;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
-import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignmentGroup;
+import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -27,7 +27,7 @@ import java.util.stream.Stream;
 @Service
 public class EssPersonnelTaskService implements PersonnelTaskService {
     private final PersonnelTaskDao taskDao;
-    private final ImmutableMap<PersonnelTaskType, PersonnelTaskDetailDao<?>> taskDetailDaoMap;
+    private final ImmutableMap<PersonnelTaskType, PersonnelTaskDetailDao<? extends PersonnelTask>> taskDetailDaoMap;
     private ImmutableMap<Integer, PersonnelTask> taskMap;
 
     @Autowired
@@ -53,7 +53,7 @@ public class EssPersonnelTaskService implements PersonnelTaskService {
         if (personnelTask == null) {
             throw new PersonnelTaskNotFoundEx(taskId);
         }
-        return getDetail ? personnelTask : getDetailedTask(personnelTask);
+        return getDetail ? getDetailedTask(personnelTask) : personnelTask;
     }
 
     @Override

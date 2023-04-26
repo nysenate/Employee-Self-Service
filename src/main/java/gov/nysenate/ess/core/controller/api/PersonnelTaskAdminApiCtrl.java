@@ -2,21 +2,14 @@ package gov.nysenate.ess.core.controller.api;
 
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.SimpleResponse;
-import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
-import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
-import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
-import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.pec.assignment.CsvTaskAssigner;
 import gov.nysenate.ess.core.service.pec.assignment.PersonnelTaskAssigner;
 import gov.nysenate.ess.core.service.pec.external.PECVideoCSVService;
 import gov.nysenate.ess.core.service.pec.notification.PECNotificationService;
-import gov.nysenate.ess.core.service.pec.task.CachedPersonnelTaskService;
 import gov.nysenate.ess.core.service.pec.view.EmployeeEmailView;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.subject.Subject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,18 +30,15 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
     private final PersonnelTaskAssigner taskAssigner;
     private final PECVideoCSVService pecVideoCSVService;
     private final CsvTaskAssigner csvTaskAssigner;
-    private final CachedPersonnelTaskService cachedPersonnelTaskService;
 
     private final PECNotificationService pecNotificationService;
 
     @Autowired
     public PersonnelTaskAdminApiCtrl(PersonnelTaskAssigner taskAssigner, PECVideoCSVService pecVideoCSVService,
-                                     CsvTaskAssigner csvTaskAssigner, CachedPersonnelTaskService cachedPersonnelTaskService,
-                                     PECNotificationService pecNotificationService) {
+                                     CsvTaskAssigner csvTaskAssigner, PECNotificationService pecNotificationService) {
         this.taskAssigner = taskAssigner;
         this.pecVideoCSVService = pecVideoCSVService;
         this.csvTaskAssigner = csvTaskAssigner;
-        this.cachedPersonnelTaskService = cachedPersonnelTaskService;
         this.pecNotificationService = pecNotificationService;
     }
 
@@ -335,28 +325,5 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
         return new SimpleResponse(false,
                 "You do not have permission to execute this api functionality",
                 "employee-task-override");
-    }
-
-
-    /**
-     * Mark Specific Individuals Complete
-     * ----------------------------------
-     *
-     * Mark specific employees Personnel task assignments complete
-     *
-     * Usage:
-     * (POST)   /api/v1/admin/personnel/task/mark/complete
-     *
-     * Path params:
-     *
-     * @return {@link SimpleResponse}
-     */
-    @RequestMapping(value = "/mark/complete", method = POST)
-    public SimpleResponse markTasksComplete() {
-        checkPermission(ADMIN.getPermission());
-        cachedPersonnelTaskService.markTasksComplete();
-        return new SimpleResponse(true,
-                "The tasks have been marked complete",
-                "tasks-marked-complete");
     }
 }

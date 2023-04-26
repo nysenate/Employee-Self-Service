@@ -12,7 +12,6 @@ import static java.util.Objects.requireNonNull;
  * A general task assigned to employees by personnel
  */
 public class PersonnelTask implements Comparable<PersonnelTask> {
-
     private final int taskId;
     private final PersonnelTaskType taskType;
     private final PersonnelTaskAssignmentGroup assignmentGroup;
@@ -58,8 +57,7 @@ public class PersonnelTask implements Comparable<PersonnelTask> {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof PersonnelTask)) return false;
-        PersonnelTask that = (PersonnelTask) o;
+        if (!(o instanceof PersonnelTask that)) return false;
         return taskId == that.taskId &&
                 active == that.active &&
                 taskType == that.taskType &&

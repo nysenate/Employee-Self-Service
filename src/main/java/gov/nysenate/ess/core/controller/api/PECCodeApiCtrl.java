@@ -26,7 +26,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.List;
 
 import static gov.nysenate.ess.core.model.pec.PersonnelTaskType.ETHICS_LIVE_COURSE;
@@ -142,7 +141,7 @@ public class PECCodeApiCtrl extends BaseRestApiCtrl {
 
         ensureEmpIdExists(submission.getEmpId(), "empId");
 
-        EthicsLiveCourseTask ethicsLiveCourseTask = (EthicsLiveCourseTask) getEthicsLiveCourseFromIdParams(submission.getTaskId(), "taskId");
+        EthicsLiveCourseTask ethicsLiveCourseTask = getEthicsLiveCourseFromIdParams(submission.getTaskId(), "taskId");
 
         validateCodeFormat(submission.getCodes(), ethicsLiveCourseTask, "codes");
 
@@ -173,7 +172,7 @@ public class PECCodeApiCtrl extends BaseRestApiCtrl {
 
         ensureEmpIdExists(submission.getEmpId(), "empId");
 
-        VideoTask videoTask = (VideoTask) getVideoFromIdParams(submission.getTaskId(), "taskId");
+        VideoTask videoTask = getVideoFromIdParams(submission.getTaskId(), "taskId");
 
         validateCodeFormat(submission.getCodes(), videoTask, "codes");
 
