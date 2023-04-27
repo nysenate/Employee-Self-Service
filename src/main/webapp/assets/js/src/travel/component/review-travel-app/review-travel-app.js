@@ -156,5 +156,19 @@ function reviewController($scope, $q, modals, locationService, appReviewApi, rol
         });
     }
 
+    vm.roleSelectBackgroundColor = function () {
+        switch(vm.activeRole.name) {
+            case "DEPARTMENT_HEAD":
+                return "orange";
+                break;
+            case "TRAVEL_ADMIN":
+                return "teal"
+                break;
+            case "SECRETARY_OF_THE_SENATE":
+                return "green"
+                break;
+        }
+    }
+
     init();
 }

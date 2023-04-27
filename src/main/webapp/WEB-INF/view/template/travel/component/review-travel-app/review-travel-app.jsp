@@ -6,11 +6,13 @@
     <div class="content-container content-controls">
       <h4 class="travel-content-info travel-text-bold" style="margin: 0;">The following travel applications require your
         review.</h4>
-      <h4 style="display: inline;">Active Role:</h4>
-      <select style="margin: 10px;"
-              ng-model="vm.activeRole"
-              ng-options="role.label for role in vm.userRoles"
-              ng-change="vm.onActiveRoleChange()">hello</select>
+      <div class="role-select-container" ng-class="vm.roleSelectBackgroundColor()">
+        <h4 style="display: inline;">Active Role:</h4>
+        <select style="margin: 10px;"
+                ng-model="vm.activeRole"
+                ng-options="role.label for role in vm.userRoles"
+                ng-change="vm.onActiveRoleChange()">hello</select>
+      </div>
     </div>
   </div>
 
