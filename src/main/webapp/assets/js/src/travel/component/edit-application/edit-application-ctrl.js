@@ -99,7 +99,7 @@ function editAppCtrl($scope, locationService, modals, stateService, appPatchApi,
             }, $scope.handleErrorResponse);
         } else {
             appEditApi.save({id: vm.appId}, vm.dto, function (response) {
-                locationService.go("/travel/manage/review", false, {appId: vm.appId});
+                locationService.go("/travel/manage/review", false, {appId: vm.appId, role: vm.activeRole});
             }, $scope.handleErrorResponse);
         }
     };
@@ -109,7 +109,7 @@ function editAppCtrl($scope, locationService, modals, stateService, appPatchApi,
             if (vm.activeRole === 'NONE') {
                 locationService.go("/travel/applications", false);
             } else {
-                locationService.go("/travel/manage/review", false, {appId: vm.appId});
+                locationService.go("/travel/manage/review", false, {appId: vm.appId, role: vm.activeRole});
             }
         })
     };

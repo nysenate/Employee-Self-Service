@@ -1,11 +1,13 @@
 var essTravel = angular.module("essTravel");
 
-essTravel.controller("ReviewTravelAppCtrl", ["$scope", "$q", "modals", "LocationService", "ApplicationReviewApi", "TravelRoleService", reviewController
+essTravel.controller("ReviewTravelAppCtrl", ["$scope", "$q", "modals", "LocationService", "ApplicationReviewApi",
+                                             "TravelRoleService", reviewController
 ]);
 
 function reviewController($scope, $q, modals, locationService, appReviewApi, roleService) {
 
     const APP_ID_SEARCH_PARAM = "appId";
+    const ROLE_SEARCH_PARAM = "role";
     const ISO_FORMAT = "YYYY-MM-DD";
 
     var vm = this;
@@ -21,9 +23,12 @@ function reviewController($scope, $q, modals, locationService, appReviewApi, rol
     vm.activeRole = {};
 
     function init() {
+        // vm.activeRole = locationService.getSearchParam("role");
         roleService.roles()
             .then(function (response) {
-                vm.userRoles = _.uniq(response.allRoles, function (r) { return r.name}); // Unique roles.
+                vm.userRoles = _.uniq(response.allRoles, function (r) {
+                    return r.name
+                }); // Unique roles.
                 queryPendingAppReviews()
                     .then(getSharedReviews)
                     .then(initAppIdToReviewMap)
@@ -80,8 +85,16 @@ function reviewController($scope, $q, modals, locationService, appReviewApi, rol
     }
 
     function setInitialRole() {
-        if (vm.activeRole.name == undefined) {
+        var roleName = locationService.getSearchParam(ROLE_SEARCH_PARAM);
+        if (roleName == undefined) {
             vm.activeRole = vm.userRoles[vm.userRoles.length - 1];
+        } else {
+            for (var i = 0; i < vm.userRoles.length; i++) {
+                var el = vm.userRoles[i];
+                if (el.name === roleName) {
+                    vm.activeRole = el;
+                }
+            }
         }
     }
 
@@ -129,6 +142,7 @@ function reviewController($scope, $q, modals, locationService, appReviewApi, rol
     }
 
     vm.onActiveRoleChange = function () {
+        locationService.setSearchParam(ROLE_SEARCH_PARAM, vm.activeRole.name);
         updateToReview(vm.activeRole);
     };
 
@@ -157,7 +171,7 @@ function reviewController($scope, $q, modals, locationService, appReviewApi, rol
     }
 
     vm.roleSelectBackgroundColor = function () {
-        switch(vm.activeRole.name) {
+        switch (vm.activeRole.name) {
             case "DEPARTMENT_HEAD":
                 return "orange";
                 break;
