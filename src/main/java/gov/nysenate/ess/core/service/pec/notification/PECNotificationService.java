@@ -153,7 +153,7 @@ public class PECNotificationService {
         String spaces = " ".repeat(Math.max(28 - address.length(), 1));
         String logMessage = "Recipient: %sSubject: %s\n".formatted(address + spaces, emailInfo.subject());
         String html = emailInfo.html();
-        if (pecTestMode) {
+        if (emailInfo.type() != ADMIN_CODES && pecTestMode) {
             address = reportEmails.get(0);
             html += "<br> Employee ID: #" + emailInfo.employee().getEmployeeId() +
                     "<br> Email: " + emailInfo.employee().getEmail();
