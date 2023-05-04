@@ -6,6 +6,7 @@ import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.travel.notifications.email.events.TravelApprovalEmailEvent;
 import gov.nysenate.ess.travel.notifications.email.events.TravelDisapprovalEmailEvent;
 import gov.nysenate.ess.travel.notifications.email.events.TravelPendingReviewEmailEvent;
+import gov.nysenate.ess.travel.request.app.ApprovalStatus;
 import gov.nysenate.ess.travel.request.app.TravelApplication;
 import gov.nysenate.ess.travel.request.app.TravelApplicationService;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
@@ -14,6 +15,7 @@ import gov.nysenate.ess.travel.authorization.role.TravelRoles;
 import gov.nysenate.ess.travel.delegate.Delegation;
 import gov.nysenate.ess.travel.delegate.DelegationDao;
 import gov.nysenate.ess.travel.notifications.email.TravelEmailService;
+import gov.nysenate.ess.travel.request.app.TravelApplicationStatus;
 import gov.nysenate.ess.travel.review.dao.ApplicationReviewDao;
 import gov.nysenate.ess.travel.review.view.ActionType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,12 +45,16 @@ public class ApplicationReviewService {
 
         if (applicationReview.nextReviewerRole() == TravelRole.NONE) {
             // If no one else needs to review, the application is completely approved.
-            applicationReview.application().approve();
-            travelApplicationService.saveApplication(applicationReview.application());
+            applicationReview.application().setStatus(new TravelApplicationStatus(ApprovalStatus.APPROVED, ""));
             eventBus.post(new TravelApprovalEmailEvent(applicationReview));
         } else {
+            if (applicationReview.nextReviewerRole() == TravelRole.TRAVEL_ADMIN
+                    || applicationReview.nextReviewerRole() == TravelRole.SECRETARY_OF_THE_SENATE) {
+                applicationReview.application().setStatus(new TravelApplicationStatus(ApprovalStatus.TRAVEL_UNIT, ""));
+            }
             eventBus.post(new TravelPendingReviewEmailEvent(applicationReview));
         }
+        travelApplicationService.saveApplication(applicationReview.application());
     }
 
     public void disapproveApplication(ApplicationReview applicationReview, Employee disapprover,
@@ -58,7 +64,7 @@ public class ApplicationReviewService {
         applicationReview.addAction(disapproveAction);
         saveApplicationReview(applicationReview);
 
-        applicationReview.application().disapprove(reason);
+        applicationReview.application().setStatus(new TravelApplicationStatus(ApprovalStatus.DISAPPROVED, reason));
         travelApplicationService.saveApplication(applicationReview.application());
         eventBus.post(new TravelDisapprovalEmailEvent(applicationReview));
     }

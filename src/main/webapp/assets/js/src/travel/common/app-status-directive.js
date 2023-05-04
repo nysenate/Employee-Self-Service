@@ -27,23 +27,14 @@ essTravel.directive('essAppStatus', ['appProps', function (appProps) {
                 else if (app.status.isNotApplicable) {
                     return 'travel-text bold';
                 }
+                else if (app.status.isDraft) {
+                    return 'draft-text'
+                }
                 return '';
             };
 
             $scope.statusDescription = function () {
-                if (app.status.isPending) {
-                    return 'Pending';
-                }
-                else if (app.status.isApproved) {
-                    return 'Approved';
-                }
-                else if (app.status.isDisapproved) {
-                    return 'Disapproved';
-                }
-                else if (app.status.isNotApplicable) {
-                    return 'Not Applicable';
-                }
-                return '';
+                return app.status.label;
             };
 
             $elem.addClass($scope.statusClass());

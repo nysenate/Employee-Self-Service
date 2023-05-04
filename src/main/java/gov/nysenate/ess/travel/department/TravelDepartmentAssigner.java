@@ -71,7 +71,7 @@ public class TravelDepartmentAssigner {
                 .collect(Collectors.toMap(Employee::getEmployeeId, Function.identity()));
         var prev = employee;
         var curr = idToEmp.get(employee.getSupervisorId());
-        while (curr.getSupervisorId() != prev.getEmployeeId()) {
+        while (curr != null && curr.getSupervisorId() != prev.getEmployeeId()) {
             if (departmentHeadIds.contains(curr.getEmployeeId())) {
                 return curr;
             }

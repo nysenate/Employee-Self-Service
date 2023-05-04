@@ -8,6 +8,10 @@ import gov.nysenate.ess.travel.request.app.TravelApplicationStatus;
 
 public class TravelApplicationStatusView implements ViewObject {
 
+    private String name;
+    private String label;
+    private String note;
+
     @JsonProperty("isPending")
     private boolean isPending;
     @JsonProperty("isApproved")
@@ -16,31 +20,38 @@ public class TravelApplicationStatusView implements ViewObject {
     private boolean isDisapproved;
     @JsonProperty("isNotApplicable")
     private boolean isNotApplicable;
-    private String note;
+    @JsonProperty("isDraft")
+    private boolean isDraft;
 
     public TravelApplicationStatusView() {
     }
 
     public TravelApplicationStatusView(TravelApplicationStatus status) {
+        name = status.status().name();
+        label = status.status().label();
+        note = status.note();
         isPending = status.isPending();
         isApproved = status.isApproved();
         isDisapproved = status.isDisapproved();
         isNotApplicable = status.isNotApplicable();
-        note = status.note();
+        isDraft = status.isDraft();
     }
 
     public TravelApplicationStatus toTravelApplicationStatus() {
-        ApprovalStatus status = isPending ? ApprovalStatus.PENDING
-                : isApproved ? ApprovalStatus.APPROVED
-                : isDisapproved ? ApprovalStatus.DISAPPROVED
-                : isNotApplicable ? ApprovalStatus.NOT_APPLICABLE
-                : null;
-        if (status == null) {
-            throw new IllegalArgumentException("TravelApplicationStatus ApplicationStatus cannot be null." +
-                    " Likely an error in view serialization/deserialization.");
-        }
-
+        ApprovalStatus status = ApprovalStatus.valueOf(name);
         return new TravelApplicationStatus(status, note);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public String getNote() {
+        return note;
     }
 
     @JsonIgnore
@@ -63,8 +74,9 @@ public class TravelApplicationStatusView implements ViewObject {
         return isNotApplicable;
     }
 
-    public String getNote() {
-        return note;
+    @JsonIgnore
+    public boolean isDraft() {
+        return isDraft;
     }
 
     @Override

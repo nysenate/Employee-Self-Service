@@ -24,7 +24,7 @@
     </div>
 
     <div ng-if="vm.data.isLoading === false">
-      <div ng-if="vm.data.reviews.filtered.length === 0">
+      <div ng-if="vm.data.apps.filtered.length === 0">
         <div class="content-container">
           <div class="content-info">
             <h2 class="dark-gray">No Review History.</h2>
@@ -36,8 +36,7 @@
         <ess-app-review-summary-table
             reviews="vm.data.reviews.filtered"
             on-row-click="vm.displayReviewViewModal(review)"
-            roles="vm.data.roles"
-            show-action>
+            show-status>
         </ess-app-review-summary-table>
       </div>
     </div>

@@ -12,7 +12,7 @@
           <th>Employee</th>
           <th>Destination</th>
           <th>Allotted Funds</th>
-          <th ng-if="options.showAction">Last Action</th>
+          <th ng-if="options.showStatus">Status</th>
         </tr>
         </thead>
 
@@ -26,7 +26,7 @@
           <td ng-bind="::review.travelApplication.traveler.fullName"></td>
           <td ng-bind="::review.travelApplication.activeAmendment.destinationSummary"></td>
           <td ng-bind="::review.travelApplication.activeAmendment.totalAllowance | currency"></td>
-          <td ng-if="options.showAction" ess-review-action-status="userAction(review)"></td>
+          <td ng-if="options.showStatus" ess-app-status="review.travelApplication"></td>
 
         </tr>
         </tbody>

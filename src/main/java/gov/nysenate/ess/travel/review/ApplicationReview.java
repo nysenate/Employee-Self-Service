@@ -29,20 +29,7 @@ public class ApplicationReview {
         this.actions = new TreeSet<>(actionComparator);
         this.actions.addAll(actions);
         this.isShared = isShared;
-
-        if (travelerRole == TravelRole.NONE) {
-            reviewerStrategy = new DefaultReviewerStrategy();
-        } else if (travelerRole == TravelRole.MAJORITY_LEADER) {
-            reviewerStrategy = new MajReviewerStrategy();
-        } else if (application.getTraveler().isSenator()) {
-            reviewerStrategy = new SenatorReviewerStrategy();
-        } else if (travelerRole == TravelRole.DEPARTMENT_HEAD) {
-            reviewerStrategy = new DepartmentHeadReviewerStrategy();
-        } else if (travelerRole == TravelRole.TRAVEL_ADMIN) {
-            reviewerStrategy = new TravelAdminReviewerStrategy();
-        } else if (travelerRole == TravelRole.SECRETARY_OF_THE_SENATE) {
-            reviewerStrategy = new SosReviewerStrategy();
-        }
+        this.reviewerStrategy = ReviewerStrategy.getStrategy(travelerRole, application.getTraveler().isSenator());
     }
 
     public ApplicationReview(TravelApplication application, TravelRole travelerRole) {

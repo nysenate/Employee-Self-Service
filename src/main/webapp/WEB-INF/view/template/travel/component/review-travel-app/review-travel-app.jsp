@@ -29,8 +29,8 @@
       <ess-app-review-summary-table
           title="Applications to Review"
           reviews="vm.reviews.toReview"
-          active-role="vm.activeRole"
-          on-row-click="vm.onRowClick(review)">
+          on-row-click="vm.onRowClick(review)"
+          show-status>
       </ess-app-review-summary-table>
     </div>
   </div>
@@ -40,8 +40,8 @@
       <ess-app-review-summary-table
           title="Shared Applications"
           reviews="vm.reviews.shared"
-          active-role="vm.activeRole"
-          on-row-click="vm.onRowClick(review)">
+          on-row-click="vm.onRowClick(review)"
+          show-status>
       </ess-app-review-summary-table>
     </div>
   </div>

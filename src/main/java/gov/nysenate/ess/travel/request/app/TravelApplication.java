@@ -25,8 +25,8 @@ public class TravelApplication {
     private TravelApplicationStatus status;
     protected SortedSet<Amendment> amendments;
 
-    public TravelApplication(Employee traveler, Amendment amendment, int travelerDeptHeadEmpId) {
-        this(0, traveler, travelerDeptHeadEmpId, new TravelApplicationStatus(ApprovalStatus.PENDING), Lists.newArrayList(amendment));
+    public TravelApplication(Employee traveler, Amendment amendment, int travelerDeptHeadEmpId, ApprovalStatus approvalStatus) {
+        this(0, traveler, travelerDeptHeadEmpId, new TravelApplicationStatus(approvalStatus), Lists.newArrayList(amendment));
     }
 
     public TravelApplication(int id, Employee traveler, int travelerDeptHeadEmpId,
@@ -54,21 +54,6 @@ public class TravelApplication {
 
     public TravelApplicationStatus status() {
         return status;
-    }
-
-    /**
-     * Mark the TravelApplication as approved.
-     */
-    public void approve() {
-        status().approve();
-    }
-
-    /**
-     * Mark the TravelApplication as disapproved
-     * @param reason The reason for disapproval.
-     */
-    public void disapprove(String reason) {
-        status().disapprove(reason);
     }
 
     public boolean isApproved() {
@@ -115,7 +100,7 @@ public class TravelApplication {
         amendments.add(a);
     }
 
-    protected void setStatus(TravelApplicationStatus status) {
+    public void setStatus(TravelApplicationStatus status) {
         this.status = status;
     }
 

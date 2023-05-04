@@ -30,7 +30,8 @@
           <ui-select-match allow-clear="true">
             <span ng-bind="$select.selected.fullName"></span>
           </ui-select-match>
-          <ui-select-choices repeat="traveler in vm.data.travelers.all | filter: $select.search track by traveler.employeeId">
+          <ui-select-choices
+              repeat="traveler in vm.data.travelers.all | filter: $select.search track by traveler.employeeId">
             <div ng-bind-html="traveler.fullName"></div>
           </ui-select-choices>
         </ui-select>
@@ -49,7 +50,8 @@
       <div ng-if="vm.data.reviews.filtered.length > 0">
         <ess-app-review-summary-table
             reviews="vm.data.reviews.filtered"
-            on-row-click="vm.displayReviewViewModal(review)">
+            on-row-click="vm.displayReviewViewModal(review)"
+            show-status>
         </ess-app-review-summary-table>
       </div>
     </div>

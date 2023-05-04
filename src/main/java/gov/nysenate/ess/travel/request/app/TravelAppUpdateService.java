@@ -3,6 +3,9 @@ package gov.nysenate.ess.travel.request.app;
 import com.google.common.eventbus.EventBus;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.util.DateUtils;
+import gov.nysenate.ess.travel.authorization.role.TravelRole;
+import gov.nysenate.ess.travel.authorization.role.TravelRoleFactory;
+import gov.nysenate.ess.travel.authorization.role.TravelRoles;
 import gov.nysenate.ess.travel.notifications.email.events.TravelAppEditedEmailEvent;
 import gov.nysenate.ess.travel.notifications.email.events.TravelPendingReviewEmailEvent;
 import gov.nysenate.ess.travel.request.allowances.Allowances;
@@ -23,6 +26,7 @@ import gov.nysenate.ess.travel.provider.senate.SenateMie;
 import gov.nysenate.ess.travel.provider.senate.SqlSenateMieDao;
 import gov.nysenate.ess.travel.review.ApplicationReview;
 import gov.nysenate.ess.travel.review.ApplicationReviewService;
+import gov.nysenate.ess.travel.review.strategy.ReviewerStrategy;
 import gov.nysenate.ess.travel.utils.Dollars;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +49,7 @@ public class TravelAppUpdateService {
     @Autowired private ApplicationReviewService appReviewService;
     @Autowired private TravelEmailService emailService;
     @Autowired private EventBus eventBus;
+    @Autowired private TravelRoleFactory travelRoleFactory;
 
     /**
      * Returns a new Amendment with the provided purpose of travel added to the amendment.
@@ -175,6 +180,7 @@ public class TravelAppUpdateService {
                 .withLodgingPerDiems(lpds)
                 .build();
     }
+
     /**
      * Updates the mileage per diem information on the amendment's Route.
      * This allows users to opt in or out of mileage reimbursement for each leg of their trip.
@@ -198,9 +204,10 @@ public class TravelAppUpdateService {
 
     /**
      * Persists the edits in {@code amd} to the application.
+     *
      * @param appId The id of the TravelApplication to modify.
-     * @param amd An amendment with all desired changes made to it.
-     * @param user The logged in user who is making these changes.
+     * @param amd   An amendment with all desired changes made to it.
+     * @param user  The logged in user who is making these changes.
      * @return
      */
     public TravelApplication editTravelApp(int appId, Amendment amd, Employee user) {
@@ -224,7 +231,7 @@ public class TravelAppUpdateService {
 
     public TravelApplication resubmitApp(int appId, Amendment amd, Employee user) {
         TravelApplication app = saveAppEdits(appId, amd, user);
-        app.setStatus(new TravelApplicationStatus(ApprovalStatus.PENDING));
+        app.setStatus(new TravelApplicationStatus(getApprovalStatus(app.getTraveler())));
         appService.saveApplication(app);
         ApplicationReview applicationReview = appReviewService.getApplicationReviewByAppId(app.getAppId());
         eventBus.post(new TravelPendingReviewEmailEvent(applicationReview));
@@ -235,8 +242,8 @@ public class TravelAppUpdateService {
      * Creates and saves a new TravelApplication with one amendment {@code amd}.
      * This also creates and saves an ApplicationReview.
      *
-     * @param amd The first amendment to the TravelApplication
-     * @param traveler The employee who will be traveling.
+     * @param amd       The first amendment to the TravelApplication
+     * @param traveler  The employee who will be traveling.
      * @param submitter The employee who is submitting the application.
      * @return
      */
@@ -248,11 +255,23 @@ public class TravelAppUpdateService {
                 .withCreatedDateTime(LocalDateTime.now())
                 .build();
 
-        TravelApplication app = new TravelApplication(traveler, amd, travelerDeptHeadEmpId);
+        TravelApplication app = new TravelApplication(traveler, amd, travelerDeptHeadEmpId, getApprovalStatus(traveler));
         appService.saveApplication(app);
 
         ApplicationReview appReview = appReviewService.createApplicationReview(app);
         appReviewService.saveApplicationReview(appReview);
         return app;
+    }
+
+    private ApprovalStatus getApprovalStatus(Employee traveler) {
+        TravelRoles roles = travelRoleFactory.travelRolesForEmp(traveler);
+        ReviewerStrategy reviewerStrategy = ReviewerStrategy.getStrategy(roles.apex(), traveler.isSenator());
+        TravelRole roleToReview = reviewerStrategy.after(null);
+        ApprovalStatus approvalStatus;
+        switch (roleToReview) {
+            case TRAVEL_ADMIN, SECRETARY_OF_THE_SENATE, MAJORITY_LEADER -> approvalStatus = ApprovalStatus.TRAVEL_UNIT;
+            default -> approvalStatus = ApprovalStatus.DEPARTMENT_HEAD;
+        }
+        return approvalStatus;
     }
 }

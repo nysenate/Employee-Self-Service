@@ -19,7 +19,7 @@ enum SqlApplicationReviewQuery implements BasicSqlQuery {
                    app_review.next_reviewer_role, is_shared
             FROM ${travelSchema}.app_review
               JOIN ${travelSchema}.app ON app_review.app_id = app.app_id
-            WHERE app.status = 'PENDING'
+            WHERE app.status IN ('DEPARTMENT_HEAD', 'TRAVEL_UNIT')
             AND app_review.next_reviewer_role = :role
             """
     ),
@@ -28,7 +28,7 @@ enum SqlApplicationReviewQuery implements BasicSqlQuery {
               app_review.next_reviewer_role, is_shared
             FROM ${travelSchema}.app_review
               JOIN ${travelSchema}.app ON app_review.app_id = app.app_id
-            WHERE app.status = 'PENDING'
+            WHERE app.status IN ('DEPARTMENT_HEAD', 'TRAVEL_UNIT')
               AND app_review.next_reviewer_role = 'DEPARTMENT_HEAD'
               AND app.traveler_dept_head_emp_id IN (:empIds)
             """

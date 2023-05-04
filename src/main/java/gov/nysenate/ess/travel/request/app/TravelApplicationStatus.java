@@ -22,7 +22,7 @@ public class TravelApplicationStatus {
     }
 
     public boolean isPending() {
-        return status == ApprovalStatus.PENDING;
+        return status == ApprovalStatus.DEPARTMENT_HEAD || status == ApprovalStatus.TRAVEL_UNIT;
     }
 
     public boolean isApproved() {
@@ -37,21 +37,16 @@ public class TravelApplicationStatus {
         return status == ApprovalStatus.NOT_APPLICABLE;
     }
 
+    public boolean isDraft() {
+        return status == ApprovalStatus.DRAFT;
+    }
+
     public ApprovalStatus status() {
         return status;
     }
 
     public String note() {
         return note;
-    }
-
-    protected void approve() {
-        status = ApprovalStatus.APPROVED;
-    }
-
-    protected void disapprove(String note) {
-        status = ApprovalStatus.DISAPPROVED;
-        this.note = note;
     }
 
     @Override
