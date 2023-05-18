@@ -2,6 +2,7 @@ package gov.nysenate.ess.travel.department;
 
 import gov.nysenate.ess.core.client.view.EmployeeView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
+import gov.nysenate.ess.core.model.personnel.Employee;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -19,6 +20,13 @@ public class DepartmentView implements ViewObject {
         this.subordinates = department.getSubordinates().stream()
                 .map(EmployeeView::new)
                 .collect(Collectors.toSet());
+    }
+
+    public Department toDepartment() {
+        Set<Employee> subordinates = this.subordinates.stream()
+                .map(EmployeeView::toEmployee)
+                .collect(Collectors.toSet());
+        return new Department(head.toEmployee(), subordinates);
     }
 
     public EmployeeView getHead() {

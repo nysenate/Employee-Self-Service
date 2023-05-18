@@ -1,12 +1,12 @@
 package gov.nysenate.ess.travel.api;
 
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
+import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.client.response.error.ErrorCode;
 import gov.nysenate.ess.core.client.response.error.ErrorResponse;
 import gov.nysenate.ess.core.client.view.DetailedEmployeeView;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
-import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.util.OutputUtils;
@@ -22,9 +22,12 @@ import gov.nysenate.ess.travel.request.amendment.Amendment;
 import gov.nysenate.ess.travel.request.app.*;
 import gov.nysenate.ess.travel.request.attachment.Attachment;
 import gov.nysenate.ess.travel.request.department.SqlDepartmentHeadDao;
+import gov.nysenate.ess.travel.request.draft.Draft;
+import gov.nysenate.ess.travel.request.draft.DraftService;
+import gov.nysenate.ess.travel.request.draft.DraftView;
 import gov.nysenate.ess.travel.request.route.*;
 import gov.nysenate.ess.travel.provider.ProviderException;
-import gov.nysenate.ess.travel.request.unsubmitted.UnsubmittedAppDao;
+import gov.nysenate.ess.travel.request.draft.DraftDao;
 import gov.nysenate.ess.travel.utils.AttachmentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,55 +43,44 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @SuppressWarnings("UnnecessaryBoxing") @RestController
-@RequestMapping(BaseRestApiCtrl.REST_PATH + "/travel/unsubmitted")
-public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
+@RequestMapping(BaseRestApiCtrl.REST_PATH + "/travel/drafts")
+public class DraftCtrl extends BaseRestApiCtrl {
 
-    private static final Logger logger = LoggerFactory.getLogger(UnsubmittedAppCtrl.class);
+    private static final Logger logger = LoggerFactory.getLogger(DraftCtrl.class);
     @Autowired private EmployeeInfoService employeeInfoService;
-    @Autowired private UnsubmittedAppDao unsubmittedAppDao;
+    @Autowired private DraftDao draftDao;
     @Autowired private AllowedTravelersService allowedTravelersService;
     @Autowired private RouteViewValidator routeViewValidator;
     @Autowired private TravelAppUpdateService appUpdateService;
     @Autowired private AttachmentService attachmentService;
     @Autowired private SqlDepartmentHeadDao departmentHeadDao;
     @Autowired private TravelEmployeeService travelEmployeeService;
+    @Autowired private DraftService draftService;
 
-    /**
-     * Get an unsubmitted app API
-     * --------------------------
-     * Get the current unsubmitted app for the logged in user.
-     * <p>
-     * Usage:   (GET) /api/v1/travel/unsubmitted
-     * <p>
-     *
-     * @throws IOException
-     */
-    @RequestMapping(value = "", method = RequestMethod.GET)
-    public BaseResponse getUnsubmittedApps() {
+    @RequestMapping(value = "", method = RequestMethod.PUT)
+    public BaseResponse createDraft() {
         Employee user = employeeInfoService.getEmployee(getSubjectEmployeeId());
-        Optional<TravelAppEditDto> dtoOpt = unsubmittedAppDao.find(getSubjectEmployeeId());
-        TravelAppEditDto appEditDto = null;
-        if (dtoOpt.isPresent()) {
-            appEditDto = dtoOpt.get();
-            // Make sure the traveler's department is up to date.
-            appEditDto.setTraveler(new DetailedEmployeeView(
-                    employeeInfoService.getEmployee(appEditDto.getTraveler().getEmployeeId())));
-        } else {
-            appEditDto = dtoOpt.orElseGet(() -> {
-                Amendment amd = new Amendment.Builder().build();
-                return new TravelAppEditDto(
-                        new DetailedEmployeeView(user),
-                        new AmendmentView(amd),
-                        departmentHeadDao.defaultDepartmentHead(user.getEmployeeId())
-                );
-            });
-        }
-        Set<Employee> allowedTravelerEmps = allowedTravelersService.forEmp(user);
-        Set<TravelEmployee> allowedTravelers = travelEmployeeService.getTravelEmployees(allowedTravelerEmps);
-        appEditDto.setAllowedTravelerViews(allowedTravelers);
+        TravelEmployee travelEmployee = travelEmployeeService.getTravelEmployee(user);
+        Draft draft = new Draft(travelEmployee);
+        DraftView draftView = new DraftView(draft);
+        return new ViewObjectResponse<>(draftView);
+    }
 
-        unsubmittedAppDao.save(getSubjectEmployeeId(), appEditDto.getTraveler(), appEditDto.getAmendment(), appEditDto.getTravelerDeptHeadEmpId());
-        return new ViewObjectResponse<>(appEditDto);
+    @RequestMapping(value = "", method = RequestMethod.GET)
+    public BaseResponse getUsersDrafts() {
+        List<Draft> drafts = draftService.getUserDrafts(getSubjectEmployeeId());
+        List<DraftView> draftViews = drafts.stream()
+                .map(DraftView::new)
+                .collect(Collectors.toList());
+        return ListViewResponse.of(draftViews);
+    }
+
+    @RequestMapping(value = "/route", method = RequestMethod.POST)
+    public BaseResponse updateRoute(@RequestBody DraftView draftView) {
+        routeViewValidator.validateTravelDates(draftView.getAmendment().getRoute());
+        Draft draft = draftView.toDraft();
+        draft.setAmendment(appUpdateService.updateRoute(draft.getAmendment(), draft.getAmendment().route()));
+        return new ViewObjectResponse<>(new DraftView(draft));
     }
 
     /**
@@ -104,7 +96,7 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping(value = "", method = RequestMethod.DELETE)
     public void deleteUnsubmittedApp() {
-        unsubmittedAppDao.delete(getSubjectEmployeeId());
+        draftDao.delete(getSubjectEmployeeId());
     }
 
     /**
@@ -178,7 +170,7 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
 
         AmendmentView amendmentView = new AmendmentView(amendment);
         // Save after all changes are applied.
-        unsubmittedAppDao.save(user.getEmployeeId(), dto.getTraveler(), amendmentView, dto.getTravelerDeptHeadEmpId());
+//        draftDao.save(user.getEmployeeId(), dto.getTraveler(), amendmentView, dto.getTravelerDeptHeadEmpId());
 
         dto.setAmendment(amendmentView);
         return new ViewObjectResponse<>(dto);
@@ -192,13 +184,12 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
      * @throws IOException
      */
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public BaseResponse submitApp() {
+    public BaseResponse submitApp(@RequestBody DraftView draftView) {
         Employee user = employeeInfoService.getEmployee(getSubjectEmployeeId());
-        TravelAppEditDto dto = findApp(getSubjectEmployeeId());
+        Draft draft = draftView.toDraft();
 
-        TravelApplication app = appUpdateService.submitTravelApplication(
-                dto.getAmendment().toAmendment(), dto.getTraveler().toEmployee(), user, dto.getTravelerDeptHeadEmpId());
-        unsubmittedAppDao.delete(user.getEmployeeId());
+        TravelApplication app = appUpdateService.submitTravelApplication(draft, user);
+        draftDao.delete(draft.getId());
         return new ViewObjectResponse<>(new TravelApplicationView(app));
     }
 
@@ -220,7 +211,7 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
                 .build();
 
         AmendmentView amdView = new AmendmentView(amd);
-        unsubmittedAppDao.save(getSubjectEmployeeId(), dto.getTraveler(), amdView, dto.getTravelerDeptHeadEmpId());
+//        draftDao.save(getSubjectEmployeeId(), dto.getTraveler(), amdView, dto.getTravelerDeptHeadEmpId());
         dto.setAmendment(amdView);
         return new ViewObjectResponse<>(dto);
     }
@@ -248,15 +239,16 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
                 .build();
 
         AmendmentView amdView = new AmendmentView(amd);
-        unsubmittedAppDao.save(getSubjectEmployeeId(), dto.getTraveler(), amdView, dto.getTravelerDeptHeadEmpId());
+//        draftDao.save(getSubjectEmployeeId(), dto.getTraveler(), amdView, dto.getTravelerDeptHeadEmpId());
         dto.setAmendment(amdView);
         return new ViewObjectResponse<>(dto);
     }
 
     private TravelAppEditDto findApp(int userId) {
-        return unsubmittedAppDao.find(userId)
-                .orElseThrow(() -> new InvalidRequestParamEx(String.valueOf(userId), "userId", "int",
-                        "No Unsubmitted travel app found with provided userId"));
+        return null;
+//        return draftDao.find(userId)
+//                .orElseThrow(() -> new InvalidRequestParamEx(String.valueOf(userId), "userId", "int",
+//                        "No Unsubmitted travel app found with provided userId"));
     }
 
     @ExceptionHandler(InvalidTravelDatesException.class)

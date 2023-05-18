@@ -135,15 +135,14 @@ public class Destination {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Destination that = (Destination) o;
-        return id == that.id &&
-                Objects.equals(address, that.address) &&
-                Objects.equals(dateRange, that.dateRange) &&
-                Objects.equals(mealPerDiems, that.mealPerDiems) &&
-                Objects.equals(lodgingPerDiems, that.lodgingPerDiems);
+        return Objects.equals(address, that.address)
+                && Objects.equals(dateRange, that.dateRange)
+                && Objects.equals(mealPerDiems, that.mealPerDiems)
+                && Objects.equals(lodgingPerDiems, that.lodgingPerDiems);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, address, dateRange, mealPerDiems, lodgingPerDiems);
+        return Objects.hash(address, dateRange, mealPerDiems, lodgingPerDiems);
     }
 }

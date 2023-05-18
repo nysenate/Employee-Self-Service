@@ -6,7 +6,7 @@ function allowancesEditForm(appProps) {
     return {
         restrict: 'E',
         scope: {
-            amendment: '<',               // The application being edited.
+            data: '<',               // The application being edited.
             positiveCallback: '&',   // Callback function called when continuing. Takes a travel app param named 'app'.
             neutralCallback: '&',   // Callback function called when moving back. Takes a travel app param named 'app'.
             negativeCallback: '&',  // Callback function called when canceling. Takes a travel app param named 'app'.
@@ -16,11 +16,11 @@ function allowancesEditForm(appProps) {
         templateUrl: appProps.ctxPath + '/template/travel/common/app/allowances-edit-form-directive',
         link: function (scope, elem, attrs) {
 
-            scope.dirtyAmendment = angular.copy(scope.amendment);
-            console.log(scope.dirtyAmendment);
+            scope.dirtyDraft = angular.copy(scope.data.draft);
+            console.log(scope.dirtyDraft);
 
             scope.next = function () {
-                scope.positiveCallback({amendment: scope.dirtyAmendment});
+                scope.positiveCallback({draft: scope.dirtyDraft});
             };
 
             scope.previousDay = function (date) {
@@ -28,19 +28,19 @@ function allowancesEditForm(appProps) {
             };
 
             scope.tripHasMeals = function () {
-                return scope.dirtyAmendment.mealPerDiems.allMealPerDiems.length > 0;
+                return scope.dirtyDraft.amendment.mealPerDiems.allMealPerDiems.length > 0;
             };
 
             scope.tripHasLodging = function () {
-                return scope.dirtyAmendment.lodgingPerDiems.allLodgingPerDiems.length > 0;
+                return scope.dirtyDraft.amendment.lodgingPerDiems.allLodgingPerDiems.length > 0;
             };
 
             scope.back = function () {
-                scope.neutralCallback({amendment: scope.dirtyAmendment});
+                scope.neutralCallback({draft: scope.dirtyDraft});
             };
 
             scope.cancel = function () {
-                scope.negativeCallback({amendment: scope.dirtyAmendment});
+                scope.negativeCallback({draft: scope.dirtyDraft});
             }
         }
     }

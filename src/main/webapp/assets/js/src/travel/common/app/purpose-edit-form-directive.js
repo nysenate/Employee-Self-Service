@@ -1,13 +1,13 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.directive('essPurposeEditForm', ['$http', 'appProps', 'TravelAttachmentDelete', 'modals', purposeEditLink]);
+essTravel.directive('essPurposeEditForm', ['$http', 'appProps', 'TravelAttachmentDelete', 'TravelEventTypesApi',
+                                           'AllowedTravelersApi', 'modals', purposeEditLink]);
 
-function purposeEditLink($http, appProps, attachmentDeleteApi, modals) {
+function purposeEditLink($http, appProps, attachmentDeleteApi, eventTypesApi, allowedTravelersApi, modals) {
     return {
         restrict: 'E',
         scope: {
-            dto: '<',               // The TravelAppEditDto being edited.
-            eventTypes: '<',        // Valid Purpose of Travel event types.
+            data: '<',               // The TravelAppEditDto being edited.
             positiveCallback: '&',  // Callback function called when continuing. Takes a travel app param named 'amendment'.
             negativeCallback: '&',  // Callback function called when canceling. Takes a travel app param named 'amendment'.
             negativeLabel: '@'      // Text to label the negative button. Defaults to 'Cancel'
@@ -16,18 +16,35 @@ function purposeEditLink($http, appProps, attachmentDeleteApi, modals) {
         templateUrl: appProps.ctxPath + '/template/travel/common/app/purpose-edit-form-directive',
         link: function (scope, elem, attrs) {
 
-            scope.dirtyAmendment = angular.copy(scope.dto.amendment);
+            scope.isLoading = true;
+            scope.dirtyDraft = angular.copy(scope.data.draft);
+            scope.eventTYpes = [];
+            scope.allowedTravelers = [];
+
+            (function () {
+                // Init event types and allowed travelers.
+                var eventTypesPromise = eventTypesApi.get().$promise.then(function (res) {
+                    scope.eventTypes = res.result;
+                });
+                var allowedTravelersPromise = allowedTravelersApi.get().$promise.then(function (res) {
+                    scope.allowedTravelers = res.result;
+                });
+
+                Promise.all([eventTypesPromise, allowedTravelersPromise]).then(function () {
+                    scope.isLoading = false;
+                    scope.$apply();
+                });
+            })();
 
             scope.next = function () {
                 scope.setInvalidFormElementsTouched(scope.purpose.form);
                 if (scope.purpose.form.$valid) {
-                    scope.dto.amendment = scope.dirtyAmendment
-                    scope.positiveCallback({dto: scope.dto});
+                    scope.positiveCallback({draft: scope.dirtyDraft});
                 }
             };
 
             scope.cancel = function () {
-                scope.negativeCallback({app: scope.dirtyAmendment});
+                scope.negativeCallback({draft: scope.dirtyDraft});
             };
 
             /**
@@ -66,22 +83,10 @@ function purposeEditLink($http, appProps, attachmentDeleteApi, modals) {
                 })
             };
 
-            scope.onTravelerSelected = function (traveler) {
-                for (var i = 0; i < scope.dto.allowedTravelers.length; i++) {
-                    var allowedTraveler = scope.dto.allowedTravelers[i];
-                    if (allowedTraveler.employeeId === traveler.employeeId) {
-                        if (allowedTraveler.department == null || allowedTraveler.department.head.employeeId === traveler.employeeId) {
-                            scope.departmentHead = null;
-                            scope.dto.travelerDeptHeadEmpId = null;
-                        } else {
-                            scope.departmentHead = allowedTraveler.department.head;
-                            scope.dto.travelerDeptHeadEmpId = scope.departmentHead.employeeId;
-                        }
-                    }
-                }
+            scope.showDepartmentHead = function () {
+                return !scope.dirtyDraft.traveler.isDepartmentHead
+                    && scope.dirtyDraft.traveler.department.head != null;
             }
-
-            scope.onTravelerSelected(scope.dto.traveler);
         }
     }
 }

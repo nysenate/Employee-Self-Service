@@ -13,10 +13,20 @@ public class TravelEmployee extends Employee {
     }
 
     public boolean isDepartmentHead() {
-        return this.employeeId == department.getHead().getEmployeeId();
+        return this.employeeId == getDeptHeadId();
     }
 
     public Department getDepartment() {
         return this.department;
+    }
+
+    /**
+     * Returns the employees department head employee id if they have one, 0 otherwise.
+     */
+    public int getDeptHeadId() {
+        if (department == null || department.getHead() == null) {
+            return 0;
+        }
+        return department.getHead().getEmployeeId();
     }
 }

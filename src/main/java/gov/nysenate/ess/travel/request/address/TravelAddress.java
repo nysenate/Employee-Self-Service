@@ -106,12 +106,19 @@ public class TravelAddress {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         TravelAddress that = (TravelAddress) o;
-        return id == that.id && Objects.equals(placeId, that.placeId) && Objects.equals(name, that.name) && Objects.equals(addr1, that.addr1) && Objects.equals(city, that.city) && Objects.equals(zip5, that.zip5) && Objects.equals(county, that.county) && Objects.equals(state, that.state) && Objects.equals(country, that.country);
+        return Objects.equals(placeId, that.placeId)
+                && Objects.equals(name, that.name)
+                && Objects.equals(addr1, that.addr1)
+                && Objects.equals(city, that.city)
+                && Objects.equals(zip5, that.zip5)
+                && Objects.equals(county, that.county)
+                && Objects.equals(state, that.state)
+                && Objects.equals(country, that.country);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, placeId, name, addr1, city, zip5, county, state, country);
+        return Objects.hash(placeId, name, addr1, city, zip5, county, state, country);
     }
 
     public static class Builder {

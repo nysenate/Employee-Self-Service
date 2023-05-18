@@ -25,7 +25,7 @@
         <div class="padding-10">
           <span style="margin: 5px 10px 5px 10px;">Enter your outbound route starting from the origin and including all destinations.</span>
 
-          <div class="padding-10" ng-repeat="leg in dirtyAmendment.route.outboundLegs">
+          <div class="padding-10" ng-repeat="leg in dirtyDraft.amendment.route.outboundLegs">
             <div>
               <h2 class="travel-title-small inline-block">Segment {{$index + 1}}</h2>
               <span class="icon-circle-with-cross travel-cross"

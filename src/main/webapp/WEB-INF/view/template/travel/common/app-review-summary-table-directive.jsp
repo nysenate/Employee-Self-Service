@@ -17,7 +17,7 @@
         </thead>
 
         <tbody>
-        <tr dir-paginate="review in reviews | orderBy: 'travelApplication.startDate' | itemsPerPage : 10"
+        <tr dir-paginate="review in reviews | orderBy: '-travelApplication.travelStartDate' | itemsPerPage : 10"
             pagination-id="travel-table-pagination"
             ng-click="onRowClick({review: review})"
             ng-class="{'shared-review': (review.isShared && activeRole.name && activeRole.name !== review.nextReviewerRole) }">

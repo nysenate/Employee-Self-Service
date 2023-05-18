@@ -5,49 +5,46 @@
 
   <ess-new-app-breadcrumbs></ess-new-app-breadcrumbs>
 
-  <div loader-indicator class="loader" ng-show="!data.amendment"></div>
+  <div loader-indicatorclass="loader" ng-show="isLoading"></div>
 
-  <div ng-if="data.amendment">
+  <div ng-if="!isLoading">
     <div ng-if="stateService.isPurposeState()">
-      <ess-purpose-edit-form dto="data"
-                             event-types="data.eventTypes"
-                             positive-callback="savePurpose(dto)"
-                             negative-callback="cancel(amendment)">
+      <ess-purpose-edit-form data="data"
+                             positive-callback="savePurpose(draft)"
+                             negative-callback="cancel(draft)">
       </ess-purpose-edit-form>
     </div>
 
     <div ng-if="stateService.isOutboundState()">
-      <ess-outbound-edit-form amendment="data.amendment"
-                              traveler="data.traveler"
-                              positive-callback="saveOutbound(amendment)"
-                              neutral-callback="toPurposeState(amendment)"
-                              negative-callback="cancel(amendment)">
+      <ess-outbound-edit-form data="data"
+                              positive-callback="saveOutbound(draft)"
+                              neutral-callback="toPurposeState(draft)"
+                              negative-callback="cancel(draft)">
       </ess-outbound-edit-form>
     </div>
 
     <div ng-if="stateService.isReturnState()">
-      <ess-return-edit-form amendment="data.amendment"
-                            positive-callback="saveRoute(amendment)"
-                            neutral-callback="toOutboundState(amendment)"
-                            negative-callback="cancel(amendment)">
+      <ess-return-edit-form data="data"
+                            positive-callback="saveRoute(draft)"
+                            neutral-callback="toOutboundState(draft)"
+                            negative-callback="cancel(draft)">
       </ess-return-edit-form>
     </div>
 
     <div ng-if="stateService.isAllowancesState()">
-      <ess-allowances-edit-form amendment="data.amendment"
-                                positive-callback="saveAllowances(amendment)"
-                                neutral-callback="toReturnState(amendment)"
-                                negative-callback="cancel(amendment)">
+      <ess-allowances-edit-form data="data"
+                                positive-callback="saveAllowances(draft)"
+                                neutral-callback="toReturnState(draft)"
+                                negative-callback="cancel(draft)">
       </ess-allowances-edit-form>
     </div>
 
     <div ng-if="stateService.isReviewState()">
-      <ess-review-edit-form amendment="data.amendment"
-                            traveler="data.traveler"
+      <ess-review-edit-form data="data"
                             positive-btn-label="Submit Application"
-                            positive-callback="submitApplication(amendment)"
-                            neutral-callback="toAllowancesState(amendment)"
-                            negative-callback="cancel(amendment)">
+                            positive-callback="submitApplication(draft)"
+                            neutral-callback="toAllowancesState(draft)"
+                            negative-callback="cancel(draft)">
       </ess-review-edit-form>
     </div>
   </div>

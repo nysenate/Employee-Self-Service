@@ -6,8 +6,7 @@ function reviewEditForm($compile, appProps, modals) {
     return {
         restrict: 'E',
         scope: {
-            amendment: '<',         // The application being edited.
-            traveler: '<',          // The traveling employee.
+            data: '<',         // The application being edited.
             positiveCallback: '&',  // Callback function called when continuing. Takes a travel app param named 'app'.
             positiveBtnLabel: '@',  // The label to use for the positive button.
             neutralCallback: '&',   // Callback function called when moving back. Takes a travel app param named 'app'.
@@ -19,28 +18,26 @@ function reviewEditForm($compile, appProps, modals) {
         link: function (scope, elem, attrs) {
 
             scope.app = {
-                activeAmendment: scope.amendment,
-                traveler: scope.traveler,
+                activeAmendment: scope.data.draft.amendment,
+                traveler: scope.data.draft.traveler,
                 submittedDateTime: new Date(),
             };
 
             // Hides the negative button if no callback was provided.
             scope.showNegative = attrs.hasOwnProperty('negativeCallback');
 
-            scope.reviewAmendment = angular.copy(scope.amendment);
-
             displayMap();
 
             scope.next = function () {
-                scope.positiveCallback({amendment: scope.reviewAmendment});
+                scope.positiveCallback({draft: scope.data.draft});
             };
 
             scope.back = function () {
-                scope.neutralCallback({amendment: scope.dirtyApp});
+                scope.neutralCallback({draft: scope.data.draft});
             };
 
             scope.cancel = function () {
-                scope.negativeCallback({amendment: scope.reviewAmendment});
+                scope.negativeCallback({draft: scope.data.draft});
             };
 
             function displayMap() {
@@ -60,10 +57,10 @@ function reviewEditForm($compile, appProps, modals) {
 
                 // Create map api parameters.
                 // All intermediate destinations should be waypoints, final destination should an address string.
-                var origin = scope.reviewAmendment.route.origin.formattedAddressWithCounty;
+                var origin = scope.data.draft.amendment.route.origin.formattedAddressWithCounty;
 
                 var waypoints = [];
-                scope.reviewAmendment.route.outboundLegs.forEach(function (leg) {
+                scope.data.draft.amendment.route.outboundLegs.forEach(function (leg) {
                     waypoints.push({location: leg.to.address.formattedAddressWithCounty});
                 });
 

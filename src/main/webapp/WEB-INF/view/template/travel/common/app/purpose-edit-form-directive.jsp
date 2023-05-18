@@ -12,7 +12,7 @@
           A purpose of travel is required.
         </li>
         <li ng-if="purpose.form.$error.eventNameRequired">
-          Name of the {{dirtyAmendment.purposeOfTravel.eventType.displayName}} is required.
+          Name of the {{dirtyDraft.amendment.purposeOfTravel.eventType.displayName}} is required.
         </li>
         <li ng-if="purpose.form.$error.additionalPurposeRequired">
           A description of your purpose of travel is required.
@@ -21,25 +21,26 @@
     </ess-notification>
   </div>
 
-  <div class="travel-card">
+  <div loader-indicator class="loader" ng-show="isLoading"></div>
+  <div class="travel-card" ng-show="!isLoading">
     <form ng-cloak name="purpose.form" id="purposeForm" novalidate>
       <div class="travel-card-item">
         <h1>Traveler Info</h1>
         <div class="padding-10">
           <div class="purpose-row">
             <label>Travel application on behalf of:</label>
-            <ui-select ng-model="dto.traveler" style="min-width: 200px;" class="travel-ui-select-input" on-select="onTravelerSelected($item)" traveler-validator>
+            <ui-select ng-model="dirtyDraft.traveler" style="min-width: 200px;" class="travel-ui-select-input" traveler-validator>
               <ui-select-match>
                 <span ng-bind="$select.selected.fullName"></span>
               </ui-select-match>
-              <ui-select-choices repeat="emp in dto.allowedTravelers | filter: $select.search track by emp.employeeId">
+              <ui-select-choices repeat="emp in allowedTravelers | filter: $select.search track by emp.employeeId">
                 <div ng-bind-html="emp.fullName"></div>
               </ui-select-choices>
             </ui-select>
           </div>
-          <div class="purpose-row" ng-if="departmentHead !== null">
+          <div class="purpose-row" ng-if="showDepartmentHead()">
             <label>Traveler Department Head:</label>
-            <span class="padding-left-10">{{departmentHead.fullName}}</span>
+            <span class="padding-left-10">{{dirtyDraft.traveler.department.head.fullName}}</span>
           </div>
         </div>
       </div>
@@ -52,29 +53,29 @@
                     class="travel-input"
                     event-type-validator
                     ng-options="eventType as eventType.displayName for eventType in eventTypes track by eventType.name"
-                    ng-model="dirtyAmendment.purposeOfTravel.eventType"/>
+                    ng-model="dirtyDraft.amendment.purposeOfTravel.eventType"/>
           </div>
-          <div ng-if="dirtyAmendment.purposeOfTravel.eventType.requiresName" class="purpose-row">
-            <label for="eventNameInput">Name of the {{dirtyAmendment.purposeOfTravel.eventType.displayName}}:</label>
+          <div ng-if="dirtyDraft.amendment.purposeOfTravel.eventType.requiresName" class="purpose-row">
+            <label for="eventNameInput">Name of the {{dirtyDraft.amendment.purposeOfTravel.eventType.displayName}}:</label>
             <input id="eventNameInput" type="text" class="travel-input"
                    event-name-validator
-                   ng-model="dirtyAmendment.purposeOfTravel.eventName"/>
+                   ng-model="dirtyDraft.amendment.purposeOfTravel.eventName"/>
           </div>
-          <div ng-if="dirtyAmendment.purposeOfTravel.eventType !== null" class="purpose-row">
-            <div ng-if="dirtyAmendment.purposeOfTravel.eventType.requiresAdditionalPurpose">
+          <div ng-if="dirtyDraft.amendment.purposeOfTravel.eventType !== null" class="purpose-row">
+            <div ng-if="dirtyDraft.amendment.purposeOfTravel.eventType.requiresAdditionalPurpose">
               <label for="purposeAdditionalTextRequired">
                 Enter your purpose of travel:
               </label>
-              <textarea id="purposeAdditionalTextRequired" ng-model="dirtyAmendment.purposeOfTravel.additionalPurpose"
+              <textarea id="purposeAdditionalTextRequired" ng-model="dirtyDraft.amendment.purposeOfTravel.additionalPurpose"
                         class="travel-input"
                         additional-purpose-validator
                         cols="120" rows="3"></textarea>
             </div>
-            <div ng-if="!dirtyAmendment.purposeOfTravel.eventType.requiresAdditionalPurpose">
+            <div ng-if="!dirtyDraft.amendment.purposeOfTravel.eventType.requiresAdditionalPurpose">
               <label for="purposeAdditionalTextOptional">
                 Provide additional information (<em>Optional</em>):
               </label>
-              <textarea id="purposeAdditionalTextOptional" ng-model="dirtyAmendment.purposeOfTravel.additionalPurpose"
+              <textarea id="purposeAdditionalTextOptional" ng-model="dirtyDraft.amendment.purposeOfTravel.additionalPurpose"
                         class="travel-input"
                         style="resize:vertical;"
                         cols="120" rows="3"></textarea>
@@ -87,7 +88,7 @@
         <h1 class="">Supporting Documentation <em class="optional">(Optional)</em></h1>
         <div class="text-align-center padding-10">
           <span class="">You may attach any relevant supporting documentation.</span>
-          <div ng-repeat="attachment in dirtyAmendment.attachments" class="travel-attachment-container">
+          <div ng-repeat="attachment in dirtyDraft.amendment.attachments" class="travel-attachment-container">
             <div class="travel-attachment-filename">
               {{attachment.originalName}}
               <span ng-click="deleteAttachment(attachment)" class="icon-cross" style="cursor: pointer;"></span>

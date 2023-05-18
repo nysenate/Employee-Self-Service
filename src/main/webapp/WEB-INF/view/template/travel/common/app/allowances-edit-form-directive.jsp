@@ -20,27 +20,27 @@
             <div class="left">
               <div class="row">
                 <label class="">Tolls: $</label>
-                <input ng-model="dirtyAmendment.allowances.tolls" type="number" step="0.01" min="0"
+                <input ng-model="dirtyDraft.amendment.allowances.tolls" type="number" step="0.01" min="0"
                        style="width: 5em;">
               </div>
               <div class="row">
                 <label class="">Parking: $</label>
-                <input ng-model="dirtyAmendment.allowances.parking" type="number" step="0.01" min="0"
+                <input ng-model="dirtyDraft.amendment.allowances.parking" type="number" step="0.01" min="0"
                        style="width: 5em;">
               </div>
               <div class="row">
                 <label class="">Taxi/Bus/Subway: $</label>
-                <input ng-model="dirtyAmendment.allowances.alternateTransportation" type="number" step="0.01"
+                <input ng-model="dirtyDraft.amendment.allowances.alternateTransportation" type="number" step="0.01"
                        min="0" style="width: 5em;">
               </div>
               <div class="row">
                 <label class="">Train/Airplane: $</label>
-                <input ng-model="dirtyAmendment.allowances.trainAndPlane" type="number" step="0.01" min="0"
+                <input ng-model="dirtyDraft.amendment.allowances.trainAndPlane" type="number" step="0.01" min="0"
                        style="width: 5em;">
               </div>
               <div class="row">
                 <label class="">Registration Fee: $</label>
-                <input ng-model="dirtyAmendment.allowances.registration" type="number" step="0.01" min="0"
+                <input ng-model="dirtyDraft.amendment.allowances.registration" type="number" step="0.01" min="0"
                        style="width: 5em;">
               </div>
             </div>
@@ -77,7 +77,7 @@
               </tr>
               </thead>
               <tbody>
-              <tr ng-repeat="perDiem in dirtyAmendment.mealPerDiems.allMealPerDiems">
+              <tr ng-repeat="perDiem in dirtyDraft.amendment.mealPerDiems.allMealPerDiems">
                 <td>{{perDiem.address.formattedAddressWithCounty}}</td>
                 <td>{{perDiem.date | date: 'shortDate'}}</td>
                 <td><label>Request Meals: </label><input type="checkbox" ng-model="perDiem.isReimbursementRequested">
@@ -105,7 +105,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="perDiem in dirtyAmendment.lodgingPerDiems.allLodgingPerDiems">
+                <tr ng-repeat="perDiem in dirtyDraft.amendment.lodgingPerDiems.allLodgingPerDiems">
                   <td>{{perDiem.address.formattedAddressWithCounty}}</td>
                   <td>{{previousDay(perDiem.date) | date: 'shortDate'}} - {{perDiem.date | date: 'shortDate'}}</td>
                   <td><label>Request Lodging: </label><input type="checkbox"
@@ -120,7 +120,7 @@
       </div>
 
       <div class="travel-card-item"
-           ng-show="dirtyAmendment.route.mileagePerDiems.doesTripQualifyForReimbursement">
+           ng-show="dirtyDraft.amendment.route.mileagePerDiems.doesTripQualifyForReimbursement">
         <h1 class="">Mileage Adjustment <em class="optional">(Optional)</em></h1>
         <div class="padding-10">
         <span class=""> You qualify for the following mileage reimbursements. Uncheck anything you would <span
@@ -136,7 +136,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="leg in dirtyAmendment.route.mileagePerDiems.allLegs"
+                <tr ng-repeat="leg in dirtyDraft.amendment.route.mileagePerDiems.allLegs"
                     ng-if="leg.qualifiesForReimbursement">
                   <td>{{leg.from.address.formattedAddressWithCounty}}</td>
                   <td>{{leg.to.address.formattedAddressWithCounty}}</td>

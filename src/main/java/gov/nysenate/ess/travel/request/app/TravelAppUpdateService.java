@@ -17,6 +17,7 @@ import gov.nysenate.ess.travel.request.allowances.meal.MealPerDiems;
 import gov.nysenate.ess.travel.request.allowances.mileage.MileagePerDiems;
 import gov.nysenate.ess.travel.request.amendment.Amendment;
 import gov.nysenate.ess.travel.request.amendment.Version;
+import gov.nysenate.ess.travel.request.draft.Draft;
 import gov.nysenate.ess.travel.request.route.Leg;
 import gov.nysenate.ess.travel.request.route.Route;
 import gov.nysenate.ess.travel.request.route.RouteService;
@@ -241,21 +242,21 @@ public class TravelAppUpdateService {
     /**
      * Creates and saves a new TravelApplication with one amendment {@code amd}.
      * This also creates and saves an ApplicationReview.
-     *
-     * @param amd       The first amendment to the TravelApplication
-     * @param traveler  The employee who will be traveling.
-     * @param submitter The employee who is submitting the application.
-     * @return
      */
-    public TravelApplication submitTravelApplication(Amendment amd, Employee traveler, Employee submitter, int travelerDeptHeadEmpId) {
-        amd = new Amendment.Builder(amd)
+    public TravelApplication submitTravelApplication(Draft draft, Employee submitter) {
+        Amendment amd = new Amendment.Builder(draft.getAmendment())
                 .withAmendmentId(0)
                 .withVersion(Version.A)
                 .withCreatedBy(submitter)
                 .withCreatedDateTime(LocalDateTime.now())
                 .build();
 
-        TravelApplication app = new TravelApplication(traveler, amd, travelerDeptHeadEmpId, getApprovalStatus(traveler));
+        TravelApplication app = new TravelApplication(
+                draft.getTraveler(),
+                amd,
+                draft.getTraveler().getDeptHeadId(),
+                getApprovalStatus(draft.getTraveler())
+        );
         appService.saveApplication(app);
 
         ApplicationReview appReview = appReviewService.createApplicationReview(app);

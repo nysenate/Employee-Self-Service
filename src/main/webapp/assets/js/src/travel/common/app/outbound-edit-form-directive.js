@@ -6,8 +6,7 @@ function outboundEditLink(appProps) {
     return {
         restrict: 'E',
         scope: {
-            amendment: '<',         // The amendment being edited.
-            traveler: '<',          // The employee who will be traveling.
+            data: '<',         // The amendment being edited.
             positiveCallback: '&',  // Callback function called when continuing. Takes a travel app param named 'amendment'.
             neutralCallback: '&',   // Callback function called when moving back. Takes a travel app param named 'amendment'.
             negativeCallback: '&',  // Callback function called when canceling. Takes a travel app param named 'amendment'.
@@ -17,24 +16,24 @@ function outboundEditLink(appProps) {
         templateUrl: appProps.ctxPath + '/template/travel/common/app/outbound-edit-form-directive',
         link: function (scope, elem, attrs) {
 
-            scope.dirtyAmendment = angular.copy(scope.amendment);
+            scope.dirtyDraft = angular.copy(scope.data.draft);
+            console.log(scope.dirtyDraft);
 
-            if (scope.dirtyAmendment.route.outboundLegs.length === 0) {
+            if (scope.dirtyDraft.amendment.route.outboundLegs.length === 0) {
                 var leg = new Leg();
-                console.log(scope.traveler);
                 // Init from address to employees work address.
-                leg.from.address = scope.traveler.empWorkLocation.address;
-                scope.dirtyAmendment.route.outboundLegs.push(leg);
+                leg.from.address = scope.dirtyDraft.traveler.empWorkLocation.address;
+                scope.dirtyDraft.amendment.route.outboundLegs.push(leg);
             }
 
             scope.addSegment = function () {
                 // Initialize new leg
                 var segment = new Leg();
-                var prevSeg = scope.dirtyAmendment.route.outboundLegs[scope.dirtyAmendment.route.outboundLegs.length - 1];
+                var prevSeg = scope.dirtyDraft.amendment.route.outboundLegs[scope.dirtyDraft.amendment.route.outboundLegs.length - 1];
                 segment.from = prevSeg.to;
                 segment.methodOfTravel = prevSeg.methodOfTravel;
                 segment.methodOfTravelDescription = prevSeg.methodOfTravelDescription;
-                scope.dirtyAmendment.route.outboundLegs.push(segment);
+                scope.dirtyDraft.amendment.route.outboundLegs.push(segment);
             };
 
             scope.setFromAddress = function (leg, address) {
@@ -46,30 +45,30 @@ function outboundEditLink(appProps) {
             };
 
             scope.isLastSegment = function (index) {
-                return scope.dirtyAmendment.route.outboundLegs.length - 1 === index;
+                return scope.dirtyDraft.amendment.route.outboundLegs.length - 1 === index;
             };
 
             scope.deleteSegment = function () {
-                scope.dirtyAmendment.route.outboundLegs.pop();
+                scope.dirtyDraft.amendment.route.outboundLegs.pop();
             };
 
             scope.next = function () {
                 scope.setInvalidFormElementsTouched(scope.outbound.form);
                 if (scope.outbound.form.$valid) {
-                    scope.normalizeTravelDates(scope.dirtyAmendment.route.outboundLegs);
-                    scope.checkCounties(scope.dirtyAmendment.route.outboundLegs)
+                    scope.normalizeTravelDates(scope.dirtyDraft.amendment.route.outboundLegs);
+                    scope.checkCounties(scope.dirtyDraft.amendment.route.outboundLegs)
                         .then(function () {
-                            scope.positiveCallback({amendment: scope.dirtyAmendment});
+                            scope.positiveCallback({draft: scope.dirtyDraft});
                         });
                 }
             };
 
             scope.back = function () {
-                scope.neutralCallback({app: scope.dirtyAmendment});
+                scope.neutralCallback({draft: scope.dirtyDraft});
             };
 
             scope.cancel = function () {
-                scope.negativeCallback({app: scope.dirtyAmendment});
+                scope.negativeCallback({draft: scope.dirtyDraft});
             };
         }
     }

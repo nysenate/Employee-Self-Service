@@ -112,6 +112,10 @@ public class TravelAppEditCtrl extends BaseRestApiCtrl {
                 appDto.getAmendment().toAmendment(),
                 appDto.getAmendment().getRoute().toRoute());
 
+        if (app.activeAmendment().route().equals(amd.route())) {
+            System.out.println("================================ ROUTES ARE THE SAME ===========================");
+        }
+
         // Create a new TravelAppEditDto to ensure allowedTravelers and eventTypes are populated correctly.
         appDto = new TravelAppEditDto(appDto.getTraveler(), new AmendmentView(amd), app.getTravelerDeptHeadEmpId());
         Set<Employee> allowedTravelerEmps = allowedTravelersService.forEmp(app.getTraveler());

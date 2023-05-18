@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static java.time.format.DateTimeFormatter.ISO_DATE;
 import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 
 public class TravelApplicationView implements ViewObject {
@@ -22,7 +23,7 @@ public class TravelApplicationView implements ViewObject {
     private TravelApplicationStatusView status;
     private AmendmentView activeAmendment;
     private List<AmendmentView> amendments;
-
+    private String travelStartDate;
 
     public TravelApplicationView() {
     }
@@ -39,6 +40,7 @@ public class TravelApplicationView implements ViewObject {
         amendments = app.getAmendments().stream()
                 .map(AmendmentView::new)
                 .collect(Collectors.toList());
+        this.travelStartDate = app.activeAmendment().startDate().format(ISO_DATE);
     }
 
     public TravelApplication toTravelApplication() {
@@ -82,6 +84,10 @@ public class TravelApplicationView implements ViewObject {
 
     public List<AmendmentView> getAmendments() {
         return amendments;
+    }
+
+    public String getTravelStartDate() {
+        return travelStartDate;
     }
 
     @Override
