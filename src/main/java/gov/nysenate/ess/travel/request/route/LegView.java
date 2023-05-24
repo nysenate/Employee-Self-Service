@@ -1,5 +1,6 @@
 package gov.nysenate.ess.travel.request.route;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.travel.request.allowances.PerDiem;
@@ -101,10 +102,12 @@ public class LegView implements ViewObject {
         return mileageRate;
     }
 
+    @JsonIgnore
     public boolean isReimbursementRequested() {
         return isReimbursementRequested;
     }
 
+    @JsonIgnore
     public boolean isOutbound() {
         return isOutbound;
     }

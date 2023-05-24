@@ -62,15 +62,16 @@ function purposeEditLink($http, appProps, attachmentDeleteApi, eventTypesApi, al
                     formData.append("file", files[i]);
                 }
 
-                // Use $http instead of $resource because it can handle formData.
-                $http.post(appProps.apiPath + '/travel/unsubmitted/attachment', formData, {
+                // Use $http because $resource can't handle formData.
+                $http.post(appProps.apiPath + '/travel/drafts/attachment', formData, {
                     // Allow $http to choose the correct 'content-type'.
                     headers: {'Content-Type': undefined},
                     transformRequest: angular.identity
                 }).then(function (response) {
                     console.log(response);
                     // Update dirtyApp attachments
-                    scope.dirtyAmendment.attachments = response.data.result.amendment.attachments;
+                    scope.dirtyDraft.amendment.attachments = scope.dirtyDraft.amendment.attachments.concat(response.data.result);
+                    // scope.dirtyAmendment.attachments = response.data.result.amendment.attachments;
                 }).catch(function (res) {
                     modals.open("document-upload-error")
                         .then(scope.closeLoadingModal);
@@ -78,9 +79,13 @@ function purposeEditLink($http, appProps, attachmentDeleteApi, eventTypesApi, al
             }
 
             scope.deleteAttachment = function (attachment) {
-                attachmentDeleteApi.delete({filename: attachment.filename}, function (response) {
-                    scope.dirtyAmendment.attachments = response.result.amendment.attachments;
-                })
+                var attachments = scope.dirtyDraft.amendment.attachments
+                for (var i = 0; i < attachments.length; i++) {
+                    var attch = attachments[i];
+                    if (attch.filename === attachment.filename) {
+                        attachments.splice(i, 1);
+                    }
+                }
             };
 
             scope.showDepartmentHead = function () {

@@ -5,29 +5,20 @@ import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.client.response.error.ErrorCode;
 import gov.nysenate.ess.core.client.response.error.ErrorResponse;
-import gov.nysenate.ess.core.client.view.DetailedEmployeeView;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
-import gov.nysenate.ess.core.util.OutputUtils;
 import gov.nysenate.ess.travel.allowedtravelers.AllowedTravelersService;
 import gov.nysenate.ess.travel.api.application.*;
 import gov.nysenate.ess.travel.employee.TravelEmployee;
 import gov.nysenate.ess.travel.employee.TravelEmployeeService;
-import gov.nysenate.ess.travel.request.allowances.AllowancesView;
-import gov.nysenate.ess.travel.request.allowances.lodging.LodgingPerDiemsView;
-import gov.nysenate.ess.travel.request.allowances.meal.MealPerDiemsView;
-import gov.nysenate.ess.travel.request.allowances.mileage.MileagePerDiemsView;
 import gov.nysenate.ess.travel.request.amendment.Amendment;
 import gov.nysenate.ess.travel.request.app.*;
 import gov.nysenate.ess.travel.request.attachment.Attachment;
 import gov.nysenate.ess.travel.request.department.SqlDepartmentHeadDao;
-import gov.nysenate.ess.travel.request.draft.Draft;
-import gov.nysenate.ess.travel.request.draft.DraftService;
-import gov.nysenate.ess.travel.request.draft.DraftView;
+import gov.nysenate.ess.travel.request.draft.*;
 import gov.nysenate.ess.travel.request.route.*;
 import gov.nysenate.ess.travel.provider.ProviderException;
-import gov.nysenate.ess.travel.request.draft.DraftDao;
 import gov.nysenate.ess.travel.utils.AttachmentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +28,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.swing.text.html.ListView;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -75,14 +67,6 @@ public class DraftCtrl extends BaseRestApiCtrl {
         return ListViewResponse.of(draftViews);
     }
 
-    @RequestMapping(value = "/route", method = RequestMethod.POST)
-    public BaseResponse updateRoute(@RequestBody DraftView draftView) {
-        routeViewValidator.validateTravelDates(draftView.getAmendment().getRoute());
-        Draft draft = draftView.toDraft();
-        draft.setAmendment(appUpdateService.updateRoute(draft.getAmendment(), draft.getAmendment().route()));
-        return new ViewObjectResponse<>(new DraftView(draft));
-    }
-
     /**
      * Delete an unsubmitted app API
      * -----------------------------
@@ -100,80 +84,39 @@ public class DraftCtrl extends BaseRestApiCtrl {
     }
 
     /**
-     * Patch an unsubmitted app API
+     * Patch a Draft API
      * ----------------------------
-     * Updates one or more fields of an unsubmitted app.
-     * <p>
-     * Usage:   (PATCH) /api/v1/travel/unsubmitted
-     * <p>
-     * <p>
-     * Body:
-     *
-     * @param patches Map of patch keys to patch values. Patch key represents a field to be updated with the patch value.
-     * @return {@link TravelApplicationView} updated with patches.
-     * @throws IOException
+     * Usage:   (PATCH) /api/v1/travel/drafts
      */
     @RequestMapping(value = "", method = RequestMethod.PATCH)
-    public BaseResponse patchUnsubmittedApp(@RequestBody Map<String, String> patches) throws ProviderException, IOException {
-        TravelAppEditDto dto = findApp(getSubjectEmployeeId());
-        Amendment amendment = dto.getAmendment().toAmendment();
-        Employee user = employeeInfoService.getEmployee(getSubjectEmployeeId());
+    public BaseResponse patchDraftApp(@RequestBody DraftViewPatches draftPatches) throws ProviderException, IOException {
+        Draft draft = draftPatches.getDraft().toDraft();
 
-        // Perform all updates specified in the patch.
-        for (Map.Entry<String, String> patch : patches.entrySet()) {
-            switch (patch.getKey()) {
-                case "traveler":
-                    int travelerEmpId = Integer.valueOf(patch.getValue());
-                    if (travelerEmpId != dto.getTraveler().getEmployeeId()) {
-                        dto.setTraveler(new DetailedEmployeeView(employeeInfoService.getEmployee(travelerEmpId)));
-                    }
+        for (DraftViewPatchOption option : draftPatches.getOptions()) {
+            switch (option) {
+                case ROUTE:
+                    routeViewValidator.validateTravelDates(new RouteView(draft.getAmendment().route()));
+                    draft.setAmendment(appUpdateService.updateRoute(draft.getAmendment(), draft.getAmendment().route()));
                     break;
-                case "travelerDeptHeadEmpId":
-                    Integer travelerDeptHeadEmpId = Optional.ofNullable(patch.getValue())
-                            .map(Integer::valueOf)
-                            .orElse(null);
-                    dto.setTravelerDeptHeadEmpId(travelerDeptHeadEmpId);
+                case ALLOWANCES:
+                    draft.setAmendment(appUpdateService.updateAllowances(draft.getAmendment(), draft.getAmendment().allowances()));
                     break;
-                case "purposeOfTravel":
-                    PurposeOfTravelView potView = OutputUtils.jsonToObject(patch.getValue(), PurposeOfTravelView.class);
-                    amendment = appUpdateService.updatePurposeOfTravel(amendment, potView.toPurposeOfTravel());
+                case MEAL_PER_DIEMS:
+                    draft.setAmendment(appUpdateService.updateMealPerDiems(draft.getAmendment(), draft.getAmendment().mealPerDiems()));
                     break;
-                case "outbound":
-                    RouteView outboundRouteView = OutputUtils.jsonToObject(patch.getValue(), RouteView.class);
-                    amendment = appUpdateService.updateOutboundRoute(amendment, outboundRouteView.toRoute());
+                case LODGING_PER_DIEMS:
+                    draft.setAmendment(appUpdateService.updateLodgingPerDiems(draft.getAmendment(), draft.getAmendment().lodgingPerDiems()));
                     break;
-                case "route":
-                    RouteView routeView = OutputUtils.jsonToObject(patch.getValue(), RouteView.class);
-                    routeViewValidator.validateTravelDates(routeView);
-                    amendment = appUpdateService.updateRoute(amendment, routeView.toRoute());
-                    break;
-                case "allowances":
-                    AllowancesView allowancesView = OutputUtils.jsonToObject(patch.getValue(), AllowancesView.class);
-                    amendment = appUpdateService.updateAllowances(amendment, allowancesView.toAllowances());
-                    break;
-                case "mealPerDiems":
-                    MealPerDiemsView mealPerDiemsView = OutputUtils.jsonToObject(patch.getValue(), MealPerDiemsView.class);
-                    amendment = appUpdateService.updateMealPerDiems(amendment, mealPerDiemsView.toMealPerDiems());
-                    break;
-                case "lodgingPerDiems":
-                    LodgingPerDiemsView lodgingPerDiemsView = OutputUtils.jsonToObject(patch.getValue(), LodgingPerDiemsView.class);
-                    amendment = appUpdateService.updateLodgingPerDiems(amendment, lodgingPerDiemsView.toLodgingPerDiems());
-                    break;
-                case "mileagePerDiems":
-                    MileagePerDiemsView mileagePerDiemView = OutputUtils.jsonToObject(patch.getValue(), MileagePerDiemsView.class);
-                    amendment = appUpdateService.updateMileagePerDiems(amendment, mileagePerDiemView.toMileagePerDiems());
+                case MILEAGE_PER_DIEMS:
+                    draft.setAmendment(appUpdateService.updateMileagePerDiems(draft.getAmendment(), draft.getAmendment().route().mileagePerDiems()));
                     break;
                 default:
-                    logger.info("Call to travel application patch API did not contain a valid patch key. Patches were: " + patches.toString());
+                    logger.info("Call to travel draft patch API did not contain a valid patch option. Patches were: " + draftPatches.getOptions());
             }
         }
 
-        AmendmentView amendmentView = new AmendmentView(amendment);
-        // Save after all changes are applied.
-//        draftDao.save(user.getEmployeeId(), dto.getTraveler(), amendmentView, dto.getTravelerDeptHeadEmpId());
-
-        dto.setAmendment(amendmentView);
-        return new ViewObjectResponse<>(dto);
+        DraftView draftView = new DraftView(draft);
+        return new ViewObjectResponse<>(draftView);
     }
 
     /**
@@ -195,54 +138,44 @@ public class DraftCtrl extends BaseRestApiCtrl {
 
     @RequestMapping(value = "/attachment", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public BaseResponse addAttachments(@RequestParam("file") MultipartFile[] files) throws IOException {
-        TravelAppEditDto dto = findApp(getSubjectEmployeeId());
-        Amendment amd = dto.getAmendment().toAmendment();
-
         List<Attachment> attachments = new ArrayList<>();
         for (MultipartFile file : files) {
             attachments.add(attachmentService.uploadAttachment(file));
         }
 
-        List<Attachment> allAttachments = Stream.concat(amd.attachments().stream(), attachments.stream())
+        List<AttachmentView> attachmentViews = attachments.stream()
+                .map(AttachmentView::new)
                 .collect(Collectors.toList());
-
-        amd = new Amendment.Builder(amd)
-                .withAttachments(allAttachments)
-                .build();
-
-        AmendmentView amdView = new AmendmentView(amd);
-//        draftDao.save(getSubjectEmployeeId(), dto.getTraveler(), amdView, dto.getTravelerDeptHeadEmpId());
-        dto.setAmendment(amdView);
-        return new ViewObjectResponse<>(dto);
+        return ListViewResponse.of(attachmentViews);
     }
 
-    /**
-     * Delete an attachment
-     *
-     * @param filename
-     * @return
-     */
-    @RequestMapping(value = "/attachment/{filename}", method = RequestMethod.DELETE)
-    public BaseResponse deleteAttachment(@PathVariable String filename) {
-        TravelAppEditDto dto = findApp(getSubjectEmployeeId());
-        Amendment amd = dto.getAmendment().toAmendment();
-        List<Attachment> newAttachments = new ArrayList<>();
-        List<Attachment> attachments = amd.attachments();
-        for (Attachment attachment : attachments) {
-            if (!attachment.getFilename().equals(filename)) {
-                newAttachments.add(attachment);
-            }
-        }
-
-        amd = new Amendment.Builder(amd)
-                .withAttachments(newAttachments)
-                .build();
-
-        AmendmentView amdView = new AmendmentView(amd);
-//        draftDao.save(getSubjectEmployeeId(), dto.getTraveler(), amdView, dto.getTravelerDeptHeadEmpId());
-        dto.setAmendment(amdView);
-        return new ViewObjectResponse<>(dto);
-    }
+//    /**
+//     * Delete an attachment
+//     *
+//     * @param filename
+//     * @return
+//     */
+//    @RequestMapping(value = "/attachment/{filename}", method = RequestMethod.DELETE)
+//    public BaseResponse deleteAttachment(@PathVariable String filename) {
+//        TravelAppEditDto dto = findApp(getSubjectEmployeeId());
+//        Amendment amd = dto.getAmendment().toAmendment();
+//        List<Attachment> newAttachments = new ArrayList<>();
+//        List<Attachment> attachments = amd.attachments();
+//        for (Attachment attachment : attachments) {
+//            if (!attachment.getFilename().equals(filename)) {
+//                newAttachments.add(attachment);
+//            }
+//        }
+//
+//        amd = new Amendment.Builder(amd)
+//                .withAttachments(newAttachments)
+//                .build();
+//
+//        AmendmentView amdView = new AmendmentView(amd);
+////        draftDao.save(getSubjectEmployeeId(), dto.getTraveler(), amdView, dto.getTravelerDeptHeadEmpId());
+//        dto.setAmendment(amdView);
+//        return new ViewObjectResponse<>(dto);
+//    }
 
     private TravelAppEditDto findApp(int userId) {
         return null;

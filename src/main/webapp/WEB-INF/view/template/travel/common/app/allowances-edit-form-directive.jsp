@@ -136,7 +136,14 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="leg in dirtyDraft.amendment.route.mileagePerDiems.allLegs"
+                <tr ng-repeat="leg in dirtyDraft.amendment.route.outboundLegs"
+                    ng-if="leg.qualifiesForReimbursement">
+                  <td>{{leg.from.address.formattedAddressWithCounty}}</td>
+                  <td>{{leg.to.address.formattedAddressWithCounty}}</td>
+                  <td><label>Request Mileage: </label><input type="checkbox" ng-model="leg.isReimbursementRequested">
+                  </td>
+                </tr>
+                <tr ng-repeat="leg in dirtyDraft.amendment.route.returnLegs"
                     ng-if="leg.qualifiesForReimbursement">
                   <td>{{leg.from.address.formattedAddressWithCounty}}</td>
                   <td>{{leg.to.address.formattedAddressWithCounty}}</td>

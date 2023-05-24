@@ -291,11 +291,7 @@ essApi.factory('TravelApplicationApi', ['$resource', 'appProps', function ($reso
 }]);
 
 essApi.factory('TravelDraftsApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/travel/drafts', {}, {'create': {method: 'PUT'}})
-}]);
-
-essApi.factory('TravelDraftRouteApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/travel/drafts/route')
+    return $resource(appProps.apiPath + '/travel/drafts', {}, {'create': {method: 'PUT'}, 'update': {method: 'PATCH'}})
 }]);
 
 essApi.factory('TravelEventTypesApi', ['$resource', 'appProps', function ($resource, appProps) {

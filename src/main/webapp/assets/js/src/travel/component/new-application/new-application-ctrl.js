@@ -10,11 +10,11 @@ var essTravel = angular.module('essTravel');
  */
 essTravel.controller('NewApplicationCtrl',
                      ['$scope', '$window', 'appProps', 'modals', 'LocationService', 'AppEditStateService',
-                      'UnsubmittedAppApi', 'TravelApplicationByIdApi', 'TravelDraftsApi', 'TravelDraftRouteApi',
+                      'UnsubmittedAppApi', 'TravelApplicationByIdApi', 'TravelDraftsApi',
                       travelAppController]);
 
 function travelAppController($scope, $window, appProps, modals, locationService, stateService,
-                             unsubmittedAppApi, appIdApi, draftsApi, draftRouteApi) {
+                             unsubmittedAppApi, appIdApi, draftsApi) {
 
     $scope.stateService = stateService;
     // Common data shared between all child controllers.
@@ -49,7 +49,12 @@ function travelAppController($scope, $window, appProps, modals, locationService,
     $scope.saveRoute = function (draft) {
         if (!_.isEqual(draft.amendment.route, $scope.data.draft.amendment.route)) {
             $scope.openLoadingModal();
-            draftRouteApi.save(draft).$promise
+            draftsApi.update(
+                {
+                    options: ['ROUTE'],
+                    draft: draft
+                })
+                .$promise
                 .then(function (res) {
                     $scope.data.draft = res.result;
                     stateService.setAllowancesState();
@@ -70,8 +75,22 @@ function travelAppController($scope, $window, appProps, modals, locationService,
     };
 
     $scope.saveAllowances = function (draft) {
-        $scope.data.draft = draft;
-        stateService.setReviewState();
+        console.log(draft);
+        $scope.openLoadingModal();
+        draftsApi.update(
+            {
+                options: ['ALLOWANCES', 'MEAL_PER_DIEMS', 'LODGING_PER_DIEMS', 'MILEAGE_PER_DIEMS'],
+                draft: draft
+            })
+            .$promise
+            .then(function (res) {
+                $scope.data.draft = res.result;
+                stateService.setReviewState();
+            })
+            .catch(function (error) {
+                $scope.handleErrorResponse(error);
+            })
+            .finally($scope.closeLoadingModal)
     };
 
     $scope.submitApplication = function () {
