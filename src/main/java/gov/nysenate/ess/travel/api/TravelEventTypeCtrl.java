@@ -8,8 +8,7 @@ import gov.nysenate.ess.travel.api.application.EventTypeView;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.EnumSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -18,10 +17,11 @@ public class TravelEventTypeCtrl extends BaseRestApiCtrl {
 
     @RequestMapping("")
     public BaseResponse fetchTravelEventTypes() {
-        Set<EventTypeView> eventTypeViews = EnumSet.allOf(EventType.class)
+        List<EventTypeView> eventTypeViews = EnumSet.allOf(EventType.class)
                 .stream()
+                .sorted(Comparator.comparing(EventType::ordinal))
                 .map(EventTypeView::new)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
         return ListViewResponse.of(eventTypeViews);
     }
 }
