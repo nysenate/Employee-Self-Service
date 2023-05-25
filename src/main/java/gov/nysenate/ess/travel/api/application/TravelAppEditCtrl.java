@@ -14,6 +14,8 @@ import gov.nysenate.ess.travel.request.amendment.Amendment;
 import gov.nysenate.ess.travel.request.app.TravelAppUpdateService;
 import gov.nysenate.ess.travel.request.app.TravelApplication;
 import gov.nysenate.ess.travel.request.app.TravelApplicationService;
+import gov.nysenate.ess.travel.request.draft.Draft;
+import gov.nysenate.ess.travel.request.draft.DraftView;
 import gov.nysenate.ess.travel.request.route.RouteViewValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -34,14 +36,7 @@ public class TravelAppEditCtrl extends BaseRestApiCtrl {
 
     /**
      * Call this when starting to edit an application.
-     * <p>
-     * It returns an TravelAppEditDto which contains traveler and amendment fields which
-     * should be modified when making edits.
-     * - The traveler fields is an EmployeeView of the current traveler.
-     * - The Amendment field is an AmendmentView. It is mostly a copy of the most recent
-     * amendment but its Version is updated.
-     *
-     * @param appId
+     * @param appId The appId being edited.
      * @return
      */
     @RequestMapping(value = "/edit/{appId}", method = RequestMethod.GET)
@@ -55,15 +50,8 @@ public class TravelAppEditCtrl extends BaseRestApiCtrl {
                 .withVersion(app.activeAmendment().version().next())
                 .build();
 
-        TravelAppEditDto editDto = new TravelAppEditDto(
-                new DetailedEmployeeView(app.getTraveler()),
-                new AmendmentView(editAmd),
-                app.getTravelerDeptHeadEmpId());
-
-        Set<Employee> allowedTravelerEmps = allowedTravelersService.forEmp(app.getTraveler());
-        Set<TravelEmployee> allowedTravelers = travelEmployeeService.getTravelEmployees(allowedTravelerEmps);
-        editDto.setAllowedTravelerViews(allowedTravelers);
-        return new ViewObjectResponse<>(editDto);
+        Draft draft = new Draft(app.getTraveler(), editAmd);
+        return new ViewObjectResponse<>(new DraftView(draft));
     }
 
     @RequestMapping(value = "/edit/{appId}", method = RequestMethod.POST)

@@ -1,8 +1,8 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.directive('essReturnEditForm', ['$q', 'appProps', 'modals', returnEditForm]);
+essTravel.directive('essReturnEditForm', ['$q', 'appProps', 'modals', 'TravelDraftsApi', returnEditForm]);
 
-function returnEditForm($q, appProps, modals) {
+function returnEditForm($q, appProps, modals, draftsApi) {
     return {
         restrict: 'E',
         scope: {
@@ -88,10 +88,36 @@ function returnEditForm($q, appProps, modals) {
                             scope.checkCounties(scope.dirtyDraft.amendment.route.returnLegs)
                         })
                         .then(function () {
-                            scope.positiveCallback({draft: scope.dirtyDraft});
+                            updateRoute()
                         });
                 }
             };
+
+            function updateRoute() {
+                if (!_.isEqual(scope.dirtyDraft.amendment.route, scope.data.draft.amendment.route)) {
+                    scope.openLoadingModal();
+                    draftsApi.update(
+                        {
+                            options: ['ROUTE'],
+                            draft: scope.dirtyDraft
+                        })
+                        .$promise
+                        .then(function (res) {
+                            scope.dirtyDraft = res.result;
+                            scope.positiveCallback({draft: scope.dirtyDraft});
+                        })
+                        .catch(function (error) {
+                            if (error.status === 502) {
+                                scope.handleDataProviderError();
+                            } else if (error.status === 400) {
+                                scope.handleTravelDateError();
+                            } else {
+                                scope.handleErrorResponse(error);
+                            }
+                        })
+                        .finally(scope.closeLoadingModal)
+                }
+            }
 
             scope.back = function () {
                 scope.neutralCallback({draft: scope.dirtyDraft});

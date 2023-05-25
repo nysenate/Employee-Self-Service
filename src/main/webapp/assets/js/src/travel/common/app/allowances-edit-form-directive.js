@@ -1,8 +1,8 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.directive('essAllowancesEditForm', ['appProps', allowancesEditForm]);
+essTravel.directive('essAllowancesEditForm', ['appProps', 'TravelDraftsApi', allowancesEditForm]);
 
-function allowancesEditForm(appProps) {
+function allowancesEditForm(appProps, draftsApi) {
     return {
         restrict: 'E',
         scope: {
@@ -17,10 +17,23 @@ function allowancesEditForm(appProps) {
         link: function (scope, elem, attrs) {
 
             scope.dirtyDraft = angular.copy(scope.data.draft);
-            console.log(scope.dirtyDraft);
 
             scope.next = function () {
-                scope.positiveCallback({draft: scope.dirtyDraft});
+                scope.openLoadingModal();
+                draftsApi.update(
+                    {
+                        options: ['ALLOWANCES', 'MEAL_PER_DIEMS', 'LODGING_PER_DIEMS', 'MILEAGE_PER_DIEMS'],
+                        draft: scope.dirtyDraft
+                    })
+                    .$promise
+                    .then(function (res) {
+                        scope.dirtyDraft = res.result;
+                        scope.positiveCallback({draft: scope.dirtyDraft});
+                    })
+                    .catch(function (error) {
+                        scope.handleErrorResponse(error);
+                    })
+                    .finally(scope.closeLoadingModal)
             };
 
             scope.previousDay = function (date) {

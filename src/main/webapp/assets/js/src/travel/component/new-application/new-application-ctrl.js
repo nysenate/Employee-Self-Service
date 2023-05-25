@@ -47,50 +47,13 @@ function travelAppController($scope, $window, appProps, modals, locationService,
     };
 
     $scope.saveRoute = function (draft) {
-        if (!_.isEqual(draft.amendment.route, $scope.data.draft.amendment.route)) {
-            $scope.openLoadingModal();
-            draftsApi.update(
-                {
-                    options: ['ROUTE'],
-                    draft: draft
-                })
-                .$promise
-                .then(function (res) {
-                    $scope.data.draft = res.result;
-                    stateService.setAllowancesState();
-                })
-                .catch(function (error) {
-                    if (error.status === 502) {
-                        $scope.handleDataProviderError();
-                    } else if (error.status === 400) {
-                        $scope.handleTravelDateError();
-                    } else {
-                        $scope.handleErrorResponse(error);
-                    }
-                })
-                .finally($scope.closeLoadingModal)
-        } else {
-            stateService.setAllowancesState();
-        }
+        $scope.data.draft = draft;
+        stateService.setAllowancesState();
     };
 
     $scope.saveAllowances = function (draft) {
-        console.log(draft);
-        $scope.openLoadingModal();
-        draftsApi.update(
-            {
-                options: ['ALLOWANCES', 'MEAL_PER_DIEMS', 'LODGING_PER_DIEMS', 'MILEAGE_PER_DIEMS'],
-                draft: draft
-            })
-            .$promise
-            .then(function (res) {
-                $scope.data.draft = res.result;
-                stateService.setReviewState();
-            })
-            .catch(function (error) {
-                $scope.handleErrorResponse(error);
-            })
-            .finally($scope.closeLoadingModal)
+        $scope.data.draft = draft
+        stateService.setReviewState();
     };
 
     $scope.submitApplication = function () {

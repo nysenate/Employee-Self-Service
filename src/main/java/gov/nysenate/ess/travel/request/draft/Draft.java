@@ -17,6 +17,10 @@ public class Draft {
         this(0, user.getEmployeeId(), user, new Amendment.Builder().build(), LocalDateTime.now());
     }
 
+    public Draft(TravelEmployee traveler, Amendment amendment) {
+        this(0, 0, traveler, amendment, LocalDateTime.now());
+    }
+
     public Draft(int id, int userEmpId, TravelEmployee traveler, Amendment amendment, LocalDateTime updatedDateTime) {
         this.id = id;
         this.userEmpId = userEmpId;
