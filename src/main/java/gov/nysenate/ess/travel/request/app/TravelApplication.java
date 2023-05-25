@@ -3,6 +3,7 @@ package gov.nysenate.ess.travel.request.app;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import gov.nysenate.ess.core.model.personnel.Employee;
+import gov.nysenate.ess.travel.employee.TravelEmployee;
 import gov.nysenate.ess.travel.request.amendment.Amendment;
 import gov.nysenate.ess.travel.request.amendment.Version;
 
@@ -15,7 +16,7 @@ public class TravelApplication {
     private static final Comparator<Amendment> amendmentComparator = Comparator.comparing(Amendment::version);
 
     protected int appId;
-    protected Employee traveler;
+    protected TravelEmployee traveler;
     protected int travelerDeptHeadEmpId;
 
     /**
@@ -25,11 +26,11 @@ public class TravelApplication {
     private TravelApplicationStatus status;
     protected SortedSet<Amendment> amendments;
 
-    public TravelApplication(Employee traveler, Amendment amendment, int travelerDeptHeadEmpId, ApprovalStatus approvalStatus) {
+    public TravelApplication(TravelEmployee traveler, Amendment amendment, int travelerDeptHeadEmpId, ApprovalStatus approvalStatus) {
         this(0, traveler, travelerDeptHeadEmpId, new TravelApplicationStatus(approvalStatus), Lists.newArrayList(amendment));
     }
 
-    public TravelApplication(int id, Employee traveler, int travelerDeptHeadEmpId,
+    public TravelApplication(int id, TravelEmployee traveler, int travelerDeptHeadEmpId,
                              TravelApplicationStatus status, Collection<Amendment> amendments) {
         Preconditions.checkArgument(!amendments.isEmpty());
         this.appId = id;
@@ -64,7 +65,7 @@ public class TravelApplication {
         return appId;
     }
 
-    public Employee getTraveler() {
+    public TravelEmployee getTraveler() {
         return traveler;
     }
 

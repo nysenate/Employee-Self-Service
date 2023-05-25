@@ -3,6 +3,8 @@ package gov.nysenate.ess.travel.request.app.dao;
 import gov.nysenate.ess.core.dao.base.*;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
+import gov.nysenate.ess.travel.employee.TravelEmployee;
+import gov.nysenate.ess.travel.employee.TravelEmployeeService;
 import gov.nysenate.ess.travel.request.amendment.Amendment;
 import gov.nysenate.ess.travel.request.app.*;
 import org.slf4j.Logger;
@@ -23,7 +25,7 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
     private Logger logger = LoggerFactory.getLogger(SqlTravelApplicationDao.class);
 
     @Autowired private SqlAmendmentDao amendmentDao;
-    @Autowired private EmployeeInfoService employeeInfoService;
+    @Autowired private TravelEmployeeService travelEmployeeService;
 
     /**
      * Persists a {@link TravelApplication} to the database.
@@ -102,7 +104,7 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
     }
 
     private TravelApplication populateApplicationDetails(TravelAppRepositoryView view) {
-        Employee traveler = employeeInfoService.getEmployee(view.travelerEmpId);
+        TravelEmployee traveler = travelEmployeeService.getTravelEmployee(view.travelerEmpId);
         List<Amendment> amds = view.amendmentViews.stream()
                 .map(v -> amendmentDao.selectAmendment(v))
                 .collect(Collectors.toList());
