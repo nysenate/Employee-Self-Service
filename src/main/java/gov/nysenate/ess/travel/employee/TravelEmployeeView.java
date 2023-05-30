@@ -17,6 +17,7 @@ public class TravelEmployeeView extends EmployeeView implements ViewObject {
     private LocationView empWorkLocation;
     private String nid;
     private RespCenterView respCtr;
+    private String jobTitle;
 
     public TravelEmployeeView() {
         super();
@@ -31,6 +32,7 @@ public class TravelEmployeeView extends EmployeeView implements ViewObject {
                 : new LocationView(travelEmployee.getWorkLocation());
         this.nid = travelEmployee.getNid();
         this.respCtr = new RespCenterView(travelEmployee.getRespCenter());
+        this.jobTitle = travelEmployee.getJobTitle();
     }
 
     public TravelEmployee toTravelEmployee() {
@@ -38,6 +40,7 @@ public class TravelEmployeeView extends EmployeeView implements ViewObject {
         emp.setNid(nid);
         emp.setWorkLocation(empWorkLocation.toLocation());
         emp.setRespCenter(respCtr.toResponsibilityCenter());
+        emp.setJobTitle(jobTitle);
         return new TravelEmployee(emp, department.toDepartment());
     }
 
@@ -80,6 +83,14 @@ public class TravelEmployeeView extends EmployeeView implements ViewObject {
 
     public void setRespCtr(RespCenterView respCtr) {
         this.respCtr = respCtr;
+    }
+
+    public String getJobTitle() {
+        return jobTitle;
+    }
+
+    public void setJobTitle(String jobTitle) {
+        this.jobTitle = jobTitle;
     }
 
     @Override
