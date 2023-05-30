@@ -7,9 +7,9 @@ function outboundEditLink(appProps) {
         restrict: 'E',
         scope: {
             data: '<',         // The amendment being edited.
-            positiveCallback: '&',  // Callback function called when continuing. Takes a travel app param named 'amendment'.
-            neutralCallback: '&',   // Callback function called when moving back. Takes a travel app param named 'amendment'.
-            negativeCallback: '&',  // Callback function called when canceling. Takes a travel app param named 'amendment'.
+            positiveCallback: '&',  // Callback function called when continuing. Takes a draft param named 'draft'.
+            neutralCallback: '&',   // Callback function called when moving back. Takes a draft param named 'draft'.
+            negativeCallback: '&',  // Callback function called when canceling. Takes a draft param named 'draft'.
             negativeLabel: '@'      // Text to label the negative button. Defaults to 'Cancel'
         },
         controller: 'AppEditCtrl',

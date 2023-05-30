@@ -7,10 +7,10 @@ function reviewEditForm($compile, appProps, modals) {
         restrict: 'E',
         scope: {
             data: '<',         // The application being edited.
-            positiveCallback: '&',  // Callback function called when continuing. Takes a travel app param named 'app'.
+            positiveCallback: '&',  // Callback function called when continuing. Takes a draft param named 'draft'.
             positiveBtnLabel: '@',  // The label to use for the positive button.
-            neutralCallback: '&',   // Callback function called when moving back. Takes a travel app param named 'app'.
-            negativeCallback: '&?', // Callback function called when canceling. Takes a travel app param named 'app'.
+            neutralCallback: '&',   // Callback function called when moving back. Takes a draft param named 'draft'.
+            negativeCallback: '&?', // Callback function called when canceling. Takes a draft param named 'draft'.
             negativeLabel: '@'      // Text to label the negative button. Defaults to 'Cancel'
         },
         controller: 'AppEditCtrl',
