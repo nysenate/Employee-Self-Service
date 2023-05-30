@@ -49,6 +49,15 @@ public class DraftCtrl extends BaseRestApiCtrl {
     @Autowired private TravelEmployeeService travelEmployeeService;
     @Autowired private DraftService draftService;
 
+    /**
+     * Create new Draft API
+     * -----------------------------
+     * This creates a new Draft with the initial traveler set to the current user.
+     * <p>
+     * Usage:   (PUT) /api/v1/travel/drafts
+     * </p>
+     * @return
+     */
     @RequestMapping(value = "", method = RequestMethod.PUT)
     public BaseResponse createDraft() {
         Employee user = employeeInfoService.getEmployee(getSubjectEmployeeId());
@@ -58,6 +67,15 @@ public class DraftCtrl extends BaseRestApiCtrl {
         return new ViewObjectResponse<>(draftView);
     }
 
+    /**
+     * Get Drafts API
+     * -----------------------------
+     * Retrieves the saved drafts for the current user.
+     * <p>
+     * Usage:   (GET) /api/v1/travel/drafts
+     * </p>
+     * @return
+     */
     @RequestMapping(value = "", method = RequestMethod.GET)
     public BaseResponse getUsersDrafts() {
         List<Draft> drafts = draftService.getUserDrafts(getSubjectEmployeeId());
@@ -68,16 +86,14 @@ public class DraftCtrl extends BaseRestApiCtrl {
     }
 
     /**
-     * Delete an unsubmitted app API
+     * Delete a Draft API
      * -----------------------------
-     * Deletes the currently saved unsubmitted app for the logged in user.
-     * This effectively resets the application for starting over.
+     * Deletes the draft with the provided id.
      * <p>
-     * Usage:   (DELETE) /api/v1/travel/unsubmitted
+     * Usage:   (DELETE) /api/v1/travel/drafts/{id}
      * <p>
-     *
-     * @throws IOException
      */
+    // TODO update this method
     @RequestMapping(value = "", method = RequestMethod.DELETE)
     public void deleteUnsubmittedApp() {
         draftDao.delete(getSubjectEmployeeId());
@@ -86,6 +102,7 @@ public class DraftCtrl extends BaseRestApiCtrl {
     /**
      * Patch a Draft API
      * ----------------------------
+     * Updates pieces of a Draft.
      * Usage:   (PATCH) /api/v1/travel/drafts
      */
     @RequestMapping(value = "", method = RequestMethod.PATCH)
@@ -120,11 +137,12 @@ public class DraftCtrl extends BaseRestApiCtrl {
     }
 
     /**
-     * Submit unsubmitted app API
+     * Submit Draft API
      * --------------------------
-     *
-     * @return {@link TravelApplicationView}
-     * @throws IOException
+     * Saves the draft included in the response body.
+     * <p>
+     * Usage:   (POST) /api/v1/travel/drafts
+     * <p>
      */
     @RequestMapping(value = "", method = RequestMethod.POST)
     public BaseResponse submitApp(@RequestBody DraftView draftView) {
@@ -136,6 +154,17 @@ public class DraftCtrl extends BaseRestApiCtrl {
         return new ViewObjectResponse<>(new TravelApplicationView(app));
     }
 
+    /**
+     * Upload Attachment API
+     * --------------------------
+     * Uploads the provided files and returns them as AttachmentView's.
+     * <p>
+     * Usage:   (POST) /api/v1/travel/drafts/attachment
+     * <p>
+     * @param files
+     * @return
+     * @throws IOException
+     */
     @RequestMapping(value = "/attachment", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public BaseResponse addAttachments(@RequestParam("file") MultipartFile[] files) throws IOException {
         List<Attachment> attachments = new ArrayList<>();
@@ -147,41 +176,6 @@ public class DraftCtrl extends BaseRestApiCtrl {
                 .map(AttachmentView::new)
                 .collect(Collectors.toList());
         return ListViewResponse.of(attachmentViews);
-    }
-
-//    /**
-//     * Delete an attachment
-//     *
-//     * @param filename
-//     * @return
-//     */
-//    @RequestMapping(value = "/attachment/{filename}", method = RequestMethod.DELETE)
-//    public BaseResponse deleteAttachment(@PathVariable String filename) {
-//        TravelAppEditDto dto = findApp(getSubjectEmployeeId());
-//        Amendment amd = dto.getAmendment().toAmendment();
-//        List<Attachment> newAttachments = new ArrayList<>();
-//        List<Attachment> attachments = amd.attachments();
-//        for (Attachment attachment : attachments) {
-//            if (!attachment.getFilename().equals(filename)) {
-//                newAttachments.add(attachment);
-//            }
-//        }
-//
-//        amd = new Amendment.Builder(amd)
-//                .withAttachments(newAttachments)
-//                .build();
-//
-//        AmendmentView amdView = new AmendmentView(amd);
-////        draftDao.save(getSubjectEmployeeId(), dto.getTraveler(), amdView, dto.getTravelerDeptHeadEmpId());
-//        dto.setAmendment(amdView);
-//        return new ViewObjectResponse<>(dto);
-//    }
-
-    private TravelAppEditDto findApp(int userId) {
-        return null;
-//        return draftDao.find(userId)
-//                .orElseThrow(() -> new InvalidRequestParamEx(String.valueOf(userId), "userId", "int",
-//                        "No Unsubmitted travel app found with provided userId"));
     }
 
     @ExceptionHandler(InvalidTravelDatesException.class)
