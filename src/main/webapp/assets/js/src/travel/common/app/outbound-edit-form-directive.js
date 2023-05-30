@@ -7,7 +7,7 @@ function outboundEditLink(appProps) {
         restrict: 'E',
         scope: {
             data: '<',         // The amendment being edited.
-            positiveCallback: '&',  // Callback function called when continuing. Takes a draft param named 'draft'.
+            positiveCallback: '&',  // Callback function called when continuing. Takes a route param named 'route'.
             neutralCallback: '&',   // Callback function called when moving back. Takes a draft param named 'draft'.
             negativeCallback: '&',  // Callback function called when canceling. Takes a draft param named 'draft'.
             negativeLabel: '@'      // Text to label the negative button. Defaults to 'Cancel'
@@ -15,25 +15,23 @@ function outboundEditLink(appProps) {
         controller: 'AppEditCtrl',
         templateUrl: appProps.ctxPath + '/template/travel/common/app/outbound-edit-form-directive',
         link: function (scope, elem, attrs) {
+            scope.route = angular.copy(scope.data.draft.amendment.route);
 
-            scope.dirtyDraft = angular.copy(scope.data.draft);
-            console.log(scope.dirtyDraft);
-
-            if (scope.dirtyDraft.amendment.route.outboundLegs.length === 0) {
+            if (scope.route.outboundLegs.length === 0) {
                 var leg = new Leg();
                 // Init from address to employees work address.
-                leg.from.address = scope.dirtyDraft.traveler.empWorkLocation.address;
-                scope.dirtyDraft.amendment.route.outboundLegs.push(leg);
+                leg.from.address = scope.data.draft.traveler.empWorkLocation.address;
+                scope.route.outboundLegs.push(leg);
             }
 
             scope.addSegment = function () {
                 // Initialize new leg
                 var segment = new Leg();
-                var prevSeg = scope.dirtyDraft.amendment.route.outboundLegs[scope.dirtyDraft.amendment.route.outboundLegs.length - 1];
+                var prevSeg = scope.route.outboundLegs[scope.route.outboundLegs.length - 1];
                 segment.from = prevSeg.to;
                 segment.methodOfTravel = prevSeg.methodOfTravel;
                 segment.methodOfTravelDescription = prevSeg.methodOfTravelDescription;
-                scope.dirtyDraft.amendment.route.outboundLegs.push(segment);
+                scope.route.outboundLegs.push(segment);
             };
 
             scope.setFromAddress = function (leg, address) {
@@ -45,20 +43,20 @@ function outboundEditLink(appProps) {
             };
 
             scope.isLastSegment = function (index) {
-                return scope.dirtyDraft.amendment.route.outboundLegs.length - 1 === index;
+                return scope.route.outboundLegs.length - 1 === index;
             };
 
             scope.deleteSegment = function () {
-                scope.dirtyDraft.amendment.route.outboundLegs.pop();
+                scope.route.outboundLegs.pop();
             };
 
             scope.next = function () {
                 scope.setInvalidFormElementsTouched(scope.outbound.form);
                 if (scope.outbound.form.$valid) {
-                    scope.normalizeTravelDates(scope.dirtyDraft.amendment.route.outboundLegs);
-                    scope.checkCounties(scope.dirtyDraft.amendment.route.outboundLegs)
+                    scope.normalizeTravelDates(scope.route.outboundLegs);
+                    scope.checkCounties(scope.route.outboundLegs)
                         .then(function () {
-                            scope.positiveCallback({draft: scope.dirtyDraft});
+                            scope.positiveCallback({route: scope.route});
                         });
                 }
             };

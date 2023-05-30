@@ -17,7 +17,7 @@
 
     <div ng-if="stateService.isOutboundState()">
       <ess-outbound-edit-form data="data"
-                              positive-callback="saveOutbound(draft)"
+                              positive-callback="saveOutbound(route)"
                               neutral-callback="toPurposeState(draft)"
                               negative-callback="cancel(draft)">
       </ess-outbound-edit-form>

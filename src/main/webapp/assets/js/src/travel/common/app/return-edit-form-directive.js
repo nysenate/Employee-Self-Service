@@ -17,7 +17,7 @@ function returnEditForm($q, appProps, modals, draftsApi) {
         link: function (scope, elem, attrs) {
 
             scope.dirtyDraft = angular.copy(scope.data.draft);
-            scope.route = scope.dirtyDraft.amendment.route;
+            scope.route = scope.data.dirtyRoute;
 
             if (scope.route.returnLegs.length === 0) {
                 // Init return leg
@@ -82,10 +82,10 @@ function returnEditForm($q, appProps, modals, draftsApi) {
             scope.next = function () {
                 scope.setInvalidFormElementsTouched(scope.return.form);
                 if (scope.return.form.$valid) {
-                    scope.normalizeTravelDates(scope.dirtyDraft.amendment.route.returnLegs);
-                    promptUserIfLongTrip(scope.dirtyDraft.amendment.route)
+                    scope.normalizeTravelDates(scope.route.returnLegs);
+                    promptUserIfLongTrip(scope.route)
                         .then(function () {
-                            scope.checkCounties(scope.dirtyDraft.amendment.route.returnLegs)
+                            scope.checkCounties(scope.route.returnLegs)
                         })
                         .then(function () {
                             updateRoute()
@@ -94,8 +94,9 @@ function returnEditForm($q, appProps, modals, draftsApi) {
             };
 
             function updateRoute() {
-                if (!_.isEqual(scope.dirtyDraft.amendment.route, scope.data.draft.amendment.route)) {
+                if (angular.toJson(scope.route) !== angular.toJson(scope.data.draft.amendment.route)) {
                     scope.openLoadingModal();
+                    scope.dirtyDraft.amendment.route = scope.route;
                     draftsApi.update(
                         {
                             options: ['ROUTE'],
@@ -116,6 +117,9 @@ function returnEditForm($q, appProps, modals, draftsApi) {
                             }
                         })
                         .finally(scope.closeLoadingModal)
+                }
+                else {
+                    scope.positiveCallback({draft: scope.dirtyDraft});
                 }
             }
 

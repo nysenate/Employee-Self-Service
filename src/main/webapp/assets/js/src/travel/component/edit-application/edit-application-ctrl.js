@@ -13,6 +13,7 @@ function editAppCtrl($scope, locationService, modals, stateService, appPatchApi,
     vm.appId = 0;
     // Some editing functionality is only available to the TRAVEL_ADMIN.
     vm.activeRole = 'NONE';
+    vm.dirtyRoute = {};
 
     (function init() {
         vm.stateService = stateService;
@@ -22,6 +23,7 @@ function editAppCtrl($scope, locationService, modals, stateService, appPatchApi,
         vm.activeRole = locationService.getSearchParam("role");
         appEditApi.get({id: vm.appId, role: vm.activeRole}, function (response) {
             vm.draft = response.result;
+            vm.dirtyRoute = angular.copy(vm.draft.amendment.route);
         }, $scope.handleErrorResponse);
     })();
 
@@ -30,13 +32,14 @@ function editAppCtrl($scope, locationService, modals, stateService, appPatchApi,
         stateService.setOutboundState();
     };
 
-    vm.saveOutbound = function (draft) {
-        vm.draft = draft;
+    vm.saveOutbound = function (route) {
+        vm.dirtyRoute = route;
         stateService.setReturnState();
     };
 
     vm.saveRoute = function (draft) {
         vm.draft = draft;
+        vm.dirtyRoute = angular.copy(draft.amendment.route);
         stateService.setAllowancesState();
     };
 

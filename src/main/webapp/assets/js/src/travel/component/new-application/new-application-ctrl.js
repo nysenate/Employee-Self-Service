@@ -19,7 +19,8 @@ function travelAppController($scope, $window, appProps, modals, locationService,
     $scope.stateService = stateService;
     // Common data shared between all child controllers.
     $scope.data = {
-        draft: {}
+        draft: {},
+        dirtyRoute: {}, // Save partial route updates here. The route is saved to the draft after it is fully entered.
     };
     $scope.isLoading = true;
 
@@ -31,6 +32,7 @@ function travelAppController($scope, $window, appProps, modals, locationService,
         function initApplication() {
             draftsApi.create().$promise.then(function (res) {
                 $scope.data.draft = res.result;
+                $scope.data.dirtyRoute = angular.copy($scope.data.draft.amendment.route);
                 $scope.isLoading = false;
             });
         }
@@ -41,13 +43,14 @@ function travelAppController($scope, $window, appProps, modals, locationService,
         stateService.setOutboundState();
     };
 
-    $scope.saveOutbound = function (draft) {
-        $scope.data.draft = draft;
+    $scope.saveOutbound = function (route) {
+        $scope.data.dirtyRoute = route;
         stateService.setReturnState();
     };
 
     $scope.saveRoute = function (draft) {
         $scope.data.draft = draft;
+        $scope.data.dirtyRoute = angular.copy(draft.amendment.route);
         stateService.setAllowancesState();
     };
 
