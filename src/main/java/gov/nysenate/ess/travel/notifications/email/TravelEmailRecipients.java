@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class TravelEmailRecipients {
@@ -40,9 +41,12 @@ public class TravelEmailRecipients {
      * @return A set of employees who should be emailed.
      */
     public Set<Employee> forStatusUpdate(TravelApplication app) {
-        return Sets.newHashSet(
-                app.getSubmittedBy(),
-                app.getTraveler());
+        Set<Integer> empIds = new HashSet<>();
+        empIds.add(app.getSubmittedBy().getEmployeeId());
+        empIds.add(app.getTraveler().getEmployeeId());
+        return empIds.stream()
+                .map(employeeInfoService::getEmployee)
+                .collect(Collectors.toSet());
     }
 
     /**
