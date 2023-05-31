@@ -12,7 +12,6 @@ import gov.nysenate.ess.travel.allowedtravelers.AllowedTravelersService;
 import gov.nysenate.ess.travel.api.application.*;
 import gov.nysenate.ess.travel.employee.TravelEmployee;
 import gov.nysenate.ess.travel.employee.TravelEmployeeService;
-import gov.nysenate.ess.travel.request.amendment.Amendment;
 import gov.nysenate.ess.travel.request.app.*;
 import gov.nysenate.ess.travel.request.attachment.Attachment;
 import gov.nysenate.ess.travel.request.department.SqlDepartmentHeadDao;
@@ -28,11 +27,9 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.swing.text.html.ListView;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @SuppressWarnings("UnnecessaryBoxing") @RestController
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/travel/drafts")
@@ -145,7 +142,7 @@ public class DraftCtrl extends BaseRestApiCtrl {
      * <p>
      */
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public BaseResponse submitApp(@RequestBody DraftView draftView) {
+    public BaseResponse submitDraft(@RequestBody DraftView draftView) {
         Employee user = employeeInfoService.getEmployee(getSubjectEmployeeId());
         Draft draft = draftView.toDraft();
 

@@ -10,11 +10,11 @@ var essTravel = angular.module('essTravel');
  */
 essTravel.controller('NewApplicationCtrl',
                      ['$scope', '$window', 'appProps', 'modals', 'LocationService', 'AppEditStateService',
-                      'UnsubmittedAppApi', 'TravelApplicationByIdApi', 'TravelDraftsApi',
+                      'TravelApplicationByIdApi', 'TravelDraftsApi',
                       travelAppController]);
 
 function travelAppController($scope, $window, appProps, modals, locationService, stateService,
-                             unsubmittedAppApi, appIdApi, draftsApi) {
+                             appIdApi, draftsApi) {
 
     $scope.stateService = stateService;
     // Common data shared between all child controllers.

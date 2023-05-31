@@ -1,12 +1,10 @@
 var essTravel = angular.module('essTravel');
 
 essTravel.controller('EditApplicationCtrl',
-                     ['$scope', 'LocationService', 'modals', 'AppEditStateService', 'UnsubmittedAppApi',
-                      'TravelAppEditApi', 'TravelAppEditResubmitApi', 'TravelAppEditRouteApi',
-                      'TravelAppEditAllowancesApi', 'TravelDraftsApi', editAppCtrl]);
+                     ['$scope', 'LocationService', 'modals', 'AppEditStateService',
+                      'TravelAppEditApi', 'TravelAppEditResubmitApi', editAppCtrl]);
 
-function editAppCtrl($scope, locationService, modals, stateService, appPatchApi, appEditApi, appResubmitApi,
-                     editRouteApi, editAllowancesApi, draftsApi) {
+function editAppCtrl($scope, locationService, modals, stateService, appEditApi, appResubmitApi) {
 
     var vm = this;
     vm.draft = undefined; // Contains the `traveler` and `amendment` fields which can be edited.
