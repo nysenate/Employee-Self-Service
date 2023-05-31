@@ -21,6 +21,8 @@
     </div>
   </div>
 
+  <div loader-indicator class="loader" ng-show="!vm.appRequest.$resolved"></div>
+
   <div ng-if="vm.appRequest.$resolved === true">
     <div ng-if="vm.apps.filtered.length === 0">
       <div class="content-container">

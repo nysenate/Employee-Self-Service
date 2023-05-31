@@ -5,7 +5,7 @@
 
   <ess-new-app-breadcrumbs></ess-new-app-breadcrumbs>
 
-  <div loader-indicatorclass="loader" ng-show="isLoading"></div>
+  <div loader-indicator class="loader" ng-show="isLoading"></div>
 
   <div ng-if="!isLoading">
     <div ng-if="stateService.isPurposeState()">
