@@ -81,11 +81,10 @@ function travelAppController($scope, $window, appProps, modals, locationService,
     };
 
     $scope.cancel = function (draft) {
-        // modals.open("cancel-application").then(function () {
-        //     modals.resolve({});
-        //     $scope.openLoadingModal();
-        //     cancelApplication(app);
-        // });
+        modals.open("cancel-application").then(function () {
+            modals.resolve({});
+            reload();
+        });
     };
 
     $scope.toPurposeState = function () {
@@ -103,13 +102,6 @@ function travelAppController($scope, $window, appProps, modals, locationService,
     $scope.toAllowancesState = function () {
         $scope.stateService.setAllowancesState();
     };
-
-    function cancelApplication() {
-        unsubmittedAppApi.remove()
-            .$promise
-            .then(reload)
-            .catch($scope.handleErrorResponse)
-    }
 
     function reload() {
         locationService.go("/travel/application/new", true);

@@ -1,9 +1,9 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.directive('essPurposeEditForm', ['$http', 'appProps', 'TravelAttachmentDelete', 'TravelEventTypesApi',
+essTravel.directive('essPurposeEditForm', ['$http', 'appProps', 'TravelEventTypesApi',
                                            'AllowedTravelersApi', 'modals', purposeEditLink]);
 
-function purposeEditLink($http, appProps, attachmentDeleteApi, eventTypesApi, allowedTravelersApi, modals) {
+function purposeEditLink($http, appProps, eventTypesApi, allowedTravelersApi, modals) {
     return {
         restrict: 'E',
         scope: {
