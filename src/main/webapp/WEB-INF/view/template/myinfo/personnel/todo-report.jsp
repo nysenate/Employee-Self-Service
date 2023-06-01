@@ -165,7 +165,10 @@
                       {{getTaskTitle(task.taskId)}}
                       <br>
                       <button style="margin-top: 10px; margin-bottom: 15px;" ng-click="overrideEmpTaskCompletion(task.taskId, getTaskTitle(task.taskId),
-                    principal.getEmployeeId())">Manually override
+                    principal.getEmployeeId())">Manually Override
+                      </button>
+                      <button style="margin-top: 10px; margin-bottom: 15px;" ng-click="overrideEmpTaskActiveStatus(task.taskId, getTaskTitle(task.taskId),
+                    principal.getEmployeeId())">Deactivate Task
                       </button>
                     </li>
                   </ul>
@@ -208,7 +211,7 @@
         </h3>
         <div class="confirmation-message">
           <p>
-            Warning: You are attempting to submit a task override for employee
+            Warning: You are attempting to submit a task COMPLETION override for employee
             <br>
             {{getOverrideTaskEmpName()}}
             <br> for task <br>
@@ -217,13 +220,33 @@
         </div>
         <hr/>
         <div class="todo-input-container">
-          <input ng-click="submitTaskOverride()" class="submit-button" type="button" value="Proceed"/>
+          <input ng-click="submitTaskOverride(false)" class="submit-button" type="button" value="Proceed"/>
           <input ng-click="rejectTaskOverride()" class="reject-button" type="button" value="Cancel"/>
         </div>
       </div>
     </modal>
 
-
+    <modal modal-id="task-active-status-override-dialog">
+      <div class="confirm-modal">
+        <h3 class="content-info">
+          Personnel Task Override
+        </h3>
+        <div class="confirmation-message">
+          <p>
+            Warning: You are attempting to submit a task ACTIVE STATUS override for employee
+            <br>
+            {{getOverrideTaskEmpName()}}
+            <br> for task <br>
+            {{getOverrideTaskTitle()}}
+          </p>
+        </div>
+        <hr/>
+        <div class="todo-input-container">
+          <input ng-click="submitTaskOverride(true)" class="submit-button" type="button" value="Proceed"/>
+          <input ng-click="rejectTaskOverride()" class="reject-button" type="button" value="Cancel"/>
+        </div>
+      </div>
+    </modal>
   </div>
 
 </section>

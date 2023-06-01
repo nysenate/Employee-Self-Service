@@ -57,7 +57,7 @@ public interface EmployeeInfoService
     RangeSet<LocalDate> getEmployeeActiveDatesService(int empId);
 
     /**
-     * Returns a localdate that is the employees most recent continous service start date
+     * Returns a localdate that is the employees most recent continuous service start date
      * @param empId
      * @return
      */

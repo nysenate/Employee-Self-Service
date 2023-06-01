@@ -29,6 +29,11 @@ public interface PersonnelTaskDao {
     void updatePersonnelAssignedTaskCompletion(int empID, int updateEmpID, boolean completed, int taskID);
 
     /**
+     * Update a personnel assigned task active status
+     */
+    void updatePersonnelAssignedActiveStatus(int empID, int updateEmpID, boolean activeStatus, int taskID);
+
+    /**
      * Update a personnel assigned task
      */
     void updatePersonnelAssignedTaskAssignment(int empID, int updateEmpID, boolean assigned, int taskID);

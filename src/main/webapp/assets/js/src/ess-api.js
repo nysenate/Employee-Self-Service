@@ -148,8 +148,16 @@ essApi.factory('PersonnelAssignmentApi', ['$resource', 'appProps', function ($re
     });
 }]);
 
-essApi.factory('UpdatePersonnelTaskAssignmentApi', ['$resource', 'appProps', function ($resource, appProps) {
+essApi.factory('UpdatePersonnelTaskAssignmentCompletionApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/admin/personnel/task/overrride/:updateEmpID/:taskId/true/:empId', {
+        updateEmpID: '@updateEmpID',
+        taskId: '@taskId',
+        empId: '@empId'
+    });
+}]);
+
+essApi.factory('UpdatePersonnelTaskAssignmentActiveStatusApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/admin/personnel/task/overrride/activation/:updateEmpID/:taskId/false/:empId', {
         updateEmpID: '@updateEmpID',
         taskId: '@taskId',
         empId: '@empId'
