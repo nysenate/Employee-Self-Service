@@ -18,7 +18,8 @@ public class SupplyPageCtrl extends BaseEssPageCtrl
     @RequestMapping(method = {RequestMethod.GET, RequestMethod.HEAD})
     @Override
     String mainPage(ModelMap modelMap, HttpServletRequest request) {
-        addCommonModelMapData(modelMap);
-        return "supply";
+//        addCommonModelMapData(modelMap);
+//        return "supply";
+        return null;
     }
 }

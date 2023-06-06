@@ -21,7 +21,8 @@ public class MyInfoPageCtrl extends BaseEssPageCtrl
     @RequestMapping(method = {RequestMethod.GET, RequestMethod.HEAD})
     @Override
     String mainPage(ModelMap modelMap, HttpServletRequest request) {
-        addCommonModelMapData(modelMap);
-        return "myinfo";
+//        addCommonModelMapData(modelMap);
+//        return "myinfo";
+        return null;
     }
 }

@@ -14,7 +14,7 @@ public class DefaultPageCtrl
 
     @RequestMapping(method = {RequestMethod.GET, RequestMethod.HEAD})
     public String defaultRedirect() {
-        return "redirect:/time";
+        return "redirect:/travel";
     }
 
 }
