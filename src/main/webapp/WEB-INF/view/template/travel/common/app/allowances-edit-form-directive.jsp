@@ -120,7 +120,7 @@
       </div>
 
       <div class="travel-card-item"
-           ng-show="dirtyDraft.amendment.route.mileagePerDiems.doesTripQualifyForReimbursement">
+           ng-show="dirtyDraft.amendment.mileagePerDiems.doesTripQualifyForReimbursement">
         <h1 class="">Mileage Adjustment <em class="optional">(Optional)</em></h1>
         <div class="padding-10">
         <span class=""> You qualify for the following mileage reimbursements. Uncheck anything you would <span
@@ -136,18 +136,11 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="leg in dirtyDraft.amendment.route.outboundLegs"
-                    ng-if="leg.qualifiesForReimbursement">
-                  <td>{{leg.from.address.formattedAddressWithCounty}}</td>
-                  <td>{{leg.to.address.formattedAddressWithCounty}}</td>
-                  <td><label>Request Mileage: </label><input type="checkbox" ng-model="leg.isReimbursementRequested">
-                  </td>
-                </tr>
-                <tr ng-repeat="leg in dirtyDraft.amendment.route.returnLegs"
-                    ng-if="leg.qualifiesForReimbursement">
-                  <td>{{leg.from.address.formattedAddressWithCounty}}</td>
-                  <td>{{leg.to.address.formattedAddressWithCounty}}</td>
-                  <td><label>Request Mileage: </label><input type="checkbox" ng-model="leg.isReimbursementRequested">
+                <tr ng-repeat="pd in dirtyDraft.amendment.mileagePerDiems.allPerDiems"
+                    ng-if="pd.qualifiesForReimbursement">
+                  <td>{{pd.from.formattedAddressWithCounty}}</td>
+                  <td>{{pd.to.formattedAddressWithCounty}}</td>
+                  <td><label>Request Mileage: </label><input type="checkbox" ng-model="pd.isReimbursementRequested">
                   </td>
                 </tr>
                 </tbody>

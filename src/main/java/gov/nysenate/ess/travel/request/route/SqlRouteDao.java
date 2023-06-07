@@ -69,11 +69,8 @@ public class SqlRouteDao extends SqlBaseDao implements RouteDao {
                 .addValue("travelDate", toDate(leg.travelDate()))
                 .addValue("methodOfTravel", leg.methodOfTravel())
                 .addValue("methodOfTravelDescription", leg.methodOfTravelDescription())
-                .addValue("miles", String.valueOf(leg.miles()))
-                .addValue("mileageRate", leg.mileageRate().toString())
                 .addValue("isOutbound", isOutbound)
-                .addValue("sequenceNo", sequenceNo)
-                .addValue("isReimbursementRequested", leg.isReimbursementRequested());
+                .addValue("sequenceNo", sequenceNo);
     }
 
     @Override
@@ -102,9 +99,9 @@ public class SqlRouteDao extends SqlBaseDao implements RouteDao {
     private enum SqlRouteQuery implements BasicSqlQuery {
         INSERT_ROUTE(
                 "INSERT INTO ${travelSchema}.leg(from_destination_id, to_destination_id, travel_date," +
-                        " method_of_travel, method_of_travel_description, miles, mileage_rate, is_outbound, sequence_no, is_reimbursement_requested) \n" +
+                        " method_of_travel, method_of_travel_description, is_outbound, sequence_no) \n" +
                         " VALUES(:fromDestinationId, :toDestinationId, :travelDate," +
-                        " :methodOfTravel, :methodOfTravelDescription, :miles, :mileageRate, :isOutbound, :sequenceNo, :isReimbursementRequested)"
+                        " :methodOfTravel, :methodOfTravelDescription, :isOutbound, :sequenceNo)"
         ),
         INSERT_JOIN_TABLE(
                 "INSERT INTO ${travelSchema}.amendment_legs(amendment_id, leg_id)\n" +
@@ -117,7 +114,7 @@ public class SqlRouteDao extends SqlBaseDao implements RouteDao {
         ),
         SELECT_ROUTE(
                 "SELECT leg_id, from_destination_id, to_destination_id, travel_date, method_of_travel," +
-                        " method_of_travel_description, miles, mileage_rate, is_outbound, is_reimbursement_requested\n" +
+                        " method_of_travel_description, is_outbound \n" +
                         " FROM ${travelSchema}.leg\n" +
                         " WHERE leg_id IN (:legIds)\n" +
                         " ORDER BY sequence_no ASC"
@@ -169,17 +166,13 @@ public class SqlRouteDao extends SqlBaseDao implements RouteDao {
 
         @Override
         public Leg mapRow(ResultSet rs, int rowNum) throws SQLException {
-            PerDiem perDiem = new PerDiem(getLocalDate(rs, "travel_date"),
-                    new BigDecimal(rs.getString("mileage_rate")));
             return new Leg(
                     rs.getInt("leg_id"),
                     new Destination(rs.getInt("from_destination_id")),
                     new Destination(rs.getInt("to_destination_id")),
                     new ModeOfTransportation(MethodOfTravel.of(rs.getString("method_of_travel")), rs.getString("method_of_travel_description")),
-                    Double.parseDouble(rs.getString("miles")),
-                    perDiem,
                     rs.getBoolean("is_outbound"),
-                    rs.getBoolean("is_reimbursement_requested"));
+                    getLocalDate(rs, "travel_date"));
         }
     }
 }

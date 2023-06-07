@@ -4,6 +4,7 @@ import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.travel.request.allowances.Allowances;
 import gov.nysenate.ess.travel.request.allowances.lodging.LodgingPerDiems;
 import gov.nysenate.ess.travel.request.allowances.meal.MealPerDiems;
+import gov.nysenate.ess.travel.request.allowances.mileage.MileagePerDiems;
 import gov.nysenate.ess.travel.request.app.PurposeOfTravel;
 import gov.nysenate.ess.travel.request.attachment.Attachment;
 import gov.nysenate.ess.travel.request.route.Route;
@@ -33,6 +34,7 @@ public class Amendment {
     private final Employee createdBy;
     private final MealPerDiems mealPerDiems;
     private final LodgingPerDiems lodgingPerDiems;
+    private final MileagePerDiems mileagePerDiems;
 
     public Amendment(Builder builder) {
         amendmentId = builder.amendmentId;
@@ -45,10 +47,11 @@ public class Amendment {
         attachments = builder.attachments;
         createdDateTime = builder.createdDateTime;
         createdBy = builder.createdBy;
+        mileagePerDiems = builder.mileagePerDiems;
     }
 
     public Dollars mileageAllowance() {
-        return route().mileagePerDiems().totalPerDiem();
+        return mileagePerDiems().totalPerDiemValue();
     }
 
     public Dollars mealAllowance() {
@@ -147,6 +150,10 @@ public class Amendment {
         return this.lodgingPerDiems;
     }
 
+    public MileagePerDiems mileagePerDiems() {
+        return this.mileagePerDiems;
+    }
+
     public Allowances allowances() {
         return allowances;
     }
@@ -179,6 +186,7 @@ public class Amendment {
         private Allowances allowances = new Allowances();
         private MealPerDiems mealPerDiems = new MealPerDiems(new HashSet<>());
         private LodgingPerDiems lodgingPerDiems = new LodgingPerDiems(new HashSet<>());
+        private MileagePerDiems mileagePerDiems = new MileagePerDiems(new HashSet<>());
         private List<Attachment> attachments = new ArrayList<>();
         private LocalDateTime createdDateTime;
         private Employee createdBy;
@@ -200,6 +208,7 @@ public class Amendment {
             withMealPerDiems(amd.mealPerDiems());
             withLodgingPerDiems(amd.lodgingPerDiems());
             withAttachments(amd.attachments());
+            withMileagePerDiems(amd.mileagePerDiems());
         }
 
         public Builder withAmendmentId(int id) {
@@ -234,6 +243,11 @@ public class Amendment {
 
         public Builder withLodgingPerDiems(LodgingPerDiems lpds) {
             this.lodgingPerDiems = lpds;
+            return this;
+        }
+
+        public Builder withMileagePerDiems(MileagePerDiems mpds) {
+            this.mileagePerDiems = mpds;
             return this;
         }
 

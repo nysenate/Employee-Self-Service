@@ -1,11 +1,12 @@
 package gov.nysenate.ess.travel.unit.application.allowances;
 
 import gov.nysenate.ess.core.annotation.UnitTest;
+import gov.nysenate.ess.travel.request.address.TravelAddress;
 import gov.nysenate.ess.travel.request.allowances.PerDiem;
+import gov.nysenate.ess.travel.request.allowances.mileage.MileagePerDiem;
 import gov.nysenate.ess.travel.request.allowances.mileage.MileagePerDiems;
 import gov.nysenate.ess.travel.request.route.Leg;
 import gov.nysenate.ess.travel.request.route.ModeOfTransportation;
-import gov.nysenate.ess.travel.request.route.destination.Destination;
 import gov.nysenate.ess.travel.fixtures.TravelAddressFixture;
 import gov.nysenate.ess.travel.utils.Dollars;
 import org.junit.Test;
@@ -22,8 +23,8 @@ import static org.junit.Assert.assertTrue;
 @Category(UnitTest.class)
 public class MileagePerDiemsTest {
 
-    private Destination from = new Destination(TravelAddressFixture.albany(), LocalDate.now(), LocalDate.now());
-    private Destination to = new Destination(TravelAddressFixture.cliftonPark(), LocalDate.now(), LocalDate.now());
+    private TravelAddress from = TravelAddressFixture.albany();
+    private TravelAddress to = TravelAddressFixture.cliftonPark();
     private PerDiem perDiem = new PerDiem(LocalDate.now(), new Dollars("0.50"));
 
     @Test(expected = NullPointerException.class)
@@ -34,35 +35,35 @@ public class MileagePerDiemsTest {
     @Test
     public void givenEmpty_thenPerDiemIsZero() {
         MileagePerDiems mpd = new MileagePerDiems(new ArrayList<>());
-        assertEquals(Dollars.ZERO, mpd.totalPerDiem());
+        assertEquals(Dollars.ZERO, mpd.totalPerDiemValue());
     }
 
     @Test
     public void givenLongTrip_thenCorrectlyCalculatesReimbursement() {
-        Leg outboundLeg = new Leg(0, from, to, ModeOfTransportation.PERSONAL_AUTO, 100, perDiem, true, true);
-        Leg returnLeg = new Leg(0, to, from, ModeOfTransportation.PERSONAL_AUTO, 100, perDiem, false, true);
-        MileagePerDiems mpd = new MileagePerDiems(Arrays.asList(outboundLeg, returnLeg));
-        assertEquals(new Dollars("100"), mpd.totalPerDiem());
+        MileagePerDiem outboundPerDiem = new MileagePerDiem(0, from, to, ModeOfTransportation.PERSONAL_AUTO, 100, perDiem, true, true);
+        MileagePerDiem returnPerDiem = new MileagePerDiem(0, to, from, ModeOfTransportation.PERSONAL_AUTO, 100, perDiem, false, true);
+        MileagePerDiems mpd = new MileagePerDiems(Arrays.asList(outboundPerDiem, returnPerDiem));
+        assertEquals(new Dollars("100"), mpd.totalPerDiemValue());
     }
 
     /**
      * The outbound mileage must be greater than the MILE_THRESHOLD to receive mileage reimbursement.
      */
     @Test
-    public void toQualityForMileageReimbursement_outboundLegMustBeGreaterThanMileageThreshold() {
-        Leg outboundLeg = new Leg(0, from, to, ModeOfTransportation.TRAIN, 100, perDiem, true, true);
-        Leg returnLeg = new Leg(0, to, from, ModeOfTransportation.PERSONAL_AUTO, 100, perDiem, false, true);
+    public void toQualityForMileageReimbursement_outboundPerDiemMustBeGreaterThanMileageThreshold() {
+        MileagePerDiem outboundPerDiem = new MileagePerDiem(0, from, to, ModeOfTransportation.TRAIN, 100, perDiem, true, true);
+        MileagePerDiem returnPerDiem = new MileagePerDiem(0, to, from, ModeOfTransportation.PERSONAL_AUTO, 100, perDiem, false, true);
 
-        MileagePerDiems mpd = new MileagePerDiems(Arrays.asList(outboundLeg, returnLeg));
+        MileagePerDiems mpd = new MileagePerDiems(Arrays.asList(outboundPerDiem, returnPerDiem));
         assertTrue(mpd.tripQualifiesForReimbursement());
     }
 
     @Test
-    public void givenOutboundLeg_thenTripQualifiesForReimbursement() {
+    public void givenOutboundPerDiem_thenTripQualifiesForReimbursement() {
         boolean isOutbound = true;
-        Leg leg = new Leg(0, from, to, ModeOfTransportation.PERSONAL_AUTO, 99999.0, perDiem, isOutbound, true);
+        MileagePerDiem outboundPerDiem = new MileagePerDiem(0, from, to, ModeOfTransportation.PERSONAL_AUTO, 99999.0, perDiem, isOutbound, true);
 
-        MileagePerDiems mpd = new MileagePerDiems(Arrays.asList(leg));
+        MileagePerDiems mpd = new MileagePerDiems(Arrays.asList(outboundPerDiem));
         assertTrue(mpd.tripQualifiesForReimbursement());
     }
 
@@ -77,8 +78,8 @@ public class MileagePerDiemsTest {
     }
 
     private boolean modeOfTransportationQualifiesForReimbursement(ModeOfTransportation mot) {
-        Leg leg = new Leg(0, from, to, mot, 100, perDiem, true, true);
-        MileagePerDiems mpd = new MileagePerDiems(Arrays.asList(leg));
+        MileagePerDiem pd = new MileagePerDiem(0, from, to, mot, 100, perDiem, true, true);
+        MileagePerDiems mpd = new MileagePerDiems(Arrays.asList(pd));
         return mpd.tripQualifiesForReimbursement();
     }
 }

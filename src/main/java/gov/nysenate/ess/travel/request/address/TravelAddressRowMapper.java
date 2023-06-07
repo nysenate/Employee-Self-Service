@@ -9,16 +9,20 @@ public class TravelAddressRowMapper implements RowMapper<TravelAddress> {
 
     @Override
     public TravelAddress mapRow(ResultSet rs, int i) throws SQLException {
+        return mapRow(rs, i, "");
+    }
+
+    public TravelAddress mapRow(ResultSet rs, int i, String prefix) throws SQLException {
         return new TravelAddress.Builder()
-                .withId(rs.getInt("address_id"))
-                .withPlaceId(rs.getString("place_id"))
-                .withName(rs.getString("name"))
-                .withAddr1(rs.getString("street_1"))
-                .withCity(rs.getString("city"))
-                .withCounty(rs.getString("county"))
-                .withZip5(rs.getString("zip_5"))
-                .withState(rs.getString("state"))
-                .withCountry(rs.getString("country"))
+                .withId(rs.getInt(prefix + "address_id"))
+                .withPlaceId(rs.getString(prefix + "place_id"))
+                .withName(rs.getString(prefix + "name"))
+                .withAddr1(rs.getString(prefix + "street_1"))
+                .withCity(rs.getString(prefix + "city"))
+                .withCounty(rs.getString(prefix + "county"))
+                .withZip5(rs.getString(prefix + "zip_5"))
+                .withState(rs.getString(prefix + "state"))
+                .withCountry(rs.getString(prefix + "country"))
                 .build();
     }
 }

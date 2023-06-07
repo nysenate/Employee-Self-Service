@@ -15,47 +15,18 @@ public class Leg {
     private Destination from;
     private Destination to;
     private final ModeOfTransportation modeOfTransportation;
-    private final double miles;
-    private final PerDiem mileagePerDiem;
+    private LocalDate travelDate;
     private final boolean isOutbound;
-    private boolean isReimbursementRequested;
+
 
     public Leg(int id, Destination from, Destination to, ModeOfTransportation modeOfTransportation,
-               double miles, PerDiem mileagePerDiem, boolean isOutbound, boolean isReimbursementRequested) {
+               boolean isOutbound, LocalDate travelDate) {
         this.id = id;
         this.from = Objects.requireNonNull(from);
         this.to = Objects.requireNonNull(to);
         this.modeOfTransportation = Objects.requireNonNull(modeOfTransportation);
-        this.miles = miles;
-        this.mileagePerDiem = mileagePerDiem;
+        this.travelDate = travelDate;
         this.isOutbound = isOutbound;
-        this.isReimbursementRequested = isReimbursementRequested;
-    }
-
-    /**
-     * The maximum mileage allowance allowed for this leg of the trip.
-     *
-     * @return
-     */
-    public Dollars maximumPerDiem() {
-        return qualifiesForMileageReimbursement()
-                ? new Dollars(mileageRate().multiply(new BigDecimal(miles)))
-                : Dollars.ZERO;
-    }
-
-    /**
-     * The mileage allowance requested and allowed for this leg of the trip.
-     *
-     * @return
-     */
-    public Dollars requestedPerDiem() {
-        return isReimbursementRequested()
-                ? maximumPerDiem()
-                : Dollars.ZERO;
-    }
-
-    public void setIsReimbursementRequested(boolean isReimbursementRequested) {
-        this.isReimbursementRequested = isReimbursementRequested;
     }
 
     public void setFromDestination(Destination from) {
@@ -87,15 +58,11 @@ public class Leg {
     }
 
     public LocalDate travelDate() {
-        return mileagePerDiem.getDate();
+        return travelDate;
     }
 
-    public double miles() {
-        return miles;
-    }
-
-    public BigDecimal mileageRate() {
-        return mileagePerDiem.getRate();
+    public ModeOfTransportation getModeOfTransportation() {
+        return modeOfTransportation;
     }
 
     public String methodOfTravel() {
@@ -110,16 +77,8 @@ public class Leg {
         return modeOfTransportation.getDescription();
     }
 
-    public boolean isReimbursementRequested() {
-        return this.isReimbursementRequested;
-    }
-
     public boolean isOutbound() {
         return isOutbound;
-    }
-
-    public boolean qualifiesForMileageReimbursement() {
-        return modeOfTransportation.qualifiesForMileageReimbursement();
     }
 
     void setId(int id) {
@@ -133,9 +92,8 @@ public class Leg {
                 ", from=" + from +
                 ", to=" + to +
                 ", modeOfTransportation=" + modeOfTransportation +
-                ", miles=" + miles +
-                ", perDiem=" + mileagePerDiem +
                 ", isOutbound=" + isOutbound +
+                ", travelDate=" + travelDate +
                 '}';
     }
 
@@ -144,17 +102,17 @@ public class Leg {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Leg leg = (Leg) o;
-        return Double.compare(leg.miles, miles) == 0
+        return id == leg.id
                 && isOutbound == leg.isOutbound
-                && isReimbursementRequested == leg.isReimbursementRequested
-                && Objects.equals(from, leg.from) && Objects.equals(to, leg.to)
+                && Objects.equals(from, leg.from)
+                && Objects.equals(to, leg.to)
                 && Objects.equals(modeOfTransportation, leg.modeOfTransportation)
-                && Objects.equals(mileagePerDiem, leg.mileagePerDiem);
+                && Objects.equals(travelDate, leg.travelDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(from, to, modeOfTransportation, miles, mileagePerDiem, isOutbound, isReimbursementRequested);
+        return Objects.hash(id, from, to, modeOfTransportation, isOutbound, travelDate);
     }
 }
 

@@ -122,7 +122,7 @@ public class DraftCtrl extends BaseRestApiCtrl {
                     draft.setAmendment(appUpdateService.updateLodgingPerDiems(draft.getAmendment(), draft.getAmendment().lodgingPerDiems()));
                     break;
                 case MILEAGE_PER_DIEMS:
-                    draft.setAmendment(appUpdateService.updateMileagePerDiems(draft.getAmendment(), draft.getAmendment().route().mileagePerDiems()));
+                    draft.setAmendment(appUpdateService.updateMileagePerDiems(draft.getAmendment(), draft.getAmendment().mileagePerDiems()));
                     break;
                 default:
                     logger.info("Call to travel draft patch API did not contain a valid patch option. Patches were: " + draftPatches.getOptions());

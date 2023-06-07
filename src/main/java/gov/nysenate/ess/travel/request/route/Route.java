@@ -24,10 +24,6 @@ public class Route {
         this.returnLegs = ImmutableList.copyOf(returnLegs);
     }
 
-    public MileagePerDiems mileagePerDiems() {
-        return new MileagePerDiems(getAllLegs());
-    }
-
     public TravelAddress origin() {
         if (getOutboundLegs().size() > 0) {
             return getOutboundLegs().get(0).fromAddress();

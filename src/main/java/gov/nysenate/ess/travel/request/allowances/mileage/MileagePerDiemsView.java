@@ -1,8 +1,9 @@
 package gov.nysenate.ess.travel.request.allowances.mileage;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
-import gov.nysenate.ess.travel.request.route.LegView;
+import gov.nysenate.ess.travel.utils.Dollars;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,49 +11,58 @@ import java.util.stream.Collectors;
 public class MileagePerDiemsView implements ViewObject {
 
     private String totalPerDiem;
-    private List<LegView> allLegs;
-    private List<LegView> qualifyingLegs;
-    private List<LegView> requestedLegs;
+    private List<MileagePerDiemView> allPerDiems;
+    private List<MileagePerDiemView> qualifyingPerDiems;
+    private List<MileagePerDiemView> requestedPerDiems;
     @JsonProperty("doesTripQualifyForReimbursement")
     private boolean doesTripQualifyForReimbursement;
     private String totalMileage;
+    @JsonProperty("isOverridden")
+    private boolean isOverridden;
+    private String overrideRate;
 
     public MileagePerDiemsView() {
     }
 
-    public MileagePerDiemsView(MileagePerDiems ma) {
-        this.totalPerDiem = ma.totalPerDiem().toString();
-        this.allLegs = ma.allLegs().stream()
-                .map(LegView::new)
+    public MileagePerDiemsView(MileagePerDiems mpd) {
+        this.totalPerDiem = mpd.totalPerDiemValue().toString();
+        this.allPerDiems = mpd.allPerDiems().stream()
+                .map(MileagePerDiemView::new)
                 .collect(Collectors.toList());
-        this.qualifyingLegs = ma.mileageReimbursableLegs().stream()
-                .map(LegView::new)
+        this.qualifyingPerDiems = mpd.qualifyingPerDiems().stream()
+                .map(MileagePerDiemView::new)
                 .collect(Collectors.toList());
-        this.requestedLegs = ma.requestedLegs().stream()
-                .map(LegView::new)
+        this.requestedPerDiems = mpd.requestedPerDiems().stream()
+                .map(MileagePerDiemView::new)
                 .collect(Collectors.toList());
-        this.doesTripQualifyForReimbursement = ma.tripQualifiesForReimbursement();
-        this.totalMileage = String.valueOf(ma.totalMileage());
+        this.doesTripQualifyForReimbursement = mpd.tripQualifiesForReimbursement();
+        this.totalMileage = String.valueOf(mpd.totalMileage());
+        this.isOverridden = mpd.isOverridden();
+        this.overrideRate = mpd.getOverrideRate().toString();
     }
 
     public MileagePerDiems toMileagePerDiems() {
-        return new MileagePerDiems(allLegs.stream().map(LegView::toLeg).collect(Collectors.toList()));
+        return new MileagePerDiems(allPerDiems.stream()
+                .map(MileagePerDiemView::toMileagePerDiem)
+                .collect(Collectors.toList()),
+                new Dollars(overrideRate)
+        );
     }
 
     public String getTotalPerDiem() {
         return totalPerDiem;
     }
 
-    public List<LegView> getAllLegs() {
-        return allLegs;
+    public List<MileagePerDiemView> getAllPerDiems() {
+        return allPerDiems;
     }
 
-    public List<LegView> getQualifyingLegs() {
-        return qualifyingLegs;
+    public List<MileagePerDiemView> getQualifyingPerDiems() {
+        return qualifyingPerDiems;
     }
 
-    public List<LegView> getRequestedLegs() {
-        return requestedLegs;
+    public List<MileagePerDiemView> getRequestedPerDiems() {
+        return requestedPerDiems;
     }
 
     public boolean isDoesTripQualifyForReimbursement() {
@@ -61,6 +71,15 @@ public class MileagePerDiemsView implements ViewObject {
 
     public String getTotalMileage() {
         return totalMileage;
+    }
+
+    @JsonIgnore
+    public boolean isOverridden() {
+        return isOverridden;
+    }
+
+    public String getOverrideRate() {
+        return overrideRate;
     }
 
     @Override

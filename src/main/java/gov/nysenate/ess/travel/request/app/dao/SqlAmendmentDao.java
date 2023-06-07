@@ -9,6 +9,8 @@ import gov.nysenate.ess.travel.request.allowances.lodging.LodgingPerDiems;
 import gov.nysenate.ess.travel.request.allowances.lodging.SqlLodgingPerDiemsDao;
 import gov.nysenate.ess.travel.request.allowances.meal.MealPerDiems;
 import gov.nysenate.ess.travel.request.allowances.meal.SqlMealPerDiemsDao;
+import gov.nysenate.ess.travel.request.allowances.mileage.MileagePerDiems;
+import gov.nysenate.ess.travel.request.allowances.mileage.SqlMileagePerDiemsDao;
 import gov.nysenate.ess.travel.request.amendment.Amendment;
 import gov.nysenate.ess.travel.request.attachment.Attachment;
 import gov.nysenate.ess.travel.request.attachment.SqlAttachmentDao;
@@ -29,6 +31,7 @@ public class SqlAmendmentDao extends SqlBaseDao {
     private SqlAllowancesDao allowancesDao;
     private SqlMealPerDiemsDao mealPerDiemsDao;
     private SqlLodgingPerDiemsDao lodgingPerDiemsDao;
+    private SqlMileagePerDiemsDao mileagePerDiemsDao;
     private SqlAttachmentDao attachmentDao;
     private EmployeeInfoService employeeInfoService;
 
@@ -37,12 +40,14 @@ public class SqlAmendmentDao extends SqlBaseDao {
                            SqlAllowancesDao allowancesDao,
                            SqlMealPerDiemsDao mealPerDiemsDao,
                            SqlLodgingPerDiemsDao lodgingPerDiemsDao,
+                           SqlMileagePerDiemsDao mileagePerDiemsDao,
                            SqlAttachmentDao attachmentDao,
                            EmployeeInfoService employeeInfoService) {
         this.routeDao = routeDao;
         this.allowancesDao = allowancesDao;
         this.mealPerDiemsDao = mealPerDiemsDao;
         this.lodgingPerDiemsDao = lodgingPerDiemsDao;
+        this.mileagePerDiemsDao = mileagePerDiemsDao;
         this.attachmentDao = attachmentDao;
         this.employeeInfoService = employeeInfoService;
     }
@@ -52,6 +57,7 @@ public class SqlAmendmentDao extends SqlBaseDao {
         Allowances allowances = allowancesDao.selectAllowances(amdView.amendmentId);
         MealPerDiems mpds = mealPerDiemsDao.selectMealPerDiems(amdView.amendmentId);
         LodgingPerDiems lpds = lodgingPerDiemsDao.selectLodgingPerDiems(amdView.amendmentId);
+        MileagePerDiems mileagePerDiems = mileagePerDiemsDao.selectMileagePerDiems(amdView.amendmentId);
         List<Attachment> attachments = attachmentDao.selectAmendmentAttachments(amdView.amendmentId);
         Employee createdBy = employeeInfoService.getEmployee(amdView.createdByEmpId);
         return new Amendment.Builder()
@@ -62,6 +68,7 @@ public class SqlAmendmentDao extends SqlBaseDao {
                 .withAllowances(allowances)
                 .withMealPerDiems(mpds)
                 .withLodgingPerDiems(lpds)
+                .withMileagePerDiems(mileagePerDiems)
                 .withAttachments(attachments)
                 .withCreatedDateTime(amdView.createdDateTime)
                 .withCreatedBy(createdBy)
@@ -79,6 +86,7 @@ public class SqlAmendmentDao extends SqlBaseDao {
         allowancesDao.saveAllowances(amd.allowances(), amd.amendmentId());
         mealPerDiemsDao.saveMealPerDiems(amd.mealPerDiems(), amd.amendmentId());
         lodgingPerDiemsDao.saveLodgingPerDiems(amd.lodgingPerDiems(), amd.amendmentId());
+        mileagePerDiemsDao.saveMileagePerDiems(amd.mileagePerDiems(), amd.amendmentId());
         attachmentDao.saveAmendmentAttachments(amd.attachments(), amd.amendmentId());
     }
 

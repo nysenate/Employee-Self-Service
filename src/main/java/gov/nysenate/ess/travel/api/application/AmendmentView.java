@@ -2,6 +2,7 @@ package gov.nysenate.ess.travel.api.application;
 
 import gov.nysenate.ess.core.client.view.DetailedEmployeeView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
+import gov.nysenate.ess.travel.request.allowances.mileage.MileagePerDiemsView;
 import gov.nysenate.ess.travel.request.attachment.Attachment;
 import gov.nysenate.ess.travel.request.address.TravelAddress;
 import gov.nysenate.ess.travel.request.allowances.AllowancesView;
@@ -29,6 +30,7 @@ public class AmendmentView implements ViewObject {
     private AllowancesView allowances;
     private MealPerDiemsView mealPerDiems;
     private LodgingPerDiemsView lodgingPerDiems;
+    private MileagePerDiemsView mileagePerDiems;
     private String createdDateTime;
     private DetailedEmployeeView createdBy;
     private List<AttachmentView> attachments;
@@ -66,6 +68,7 @@ public class AmendmentView implements ViewObject {
         allowances = new AllowancesView(amendment.allowances());
         mealPerDiems = new MealPerDiemsView(amendment.mealPerDiems());
         lodgingPerDiems = new LodgingPerDiemsView(amendment.lodgingPerDiems());
+        mileagePerDiems = new MileagePerDiemsView(amendment.mileagePerDiems());
         createdDateTime = amendment.createdDateTime() == null
                 ? null
                 : amendment.createdDateTime().format(ISO_DATE_TIME);
@@ -115,6 +118,7 @@ public class AmendmentView implements ViewObject {
                 .withCreatedBy(createdBy == null ? null : createdBy.toEmployee())
                 .withMealPerDiems(mealPerDiems.toMealPerDiems())
                 .withLodgingPerDiems(lodgingPerDiems.toLodgingPerDiems())
+                .withMileagePerDiems(mileagePerDiems.toMileagePerDiems())
                 .build();
     }
 
@@ -212,6 +216,10 @@ public class AmendmentView implements ViewObject {
 
     public String getDestinationSummary() {
         return destinationSummary;
+    }
+
+    public MileagePerDiemsView getMileagePerDiems() {
+        return mileagePerDiems;
     }
 
     @Override

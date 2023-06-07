@@ -8,12 +8,14 @@ import gov.nysenate.ess.travel.authorization.role.TravelRoleFactory;
 import gov.nysenate.ess.travel.authorization.role.TravelRoles;
 import gov.nysenate.ess.travel.notifications.email.events.TravelAppEditedEmailEvent;
 import gov.nysenate.ess.travel.notifications.email.events.TravelPendingReviewEmailEvent;
+import gov.nysenate.ess.travel.provider.miles.MileageAllowanceService;
 import gov.nysenate.ess.travel.request.allowances.Allowances;
 import gov.nysenate.ess.travel.request.allowances.PerDiem;
 import gov.nysenate.ess.travel.request.allowances.lodging.LodgingPerDiem;
 import gov.nysenate.ess.travel.request.allowances.lodging.LodgingPerDiems;
 import gov.nysenate.ess.travel.request.allowances.meal.MealPerDiem;
 import gov.nysenate.ess.travel.request.allowances.meal.MealPerDiems;
+import gov.nysenate.ess.travel.request.allowances.mileage.MileagePerDiem;
 import gov.nysenate.ess.travel.request.allowances.mileage.MileagePerDiems;
 import gov.nysenate.ess.travel.request.amendment.Amendment;
 import gov.nysenate.ess.travel.request.amendment.Version;
@@ -35,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -51,6 +54,7 @@ public class TravelAppUpdateService {
     @Autowired private TravelEmailService emailService;
     @Autowired private EventBus eventBus;
     @Autowired private TravelRoleFactory travelRoleFactory;
+    @Autowired private MileageAllowanceService mileageService;
 
     /**
      * Returns a new Amendment with the provided purpose of travel added to the amendment.
@@ -102,13 +106,27 @@ public class TravelAppUpdateService {
      */
     public Amendment updateRoute(Amendment amd, Route route) {
         Route fullRoute = routeService.createRoute(route);
-        MealPerDiems mpds = createMealPerDiems(fullRoute);
-        LodgingPerDiems lpds = createLodgingPerDiems(fullRoute);
+        MileagePerDiems mileagePerDiems = createMileagePerDiems(fullRoute);
+        MealPerDiems mealPerDiems = createMealPerDiems(fullRoute);
+        LodgingPerDiems lodgingPerDiems = createLodgingPerDiems(fullRoute);
         return new Amendment.Builder(amd)
                 .withRoute(fullRoute)
-                .withMealPerDiems(mpds)
-                .withLodgingPerDiems(lpds)
+                .withMealPerDiems(mealPerDiems)
+                .withLodgingPerDiems(lodgingPerDiems)
+                .withMileagePerDiems(mileagePerDiems)
                 .build();
+    }
+
+    private MileagePerDiems createMileagePerDiems(Route route) {
+        Set<MileagePerDiem> mileagePerDiemSet = new HashSet<>();
+        for (Leg leg : route.getAllLegs()) {
+            double miles = mileageService.drivingDistance(leg.fromAddress(), leg.toAddress());
+            BigDecimal mileageRate = mileageService.getIrsRate(leg.travelDate());
+            PerDiem perDiem = new PerDiem(leg.travelDate(), mileageRate);
+            mileagePerDiemSet.add(new MileagePerDiem(0, leg.fromAddress(), leg.toAddress(), leg.getModeOfTransportation(),
+                    miles, perDiem, leg.isOutbound(), true));
+        }
+        return new MileagePerDiems(mileagePerDiemSet);
     }
 
     private MealPerDiems createMealPerDiems(Route route) {
@@ -183,24 +201,16 @@ public class TravelAppUpdateService {
     }
 
     /**
-     * Updates the mileage per diem information on the amendment's Route.
-     * This allows users to opt in or out of mileage reimbursement for each leg of their trip.
+     * Returns a new Amendment with the provided MileagePerDiems.
      *
      * @param amd  The initial amendment.
      * @param mpds The MileagePerDiems to reference when updating the Route.
      * @return The amd Amendment with the Route Legs `Leg.isReimbursementRequested` field updated.
      */
     public Amendment updateMileagePerDiems(Amendment amd, MileagePerDiems mpds) {
-        for (Leg qualifyingLeg : mpds.mileageReimbursableLegs()) {
-            for (Leg appLeg : amd.route().getAllLegs()) {
-                if (appLeg.fromAddress().equals(qualifyingLeg.fromAddress())
-                        && appLeg.toAddress().equals(qualifyingLeg.toAddress())
-                        && appLeg.travelDate().equals(qualifyingLeg.travelDate())) {
-                    appLeg.setIsReimbursementRequested(qualifyingLeg.isReimbursementRequested());
-                }
-            }
-        }
-        return amd;
+        return new Amendment.Builder(amd)
+                .withMileagePerDiems(mpds)
+                .build();
     }
 
     /**

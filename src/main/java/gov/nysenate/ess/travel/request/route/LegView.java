@@ -20,16 +20,9 @@ public class LegView implements ViewObject {
     private DestinationView to;
     private String methodOfTravelDisplayName;
     private String methodOfTravelDescription;
-    private String miles;
     private String travelDate;
-    private String mileageRate;
-    @JsonProperty("isReimbursementRequested")
-    private boolean isReimbursementRequested;
     @JsonProperty("isOutbound")
     private boolean isOutbound;
-    private String requestedPerDiem;
-    private String maximumPerDiem;
-    private boolean qualifiesForReimbursement;
 
     public LegView() {
     }
@@ -40,14 +33,8 @@ public class LegView implements ViewObject {
         this.to = new DestinationView(leg.to());
         this.methodOfTravelDisplayName = leg.methodOfTravelDisplayName();
         this.methodOfTravelDescription = leg.methodOfTravelDescription();
-        this.miles = BigDecimal.valueOf(leg.miles()).setScale(1, RoundingMode.HALF_UP).toString();
         this.travelDate = leg.travelDate().format(DATEPICKER_FORMAT);
-        this.mileageRate = leg.mileageRate().toString();
-        this.isReimbursementRequested = leg.isReimbursementRequested();
         this.isOutbound = leg.isOutbound();
-        this.requestedPerDiem = leg.requestedPerDiem().toString();
-        this.maximumPerDiem = leg.maximumPerDiem().toString();
-        this.qualifiesForReimbursement = leg.qualifiesForMileageReimbursement();
     }
 
     public Leg toLeg() {
@@ -56,17 +43,8 @@ public class LegView implements ViewObject {
                 from.toDestination(),
                 to.toDestination(),
                 new ModeOfTransportation(this.methodOfTravelDisplayName, this.methodOfTravelDescription),
-                miles == null ? Double.valueOf(0) : Double.valueOf(miles),
-                createPerDiem(),
                 isOutbound,
-                isReimbursementRequested
-        );
-    }
-
-    private PerDiem createPerDiem() {
-        return new PerDiem(
-                LocalDate.parse(travelDate, DATEPICKER_FORMAT),
-                mileageRate == null ? new BigDecimal(0) : new BigDecimal(mileageRate)
+                LocalDate.parse(travelDate, DATEPICKER_FORMAT)
         );
     }
 
@@ -90,38 +68,13 @@ public class LegView implements ViewObject {
         return methodOfTravelDescription;
     }
 
-    public String getMiles() {
-        return miles;
-    }
-
     public String getTravelDate() {
         return travelDate;
-    }
-
-    public String getMileageRate() {
-        return mileageRate;
-    }
-
-    @JsonIgnore
-    public boolean isReimbursementRequested() {
-        return isReimbursementRequested;
     }
 
     @JsonIgnore
     public boolean isOutbound() {
         return isOutbound;
-    }
-
-    public String getRequestedPerDiem() {
-        return requestedPerDiem;
-    }
-
-    public String getMaximumPerDiem() {
-        return maximumPerDiem;
-    }
-
-    public boolean getQualifiesForReimbursement() {
-        return qualifiesForReimbursement;
     }
 
     @Override

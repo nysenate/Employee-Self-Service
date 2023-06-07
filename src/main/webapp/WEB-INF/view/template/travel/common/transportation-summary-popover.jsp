@@ -20,19 +20,19 @@
       </tr>
       </thead>
       <tbody>
-      <tr ng-repeat="leg in amd.route.mileagePerDiems.requestedLegs">
-        <td>{{leg.from.address.formattedAddressWithCounty}}</td>
-        <td>{{leg.to.address.formattedAddressWithCounty}}</td>
-        <td>{{leg.miles}}</td>
-        <td>{{leg.mileageRate}}</td>
-        <td>{{leg.requestedPerDiem | currency}}</td>
+      <tr ng-repeat="pd in mileagePerDiems.requestedPerDiems">
+        <td>{{pd.from.formattedAddressWithCounty}}</td>
+        <td>{{pd.to.formattedAddressWithCounty}}</td>
+        <td>{{pd.miles}}</td>
+        <td>{{pd.mileageRate}}</td>
+        <td>{{pd.requestedPerDiem | currency}}</td>
       </tr>
       <tr>
         <td></td>
         <td class="bold">Total:</td>
         <td></td>
         <td></td>
-        <td class="bold">{{amd.route.mileagePerDiems.totalPerDiem | currency}}</td>
+        <td class="bold">{{mileagePerDiems.totalPerDiem | currency}}</td>
       </tr>
       </tbody>
     </table>

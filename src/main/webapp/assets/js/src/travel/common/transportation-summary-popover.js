@@ -8,7 +8,8 @@ travel.directive('essTransportationSummaryPopover', ['appProps', function (appPr
         },
         templateUrl: appProps.ctxPath + '/template/travel/common/transportation-summary-popover',
         link: function ($scope) {
-            $scope.hide = $scope.amd.route.mileagePerDiems.requestedLegs.length === 0;
+            $scope.mileagePerDiems = $scope.amd.mileagePerDiems;
+            $scope.hide = $scope.mileagePerDiems.requestedPerDiems.length === 0;
         }
     }
 }])

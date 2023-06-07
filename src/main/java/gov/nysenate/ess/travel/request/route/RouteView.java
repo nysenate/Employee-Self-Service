@@ -13,7 +13,6 @@ public class RouteView implements ViewObject {
     private List<LegView> outboundLegs;
     private List<LegView> returnLegs;
     private List<DestinationView> destinations;
-    private MileagePerDiemsView mileagePerDiems;
     private TravelAddressView origin;
 
     public RouteView() {
@@ -30,7 +29,6 @@ public class RouteView implements ViewObject {
         destinations = route.destinations().stream()
                 .map(DestinationView::new)
                 .collect(Collectors.toList());
-        mileagePerDiems = new MileagePerDiemsView(route.mileagePerDiems());
     }
 
     public Route toRoute() {
@@ -54,10 +52,6 @@ public class RouteView implements ViewObject {
 
     public TravelAddressView getOrigin() {
         return origin;
-    }
-
-    public MileagePerDiemsView getMileagePerDiems() {
-        return mileagePerDiems;
     }
 
     @Override

@@ -67,12 +67,9 @@ public class RouteService {
         Destination from = createFromDestination(previousLeg, currentLeg);
         Destination to = createToDestination(nextLeg, currentLeg);
 
-        double miles = mileageService.drivingDistance(from.getAddress(), to.getAddress());
-        BigDecimal mileageRate = mileageService.getIrsRate(currentLeg.travelDate());
-        PerDiem perDiem = new PerDiem(currentLeg.travelDate(), mileageRate);
         return new Leg(0, from, to,
                 new ModeOfTransportation(currentLeg.methodOfTravel(), currentLeg.methodOfTravelDescription()),
-                miles, perDiem, isOutbound, true);
+                isOutbound, currentLeg.travelDate());
     }
 
     private Leg getLegOrNull(Route simpleRoute, int legIndex) {

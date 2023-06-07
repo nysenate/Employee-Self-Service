@@ -1,7 +1,6 @@
 package gov.nysenate.ess.travel.request.allowances.mileage;
 
 import com.google.common.collect.ImmutableList;
-import gov.nysenate.ess.travel.request.route.Leg;
 import gov.nysenate.ess.travel.utils.Dollars;
 import gov.nysenate.ess.travel.utils.UnitUtils;
 
@@ -13,55 +12,73 @@ public class MileagePerDiems {
      * The minimum outbound mileage needed to qualify for mileage reimbursement.
      */
     private static final double MILE_THRESHOLD = 35.0;
-    private final ImmutableList<Leg> legs;
+    private final ImmutableList<MileagePerDiem> perDiems;
+    private Dollars overrideRate;
 
-    public MileagePerDiems(Collection<Leg> legs) {
-        this.legs = ImmutableList.copyOf(legs);
+    public MileagePerDiems(Collection<MileagePerDiem> perDiems) {
+        this(ImmutableList.copyOf(perDiems), Dollars.ZERO);
+    }
+
+    public MileagePerDiems(Collection<MileagePerDiem> perDiems, Dollars overrideRate) {
+        this.perDiems = ImmutableList.copyOf(perDiems);
+        this.overrideRate = overrideRate == null ? Dollars.ZERO : overrideRate;
     }
 
     /**
-     * The mileage allowance this trip is qualified for and requested.
+     * The total mileage allowance this trip is qualified for and requested.
      * <p>
      * Outbound mileage must be > 35 miles to qualify for any mileage allowance.
-     * Must be traveling via personal auto for a leg to qualify.
+     * Must be traveling via personal auto to qualify.
+     *
      * @return
      */
-    public Dollars totalPerDiem() {
+    public Dollars totalPerDiemValue() {
         if (tripQualifiesForReimbursement()) {
-            return requestedLegs().stream()
-                    .map(Leg::requestedPerDiem)
+            return requestedPerDiems().stream()
+                    .map(MileagePerDiem::requestedPerDiemValue)
                     .reduce(Dollars.ZERO, Dollars::add);
         } else {
             return Dollars.ZERO;
         }
     }
 
-    public ImmutableList<Leg> allLegs() {
-        return legs;
+    public ImmutableList<MileagePerDiem> allPerDiems() {
+        return perDiems;
     }
 
     /**
-     * Legs that are allowed to be reimbursed for travel.
+     * MileagePerDiem's that qualify for reimbursement.
      */
-    public ImmutableList<Leg> mileageReimbursableLegs() {
-        return legs.stream()
-                .filter(Leg::qualifiesForMileageReimbursement)
+    public ImmutableList<MileagePerDiem> qualifyingPerDiems() {
+        return perDiems.stream()
+                .filter(MileagePerDiem::qualifiesForReimbursement)
                 .collect(ImmutableList.toImmutableList());
     }
 
     /**
-     * Legs that are allowed to be reimbursed for travel and the travel
-     * has requested reimbursement.
+     * MileagePerDiem's that qualify for reimbursement and are requested by the traveler.
      */
-    public ImmutableList<Leg> requestedLegs() {
-        return mileageReimbursableLegs().stream()
-                .filter(Leg::isReimbursementRequested)
+    public ImmutableList<MileagePerDiem> requestedPerDiems() {
+        return qualifyingPerDiems().stream()
+                .filter(MileagePerDiem::isReimbursementRequested)
                 .collect(ImmutableList.toImmutableList());
     }
 
     /**
-     * A trip qualifies for mileage reimbursement if a isMileageReimbursable MethodOfTravel is used
+     * Total mileage of qualifying mileagePerDiem's rounded to the tenth of a mile.
+     *
+     * @return
+     */
+    public double totalMileage() {
+        return UnitUtils.round(qualifyingPerDiems().stream()
+                .mapToDouble(MileagePerDiem::getMiles)
+                .sum(), 1);
+    }
+
+    /**
+     * A trip is eligible for mileage reimbursement if a isMileageReimbursable MethodOfTravel is used
      * on any leg of the trip and the total outbound miles is greater than MILE_THRESHOLD.
+     *
      * @return
      */
     public boolean tripQualifiesForReimbursement() {
@@ -69,24 +86,22 @@ public class MileagePerDiems {
     }
 
     private boolean isOutboundMileageGreaterThanTheshold() {
-        double outboundMiles = legs.stream()
-                .filter(Leg::isOutbound)
-                .mapToDouble(Leg::miles)
+        double outboundMiles = perDiems.stream()
+                .filter(MileagePerDiem::isOutbound)
+                .mapToDouble(MileagePerDiem::getMiles)
                 .sum();
         return outboundMiles > MILE_THRESHOLD;
     }
 
     private boolean isReimbursableMethodOfTravelUsed() {
-        return legs.stream().anyMatch(Leg::qualifiesForMileageReimbursement);
+        return perDiems.stream().anyMatch(MileagePerDiem::qualifiesForReimbursement);
     }
 
-    /**
-     * Total mileage rounded to the tenth of a mile.
-     * @return
-     */
-    public double totalMileage() {
-        return UnitUtils.round(mileageReimbursableLegs().stream()
-                .mapToDouble(Leg::miles)
-                .sum(), 1);
+    public boolean isOverridden() {
+        return !Dollars.ZERO.equals(getOverrideRate());
+    }
+
+    public Dollars getOverrideRate() {
+        return overrideRate;
     }
 }
