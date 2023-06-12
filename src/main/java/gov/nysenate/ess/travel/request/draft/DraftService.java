@@ -35,6 +35,12 @@ public class DraftService {
                 .collect(Collectors.toList());
     }
 
+    public Draft saveDraft(Draft draft) {
+        DraftRecord record = new DraftRecord(draft);
+        record = draftDao.save(record);
+        return createDraft(record);
+    }
+
     private Draft createDraft(DraftRecord record) {
         TravelEmployee travelEmployee = travelEmployeeService.getTravelEmployee(record.travelerEmpId);
         Amendment amd;

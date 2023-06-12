@@ -138,10 +138,10 @@ public class DraftCtrl extends BaseRestApiCtrl {
      * --------------------------
      * Saves the draft included in the response body.
      * <p>
-     * Usage:   (POST) /api/v1/travel/drafts
+     * Usage:   (POST) /api/v1/travel/drafts/submit
      * <p>
      */
-    @RequestMapping(value = "", method = RequestMethod.POST)
+    @RequestMapping(value = "/submit", method = RequestMethod.POST)
     public BaseResponse submitDraft(@RequestBody DraftView draftView) {
         Employee user = employeeInfoService.getEmployee(getSubjectEmployeeId());
         Draft draft = draftView.toDraft();
@@ -149,6 +149,13 @@ public class DraftCtrl extends BaseRestApiCtrl {
         TravelApplication app = appUpdateService.submitTravelApplication(draft, user);
         draftDao.delete(draft.getId());
         return new ViewObjectResponse<>(new TravelApplicationView(app));
+    }
+
+    @RequestMapping(value = "", method = RequestMethod.POST)
+    public BaseResponse saveDraft(@RequestBody DraftView draftView) {
+        Draft draft = draftView.toDraft();
+        draft = draftService.saveDraft(draft);
+        return new ViewObjectResponse<>(new DraftView(draft));
     }
 
     /**

@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
@@ -36,11 +38,13 @@ public class DraftDao extends SqlBaseDao {
     /**
      * Persists the given DraftRecord.
      */
-    public void save(DraftRecord draftRecord) {
+    public DraftRecord save(DraftRecord draftRecord) {
         MapSqlParameterSource params = draftParams(draftRecord);
         if (!update(params)) {
-            insert(params);
+            int id = insert(params);
+            draftRecord.id = id;
         }
+        return draftRecord;
     }
 
     // Attempts to update a draft. Returns true if update was successful, false otherwise.
@@ -49,9 +53,11 @@ public class DraftDao extends SqlBaseDao {
         return localNamedJdbc.update(sql, params) == 1;
     }
 
-    private void insert(MapSqlParameterSource params) {
+    private Integer insert(MapSqlParameterSource params) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = SqlDraftQuery.INSERT.getSql(schemaMap());
         localNamedJdbc.update(sql, params);
+        return (Integer) keyHolder.getKeys().get("draft_id");
     }
 
     /**

@@ -1,5 +1,7 @@
 package gov.nysenate.ess.travel.request.draft;
 
+import gov.nysenate.ess.core.util.OutputUtils;
+
 import java.time.LocalDateTime;
 
 /**
@@ -14,5 +16,13 @@ public class DraftRecord {
     protected LocalDateTime updatedDateTime;
 
     public DraftRecord() {
+    }
+
+    public DraftRecord(Draft draft) {
+        this.id = draft.getId();
+        this.userEmpId = draft.getUserEmpId();
+        this.travelerEmpId = draft.getTraveler().getEmployeeId();
+        this.amendmentJson = OutputUtils.toJson(draft.getAmendment());
+        this.updatedDateTime = draft.getUpdatedDateTime();
     }
 }
