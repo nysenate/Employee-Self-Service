@@ -20,7 +20,9 @@ class TravelApplicationHandler extends BaseHandler {
 
     @Override
     public void processRow(ResultSet rs) throws SQLException {
-        view = applicationRowMapper.mapRow(rs, rs.getRow());
+        if (view == null) {
+            view = applicationRowMapper.mapRow(rs, rs.getRow());
+        }
         view.amendmentViews.add(amdRowMapper.mapRow(rs, rs.getRow()));
     }
 
