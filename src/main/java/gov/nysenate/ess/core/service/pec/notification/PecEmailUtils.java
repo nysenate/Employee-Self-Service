@@ -59,10 +59,10 @@ class PecEmailUtils {
         return emails;
     }
 
-    public Map<Employee, List<AssignmentWithTask>> getNotifiableTaskMap(boolean invitableOnly) {
+    public Map<Employee, List<AssignmentWithTask>> getNotifiableTaskMap() {
         var idToTaskMap = new HashMap<Integer, List<AssignmentWithTask>>();
-        for (var task : assignmentDao.getNotifiableAssignmentsWithTasks(invitableOnly)) {
-            if (!invitableOnly && !shouldSendReminder(task.assignment().getDueDate())) {
+        for (var task : assignmentDao.getNotifiableAssignmentsWithTasks()) {
+            if (!shouldSendReminder(task.assignment().getDueDate())) {
                 continue;
             }
             int id = task.assignment().getEmpId();

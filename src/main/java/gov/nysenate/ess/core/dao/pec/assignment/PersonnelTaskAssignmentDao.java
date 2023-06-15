@@ -30,10 +30,9 @@ public interface PersonnelTaskAssignmentDao {
 
     /**
      * Get all assignment-task pairs that may require notification.
-     * @param invitableOnly if only invitable pairs should be returned.
      * @return the relevant AssignmentWithTasks.
      */
-    List<AssignmentWithTask> getNotifiableAssignmentsWithTasks(boolean invitableOnly);
+    List<AssignmentWithTask> getNotifiableAssignmentsWithTasks();
 
     /**
      * Get a list of tasks matching the given query
