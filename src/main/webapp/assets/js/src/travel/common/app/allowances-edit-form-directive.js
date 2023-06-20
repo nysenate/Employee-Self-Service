@@ -16,6 +16,7 @@ function allowancesEditForm(appProps, draftsApi) {
         templateUrl: appProps.ctxPath + '/template/travel/common/app/allowances-edit-form-directive',
         link: function (scope, elem, attrs) {
 
+            scope.mode = scope.data.mode;
             scope.dirtyDraft = angular.copy(scope.data.draft);
 
             scope.next = function () {
@@ -35,6 +36,13 @@ function allowancesEditForm(appProps, draftsApi) {
                     })
                     .finally(scope.closeLoadingModal)
             };
+
+            scope.save = function () {
+                scope.saveDraft(scope.dirtyDraft)
+                    .then(function (draft) {
+                        scope.dirtyDraft = draft;
+                    });
+            }
 
             scope.previousDay = function (date) {
                 return moment(date).subtract(1, 'days').toDate();

@@ -302,6 +302,10 @@ essApi.factory('TravelDraftsSubmitApi', ['$resource', 'appProps', function ($res
     return $resource(appProps.apiPath + '/travel/drafts/submit')
 }]);
 
+essApi.factory('TravelDraftByIdApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/travel/drafts/:id', {id: '@id'})
+}]);
+
 essApi.factory('TravelEventTypesApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/travel/event-types')
 }]);

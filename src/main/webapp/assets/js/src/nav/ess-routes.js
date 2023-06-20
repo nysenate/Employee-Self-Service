@@ -205,6 +205,10 @@ essApp.config(function ($routeProvider, $locationProvider) {
         templateUrl: ctxPath + '/template/travel/component/new-application/new-application'
     });
 
+    $routeProvider.when(ctxPath + '/travel/application/new/:draftId', {
+        templateUrl: ctxPath + '/template/travel/component/new-application/new-application'
+    });
+
     $routeProvider.when(ctxPath + '/travel/application/edit', {
         templateUrl: ctxPath + '/template/travel/component/edit-application/edit-application'
     });

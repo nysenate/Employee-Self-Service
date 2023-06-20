@@ -10,12 +10,13 @@ function purposeEditLink($http, appProps, eventTypesApi, allowedTravelersApi, mo
             data: '<',               // The TravelAppEditDto being edited.
             positiveCallback: '&',  // Callback function called when continuing. Takes a draft param named 'draft'.
             negativeCallback: '&',  // Callback function called when canceling. Takes a draft param named 'draft'.
-            negativeLabel: '@'      // Text to label the negative button. Defaults to 'Cancel'
+            negativeLabel: '@',     // Text to label the negative button. Defaults to 'Cancel'
         },
         controller: 'AppEditCtrl',
         templateUrl: appProps.ctxPath + '/template/travel/common/app/purpose-edit-form-directive',
         link: function (scope, elem, attrs) {
 
+            scope.mode = scope.data.mode;
             scope.isLoading = true;
             scope.dirtyDraft = angular.copy(scope.data.draft);
             scope.eventTYpes = [];
@@ -42,6 +43,18 @@ function purposeEditLink($http, appProps, eventTypesApi, allowedTravelersApi, mo
                     scope.positiveCallback({draft: scope.dirtyDraft});
                 }
             };
+
+            scope.save = function () {
+                scope.setInvalidFormElementsTouched(scope.purpose.form);
+                if (scope.purpose.form.$valid) {
+                    scope.saveDraft(scope.dirtyDraft)
+                        .then(function(draft) {
+                            scope.dirtyDraft = draft;
+                        })
+                } else {
+                    scope.purpose.form.$submitted = true;
+                }
+            }
 
             scope.cancel = function () {
                 scope.negativeCallback({draft: scope.dirtyDraft});

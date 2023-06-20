@@ -12,6 +12,7 @@ function editAppCtrl($scope, locationService, modals, stateService, appEditApi, 
     // Some editing functionality is only available to the TRAVEL_ADMIN.
     vm.activeRole = 'NONE';
     vm.dirtyRoute = {};
+    vm.mode = undefined;
 
     (function init() {
         vm.stateService = stateService;
@@ -23,6 +24,11 @@ function editAppCtrl($scope, locationService, modals, stateService, appEditApi, 
             vm.draft = response.result;
             vm.dirtyRoute = angular.copy(vm.draft.amendment.route);
         }, $scope.handleErrorResponse);
+        if (vm.activeRole === 'NONE') {
+            vm.mode = 'RESUBMIT';
+        } else {
+            vm.mode = 'EDIT';
+        }
     })();
 
     vm.savePurpose = function (draft) {
@@ -56,11 +62,11 @@ function editAppCtrl($scope, locationService, modals, stateService, appEditApi, 
     };
 
     vm.saveEdits = function (draft) {
-        if (vm.activeRole === 'NONE') {
+        if (vm.mode === 'RESUBMIT') {
             appResubmitApi.save({id: vm.appId}, vm.draft, function (response) {
                 locationService.go("/travel/applications", false);
             }, $scope.handleErrorResponse);
-        } else {
+        } else if (vm.mode === 'EDIT') {
             appEditApi.save({id: vm.appId}, vm.draft, function (response) {
                 locationService.go("/travel/manage/review", false, {appId: vm.appId, role: vm.activeRole});
             }, $scope.handleErrorResponse);
@@ -69,7 +75,7 @@ function editAppCtrl($scope, locationService, modals, stateService, appEditApi, 
 
     vm.cancelEdit = function (draft) {
         modals.open('cancel-edits').catch(function () {
-            if (vm.activeRole === 'NONE') {
+            if (vm.mode === 'RESUBMIT') {
                 locationService.go("/travel/applications", false);
             } else {
                 locationService.go("/travel/manage/review", false, {appId: vm.appId, role: vm.activeRole});

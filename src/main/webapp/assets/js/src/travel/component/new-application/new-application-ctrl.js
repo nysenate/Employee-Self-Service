@@ -10,17 +10,18 @@ var essTravel = angular.module('essTravel');
  */
 essTravel.controller('NewApplicationCtrl',
                      ['$scope', '$window', 'appProps', 'modals', 'LocationService', 'AppEditStateService',
-                      'TravelApplicationByIdApi', 'TravelDraftsApi', 'TravelDraftsSubmitApi',
-                      travelAppController]);
+                      'TravelApplicationByIdApi', 'TravelDraftsApi', 'TravelDraftsSubmitApi', '$routeParams',
+                      'TravelDraftByIdApi', travelAppController]);
 
 function travelAppController($scope, $window, appProps, modals, locationService, stateService,
-                             appIdApi, draftsApi, draftSubmitApi) {
+                             appIdApi, draftsApi, draftSubmitApi, $routeParams, draftByIdApi) {
 
     $scope.stateService = stateService;
     // Common data shared between all child controllers.
     $scope.data = {
         draft: {},
         dirtyRoute: {}, // Save partial route updates here. The route is saved to the draft after it is fully entered.
+        mode: 'NEW'
     };
     $scope.isLoading = true;
 
@@ -30,11 +31,19 @@ function travelAppController($scope, $window, appProps, modals, locationService,
         initApplication();
 
         function initApplication() {
-            draftsApi.create().$promise.then(function (res) {
+            if ($routeParams.draftId) {
+                draftByIdApi.get({id: $routeParams.draftId}).$promise
+                    .then(handleDraftResult)
+            } else {
+                draftsApi.create().$promise
+                    .then(handleDraftResult);
+            }
+
+            function handleDraftResult(res) {
                 $scope.data.draft = res.result;
                 $scope.data.dirtyRoute = angular.copy($scope.data.draft.amendment.route);
                 $scope.isLoading = false;
-            });
+            }
         }
     };
 

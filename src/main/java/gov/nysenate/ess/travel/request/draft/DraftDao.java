@@ -6,6 +6,7 @@ import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.RowCallbackHandler;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -21,15 +22,21 @@ public class DraftDao extends SqlBaseDao {
 
     private static final Logger logger = LoggerFactory.getLogger(DraftDao.class);
 
+    public DraftRecord find(int draftId) {
+        MapSqlParameterSource params = new MapSqlParameterSource("draftId", draftId);
+        String sql = SqlDraftQuery.FIND_BY_DRAFT_ID.getSql(schemaMap());
+        return localNamedJdbc.queryForObject(sql, params, new DraftMapper());
+    }
+
     /**
      * Fetch the current users drafts records.
      *
-     * @param userId The employee id of the logged in user.
+     * @param userEmpId The employee id of the logged in user.
      */
-    public List<DraftRecord> find(int userId) {
+    public List<DraftRecord> draftsForEmpId(int userEmpId) {
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("userEmpId", userId);
-        String sql = SqlDraftQuery.FIND.getSql(schemaMap());
+                .addValue("userEmpId", userEmpId);
+        String sql = SqlDraftQuery.FIND_BY_USER_ID.getSql(schemaMap());
         DraftRecordHandler handler = new DraftRecordHandler();
         localNamedJdbc.query(sql, params, handler);
         return handler.getResults();
@@ -56,7 +63,7 @@ public class DraftDao extends SqlBaseDao {
     private Integer insert(MapSqlParameterSource params) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = SqlDraftQuery.INSERT.getSql(schemaMap());
-        localNamedJdbc.update(sql, params);
+        localNamedJdbc.update(sql, params, keyHolder);
         return (Integer) keyHolder.getKeys().get("draft_id");
     }
 
@@ -83,7 +90,13 @@ public class DraftDao extends SqlBaseDao {
 
 
     private enum SqlDraftQuery implements BasicSqlQuery {
-        FIND("""
+        FIND_BY_DRAFT_ID("""
+                SELECT draft_id, user_emp_id, amendment_json, traveler_emp_id, updated_date_time
+                FROM ${travelSchema}.draft
+                WHERE draft_id = :draftId
+                """
+        ),
+        FIND_BY_USER_ID("""
                 SELECT draft_id, user_emp_id, amendment_json, traveler_emp_id, updated_date_time
                 FROM ${travelSchema}.draft
                 WHERE user_emp_id = :userEmpId
@@ -94,9 +107,9 @@ public class DraftDao extends SqlBaseDao {
                 UPDATE ${travelSchema}.draft
                 SET user_emp_id = :userEmpId,
                 traveler_emp_id = :travelerEmpId,
-                amendment_json = :amendmentJson
+                amendment_json = :amendmentJson,
                 updated_date_time = :updatedDateTime
-                WHERE draft_id = draftId;
+                WHERE draft_id = :draftId;
                 """
         ),
         INSERT("""
@@ -130,21 +143,31 @@ public class DraftDao extends SqlBaseDao {
 
     private class DraftRecordHandler implements RowCallbackHandler {
 
+        private DraftMapper draftMapper = new DraftMapper();
         private List<DraftRecord> draftRecords = new ArrayList<>();
 
         @Override
         public void processRow(ResultSet rs) throws SQLException {
+            DraftRecord d = draftMapper.mapRow(rs, rs.getRow());
+            draftRecords.add(d);
+        }
+
+        public List<DraftRecord> getResults() {
+            return draftRecords;
+        }
+    }
+
+    private class DraftMapper implements RowMapper<DraftRecord> {
+
+        @Override
+        public DraftRecord mapRow(ResultSet rs, int rowNum) throws SQLException {
             DraftRecord d = new DraftRecord();
             d.id = rs.getInt("draft_id");
             d.userEmpId = rs.getInt("user_emp_id");
             d.travelerEmpId = rs.getInt("traveler_emp_id");
             d.amendmentJson = rs.getString("amendment_json");
             d.updatedDateTime = getLocalDateTime(rs, "updated_date_time");
-            draftRecords.add(d);
-        }
-
-        public List<DraftRecord> getResults() {
-            return draftRecords;
+            return d;
         }
     }
 }

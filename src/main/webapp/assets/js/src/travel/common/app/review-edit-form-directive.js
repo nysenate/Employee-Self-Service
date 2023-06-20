@@ -17,6 +17,7 @@ function reviewEditForm($compile, appProps, modals) {
         templateUrl: appProps.ctxPath + '/template/travel/common/app/review-edit-form-directive',
         link: function (scope, elem, attrs) {
 
+            scope.mode = scope.data.mode;
             scope.app = {
                 activeAmendment: scope.data.draft.amendment,
                 traveler: scope.data.draft.traveler,
@@ -31,6 +32,13 @@ function reviewEditForm($compile, appProps, modals) {
             scope.next = function () {
                 scope.positiveCallback({draft: scope.data.draft});
             };
+
+            scope.save = function () {
+                scope.saveDraft(scope.data.draft)
+                    .then(function (draft) {
+                        scope.data.draft = draft;
+                    });
+            }
 
             scope.back = function () {
                 scope.neutralCallback({draft: scope.data.draft});

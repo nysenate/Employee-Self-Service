@@ -16,6 +16,7 @@ function returnEditForm($q, appProps, modals, draftsApi) {
         templateUrl: appProps.ctxPath + '/template/travel/common/app/return-edit-form-directive',
         link: function (scope, elem, attrs) {
 
+            scope.mode = scope.data.mode;
             scope.dirtyDraft = angular.copy(scope.data.draft);
             scope.route = scope.data.dirtyRoute;
 
@@ -80,20 +81,28 @@ function returnEditForm($q, appProps, modals, draftsApi) {
             };
 
             scope.next = function () {
+                validateData()
+                    .then(updateRoute)
+                    .then(function () {
+                        scope.positiveCallback({draft: scope.dirtyDraft})
+                    })
+            };
+
+            function validateData() {
                 scope.setInvalidFormElementsTouched(scope.return.form);
                 if (scope.return.form.$valid) {
                     scope.normalizeTravelDates(scope.route.returnLegs);
-                    promptUserIfLongTrip(scope.route)
+                    return promptUserIfLongTrip(scope.route)
                         .then(function () {
                             scope.checkCounties(scope.route.returnLegs)
                         })
-                        .then(function () {
-                            updateRoute()
-                        });
+                } else {
+                    scope.return.form.$submitted = true;
                 }
-            };
+            }
 
             function updateRoute() {
+                var deferred = $q.defer();
                 if (angular.toJson(scope.route) !== angular.toJson(scope.data.draft.amendment.route)) {
                     scope.openLoadingModal();
                     scope.dirtyDraft.amendment.route = scope.route;
@@ -105,7 +114,7 @@ function returnEditForm($q, appProps, modals, draftsApi) {
                         .$promise
                         .then(function (res) {
                             scope.dirtyDraft = res.result;
-                            scope.positiveCallback({draft: scope.dirtyDraft});
+                            deferred.resolve();
                         })
                         .catch(function (error) {
                             if (error.status === 502) {
@@ -115,12 +124,29 @@ function returnEditForm($q, appProps, modals, draftsApi) {
                             } else {
                                 scope.handleErrorResponse(error);
                             }
+                            deferred.reject(error);
                         })
-                        .finally(scope.closeLoadingModal)
+                        .finally(function () {
+                            scope.closeLoadingModal();
+                        })
+                } else {
+                    deferred.resolve();
                 }
-                else {
-                    scope.positiveCallback({draft: scope.dirtyDraft});
-                }
+                return deferred.promise;
+            }
+
+            scope.save = function () {
+                validateData()
+                    .then(updateRoute)
+                    .then(function () {
+                        scope.saveDraft(scope.dirtyDraft)
+                            .then(function (draft) {
+                                scope.dirtyDraft = draft;
+                            })
+                            .catch(function (error) {
+                                console.error(error);
+                            });
+                    });
             }
 
             scope.back = function () {

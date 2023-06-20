@@ -83,6 +83,21 @@ public class DraftCtrl extends BaseRestApiCtrl {
     }
 
     /**
+     * Fetch Draft API
+     * -----------------------------
+     * Retrieves the draft with the provided id.
+     * <p>
+     * Usage:   (GET) /api/v1/travel/drafts/{id}
+     * <p>
+     */
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    public BaseResponse getDraft(@PathVariable int id) {
+        // TODO check permissions
+        Draft draft = draftService.getDraft(id);
+        return new ViewObjectResponse<>(new DraftView(draft));
+    }
+
+    /**
      * Delete a Draft API
      * -----------------------------
      * Deletes the draft with the provided id.
@@ -91,7 +106,7 @@ public class DraftCtrl extends BaseRestApiCtrl {
      * <p>
      */
     // TODO update this method
-    @RequestMapping(value = "", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public void deleteUnsubmittedApp() {
         draftDao.delete(getSubjectEmployeeId());
     }
@@ -151,6 +166,14 @@ public class DraftCtrl extends BaseRestApiCtrl {
         return new ViewObjectResponse<>(new TravelApplicationView(app));
     }
 
+    /**
+     * Save Draft API
+     * --------------------------
+     * Saves a draft without submitting it.
+     * <p>
+     * Usage:   (POST) /api/v1/travel/drafts
+     * <p>
+     */
     @RequestMapping(value = "", method = RequestMethod.POST)
     public BaseResponse saveDraft(@RequestBody DraftView draftView) {
         Draft draft = draftView.toDraft();

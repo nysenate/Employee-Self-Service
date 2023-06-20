@@ -112,7 +112,9 @@
           Back
         </button>
         <button class="travel-neutral-btn"
+                ng-if="mode === 'EDIT' || mode === 'RESUBMIT'"
                 type="button"
+                ng-value="::negativeLabel || 'Cancel'"
                 ng-click="cancel()">
           {{::negativeLabel || 'Cancel'}}
         </button>

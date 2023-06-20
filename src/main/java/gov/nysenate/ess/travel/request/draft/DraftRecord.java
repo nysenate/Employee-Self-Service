@@ -1,6 +1,7 @@
 package gov.nysenate.ess.travel.request.draft;
 
 import gov.nysenate.ess.core.util.OutputUtils;
+import gov.nysenate.ess.travel.api.application.AmendmentView;
 
 import java.time.LocalDateTime;
 
@@ -22,7 +23,7 @@ public class DraftRecord {
         this.id = draft.getId();
         this.userEmpId = draft.getUserEmpId();
         this.travelerEmpId = draft.getTraveler().getEmployeeId();
-        this.amendmentJson = OutputUtils.toJson(draft.getAmendment());
+        this.amendmentJson = OutputUtils.toJson(new AmendmentView(draft.getAmendment()));
         this.updatedDateTime = draft.getUpdatedDateTime();
     }
 }

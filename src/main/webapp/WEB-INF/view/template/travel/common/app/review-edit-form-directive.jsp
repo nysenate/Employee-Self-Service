@@ -15,10 +15,18 @@
               ng-click="back()">
         Back
       </button>
-      <button type="button" class="travel-neutral-btn"
-              ng-show="showNegative"
+      <button class="travel-neutral-btn"
+              ng-if="mode === 'EDIT' || mode === 'RESUBMIT'"
+              type="button"
+              ng-value="::negativeLabel || 'Cancel'"
               ng-click="cancel()">
         {{::negativeLabel || 'Cancel'}}
+      </button>
+      <button class="travel-teal-btn"
+              ng-if="mode === 'NEW'"
+              type="button"
+              ng-click="save()">
+        Save
       </button>
       <button type="submit" class="travel-submit-btn"
               ng-click="next()">

@@ -28,8 +28,13 @@ public class DraftService {
         this.travelEmployeeService = travelEmployeeService;
     }
 
+    public Draft getDraft(int draftId) {
+        DraftRecord record = draftDao.find(draftId);
+        return createDraft(record);
+    }
+
     public List<Draft> getUserDrafts(int userId) {
-        List<DraftRecord> records = draftDao.find(userId);
+        List<DraftRecord> records = draftDao.draftsForEmpId(userId);
         return records.stream()
                 .map(this::createDraft)
                 .collect(Collectors.toList());
