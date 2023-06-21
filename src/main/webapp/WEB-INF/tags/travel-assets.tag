@@ -21,6 +21,8 @@
 
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/component/view-applications/view-applications-ctrl.js?v=${releaseVersion}"></script>
 
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/component/drafts/application-drafts-ctrl.js?v=${releaseVersion}"></script>
+
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/component/edit-application/edit-application-ctrl.js?v=${releaseVersion}"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/component/edit-application/edit-app-breadcrumbs-directive.js?v=${releaseVersion}"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/component/edit-application/perdiem-overrides-edit-form-directive.js?v=${releaseVersion}"></script>
