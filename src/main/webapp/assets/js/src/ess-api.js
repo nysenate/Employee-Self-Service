@@ -303,7 +303,7 @@ essApi.factory('TravelDraftsSubmitApi', ['$resource', 'appProps', function ($res
 }]);
 
 essApi.factory('TravelDraftByIdApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/travel/drafts/:id', {id: '@id'})
+    return $resource(appProps.apiPath + '/travel/drafts/:id', {id: '@id'}, {'delete': {method: 'DELETE'}})
 }]);
 
 essApi.factory('TravelEventTypesApi', ['$resource', 'appProps', function ($resource, appProps) {

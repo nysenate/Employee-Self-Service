@@ -114,20 +114,19 @@ function returnEditForm($q, appProps, modals, draftsApi) {
                         .$promise
                         .then(function (res) {
                             scope.dirtyDraft = res.result;
+                            scope.closeLoadingModal();
                             deferred.resolve();
                         })
                         .catch(function (error) {
+                            scope.closeLoadingModal();
                             if (error.status === 502) {
                                 scope.handleDataProviderError();
                             } else if (error.status === 400) {
-                                scope.handleTravelDateError();
+                                scope.$parent.handleTravelDateError();
                             } else {
-                                scope.handleErrorResponse(error);
+                                scope.$parent.handleErrorResponse(error);
                             }
                             deferred.reject(error);
-                        })
-                        .finally(function () {
-                            scope.closeLoadingModal();
                         })
                 } else {
                     deferred.resolve();
@@ -145,6 +144,7 @@ function returnEditForm($q, appProps, modals, draftsApi) {
                             })
                             .catch(function (error) {
                                 console.error(error);
+                                scope.$parent.handleErrorResponse(error);
                             });
                     });
             }

@@ -32,7 +32,7 @@ function allowancesEditForm(appProps, draftsApi) {
                         scope.positiveCallback({draft: scope.dirtyDraft});
                     })
                     .catch(function (error) {
-                        scope.handleErrorResponse(error);
+                        scope.$parent.handleErrorResponse(error);
                     })
                     .finally(scope.closeLoadingModal)
             };

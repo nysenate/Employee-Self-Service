@@ -100,7 +100,7 @@ public class DraftDao extends SqlBaseDao {
                 SELECT draft_id, user_emp_id, amendment_json, traveler_emp_id, updated_date_time
                 FROM ${travelSchema}.draft
                 WHERE user_emp_id = :userEmpId
-                ORDER BY update_date_time desc
+                ORDER BY updated_date_time desc
                 """
         ),
         UPDATE("""

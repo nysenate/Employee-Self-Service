@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,6 +34,10 @@ public class DraftService {
         return createDraft(record);
     }
 
+    public void deleteDraft(int draftId) {
+        draftDao.delete(draftId);
+    }
+
     public List<Draft> getUserDrafts(int userId) {
         List<DraftRecord> records = draftDao.draftsForEmpId(userId);
         return records.stream()
@@ -41,6 +46,7 @@ public class DraftService {
     }
 
     public Draft saveDraft(Draft draft) {
+        draft.setUpdatedDateTime(LocalDateTime.now());
         DraftRecord record = new DraftRecord(draft);
         record = draftDao.save(record);
         return createDraft(record);

@@ -2,6 +2,7 @@ package gov.nysenate.ess.travel.api;
 
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
+import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.client.response.error.ErrorCode;
 import gov.nysenate.ess.core.client.response.error.ErrorResponse;
@@ -105,10 +106,11 @@ public class DraftCtrl extends BaseRestApiCtrl {
      * Usage:   (DELETE) /api/v1/travel/drafts/{id}
      * <p>
      */
-    // TODO update this method
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public void deleteUnsubmittedApp() {
-        draftDao.delete(getSubjectEmployeeId());
+    public BaseResponse deleteDraft(@PathVariable int id) {
+        // TODO check permissions
+        draftService.deleteDraft(id);
+        return new SimpleResponse(true, "Successfully deleted draft " + id, "");
     }
 
     /**
