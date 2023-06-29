@@ -28,8 +28,7 @@ public class ScheduledAssignmentAndInvites {
     @Scheduled(cron = "${scheduler.personnel_task.assignment.cron:0 0 3 * * *}")
     public void scheduledPersonnelTaskAssignment() {
         if (scheduledAssignmentEnabled) {
-            taskAssigner.assignTasks(true);
-            pecNotificationService.sendInviteEmails();
+            pecNotificationService.sendInviteEmails(taskAssigner.assignTasks(true));
         }
     }
 }

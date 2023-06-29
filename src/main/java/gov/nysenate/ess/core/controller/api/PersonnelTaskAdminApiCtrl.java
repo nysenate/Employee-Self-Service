@@ -6,7 +6,6 @@ import gov.nysenate.ess.core.service.pec.assignment.CsvTaskAssigner;
 import gov.nysenate.ess.core.service.pec.assignment.PersonnelTaskAssigner;
 import gov.nysenate.ess.core.service.pec.external.PECVideoCSVService;
 import gov.nysenate.ess.core.service.pec.notification.PECNotificationService;
-import gov.nysenate.ess.core.service.pec.task.CachedPersonnelTaskService;
 import gov.nysenate.ess.core.service.pec.view.EmployeeEmailView;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.AuthorizationException;
@@ -31,18 +30,15 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
     private final PersonnelTaskAssigner taskAssigner;
     private final PECVideoCSVService pecVideoCSVService;
     private final CsvTaskAssigner csvTaskAssigner;
-    private final CachedPersonnelTaskService cachedPersonnelTaskService;
 
     private final PECNotificationService pecNotificationService;
 
     @Autowired
     public PersonnelTaskAdminApiCtrl(PersonnelTaskAssigner taskAssigner, PECVideoCSVService pecVideoCSVService,
-                                     CsvTaskAssigner csvTaskAssigner, CachedPersonnelTaskService cachedPersonnelTaskService,
-                                     PECNotificationService pecNotificationService) {
+                                     CsvTaskAssigner csvTaskAssigner, PECNotificationService pecNotificationService) {
         this.taskAssigner = taskAssigner;
         this.pecVideoCSVService = pecVideoCSVService;
         this.csvTaskAssigner = csvTaskAssigner;
-        this.cachedPersonnelTaskService = cachedPersonnelTaskService;
         this.pecNotificationService = pecNotificationService;
     }
 
@@ -61,21 +57,6 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
         return new SimpleResponse(true,
                 "pec notifications complete",
                 "pec-notifications-complete");
-    }
-
-    /**
-     * PEC Send Invites API
-     * --------------------------
-     * Send invites to all necessary employees.
-     * Usage:
-     * (POST)   /api/v1/admin/personnel/task/sendInvites
-     * @return {@link SimpleResponse}
-     */
-    @RequestMapping(value = "/sendInvites", method = POST)
-    public SimpleResponse sendInvites() {
-        checkPermission(ADMIN.getPermission());
-        pecNotificationService.sendInviteEmails();
-        return new SimpleResponse(true, "Invite emails sent!", "send-invites");
     }
 
     /**
@@ -112,8 +93,7 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/assign", method = POST)
     public SimpleResponse assignTasks() {
         checkPermission(RUN_PERSONNEL_TASK_ASSIGNER.getPermission());
-        taskAssigner.assignTasks(true);
-        pecNotificationService.sendInviteEmails();
+        pecNotificationService.sendInviteEmails(taskAssigner.assignTasks(true));
         return new SimpleResponse(true,
                 "task assignment complete",
                 "task-assignment-complete");
@@ -168,8 +148,7 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
     public SimpleResponse assignTasksForEmp(@PathVariable int empId) {
         checkPermission(RUN_PERSONNEL_TASK_ASSIGNER.getPermission());
         ensureEmpIdActive(empId, "empId");
-        taskAssigner.assignTasks(empId, true);
-        pecNotificationService.sendInviteEmails();
+        pecNotificationService.sendInviteEmails(taskAssigner.assignTasks(empId, true));
         return new SimpleResponse(true,
                 "task assignment complete for emp#" + empId,
                 "task-assignment-complete");
