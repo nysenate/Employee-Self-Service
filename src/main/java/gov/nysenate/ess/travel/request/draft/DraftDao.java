@@ -22,8 +22,14 @@ public class DraftDao extends SqlBaseDao {
 
     private static final Logger logger = LoggerFactory.getLogger(DraftDao.class);
 
-    public DraftRecord find(int draftId) {
-        MapSqlParameterSource params = new MapSqlParameterSource("draftId", draftId);
+    /**
+     * @param draftId The id of the draft.
+     * @param employeeId The employee id of the logged-in user. This ensures users can only fetch their own drafts.
+     */
+    protected DraftRecord find(int draftId, int employeeId) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("draftId", draftId)
+                .addValue("userEmpId", employeeId);
         String sql = SqlDraftQuery.FIND_BY_DRAFT_ID.getSql(schemaMap());
         return localNamedJdbc.queryForObject(sql, params, new DraftMapper());
     }
@@ -33,7 +39,7 @@ public class DraftDao extends SqlBaseDao {
      *
      * @param userEmpId The employee id of the logged in user.
      */
-    public List<DraftRecord> draftsForEmpId(int userEmpId) {
+    protected List<DraftRecord> draftsForEmpId(int userEmpId) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("userEmpId", userEmpId);
         String sql = SqlDraftQuery.FIND_BY_USER_ID.getSql(schemaMap());
@@ -45,7 +51,7 @@ public class DraftDao extends SqlBaseDao {
     /**
      * Persists the given DraftRecord.
      */
-    public DraftRecord save(DraftRecord draftRecord) {
+    protected DraftRecord save(DraftRecord draftRecord) {
         MapSqlParameterSource params = draftParams(draftRecord);
         if (!update(params)) {
             int id = insert(params);
@@ -70,11 +76,13 @@ public class DraftDao extends SqlBaseDao {
     /**
      * Delete the DraftRecord with the given id.
      */
-    public void delete(int draftId) {
+    protected void delete(int draftId, int employeeId) {
         if (draftId == 0) {
             return;
         }
-        MapSqlParameterSource params = new MapSqlParameterSource("draftId", draftId);
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("draftId", draftId)
+                .addValue("userEmpId", employeeId);
         String sql = SqlDraftQuery.DELETE.getSql(schemaMap());
         localNamedJdbc.update(sql, params);
     }
@@ -94,6 +102,7 @@ public class DraftDao extends SqlBaseDao {
                 SELECT draft_id, user_emp_id, amendment_json, traveler_emp_id, updated_date_time
                 FROM ${travelSchema}.draft
                 WHERE draft_id = :draftId
+                  AND user_emp_id = :userEmpId
                 """
         ),
         FIND_BY_USER_ID("""
@@ -119,7 +128,8 @@ public class DraftDao extends SqlBaseDao {
         ),
         DELETE("""
                 DELETE FROM ${travelSchema}.draft
-                WHERE draft_id = :draftId;
+                WHERE draft_id = :draftId
+                  AND user_emp_id = :userEmpId
                 """
         )
         ;

@@ -29,13 +29,22 @@ public class DraftService {
         this.travelEmployeeService = travelEmployeeService;
     }
 
-    public Draft getDraft(int draftId) {
-        DraftRecord record = draftDao.find(draftId);
+    /**
+     * @param draftId The id of the draft to fetch.
+     * @param employeeId The employee id of the logged-in user.
+     */
+    public Draft getDraft(int draftId, int employeeId) {
+        DraftRecord record = draftDao.find(draftId, employeeId);
         return createDraft(record);
     }
 
-    public void deleteDraft(int draftId) {
-        draftDao.delete(draftId);
+    /**
+     * Delete a draft.
+     * @param draftId The id of the draft to delete.
+     * @param employeeId The employee id of the logged-in user.
+     */
+    public void deleteDraft(int draftId, int employeeId) {
+        draftDao.delete(draftId, employeeId);
     }
 
     public List<Draft> getUserDrafts(int userId) {

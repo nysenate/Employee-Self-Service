@@ -32,18 +32,15 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@SuppressWarnings("UnnecessaryBoxing") @RestController
+@RestController
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/travel/drafts")
 public class DraftCtrl extends BaseRestApiCtrl {
 
     private static final Logger logger = LoggerFactory.getLogger(DraftCtrl.class);
     @Autowired private EmployeeInfoService employeeInfoService;
-    @Autowired private DraftDao draftDao;
-    @Autowired private AllowedTravelersService allowedTravelersService;
     @Autowired private RouteViewValidator routeViewValidator;
     @Autowired private TravelAppUpdateService appUpdateService;
     @Autowired private AttachmentService attachmentService;
-    @Autowired private SqlDepartmentHeadDao departmentHeadDao;
     @Autowired private TravelEmployeeService travelEmployeeService;
     @Autowired private DraftService draftService;
 
@@ -54,7 +51,6 @@ public class DraftCtrl extends BaseRestApiCtrl {
      * <p>
      * Usage:   (PUT) /api/v1/travel/drafts
      * </p>
-     * @return
      */
     @RequestMapping(value = "", method = RequestMethod.PUT)
     public BaseResponse createDraft() {
@@ -72,7 +68,6 @@ public class DraftCtrl extends BaseRestApiCtrl {
      * <p>
      * Usage:   (GET) /api/v1/travel/drafts
      * </p>
-     * @return
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
     public BaseResponse getUsersDrafts() {
@@ -93,8 +88,7 @@ public class DraftCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public BaseResponse getDraft(@PathVariable int id) {
-        // TODO check permissions
-        Draft draft = draftService.getDraft(id);
+        Draft draft = draftService.getDraft(id, getSubjectEmployeeId());
         return new ViewObjectResponse<>(new DraftView(draft));
     }
 
@@ -108,8 +102,7 @@ public class DraftCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public BaseResponse deleteDraft(@PathVariable int id) {
-        // TODO check permissions
-        draftService.deleteDraft(id);
+        draftService.deleteDraft(id, getSubjectEmployeeId());
         return new SimpleResponse(true, "Successfully deleted draft " + id, "");
     }
 
@@ -164,7 +157,7 @@ public class DraftCtrl extends BaseRestApiCtrl {
         Draft draft = draftView.toDraft();
 
         TravelApplication app = appUpdateService.submitTravelApplication(draft, user);
-        draftDao.delete(draft.getId());
+        draftService.deleteDraft(draft.getId(), getSubjectEmployeeId());
         return new ViewObjectResponse<>(new TravelApplicationView(app));
     }
 
