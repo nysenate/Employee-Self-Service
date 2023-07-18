@@ -76,7 +76,7 @@ public class PECNotificationService {
         // Document all employees with missing info to report to admins
         List<String> missingEmails = new ArrayList<>();
         List<EmployeeEmail> emailsToSend = new ArrayList<>();
-        for (var entry : pecEmailUtils.getNotifiableTaskMap(false).entrySet()) {
+        for (var entry : pecEmailUtils.getNotifiableTaskMap().entrySet()) {
             // Continue processing employee if they have outstanding assignments and a valid email
             Employee employee = entry.getKey();
             if (Strings.isBlank(employee.getEmail())) {
@@ -104,22 +104,14 @@ public class PECNotificationService {
         logger.info("Completed PEC Reminder Process");
     }
 
-    public void sendInviteEmails() {
-        getInviteEmails(List.of()).forEach(this::sendEmail);
+    public void sendInviteEmails(List<AssignmentWithTask> assigned) {
+        getInviteEmails(assigned).forEach(this::sendEmail);
     }
 
-    public List<EmployeeEmail> getInviteEmails(List<AssignmentWithTask> toAssign) {
-        var emailsAfterAssignment = toAssign.stream().filter(data -> data.task().isNotifiable())
+    public List<EmployeeEmail> getInviteEmails(List<AssignmentWithTask> assigned) {
+        return assigned.stream().filter(data -> data.task().isNotifiable())
                 .map(task -> pecEmailUtils.getEmail(INVITE, Optional.empty(), task))
                 .collect(Collectors.toList());
-        var emailsInQueue = new ArrayList<EmployeeEmail>();
-        for (var entry : pecEmailUtils.getNotifiableTaskMap(true).entrySet()) {
-            for (var taskPair : entry.getValue()) {
-                emailsInQueue.add(pecEmailUtils.getEmail(INVITE, Optional.of(entry.getKey()), taskPair));
-            }
-        }
-        emailsInQueue.addAll(emailsAfterAssignment);
-        return emailsInQueue;
     }
 
     public void sendCompletionEmail(int empId, PersonnelTask task) {
@@ -137,7 +129,7 @@ public class PECNotificationService {
     /**
      * Sends emails. Limited by test mode and PEC notifs enabled.
      */
-    public void sendEmail(EmployeeEmail emailInfo) {
+    private void sendEmail(EmployeeEmail emailInfo) {
         if (emailInfo.employee().isSenator() ||
                 (!allPecNotifsEnabled && emailInfo.type() != ADMIN_CODES)) {
             return;
@@ -153,7 +145,7 @@ public class PECNotificationService {
         String spaces = " ".repeat(Math.max(28 - address.length(), 1));
         String logMessage = "Recipient: %sSubject: %s\n".formatted(address + spaces, emailInfo.subject());
         String html = emailInfo.html();
-        if (pecTestMode) {
+        if (emailInfo.type() != ADMIN_CODES && pecTestMode) {
             address = reportEmails.get(0);
             html += "<br> Employee ID: #" + emailInfo.employee().getEmployeeId() +
                     "<br> Email: " + emailInfo.employee().getEmail();

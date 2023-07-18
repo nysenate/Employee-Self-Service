@@ -60,21 +60,6 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
     }
 
     /**
-     * PEC Send Invites API
-     * --------------------------
-     * Send invites to all necessary employees.
-     * Usage:
-     * (POST)   /api/v1/admin/personnel/task/sendInvites
-     * @return {@link SimpleResponse}
-     */
-    @RequestMapping(value = "/sendInvites", method = POST)
-    public SimpleResponse sendInvites() {
-        checkPermission(ADMIN.getPermission());
-        pecNotificationService.sendInviteEmails();
-        return new SimpleResponse(true, "Invite emails sent!", "send-invites");
-    }
-
-    /**
      * PEC Assignment & Due Dates For Moodle & Ethics Live
      * ---------------------------------------------------
      *
@@ -108,8 +93,7 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/assign", method = POST)
     public SimpleResponse assignTasks() {
         checkPermission(RUN_PERSONNEL_TASK_ASSIGNER.getPermission());
-        taskAssigner.assignTasks(true);
-        pecNotificationService.sendInviteEmails();
+        pecNotificationService.sendInviteEmails(taskAssigner.assignTasks(true));
         return new SimpleResponse(true,
                 "task assignment complete",
                 "task-assignment-complete");
@@ -164,8 +148,7 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
     public SimpleResponse assignTasksForEmp(@PathVariable int empId) {
         checkPermission(RUN_PERSONNEL_TASK_ASSIGNER.getPermission());
         ensureEmpIdActive(empId, "empId");
-        taskAssigner.assignTasks(empId, true);
-        pecNotificationService.sendInviteEmails();
+        pecNotificationService.sendInviteEmails(taskAssigner.assignTasks(empId, true));
         return new SimpleResponse(true,
                 "task assignment complete for emp#" + empId,
                 "task-assignment-complete");

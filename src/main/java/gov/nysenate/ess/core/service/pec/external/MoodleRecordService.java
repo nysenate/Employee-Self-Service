@@ -107,7 +107,7 @@ public class MoodleRecordService implements ESSMoodleRecordService {
                         currentTaskAssignment.getEmpId() != currentTaskAssignment.getUpdateEmpId() ) {
                     continue;
                 }
-                else if (currentTaskAssignment.wasManuallyOverridden()) {
+                else if ( currentTaskAssignment.isCompleted() && currentTaskAssignment.wasManuallyOverridden() ) {
                     continue;
                 }
             }

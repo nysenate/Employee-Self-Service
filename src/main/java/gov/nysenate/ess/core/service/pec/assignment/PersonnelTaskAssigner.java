@@ -18,7 +18,7 @@ public interface PersonnelTaskAssigner {
     /**
      * Generates tasks for unassigned active personnel tasks for a single active employee.
      * @param empId int - employee id of the chosen employee.
-     * @param updateDb boolean - ipf the database should be updated.
+     * @param updateDb boolean - if the database should be updated.
      */
     List<AssignmentWithTask> assignTasks(int empId, boolean updateDb);
 

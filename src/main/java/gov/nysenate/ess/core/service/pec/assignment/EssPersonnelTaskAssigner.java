@@ -82,7 +82,9 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
                     .flatMap(List::stream).collect(Collectors.toList());
         }
         else {
-            logger.info("Skipping task assignment for ineligible emp #{}", empId);
+            if (updateDb) {
+                logger.info("Skipping task assignment for ineligible emp #{}", empId);
+            }
             return List.of();
         }
     }

@@ -195,9 +195,8 @@ public class EssTimeRecordManager implements TimeRecordManager
         List<TimeRecord> recordsToSave = new LinkedList<>();
         TransactionHistory transHistory = transService.getTransHistory(empId);
 
-        // Get the latest submitted record.  New records will not be created for dates before this record
-        Optional<TimeRecord> latestSubmitted = existingRecords.stream()
-                .filter(record -> record.getRecordStatus().getScope() != TimeRecordScope.EMPLOYEE)
+        // Get the latest record.  New records will not be created for dates before this record
+        Optional<TimeRecord> latestRecord = existingRecords.stream()
                 .max(TimeRecord::compareTo);
 
         try {
@@ -214,7 +213,7 @@ public class EssTimeRecordManager implements TimeRecordManager
             if (transHistory.isFullyAppointed()) {
                 newRecordsSaved = recordRanges.stream()
                         .filter(range -> DateUtils.startOfDateRange(range).isAfter(
-                                latestSubmitted.map(TimeRecord::getEndDate).orElse(LocalDate.MIN)))
+                                latestRecord.map(TimeRecord::getEndDate).orElse(LocalDate.MIN)))
                         .map(range -> createTimeRecord(empId, range))
                         .peek(recordsToSave::add)
                         .count();

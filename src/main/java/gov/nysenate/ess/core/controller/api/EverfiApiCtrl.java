@@ -108,7 +108,7 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
      *
      * @return String
      * */
-    @RequestMapping(value = "/personnel/task/generate", method = GET)
+    @RequestMapping(value = "/personnel/task/generate", method = POST)
     @ResponseStatus(value = HttpStatus.OK)
     public SimpleResponse runEverfiImport(HttpServletRequest request,
                                           HttpServletResponse response,

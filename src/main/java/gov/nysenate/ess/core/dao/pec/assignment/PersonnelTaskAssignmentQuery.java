@@ -23,10 +23,6 @@ public enum PersonnelTaskAssignmentQuery implements BasicSqlQuery {
             "WHERE pt.active AND pt.notifiable AND pta.active AND NOT pta.completed"
     ),
 
-    SELECT_INVITABLE_ASSIGNMENTS(
-            SELECT_NOTIFIABLE_ASSIGNMENTS.sql + " AND NOT pta.first_notification_sent"
-    ),
-
     SELECT_TASKS_QUERY("" +
             "SELECT *\n" +
             "FROM ${essSchema}.personnel_task_assignment ta\n" +

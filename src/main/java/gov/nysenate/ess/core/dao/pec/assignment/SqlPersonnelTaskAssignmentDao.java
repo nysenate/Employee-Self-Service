@@ -1,6 +1,5 @@
 package gov.nysenate.ess.core.dao.pec.assignment;
 
-import gov.nysenate.ess.core.dao.base.BasicSqlQuery;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
@@ -56,9 +55,8 @@ public class SqlPersonnelTaskAssignmentDao extends SqlBaseDao implements Personn
     }
 
     @Override
-    public List<AssignmentWithTask> getNotifiableAssignmentsWithTasks(boolean invitableOnly) {
-        BasicSqlQuery sql = invitableOnly ? SELECT_INVITABLE_ASSIGNMENTS : SELECT_NOTIFIABLE_ASSIGNMENTS;
-        return localNamedJdbc.query(sql.getSql(schemaMap()), assignTaskMapper);
+    public List<AssignmentWithTask> getNotifiableAssignmentsWithTasks() {
+        return localNamedJdbc.query(SELECT_NOTIFIABLE_ASSIGNMENTS.getSql(schemaMap()), assignTaskMapper);
     }
 
     @Override
