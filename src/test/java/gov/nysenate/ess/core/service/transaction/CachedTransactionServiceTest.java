@@ -35,7 +35,7 @@ public class CachedTransactionServiceTest extends BaseTest {
 
     private void timedGet(int empId) {
         Stopwatch sw = Stopwatch.createStarted();
-        TransactionHistory transHistory = transService.getTransHistory(empId);
+        transService.getTransHistory(empId);
         logger.info("got trans history for {}:  {}", empId, sw.stop().elapsed(TimeUnit.NANOSECONDS));
     }
 
@@ -53,7 +53,7 @@ public class CachedTransactionServiceTest extends BaseTest {
         timedGet(empId);
         timedGet(empId);
         logger.info("invalidating {}!", empId);
-        // TODO: remove empId
+        transService.evictContent(String.valueOf(empId));
         timedGet(empId);
     }
 

@@ -14,7 +14,6 @@ import gov.nysenate.ess.core.model.transaction.TransactionCode;
 import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.model.transaction.TransactionHistoryUpdateEvent;
 import gov.nysenate.ess.core.model.transaction.TransactionRecord;
-import gov.nysenate.ess.core.service.cache.EssCacheManager;
 import gov.nysenate.ess.core.service.period.PayPeriodService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.security.authorization.DepartmentalWhitelistService;
@@ -23,7 +22,10 @@ import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.RangeUtils;
 import gov.nysenate.ess.core.util.SortOrder;
 import gov.nysenate.ess.time.dao.attendance.AttendanceDao;
-import gov.nysenate.ess.time.model.attendance.*;
+import gov.nysenate.ess.time.model.attendance.AttendanceRecord;
+import gov.nysenate.ess.time.model.attendance.TimeEntry;
+import gov.nysenate.ess.time.model.attendance.TimeRecord;
+import gov.nysenate.ess.time.model.attendance.TimeRecordStatus;
 import gov.nysenate.ess.time.service.accrual.AccrualInfoService;
 import gov.nysenate.ess.time.service.notification.TimeRecordManagerEmailService;
 import org.slf4j.Logger;
@@ -233,7 +235,7 @@ public class EssTimeRecordManager implements TimeRecordManager
         } catch (Exception ex) {
             // If anything goes wrong, attempt to clear the employee's record cache.
             logger.warn("Clearing time record cache for emp:{} due to time record manager error.", empId);
-            EssCacheManager.removeEntry(timeRecordService.cacheType(), String.valueOf(empId));
+            timeRecordService.evictContent(String.valueOf(empId));
             throw ex;
         }
     }

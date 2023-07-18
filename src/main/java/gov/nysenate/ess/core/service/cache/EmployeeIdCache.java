@@ -31,6 +31,11 @@ public abstract class EmployeeIdCache<Value> extends CachingService<Integer, Val
     }
 
     @Override
+    public void evictContent(String key) {
+        cache.remove(Integer.parseInt(key));
+    }
+
+    @Override
     public void clearCache(boolean warmCache) {
         logger.info("Clearing " + cacheType().name() + " cache...");
         cache.clear();
