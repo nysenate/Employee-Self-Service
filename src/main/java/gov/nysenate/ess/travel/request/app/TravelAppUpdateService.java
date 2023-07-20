@@ -39,7 +39,9 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -118,15 +120,15 @@ public class TravelAppUpdateService {
     }
 
     private MileagePerDiems createMileagePerDiems(Route route) {
-        Set<MileagePerDiem> mileagePerDiemSet = new HashSet<>();
+        List<MileagePerDiem> mileagePerDiemList = new ArrayList<>();
         for (Leg leg : route.getAllLegs()) {
             double miles = mileageService.drivingDistance(leg.fromAddress(), leg.toAddress());
             BigDecimal mileageRate = mileageService.getIrsRate(leg.travelDate());
             PerDiem perDiem = new PerDiem(leg.travelDate(), mileageRate);
-            mileagePerDiemSet.add(new MileagePerDiem(0, leg.fromAddress(), leg.toAddress(), leg.getModeOfTransportation(),
+            mileagePerDiemList.add(new MileagePerDiem(0, leg.fromAddress(), leg.toAddress(), leg.getModeOfTransportation(),
                     miles, perDiem, leg.isOutbound(), true));
         }
-        return new MileagePerDiems(mileagePerDiemSet);
+        return new MileagePerDiems(mileagePerDiemList);
     }
 
     private MealPerDiems createMealPerDiems(Route route) {
