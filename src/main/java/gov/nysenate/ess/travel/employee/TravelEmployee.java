@@ -3,6 +3,8 @@ package gov.nysenate.ess.travel.employee;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.travel.department.Department;
 
+import java.util.Objects;
+
 public class TravelEmployee extends Employee {
 
     private Department department;
@@ -28,5 +30,19 @@ public class TravelEmployee extends Employee {
             return 0;
         }
         return department.getHead().getEmployeeId();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        TravelEmployee that = (TravelEmployee) o;
+        return Objects.equals(department, that.department);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), department);
     }
 }

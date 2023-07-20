@@ -147,8 +147,8 @@ public class ApplicationReviewService {
      * @param emp
      * @return All ApplicationReviews that have been modified by any of {@code emp} roles.
      */
-    public List<ApplicationReview> appReviewHistory(Employee emp) {
-        List<ApplicationReview> appReviews = new ArrayList<>();
+    public Set<ApplicationReview> appReviewHistory(Employee emp) {
+        Set<ApplicationReview> appReviews = new HashSet<>();
         TravelRoles roles = travelRoleFactory.travelRolesForEmp(emp);
         for (TravelRole role : Sets.newHashSet(roles.all())) {
             // Convert roles.all to a set to remove duplicates. The only practical duplicate is DEPARTMENT_HEAD,

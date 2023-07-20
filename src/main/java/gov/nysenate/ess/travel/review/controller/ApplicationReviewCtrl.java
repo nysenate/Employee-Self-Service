@@ -98,7 +98,7 @@ public class ApplicationReviewCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/history")
     public BaseResponse reviewHistory() {
         Employee emp = employeeInfoService.getEmployee(getSubjectEmployeeId());
-        List<ApplicationReview> reviews = appReviewService.appReviewHistory(emp);
+        Set<ApplicationReview> reviews = appReviewService.appReviewHistory(emp);
         return ListViewResponse.of(reviews.stream()
                 .map(ApplicationReviewView::new)
                 .collect(Collectors.toList()));
