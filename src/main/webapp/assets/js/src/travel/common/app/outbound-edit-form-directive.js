@@ -16,7 +16,7 @@ function outboundEditLink(appProps) {
         templateUrl: appProps.ctxPath + '/template/travel/common/app/outbound-edit-form-directive',
         link: function (scope, elem, attrs) {
             scope.mode = scope.data.mode;
-            scope.route = angular.copy(scope.data.draft.amendment.route);
+            scope.route = angular.copy(scope.data.dirtyRoute);
 
             if (scope.route.outboundLegs.length === 0) {
                 var leg = new Leg();
