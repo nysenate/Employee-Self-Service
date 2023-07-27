@@ -9,6 +9,8 @@ import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -33,8 +35,7 @@ public class EthicsLiveGroupTaskAssigner extends BaseGroupTaskAssigner {
                 .filter(PersonnelTaskAssignment::isCompleted)
                 .max(Comparator.comparing(PersonnelTaskAssignment::getUpdateTime));
 
-
-
+        LocalDateTime beginningOfCalendarYear = LocalDateTime.of(LocalDate.now().getYear(), 1,1,0,0,0);
         final Set<Integer> requiredTaskIds = new HashSet<>();
 
         if (latestCompletedOpt.isPresent()) {
@@ -43,8 +44,10 @@ public class EthicsLiveGroupTaskAssigner extends BaseGroupTaskAssigner {
             if (latestEthicsLiveTaskOpt.isPresent() ) {
                 PersonnelTask latestTask = latestEthicsLiveTaskOpt.get();
 
-                // Require the latest task if it was mandated after the last ethics assignment was completed.
-                if ( latestTask.getEffectiveDateTime().isAfter(latestCompletedTask.getUpdateTime()) ) {
+                // Require the latest task if it was mandated after the last ethics assignment was completed
+                // AND they didnt complete the previous ethics live course in the current calendar year
+                if ( latestTask.getEffectiveDateTime().isAfter(latestCompletedTask.getUpdateTime())
+                        && latestCompletedTask.getUpdateTime().isBefore(beginningOfCalendarYear) ) {
                     requiredTaskIds.add(latestTask.getTaskId());
                 }
             }
