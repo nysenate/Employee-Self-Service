@@ -1,11 +1,13 @@
 package gov.nysenate.ess.travel.review;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import gov.nysenate.ess.travel.request.app.TravelApplication;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
 import gov.nysenate.ess.travel.review.strategy.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * The entire review process for a single {@link TravelApplication}.
@@ -56,6 +58,16 @@ public class ApplicationReview {
         }
     }
 
+    public Action getLatestActionByRole(TravelRole role) {
+        List<Action> actionsByRole = actions.stream()
+                .filter(a -> a.role() == role)
+                .collect(Collectors.toList());
+        if (actionsByRole.isEmpty()) {
+            return null;
+        }
+        return actionsByRole.get(actionsByRole.size() - 1);
+    }
+
     public TravelApplication application() {
         return application;
     }
@@ -97,8 +109,7 @@ public class ApplicationReview {
     private Action mostRecentAction() {
         try {
             return actions.last();
-        }
-        catch (NoSuchElementException ex) {
+        } catch (NoSuchElementException ex) {
             return null;
         }
     }

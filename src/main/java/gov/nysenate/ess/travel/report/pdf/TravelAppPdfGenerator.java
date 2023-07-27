@@ -2,6 +2,7 @@ package gov.nysenate.ess.travel.report.pdf;
 
 import com.google.common.base.Preconditions;
 import gov.nysenate.ess.travel.request.app.TravelApplication;
+import gov.nysenate.ess.travel.review.ApplicationReview;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -18,14 +19,14 @@ public class TravelAppPdfGenerator {
     private static final float PAGE_MARGIN = 35f;
     private static final float HR_WIDTH = 3f;
 
-    private final TravelApplication app;
+    private final ApplicationReview appReview;
     private float currentY;         // The current Y position for the current page of the pdf.
     private float contentWidth;     // The width of the page minus the margin on both sides. Used to center text.
     private float lineStartX;       // The x position where all lines start.
     private float bottomY;          // The y position representing the bottom of the page.
 
-    public TravelAppPdfGenerator(TravelApplication app) {
-        this.app = Preconditions.checkNotNull(app);
+    public TravelAppPdfGenerator(ApplicationReview appReview) {
+        this.appReview = Preconditions.checkNotNull(appReview);
     }
 
     /**
@@ -54,14 +55,14 @@ public class TravelAppPdfGenerator {
             currentY -= 30f;
 
             // Draw Employee Info
-            AppPdfEmployeeInfoWriter employeeInfoWriter = new AppPdfEmployeeInfoWriter(config, cs, lineStartX, currentY, app);
+            AppPdfEmployeeInfoWriter employeeInfoWriter = new AppPdfEmployeeInfoWriter(config, cs, lineStartX, currentY, appReview.application());
             currentY = employeeInfoWriter.write();
             currentY -= 15f;
             drawHorizontalLine(cs);
             currentY -= 15f + 12f - HR_WIDTH; // Keep whitespace around horizontal line the same on both sides.
 
             // Draw App Info
-            AppPdfTravelInfoWriter travelInfoWriter = new AppPdfTravelInfoWriter(config, cs, lineStartX, currentY, app);
+            AppPdfTravelInfoWriter travelInfoWriter = new AppPdfTravelInfoWriter(config, cs, lineStartX, currentY, appReview.application());
             currentY = travelInfoWriter.write();
             currentY -= 15f;
 
@@ -70,35 +71,35 @@ public class TravelAppPdfGenerator {
                 // 159f is the spacing needed for the expenses box and the horizontal line below it.
                 // Cant fit on current page, start a new page.
                 cs = newPage(doc, cs);
-                AppPdfMotWriter motWriter = new AppPdfMotWriter(config, cs, lineStartX, currentY, app);
+                AppPdfMotWriter motWriter = new AppPdfMotWriter(config, cs, lineStartX, currentY, appReview.application());
                 motWriter.write(); // Do not update currentY, we want this and the expenses box to start at the same y
 
-                AppPdfExpensesWriter expensesWriter = new AppPdfExpensesWriter(config, cs, lineStartX, currentY, app);
+                AppPdfExpensesWriter expensesWriter = new AppPdfExpensesWriter(config, cs, lineStartX, currentY, appReview.application());
                 currentY = expensesWriter.write();
             } else {
                 // Draw on current page.
-                AppPdfMotWriter motWriter = new AppPdfMotWriter(config, cs, lineStartX, currentY, app);
+                AppPdfMotWriter motWriter = new AppPdfMotWriter(config, cs, lineStartX, currentY, appReview.application());
                 motWriter.write(); // Do not update currentY, we want this and the expenses box to start at the same y
 
-                AppPdfExpensesWriter expensesWriter = new AppPdfExpensesWriter(config, cs, lineStartX, currentY, app);
+                AppPdfExpensesWriter expensesWriter = new AppPdfExpensesWriter(config, cs, lineStartX, currentY, appReview.application());
                 currentY = expensesWriter.write();
             }
 
             currentY -= 5f;
             drawHorizontalLine(cs);
-            currentY -= 40f;
+            currentY -= 30f;
 
             // Draw Signatures
             if (calculateRemainingSpace() < 64f) {
                 // 64f is the space needed to draw signatures. Hard coded since I could not figure out how to calculate dynamically accurately.
                 // Cant fit on current page, start a new page.
                 cs = newPage(doc, cs);
-                currentY -=40f; // Additional top of page margin before signatures.
-                AppPdfSignatureWriter signatureWriter = new AppPdfSignatureWriter(config, cs, lineStartX, currentY, app);
+                currentY -=30f; // Additional top of page margin before signatures.
+                AppPdfSignatureWriter signatureWriter = new AppPdfSignatureWriter(config, cs, lineStartX, currentY, appReview);
                 currentY = signatureWriter.write();
             }
             else {
-                AppPdfSignatureWriter signatureWriter = new AppPdfSignatureWriter(config, cs, lineStartX, currentY, app);
+                AppPdfSignatureWriter signatureWriter = new AppPdfSignatureWriter(config, cs, lineStartX, currentY, appReview);
                 currentY = signatureWriter.write();
             }
 

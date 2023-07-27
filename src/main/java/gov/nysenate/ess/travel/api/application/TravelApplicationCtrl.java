@@ -9,6 +9,8 @@ import gov.nysenate.ess.travel.request.attachment.SqlAttachmentDao;
 import gov.nysenate.ess.travel.request.app.TravelApplication;
 import gov.nysenate.ess.travel.request.app.TravelApplicationService;
 import gov.nysenate.ess.travel.report.pdf.TravelAppPdfGenerator;
+import gov.nysenate.ess.travel.review.ApplicationReview;
+import gov.nysenate.ess.travel.review.ApplicationReviewService;
 import gov.nysenate.ess.travel.utils.AttachmentService;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
@@ -33,6 +35,7 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
     private static final Logger logger = LoggerFactory.getLogger(TravelApplicationCtrl.class);
 
     @Autowired private TravelApplicationService appService;
+    @Autowired private ApplicationReviewService appReviewService;
     @Autowired private AttachmentService attachmentService;
     @Autowired private SqlAttachmentDao attachmentDao;
 
@@ -45,10 +48,10 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
 
     @RequestMapping(value = "/application/{appId}.pdf", method = RequestMethod.GET)
     public ResponseEntity<byte[]> getAppPdf(@PathVariable int appId) throws IOException {
-        TravelApplication app = appService.getTravelApplication(appId);
-        checkTravelAppPermission(app, RequestMethod.GET);
+        ApplicationReview appReview = appReviewService.getApplicationReviewByAppId(appId);
+        checkTravelAppPermission(appReview.application(), RequestMethod.GET);
 
-        TravelAppPdfGenerator pdfGenerator = new TravelAppPdfGenerator(app);
+        TravelAppPdfGenerator pdfGenerator = new TravelAppPdfGenerator(appReview);
         try (ByteArrayOutputStream pdfBytes = new ByteArrayOutputStream()) {
             pdfGenerator.write(pdfBytes);
             HttpHeaders headers = new HttpHeaders();
