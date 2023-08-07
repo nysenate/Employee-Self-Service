@@ -9,72 +9,32 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public class SqlDepartmentHeadDao extends SqlBaseDao {
 
     /**
-     * Retrieves the previously used department head emp id for the given employee.
-     * If the user does not have any previously submitted apps, return 0.
-     *
-     * @param empId The employee id of the user submitting a travel app.
+     * Retrieves all the current department heads employee id's.
      */
-    public int defaultDepartmentHead(int empId) {
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("submittedById", empId);
-        String sql = SqlDepartmentHeadQuery.SELECT_DEFAULT_DEPT_HD.getSql(schemaMap());
-        List<Integer> deptHeadList = localNamedJdbc.query(sql, params, new DepartmentHeadEmpIdRowMapper());
-        return deptHeadList.stream()
-                .findFirst()
-                .orElse(0);
+    public Set<Integer> currentDeptHdIds() {
+        return deptHdIdsAsOf(LocalDate.now());
     }
 
-    public boolean isDepartmentHead(int empId) {
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("empId", empId);
-        String sql = SqlDepartmentHeadQuery.IS_DEPT_HEAD.getSql(schemaMap());
-        return Boolean.TRUE.equals(localNamedJdbc.queryForObject(sql, params, Boolean.class));
+    private Set<Integer> deptHdIdsAsOf(LocalDate date) {
+        MapSqlParameterSource params = new MapSqlParameterSource("date", toDate(date));
+        String sql = SqlDepartmentHeadQuery.SELECT_ALL_DEPT_HD_EMP_IDS.getSql(schemaMap());
+        return new HashSet<>(localNamedJdbc.queryForList(sql, params, Integer.class));
     }
-
-    /**
-     * Retrieves a list of all employee id's that have been listed as a department head in a travel app.
-     */
-    public List<Integer> allDepartmentHeads() {
-        String sql = SqlDepartmentHeadQuery.SELECT_DEPT_HDS.getSql(schemaMap());
-        return localNamedJdbc.query(sql, new DepartmentHeadEmpIdRowMapper());
-    }
-
-
-    private class DepartmentHeadEmpIdRowMapper implements RowMapper<Integer> {
-
-        @Override
-        public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return rs.getInt("traveler_dept_head_emp_id");
-        }
-    }
-
 
     private enum SqlDepartmentHeadQuery implements BasicSqlQuery {
-        SELECT_DEFAULT_DEPT_HD("""
-                SELECT traveler_dept_head_emp_id
-                FROM ${travelSchema}.app
-                WHERE submitted_by_id = :submittedById
-                ORDER BY created_date_time DESC
-                LIMIT 1
-                """
-        ),
-        IS_DEPT_HEAD("""
-                SELECT EXISTS(
-                  SELECT *
-                  FROM ${travelSchema}.app
-                  WHERE traveler_dept_head_emp_id = :empId
-                )
-                """
-        ),
-        SELECT_DEPT_HDS("""
-                SELECT DISTINCT(traveler_dept_head_emp_id)
-                FROM ${travelSchema}.app
+        SELECT_ALL_DEPT_HD_EMP_IDS("""
+                SELECT employee_id
+                FROM ${essSchema}.department_head
+                WHERE effective_date_range @> :date::date
                 """
         );
 

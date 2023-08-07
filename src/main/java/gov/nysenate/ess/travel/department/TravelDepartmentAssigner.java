@@ -53,6 +53,11 @@ public class TravelDepartmentAssigner {
         return ObjectUtils.firstNonNull(senatorDeptHead, supChainDeptHead);
     }
 
+    /**
+     * Finds the department head for employees working under senators.
+     * @param employee
+     * @return
+     */
     private Employee senatorOfficeDeptHead(Employee employee) {
         if (employee.getRespCenter() == null) {
             return null;
@@ -66,6 +71,11 @@ public class TravelDepartmentAssigner {
                 .orElse(null);
     }
 
+    /**
+     * Finds the department head for employees working in admin offices.
+     * @param employee
+     * @return
+     */
     private Employee supChainDeptHead(Employee employee) {
         Map<Integer, Employee> idToEmp = activeEmployees.stream()
                 .collect(Collectors.toMap(Employee::getEmployeeId, Function.identity()));
