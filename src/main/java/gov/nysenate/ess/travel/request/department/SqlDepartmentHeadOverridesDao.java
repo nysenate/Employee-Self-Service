@@ -1,5 +1,6 @@
 package gov.nysenate.ess.travel.request.department;
 
+import gov.nysenate.ess.core.dao.base.BaseHandler;
 import gov.nysenate.ess.core.dao.base.BasicSqlQuery;
 import gov.nysenate.ess.core.dao.base.DbVendor;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
@@ -7,13 +8,21 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Repository
 public class SqlDepartmentHeadOverridesDao extends SqlBaseDao {
+
+    public Map<Integer, Integer> currentOverrides() {
+        MapSqlParameterSource params = new MapSqlParameterSource("date", toDate(LocalDate.now()));
+        String sql = SqlDepartmentHeadOverridesQuery.SELECT_OVERRIDES.getSql(schemaMap());
+        DepartmentHeadOverridesHandler handler = new DepartmentHeadOverridesHandler();
+        localNamedJdbc.query(sql, params, handler);
+        return handler.getResults();
+    }
 
     /**
      * Returns an optional containing the employees department head employee id if they are included
@@ -35,7 +44,7 @@ public class SqlDepartmentHeadOverridesDao extends SqlBaseDao {
     /**
      * @return A Set of EmployeeId's for all department heads currently active in the overrides table.
      */
-    public Set<Integer> departmentHeadOverrides() {
+    public Set<Integer> currentDepartmentHeads() {
         MapSqlParameterSource params = new MapSqlParameterSource("date", toDate(LocalDate.now()));
         String sql = SqlDepartmentHeadOverridesQuery.SELECT_DEPT_HDS.getSql(schemaMap());
         return new HashSet<>(localNamedJdbc.queryForList(sql, params, Integer.class));
@@ -43,6 +52,11 @@ public class SqlDepartmentHeadOverridesDao extends SqlBaseDao {
 
 
     private enum SqlDepartmentHeadOverridesQuery implements BasicSqlQuery {
+        SELECT_OVERRIDES("""
+                SELECT employee_id, department_head_emp_id
+                FROM ${essSchema}.department_head_override
+                WHERE effective_date_range @> :date::date
+                """),
         SELECT_DEPT_HD_FOR_EMP("""
                 SELECT department_head_emp_id
                 FROM ${essSchema}.department_head_override
@@ -70,6 +84,26 @@ public class SqlDepartmentHeadOverridesDao extends SqlBaseDao {
         @Override
         public DbVendor getVendor() {
             return DbVendor.POSTGRES;
+        }
+    }
+
+    private class DepartmentHeadOverridesHandler extends BaseHandler {
+
+        private Map<Integer, Integer> empIdToDeptHdId;
+
+        public DepartmentHeadOverridesHandler() {
+            this.empIdToDeptHdId = new HashMap<>();
+        }
+
+        @Override
+        public void processRow(ResultSet rs) throws SQLException {
+            Integer empId = rs.getInt("employee_id");
+            Integer deptHdId = rs.getInt("department_head_emp_id");
+            empIdToDeptHdId.put(empId, deptHdId);
+        }
+
+        protected Map<Integer, Integer> getResults() {
+            return empIdToDeptHdId;
         }
     }
 }

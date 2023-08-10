@@ -5,22 +5,28 @@ import org.apache.commons.lang3.ObjectUtils;
 
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class TravelDepartmentAssigner {
 
     private final Set<Employee> activeEmployees;
     private final Set<Integer> departmentHeadIds;
+    private final Map<Integer, Integer> empIdToDeptHdId;
 
-    public TravelDepartmentAssigner(Set<Employee> activeEmployees, Set<Integer> departmentHeadIds) {
+    public TravelDepartmentAssigner(Set<Employee> activeEmployees, Set<Integer> departmentHeadIds,
+                                    Map<Integer, Integer> empIdToDeptHdId) {
         this.activeEmployees = activeEmployees;
         this.departmentHeadIds = departmentHeadIds;
+        this.empIdToDeptHdId = empIdToDeptHdId;
     }
 
     /**
      * Find and construct the Department that the given employee belongs to or is the head of.
+     *
      * @param employee
      * @return A Department or null if the department could not be determined.
      */
@@ -48,47 +54,60 @@ public class TravelDepartmentAssigner {
         if (isDepartmentHead(employee)) {
             return employee;
         }
-        Employee senatorDeptHead = senatorOfficeDeptHead(employee);
-        Employee supChainDeptHead = supChainDeptHead(employee);
-        return ObjectUtils.firstNonNull(senatorDeptHead, supChainDeptHead);
+        return Stream.of(overrideDeptHead(employee), senatorOfficeDeptHead(employee), supChainDeptHead(employee))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .findFirst()
+                .orElse(null);
+    }
+
+    private Optional<Employee> overrideDeptHead(Employee employee) {
+        Integer deptHeadId = empIdToDeptHdId.get(employee.getEmployeeId());
+        if (deptHeadId == null) {
+            return Optional.empty();
+        }
+        return activeEmployees.stream()
+                .filter(e -> e.getEmployeeId() == deptHeadId)
+                .findFirst();
     }
 
     /**
      * Finds the department head for employees working under senators.
+     *
      * @param employee
      * @return
      */
-    private Employee senatorOfficeDeptHead(Employee employee) {
+    private Optional<Employee> senatorOfficeDeptHead(Employee employee) {
         if (employee.getRespCenter() == null) {
-            return null;
+            return Optional.empty();
         }
         int respCtrCode = employee.getRespCenter().getCode();
         return activeEmployees.stream()
                 .filter(e -> e.getRespCenter() != null)
                 .filter(e -> e.getRespCenter().getCode() == respCtrCode)
                 .filter(Employee::isSenator)
-                .findFirst()
-                .orElse(null);
+                .findFirst();
     }
 
     /**
      * Finds the department head for employees working in admin offices.
+     *
      * @param employee
      * @return
      */
-    private Employee supChainDeptHead(Employee employee) {
+    private Optional<Employee> supChainDeptHead(Employee employee) {
         Map<Integer, Employee> idToEmp = activeEmployees.stream()
                 .collect(Collectors.toMap(Employee::getEmployeeId, Function.identity()));
         var prev = employee;
         var curr = idToEmp.get(employee.getSupervisorId());
         while (curr != null && curr.getSupervisorId() != prev.getEmployeeId()) {
             if (departmentHeadIds.contains(curr.getEmployeeId())) {
-                return curr;
+                return Optional.of(curr);
             }
             prev = curr;
             curr = idToEmp.get(curr.getSupervisorId());
         }
-        return null;
+        return Optional.empty();
     }
 
     private boolean isDepartmentHead(Employee employee) {
