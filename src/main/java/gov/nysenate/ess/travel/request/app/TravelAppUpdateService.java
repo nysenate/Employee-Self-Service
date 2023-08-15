@@ -6,6 +6,7 @@ import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
 import gov.nysenate.ess.travel.authorization.role.TravelRoleFactory;
 import gov.nysenate.ess.travel.authorization.role.TravelRoles;
+import gov.nysenate.ess.travel.employee.TravelEmployee;
 import gov.nysenate.ess.travel.notifications.email.events.TravelAppEditedEmailEvent;
 import gov.nysenate.ess.travel.notifications.email.events.TravelPendingReviewEmailEvent;
 import gov.nysenate.ess.travel.provider.miles.MileageAllowanceService;
@@ -101,17 +102,14 @@ public class TravelAppUpdateService {
      * Use this once both outbound and return legs have been added to the route so that
      * mileage, per diems, etc can be calculated.
      *
-     * @param amd   The initial amendment.
-     * @param route A Route with both outbound and return legs set. All Route data i.e. mileage, per diems
-     *              will be calculated and set on the Route. This Route will be added to the returned amendment.
      * @return A new Amendment with the full calculated Route added to it.
      */
-    public Amendment updateRoute(Amendment amd, Route route) {
-        Route fullRoute = routeService.createRoute(route);
+    public Amendment updateRoute(Draft draft) { //Amendment amd, Route route) {
+        Route fullRoute = routeService.createRoute(draft.getAmendment().route());
         MileagePerDiems mileagePerDiems = createMileagePerDiems(fullRoute);
-        MealPerDiems mealPerDiems = createMealPerDiems(fullRoute);
+        MealPerDiems mealPerDiems = createMealPerDiems(fullRoute, draft.getTraveler());
         LodgingPerDiems lodgingPerDiems = createLodgingPerDiems(fullRoute);
-        return new Amendment.Builder(amd)
+        return new Amendment.Builder(draft.getAmendment())
                 .withRoute(fullRoute)
                 .withMealPerDiems(mealPerDiems)
                 .withLodgingPerDiems(lodgingPerDiems)
@@ -131,7 +129,8 @@ public class TravelAppUpdateService {
         return new MileagePerDiems(mileagePerDiemList);
     }
 
-    private MealPerDiems createMealPerDiems(Route route) {
+    private MealPerDiems createMealPerDiems(Route route, TravelEmployee traveler) {
+        boolean isAllowedMeals = traveler.getRespCenter().isAdministrativeOffice();
         Set<MealPerDiem> mealPerDiemSet = new HashSet<>();
         for (Destination d : route.destinations()) {
             for (PerDiem pd : d.mealPerDiems()) {
@@ -147,7 +146,7 @@ public class TravelAppUpdateService {
                 }
             }
         }
-        return new MealPerDiems(mealPerDiemSet);
+        return new MealPerDiems(mealPerDiemSet, isAllowedMeals);
     }
 
     private LodgingPerDiems createLodgingPerDiems(Route route) {

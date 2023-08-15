@@ -143,7 +143,7 @@
                 <ess-transportation-summary-popover amd="app.activeAmendment" />
               </td>
             </tr>
-            <tr>
+            <tr ng-if="app.activeAmendment.mealPerDiems.isAllowedMeals">
               <td class="label">
                 <label>Food</label>
               </td>

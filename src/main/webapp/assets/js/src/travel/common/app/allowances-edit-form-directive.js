@@ -49,7 +49,8 @@ function allowancesEditForm(appProps, draftsApi) {
             };
 
             scope.tripHasMeals = function () {
-                return scope.dirtyDraft.amendment.mealPerDiems.allMealPerDiems.length > 0;
+                return scope.dirtyDraft.amendment.mealPerDiems.allMealPerDiems.length > 0
+                    && scope.dirtyDraft.amendment.mealPerDiems.isAllowedMeals;
             };
 
             scope.tripHasLodging = function () {

@@ -24,12 +24,13 @@ public class AppPdfExpensesWriter implements AppPdfWriter {
 
     @Override
     public float write() throws IOException {
+        boolean isAllowedMeals = app.activeAmendment().mealPerDiems().isAllowedMeals();
         float currentY = y;
         final float leading = config.leadingRatio * config.fontSize;
         float boxStartX = x + 295f;
         float boxTextStartX = boxStartX + 5f;
         float boxWidth = 213f;
-        float boxHeight = 145f;
+        float boxHeight = isAllowedMeals ? 145f : 130f;
         float boxRightAlignEndX = boxStartX + boxWidth - 5f;
         float lineWidth = 1f;
 
@@ -45,8 +46,10 @@ public class AppPdfExpensesWriter implements AppPdfWriter {
         currentY -= leading;
 
         // Food
-        drawEstimatedTravelCostsRow(cs, boxTextStartX, boxRightAlignEndX, currentY, "Food", app.activeAmendment().mealAllowance().toString());
-        currentY -= leading;
+        if (isAllowedMeals) {
+            drawEstimatedTravelCostsRow(cs, boxTextStartX, boxRightAlignEndX, currentY, "Food", app.activeAmendment().mealAllowance().toString());
+            currentY -= leading;
+        }
 
         // Lodging
         drawEstimatedTravelCostsRow(cs, boxTextStartX, boxRightAlignEndX, currentY, "Lodging", app.activeAmendment().lodgingAllowance().toString());

@@ -44,7 +44,7 @@ public class SqlMealPerDiemsDao extends SqlBaseDao {
             // do not get updated. We need to call saveTravelAddress here so the mealPerDiem addresses have the correct address_id.
             travelAddressDao.saveAddress(mpd.address());
             insertMealPerDiem(mpd);
-            int id = insertIntoJoinTable(mpd, amendmentId, mealPerDiems.overrideRate());
+            int id = insertIntoJoinTable(mpd, amendmentId, mealPerDiems.overrideRate(), mealPerDiems.isAllowedMeals());
             mealPerDiems.setId(id);
         }
     }
@@ -63,11 +63,12 @@ public class SqlMealPerDiemsDao extends SqlBaseDao {
         mpd.setId((Integer) keyHolder.getKeys().get("amendment_meal_per_diem_id"));
     }
 
-    private int insertIntoJoinTable(MealPerDiem mpd, int amendmentId, Dollars overrideRate) {
+    private int insertIntoJoinTable(MealPerDiem mpd, int amendmentId, Dollars overrideRate, boolean isAllowedMeals) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("amendmentId", amendmentId)
                 .addValue("mpdId", mpd.id())
-                .addValue("overrideRate", overrideRate.toString());
+                .addValue("overrideRate", overrideRate.toString())
+                .addValue("isAllowedMeals", isAllowedMeals);
         String sql = SqlMealPerDiemsQuery.INSERT_JOIN_TABLE.getSql(schemaMap());
         KeyHolder keyHolder = new GeneratedKeyHolder();
         localNamedJdbc.update(sql, params, keyHolder);
@@ -76,7 +77,7 @@ public class SqlMealPerDiemsDao extends SqlBaseDao {
 
     private enum SqlMealPerDiemsQuery implements BasicSqlQuery {
         SELECT_MEAL_PER_DIEMS("""
-                SELECT mpds.amendment_meal_per_diems_id, mpds.amendment_meal_per_diem_id, mpds.override_rate,
+                SELECT mpds.amendment_meal_per_diems_id, mpds.amendment_meal_per_diem_id, mpds.override_rate, mpds.is_allowed_meals,
                   mpd.address_id, mpd.date, mpd.rate, mpd.senate_mie_id, mpd.is_reimbursement_requested,
                   senate_mie.fiscal_year, senate_mie.total, senate_mie.breakfast, senate_mie.dinner,
                   addr.street_1, addr.city, addr.state, addr.zip_5, addr.county, addr.country, addr.place_id, addr.name
@@ -95,8 +96,8 @@ public class SqlMealPerDiemsDao extends SqlBaseDao {
         ),
         INSERT_JOIN_TABLE("""
                 INSERT INTO ${travelSchema}.amendment_meal_per_diems
-                  (amendment_id, amendment_meal_per_diem_id, override_rate)
-                VALUES (:amendmentId, :mpdId, :overrideRate)
+                  (amendment_id, amendment_meal_per_diem_id, override_rate, is_allowed_meals)
+                VALUES (:amendmentId, :mpdId, :overrideRate, :isAllowedMeals)
                 """
         );
 
@@ -121,6 +122,7 @@ public class SqlMealPerDiemsDao extends SqlBaseDao {
 
         private int mealPerDiemsId;
         private Dollars overrideRate;
+        private boolean isAllowedMeals;
         private Set<MealPerDiem> mealPerDiems;
         private TravelAddressRowMapper addressRowMapper = new TravelAddressRowMapper();
         private SenateMieRowMapper senateMieRowMapper = new SenateMieRowMapper();
@@ -133,6 +135,7 @@ public class SqlMealPerDiemsDao extends SqlBaseDao {
         public void processRow(ResultSet rs) throws SQLException {
             mealPerDiemsId = rs.getInt("amendment_meal_per_diems_id");
             overrideRate = new Dollars(rs.getString("override_rate"));
+            isAllowedMeals = rs.getBoolean("is_allowed_meals");
 
             int mpdId = rs.getInt("amendment_meal_per_diem_id");
             TravelAddress address = addressRowMapper.mapRow(rs, rs.getRow());
@@ -150,7 +153,7 @@ public class SqlMealPerDiemsDao extends SqlBaseDao {
         }
 
         public MealPerDiems getResult() {
-            return new MealPerDiems(mealPerDiemsId, mealPerDiems, overrideRate);
+            return new MealPerDiems(mealPerDiemsId, mealPerDiems, overrideRate, isAllowedMeals);
         }
     }
 }

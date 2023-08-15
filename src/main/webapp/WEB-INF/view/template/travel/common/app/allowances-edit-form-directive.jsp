@@ -45,7 +45,8 @@
               </div>
             </div>
             <div class="travel-note">
-              <p>Meals, lodging, and mileage expenses will be calculated automatically.</p>
+              <p ng-if="dirtyDraft.amendment.mealPerDiems.isAllowedMeals">Meals, lodging, and mileage expenses will be calculated automatically.</p>
+              <p ng-if="!dirtyDraft.amendment.mealPerDiems.isAllowedMeals">Lodging and mileage expenses will be calculated automatically.</p>
             </div>
           </div>
         </div>

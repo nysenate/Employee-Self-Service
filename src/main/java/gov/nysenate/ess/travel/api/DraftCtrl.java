@@ -120,7 +120,7 @@ public class DraftCtrl extends BaseRestApiCtrl {
             switch (option) {
                 case ROUTE:
                     routeViewValidator.validateTravelDates(new RouteView(draft.getAmendment().route()));
-                    draft.setAmendment(appUpdateService.updateRoute(draft.getAmendment(), draft.getAmendment().route()));
+                    draft.setAmendment(appUpdateService.updateRoute(draft));
                     break;
                 case ALLOWANCES:
                     draft.setAmendment(appUpdateService.updateAllowances(draft.getAmendment(), draft.getAmendment().allowances()));

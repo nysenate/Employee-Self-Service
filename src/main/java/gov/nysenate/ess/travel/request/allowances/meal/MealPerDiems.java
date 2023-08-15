@@ -19,12 +19,17 @@ public class MealPerDiems {
     private int id;
     private final ImmutableSortedSet<MealPerDiem> mealPerDiems;
     private Dollars overrideRate;
+    private final boolean isAllowedMeals;
 
     public MealPerDiems(Collection<MealPerDiem> mealPerDiems) {
-        this(0, mealPerDiems, Dollars.ZERO);
+        this(0, mealPerDiems, Dollars.ZERO, true);
     }
 
-    public MealPerDiems(int id, Collection<MealPerDiem> mealPerDiems, Dollars overrideRate) {
+    public MealPerDiems(Collection<MealPerDiem> mealPerDiems, boolean isAllowedMeals) {
+        this(0, mealPerDiems, Dollars.ZERO, isAllowedMeals);
+    }
+
+    public MealPerDiems(int id, Collection<MealPerDiem> mealPerDiems, Dollars overrideRate, boolean isAllowedMeals) {
         // If multiple MealPerDiem's for the same date, only keep the one with the highest rate.
         Map<LocalDate, MealPerDiem> dateToPerDiems = new HashMap<>();
         for (MealPerDiem mpd : mealPerDiems) {
@@ -45,6 +50,7 @@ public class MealPerDiems {
                 .addAll(dateToPerDiems.values())
                 .build();
         this.overrideRate = overrideRate ==  null ? Dollars.ZERO : overrideRate;
+        this.isAllowedMeals = isAllowedMeals;
     }
 
     public int id() {
@@ -68,6 +74,9 @@ public class MealPerDiems {
     }
 
     public Dollars totalPerDiem() {
+        if (!isAllowedMeals) {
+            return Dollars.ZERO;
+        }
         return isOverridden() ?
                 overrideRate
                 : requestedMealPerDiems().stream()
@@ -91,6 +100,9 @@ public class MealPerDiems {
                 .collect(ImmutableSortedSet.toImmutableSortedSet(dateComparator));
     }
 
+    public boolean isAllowedMeals() {
+        return isAllowedMeals;
+    }
 
     @Override
     public String toString() {
