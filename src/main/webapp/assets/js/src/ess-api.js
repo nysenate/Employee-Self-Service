@@ -85,6 +85,20 @@ essApi.factory('AccrualHistoryApi', ['$resource', 'appProps', function($resource
     return $resource(appProps.apiPath + '/accruals/history');
 }]);
 
+/** --- Donation API --- */
+
+essApi.factory('TimeDonatedInPastYearApi', ['$resource', 'appProps', function($resource, appProps) {
+    return $resource(appProps.apiPath + '/donation/timeDonatedInPastYear');
+}]);
+
+essApi.factory('DonationHistoryApi', ['$resource', 'appProps', function($resource, appProps) {
+    return $resource(appProps.apiPath + '/donation/history');
+}]);
+
+essApi.factory('SubmitDonationApi', ['$resource', 'appProps', function($resource, appProps) {
+    return $resource(appProps.apiPath + '/donation/submit');
+}]);
+
 /** --- Expected Hours API --- */
 
 essApi.factory('ExpectedHoursApi', ['$resource', 'appProps', function($resource, appProps) {
