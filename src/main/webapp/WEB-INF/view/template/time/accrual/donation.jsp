@@ -13,7 +13,25 @@
       ng-model="state.hoursToDonate"><br><br>
       <label for="effectiveDate">Effective date :</label>
       <input type="date" name="effectiveDate" id="effectiveDate"
-             ng-model="state.effectiveDate" ng-change="state.setMaxDonation()"><br><br>
+             ng-model="state.effectiveDate" ng-change="setMaxDonation()"><br><br>
     </form>
+
+  </div>
+  <div>
+    <div class="dropdown">
+      <label for="history"></label>
+      <select id="history" ng-model="state.currYear">
+        <option ng-repeat="year in getYears()">
+          {{year}}
+        </option>
+      </select>
+      <p ng-repeat="donation in state.donationData">
+        {{donation}}
+      </p>
+
+    </div>
+    <div ng-hide="state.donationData.length !== 0">
+      You have no donations for this year yet.
+    </div>
   </div>
 </section>

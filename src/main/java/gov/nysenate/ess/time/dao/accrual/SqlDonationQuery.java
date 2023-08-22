@@ -5,15 +5,16 @@ import gov.nysenate.ess.core.dao.base.DbVendor;
 
 public enum SqlDonationQuery implements BasicSqlQuery {
     // TODO: may need different schema on prod, because inserts are needed
+
     SELECT_HOURS_DONATED_IN_RANGE("""
-            SELECT SUM(NUTIMEADJ) as sum
+            SELECT SUM(NUTIMEADJ) AS sum
             FROM SASS_OWNER.PM23TIMEPOOL
             WHERE :startDate <= DTEFFECT AND DTEFFECT <= :endDate AND NUXREFEM = :empId"""),
 
     SELECT_EMP_DONATION_RECORDS("""
-            SELECT NUTIMEADJ as hours, DTEFFECT as date
+            SELECT NUTIMEADJ AS donationHours, DTEFFECT AS donationDate
             FROM SASS_OWNER.PM23TIMEPOOL
-            WHERE NUXREFEM = :empId"""),
+            WHERE NUXREFEM = :empId AND extract(year FROM DTEFFECT) = :year"""),
 
     INSERT_DONATION("""
             INSERT INTO SASS_OWNER.PM23TIMEPOOL

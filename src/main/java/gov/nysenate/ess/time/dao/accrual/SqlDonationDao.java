@@ -16,8 +16,6 @@ import java.time.LocalDate;
 
 @Service
 public class SqlDonationDao extends SqlBaseDao implements DonationDao {
-    // TODO: also need to check sick time remaining
-
     @Override
     public BigDecimal getTimeDonatedInLastYear(int empId, LocalDate date) {
         var params = new MapSqlParameterSource("empId", empId)
@@ -28,8 +26,8 @@ public class SqlDonationDao extends SqlBaseDao implements DonationDao {
     }
 
     @Override
-    public Multimap<LocalDate, Float> getAllDonatedTime(int empId) {
-        var params = new MapSqlParameterSource("empId", empId);
+    public Multimap<LocalDate, BigDecimal> getDonatedTime(int empId, int year) {
+        var params = new MapSqlParameterSource("empId", empId).addValue("year", year);
         var rch = new MapDonationRecords();
         remoteNamedJdbc.query(SqlDonationQuery.SELECT_EMP_DONATION_RECORDS.getSql(schemaMap), params, rch);
         return rch.resultsMap;
@@ -45,11 +43,11 @@ public class SqlDonationDao extends SqlBaseDao implements DonationDao {
     }
 
     private static final class MapDonationRecords implements RowCallbackHandler {
-        private final Multimap<LocalDate, Float> resultsMap = ArrayListMultimap.create();
+        private final Multimap<LocalDate, BigDecimal> resultsMap = ArrayListMultimap.create();
 
         @Override
         public void processRow(@Nonnull ResultSet rs) throws SQLException {
-            resultsMap.put(getLocalDate(rs, "date"), rs.getFloat("hours"));
+            resultsMap.put(getLocalDate(rs, "donationDate"), rs.getBigDecimal("donationHours"));
         }
     }
 }
