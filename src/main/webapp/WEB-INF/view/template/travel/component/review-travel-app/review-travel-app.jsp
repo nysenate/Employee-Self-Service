@@ -16,6 +16,10 @@
     </div>
   </div>
 
+  <div ng-if="vm.isLoading">
+    <div loader-indicator class="loader"></div>
+  </div>
+
   <div ng-if="vm.isLoading === false">
     <div ng-if="vm.reviews.toReview.length === 0">
       <div class="content-container">

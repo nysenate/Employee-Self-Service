@@ -38,6 +38,10 @@
       </div>
     </div>
 
+    <div ng-if="vm.data.isLoading">
+      <div loader-indicator class="loader"></div>
+    </div>
+
     <div ng-if="vm.data.isLoading === false">
       <div ng-if="vm.data.reviews.filtered.length === 0">
         <div class="content-container">
