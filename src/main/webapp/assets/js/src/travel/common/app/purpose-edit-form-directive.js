@@ -19,7 +19,7 @@ function purposeEditLink($http, appProps, eventTypesApi, allowedTravelersApi, mo
             scope.mode = scope.data.mode;
             scope.isLoading = true;
             scope.dirtyDraft = angular.copy(scope.data.draft);
-            scope.eventTYpes = [];
+            scope.eventTypes = [];
             scope.allowedTravelers = [];
 
             (function () {
