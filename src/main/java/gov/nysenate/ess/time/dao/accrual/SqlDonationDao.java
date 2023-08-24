@@ -21,7 +21,7 @@ public class SqlDonationDao extends SqlBaseDao implements DonationDao {
         var params = new MapSqlParameterSource("empId", empId)
                 .addValue("startDate", date.minusYears(1))
                 .addValue("endDate", date);
-        return remoteNamedJdbc.query(SqlDonationQuery.SELECT_HOURS_DONATED_IN_RANGE.getSql(schemaMap()),
+        return remoteNamedJdbc.query(SqlDonationQuery.SELECT_HOURS_DONATED_IN_RANGE.getSql(schemaMap),
                 params, new HoursDonated());
     }
 
@@ -31,6 +31,13 @@ public class SqlDonationDao extends SqlBaseDao implements DonationDao {
         var rch = new MapDonationRecords();
         remoteNamedJdbc.query(SqlDonationQuery.SELECT_EMP_DONATION_RECORDS.getSql(schemaMap), params, rch);
         return rch.resultsMap;
+    }
+
+    @Override
+    public boolean submitDonation(LocalDate effectiveDate, int empId, BigDecimal donation) {
+        var params = new MapSqlParameterSource("effectiveDate", effectiveDate)
+                .addValue("empId", empId).addValue("donation", donation);
+        return remoteNamedJdbc.update(SqlDonationQuery.INSERT_DONATION.getSql(schemaMap), params) != 0;
     }
 
     private static final class HoursDonated implements ResultSetExtractor<BigDecimal> {
