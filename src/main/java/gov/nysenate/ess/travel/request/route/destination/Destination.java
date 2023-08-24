@@ -82,7 +82,7 @@ public class Destination {
         }
 
         List<LocalDate> nights = new ArrayList<>();
-        for (LocalDate date = arrivalDate().plusDays(1); date.isBefore(departureDate().plusDays(1)); date = date.plusDays(1)) {
+        for (LocalDate date = arrivalDate(); date.isBefore(departureDate()); date = date.plusDays(1)) {
             nights.add(date);
         }
 

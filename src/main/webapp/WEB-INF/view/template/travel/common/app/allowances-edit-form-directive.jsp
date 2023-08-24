@@ -108,7 +108,7 @@
                 <tbody>
                 <tr ng-repeat="perDiem in dirtyDraft.amendment.lodgingPerDiems.allLodgingPerDiems">
                   <td>{{perDiem.address.formattedAddressWithCounty}}</td>
-                  <td>{{previousDay(perDiem.date) | date: 'shortDate'}} - {{perDiem.date | date: 'shortDate'}}</td>
+                  <td>{{perDiem.date | date: 'shortDate'}} - {{nextDay(perDiem.date) | date: 'shortDate'}}</td>
                   <td><label>Request Lodging: </label><input type="checkbox"
                                                              ng-model="perDiem.isReimbursementRequested">
                   </td>

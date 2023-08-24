@@ -44,8 +44,8 @@ function allowancesEditForm(appProps, draftsApi) {
                     });
             }
 
-            scope.previousDay = function (date) {
-                return moment(date).subtract(1, 'days').toDate();
+            scope.nextDay = function (date) {
+                return moment(date).add(1, 'days').toDate();
             };
 
             scope.tripHasMeals = function () {
