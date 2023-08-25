@@ -6,11 +6,15 @@
   </div>
 
   <div class="content-container">
+    <p>You may donate 10-{{state.maxDonation}} hours in half-hour increments.</p>
     <form>
       <label for="donation">Donation amount:</label>
       <input type="number" id="donation" name="donation"
              min="10" max={{state.maxDonation}} step="0.5"
-             ng-model="state.hoursToDonate" ng-disabled="state.showCertificationMessage"><br><br>
+             ng-model="state.hoursToDonate" ng-disabled="state.showCertificationMessage || state.maxDonation < 10"><br><br>
+      <p ng-show="state.maxDonation < 10">
+        You are ineligible to donate time on this date.
+      </p>
       <label for="effectiveDate">Effective date:</label>
       <input type="date" name="effectiveDate" id="effectiveDate"
              ng-model="state.effectiveDate" ng-change="setMaxDonation()"
@@ -23,6 +27,9 @@
         <input ng-click="submitDonation()" class="submit-button" type="button" value="Yes">
         <input ng-click="state.showCertificationMessage = false" class="submit-button" type="button" value="No">
       </div>
+      <p>
+        {{state.message}}
+      </p>
     </form>
   </div>
 
