@@ -1,33 +1,35 @@
 angular.module('essTime')
     .controller('DonationCtrl', ['$timeout', '$scope', 'appProps', 'modals',
-                                 "MaxDonationApi", "DonationHistoryApi", "SubmitDonationApi",
+                                 "DonationInfoApi", "DonationHistoryApi", "SubmitDonationApi",
                                  sickTimeDonationCtrl]);
 // TODO: note: effective dates should be in [start of last time sheet, today], default to today
 // TODO: reload year donations on submission, and reset donation amount
 // TODO: need loading
 
 function sickTimeDonationCtrl($timeout, $scope, appProps, modals,
-                              MaxDonationApi, DonationHistoryApi, SubmitDonationApi) {
+                              DonationInfoApi, DonationHistoryApi, SubmitDonationApi) {
     const initialState = {
         empId: appProps.user.employeeId,
         effectiveDate: new Date(),
         hoursToDonate: null,
         currYear: null,
         maxDonation: null,
+        accruedSickTime: null,
         donationData: [],
         showCertificationMessage: false,
         message: ""
     };
     $scope.state = angular.extend(initialState);
 
-    function setMaxDonation() {
+    function setDonationInfo() {
         const params = {
             empId: $scope.state.empId,
             effectiveDate: $scope.state.effectiveDate
         };
-        MaxDonationApi.get(params,
+        DonationInfoApi.get(params,
             function onSuccess(resp) {
-                $scope.state.maxDonation = resp.result.value;
+                $scope.state.maxDonation = resp.result.maxDonation;
+                $scope.state.accruedSickTime = resp.result.accruedSickTime;
             }
         );
     }
@@ -68,6 +70,6 @@ function sickTimeDonationCtrl($timeout, $scope, appProps, modals,
         $scope.state.showCertificationMessage = false;
     }
 
-    setMaxDonation();
-    $scope.setMaxDonation = setMaxDonation;
+    setDonationInfo();
+    $scope.setDonationInfo = setDonationInfo;
 }

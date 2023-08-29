@@ -6,7 +6,10 @@
   </div>
 
   <div class="content-container">
-    <p>You may donate 10-{{state.maxDonation}} hours in half-hour increments.</p>
+    <p>You have {{state.accruedSickTime}} hours of accrued sick time.</p>
+    <p ng-show="state.maxDonation >= 10">
+      You may donate 10 - {{state.maxDonation}} hours in half-hour increments.
+    </p>
     <form>
       <label for="donation">Donation amount:</label>
       <input type="number" id="donation" name="donation"
@@ -15,9 +18,10 @@
       <p ng-show="state.maxDonation < 10">
         You are ineligible to donate time on this date.
       </p>
+
       <label for="effectiveDate">Effective date:</label>
       <input type="date" name="effectiveDate" id="effectiveDate"
-             ng-model="state.effectiveDate" ng-change="setMaxDonation()"
+             ng-model="state.effectiveDate" ng-change="setDonationInfo()"
              ng-disabled="state.showCertificationMessage"><br><br>
 
       <input ng-click="state.showCertificationMessage = true" class="submit-button" type="button" value="Donate time"

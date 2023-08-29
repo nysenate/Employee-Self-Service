@@ -5,12 +5,13 @@ import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.client.response.error.ErrorResponse;
-import gov.nysenate.ess.core.client.view.base.BigDecimalView;
+import gov.nysenate.ess.core.client.view.base.DonationInfoView;
 import gov.nysenate.ess.core.client.view.base.ListView;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.model.period.PayPeriodType;
+import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.period.PayPeriodService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
@@ -33,12 +34,11 @@ import static gov.nysenate.ess.time.model.auth.TimePermissionObject.ACCRUAL;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
-// TODO: may need permission changes
 @RestController
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/donation")
 public class DonationCtrl extends BaseRestApiCtrl {
     private static final BigDecimal MAX_DAYS_DONATED = new BigDecimal(20),
-            MIN_TIME_REMAINING = new BigDecimal(70);
+            MIN_DAYS_REMAINING = new BigDecimal(10), HALF = new BigDecimal("0.5");
     private final DonationDao donationDao;
     private final AccrualComputeService accrualComputeService;
     private final PayPeriodService payPeriodService;
@@ -56,25 +56,26 @@ public class DonationCtrl extends BaseRestApiCtrl {
         this.empTransService = empTransService;
     }
 
-    @GetMapping("/maxDonation")
+    @GetMapping("/donationInfo")
     public BaseResponse getMaxDonation(@RequestParam int empId, @RequestParam String effectiveDate) {
         checkPermission(new EssTimePermission(empId, ACCRUAL, GET, Range.singleton(LocalDate.now())));
-        PayType payType = employeeInfoService.getEmployee(empId).getPayType();
-        // Ineligible to donate, might as well skip the rest.
-        if (payType == PayType.TE) {
-            return new ViewObjectResponse<>(new BigDecimalView(BigDecimal.ZERO));
-        }
-        BigDecimal hoursPerDay = HOURS_PER_DAY
-                .multiply(payType == PayType.RA ? BigDecimal.ONE : getProratePercentageFromEmpId(empId));
+        Employee emp = employeeInfoService.getEmployee(empId);
         LocalDate date = getDateFromFrontend(effectiveDate);
-        var yearlyDonationLimit = hoursPerDay.multiply(MAX_DAYS_DONATED)
-                .subtract(donationDao.getTimeDonatedInLastYear(empId, date));
         PayPeriod payPeriod = payPeriodService.getPayPeriod(PayPeriodType.AF, date);
-        // TODO: need employee with (210 > sick hours > 80) to test this
-        var timeRemainingLimit = accrualComputeService.getAccrualsAvailable(empId, payPeriod)
-                .getSickAvailable().subtract(MIN_TIME_REMAINING);
-        var result = timeRemainingLimit.min(yearlyDonationLimit).max(BigDecimal.ZERO);
-        return new ViewObjectResponse<>(new BigDecimalView(result));
+        BigDecimal accruedSickTime = accrualComputeService.getAccrualsAvailable(empId, payPeriod).getSickAvailable();
+        BigDecimal empHoursPerDay = HOURS_PER_DAY.multiply(getProratePercentageFromEmpId(emp));
+
+        var yearlyDonationLimit = empHoursPerDay.multiply(MAX_DAYS_DONATED)
+                .subtract(donationDao.getTimeDonatedInLastYear(empId, date));
+        var timeRemainingLimit = accruedSickTime.subtract(empHoursPerDay.multiply(MIN_DAYS_REMAINING));
+        // Result needs to be rounded to the nearest multiple of 0.5
+        BigDecimal unRoundedResult = timeRemainingLimit.min(yearlyDonationLimit);
+        BigDecimal decimalPart = unRoundedResult.remainder(BigDecimal.ONE);
+        BigDecimal roundedResult = new BigDecimal(unRoundedResult.intValue());
+        if (decimalPart.compareTo(HALF) >= 0) {
+            roundedResult = roundedResult.add(HALF);
+        }
+        return new ViewObjectResponse<>(new DonationInfoView(roundedResult, accruedSickTime));
     }
 
     @GetMapping("/history")
@@ -98,8 +99,15 @@ public class DonationCtrl extends BaseRestApiCtrl {
         return new ErrorResponse(ERROR_SUBMITTING_TIME_DONATION);
     }
 
-    private BigDecimal getProratePercentageFromEmpId(int empId) {
-        var transHistory = empTransService.getTransHistory(empId);
+    private BigDecimal getProratePercentageFromEmpId(Employee emp) {
+        if (emp.getPayType() == PayType.RA) {
+            return BigDecimal.ONE;
+        }
+        // Temporary employees cannot donate.
+        if (emp.getPayType() == PayType.TE) {
+            return BigDecimal.ZERO;
+        }
+        var transHistory = empTransService.getTransHistory(emp.getEmployeeId());
         BigDecimal minTotalHours = transHistory.getEffectiveMinHours(Range.singleton(LocalDate.now()))
                 .lastEntry().getValue();
         return AccrualUtils.getProratePercentage(minTotalHours);

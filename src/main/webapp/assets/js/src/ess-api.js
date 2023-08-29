@@ -87,8 +87,8 @@ essApi.factory('AccrualHistoryApi', ['$resource', 'appProps', function($resource
 
 /** --- Donation API --- */
 
-essApi.factory('MaxDonationApi', ['$resource', 'appProps', function($resource, appProps) {
-    return $resource(appProps.apiPath + '/donation/maxDonation');
+essApi.factory('DonationInfoApi', ['$resource', 'appProps', function($resource, appProps) {
+    return $resource(appProps.apiPath + '/donation/donationInfo');
 }]);
 
 essApi.factory('DonationHistoryApi', ['$resource', 'appProps', function($resource, appProps) {
