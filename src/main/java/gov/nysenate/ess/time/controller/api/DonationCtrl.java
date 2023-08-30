@@ -5,6 +5,7 @@ import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.client.response.error.ErrorResponse;
+import gov.nysenate.ess.core.client.view.base.DateRangeView;
 import gov.nysenate.ess.core.client.view.base.DonationInfoView;
 import gov.nysenate.ess.core.client.view.base.ListView;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
@@ -16,8 +17,11 @@ import gov.nysenate.ess.core.service.period.PayPeriodService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
 import gov.nysenate.ess.time.dao.accrual.DonationDao;
+import gov.nysenate.ess.time.model.attendance.TimeRecord;
+import gov.nysenate.ess.time.model.attendance.TimeRecordScope;
 import gov.nysenate.ess.time.model.auth.EssTimePermission;
 import gov.nysenate.ess.time.service.accrual.AccrualComputeService;
+import gov.nysenate.ess.time.service.attendance.TimeRecordService;
 import gov.nysenate.ess.time.util.AccrualUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -44,29 +48,31 @@ public class DonationCtrl extends BaseRestApiCtrl {
     private final PayPeriodService payPeriodService;
     private final EmployeeInfoService employeeInfoService;
     private final EmpTransactionService empTransService;
+    private final TimeRecordService timeRecordService;
+
 
     @Autowired
     public DonationCtrl(DonationDao donationDao, AccrualComputeService accrualComputeService,
                         PayPeriodService payPeriodService, EmployeeInfoService employeeInfoService,
-                        EmpTransactionService empTransService) {
+                        EmpTransactionService empTransService, TimeRecordService timeRecordService) {
         this.donationDao = donationDao;
         this.accrualComputeService = accrualComputeService;
         this.payPeriodService = payPeriodService;
         this.employeeInfoService = employeeInfoService;
         this.empTransService = empTransService;
+        this.timeRecordService = timeRecordService;
     }
 
-    @GetMapping("/donationInfo")
-    public BaseResponse getMaxDonation(@RequestParam int empId, @RequestParam String effectiveDate) {
+    @GetMapping("/info")
+    public BaseResponse getMaxDonation(@RequestParam int empId) {
         checkPermission(new EssTimePermission(empId, ACCRUAL, GET, Range.singleton(LocalDate.now())));
         Employee emp = employeeInfoService.getEmployee(empId);
-        LocalDate date = getDateFromFrontend(effectiveDate);
-        PayPeriod payPeriod = payPeriodService.getPayPeriod(PayPeriodType.AF, date);
+        PayPeriod payPeriod = payPeriodService.getPayPeriod(PayPeriodType.AF, LocalDate.now());
         BigDecimal accruedSickTime = accrualComputeService.getAccrualsAvailable(empId, payPeriod).getSickAvailable();
         BigDecimal empHoursPerDay = HOURS_PER_DAY.multiply(getProratePercentageFromEmpId(emp));
 
         var yearlyDonationLimit = empHoursPerDay.multiply(MAX_DAYS_DONATED)
-                .subtract(donationDao.getTimeDonatedInLastYear(empId, date));
+                .subtract(donationDao.getTimeDonatedInLastYear(empId));
         var timeRemainingLimit = accruedSickTime.subtract(empHoursPerDay.multiply(MIN_DAYS_REMAINING));
         // Result needs to be rounded to the nearest multiple of 0.5
         BigDecimal unRoundedResult = timeRemainingLimit.min(yearlyDonationLimit);
@@ -76,6 +82,15 @@ public class DonationCtrl extends BaseRestApiCtrl {
             roundedResult = roundedResult.add(HALF);
         }
         return new ViewObjectResponse<>(new DonationInfoView(roundedResult, accruedSickTime));
+    }
+
+    @GetMapping("/range")
+    public BaseResponse getDonationRange(@RequestParam int empId) {
+        Range<LocalDate> todayRange = Range.closed(LocalDate.now(), LocalDate.now());
+        Range<LocalDate> dateRange = timeRecordService.getActiveTimeRecords(empId).stream()
+                .filter(timeRecord -> timeRecord.getRecordStatus().getScope() == TimeRecordScope.EMPLOYEE)
+                .map(TimeRecord::getDateRange).reduce(todayRange, Range::span);
+        return new ViewObjectResponse<>(new DateRangeView(dateRange));
     }
 
     @GetMapping("/history")
@@ -90,10 +105,10 @@ public class DonationCtrl extends BaseRestApiCtrl {
     }
 
     @PostMapping("/submit")
-    public BaseResponse submitDonation(@RequestParam int empId, @RequestParam String effectiveDate, @RequestParam String hoursToDonate) {
+    public BaseResponse submitDonation(@RequestParam int empId, @RequestParam String hoursToDonate) {
         checkPermission(new EssTimePermission(empId, ACCRUAL, POST, Range.singleton(LocalDate.now())));
         BigDecimal donation = BigDecimal.valueOf(Double.parseDouble(hoursToDonate));
-        if (donationDao.submitDonation(getDateFromFrontend(effectiveDate), empId, donation)) {
+        if (donationDao.submitDonation(empId, donation)) {
             return new SimpleResponse(true, "Donation submitted!", "sick-time-donation");
         }
         return new ErrorResponse(ERROR_SUBMITTING_TIME_DONATION);
@@ -111,10 +126,6 @@ public class DonationCtrl extends BaseRestApiCtrl {
         BigDecimal minTotalHours = transHistory.getEffectiveMinHours(Range.singleton(LocalDate.now()))
                 .lastEntry().getValue();
         return AccrualUtils.getProratePercentage(minTotalHours);
-    }
-
-    private static LocalDate getDateFromFrontend(String dateStr) {
-        return LocalDate.parse(dateStr.split("T")[0]);
     }
 
     private static String donationString(LocalDate date, Collection<BigDecimal> hours) {

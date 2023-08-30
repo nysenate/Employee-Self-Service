@@ -2,7 +2,7 @@
 
 <section ng-controller="DonationCtrl" id="donation-page">
   <div class="time-attendance-hero">
-    <h2>Sick Time Donation</h2>
+    <h2>Sick Leave Donation</h2>
   </div>
 
   <div class="content-container">
@@ -18,11 +18,6 @@
       <p ng-show="state.maxDonation < 10">
         You are ineligible to donate time on this date.
       </p>
-
-      <label for="effectiveDate">Effective date:</label>
-      <input type="date" name="effectiveDate" id="effectiveDate"
-             ng-model="state.effectiveDate" ng-change="setDonationInfo()"
-             ng-disabled="state.showCertificationMessage"><br><br>
 
       <input ng-click="state.showCertificationMessage = true" class="submit-button" type="button" value="Donate time"
              ng-disabled="!state.hoursToDonate || state.showCertificationMessage"/>

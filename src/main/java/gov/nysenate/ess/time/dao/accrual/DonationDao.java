@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public interface DonationDao {
-    BigDecimal getTimeDonatedInLastYear(int empId, LocalDate date);
+    BigDecimal getTimeDonatedInLastYear(int empId);
 
     /**
      * Maps effective dates to a list of hours donated for a given year and employee.
@@ -18,5 +18,5 @@ public interface DonationDao {
     /**
      * @return if submission was successful
      */
-    boolean submitDonation(LocalDate effectiveDate, int empId, BigDecimal donation);
+    boolean submitDonation(int empId, BigDecimal donation);
 }

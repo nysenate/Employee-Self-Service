@@ -9,7 +9,7 @@ public enum SqlDonationQuery implements BasicSqlQuery {
     SELECT_HOURS_DONATED_IN_RANGE("""
             SELECT SUM(NUTIMEADJ) AS sum
             FROM SASS_OWNER.PM23TIMEPOOL
-            WHERE :startDate <= DTEFFECT AND DTEFFECT <= :endDate AND NUXREFEM = :empId"""),
+            WHERE :startDate < DTEFFECT AND DTEFFECT <= :endDate AND NUXREFEM = :empId"""),
 
     SELECT_EMP_DONATION_RECORDS("""
             SELECT NUTIMEADJ AS donationHours, DTEFFECT AS donationDate
@@ -21,11 +21,11 @@ public enum SqlDonationQuery implements BasicSqlQuery {
             FROM SASS_OWNER.PL23TIMETYP
             WHERE CDTIMETYP = 'SICK'"""),
 
+    // Used as a sub-query to be incremented.
     GET_MAX_NUPOOLTXN(
             "SELECT MAX(NUPOOLTXN)\n" +
             "FROM SASS_OWNER.PM23TIMEPOOL"),
 
-    // TODO: use TRUNC if needed for insert and update date. may need :entryDate to make them equal
     INSERT_DONATION("" +
             "INSERT INTO SASS_OWNER.PM23TIMEPOOL\n" +
             "(       DTEFFECT,       NUXREFEM,   NUTIMEADJ,     NUXRTIMETYP,                    NUPOOLTXN)\n" +

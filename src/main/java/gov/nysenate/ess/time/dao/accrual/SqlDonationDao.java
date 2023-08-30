@@ -17,10 +17,10 @@ import java.time.LocalDate;
 @Service
 public class SqlDonationDao extends SqlBaseDao implements DonationDao {
     @Override
-    public BigDecimal getTimeDonatedInLastYear(int empId, LocalDate date) {
+    public BigDecimal getTimeDonatedInLastYear(int empId) {
         var params = new MapSqlParameterSource("empId", empId)
-                .addValue("startDate", date.minusYears(1))
-                .addValue("endDate", date);
+                .addValue("startDate", LocalDate.now().minusYears(1))
+                .addValue("endDate", LocalDate.now());
         return remoteNamedJdbc.query(SqlDonationQuery.SELECT_HOURS_DONATED_IN_RANGE.getSql(schemaMap),
                 params, new HoursDonated());
     }
@@ -34,8 +34,8 @@ public class SqlDonationDao extends SqlBaseDao implements DonationDao {
     }
 
     @Override
-    public boolean submitDonation(LocalDate effectiveDate, int empId, BigDecimal donation) {
-        var params = new MapSqlParameterSource("effectiveDate", effectiveDate)
+    public boolean submitDonation(int empId, BigDecimal donation) {
+        var params = new MapSqlParameterSource("effectiveDate", LocalDate.now())
                 .addValue("empId", empId).addValue("donation", donation);
         return remoteNamedJdbc.update(SqlDonationQuery.INSERT_DONATION.getSql(schemaMap), params) != 0;
     }

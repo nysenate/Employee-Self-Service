@@ -2,7 +2,7 @@ angular.module('essTime')
     .controller('DonationCtrl', ['$timeout', '$scope', 'appProps', 'modals',
                                  "DonationInfoApi", "DonationHistoryApi", "SubmitDonationApi",
                                  sickTimeDonationCtrl]);
-// TODO: note: effective dates should be in [start of last time sheet, today], default to today
+
 // TODO: reload year donations on submission, and reset donation amount
 // TODO: need loading
 
@@ -10,7 +10,6 @@ function sickTimeDonationCtrl($timeout, $scope, appProps, modals,
                               DonationInfoApi, DonationHistoryApi, SubmitDonationApi) {
     const initialState = {
         empId: appProps.user.employeeId,
-        effectiveDate: new Date(),
         hoursToDonate: null,
         currYear: null,
         maxDonation: null,
@@ -24,7 +23,6 @@ function sickTimeDonationCtrl($timeout, $scope, appProps, modals,
     function setDonationInfo() {
         const params = {
             empId: $scope.state.empId,
-            effectiveDate: $scope.state.effectiveDate
         };
         DonationInfoApi.get(params,
             function onSuccess(resp) {
@@ -58,7 +56,6 @@ function sickTimeDonationCtrl($timeout, $scope, appProps, modals,
     $scope.submitDonation = function() {
         const params = {
             empId: $scope.state.empId,
-            effectiveDate: $scope.state.effectiveDate,
             hoursToDonate: $scope.state.hoursToDonate
         };
         // We pass in all data in the params
