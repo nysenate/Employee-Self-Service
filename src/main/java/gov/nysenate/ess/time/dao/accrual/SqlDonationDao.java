@@ -3,6 +3,7 @@ package gov.nysenate.ess.time.dao.accrual;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
+import gov.nysenate.ess.core.model.personnel.Employee;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -17,12 +18,9 @@ import java.time.LocalDate;
 @Service
 public class SqlDonationDao extends SqlBaseDao implements DonationDao {
     @Override
-    public BigDecimal getTimeDonatedInLastYear(int empId) {
-        var params = new MapSqlParameterSource("empId", empId)
-                .addValue("startDate", LocalDate.now().minusYears(1))
-                .addValue("endDate", LocalDate.now());
-        return remoteNamedJdbc.query(SqlDonationQuery.SELECT_HOURS_DONATED_IN_RANGE.getSql(schemaMap),
-                params, new HoursDonated());
+    public BigDecimal getTimeDonatedThisYear(int empId) {
+        return remoteNamedJdbc.query(SqlDonationQuery.SELECT_HOURS_DONATED_THIS_YEAR.getSql(schemaMap),
+                new MapSqlParameterSource("empId", empId), new HoursDonated());
     }
 
     @Override
@@ -34,9 +32,11 @@ public class SqlDonationDao extends SqlBaseDao implements DonationDao {
     }
 
     @Override
-    public boolean submitDonation(int empId, BigDecimal donation) {
+    public boolean submitDonation(Employee emp, BigDecimal donation) {
         var params = new MapSqlParameterSource("effectiveDate", LocalDate.now())
-                .addValue("empId", empId).addValue("donation", donation);
+                .addValue("empId", emp.getEmployeeId())
+                .addValue("uid", emp.getUid())
+                .addValue("donation", donation);
         return remoteNamedJdbc.update(SqlDonationQuery.INSERT_DONATION.getSql(schemaMap), params) != 0;
     }
 

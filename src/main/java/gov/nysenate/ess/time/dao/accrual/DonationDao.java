@@ -1,12 +1,16 @@
 package gov.nysenate.ess.time.dao.accrual;
 
 import com.google.common.collect.Multimap;
+import gov.nysenate.ess.core.model.personnel.Employee;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public interface DonationDao {
-    BigDecimal getTimeDonatedInLastYear(int empId);
+    /**
+     * Returns the total time an employee donated in this calendar year.
+     */
+    BigDecimal getTimeDonatedThisYear(int empId);
 
     /**
      * Maps effective dates to a list of hours donated for a given year and employee.
@@ -18,5 +22,5 @@ public interface DonationDao {
     /**
      * @return if submission was successful
      */
-    boolean submitDonation(int empId, BigDecimal donation);
+    boolean submitDonation(Employee emp, BigDecimal donation);
 }

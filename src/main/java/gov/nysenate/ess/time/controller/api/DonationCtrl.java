@@ -64,7 +64,7 @@ public class DonationCtrl extends BaseRestApiCtrl {
     }
 
     @GetMapping("/info")
-    public BaseResponse getMaxDonation(@RequestParam int empId) {
+    public BaseResponse getDonationInfo(@RequestParam int empId) {
         checkPermission(new EssTimePermission(empId, ACCRUAL, GET, Range.singleton(LocalDate.now())));
         Employee emp = employeeInfoService.getEmployee(empId);
         PayPeriod payPeriod = payPeriodService.getPayPeriod(PayPeriodType.AF, LocalDate.now());
@@ -72,7 +72,7 @@ public class DonationCtrl extends BaseRestApiCtrl {
         BigDecimal empHoursPerDay = HOURS_PER_DAY.multiply(getProratePercentageFromEmpId(emp));
 
         var yearlyDonationLimit = empHoursPerDay.multiply(MAX_DAYS_DONATED)
-                .subtract(donationDao.getTimeDonatedInLastYear(empId));
+                .subtract(donationDao.getTimeDonatedThisYear(empId));
         var timeRemainingLimit = accruedSickTime.subtract(empHoursPerDay.multiply(MIN_DAYS_REMAINING));
         // Result needs to be rounded to the nearest multiple of 0.5
         BigDecimal unRoundedResult = timeRemainingLimit.min(yearlyDonationLimit);
@@ -94,6 +94,7 @@ public class DonationCtrl extends BaseRestApiCtrl {
     }
 
     @GetMapping("/history")
+    // TODO: order sick time donations within days
     public BaseResponse getDonationHistory(@RequestParam int empId, @RequestParam int year) {
         checkPermission(new EssTimePermission(empId, ACCRUAL, GET, Range.singleton(LocalDate.now())));
         var history = donationDao.getDonatedTime(empId, year)
@@ -108,7 +109,8 @@ public class DonationCtrl extends BaseRestApiCtrl {
     public BaseResponse submitDonation(@RequestParam int empId, @RequestParam String hoursToDonate) {
         checkPermission(new EssTimePermission(empId, ACCRUAL, POST, Range.singleton(LocalDate.now())));
         BigDecimal donation = BigDecimal.valueOf(Double.parseDouble(hoursToDonate));
-        if (donationDao.submitDonation(empId, donation)) {
+        Employee emp = employeeInfoService.getEmployee(empId);
+        if (donationDao.submitDonation(emp, donation)) {
             return new SimpleResponse(true, "Donation submitted!", "sick-time-donation");
         }
         return new ErrorResponse(ERROR_SUBMITTING_TIME_DONATION);

@@ -3,15 +3,12 @@ angular.module('essTime')
                                  "DonationInfoApi", "DonationHistoryApi", "SubmitDonationApi",
                                  sickTimeDonationCtrl]);
 
-// TODO: reload year donations on submission, and reset donation amount
-// TODO: need loading
-
 function sickTimeDonationCtrl($timeout, $scope, appProps, modals,
                               DonationInfoApi, DonationHistoryApi, SubmitDonationApi) {
     const initialState = {
         empId: appProps.user.employeeId,
         hoursToDonate: null,
-        currYear: null,
+        selectedYear: new Date().getFullYear(),
         maxDonation: null,
         accruedSickTime: null,
         donationData: [],
@@ -21,6 +18,7 @@ function sickTimeDonationCtrl($timeout, $scope, appProps, modals,
     $scope.state = angular.extend(initialState);
 
     function setDonationInfo() {
+        $scope.state.maxDonation = null;
         const params = {
             empId: $scope.state.empId,
         };
@@ -35,7 +33,7 @@ function sickTimeDonationCtrl($timeout, $scope, appProps, modals,
     $scope.setDonationHistory = function setDonationHistory() {
         const params = {
             empId: $scope.state.empId,
-            year: $scope.state.currYear
+            year: $scope.state.selectedYear
         };
         DonationHistoryApi.get(params,
             function onSuccess(resp) {
@@ -65,8 +63,12 @@ function sickTimeDonationCtrl($timeout, $scope, appProps, modals,
             }
         );
         $scope.state.showCertificationMessage = false;
+        $scope.state.hoursToDonate = null;
+        $scope.setDonationInfo();
+        $scope.setDonationHistory();
     }
 
+    $scope.$watch('state.selectedYear', $scope.setDonationHistory);
     setDonationInfo();
     $scope.setDonationInfo = setDonationInfo;
 }
