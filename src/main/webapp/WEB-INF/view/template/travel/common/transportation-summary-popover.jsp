@@ -14,8 +14,8 @@
       <tr>
         <td>From</td>
         <td>To</td>
-        <td>Miles</td>
         <td>Rate</td>
+        <td>Miles</td>
         <td>Allowance</td>
       </tr>
       </thead>
@@ -23,15 +23,15 @@
       <tr ng-repeat="pd in mileagePerDiems.requestedPerDiems">
         <td>{{pd.from.formattedAddressWithCounty}}</td>
         <td>{{pd.to.formattedAddressWithCounty}}</td>
-        <td>{{pd.miles}}</td>
         <td>{{pd.mileageRate}}</td>
+        <td>{{pd.miles}}</td>
         <td>{{pd.requestedPerDiem | currency}}</td>
       </tr>
       <tr>
         <td></td>
         <td class="bold">Total:</td>
         <td></td>
-        <td></td>
+        <td class="bold">{{mileagePerDiems.totalMileage}}</td>
         <td class="bold">{{mileagePerDiems.totalPerDiem | currency}}</td>
       </tr>
       </tbody>

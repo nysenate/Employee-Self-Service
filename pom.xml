@@ -550,6 +550,12 @@
       <artifactId>commons-fileupload</artifactId>
       <version>${commons-fileupload.version}</version>
     </dependency>
+
+    <dependency>
+      <groupId>com.github.dhorions</groupId>
+      <artifactId>boxable</artifactId>
+      <version>1.7.0</version>
+    </dependency>
   </dependencies>
 
 </project>

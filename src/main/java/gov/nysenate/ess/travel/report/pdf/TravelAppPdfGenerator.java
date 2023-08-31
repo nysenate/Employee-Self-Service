@@ -1,7 +1,6 @@
 package gov.nysenate.ess.travel.report.pdf;
 
 import com.google.common.base.Preconditions;
-import gov.nysenate.ess.travel.request.app.TravelApplication;
 import gov.nysenate.ess.travel.review.ApplicationReview;
 import org.apache.pdfbox.multipdf.Overlay;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -122,6 +121,10 @@ public class TravelAppPdfGenerator {
                 overlay.setOverlayPosition(Overlay.Position.BACKGROUND);
                 overlay.overlayDocuments(overlayGuide);
             }
+
+            // --- Draw expense summary on the next page. ---
+            AppPdfExpenseSummaryWriter expenseWriter = new AppPdfExpenseSummaryWriter(doc, contentWidth, config, appReview.application());
+            expenseWriter.write();
 
             cs.close();
             doc.save(os);

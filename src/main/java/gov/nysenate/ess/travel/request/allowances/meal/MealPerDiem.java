@@ -34,11 +34,11 @@ public final class MealPerDiem {
         this.isReimbursementRequested = isReimbursementRequested;
     }
 
-    public int id() {
+    int id() {
         return id;
     }
 
-    public void setId(int id) {
+    void setId(int id) {
         this.id = id;
     }
 

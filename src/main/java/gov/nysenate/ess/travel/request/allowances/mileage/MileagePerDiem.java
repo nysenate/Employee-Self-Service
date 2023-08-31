@@ -33,7 +33,7 @@ public class MileagePerDiem {
     /**
      * The total requested per diem value.
      */
-    protected Dollars requestedPerDiemValue() {
+    public Dollars requestedPerDiemValue() {
         return isReimbursementRequested()
                 ? perDiemValue()
                 : Dollars.ZERO;
@@ -61,11 +61,11 @@ public class MileagePerDiem {
         return mileagePerDiem.getDate();
     }
 
-    protected BigDecimal getMileageRate() {
+    public BigDecimal getMileageRate() {
         return mileagePerDiem.getRate();
     }
 
-    protected double getMiles() {
+    public double getMiles() {
         return miles;
     }
 
@@ -77,11 +77,11 @@ public class MileagePerDiem {
         return id;
     }
 
-    protected TravelAddress getFrom() {
+    public TravelAddress getFrom() {
         return from;
     }
 
-    protected TravelAddress getTo() {
+    public TravelAddress getTo() {
         return to;
     }
 
