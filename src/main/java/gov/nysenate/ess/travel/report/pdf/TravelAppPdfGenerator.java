@@ -3,16 +3,20 @@ package gov.nysenate.ess.travel.report.pdf;
 import com.google.common.base.Preconditions;
 import gov.nysenate.ess.travel.request.app.TravelApplication;
 import gov.nysenate.ess.travel.review.ApplicationReview;
+import org.apache.pdfbox.multipdf.Overlay;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.springframework.util.ResourceUtils;
 
 import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 
 public class TravelAppPdfGenerator {
 
@@ -34,7 +38,7 @@ public class TravelAppPdfGenerator {
      *
      * @param os The OutputStream to write this application's pdf to.
      */
-    public void write(OutputStream os) throws IOException {
+    public void write(OutputStream os, boolean drawWatermark) throws IOException {
         try (PDDocument doc = new PDDocument()) {
             // Initial page setup
             PDPage page = new PDPage();
@@ -94,13 +98,29 @@ public class TravelAppPdfGenerator {
                 // 64f is the space needed to draw signatures. Hard coded since I could not figure out how to calculate dynamically accurately.
                 // Cant fit on current page, start a new page.
                 cs = newPage(doc, cs);
-                currentY -=30f; // Additional top of page margin before signatures.
+                currentY -= 30f; // Additional top of page margin before signatures.
+                AppPdfSignatureWriter signatureWriter = new AppPdfSignatureWriter(config, cs, lineStartX, currentY, appReview);
+                currentY = signatureWriter.write();
+            } else {
                 AppPdfSignatureWriter signatureWriter = new AppPdfSignatureWriter(config, cs, lineStartX, currentY, appReview);
                 currentY = signatureWriter.write();
             }
-            else {
-                AppPdfSignatureWriter signatureWriter = new AppPdfSignatureWriter(config, cs, lineStartX, currentY, appReview);
-                currentY = signatureWriter.write();
+
+            if (drawWatermark) {
+                // --- Draw the watermark ---
+                // Add a watermark/overlay for each page.
+                HashMap<Integer, PDDocument> overlayGuide = new HashMap<>();
+                for (int i = 0; i < doc.getNumberOfPages(); i++) {
+                    File file = ResourceUtils.getFile("classpath:travel/RTA_Watermark.pdf");
+                    PDDocument overlayDoc = PDDocument.load(file);
+                    overlayGuide.put(i + 1, overlayDoc);
+                }
+
+                // Draw the overlays
+                Overlay overlay = new Overlay();
+                overlay.setInputPDF(doc);
+                overlay.setOverlayPosition(Overlay.Position.BACKGROUND);
+                overlay.overlayDocuments(overlayGuide);
             }
 
             cs.close();

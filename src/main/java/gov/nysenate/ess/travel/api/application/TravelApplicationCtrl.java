@@ -4,6 +4,7 @@ import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
+import gov.nysenate.ess.travel.authorization.role.TravelRole;
 import gov.nysenate.ess.travel.request.attachment.Attachment;
 import gov.nysenate.ess.travel.request.attachment.SqlAttachmentDao;
 import gov.nysenate.ess.travel.request.app.TravelApplication;
@@ -53,7 +54,9 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
 
         TravelAppPdfGenerator pdfGenerator = new TravelAppPdfGenerator(appReview);
         try (ByteArrayOutputStream pdfBytes = new ByteArrayOutputStream()) {
-            pdfGenerator.write(pdfBytes);
+            // Draw the watermark unless user has TRAVEL_ADMIN or SOS roles.
+            boolean drawWatermark = !(getSubject().hasRole(TravelRole.TRAVEL_ADMIN.name()) || getSubject().hasRole(TravelRole.SECRETARY_OF_THE_SENATE.name()));
+            pdfGenerator.write(pdfBytes, drawWatermark);
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);
             return new ResponseEntity<>(pdfBytes.toByteArray(), headers, HttpStatus.OK);
