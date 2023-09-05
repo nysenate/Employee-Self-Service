@@ -50,7 +50,9 @@
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/time/accrual/accrual-utils.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
-                src="${ctxPath}/assets/js/src/time/sick-time-donation-ctrl.js?v=${releaseVersion}"></script>
+                src="${ctxPath}/assets/js/src/time/accrual/sick-time-donation-ctrl.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/time/accrual/donation-modal.js?v=${releaseVersion}"></script>
 
         <!-- Allowances -->
         <script type="text/javascript"

@@ -7,13 +7,14 @@ function sickTimeDonationCtrl($timeout, $scope, appProps, modals,
                               DonationInfoApi, DonationHistoryApi, SubmitDonationApi) {
     const initialState = {
         empId: appProps.user.employeeId,
+        realLastName: appProps.user.lastName,
         hoursToDonate: null,
         selectedYear: new Date().getFullYear(),
         maxDonation: null,
         accruedSickTime: null,
         donationData: [],
         showCertificationMessage: false,
-        message: ""
+        inputLastName: ""
     };
     $scope.state = angular.extend(initialState);
 
@@ -56,16 +57,21 @@ function sickTimeDonationCtrl($timeout, $scope, appProps, modals,
             empId: $scope.state.empId,
             hoursToDonate: $scope.state.hoursToDonate
         };
-        // We pass in all data in the params
         SubmitDonationApi.save(params, {},
-            function onSuccess(resp) {
-                $scope.state.message = resp.message;
+            function onSuccess() {
+                $scope.setDonationInfo();
+                $scope.setDonationHistory();
             }
-        );
-        $scope.state.showCertificationMessage = false;
+        )
         $scope.state.hoursToDonate = null;
-        $scope.setDonationInfo();
-        $scope.setDonationHistory();
+    }
+
+    $scope.openPopup = function () {
+        $scope.state.showCertificationMessage = false;
+        modals.open('donation-modal', {}, true)
+            .then(function() {
+                $scope.submitDonation();
+            }).catch(function() {})
     }
 
     $scope.$watch('state.selectedYear', $scope.setDonationHistory);

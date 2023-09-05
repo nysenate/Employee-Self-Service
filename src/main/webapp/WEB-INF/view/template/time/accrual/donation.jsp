@@ -14,7 +14,6 @@
 
   <div class="content-container" ng-show="state.maxDonation >= 10">
     <p>
-      Accrued sick hours: {{state.accruedSickTime}}<br>
       You may donate 10 - {{state.maxDonation}} hours in half-hour increments.
     </p>
     <form>
@@ -26,13 +25,10 @@
       <input ng-click="state.showCertificationMessage = true" class="submit-button" type="button" value="Donate time"
              ng-disabled="!state.hoursToDonate || state.showCertificationMessage"/>
       <div ng-show="state.showCertificationMessage">
-        Once you donate these hours, you can't get them back. Do you still wish to donate?<br>
-        <input ng-click="submitDonation()" class="submit-button" type="button" value="Yes">
-        <input ng-click="state.showCertificationMessage = false" class="submit-button" type="button" value="No">
+        You will donate {{state.hoursToDonate}} out of {{state.accruedSickTime}} accrued sick hours.<br>
+        <input ng-click="openPopup()" class="submit-button" type="button" value="Continue">
+        <input ng-click="state.showCertificationMessage = false" class="submit-button" type="button" value="Go Back">
       </div>
-      <p>
-        {{state.message}}
-      </p>
     </form>
   </div>
 
@@ -63,5 +59,11 @@
     <div ng-show="state.donationData.length === 0">
       You have no donations for this year yet.
     </div>
+  </div>
+
+  <div modal-container>
+    <modal modal-id="donation-modal">
+      <sick-donation-confirmation-modal></sick-donation-confirmation-modal>
+    </modal>
   </div>
 </section>

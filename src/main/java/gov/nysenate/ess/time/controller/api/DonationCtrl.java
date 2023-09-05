@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -99,7 +100,7 @@ public class DonationCtrl extends BaseRestApiCtrl {
         checkPermission(new EssTimePermission(empId, ACCRUAL, GET, Range.singleton(LocalDate.now())));
         var history = donationDao.getDonatedTime(empId, year)
                 // Strings should be ordered by date.
-                .asMap().entrySet().stream().sorted(Map.Entry.comparingByKey())
+                .asMap().entrySet().stream().sorted(Collections.reverseOrder(Map.Entry.comparingByKey()))
                 .map(entry -> donationString(entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());
         return new ViewObjectResponse<>(ListView.ofStringList(history));
