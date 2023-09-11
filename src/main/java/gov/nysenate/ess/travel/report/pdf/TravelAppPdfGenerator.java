@@ -105,6 +105,10 @@ public class TravelAppPdfGenerator {
                 currentY = signatureWriter.write();
             }
 
+            // --- Draw expense summary on the next page. ---
+            AppPdfExpenseSummaryWriter expenseWriter = new AppPdfExpenseSummaryWriter(doc, contentWidth, config, appReview.application());
+            expenseWriter.write();
+
             if (drawWatermark) {
                 // --- Draw the watermark ---
                 // Add a watermark/overlay for each page.
@@ -121,10 +125,6 @@ public class TravelAppPdfGenerator {
                 overlay.setOverlayPosition(Overlay.Position.BACKGROUND);
                 overlay.overlayDocuments(overlayGuide);
             }
-
-            // --- Draw expense summary on the next page. ---
-            AppPdfExpenseSummaryWriter expenseWriter = new AppPdfExpenseSummaryWriter(doc, contentWidth, config, appReview.application());
-            expenseWriter.write();
 
             cs.close();
             doc.save(os);
