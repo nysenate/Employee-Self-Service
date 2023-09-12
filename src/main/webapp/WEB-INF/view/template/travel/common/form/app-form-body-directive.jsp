@@ -132,7 +132,7 @@
             <tr>
               <td class="label">
                 <label for="transportation-expense">
-                  Transportation ({{app.activeAmendment.route.mileagePerDiems.totalMileage}} Miles)
+                  Transportation ({{app.activeAmendment.mileagePerDiems.totalMileage}} Miles)
                 </label>
               </td>
               <td class="price">
