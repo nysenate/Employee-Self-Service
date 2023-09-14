@@ -72,15 +72,15 @@ public class AppPdfSignatureWriter implements AppPdfWriter {
         currentY -= SOS_SIG_TOP_MARGIN;
 
         // SOS Signature
-        Action approvalAction = appReview.getLatestActionByRole(TravelRole.SECRETARY_OF_THE_SENATE);
-        if (approvalAction != null && approvalAction.isApproval()) {
-            float height = (config.font.getFontDescriptor().getCapHeight()) / 1000 * SIGNATURE_FONT_SIZE;
-            currentY += height + 2f;
-            drawText(x + (DEPARTMENT_HD_SIG_LEFT_MARGIN / 2), currentY, config.font, SIGNATURE_FONT_SIZE, "Alejandra N. Paulino");
-            drawText(x + (DEPARTMENT_HD_SIG_LEFT_MARGIN / 2) + DATE_LEFT_MARGIN, currentY, config.font, SIGNATURE_FONT_SIZE,
-                    approvalAction.dateTime().format(config.dateFormat));
-            currentY -= 2f;
-        }
+//        Action approvalAction = appReview.getLatestActionByRole(TravelRole.SECRETARY_OF_THE_SENATE);
+//        if (approvalAction != null && approvalAction.isApproval()) {
+//            float height = (config.font.getFontDescriptor().getCapHeight()) / 1000 * SIGNATURE_FONT_SIZE;
+//            currentY += height + 2f;
+//            drawText(x + (DEPARTMENT_HD_SIG_LEFT_MARGIN / 2), currentY, config.font, SIGNATURE_FONT_SIZE, "Alejandra N. Paulino");
+//            drawText(x + (DEPARTMENT_HD_SIG_LEFT_MARGIN / 2) + DATE_LEFT_MARGIN, currentY, config.font, SIGNATURE_FONT_SIZE,
+//                    approvalAction.dateTime().format(config.dateFormat));
+//            currentY -= 2f;
+//        }
         drawText(x + (DEPARTMENT_HD_SIG_LEFT_MARGIN /2), currentY, config.fontBold, FONT_SIZE, signatureLine);
         currentY -= leading;
 
