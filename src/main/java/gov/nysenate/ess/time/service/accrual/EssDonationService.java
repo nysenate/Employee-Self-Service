@@ -19,9 +19,9 @@ public class EssDonationService implements DonationService {
     }
 
     @Override
-    public BigDecimal getHoursDonated(int empId, LocalDate beforeOrDuring) {
+    public BigDecimal getHoursDonated(int empId) {
         try {
-            Range<LocalDate> dateRange = Range.closed(beforeImplementation, beforeOrDuring);
+            Range<LocalDate> dateRange = Range.closed(beforeImplementation, LocalDate.now());
             return donationDao.getDonatedTime(empId, dateRange)
                     .values().stream().reduce(BigDecimal.ZERO, BigDecimal::add);
         }

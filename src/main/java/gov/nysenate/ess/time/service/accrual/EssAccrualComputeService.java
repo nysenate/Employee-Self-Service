@@ -129,7 +129,7 @@ public class EssAccrualComputeService implements AccrualComputeService
         }
 
         return new AccrualsAvailable(referenceSummary, payPeriod, serviceYtdExpected, biWeekHrsExpected,
-                donationService.getHoursDonated(empId, payPeriod.getEndDate()));
+                donationService.getHoursDonated(empId));
     }
 
     /** {@inheritDoc} */
