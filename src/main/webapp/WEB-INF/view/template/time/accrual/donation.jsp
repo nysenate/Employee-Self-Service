@@ -8,18 +8,18 @@
   <p ng-show="state.maxDonation == null">
     Loading...
   </p>
-  <p ng-show="state.maxDonation != null && state.maxDonation < 10">
+  <p ng-show="state.maxDonation != null && state.maxDonation == 0">
     You are ineligible to donate sick leave at this time.
   </p>
 
-  <div class="content-container" ng-show="state.maxDonation >= 10">
+  <div class="content-container" ng-show="state.maxDonation >= 0.5">
     <p>
-      You may donate 10 - {{state.maxDonation}} hours in half-hour increments.
+      You may donate up to {{state.maxDonation}} hours in half-hour increments.
     </p>
     <form>
       <label for="donation">Donation amount:</label>
       <input type="number" id="donation" name="donation"
-             min="10" max={{state.maxDonation}} step="0.5"
+             min="0.5" max={{state.maxDonation}} step="0.5"
              ng-model="state.hoursToDonate" ng-disabled="state.showCertificationMessage"><br><br>
 
       <input ng-click="state.showCertificationMessage = true" class="submit-button" type="button" value="Donate time"

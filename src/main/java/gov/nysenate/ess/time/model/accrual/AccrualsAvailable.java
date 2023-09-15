@@ -21,7 +21,8 @@ public class AccrualsAvailable {
     private BigDecimal biWeekHrsExpected;
 
     public AccrualsAvailable(AccrualSummary summary, PayPeriod period,
-                             BigDecimal serviceYtdExpected, BigDecimal biWeekHrsExpected) {
+                             BigDecimal serviceYtdExpected, BigDecimal biWeekHrsExpected,
+                             BigDecimal sickHoursDonated) {
         this.empId = summary.getEmpId();
         this.payPeriod = period;
 
@@ -36,7 +37,7 @@ public class AccrualsAvailable {
                 .add(summary.getEmpHoursAccrued())
                 .subtract(summary.getEmpHoursUsed())
                 .subtract(summary.getFamHoursUsed())
-                .subtract(summary.getSickHoursDonated());
+                .subtract(sickHoursDonated);
 
         this.serviceYtdExpected = serviceYtdExpected;
         this.serviceYtd = summary.getTotalHoursUsed();
