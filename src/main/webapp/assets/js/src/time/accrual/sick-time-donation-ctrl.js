@@ -13,7 +13,6 @@ function sickTimeDonationCtrl($timeout, $scope, appProps, modals,
         maxDonation: null,
         accruedSickTime: null,
         donationData: [],
-        showCertificationMessage: false,
         inputLastName: ""
     };
     $scope.state = angular.extend(initialState);
@@ -66,8 +65,14 @@ function sickTimeDonationCtrl($timeout, $scope, appProps, modals,
         $scope.state.hoursToDonate = null;
     }
 
-    $scope.openPopup = function () {
-        $scope.state.showCertificationMessage = false;
+    $scope.openContinuePopup = function () {
+        modals.open('donation-continue-modal', {}, true)
+            .then(function() {
+                $scope.openConfirmPopup();
+            }).catch(function() {})
+    }
+
+    $scope.openConfirmPopup = function () {
         modals.open('donation-modal', {}, true)
             .then(function() {
                 $scope.submitDonation();
