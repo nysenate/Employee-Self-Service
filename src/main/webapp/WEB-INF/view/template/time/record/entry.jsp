@@ -103,7 +103,7 @@
          ng-if="state.annualEntries && state.tempEntries">
       <p>
         There was a change in pay type during the time covered by this record.<br>
-        Record days have been split into two seperate entry tables, one for Regular/Special Annual pay, another for
+        Record days have been split into two separate entry tables, one for Regular/Special Annual pay, another for
         Temporary pay
       </p>
     </div>

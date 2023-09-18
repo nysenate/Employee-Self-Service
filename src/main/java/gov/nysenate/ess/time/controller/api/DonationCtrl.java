@@ -5,20 +5,16 @@ import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.client.response.error.ErrorResponse;
-import gov.nysenate.ess.core.client.view.base.DateRangeView;
 import gov.nysenate.ess.core.client.view.base.DonationInfoView;
 import gov.nysenate.ess.core.client.view.base.ListView;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.period.PayPeriod;
-import gov.nysenate.ess.core.model.period.PayPeriodType;
 import gov.nysenate.ess.core.model.personnel.Employee;
-import gov.nysenate.ess.core.service.period.PayPeriodService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
 import gov.nysenate.ess.time.dao.accrual.DonationDao;
 import gov.nysenate.ess.time.model.attendance.TimeRecord;
-import gov.nysenate.ess.time.model.attendance.TimeRecordScope;
 import gov.nysenate.ess.time.model.auth.EssTimePermission;
 import gov.nysenate.ess.time.service.accrual.AccrualComputeService;
 import gov.nysenate.ess.time.service.attendance.TimeRecordService;
@@ -46,7 +42,6 @@ public class DonationCtrl extends BaseRestApiCtrl {
             MIN_DAYS_REMAINING = new BigDecimal(10), HALF = new BigDecimal("0.5");
     private final DonationDao donationDao;
     private final AccrualComputeService accrualComputeService;
-    private final PayPeriodService payPeriodService;
     private final EmployeeInfoService employeeInfoService;
     private final EmpTransactionService empTransService;
     private final TimeRecordService timeRecordService;
@@ -54,11 +49,10 @@ public class DonationCtrl extends BaseRestApiCtrl {
 
     @Autowired
     public DonationCtrl(DonationDao donationDao, AccrualComputeService accrualComputeService,
-                        PayPeriodService payPeriodService, EmployeeInfoService employeeInfoService,
-                        EmpTransactionService empTransService, TimeRecordService timeRecordService) {
+                        EmployeeInfoService employeeInfoService, EmpTransactionService empTransService,
+                        TimeRecordService timeRecordService) {
         this.donationDao = donationDao;
         this.accrualComputeService = accrualComputeService;
-        this.payPeriodService = payPeriodService;
         this.employeeInfoService = employeeInfoService;
         this.empTransService = empTransService;
         this.timeRecordService = timeRecordService;
@@ -68,15 +62,18 @@ public class DonationCtrl extends BaseRestApiCtrl {
     public BaseResponse getDonationInfo(@RequestParam int empId) {
         checkPermission(new EssTimePermission(empId, ACCRUAL, GET, Range.singleton(LocalDate.now())));
         Employee emp = employeeInfoService.getEmployee(empId);
-        PayPeriod payPeriod = payPeriodService.getPayPeriod(PayPeriodType.AF, LocalDate.now());
+        // Only sick time up until the oldest active time record is usable.
+        PayPeriod payPeriod = timeRecordService.getActiveTimeRecords(empId).stream()
+                .dropWhile(record -> !record.getRecordStatus().isUnlockedForEmployee()).findFirst()
+                .map(TimeRecord::getPayPeriod).orElse(null);
         BigDecimal accruedSickTime = accrualComputeService.getAccrualsAvailable(empId, payPeriod).getSickAvailable();
         BigDecimal empHoursPerDay = HOURS_PER_DAY.multiply(getProratePercentageFromEmpId(emp));
 
         var yearlyDonationLimit = empHoursPerDay.multiply(MAX_DAYS_DONATED)
                 .subtract(donationDao.getTimeDonatedThisYear(empId));
         var timeRemainingLimit = accruedSickTime.subtract(empHoursPerDay.multiply(MIN_DAYS_REMAINING));
-        // Result needs to be rounded to the nearest multiple of 0.5
-        BigDecimal unRoundedResult = timeRemainingLimit.min(yearlyDonationLimit);
+        // Result needs to be rounded down to the nearest multiple of 0.5
+        BigDecimal unRoundedResult = timeRemainingLimit.min(yearlyDonationLimit).max(BigDecimal.ZERO);
         BigDecimal decimalPart = unRoundedResult.remainder(BigDecimal.ONE);
         BigDecimal roundedResult = new BigDecimal(unRoundedResult.intValue());
         if (decimalPart.compareTo(HALF) >= 0) {
@@ -85,21 +82,12 @@ public class DonationCtrl extends BaseRestApiCtrl {
         return new ViewObjectResponse<>(new DonationInfoView(roundedResult, accruedSickTime));
     }
 
-    @GetMapping("/range")
-    public BaseResponse getDonationRange(@RequestParam int empId) {
-        Range<LocalDate> todayRange = Range.closed(LocalDate.now(), LocalDate.now());
-        Range<LocalDate> dateRange = timeRecordService.getActiveTimeRecords(empId).stream()
-                .filter(timeRecord -> timeRecord.getRecordStatus().getScope() == TimeRecordScope.EMPLOYEE)
-                .map(TimeRecord::getDateRange).reduce(todayRange, Range::span);
-        return new ViewObjectResponse<>(new DateRangeView(dateRange));
-    }
-
     @GetMapping("/history")
     // TODO: order sick time donations within days
     public BaseResponse getDonationHistory(@RequestParam int empId, @RequestParam int year) {
         checkPermission(new EssTimePermission(empId, ACCRUAL, GET, Range.singleton(LocalDate.now())));
         var history = donationDao.getDonatedTime(empId, year)
-                // Strings should be ordered by date.
+                // Data should be ordered by date.
                 .asMap().entrySet().stream().sorted(Collections.reverseOrder(Map.Entry.comparingByKey()))
                 .map(entry -> donationString(entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());

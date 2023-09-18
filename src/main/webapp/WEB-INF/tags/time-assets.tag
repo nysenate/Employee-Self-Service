@@ -53,6 +53,8 @@
                 src="${ctxPath}/assets/js/src/time/accrual/sick-time-donation-ctrl.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/time/accrual/donation-modal.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/time/accrual/donation-continue-modal.js?v=${releaseVersion}"></script>
 
         <!-- Allowances -->
         <script type="text/javascript"

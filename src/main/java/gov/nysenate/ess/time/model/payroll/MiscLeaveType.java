@@ -27,7 +27,7 @@ public enum MiscLeaveType
     VOL_FIRE_EMERG_MED_ACTIVITY("V", "Volunteer Fire/EMT", "Volunteer Fire Fighting and Emergency Medical Activities Leave", false, new BigInteger("191601132010629694316377408900495192200")),
     VOTING_LEAVE("T", "Voting", "Voting Leave", false, new BigInteger("186214696577130514392638601662177149240")),
     WITNESS_LEAVE("W", "Witness Leave", "Witness Leave", false, new BigInteger("191601132010618813984000877237922836616")),
-    ;
+    DONATED_MISC_LEAVE("L", "Donated Leave", "Donated Leave", false, new BigInteger("253666602241845525420608059722204643693"));
 
     String code;
     String shortName;

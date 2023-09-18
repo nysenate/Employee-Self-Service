@@ -5,45 +5,40 @@
     <h2>Sick Leave Donation</h2>
   </div>
 
-  <p ng-show="state.maxDonation == null">
-    Loading...
-  </p>
-  <p ng-show="state.maxDonation != null && state.maxDonation < 10">
-    You are ineligible to donate sick leave at this time.
-  </p>
-
-  <div class="content-container" ng-show="state.maxDonation >= 10">
-    <p>
-      You may donate 10 - {{state.maxDonation}} hours in half-hour increments.
+  <div style="text-align: center; font-size: 110%">
+    <p ng-show="state.maxDonation == null">
+      Loading...
     </p>
-    <form>
-      <label for="donation">Donation amount:</label>
-      <input type="number" id="donation" name="donation"
-             min="10" max={{state.maxDonation}} step="0.5"
-             ng-model="state.hoursToDonate" ng-disabled="state.showCertificationMessage"><br><br>
+    <p ng-show="state.maxDonation != null && state.maxDonation == 0">
+      You are ineligible to donate sick leave at this time.
+    </p>
 
-      <input ng-click="state.showCertificationMessage = true" class="submit-button" type="button" value="Donate time"
-             ng-disabled="!state.hoursToDonate || state.showCertificationMessage"/>
-      <div ng-show="state.showCertificationMessage">
-        You will donate {{state.hoursToDonate}} out of {{state.accruedSickTime}} accrued sick hours.<br>
-        <input ng-click="openPopup()" class="submit-button" type="button" value="Continue">
-        <input ng-click="state.showCertificationMessage = false" class="submit-button" type="button" value="Go Back">
-      </div>
-    </form>
+    <div class="content-container" ng-show="state.maxDonation >= 0.5">
+      <p style="padding-top: 10px">
+        You may donate up to {{state.maxDonation}} hours in half-hour increments.
+      </p>
+      <form>
+        <label for="donation">Donation amount:</label>
+        <input type="number" id="donation" name="donation"
+               style="margin: 5px"
+               min="0.5" max={{state.maxDonation}} step="0.5"
+               ng-model="state.hoursToDonate">
+
+        <input ng-click="openContinuePopup()" class="submit-button" type="button"
+               value="Donate time"
+               ng-disabled="!state.hoursToDonate"/>
+      </form>
+      <br>
+    </div>
   </div>
 
-  <div>
-    <h3 class="content-info" style="text-align: left;">
-      Select a year to view its donation history<br>
-    </h3>
-    <div class="dropdown">
-      <label for="donationHistory"></label>
-      <select id="donationHistory" ng-model="state.selectedYear"
+  <div class="content-controls" style="padding: 10px">
+    <p class="content-info" style="text-align: left; padding: 0">
+      Filter By Year &nbsp;
+      <select ng-model="state.selectedYear"
               ng-options="year for year in getYears()">
       </select>
-    </div>
-    <br>
-
+    </p>
     <table ng-show="state.donationData.length !== 0" class="donation-history-table">
       <thead>
       <tr>
@@ -64,6 +59,9 @@
   <div modal-container>
     <modal modal-id="donation-modal">
       <sick-donation-confirmation-modal></sick-donation-confirmation-modal>
+    </modal>
+    <modal modal-id="donation-continue-modal">
+      <sick-donation-continue-modal></sick-donation-continue-modal>
     </modal>
   </div>
 </section>

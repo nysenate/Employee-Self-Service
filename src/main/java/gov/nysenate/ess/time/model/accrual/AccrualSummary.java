@@ -24,9 +24,6 @@ public class AccrualSummary extends AccrualUsage
     /** The number of sick employee hours that have rolled over from prior years. */
     protected BigDecimal empHoursBanked = BigDecimal.ZERO;
 
-    /** The number of sick hours donated to the common pool. */
-    protected BigDecimal sickHoursDonated = BigDecimal.ZERO;
-
     /** --- Constructors --- */
 
     public AccrualSummary() {}
@@ -59,11 +56,6 @@ public class AccrualSummary extends AccrualUsage
 
     public void setEmpHoursBanked(BigDecimal empHoursBanked) {
         this.empHoursBanked = Optional.ofNullable(empHoursBanked).orElse(BigDecimal.ZERO);
-    }
-
-    // TODO: set this
-    public void setSickHoursDonated(BigDecimal sickHoursDonated) {
-        this.sickHoursDonated = Optional.ofNullable(sickHoursDonated).orElse(BigDecimal.ZERO);
     }
 
     /** --- Copy Constructor --- */
@@ -99,9 +91,5 @@ public class AccrualSummary extends AccrualUsage
 
     public BigDecimal getEmpHoursBanked() {
         return empHoursBanked;
-    }
-
-    public BigDecimal getSickHoursDonated() {
-        return sickHoursDonated;
     }
 }

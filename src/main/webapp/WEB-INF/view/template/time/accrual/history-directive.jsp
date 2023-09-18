@@ -39,7 +39,7 @@
     <div ng-show="accSummaries[selectedYear].length > 0">
       <p class="content-info">
         Summary of historical accrual records.
-        Click a row to view or print a detailed summary of projected accrual hours.
+        Click a row to view or print a detailed summary of accrual hours.
       </p>
       <table class="accrual-table" float-thead="floatTheadOpts"
              float-thead-enabled="floatTheadEnabled" ng-model="accSummaries[selectedYear]">
@@ -87,8 +87,8 @@
             <td class="accrual-hours available-hours vacation">{{record.vacationAvailable}}</td>
             <td class="accrual-hours sick">{{record.sickRate}}</td>
             <td class="accrual-hours sick">{{record.sickAccruedYtd}}</td>
-            <td class="accrual-hours sick">{{record.biweekSickEmpUsed + record.biweekSickFamUsed}}</td>
-            <td class="accrual-hours sick">{{record.sickEmpUsed + record.sickFamUsed}}</td>
+            <td class="accrual-hours sick">{{record.biweekSickEmpUsed + record.biweekSickFamUsed + record.biweekSickDonated}}</td>
+            <td class="accrual-hours sick">{{record.sickEmpUsed + record.sickFamUsed + record.sickDonated}}</td>
             <td class="accrual-hours available-hours sick">{{record.sickAvailable}}</td>
           </tr>
         </tbody>
