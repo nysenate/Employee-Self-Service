@@ -1,4 +1,4 @@
-<div class="text-align-center confirm-modal" style="font-size: 110%">
+<div class="confirm-modal" style="font-size: 120%">
   <h3 class="content-info">
     Donation Confirmation
   </h3>

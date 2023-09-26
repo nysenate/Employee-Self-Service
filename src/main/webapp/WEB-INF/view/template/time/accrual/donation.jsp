@@ -5,7 +5,7 @@
     <h2>Sick Leave Donation</h2>
   </div>
 
-  <div style="text-align: center; font-size: 110%">
+  <div style="text-align: center; font-size: 120%">
     <p ng-show="state.maxDonation == null">
       Loading...
     </p>
@@ -25,7 +25,7 @@
                ng-model="state.hoursToDonate">
 
         <input ng-click="openContinuePopup()" class="submit-button" type="button"
-               value="Donate time"
+               value="Continue"
                ng-disabled="!state.hoursToDonate"/>
       </form>
       <br>
@@ -57,11 +57,11 @@
   </div>
 
   <div modal-container>
-    <modal modal-id="donation-modal">
-      <sick-donation-confirmation-modal></sick-donation-confirmation-modal>
-    </modal>
     <modal modal-id="donation-continue-modal">
       <sick-donation-continue-modal></sick-donation-continue-modal>
+    </modal>
+    <modal modal-id="donation-modal">
+      <sick-donation-confirmation-modal></sick-donation-confirmation-modal>
     </modal>
   </div>
 </section>
