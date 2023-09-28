@@ -4,7 +4,6 @@ import be.quodlibet.boxable.BaseTable;
 import be.quodlibet.boxable.Cell;
 import be.quodlibet.boxable.HorizontalAlignment;
 import be.quodlibet.boxable.Row;
-import be.quodlibet.boxable.datatable.DataTable;
 import gov.nysenate.ess.travel.request.allowances.lodging.LodgingPerDiem;
 import gov.nysenate.ess.travel.request.allowances.meal.MealPerDiem;
 import gov.nysenate.ess.travel.request.allowances.mileage.MileagePerDiem;
@@ -14,7 +13,6 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
-import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
 import java.awt.*;
 import java.io.IOException;
@@ -57,7 +55,7 @@ public class AppPdfExpenseSummaryWriter implements AppPdfWriter {
 
     private PDPage writeMealSummary(PDPage page) throws IOException {
         // If no meal per diem's, don't draw anything.
-        if (app.activeAmendment().mealPerDiems().totalPerDiem().equals(Dollars.ZERO)) {
+        if (app.activeAmendment().mealPerDiems().total().equals(Dollars.ZERO)) {
             return page;
         }
 
@@ -75,9 +73,9 @@ public class AppPdfExpenseSummaryWriter implements AppPdfWriter {
                 Row<PDPage> row = dataTable.createRow(16f);
                 createBodyCell(row, 15, mpd.date().format(DATE_FORMAT), HorizontalAlignment.LEFT);
                 createBodyCell(row, 40, mpd.address().getFormattedAddressWithCounty(), HorizontalAlignment.LEFT);
-                createBodyCell(row, 15, "$" + mpd.mie().breakfast().toString(), HorizontalAlignment.RIGHT);
-                createBodyCell(row, 15, "$" + mpd.mie().dinner().toString(), HorizontalAlignment.RIGHT);
-                createBodyCell(row, 15, "$" + mpd.mie().total().toString(), HorizontalAlignment.RIGHT);
+                createBodyCell(row, 15, "$" + mpd.breakfast(), HorizontalAlignment.RIGHT);
+                createBodyCell(row, 15, "$" + mpd.dinner(), HorizontalAlignment.RIGHT);
+                createBodyCell(row, 15, "$" + mpd.total(), HorizontalAlignment.RIGHT);
             }
         }
         // Total Row
@@ -86,7 +84,7 @@ public class AppPdfExpenseSummaryWriter implements AppPdfWriter {
         createBodyCell(row, 40, "", HorizontalAlignment.LEFT);
         createBodyCell(row, 15, "", HorizontalAlignment.LEFT);
         createBodyCell(row, 15, "", HorizontalAlignment.LEFT);
-        createBodyCell(row, 15, "$" + app.activeAmendment().mealPerDiems().totalPerDiem(), HorizontalAlignment.RIGHT,
+        createBodyCell(row, 15, "$" + app.activeAmendment().mealAllowance(), HorizontalAlignment.RIGHT,
                 config.fontBold, tableFontSize);
 
         y = dataTable.draw();

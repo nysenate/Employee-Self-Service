@@ -41,21 +41,6 @@ public class MealPerDiemsTest {
     }
 
     @Test
-    public void onlyHighestRateForDayKept() {
-        MealPerDiem a = new MealPerDiem(CAPITOL, TODAY, new Dollars("23"), createMieWithTotal("23"));
-        MealPerDiem b = new MealPerDiem(CAPITOL, TODAY, new Dollars("10"), createMieWithTotal("10"));
-        MealPerDiem c = new MealPerDiem(CAPITOL, TODAY, new Dollars("20"), createMieWithTotal("20"));
-        MealPerDiem d = new MealPerDiem(CAPITOL, TODAY, new Dollars("14"), createMieWithTotal("14"));
-        MealPerDiem e = new MealPerDiem(CAPITOL, TODAY, new Dollars("28"), createMieWithTotal("28"));
-        MealPerDiem f = new MealPerDiem(CAPITOL, TODAY, new Dollars("894"), createMieWithTotal("894"));
-        MealPerDiem g = new MealPerDiem(CAPITOL, TODAY, new Dollars("12"), createMieWithTotal("12"));
-        MealPerDiem h = new MealPerDiem(CAPITOL, TODAY, new Dollars("666"), createMieWithTotal("666"));
-
-        MealPerDiems mpds = new MealPerDiems(Sets.newHashSet(a, b, c, d, e, f, g, h));
-        assertEquals(f, mpds.allMealPerDiems().first());
-    }
-
-    @Test
     public void orderedByDate() {
         MealPerDiem capitolMealPerDiem = new MealPerDiem(CAPITOL, TOMORROW, new Dollars("100"), createMieWithTotal("100"));
         MealPerDiem agencyMealPerDiem = new MealPerDiem(AGENCY, TODAY, new Dollars("50"), createMieWithTotal("50"));

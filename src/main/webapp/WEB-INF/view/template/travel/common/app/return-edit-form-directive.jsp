@@ -94,6 +94,10 @@
                          ng-model="leg.methodOfTravelDescription">
                 </div>
               </div>
+              <div class="itinerary-address" ng-if="$index === route.returnLegs.length - 1">
+                <input type="checkbox" id="arrival-time-checkbox" ng-model="route.lastLegQualifiesForDinner">
+                <label for="arrival-time-checkbox">Arriving after 7pm?</label>
+              </div>
               <div class="clear"></div>
 
             </div>

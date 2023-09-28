@@ -18,8 +18,14 @@ public class MealPerDiemView implements ViewObject {
     private TravelAddressView address;
     @JsonProperty("isReimbursementRequested")
     private boolean isReimbursementRequested;
-    private String requestedPerDiem; // TODO can be derived from rate and isReimbursementRequested?
-    private String maximumPerDiem; // TODO Always the same as rate?
+    @JsonProperty("qualifiesForBreakfast")
+    private boolean qualifiesForBreakfast;
+    @JsonProperty("qualifiesForDinner")
+    private boolean qualifiesForDinner;
+
+    private String total;
+    private String breakfast;
+    private String dinner;
 
     public MealPerDiemView() {
     }
@@ -31,8 +37,12 @@ public class MealPerDiemView implements ViewObject {
         this.rate = mpd.rate().toString();
         this.mie = mpd.mie() == null ? null : new SenateMieView(mpd.mie());
         this.isReimbursementRequested = mpd.isReimbursementRequested();
-        this.requestedPerDiem = mpd.requestedPerDiem().toString();
-        this.maximumPerDiem = mpd.maximumPerDiem().toString();
+        this.qualifiesForBreakfast = mpd.qualifiesForBreakfast();
+        this.qualifiesForDinner = mpd.qualifiesForDinner();
+
+        this.total = mpd.total().toString();
+        this.breakfast = mpd.breakfast().toString();
+        this.dinner = mpd.dinner().toString();
     }
 
     public MealPerDiem toMealPerDiem() {
@@ -42,7 +52,9 @@ public class MealPerDiemView implements ViewObject {
                 LocalDate.parse(date, DateTimeFormatter.ISO_DATE),
                 new Dollars(rate),
                 mie == null ? null : mie.toSenateMie(),
-                isReimbursementRequested
+                isReimbursementRequested,
+                qualifiesForBreakfast,
+                qualifiesForDinner
         );
     }
 
@@ -70,12 +82,24 @@ public class MealPerDiemView implements ViewObject {
         return isReimbursementRequested;
     }
 
-    public String getRequestedPerDiem() {
-        return requestedPerDiem;
+    public boolean isQualifiesForBreakfast() {
+        return qualifiesForBreakfast;
     }
 
-    public String getMaximumPerDiem() {
-        return maximumPerDiem;
+    public boolean isQualifiesForDinner() {
+        return qualifiesForDinner;
+    }
+
+    public String getTotal() {
+        return total;
+    }
+
+    public String getBreakfast() {
+        return breakfast;
+    }
+
+    public String getDinner() {
+        return dinner;
     }
 
     @Override

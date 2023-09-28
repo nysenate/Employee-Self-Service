@@ -30,7 +30,7 @@ public class MealPerDiemsView implements ViewObject {
         this.requestedMealPerDiems = ma.requestedMealPerDiems().stream()
                 .map(MealPerDiemView::new)
                 .collect(Collectors.toList());
-        this.totalPerDiem = ma.totalPerDiem().toString();
+        this.totalPerDiem = ma.total().toString();
         this.isOverridden = ma.isOverridden();
         this.overrideRate = Double.parseDouble(ma.overrideRate().toString());
         this.isAllowedMeals = ma.isAllowedMeals();

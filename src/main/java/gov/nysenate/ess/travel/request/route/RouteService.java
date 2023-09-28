@@ -46,7 +46,8 @@ public class RouteService {
             returnLegs.add(leg);
         }
 
-        Route fullRoute = new Route(outboundLegs, returnLegs);
+        Route fullRoute = new Route(outboundLegs, returnLegs,
+                route.firstLegQualifiesForBreakfast(), route.lastLegQualifiesForDinner());
         setDestinationPerDiems(fullRoute);
 
         return fullRoute;

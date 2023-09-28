@@ -55,7 +55,7 @@ public class Amendment {
     }
 
     public Dollars mealAllowance() {
-        return mealPerDiems().totalPerDiem();
+        return mealPerDiems().total();
     }
 
     public Dollars lodgingAllowance() {

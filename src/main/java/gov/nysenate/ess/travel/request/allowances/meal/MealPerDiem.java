@@ -20,18 +20,50 @@ public final class MealPerDiem {
     private final Dollars rate;
     private final SenateMie mie;
     private boolean isReimbursementRequested;
+    private boolean qualifiesForBreakfast;
+    private boolean qualifiesForDinner;
 
     public MealPerDiem(TravelAddress address, LocalDate date, Dollars rate, SenateMie mie) {
-        this(0, address, date, rate, mie, true);
+        this(0, address, date, rate, mie, true, true, true);
     }
 
-    public MealPerDiem(int id, TravelAddress address, LocalDate date, Dollars rate, SenateMie mie, boolean isReimbursementRequested) {
+    public MealPerDiem(int id, TravelAddress address, LocalDate date, Dollars rate, SenateMie mie,
+                       boolean isReimbursementRequested, boolean qualifiesForBreakfast, boolean qualifiesForDinner) {
         this.id = id;
         this.address = address;
         this.date = date;
         this.rate = rate;
         this.mie = mie;
         this.isReimbursementRequested = isReimbursementRequested;
+        this.qualifiesForBreakfast = qualifiesForBreakfast;
+        this.qualifiesForDinner = qualifiesForDinner;
+    }
+
+    /**
+     * The total reimbursement for this meal per diem.
+     */
+    public Dollars total() {
+        return breakfast().add(dinner());
+    }
+
+    /**
+     * The reimbursement for breakfast.
+     */
+    public Dollars breakfast() {
+        if (!isReimbursementRequested()) {
+            return Dollars.ZERO;
+        }
+        return qualifiesForBreakfast() ? mie().breakfast() : Dollars.ZERO;
+    }
+
+    /**
+     * The reimbursement for dinner.
+     */
+    public Dollars dinner() {
+        if (!isReimbursementRequested()) {
+            return Dollars.ZERO;
+        }
+        return qualifiesForDinner() ? mie().dinner() : Dollars.ZERO;
     }
 
     int id() {
@@ -40,14 +72,6 @@ public final class MealPerDiem {
 
     void setId(int id) {
         this.id = id;
-    }
-
-    public Dollars maximumPerDiem() {
-        return this.rate;
-    }
-
-    public Dollars requestedPerDiem() {
-        return isReimbursementRequested() ? maximumPerDiem() : Dollars.ZERO;
     }
 
     public SenateMie mie() {
@@ -70,6 +94,22 @@ public final class MealPerDiem {
         return isReimbursementRequested;
     }
 
+    public boolean qualifiesForBreakfast() {
+        return qualifiesForBreakfast;
+    }
+
+    public boolean qualifiesForDinner() {
+        return qualifiesForDinner;
+    }
+
+    public void setQualifiesForBreakfast(boolean qualifiesForBreakfast) {
+        this.qualifiesForBreakfast = qualifiesForBreakfast;
+    }
+
+    public void setQualifiesForDinner(boolean qualifiesForDinner) {
+        this.qualifiesForDinner = qualifiesForDinner;
+    }
+
     @Override
     public String toString() {
         return "MealPerDiem{" +
@@ -79,6 +119,8 @@ public final class MealPerDiem {
                 ", rate=" + rate +
                 ", mie=" + mie +
                 ", isReimbursementRequested=" + isReimbursementRequested +
+                ", qualifiesForBreakfast=" + qualifiesForBreakfast +
+                ", qualifiesForDinner=" + qualifiesForDinner +
                 '}';
     }
 
@@ -87,16 +129,19 @@ public final class MealPerDiem {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         MealPerDiem that = (MealPerDiem) o;
-        return id == that.id &&
-                isReimbursementRequested == that.isReimbursementRequested &&
-                Objects.equals(address, that.address) &&
-                Objects.equals(date, that.date) &&
-                Objects.equals(rate, that.rate) &&
-                Objects.equals(mie, that.mie);
+        return id == that.id
+                && isReimbursementRequested == that.isReimbursementRequested
+                && qualifiesForBreakfast == that.qualifiesForBreakfast
+                && qualifiesForDinner == that.qualifiesForDinner
+                && Objects.equals(address, that.address)
+                && Objects.equals(date, that.date)
+                && Objects.equals(rate, that.rate)
+                && Objects.equals(mie, that.mie);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, address, date, rate, mie, isReimbursementRequested);
+        return Objects.hash(id, address, date, rate, mie, isReimbursementRequested,
+                qualifiesForBreakfast, qualifiesForDinner);
     }
 }

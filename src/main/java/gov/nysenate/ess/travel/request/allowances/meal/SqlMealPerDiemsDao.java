@@ -55,7 +55,9 @@ public class SqlMealPerDiemsDao extends SqlBaseDao {
                 .addValue("date", toDate(mpd.date()))
                 .addValue("rate", mpd.rate().toString())
                 .addValue("senateMieId", mpd.mie() == null ? null : mpd.mie().getId())
-                .addValue("isReimbursementRequested", mpd.isReimbursementRequested());
+                .addValue("isReimbursementRequested", mpd.isReimbursementRequested())
+                .addValue("qualifiesForBreakfast", mpd.qualifiesForBreakfast())
+                .addValue("qualifiesForDinner", mpd.qualifiesForDinner());
 
         String sql = SqlMealPerDiemsQuery.INSERT_MEAL_PER_DIEM.getSql(schemaMap());
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -79,6 +81,7 @@ public class SqlMealPerDiemsDao extends SqlBaseDao {
         SELECT_MEAL_PER_DIEMS("""
                 SELECT mpds.amendment_meal_per_diems_id, mpds.amendment_meal_per_diem_id, mpds.override_rate, mpds.is_allowed_meals,
                   mpd.address_id, mpd.date, mpd.rate, mpd.senate_mie_id, mpd.is_reimbursement_requested,
+                  mpd.qualifies_for_breakfast, mpd.qualifies_for_dinner,
                   senate_mie.fiscal_year, senate_mie.total, senate_mie.breakfast, senate_mie.dinner,
                   addr.street_1, addr.city, addr.state, addr.zip_5, addr.county, addr.country, addr.place_id, addr.name
                 FROM ${travelSchema}.amendment_meal_per_diems mpds
@@ -90,8 +93,10 @@ public class SqlMealPerDiemsDao extends SqlBaseDao {
         ),
         INSERT_MEAL_PER_DIEM("""
                 INSERT INTO ${travelSchema}.amendment_meal_per_diem
-                  (address_id, date, rate, senate_mie_id, is_reimbursement_requested)
-                VALUES (:addressId, :date, :rate, :senateMieId, :isReimbursementRequested)
+                  (address_id, date, rate, senate_mie_id, is_reimbursement_requested,
+                  qualifies_for_breakfast, qualifies_for_dinner)
+                VALUES (:addressId, :date, :rate, :senateMieId, :isReimbursementRequested,
+                  :qualifiesForBreakfast, :qualifiesForDinner)
                 """
         ),
         INSERT_JOIN_TABLE("""
@@ -148,7 +153,10 @@ public class SqlMealPerDiemsDao extends SqlBaseDao {
 //                mie = senateMieDao.selectSenateMie(senateMieId);
 //            }
             boolean isReimbursementRequested = rs.getBoolean("is_reimbursement_requested");
-            MealPerDiem mpd = new MealPerDiem(mpdId, address, date, rate, mie, isReimbursementRequested);
+            boolean qualifiesForBreakfast = rs.getBoolean("qualifies_for_breakfast");
+            boolean qualifiesForDinner = rs.getBoolean("qualifies_for_dinner");
+            MealPerDiem mpd = new MealPerDiem(mpdId, address, date, rate, mie, isReimbursementRequested,
+                    qualifiesForBreakfast, qualifiesForDinner);
             mealPerDiems.add(mpd);
         }
 

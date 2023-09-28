@@ -16,6 +16,7 @@ import gov.nysenate.ess.travel.request.allowances.lodging.LodgingPerDiem;
 import gov.nysenate.ess.travel.request.allowances.lodging.LodgingPerDiems;
 import gov.nysenate.ess.travel.request.allowances.meal.MealPerDiem;
 import gov.nysenate.ess.travel.request.allowances.meal.MealPerDiems;
+import gov.nysenate.ess.travel.request.allowances.meal.MealPerDiemsFactory;
 import gov.nysenate.ess.travel.request.allowances.mileage.MileagePerDiem;
 import gov.nysenate.ess.travel.request.allowances.mileage.MileagePerDiems;
 import gov.nysenate.ess.travel.request.amendment.Amendment;
@@ -39,11 +40,9 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class TravelAppUpdateService {
@@ -51,7 +50,7 @@ public class TravelAppUpdateService {
     private static final Logger logger = LoggerFactory.getLogger(TravelAppUpdateService.class);
 
     @Autowired private RouteService routeService;
-    @Autowired private SqlSenateMieDao senateMieDao;
+    @Autowired private MealPerDiemsFactory mealPerDiemsFactory;
     @Autowired private TravelApplicationService appService;
     @Autowired private ApplicationReviewService appReviewService;
     @Autowired private TravelEmailService emailService;
@@ -130,23 +129,7 @@ public class TravelAppUpdateService {
     }
 
     private MealPerDiems createMealPerDiems(Route route, TravelEmployee traveler) {
-        boolean isAllowedMeals = traveler.getRespCenter().isAdministrativeOffice();
-        Set<MealPerDiem> mealPerDiemSet = new HashSet<>();
-        for (Destination d : route.destinations()) {
-            for (PerDiem pd : d.mealPerDiems()) {
-                // Ignore Per Diem if the rate is zero - there is no meal per diem.
-                if (!pd.isRateZero()) {
-                    SenateMie mie = null;
-                    try {
-                        mie = senateMieDao.selectSenateMie(DateUtils.getFederalFiscalYear(pd.getDate()), new Dollars(pd.getRate()));
-                    } catch (IncorrectResultSizeDataAccessException ex) {
-                        logger.warn("Unable to find Senate mie for date: " + pd.getDate().toString() + " and total: " + pd.getRate().toString());
-                    }
-                    mealPerDiemSet.add(new MealPerDiem(d.getAddress(), pd.getDate(), new Dollars(pd.getRate()), mie));
-                }
-            }
-        }
-        return new MealPerDiems(mealPerDiemSet, isAllowedMeals);
+        return mealPerDiemsFactory.create(route, traveler);
     }
 
     private LodgingPerDiems createLodgingPerDiems(Route route) {

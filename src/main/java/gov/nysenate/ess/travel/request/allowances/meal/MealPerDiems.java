@@ -3,7 +3,6 @@ package gov.nysenate.ess.travel.request.allowances.meal;
 import com.google.common.collect.ImmutableSortedSet;
 import gov.nysenate.ess.travel.utils.Dollars;
 
-import java.time.LocalDate;
 import java.util.*;
 
 /**
@@ -30,27 +29,24 @@ public class MealPerDiems {
     }
 
     public MealPerDiems(int id, Collection<MealPerDiem> mealPerDiems, Dollars overrideRate, boolean isAllowedMeals) {
-        // If multiple MealPerDiem's for the same date, only keep the one with the highest rate.
-        Map<LocalDate, MealPerDiem> dateToPerDiems = new HashMap<>();
-        for (MealPerDiem mpd : mealPerDiems) {
-            if (dateToPerDiems.containsKey(mpd.date())) {
-                // Replace if this rate is higher.
-                if (mpd.rate().compareTo(dateToPerDiems.get(mpd.date()).rate()) > 0) {
-                    dateToPerDiems.put(mpd.date(), mpd);
-                }
-            }
-            else {
-                dateToPerDiems.put(mpd.date(), mpd);
-            }
-        }
-
         this.id = id;
         this.mealPerDiems = ImmutableSortedSet
                 .orderedBy(dateComparator)
-                .addAll(dateToPerDiems.values())
+                .addAll(mealPerDiems)
                 .build();
-        this.overrideRate = overrideRate ==  null ? Dollars.ZERO : overrideRate;
+        this.overrideRate = overrideRate == null ? Dollars.ZERO : overrideRate;
         this.isAllowedMeals = isAllowedMeals;
+    }
+
+    public Dollars total() {
+        if (!isAllowedMeals) {
+            return Dollars.ZERO;
+        }
+        return isOverridden() ?
+                overrideRate
+                : requestedMealPerDiems().stream()
+                .map(MealPerDiem::total)
+                .reduce(Dollars.ZERO, Dollars::add);
     }
 
     public int id() {
@@ -71,17 +67,6 @@ public class MealPerDiems {
 
     public boolean isOverridden() {
         return !overrideRate.equals(Dollars.ZERO);
-    }
-
-    public Dollars totalPerDiem() {
-        if (!isAllowedMeals) {
-            return Dollars.ZERO;
-        }
-        return isOverridden() ?
-                overrideRate
-                : requestedMealPerDiems().stream()
-                .map(MealPerDiem::requestedPerDiem)
-                .reduce(Dollars.ZERO, Dollars::add);
     }
 
     /**

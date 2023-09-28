@@ -1,5 +1,6 @@
 package gov.nysenate.ess.travel.request.route;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.travel.request.address.TravelAddressView;
 import gov.nysenate.ess.travel.request.allowances.mileage.MileagePerDiemsView;
@@ -14,6 +15,10 @@ public class RouteView implements ViewObject {
     private List<LegView> returnLegs;
     private List<DestinationView> destinations;
     private TravelAddressView origin;
+    @JsonProperty("firstLegQualifiesForBreakfast")
+    private boolean firstLegQualifiesForBreakfast;
+    @JsonProperty("lastLegQualifiesForDinner")
+    private boolean lastLegQualifiesForDinner;
 
     public RouteView() {
     }
@@ -29,12 +34,16 @@ public class RouteView implements ViewObject {
         destinations = route.destinations().stream()
                 .map(DestinationView::new)
                 .collect(Collectors.toList());
+        firstLegQualifiesForBreakfast = route.firstLegQualifiesForBreakfast();
+        lastLegQualifiesForDinner = route.lastLegQualifiesForDinner();
     }
 
     public Route toRoute() {
         return new Route(
                 outboundLegs.stream().map(LegView::toLeg).collect(Collectors.toList()),
-                returnLegs.stream().map(LegView::toLeg).collect(Collectors.toList())
+                returnLegs.stream().map(LegView::toLeg).collect(Collectors.toList()),
+                firstLegQualifiesForBreakfast,
+                lastLegQualifiesForDinner
         );
     }
 
@@ -52,6 +61,14 @@ public class RouteView implements ViewObject {
 
     public TravelAddressView getOrigin() {
         return origin;
+    }
+
+    public boolean isFirstLegQualifiesForBreakfast() {
+        return firstLegQualifiesForBreakfast;
+    }
+
+    public boolean isLastLegQualifiesForDinner() {
+        return lastLegQualifiesForDinner;
     }
 
     @Override

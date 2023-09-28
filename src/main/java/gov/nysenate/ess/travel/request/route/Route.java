@@ -14,14 +14,19 @@ import java.util.stream.Stream;
 
 public class Route {
 
-    public static final Route EMPTY_ROUTE = new Route(ImmutableList.of(), ImmutableList.of());
+    public static final Route EMPTY_ROUTE = new Route(ImmutableList.of(), ImmutableList.of(), true, true);
 
     private final ImmutableList<Leg> outboundLegs;
     private final ImmutableList<Leg> returnLegs;
+    private final boolean firstLegQualifiesForBreakfast;
+    private final boolean lastLegQualifiesForDinner;
 
-    public Route(List<Leg> outboundLegs, List<Leg> returnLegs) {
+    public Route(List<Leg> outboundLegs, List<Leg> returnLegs,
+                 boolean firstLegQualifiesForBreakfast, boolean lastLegQualifiesForDinner) {
         this.outboundLegs = ImmutableList.copyOf(outboundLegs);
         this.returnLegs = ImmutableList.copyOf(returnLegs);
+        this.firstLegQualifiesForBreakfast = firstLegQualifiesForBreakfast;
+        this.lastLegQualifiesForDinner = lastLegQualifiesForDinner;
     }
 
     public TravelAddress origin() {
@@ -81,6 +86,7 @@ public class Route {
 
     /**
      * Returns true if this route has any legs with a MethodOfTravel equal to the given MethodOfTravel.
+     *
      * @return
      */
     public boolean hasMethodOfTravel(MethodOfTravel mot) {
@@ -90,9 +96,10 @@ public class Route {
     /**
      * Returns a set of all method of travel descriptions used for the given MethodOfTravel.
      * Returns an empty Set if the given MethodOfTravel is not used in this route.
-     *
+     * <p>
      * Intended to be used to get user entered modes of transportation when they selected
      * OTHER for the MethodOfTravel.
+     *
      * @param mot
      * @return
      */
@@ -104,11 +111,21 @@ public class Route {
 
     }
 
+    public boolean firstLegQualifiesForBreakfast() {
+        return firstLegQualifiesForBreakfast;
+    }
+
+    public boolean lastLegQualifiesForDinner() {
+        return lastLegQualifiesForDinner;
+    }
+
     @Override
     public String toString() {
         return "Route{" +
-                "outgoingLegs=" + outboundLegs +
+                "outboundLegs=" + outboundLegs +
                 ", returnLegs=" + returnLegs +
+                ", firstLegQualifiesForBreakfast=" + firstLegQualifiesForBreakfast +
+                ", lastLegQualifiesForDinner=" + lastLegQualifiesForDinner +
                 '}';
     }
 
@@ -117,12 +134,14 @@ public class Route {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Route route = (Route) o;
-        return Objects.equals(outboundLegs, route.outboundLegs) &&
-                Objects.equals(returnLegs, route.returnLegs);
+        return firstLegQualifiesForBreakfast == route.firstLegQualifiesForBreakfast
+                && lastLegQualifiesForDinner == route.lastLegQualifiesForDinner
+                && Objects.equals(outboundLegs, route.outboundLegs)
+                && Objects.equals(returnLegs, route.returnLegs);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(outboundLegs, returnLegs);
+        return Objects.hash(outboundLegs, returnLegs, firstLegQualifiesForBreakfast, lastLegQualifiesForDinner);
     }
 }

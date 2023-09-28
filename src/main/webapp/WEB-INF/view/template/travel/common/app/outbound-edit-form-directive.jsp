@@ -90,6 +90,10 @@
                          type="text" size="17" ng-model="leg.methodOfTravelDescription">
                 </div>
               </div>
+              <div class="itinerary-address" ng-if="$index === 0">
+                <input type="checkbox" id="departure-time-checkbox" ng-model="route.firstLegQualifiesForBreakfast">
+                <label for="departure-time-checkbox">Departing before 7am?</label>
+              </div>
               <div class="clear"></div>
 
             </div>
