@@ -25,7 +25,7 @@ import javax.servlet.Filter;
 
 /**
  * Configures dependencies necessary for security based functionality.
- * The security framework used is Apache Shiro (http://shiro.apache.org/).
+ * The security framework used is Apache Shiro (<a href="https://shiro.apache.org/">...</a>).
  */
 @Configuration
 public class SecurityConfig
