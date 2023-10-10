@@ -5,20 +5,22 @@ import gov.nysenate.ess.time.model.payroll.MiscLeaveGrant;
 import gov.nysenate.ess.time.model.payroll.MiscLeaveType;
 
 import javax.xml.bind.annotation.XmlElement;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class MiscLeaveGrantView implements ViewObject {
-
-    private int empId;
-    private MiscLeaveType miscLeaveType;
-    private LocalDate beginDate;
-    private LocalDate endDate;
+    private final int empId;
+    private final MiscLeaveType miscLeaveType;
+    private final LocalDate beginDate;
+    private final LocalDate endDate;
+    private final BigDecimal hours;
 
     public MiscLeaveGrantView(MiscLeaveGrant grant) {
-        this.empId = grant.getEmpId();
-        this.miscLeaveType = grant.getMiscLeaveType();
-        this.beginDate = grant.getBeginDate();
-        this.endDate = grant.getEndDate();
+        this.empId = grant.empId();
+        this.miscLeaveType = grant.miscLeaveType();
+        this.beginDate = grant.beginDate();
+        this.endDate = grant.endDate();
+        this.hours = grant.hours();
     }
 
     @XmlElement
@@ -39,6 +41,11 @@ public class MiscLeaveGrantView implements ViewObject {
     @XmlElement
     public LocalDate getEndDate() {
         return endDate;
+    }
+
+    @XmlElement
+    public BigDecimal getHours() {
+        return hours;
     }
 
     @Override

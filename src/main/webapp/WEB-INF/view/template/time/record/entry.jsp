@@ -137,6 +137,9 @@
               selected.
             </li>
             <li ng-show="errorTypes.raSa.halfHourIncrements">Hours must be in increments of 0.5</li>
+            <li ng-show="errorTypes.raSa.notEnoughMiscTime">
+              You are only allowed to use {{state.miscLeaveUsageError.hours}} {{state.miscLeaveUsageError.type}} hours on this record.
+            </li>
           </ul>
         </div>
         <table class="ess-table time-record-entry-table" id="ra-sa-time-record-table"
