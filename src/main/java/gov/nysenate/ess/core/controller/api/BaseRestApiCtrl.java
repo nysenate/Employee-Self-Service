@@ -72,6 +72,24 @@ public class BaseRestApiCtrl
     }
 
     /**
+     * Check that the current subject has at least one Permission.
+     * @param permissions to check
+     */
+    protected void checkHasPermission(Permission... permissions) {
+        for (int i = 0; i < permissions.length; i++) {
+            try {
+                checkPermission(permissions[i]);
+                break;
+            }
+            catch (AuthorizationException ex) {
+                if (i == permissions.length - 1) {
+                    throw ex;
+                }
+            }
+        }
+    }
+
+    /**
      * Checks the currently authenticated subject has permissions to perform the given action on a travel application.
      * @param app
      * @param method

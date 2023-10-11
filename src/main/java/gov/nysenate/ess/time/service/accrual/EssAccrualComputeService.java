@@ -70,6 +70,7 @@ public class EssAccrualComputeService implements AccrualComputeService
     @Autowired private AccrualDao accrualDao;
     @Autowired private TimeRecordDao timeRecordDao;
 
+    @Autowired private DonationService donationService;
     @Autowired private PayPeriodService payPeriodService;
     @Autowired private AccrualInfoService accrualInfoService;
     @Autowired private EmpTransactionService empTransService;
@@ -127,7 +128,8 @@ public class EssAccrualComputeService implements AccrualComputeService
             serviceYtdExpected = lastAccruals.getExpectedTotalHours();
         }
 
-        return new AccrualsAvailable(referenceSummary, payPeriod, serviceYtdExpected, biWeekHrsExpected);
+        return new AccrualsAvailable(referenceSummary, payPeriod, serviceYtdExpected, biWeekHrsExpected,
+                donationService.getHoursDonated(empId));
     }
 
     /** {@inheritDoc} */

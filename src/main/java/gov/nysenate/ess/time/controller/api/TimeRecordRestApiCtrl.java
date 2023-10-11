@@ -109,7 +109,7 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl {
      * --------------------------
      *
      * @param empId Integer
-     * @param scope String (accepted values are 'E', 'S', 'P', for employee, supervisor, and personnel respectively.
+     * @param scope String accepted values are 'E', 'S', 'P', for employee, supervisor, and personnel respectively.
      * @return TimeRecord ListView Response
      */
     @RequestMapping(value = "/active", method = {GET, HEAD}, produces = "application/json")

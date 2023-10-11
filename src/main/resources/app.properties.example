@@ -87,6 +87,9 @@ master.schema =
 # The schema containing read-write tables for timesheets
 ts.schema =
 
+# The schema containing other read-write tables
+base.sfms.schema =
+
 # Postgres Schema Configuration
 
 # Ess common schema

@@ -49,7 +49,8 @@ function recordUtils() {
 
     // Calculate and add the daily total as a field in each time entry within a record
     function calculateDailyTotals (record) {
-        for (var i = 0, entries = record.timeEntries; i < entries.length; i++) {
+        var entries = record.timeEntries
+        for (var i = 0; i < entries.length; i++) {
             entries[i].total = getDailyTotal(entries[i]);
         }
     }
@@ -69,7 +70,7 @@ function recordUtils() {
         return total;
     }
 
-    // Returns an object containing the total number of hours for each time usage type over an entire time recodr
+    // Returns an object containing the total number of hours for each time usage type over an entire time record
     function getRecordTotals(record) {
         var totals = {};
 

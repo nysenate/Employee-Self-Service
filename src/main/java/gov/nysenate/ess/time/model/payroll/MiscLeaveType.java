@@ -16,6 +16,7 @@ public enum MiscLeaveType
     BEREAVEMENT_LEAVE("B","Bereavement Leave", "Bereavement Leave", false, new BigInteger("191601132010624858613098950383796367496")),
     BLOOD_DONATION("D", "Blood Donation", "Blood Donation Leave", false, new BigInteger("191601132010628485390557794271320486024")),
     BRST_PROST_CANCER_SCREENING("C", "Cancer Screening", "Breast and Prostate Cancer Screening Leave", false, new BigInteger("191601132010620022909820491867097542792")),
+    DONATED_MISC_LEAVE("L", "Donated Leave", "Donated Leave", true, new BigInteger("253666602241845525420608059722204643693")),
     EXTENDED_SICK_LEAVE("X", "Extended Sick Leave", "Extended Sick Leave", false, new BigInteger("191601132010617605058181262608748130440")),
     EXTRAORDINARY_LEAVE("E", "Extraordinary Leave", "Leave for Extraordinary Circumstances", false, new BigInteger("191601132010623649687279335754621661320")),
     FLOATING_HOLIDAY("F", "Floating Holiday", "Leave for Floating Holiday", false, new BigInteger("253666602241845525420608059722204643652")),
@@ -26,8 +27,7 @@ public enum MiscLeaveType
     SICK_LEAVE_HALF_PAY("S", "Sick Leave with Half Pay", "Sick Leave with Half Pay", false, new BigInteger("191601132010622440761459721125446955144")),
     VOL_FIRE_EMERG_MED_ACTIVITY("V", "Volunteer Fire/EMT", "Volunteer Fire Fighting and Emergency Medical Activities Leave", false, new BigInteger("191601132010629694316377408900495192200")),
     VOTING_LEAVE("T", "Voting", "Voting Leave", false, new BigInteger("186214696577130514392638601662177149240")),
-    WITNESS_LEAVE("W", "Witness Leave", "Witness Leave", false, new BigInteger("191601132010618813984000877237922836616")),
-    ;
+    WITNESS_LEAVE("W", "Witness Leave", "Witness Leave", false, new BigInteger("191601132010618813984000877237922836616"));
 
     String code;
     String shortName;

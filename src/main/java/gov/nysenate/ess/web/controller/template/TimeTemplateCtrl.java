@@ -92,7 +92,8 @@ public class TimeTemplateCtrl extends BaseTemplateCtrl
      */
     @RequestMapping(value = {
             "/accrual/history",
-            "/accrual/projections"
+            "/accrual/projections",
+            "/accrual/donation"
     })
     public String getMyAccrualPage(HttpServletRequest request, ModelMap modelMap) {
         final Permission accrualPagePermission = SimpleTimePermission.ACCRUAL_PAGES.getPermission();

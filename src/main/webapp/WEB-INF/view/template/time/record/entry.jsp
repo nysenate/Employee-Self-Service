@@ -103,7 +103,7 @@
          ng-if="state.annualEntries && state.tempEntries">
       <p>
         There was a change in pay type during the time covered by this record.<br>
-        Record days have been split into two seperate entry tables, one for Regular/Special Annual pay, another for
+        Record days have been split into two separate entry tables, one for Regular/Special Annual pay, another for
         Temporary pay
       </p>
     </div>
@@ -137,6 +137,9 @@
               selected.
             </li>
             <li ng-show="errorTypes.raSa.halfHourIncrements">Hours must be in increments of 0.5</li>
+            <li ng-show="errorTypes.raSa.notEnoughMiscTime">
+              You are only allowed to use {{state.miscLeaveUsageError.hours}} {{state.miscLeaveUsageError.type}} hours on this record.
+            </li>
           </ul>
         </div>
         <table class="ess-table time-record-entry-table" id="ra-sa-time-record-table"
