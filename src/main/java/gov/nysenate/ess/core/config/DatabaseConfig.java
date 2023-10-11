@@ -1,9 +1,8 @@
 package gov.nysenate.ess.core.config;
 
+import com.google.common.collect.ImmutableMap;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import gov.nysenate.ess.core.dao.base.SqlQueryUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,7 +14,6 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -72,14 +70,11 @@ public class DatabaseConfig {
      * @return Map<String, String>
      */
     @Bean(name = "schemaMap")
-    public Map<String, String> schemaMap() {
-        Map<String, String> schemaMap = new HashMap<>();
-        schemaMap.put("masterSchema", MASTER_SCHEMA);
-        schemaMap.put("tsSchema", TS_SCHEMA);
-        schemaMap.put("essSchema", ESS_SCHEMA);
-        schemaMap.put("supplySchema", SUPPLY_SCHEMA);
-        schemaMap.put("travelSchema", TRAVEL_SCHEMA);
-        return schemaMap;
+    public ImmutableMap<String, String> schemaMap() {
+        return ImmutableMap.of(
+                "masterSchema", MASTER_SCHEMA, "tsSchema", TS_SCHEMA,
+                "essSchema", ESS_SCHEMA, "supplySchema", SUPPLY_SCHEMA,
+                "travelSchema", TRAVEL_SCHEMA, "baseSfmsSchema", BASE_SFMS_SCHEMA);
     }
 
     /** The main production schema. Intended for read access only. */
@@ -101,6 +96,9 @@ public class DatabaseConfig {
     /** The schema for the Travel app. */
     @Value("${travel.schema}")
     protected String TRAVEL_SCHEMA;
+
+    @Value("${base.sfms.schema}")
+    protected String BASE_SFMS_SCHEMA;
 
     /** Configures the supply sync procedure name prefixed with the correct schema. */
     @Bean(name = "supplySyncProcedureName")

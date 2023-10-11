@@ -232,7 +232,7 @@ essApi.factory('PeriodAllowanceUsageApi', ['$resource', 'appProps', function ($r
 /** --- Misc Leave Type Grant API --- */
 
 essApi.factory('MiscLeaveGrantApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/miscleave/grants')
+    return $resource(appProps.apiPath + '/miscleave/grantsWithRemainingHours')
 }]);
 
 /** --- Paycheck History API --- */

@@ -11,5 +11,5 @@ public interface MiscLeaveDao {
      * @param empId int - employee id
      * @return List<MiscLeaveGrant>
      */
-    public List<MiscLeaveGrant> getMiscLeaveGrants(int empId);
+    List<MiscLeaveGrant> getMiscLeaveGrants(int empId);
 }

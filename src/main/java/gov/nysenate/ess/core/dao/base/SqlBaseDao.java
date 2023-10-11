@@ -1,5 +1,6 @@
 package gov.nysenate.ess.core.dao.base;
 
+import com.google.common.collect.ImmutableMap;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
@@ -28,7 +29,7 @@ public abstract class SqlBaseDao
     protected NamedParameterJdbcTemplate remoteNamedJdbc;
 
     @Resource(name = "schemaMap")
-    protected Map<String, String> schemaMap;
+    protected ImmutableMap<String, String> schemaMap;
 
     protected Map<String, String> schemaMap() {
         return schemaMap;

@@ -29,7 +29,7 @@ public class SqlDonationDao extends SqlBaseDao implements DonationDao {
                 .addValue("startDate", dateRange.lowerEndpoint())
                 .addValue("endDate", dateRange.upperEndpoint());
         var rch = new MapDonationRecords();
-        remoteNamedJdbc.query(SELECT_DONATIONS_IN_RANGE.getSql(schemaMap), params, rch);
+        remoteNamedJdbc.query(SELECT_DONATIONS_IN_RANGE.getSql(schemaMap()), params, rch);
         return rch.resultsMap;
     }
 
@@ -39,7 +39,7 @@ public class SqlDonationDao extends SqlBaseDao implements DonationDao {
                 .addValue("empId", emp.getEmployeeId())
                 .addValue("uid", emp.getUid())
                 .addValue("donation", donation);
-        return remoteNamedJdbc.update(INSERT_DONATION.getSql(schemaMap), params) != 0;
+        return remoteNamedJdbc.update(INSERT_DONATION.getSql(schemaMap()), params) != 0;
     }
 
     private static final class MapDonationRecords implements RowCallbackHandler {
