@@ -40,8 +40,8 @@
                        class="travel-input"
                        name="fromAddress_{{$index}}"
                        ng-model="leg.from.address.formattedAddressWithCounty"
-                       leg="leg"
-                       callback="setFromAddress(leg, address)"
+                       pass-through="leg"
+                       callback="setFromAddress(passThrough, address)"
                        autocomplete-address-validator
                        placeholder="From Address"
                        type="text" size="50" required>
@@ -64,8 +64,8 @@
                        class="travel-input"
                        name="toAddress_{{$index}}"
                        ng-model="leg.to.address.formattedAddressWithCounty"
-                       leg="leg"
-                       callback="setToAddress(leg, address)"
+                       pass-through="leg"
+                       callback="setToAddress(passThrough, address)"
                        placeholder="To Address"
                        autocomplete-address-validator
                        type="text"

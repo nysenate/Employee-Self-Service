@@ -11,7 +11,7 @@ public final class LodgingPerDiem {
 
     private int id;
     private final TravelAddress address;
-    private final PerDiem perDiem;
+    private PerDiem perDiem;
     private boolean isReimbursementRequested;
 
     public LodgingPerDiem(TravelAddress address, PerDiem perDiem) {
@@ -55,6 +55,10 @@ public final class LodgingPerDiem {
 
     public boolean isReimbursementRequested() {
         return isReimbursementRequested;
+    }
+
+    public void setRate(Dollars rate) {
+        this.perDiem = new PerDiem(date(), rate);
     }
 
     @Override

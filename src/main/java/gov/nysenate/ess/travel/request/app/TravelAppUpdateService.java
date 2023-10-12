@@ -9,6 +9,7 @@ import gov.nysenate.ess.travel.authorization.role.TravelRoles;
 import gov.nysenate.ess.travel.employee.TravelEmployee;
 import gov.nysenate.ess.travel.notifications.email.events.TravelAppEditedEmailEvent;
 import gov.nysenate.ess.travel.notifications.email.events.TravelPendingReviewEmailEvent;
+import gov.nysenate.ess.travel.provider.gsa.GsaAllowanceService;
 import gov.nysenate.ess.travel.provider.miles.MileageAllowanceService;
 import gov.nysenate.ess.travel.request.allowances.Allowances;
 import gov.nysenate.ess.travel.request.allowances.PerDiem;
@@ -57,6 +58,7 @@ public class TravelAppUpdateService {
     @Autowired private EventBus eventBus;
     @Autowired private TravelRoleFactory travelRoleFactory;
     @Autowired private MileageAllowanceService mileageService;
+    @Autowired private GsaAllowanceService gsaAllowanceService;
 
     /**
      * Returns a new Amendment with the provided purpose of travel added to the amendment.
@@ -179,6 +181,11 @@ public class TravelAppUpdateService {
      * @return A new Amendment with the LodgingPerDiems set.
      */
     public Amendment updateLodgingPerDiems(Amendment amd, LodgingPerDiems lpds) {
+        for (LodgingPerDiem lpd : lpds.allLodgingPerDiems()) {
+            if (lpd.rate().equals(Dollars.ZERO)) {
+                lpd.setRate(gsaAllowanceService.fetchLodgingRate(lpd.date(), lpd.address()));
+            }
+        }
         return new Amendment.Builder(amd)
                 .withLodgingPerDiems(lpds)
                 .build();

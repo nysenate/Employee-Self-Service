@@ -64,6 +64,7 @@
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/common/lodging-summary-popover.js?v=${releaseVersion}"></script>
 
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/common/validators/autocomplete-address-validator.js?v=${releaseVersion}"></script>
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/common/validators/hotel-address-validator.js?v=${releaseVersion}"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/common/validators/date-validator.js?v=${releaseVersion}"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/common/validators/mot-validator.js?v=${releaseVersion}"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/common/validators/purpose-of-travel-validators.js?v=${releaseVersion}"></script>

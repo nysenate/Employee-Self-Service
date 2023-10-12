@@ -64,6 +64,11 @@ function allowancesEditForm(appProps, draftsApi) {
             scope.cancel = function () {
                 scope.negativeCallback({draft: scope.dirtyDraft});
             }
+
+            scope.setLodgingPerDiemAddress = function(lpd, address) {
+                lpd.address = address;
+                lpd.rate = '0'; // Since the address changed, rate is no longer valid. The backend will have to update it.
+            }
         }
     }
 }

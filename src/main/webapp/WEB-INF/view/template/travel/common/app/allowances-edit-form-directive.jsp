@@ -5,6 +5,10 @@
         <li ng-show="allowancesForm.$error.step">Expenses must be in increments of 0.01</li>
         <li ng-show="allowancesForm.$error.min">Expenses cannot be negative</li>
         <li ng-show="allowancesForm.$error.number">Expenses must be a number</li>
+        <li ng-show="allowancesForm.$error.addressValidator">One or more of your addresses are invalid.
+          <span class="icon-help-with-circle" style="padding: 5px;"
+                title="Addresses must be selected from the drop down and contain a zip code. Include a street number to help ensure your selected address will be valid."></span>
+        </li>
       </ul>
     </ess-notification>
   </div>
@@ -94,20 +98,32 @@
         <h1 class="">Lodging Adjustment <em class="optional">(Optional)</em></h1>
         <div class="padding-10">
           <span class="padding-left-10">You qualify for the following lodging reimbursements. Uncheck anything you would <span
-              class="bold">not</span> like to be reimbursed for.</span>
+              class="bold">not</span> like to be reimbursed for.</span><br>
+          <span class="padding-left-10">If you know your hotel address, you may enter it below.</span>
           <div class="padding-top-10">
             <div>
               <table class="travel-table">
                 <thead>
                 <tr>
-                  <td>Address</td>
+                  <td>Hotel Address</td>
                   <td>Date</td>
                   <td>Request Reimbursement?</td>
                 </tr>
                 </thead>
                 <tbody>
                 <tr ng-repeat="perDiem in dirtyDraft.amendment.lodgingPerDiems.allLodgingPerDiems">
-                  <td>{{perDiem.address.formattedAddressWithCounty}}</td>
+                  <td>
+                  <input ess-address-autocomplete
+                         class="travel-input"
+                         name="lodgingAddress_{{$index}}"
+                         ng-model="perDiem.address.formattedAddressWithCounty"
+                         pass-through="perDiem"
+                         callback="setLodgingPerDiemAddress(perDiem, address)"
+                         placeholder=""
+                         hotel-address-validator
+                         type="text"
+                         size="50" required>
+                  </td>
                   <td>{{perDiem.date | date: 'shortDate'}} - {{nextDay(perDiem.date) | date: 'shortDate'}}</td>
                   <td><label>Request Lodging: </label><input type="checkbox"
                                                              ng-model="perDiem.isReimbursementRequested">
