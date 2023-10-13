@@ -6,7 +6,7 @@ import gov.nysenate.ess.core.dao.base.DbVendor;
 public enum SqlMiscLeaveQuery implements BasicSqlQuery {
 
     GET_MISC_LEAVE_GRANTS("""
-            SELECT NUXREFEM, NUXRMISC, DTBEGIN, DTEND
+            SELECT NUXREFEM, DTBEGIN, DTEND, NUXRMISC
             FROM ${masterSchema}.PM23MISCPRM
             WHERE CDSTATUS = 'A' AND NUXREFEM = :empId"""
     ),
@@ -14,7 +14,7 @@ public enum SqlMiscLeaveQuery implements BasicSqlQuery {
     GET_SICK_LEAVE_GRANTS("""
             SELECT NUXREFEM, DTEFFECT, DTEND, NUAPPROVEHRS
             FROM ${baseSfmsSchema}.PM23TMEPLRQST
-            WHERE CDSTATUS = 'A' AND DTAPPROVE IS NOT NULL AND NUXREFEM = :empId ORDER BY NUXRTMEPLRQST"""
+            WHERE CDSTATUS = 'A' AND NUXREFEM = :empId AND DTAPPROVE IS NOT NULL"""
     );
 
     private final String sql;
