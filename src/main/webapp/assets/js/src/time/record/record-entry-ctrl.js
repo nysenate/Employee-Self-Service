@@ -1117,10 +1117,10 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
                 isValid &= checkRaSaHourIncrements(hrs);
 
                 var dateMoment = moment(entry.date);
-                var entries = $scope.state.records[$scope.state.iSelectedRecord].timeEntries
-                var grantInfoList = $scope.state.miscLeaveGrantInfoList
+                var entries = $scope.state.records[$scope.state.iSelectedRecord].timeEntries;
+                var grantInfoList = $scope.state.miscLeaveGrantInfoList;
 
-                for (var grantIndex in grantInfoList) {
+                for (var grantIndex = 0; grantIndex < grantInfoList.length; grantIndex++) {
                     var grantInfo = grantInfoList[grantIndex];
                     var tempGrantHours = grantInfo.hoursRemaining;
                     // Null signifies no limit to time used
@@ -1128,28 +1128,21 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
                         continue;
                     }
                     var grant = grantInfo.grant;
-                    for (var entryIndex in entries) {
+                    for (var entryIndex = 0; entryIndex < entries.length; entryIndex++) {
                         var currEntry = entries[entryIndex];
-                        if (!currEntry.miscHours) {
-                            continue;
-                        }
                         if (currEntry.miscHours && currEntry.miscType === grant.miscLeaveType
                             && !dateMoment.isBefore(grant.beginDate, 'day') && !dateMoment.isAfter(grant.endDate, 'day')) {
                             tempGrantHours = tempGrantHours - currEntry.miscHours;
-                        }
-                        if (tempGrantHours < 0) {
-                            // We've gone over the hours, but it's not this entry's problem
-                            if (currEntry !== entry) {
-                                break;
+                            if (tempGrantHours < 0) {
+                                $scope.errorTypes.raSa.notEnoughMiscTime = true;
+                                $scope.state.miscLeaveUsageError =
+                                    {type: $scope.state.miscLeavesShortnameMap[currEntry.miscType], hours: grantInfo.hoursRemaining};
+                                // We've gone over the hours, but it may not be this entry's problem
+                                return currEntry !== entry;
                             }
-                            $scope.errorTypes.raSa.notEnoughMiscTime = true;
-                            $scope.state.miscLeaveUsageError =
-                                {type: $scope.state.miscLeavesShortnameMap[entry.miscType], hours: grantInfo.hoursRemaining};
-                            return false;
                         }
                     }
                 }
-
                 $scope.errorTypes.raSa.notEnoughMiscTime = false;
                 $scope.state.miscLeaveUsageError = null;
                 return isValid;
