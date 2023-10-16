@@ -26,7 +26,7 @@ public class MiscLeaveGrant {
         this.miscLeaveType = miscLeaveType;
         this.beginDate = beginDate;
         // Default to a limit of a rolling year for this type.
-        if (miscLeaveType == MiscLeaveType.DONATED_MISC_LEAVE && endDate == null) {
+        if (miscLeaveType == MiscLeaveType.LEAVE_DONATION && endDate == null) {
             endDate = beginDate.plusYears(1).minusDays(1);
         }
         this.endDate = endDate;
