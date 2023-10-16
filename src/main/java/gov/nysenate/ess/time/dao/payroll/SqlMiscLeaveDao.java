@@ -41,7 +41,7 @@ public class SqlMiscLeaveDao extends SqlBaseDao implements MiscLeaveDao {
                 null);
 
     private final RowMapper<MiscLeaveGrant> donatedSickLeaveGrantRowMapper = (rs, rowNum) ->
-            new MiscLeaveGrant(rs.getInt("NUXREFEM"), MiscLeaveType.DONATED_MISC_LEAVE,
+            new MiscLeaveGrant(rs.getInt("NUXREFEM"), MiscLeaveType.LEAVE_DONATION,
             getLocalDate(rs, "DTEFFECT"), getLocalDate(rs, "DTEND"),
             rs.getBigDecimal("NUAPPROVEHRS"));
 }
