@@ -23,6 +23,7 @@ function reviewController($scope, $q, modals, locationService, appReviewApi, rol
     vm.activeRole = {};
 
     function init() {
+        vm.isLoading = true;
         // vm.activeRole = locationService.getSearchParam("role");
         roleService.roles()
             .then(function (response) {
