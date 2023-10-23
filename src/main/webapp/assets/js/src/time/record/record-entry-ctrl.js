@@ -29,7 +29,7 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
             empId: appProps.user.employeeId,    // Employee Id
             miscLeaves: appProps.miscLeaves,    // Listing of misc leave types
             miscLeaveGrantInfoList: null,       // List of info about grants of a misc leave type for the currently selected record
-            miscLeaveUsageError: null,          // Data on misc leave that too much is being used of
+            miscLeaveUsageErrors: {},           // Data on misc leave that too much is being used of
             accrual: null,                      // Accrual info for selected record
             expectedHrs: null,                  // An object containing expected hour data for the selected record
             allowances: {},                     // A map that stores yearly temp employee allowances
@@ -840,12 +840,13 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
 
     /**
      * This function is called before time entries are validated
-     * this resets any error flags ( they will be restored if errors are detected during validation)
+     * this resets any error flags (they will be restored if errors are detected during validation)
      * and also does any validations on the record scope
      */
     $scope.preValidation = function() {
         var record = $scope.getSelectedRecord();
         $scope.errorTypes.reset();
+        $scope.state.miscLeaveUsageErrors = {};
         checkForPrevUnsubmittedRaSa(record);
     };
 
@@ -1117,41 +1118,37 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
                 isValid &= checkRaSaHourIncrements(hrs);
 
                 var dateMoment = moment(entry.date);
-                var entries = $scope.state.records[$scope.state.iSelectedRecord].timeEntries
-                var grantInfoList = $scope.state.miscLeaveGrantInfoList
+                var entries = $scope.state.records[$scope.state.iSelectedRecord].timeEntries;
+                var grantInfoList = $scope.state.miscLeaveGrantInfoList;
 
-                for (var grantIndex in grantInfoList) {
+                for (var grantIndex = 0; grantIndex < grantInfoList.length; grantIndex++) {
                     var grantInfo = grantInfoList[grantIndex];
-                    var tempGrantHours = grantInfo.hoursRemaining;
                     // Null signifies no limit to time used
-                    if (tempGrantHours === null) {
+                    if (grantInfo.hoursRemaining === null) {
                         continue;
                     }
+                    var hoursUsed = 0.0;
                     var grant = grantInfo.grant;
-                    for (var entryIndex in entries) {
+                    for (var entryIndex = 0; entryIndex < entries.length; entryIndex++) {
                         var currEntry = entries[entryIndex];
-                        if (!currEntry.miscHours) {
-                            continue;
-                        }
                         if (currEntry.miscHours && currEntry.miscType === grant.miscLeaveType
-                            && !dateMoment.isBefore(grant.beginDate, 'day') && !dateMoment.isAfter(grant.endDate, 'day')) {
-                            tempGrantHours = tempGrantHours - currEntry.miscHours;
+                            && !dateMoment.isBefore(grant.beginDate, 'day')
+                            && !dateMoment.isAfter(grant.endDate, 'day')) {
+                            hoursUsed += currEntry.miscHours;
                         }
-                        if (tempGrantHours < 0) {
-                            // We've gone over the hours, but it's not this entry's problem
-                            if (currEntry !== entry) {
-                                break;
-                            }
-                            $scope.errorTypes.raSa.notEnoughMiscTime = true;
-                            $scope.state.miscLeaveUsageError =
-                                {type: $scope.state.miscLeavesShortnameMap[entry.miscType], hours: grantInfo.hoursRemaining};
-                            return false;
+                        // We don't need to check entries beyond the entry parameter.
+                        if (currEntry === entry) {
+                            break;
                         }
                     }
+                    // Can only invalidate entries with the same misc leave type.
+                    if (hoursUsed > grantInfo.hoursRemaining && entry.miscType === grant.miscLeaveType) {
+                        $scope.errorTypes.raSa.notEnoughMiscTime = true;
+                        var shortname = $scope.state.miscLeavesShortnameMap[grantInfo.grant.miscLeaveType];
+                        $scope.state.miscLeaveUsageErrors[shortname] = {grantInfo: grantInfo, hoursUsed: hoursUsed};
+                        isValid = false;
+                    }
                 }
-
-                $scope.errorTypes.raSa.notEnoughMiscTime = false;
-                $scope.state.miscLeaveUsageError = null;
                 return isValid;
             },
 

@@ -133,12 +133,13 @@
             <li ng-show="errorTypes.raSa.notEnoughPersonalTime">Personal hours recorded exceeds hours available.</li>
             <li ng-show="errorTypes.raSa.notEnoughSickTime">Sick hours recorded exceeds hours available.</li>
             <li ng-show="errorTypes.raSa.noMiscTypeGiven">A Misc type must be given when using Miscellaneous hours.</li>
-            <li ng-show="errorTypes.raSa.noMiscHoursGiven">Miscellaneous hours must be present when a Misc type is
-              selected.
+            <li ng-show="errorTypes.raSa.noMiscHoursGiven">
+              Miscellaneous hours must be present when a Misc type is selected.
             </li>
             <li ng-show="errorTypes.raSa.halfHourIncrements">Hours must be in increments of 0.5</li>
-            <li ng-show="errorTypes.raSa.notEnoughMiscTime">
-              You are only allowed to use {{state.miscLeaveUsageError.hours}} {{state.miscLeaveUsageError.type}} hours on this record.
+            <li ng-show="errorTypes.raSa.notEnoughMiscTime" ng-repeat="(name, data) in state.miscLeaveUsageErrors">
+              Your total of {{data.hoursUsed}} {{name}} hours
+              exceeds the limit of {{data.grantInfo.hoursRemaining}} for this pay period.
             </li>
           </ul>
         </div>
