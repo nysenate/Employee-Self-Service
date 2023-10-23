@@ -6,7 +6,7 @@ import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.travel.notifications.email.events.TravelApprovalEmailEvent;
 import gov.nysenate.ess.travel.notifications.email.events.TravelDisapprovalEmailEvent;
 import gov.nysenate.ess.travel.notifications.email.events.TravelPendingReviewEmailEvent;
-import gov.nysenate.ess.travel.request.app.ApprovalStatus;
+import gov.nysenate.ess.travel.request.app.AppStatus;
 import gov.nysenate.ess.travel.request.app.TravelApplication;
 import gov.nysenate.ess.travel.request.app.TravelApplicationService;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
@@ -45,12 +45,12 @@ public class ApplicationReviewService {
 
         if (applicationReview.nextReviewerRole() == TravelRole.NONE) {
             // If no one else needs to review, the application is completely approved.
-            applicationReview.application().setStatus(new TravelApplicationStatus(ApprovalStatus.APPROVED, ""));
+            applicationReview.application().setStatus(new TravelApplicationStatus(AppStatus.APPROVED, ""));
             eventBus.post(new TravelApprovalEmailEvent(applicationReview));
         } else {
             if (applicationReview.nextReviewerRole() == TravelRole.TRAVEL_ADMIN
                     || applicationReview.nextReviewerRole() == TravelRole.SECRETARY_OF_THE_SENATE) {
-                applicationReview.application().setStatus(new TravelApplicationStatus(ApprovalStatus.TRAVEL_UNIT, ""));
+                applicationReview.application().setStatus(new TravelApplicationStatus(AppStatus.TRAVEL_UNIT, ""));
             }
             eventBus.post(new TravelPendingReviewEmailEvent(applicationReview));
         }
@@ -64,7 +64,7 @@ public class ApplicationReviewService {
         applicationReview.addAction(disapproveAction);
         saveApplicationReview(applicationReview);
 
-        applicationReview.application().setStatus(new TravelApplicationStatus(ApprovalStatus.DISAPPROVED, reason));
+        applicationReview.application().setStatus(new TravelApplicationStatus(AppStatus.DISAPPROVED, reason));
         travelApplicationService.saveApplication(applicationReview.application());
         eventBus.post(new TravelDisapprovalEmailEvent(applicationReview));
     }

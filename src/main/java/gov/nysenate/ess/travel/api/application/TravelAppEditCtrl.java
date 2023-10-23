@@ -7,9 +7,7 @@ import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.travel.request.amendment.Amendment;
-import gov.nysenate.ess.travel.request.app.TravelAppUpdateService;
-import gov.nysenate.ess.travel.request.app.TravelApplication;
-import gov.nysenate.ess.travel.request.app.TravelApplicationService;
+import gov.nysenate.ess.travel.request.app.*;
 import gov.nysenate.ess.travel.request.draft.Draft;
 import gov.nysenate.ess.travel.request.draft.DraftView;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,5 +85,16 @@ public class TravelAppEditCtrl extends BaseRestApiCtrl {
         appUpdateService.resubmitApp(app.getAppId(), amd, user);
 
         return new SimpleResponse(true, "Edits saved", "");
+    }
+
+    @RequestMapping(value = "/edit/{appId}/cancel", method = RequestMethod.POST)
+    public BaseResponse cancelTravelApp(@PathVariable int appId) {
+        TravelApplication app = appService.getTravelApplication(appId);
+        checkTravelAppPermission(app, RequestMethod.POST);
+
+        app.setStatus(new TravelApplicationStatus(AppStatus.CANCELED));
+        appService.saveApplication(app);
+
+        return new ViewObjectResponse<>(new TravelApplicationView(app));
     }
 }

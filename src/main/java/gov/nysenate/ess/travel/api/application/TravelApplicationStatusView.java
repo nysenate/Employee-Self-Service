@@ -3,7 +3,7 @@ package gov.nysenate.ess.travel.api.application;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
-import gov.nysenate.ess.travel.request.app.ApprovalStatus;
+import gov.nysenate.ess.travel.request.app.AppStatus;
 import gov.nysenate.ess.travel.request.app.TravelApplicationStatus;
 
 public class TravelApplicationStatusView implements ViewObject {
@@ -22,6 +22,8 @@ public class TravelApplicationStatusView implements ViewObject {
     private boolean isNotApplicable;
     @JsonProperty("isDraft")
     private boolean isDraft;
+    @JsonProperty("isCanceled")
+    private boolean isCanceled;
 
     public TravelApplicationStatusView() {
     }
@@ -35,10 +37,11 @@ public class TravelApplicationStatusView implements ViewObject {
         isDisapproved = status.isDisapproved();
         isNotApplicable = status.isNotApplicable();
         isDraft = status.isDraft();
+        isCanceled = status.isCanceled();
     }
 
     public TravelApplicationStatus toTravelApplicationStatus() {
-        ApprovalStatus status = ApprovalStatus.valueOf(name);
+        AppStatus status = AppStatus.valueOf(name);
         return new TravelApplicationStatus(status, note);
     }
 
@@ -77,6 +80,11 @@ public class TravelApplicationStatusView implements ViewObject {
     @JsonIgnore
     public boolean isDraft() {
         return isDraft;
+    }
+
+    @JsonIgnore
+    public boolean isCanceled() {
+        return isCanceled;
     }
 
     @Override

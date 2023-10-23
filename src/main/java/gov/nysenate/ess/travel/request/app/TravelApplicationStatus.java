@@ -4,44 +4,48 @@ import java.util.Objects;
 
 public class TravelApplicationStatus {
 
-    protected ApprovalStatus status;
+    protected AppStatus status;
     // A note about this status. Currently, used to explain disapproval reasons.
     protected String note;
 
-    public TravelApplicationStatus(ApprovalStatus status) {
+    public TravelApplicationStatus(AppStatus status) {
         this(status, "");
     }
 
-    public TravelApplicationStatus(ApprovalStatus status, String note) {
+    public TravelApplicationStatus(AppStatus status, String note) {
         this.status = status;
         this.note = note == null ? "" : note;
     }
 
     public TravelApplicationStatus(String status, String note) {
-        this(ApprovalStatus.valueOf(status), note);
+        this(AppStatus.valueOf(status), note);
     }
 
     public boolean isPending() {
-        return status == ApprovalStatus.DEPARTMENT_HEAD || status == ApprovalStatus.TRAVEL_UNIT;
+        return status == AppStatus.DEPARTMENT_HEAD || status == AppStatus.TRAVEL_UNIT;
     }
 
     public boolean isApproved() {
-        return status == ApprovalStatus.APPROVED;
+        return status == AppStatus.APPROVED;
     }
 
     public boolean isDisapproved() {
-        return status == ApprovalStatus.DISAPPROVED;
+        return status == AppStatus.DISAPPROVED;
     }
 
     public boolean isNotApplicable() {
-        return status == ApprovalStatus.NOT_APPLICABLE;
+        return status == AppStatus.NOT_APPLICABLE;
     }
 
     public boolean isDraft() {
-        return status == ApprovalStatus.DRAFT;
+        return status == AppStatus.DRAFT;
     }
 
-    public ApprovalStatus status() {
+    public boolean isCanceled() {
+        return status == AppStatus.CANCELED;
+    }
+
+    public AppStatus status() {
         return status;
     }
 

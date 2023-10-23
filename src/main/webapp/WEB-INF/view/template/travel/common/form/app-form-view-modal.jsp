@@ -41,5 +41,9 @@
            ng-click="exit()">
       Close
     </button>
+    <button ng-if="app.status.isPending || app.status.isDisapproved"
+        type="button" class="travel-reject-btn" ng-click="cancel()">
+      Cancel
+    </button>
   </div>
 </div>

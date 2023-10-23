@@ -318,6 +318,10 @@ essApi.factory('TravelAppEditApi', ['$resource', 'appProps', function ($resource
     return $resource(appProps.apiPath + '/travel/application/edit/:id', {id: '@id'}, {'update': {method: 'PATCH'}})
 }])
 
+essApi.factory('TravelAppCancelApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/travel/application/edit/:id/cancel', {id: '@id'})
+}])
+
 essApi.factory('TravelAppEditResubmitApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/travel/application/edit/resubmit/:id', {id: '@id'}, {'update': {method: 'PATCH'}})
 }])

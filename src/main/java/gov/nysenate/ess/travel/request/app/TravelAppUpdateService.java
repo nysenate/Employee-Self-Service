@@ -2,7 +2,6 @@ package gov.nysenate.ess.travel.request.app;
 
 import com.google.common.eventbus.EventBus;
 import gov.nysenate.ess.core.model.personnel.Employee;
-import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
 import gov.nysenate.ess.travel.authorization.role.TravelRoleFactory;
 import gov.nysenate.ess.travel.authorization.role.TravelRoles;
@@ -15,7 +14,6 @@ import gov.nysenate.ess.travel.request.allowances.Allowances;
 import gov.nysenate.ess.travel.request.allowances.PerDiem;
 import gov.nysenate.ess.travel.request.allowances.lodging.LodgingPerDiem;
 import gov.nysenate.ess.travel.request.allowances.lodging.LodgingPerDiems;
-import gov.nysenate.ess.travel.request.allowances.meal.MealPerDiem;
 import gov.nysenate.ess.travel.request.allowances.meal.MealPerDiems;
 import gov.nysenate.ess.travel.request.allowances.meal.MealPerDiemsFactory;
 import gov.nysenate.ess.travel.request.allowances.mileage.MileagePerDiem;
@@ -28,8 +26,6 @@ import gov.nysenate.ess.travel.request.route.Route;
 import gov.nysenate.ess.travel.request.route.RouteService;
 import gov.nysenate.ess.travel.request.route.destination.Destination;
 import gov.nysenate.ess.travel.notifications.email.TravelEmailService;
-import gov.nysenate.ess.travel.provider.senate.SenateMie;
-import gov.nysenate.ess.travel.provider.senate.SqlSenateMieDao;
 import gov.nysenate.ess.travel.review.ApplicationReview;
 import gov.nysenate.ess.travel.review.ApplicationReviewService;
 import gov.nysenate.ess.travel.review.strategy.ReviewerStrategy;
@@ -37,11 +33,9 @@ import gov.nysenate.ess.travel.utils.Dollars;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -265,15 +259,16 @@ public class TravelAppUpdateService {
         return app;
     }
 
-    private ApprovalStatus getApprovalStatus(Employee traveler) {
+    private AppStatus getApprovalStatus(Employee traveler) {
         TravelRoles roles = travelRoleFactory.travelRolesForEmp(traveler);
         ReviewerStrategy reviewerStrategy = ReviewerStrategy.getStrategy(roles.apex(), traveler.isSenator());
         TravelRole roleToReview = reviewerStrategy.after(null);
-        ApprovalStatus approvalStatus;
+        AppStatus appStatus;
         switch (roleToReview) {
-            case TRAVEL_ADMIN, SECRETARY_OF_THE_SENATE, MAJORITY_LEADER -> approvalStatus = ApprovalStatus.TRAVEL_UNIT;
-            default -> approvalStatus = ApprovalStatus.DEPARTMENT_HEAD;
+            case TRAVEL_ADMIN, SECRETARY_OF_THE_SENATE, MAJORITY_LEADER -> appStatus = AppStatus.TRAVEL_UNIT;
+            default -> appStatus = AppStatus.DEPARTMENT_HEAD;
         }
-        return approvalStatus;
+        return appStatus;
     }
+
 }

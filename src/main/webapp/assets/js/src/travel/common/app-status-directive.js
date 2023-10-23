@@ -30,7 +30,7 @@ essTravel.directive('essAppStatus', ['appProps', function (appProps) {
                 else if (app.status.isDraft) {
                     return 'draft-text'
                 }
-                return '';
+                return 'travel-text-bold';
             };
 
             $scope.statusDescription = function () {

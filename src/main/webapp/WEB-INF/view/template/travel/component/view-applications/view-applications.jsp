@@ -45,5 +45,16 @@
     <modal modal-id="app-form-view-modal">
       <div app-form-view-modal></div>
     </modal>
+
+    <modal modal-id="app-cancel-confirm">
+      <div confirm-modal rejectable="true"
+           title="Cancel Travel Application"
+           confirm-message="Are you sure you want to cancel this application?"
+           resolve-button="Yes"
+           resolve-class="travel-reject-btn"
+           reject-button="No"
+           reject-class="travel-neutral-btn">
+      </div>
+    </modal>
   </div>
 </div>
