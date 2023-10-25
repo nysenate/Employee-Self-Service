@@ -16,7 +16,7 @@ import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 public class TravelApplicationView implements ViewObject {
 
     private int id;
-    private TravelEmployeeView traveler;
+    private DetailedEmployeeView traveler;
     private int travelerDeptHeadEmpId;
     private String submittedDateTime;
     private String lastModifiedDateTime;
@@ -31,7 +31,7 @@ public class TravelApplicationView implements ViewObject {
 
     public TravelApplicationView(TravelApplication app) {
         id = app.getAppId();
-        traveler = new TravelEmployeeView(app.getTraveler());
+        traveler = new DetailedEmployeeView(app.getTraveler());
         travelerDeptHeadEmpId = app.getTravelerDeptHeadEmpId();
         submittedDateTime = app.getSubmittedDateTime() == null ? null : app.getSubmittedDateTime().format(ISO_DATE_TIME);
         lastModifiedDateTime = app.activeAmendment() == null ? null : app.activeAmendment().createdDateTime().format(ISO_DATE_TIME);
@@ -48,14 +48,14 @@ public class TravelApplicationView implements ViewObject {
         Set<Amendment> amds = amendments.stream()
                 .map(AmendmentView::toAmendment)
                 .collect(Collectors.toSet());
-        return new TravelApplication(id, traveler.toTravelEmployee(), travelerDeptHeadEmpId, status.toTravelApplicationStatus(), amds);
+        return new TravelApplication(id, traveler.toEmployee(), travelerDeptHeadEmpId, status.toTravelApplicationStatus(), amds);
     }
 
     public int getId() {
         return id;
     }
 
-    public TravelEmployeeView getTraveler() {
+    public DetailedEmployeeView getTraveler() {
         return traveler;
     }
 

@@ -25,7 +25,7 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
     private Logger logger = LoggerFactory.getLogger(SqlTravelApplicationDao.class);
 
     @Autowired private SqlAmendmentDao amendmentDao;
-    @Autowired private TravelEmployeeService travelEmployeeService;
+    @Autowired private EmployeeInfoService employeeInfoService;
 
     /**
      * Persists a {@link TravelApplication} to the database.
@@ -104,7 +104,7 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
     }
 
     private TravelApplication populateApplicationDetails(TravelAppRepositoryView view) {
-        TravelEmployee traveler = travelEmployeeService.getTravelEmployee(view.travelerEmpId);
+        Employee traveler = employeeInfoService.getEmployee(view.travelerEmpId);
         List<Amendment> amds = view.amendmentViews.stream()
                 .map(v -> amendmentDao.selectAmendment(v))
                 .collect(Collectors.toList());

@@ -6,6 +6,7 @@ import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
+import gov.nysenate.ess.travel.employee.TravelEmployeeService;
 import gov.nysenate.ess.travel.request.amendment.Amendment;
 import gov.nysenate.ess.travel.request.app.*;
 import gov.nysenate.ess.travel.request.draft.Draft;
@@ -20,6 +21,7 @@ public class TravelAppEditCtrl extends BaseRestApiCtrl {
     @Autowired private TravelApplicationService appService;
     @Autowired private TravelAppUpdateService appUpdateService;
     @Autowired private EmployeeInfoService employeeInfoService;
+    @Autowired private TravelEmployeeService travelEmployeeService;
 
     /**
      * Initializes the editing of an Application.
@@ -41,7 +43,7 @@ public class TravelAppEditCtrl extends BaseRestApiCtrl {
                 .withVersion(app.activeAmendment().version().next())
                 .build();
 
-        Draft draft = new Draft(app.getTraveler(), editAmd);
+        Draft draft = new Draft(travelEmployeeService.getTravelEmployee(app.getTraveler()), editAmd);
         return new ViewObjectResponse<>(new DraftView(draft));
     }
 
