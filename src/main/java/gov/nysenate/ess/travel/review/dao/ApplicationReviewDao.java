@@ -41,7 +41,7 @@ public interface ApplicationReviewDao {
      * Note, to get review history for a single department, see
      * {@link #reviewHistoryForDeptHead(Employee)}.
      */
-    List<ApplicationReview> reviewHistoryForRole(TravelRole role);
+    List<ApplicationReview> reviewHistoryForRoles(Collection<TravelRole> roles);
 
     /**
      * Gets all ApplicationReview's that have a DEPARTMENT_HEAD action

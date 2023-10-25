@@ -15,7 +15,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Repository
@@ -108,12 +107,12 @@ public class SqlApplicationReviewDao extends SqlBaseDao implements ApplicationRe
     }
 
     /**
-     * Get a list of ApplicationReviews where the given role has performed an action on it.
+     * Get a list of ApplicationReviews where any of the given roles have performed an action on it.
      */
     @Override
-    public List<ApplicationReview> reviewHistoryForRole(TravelRole role) {
+    public List<ApplicationReview> reviewHistoryForRoles(Collection<TravelRole> roles) {
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("role", role.name());
+                .addValue("roles", roles.stream().map(TravelRole::name).collect(Collectors.toSet()));
         String sql = SqlApplicationReviewQuery.SELECT_APP_REVIEW_HISTORY_FOR_ROLE.getSql(schemaMap());
         var views = localNamedJdbc.query(sql, params, new ApplicationReviewRowMapper());
         return populateRepViews(views);

@@ -53,7 +53,7 @@ enum SqlApplicationReviewQuery implements BasicSqlQuery {
                     " WHERE EXISTS \n" +
                     "  (SELECT DISTINCT(action.app_review_id) \n" +
                     "  FROM ${travelSchema}.app_review_action action \n" +
-                    "  WHERE action.role = :role \n" +
+                    "  WHERE action.role IN (:roles) \n" +
                     "  AND action.app_review_id = app_review.app_review_id)"
     ),
     SELECT_APP_REVIEW_HISTORY_FOR_DEPT_HD(

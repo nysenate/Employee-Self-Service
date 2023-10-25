@@ -148,15 +148,23 @@ public class ApplicationReviewService {
      * @return All ApplicationReviews that have been modified by any of {@code emp} roles.
      */
     public Set<ApplicationReview> appReviewHistory(Employee emp) {
+        final Set<TravelRole> ADMIN_ROLES = Sets.newHashSet(TravelRole.TRAVEL_ADMIN, TravelRole.SECRETARY_OF_THE_SENATE);
         Set<ApplicationReview> appReviews = new HashSet<>();
         TravelRoles roles = travelRoleFactory.travelRolesForEmp(emp);
+
+        Set<TravelRole> adminRoles = roles.all().stream()
+                .filter(ADMIN_ROLES::contains)
+                .collect(Collectors.toSet());
+
+        if (!adminRoles.isEmpty()) {
+            appReviews.addAll(appReviewDao.reviewHistoryForRoles(adminRoles));
+        }
+
         for (TravelRole role : Sets.newHashSet(roles.all())) {
             // Convert roles.all to a set to remove duplicates. The only practical duplicate is DEPARTMENT_HEAD,
             // which can occur from delegation. These will be handled by the delegation handling below.
             if (role.equals(TravelRole.DEPARTMENT_HEAD)) {
                 appReviews.addAll(appReviewDao.reviewHistoryForDeptHead(emp));
-            } else {
-                appReviews.addAll(appReviewDao.reviewHistoryForRole(role));
             }
         }
         // If the DeptHd role is delegated, we need to add the reviewHistory for their delegate principal.
