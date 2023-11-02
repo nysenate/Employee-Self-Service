@@ -9,6 +9,7 @@ import gov.nysenate.ess.core.client.view.AlertInfoView;
 import gov.nysenate.ess.core.client.view.InvalidAlertInfoView;
 import gov.nysenate.ess.core.client.view.alert.ContactBatch;
 import gov.nysenate.ess.core.client.view.alert.ContactBatchFactory;
+import gov.nysenate.ess.core.client.view.alert.SendWordNowCsv;
 import gov.nysenate.ess.core.dao.alert.AlertInfoDao;
 import gov.nysenate.ess.core.model.auth.CorePermission;
 import gov.nysenate.ess.core.model.auth.CorePermissionObject;
@@ -23,7 +24,12 @@ import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.WebRequest;
 
+import javax.servlet.http.HttpServletResponse;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -105,18 +111,27 @@ public class AlertInfoCtrl extends BaseRestApiCtrl {
      *
      * Requires Admin permissions.
      *
-     * Get alert info for all active senate employees:
+     * Get an alert info csv dump for all active senate employees:
      *      (GET) /api/v1/alert-info/contact-dump
      */
     @RequestMapping(value = "contact-dump", method = RequestMethod.GET)
-    public ContactBatch generateContactList() {
+    public void generateContactList(WebRequest request, HttpServletResponse response) {
         checkPermission(SimpleEssPermission.ADMIN.getPermission());
 
         List<AlertInfo> alertInfos = alertInfoDao.getAllAlertInfo();
         Map<Integer, AlertInfo> alertInfoMap = alertInfos.stream()
                 .collect(Collectors.toMap(AlertInfo::getEmpId, Function.identity()));
         Set<Employee> employees = employeeInfoService.getAllEmployees(true);
-        return ContactBatchFactory.create(employees, alertInfoMap);
+
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("MMddyyyy");
+        String dateStr = LocalDate.now().format(dateFormat);
+        String filename = "nysenate_" + dateStr + ".csv";
+
+        response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", filename));
+        response.setContentType("text/csv");
+        SendWordNowCsv csv = new SendWordNowCsv();
+        csv.createCsv(response, employees, alertInfoMap);
+        response.setStatus(200);
     }
 
     @ExceptionHandler(EmployeeNotFoundEx.class)

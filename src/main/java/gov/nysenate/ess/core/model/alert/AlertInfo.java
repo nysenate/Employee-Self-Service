@@ -25,6 +25,27 @@ public class AlertInfo {
 
     private AlertInfo() {}
 
+
+    /**
+     * Returns the alternate number with country code if texting is desired, an empty string otherwise.
+     */
+    public String alternateSms() {
+        if (StringUtils.isNotBlank(alternatePhone) && alternateOptions.isTextable()) {
+            return "1" + alternatePhone; // Add country code for SMS numbers
+        }
+        return "";
+    }
+
+    /**
+     * Returns the mobile number with country code if texting is desired, an empty string otherwise.
+     */
+    public String mobileSms() {
+        if (StringUtils.isNotBlank(mobilePhone) && mobileOptions.isTextable()) {
+            return "1" + mobilePhone; // Add country code for SMS numbers
+        }
+        return "";
+    }
+
     /* --- Overrides --- */
 
     @Override
@@ -140,15 +161,15 @@ public class AlertInfo {
     }
 
     public String getHomePhone() {
-        return homePhone;
+        return homePhone == null ? "" : homePhone;
     }
 
     public String getMobilePhone() {
-        return mobilePhone;
+        return mobilePhone == null ? "" : mobilePhone;
     }
 
     public String getAlternatePhone() {
-        return alternatePhone;
+        return alternatePhone == null ? "" : alternatePhone;
     }
 
     public ContactOptions getMobileOptions() {
@@ -160,10 +181,10 @@ public class AlertInfo {
     }
 
     public String getPersonalEmail() {
-        return personalEmail;
+        return personalEmail == null ? "" : personalEmail;
     }
 
     public String getAlternateEmail() {
-        return alternateEmail;
+        return alternateEmail == null ? "" : alternateEmail;
     }
 }
