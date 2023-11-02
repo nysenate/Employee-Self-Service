@@ -7,8 +7,6 @@ import gov.nysenate.ess.core.client.response.error.ErrorCode;
 import gov.nysenate.ess.core.client.response.error.ViewObjectErrorResponse;
 import gov.nysenate.ess.core.client.view.AlertInfoView;
 import gov.nysenate.ess.core.client.view.InvalidAlertInfoView;
-import gov.nysenate.ess.core.client.view.alert.ContactBatch;
-import gov.nysenate.ess.core.client.view.alert.ContactBatchFactory;
 import gov.nysenate.ess.core.client.view.alert.SendWordNowCsv;
 import gov.nysenate.ess.core.dao.alert.AlertInfoDao;
 import gov.nysenate.ess.core.model.auth.CorePermission;
@@ -27,9 +25,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 
 import javax.servlet.http.HttpServletResponse;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -123,12 +118,7 @@ public class AlertInfoCtrl extends BaseRestApiCtrl {
                 .collect(Collectors.toMap(AlertInfo::getEmpId, Function.identity()));
         Set<Employee> employees = employeeInfoService.getAllEmployees(true);
 
-        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("MMddyyyy");
-        String dateStr = LocalDate.now().format(dateFormat);
-        String filename = "nysenate_" + dateStr + ".csv";
-
-        response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", filename));
-        response.setContentType("text/csv");
+        response.setContentType("text/plain");
         SendWordNowCsv csv = new SendWordNowCsv();
         csv.createCsv(response, employees, alertInfoMap);
         response.setStatus(200);
