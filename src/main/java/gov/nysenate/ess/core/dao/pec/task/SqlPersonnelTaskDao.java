@@ -2,10 +2,10 @@ package gov.nysenate.ess.core.dao.pec.task;
 
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
+import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignmentGroup;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
 import gov.nysenate.ess.core.model.pec.everfi.EverfiAssignmentID;
 import gov.nysenate.ess.core.model.pec.everfi.EverfiContentID;
-import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignmentGroup;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -33,7 +33,7 @@ public class SqlPersonnelTaskDao extends SqlBaseDao implements PersonnelTaskDao 
                 taskRowMapper
         );
 
-        if (personnelTasks.isEmpty() || personnelTasks == null) {
+        if (personnelTasks.isEmpty()) {
             throw new IncorrectResultSizeDataAccessException(0);
         }
         else {

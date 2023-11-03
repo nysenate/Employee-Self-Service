@@ -1,5 +1,6 @@
 package gov.nysenate.ess.core.dao.pec.task;
 
+import gov.nysenate.ess.core.dao.base.BaseDao;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 
 import java.util.HashMap;
@@ -8,7 +9,7 @@ import java.util.List;
 /**
  * DAO for retrieving {@link PersonnelTask}s
  */
-public interface PersonnelTaskDao {
+public interface PersonnelTaskDao extends BaseDao {
 
     /**
      * Get all {@link PersonnelTask}s
