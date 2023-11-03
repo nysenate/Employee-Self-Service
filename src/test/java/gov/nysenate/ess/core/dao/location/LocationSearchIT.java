@@ -3,8 +3,8 @@ package gov.nysenate.ess.core.dao.location;
 import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.annotation.IntegrationTest;
 import gov.nysenate.ess.core.annotation.TestDependsOnDatabase;
-import gov.nysenate.ess.core.dao.unit.LocationDao;
 import gov.nysenate.ess.core.model.unit.Location;
+import gov.nysenate.ess.core.service.base.LocationService;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
@@ -21,12 +21,12 @@ public class LocationSearchIT extends BaseTest {
 
     private static final Logger logger = LoggerFactory.getLogger(LocationSearchIT.class);
 
-    @Autowired private LocationDao locationDao;
+    @Autowired private LocationService locationService;
 
     @Test
     public void givenExactMatch_returnLocation() {
         String term = "A42FB";
-        List<Location> results = locationDao.searchLocations(term);
+        List<Location> results = locationService.searchLocations(term);
         assertTrue(results.size() == 1);
         assertEquals(term, results.get(0).getLocId().getCode());
     }
@@ -34,7 +34,7 @@ public class LocationSearchIT extends BaseTest {
     @Test
     public void notCaseSensitive() {
         String term = "a42fb";
-        List<Location> results = locationDao.searchLocations(term);
+        List<Location> results = locationService.searchLocations(term);
         assertTrue(results.size() == 1);
         assertEquals("A42FB", results.get(0).getLocId().getCode());
     }
@@ -42,19 +42,19 @@ public class LocationSearchIT extends BaseTest {
     @Test
     public void givenNull_returnEmptyCollection() {
         String term = null;
-        List<Location> results = locationDao.searchLocations(term);
+        List<Location> results = locationService.searchLocations(term);
         assertTrue(results.size() == 0);
     }
 
     @Test
     public void givenPartialMatch_returnMultiple() {
         String term = "A4";
-        List<Location> results = locationDao.searchLocations(term);
+        List<Location> results = locationService.searchLocations(term);
         assertTrue(results.size() > 1);
         assertResultsMatchTerm(results, term);
 
         term = "2";
-        results = locationDao.searchLocations(term);
+        results = locationService.searchLocations(term);
         assertTrue(results.size() > 1);
         assertResultsMatchTerm(results, term);
     }

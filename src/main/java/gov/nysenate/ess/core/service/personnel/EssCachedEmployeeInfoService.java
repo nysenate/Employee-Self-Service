@@ -3,10 +3,8 @@ package gov.nysenate.ess.core.service.personnel;
 import com.google.common.collect.DiscreteDomain;
 import com.google.common.collect.Range;
 import com.google.common.collect.RangeSet;
-import com.google.common.eventbus.EventBus;
 import gov.nysenate.ess.core.annotation.WorkInProgress;
 import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
-import gov.nysenate.ess.core.dao.unit.LocationDao;
 import gov.nysenate.ess.core.model.cache.CacheType;
 import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.personnel.*;
@@ -14,6 +12,7 @@ import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.core.model.unit.LocationType;
+import gov.nysenate.ess.core.service.base.LocationService;
 import gov.nysenate.ess.core.service.cache.CachingService;
 import gov.nysenate.ess.core.service.cache.EmployeeIdCache;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
@@ -27,7 +26,10 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -38,15 +40,15 @@ public class EssCachedEmployeeInfoService extends EmployeeIdCache<Employee>
 
     private final EmployeeDao employeeDao;
     private final EmpTransactionService transService;
-    private final LocationDao locationDao;
+    private final LocationService locationService;
     private LocalDateTime lastUpdateDateTime;
 
     public EssCachedEmployeeInfoService(EmployeeDao employeeDao,
                                         EmpTransactionService transService,
-                                        LocationDao locationDao) {
+                                        LocationService locationService) {
         this.employeeDao = employeeDao;
         this.transService = transService;
-        this.locationDao = locationDao;
+        this.locationService = locationService;
         lastUpdateDateTime = employeeDao.getLastUpdateTime();
     }
 
@@ -235,6 +237,6 @@ public class EssCachedEmployeeInfoService extends EmployeeIdCache<Employee>
         }
         String locCode = transHistory.latestValueOf("CDLOCAT", effectiveDate, true).get();
         // All employee assigned locations have a work location type.
-        return locationDao.getLocation(new LocationId(locCode, LocationType.WORK));
+        return locationService.getLocation(new LocationId(locCode, LocationType.WORK));
     }
 }

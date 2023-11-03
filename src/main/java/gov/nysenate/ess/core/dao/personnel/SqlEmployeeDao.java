@@ -4,13 +4,16 @@ import gov.nysenate.ess.core.dao.base.PaginatedRowHandler;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.dao.personnel.mapper.EmployeeRowMapper;
 import gov.nysenate.ess.core.dao.personnel.mapper.MinimalEmployeeRowMapper;
-import gov.nysenate.ess.core.dao.unit.LocationDao;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.personnel.EmployeeException;
 import gov.nysenate.ess.core.model.personnel.EmployeeNotFoundEx;
 import gov.nysenate.ess.core.model.transaction.TransactionCode;
+import gov.nysenate.ess.core.service.base.LocationService;
 import gov.nysenate.ess.core.service.personnel.EmployeeSearchBuilder;
-import gov.nysenate.ess.core.util.*;
+import gov.nysenate.ess.core.util.LimitOffset;
+import gov.nysenate.ess.core.util.OrderBy;
+import gov.nysenate.ess.core.util.PaginatedList;
+import gov.nysenate.ess.core.util.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +23,6 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
@@ -34,7 +33,7 @@ public class SqlEmployeeDao extends SqlBaseDao implements EmployeeDao
 {
     private static final Logger logger = LoggerFactory.getLogger(SqlEmployeeDao.class);
 
-    @Autowired private LocationDao locationDao;
+    @Autowired private LocationService locationService;
 
     /** {@inheritDoc} */
     @Override
@@ -229,7 +228,7 @@ public class SqlEmployeeDao extends SqlBaseDao implements EmployeeDao
 
     /** Returns a EmployeeRowMapper that's configured for use in this dao */
     private EmployeeRowMapper getEmployeeRowMapper() {
-        return new EmployeeRowMapper("", "RCTR_", "RCTRHD_", "AGCY_", "LOC_", locationDao);
+        return new EmployeeRowMapper("", "RCTR_", "RCTRHD_", "AGCY_", "LOC_", locationService);
     }
 
     private MinimalEmployeeRowMapper getMinimalEmployeeRowMapper() {

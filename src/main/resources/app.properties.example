@@ -141,17 +141,14 @@ cache.warm.onstartup = true
 # Warming will still be disabled for all caches if cache.warm.onstartup = false
 cache.warm.onstartup.supervisors = true
 
-# Holiday cache
+# Crons for how often to refresh certain cached data.
 cache.cron.holiday = 0 0 0 * * *
-
-# Pay Period cache
 cache.cron.period = 0 0 0 * * *
-
-# Locations cache
 cache.cron.location = 0 0 0 * * *
+cache.cron.task = 0 0 0 * * *
 
-# Travel Mileage Rate cache
-cache.cron.mileage.rate = 0 0 0 * * *
+# Travel Mileage Rate refresh
+refresh.mileage.rate.cron = 0 0 0 * * *
 
 # GSA Data Cron
 gsa.cron.data = 0 0 7 1,7,14,21,28 * *

@@ -40,7 +40,8 @@ public abstract class EmployeeIdCache<Value> extends CachingService<Integer, Val
         logger.info("Clearing " + cacheType().name() + " cache...");
         cache.clear();
         if (warmCache) {
-            employeeDao.getActiveEmployeeIds().forEach(this::putId);
+            empIds = new TreeSet<>(employeeDao.getActiveEmployeeIds());
+            empIds.forEach(this::putId);
         }
         logger.info("Done clearing cache.");
     }

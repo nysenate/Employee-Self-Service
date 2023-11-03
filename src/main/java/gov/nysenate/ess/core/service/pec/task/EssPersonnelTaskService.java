@@ -8,15 +8,14 @@ import gov.nysenate.ess.core.dao.pec.task.detail.PersonnelTaskDetailDao;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignmentGroup;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
+import gov.nysenate.ess.core.service.RefreshedCachedData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -24,18 +23,23 @@ import java.util.stream.Stream;
  * Implements {@link PersonnelTaskService} using {@link PersonnelTaskDao} and {@link PersonnelTaskDetailDao}
  * and utilizing caching to improve performance.
  */
-@Service
-public class EssPersonnelTaskService implements PersonnelTaskService {
+public class EssPersonnelTaskService
+        extends RefreshedCachedData<Integer, PersonnelTask>
+        implements PersonnelTaskService {
     private final PersonnelTaskDao taskDao;
     private final ImmutableMap<PersonnelTaskType, PersonnelTaskDetailDao<? extends PersonnelTask>> taskDetailDaoMap;
-    private ImmutableMap<Integer, PersonnelTask> taskMap;
 
     @Autowired
-    public EssPersonnelTaskService(PersonnelTaskDao taskDao,
+    public EssPersonnelTaskService(PersonnelTaskDao taskDao, @Value("${cache.cron.task}") String cron,
                                    List<PersonnelTaskDetailDao<?>> taskDetailDaos) {
+        super(cron);
         this.taskDao = taskDao;
         this.taskDetailDaoMap = Maps.uniqueIndex(taskDetailDaos, PersonnelTaskDetailDao::taskType);
-        initializeData();
+    }
+
+    @Override
+    protected Map<Integer, PersonnelTask> getMap() {
+        return toMap(taskDao.getAllTasks(), PersonnelTask::getTaskId);
     }
 
     /* --- PersonnelTaskService implementations --- */
@@ -49,7 +53,7 @@ public class EssPersonnelTaskService implements PersonnelTaskService {
 
     @Override
     public PersonnelTask getPersonnelTask(int taskId, boolean getDetail) throws PersonnelTaskNotFoundEx {
-        PersonnelTask personnelTask = taskMap.get(taskId);
+        PersonnelTask personnelTask = dataMap().get(taskId);
         if (personnelTask == null) {
             throw new PersonnelTaskNotFoundEx(taskId);
         }
@@ -58,7 +62,7 @@ public class EssPersonnelTaskService implements PersonnelTaskService {
 
     @Override
     public List<PersonnelTask> getPersonnelTasks(boolean activeOnly, boolean getDetail) {
-        Stream<PersonnelTask> taskStream = taskMap.values().stream()
+        Stream<PersonnelTask> taskStream = dataMap().values().stream()
                 .filter(task -> !activeOnly || task.isActive());
         if (getDetail) {
             taskStream = taskStream.map(this::getDetailedTask);
@@ -75,11 +79,5 @@ public class EssPersonnelTaskService implements PersonnelTaskService {
 
     private PersonnelTask getDetailedTask(PersonnelTask basicTask) {
         return taskDetailDaoMap.get(basicTask.getTaskType()).getTaskDetails(basicTask);
-    }
-
-    @Scheduled(timeUnit = TimeUnit.MINUTES, fixedDelay = 5)
-    private void initializeData() {
-        taskMap = taskDao.getAllTasks().stream()
-                .collect(ImmutableMap.toImmutableMap(PersonnelTask::getTaskId, Function.identity()));
     }
 }

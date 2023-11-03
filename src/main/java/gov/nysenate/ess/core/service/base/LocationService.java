@@ -1,26 +1,28 @@
-package gov.nysenate.ess.core.dao.unit;
+package gov.nysenate.ess.core.service.base;
 
-import com.google.common.collect.ImmutableMap;
+import gov.nysenate.ess.core.dao.unit.SqlLocationDao;
 import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.core.model.unit.LocationId;
+import gov.nysenate.ess.core.service.RefreshedCachedData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.List;
-import java.util.function.Function;
+import java.util.Map;
 import java.util.stream.Collectors;
 
-@Service
-public class LocationDao {
-    private final SqlLocationDao sqlLocationDao;
-    private ImmutableMap<LocationId, Location> locMap;
+public class LocationService extends RefreshedCachedData<LocationId, Location> {
+    private final SqlLocationDao locationDao;
 
     @Autowired
-    public LocationDao(SqlLocationDao sqlLocationDao) {
-        this.sqlLocationDao = sqlLocationDao;
-        // This unfortunately takes ~10 seconds, but we need it done before ESS starts.
-        initializeData();
+    public LocationService(SqlLocationDao sqlLocationDao, @Value("${cache.cron.location}") String cron) {
+        super(cron);
+        this.locationDao = sqlLocationDao;
+    }
+
+    @Override
+    protected Map<LocationId, Location> getMap() {
+        return toMap(locationDao.getAllLocations(), Location::getLocId);
     }
 
     /**
@@ -28,7 +30,7 @@ public class LocationDao {
      * @return The location for the given {@link LocationId} or {@code null} if no location can be found with that LocationId.
      */
     public Location getLocation(LocationId locId) {
-        return locMap.get(locId);
+        return dataMap().get(locId);
     }
 
     /**
@@ -38,22 +40,15 @@ public class LocationDao {
      * @param activeOnly if true will only return active Locations.
      */
     public List<Location> getLocations(boolean activeOnly) {
-        return locMap.values().stream().filter(loc -> !activeOnly || loc.isActive())
+        return dataMap().values().stream().filter(loc -> !activeOnly || loc.isActive())
                 .collect(Collectors.toList());
     }
 
     /**
      * Searches for locations where code matches {@code term}.
-     * @param term
      * @return A list of matching locations
      */
     public List<Location> searchLocations(String term) {
-        return sqlLocationDao.searchLocations(term);
-    }
-
-    @Scheduled(cron = "${cache.cron.location:0 0 0 * * *}")
-    private void initializeData() {
-        locMap = sqlLocationDao.getLocations(false).stream()
-                .collect(ImmutableMap.toImmutableMap(Location::getLocId, Function.identity()));
+        return locationDao.searchLocations(term);
     }
 }

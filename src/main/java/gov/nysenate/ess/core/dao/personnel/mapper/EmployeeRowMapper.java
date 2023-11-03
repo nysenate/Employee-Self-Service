@@ -2,16 +2,13 @@ package gov.nysenate.ess.core.dao.personnel.mapper;
 
 import gov.nysenate.ess.core.dao.base.BaseRowMapper;
 import gov.nysenate.ess.core.dao.unit.AddressRowMapper;
-import gov.nysenate.ess.core.dao.unit.LocationDao;
 import gov.nysenate.ess.core.dao.unit.LocationIdRowMapper;
-import gov.nysenate.ess.core.dao.unit.LocationRowMapper;
 import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.personnel.Gender;
 import gov.nysenate.ess.core.model.personnel.MaritalStatus;
 import gov.nysenate.ess.core.model.personnel.PersonnelStatus;
-import gov.nysenate.ess.core.model.unit.Location;
-import gov.nysenate.ess.core.model.unit.LocationId;
+import gov.nysenate.ess.core.service.base.LocationService;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -29,14 +26,14 @@ public class EmployeeRowMapper extends BaseRowMapper<Employee> {
     private AddressRowMapper addressRowMapper;
     private RespCenterRowMapper respCenterRowMapper;
     private LocationIdRowMapper locationIdRowMapper;
-    private LocationDao locationDao;
+    private LocationService locationService;
 
-    public EmployeeRowMapper(String pfx, String rctrPfx, String rctrhdPfx, String agcyPfx, String locPfx, LocationDao locationDao) {
+    public EmployeeRowMapper(String pfx, String rctrPfx, String rctrhdPfx, String agcyPfx, String locPfx, LocationService locationService) {
         this.pfx = pfx;
         this.addressRowMapper = new AddressRowMapper(pfx);
         this.respCenterRowMapper = new RespCenterRowMapper(rctrPfx, rctrhdPfx, agcyPfx);
         this.locationIdRowMapper = new LocationIdRowMapper(locPfx);
-        this.locationDao = locationDao;
+        this.locationService = locationService;
     }
 
     @Override
@@ -64,7 +61,7 @@ public class EmployeeRowMapper extends BaseRowMapper<Employee> {
         emp.setNid(rs.getString(pfx + "NUEMPLID"));
         emp.setHomeAddress(addressRowMapper.mapRow(rs, rowNum));
         emp.setRespCenter(respCenterRowMapper.mapRow(rs, rowNum));
-        emp.setWorkLocation(locationDao.getLocation(locationIdRowMapper.mapRow(rs, rowNum)));
+        emp.setWorkLocation(locationService.getLocation(locationIdRowMapper.mapRow(rs, rowNum)));
         emp.setSenateContServiceDate(getLocalDate(rs, pfx + "DTCONTSERV"));
         LocalDateTime maxUpdateDateTime = Stream.of(
                 getLocalDateTime(rs, "DTTXNUPDATE"),

@@ -4,15 +4,16 @@ import com.google.common.collect.Sets;
 import gov.nysenate.ess.core.annotation.UnitTest;
 import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.core.model.unit.LocationId;
-import gov.nysenate.ess.supply.item.model.*;
 import gov.nysenate.ess.supply.item.LineItem;
+import gov.nysenate.ess.supply.item.model.*;
 import gov.nysenate.ess.supply.requisition.model.Requisition;
 import gov.nysenate.ess.supply.statistics.location.LocationStatistic;
 import gov.nysenate.ess.supply.unit.fixtures.RequisitionFixture;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -20,8 +21,8 @@ import static org.hamcrest.Matchers.is;
 @org.junit.experimental.categories.Category(UnitTest.class)
 public class LocationStatisticTest {
 
-    private static final Location LOCATION = new Location(new LocationId("A42FB-W"));
-    private static final Location ALTERNATE_LOCATION = new Location(new LocationId("ZZZ-Z"));
+    private static final Location LOCATION = new Location(LocationId.ofString("A42FB-W"));
+    private static final Location ALTERNATE_LOCATION = new Location(LocationId.ofString("ZZZ-Z"));
     private Requisition requisition;
 
     @Before
