@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -36,7 +37,9 @@ public class HolidayRestApiCtrl extends BaseRestApiCtrl
     }
 
     private List<Holiday> getHolidaysDuring(LocalDate fromDate, LocalDate toDate) {
-        return holidayService.getHolidays(fromDate, toDate, false);
+        List<Holiday> holidays = holidayService.getHolidays(fromDate, toDate, false);
+        holidays.sort(Comparator.comparing(Holiday::getDate));
+        return holidays;
     }
 
     private BaseResponse getListViewResponse(List<Holiday> holidays) {
