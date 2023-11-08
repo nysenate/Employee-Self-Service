@@ -1,17 +1,14 @@
 package gov.nysenate.ess.time.service.notification;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Multimap;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.mail.SendMailService;
-import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.template.EssTemplateException;
 import gov.nysenate.ess.time.model.attendance.TimeRecord;
 import gov.nysenate.ess.time.model.notification.EssTimeRecordEmailReminder;
-import gov.nysenate.ess.time.service.attendance.TimeRecordService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +18,7 @@ import org.springframework.stereotype.Service;
 import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.toSet;
 
 /**
  * {@inheritDoc}
@@ -56,7 +49,7 @@ public class EssRecordReminderEmailService implements RecordReminderEmailService
                 if (reminder.getEmployee().isActive()) {
                     // Only send if employee is active.
                     MimeMessage message = generateReminderEmail(reminder.getEmployee(), reminder.getTimeRecords());
-                    sendMailService.sendMessages(Arrays.asList(message));
+                    sendMailService.sendMessages(Collections.singletonList(message));
                     reminder.setWasReminderSent(true);
                 }
             } catch (Exception ex) {
@@ -80,10 +73,9 @@ public class EssRecordReminderEmailService implements RecordReminderEmailService
      */
     private MimeMessage generateReminderEmail(Employee employee, Collection<TimeRecord> timeRecords) {
         String to = employee.getEmail();
-        String subject = reminderEmailSubject;
         String body = getEmailBody(employee, timeRecords);
 
-        return sendMailService.newHtmlMessage(to, subject, body);
+        return sendMailService.newHtmlMessage(to, reminderEmailSubject, body);
     }
 
     /**

@@ -312,7 +312,7 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
         return value.toString();
     }
 
-    private class EmpSupInfoNullValEx extends Exception {
+    private static class EmpSupInfoNullValEx extends Exception {
         private final int empId;
         private final String field;
 

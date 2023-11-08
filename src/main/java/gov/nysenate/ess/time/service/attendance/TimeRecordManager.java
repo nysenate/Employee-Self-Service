@@ -19,7 +19,7 @@ public interface TimeRecordManager {
      * @param payPeriods
      * @return int - the number of records created/modified
      */
-    public int ensureRecords(int empId, Collection<PayPeriod> payPeriods);
+    int ensureRecords(int empId, Collection<PayPeriod> payPeriods);
 
     /**
      * Overload of {@link #ensureRecords(int, Collection)} that uses all open pay periods for the given year
@@ -27,12 +27,12 @@ public interface TimeRecordManager {
      * @param empId int - employee id
      * @return int - the number of records created/modified
      */
-    public int ensureRecords(int empId);
+    int ensureRecords(int empId);
 
 
     /**
      * Ensure that all active employees have up to date, correct records for all active pay periods in the current year
      * @see #ensureRecords(int)
      */
-    public void ensureAllActiveRecords();
+    void ensureAllActiveRecords();
 }

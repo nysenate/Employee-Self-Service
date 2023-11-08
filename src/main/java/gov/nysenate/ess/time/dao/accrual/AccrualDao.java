@@ -1,11 +1,11 @@
 package gov.nysenate.ess.time.dao.accrual;
 
 import com.google.common.collect.Range;
+import gov.nysenate.ess.core.dao.base.BaseDao;
+import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.SortOrder;
-import gov.nysenate.ess.core.dao.base.BaseDao;
 import gov.nysenate.ess.time.model.accrual.AnnualAccSummary;
-import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.time.model.accrual.PeriodAccSummary;
 import gov.nysenate.ess.time.model.accrual.PeriodAccUsage;
 
@@ -65,6 +65,6 @@ public interface AccrualDao extends BaseDao
      * @param empId
      * @return Integer
      */
-    public BigDecimal getBasisForSAPersonalTime(int empId);
+    BigDecimal getBasisForSAPersonalTime(int empId);
 
 }

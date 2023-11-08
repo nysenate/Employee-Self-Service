@@ -95,7 +95,7 @@ public class EssDisapprovalEmailService implements DisapprovalEmailService {
     private String getEmailBody(Employee employee, Employee rejector, TimeRecord timeRecord) {
         StringWriter out = new StringWriter();
 
-        Map dataModel = ImmutableMap.of("employee", employee, "rejector", rejector, "timeRecord", timeRecord);
+        Map<String, Object> dataModel = ImmutableMap.of("employee", employee, "rejector", rejector, "timeRecord", timeRecord);
         try {
             Template emailTemplate = freemarkerCfg.getTemplate(emailTemplateName);
             emailTemplate.process(dataModel, out);

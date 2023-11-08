@@ -19,7 +19,7 @@ import java.util.List;
 public class TravelDeaPermissionFactory implements PermissionFactory {
 
     @Override
-    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum> roles) {
+    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum<?>> roles) {
         List<Permission> permissions = new ArrayList<>();
         if (roles.contains(TravelRole.DEPUTY_EXECUTIVE_ASSISTANT)) {
             permissions.add(SimpleTravelPermission.TRAVEL_UI_MANAGE.getPermission());

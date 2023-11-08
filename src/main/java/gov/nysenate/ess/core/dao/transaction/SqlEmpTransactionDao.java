@@ -9,7 +9,7 @@ import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.model.transaction.TransactionRecord;
 import gov.nysenate.ess.core.util.DateUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.StrSubstitutor;
+import org.apache.commons.text.StringSubstitutor;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
@@ -127,8 +127,7 @@ public class SqlEmpTransactionDao extends SqlBaseDao implements EmpTransactionDa
         // Apply to the sql statement */
         String auditColumns = StringUtils.join(auditColList, ",");
         selectMap.put(replaceKey, (!auditColumns.isEmpty()) ? ("," + auditColumns) : "");
-        StrSubstitutor strSub = new StrSubstitutor(selectMap);
-        return strSub.replace(selectSql);
+        return new StringSubstitutor(selectMap).replace(selectSql);
     }
 
     /**

@@ -26,7 +26,7 @@ public class SupplyPermissionFactory implements PermissionFactory {
     private static final Logger logger = LoggerFactory.getLogger(SupplyPermissionFactory.class);
 
     @Override
-    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum> roles) {
+    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum<?>> roles) {
         return roles.stream()
                 .map(r -> permissionsForRole(employee, r))
                 .flatMap(Collection::stream)

@@ -24,11 +24,21 @@ import java.util.stream.Collectors;
  */
 @Service
 public class EssAccrualInfoService implements AccrualInfoService {
-    @Autowired private CachedAnnualAccrualService cacheService;
-    @Autowired private AttendanceDao attendanceDao;
-    @Autowired private PayPeriodService payPeriodService;
-    @Autowired private EmpTransactionService transService;
+    private final CachedAnnualAccrualService cacheService;
+    private final AttendanceDao attendanceDao;
+    private final PayPeriodService payPeriodService;
+    private final EmpTransactionService transService;
 
+    @Autowired
+    public EssAccrualInfoService(CachedAnnualAccrualService cacheService,
+                                 AttendanceDao attendanceDao,
+                                 PayPeriodService payPeriodService,
+                                 EmpTransactionService transService) {
+        this.cacheService = cacheService;
+        this.attendanceDao = attendanceDao;
+        this.payPeriodService = payPeriodService;
+        this.transService = transService;
+    }
 
     /* --- Accrual Info Service Implemented Methods --- */
 

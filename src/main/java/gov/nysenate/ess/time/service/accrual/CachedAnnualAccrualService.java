@@ -10,13 +10,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.TreeMap;
 
-@Service
 class CachedAnnualAccrualService extends EmployeeIdCache<CachedAnnualAccrualService.AnnualAccCacheTree> {
     private static final Logger logger = LoggerFactory.getLogger(CachedAnnualAccrualService.class);
     private final AccrualDao accrualDao;
@@ -36,7 +34,7 @@ class CachedAnnualAccrualService extends EmployeeIdCache<CachedAnnualAccrualServ
     }
 
     /**
-     * Used to prevent type erasure. The summaries are stored as a map of year->summary
+     * Used to prevent type erasure. The summaries are stored as a map of year -> summary
      */
     static final class AnnualAccCacheTree extends TreeMap<Integer, AnnualAccSummary> {
         private AnnualAccCacheTree(TreeMap<Integer, AnnualAccSummary> annualAccruals) {
@@ -66,7 +64,6 @@ class CachedAnnualAccrualService extends EmployeeIdCache<CachedAnnualAccrualServ
             if (tree != null) {
                 tree.put(summary.getYear(), summary);
             }
-
         }
         lastUpdateDateTime = updatedAnnualAccs.stream().map(AnnualAccSummary::getUpdateDate)
                 .max(LocalDateTime::compareTo).orElse(lastUpdateDateTime);

@@ -1,6 +1,7 @@
 package gov.nysenate.ess.time.service.personnel;
 
 import com.google.common.collect.*;
+import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import gov.nysenate.ess.core.annotation.WorkInProgress;
 import gov.nysenate.ess.core.model.cache.CacheType;
@@ -8,7 +9,6 @@ import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.transaction.TransactionCode;
 import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.model.transaction.TransactionHistoryUpdateEvent;
-import gov.nysenate.ess.core.service.cache.CachingService;
 import gov.nysenate.ess.core.service.cache.EmployeeIdCache;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
@@ -20,7 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -31,10 +30,9 @@ import static gov.nysenate.ess.core.model.transaction.TransactionCode.*;
 import static gov.nysenate.ess.time.model.personnel.SupOverrideType.EMPLOYEE;
 import static gov.nysenate.ess.time.model.personnel.SupOverrideType.SUPERVISOR;
 
-@Service
-public class EssCachedSupervisorInfoService extends EmployeeIdCache<PrimarySupEmpGroup>
+public class CachedSupervisorInfoService extends EmployeeIdCache<PrimarySupEmpGroup>
         implements SupervisorInfoService {
-    private static final Logger logger = LoggerFactory.getLogger(EssCachedSupervisorInfoService.class);
+    private static final Logger logger = LoggerFactory.getLogger(CachedSupervisorInfoService.class);
     // This is how we represent an employee that isn't a supervisor.
     private static final PrimarySupEmpGroup invalidGroup = new PrimarySupEmpGroup(Integer.MIN_VALUE);
     /** A set of transactions that can affect a supervisor employee group */
@@ -44,15 +42,17 @@ public class EssCachedSupervisorInfoService extends EmployeeIdCache<PrimarySupEm
     private final EmpTransactionService empTransService;
     private final EmployeeInfoService empInfoService;
     private final SupervisorDao supervisorDao;
+    private final EventBus eventBus;
     private LocalDateTime lastSupOvrUpdate;
 
     @Autowired
-    public EssCachedSupervisorInfoService(EmpTransactionService empTransService,
-                                          EmployeeInfoService empInfoService,
-                                          SupervisorDao supervisorDao) {
+    public CachedSupervisorInfoService(EmpTransactionService empTransService,
+                                       EmployeeInfoService empInfoService,
+                                       SupervisorDao supervisorDao, EventBus eventBus) {
         this.empTransService = empTransService;
         this.empInfoService = empInfoService;
         this.supervisorDao = supervisorDao;
+        this.eventBus = eventBus;
         this.lastSupOvrUpdate = supervisorDao.getLastSupUpdateDate();
     }
 
@@ -196,8 +196,7 @@ public class EssCachedSupervisorInfoService extends EmployeeIdCache<PrimarySupEm
         }
     }
 
-    /** --- Caching Service Implemented Methods ---
-     * @see CachingService */
+    // --- Caching Service Implemented Methods ---
 
     /** {@inheritDoc} */
     @Override
@@ -303,7 +302,7 @@ public class EssCachedSupervisorInfoService extends EmployeeIdCache<PrimarySupEm
 
         Employee employee = empInfoService.getEmployee(empId);
 
-        Set<EmployeeSupInfo> empSupInfos = empInfoRanges.asRanges().stream()
+        return empInfoRanges.asRanges().stream()
                 .map(range -> {
                     LocalDate startDate = DateUtils.startOfDateRange(range);
                     LocalDate endDate = DateUtils.endOfDateRange(range);
@@ -316,8 +315,6 @@ public class EssCachedSupervisorInfoService extends EmployeeIdCache<PrimarySupEm
                     return empSupInfo;
                 })
                 .collect(Collectors.toSet());
-
-        return empSupInfos;
     }
 
     /**
@@ -405,7 +402,6 @@ public class EssCachedSupervisorInfoService extends EmployeeIdCache<PrimarySupEm
 
     /**
      * Get sup ids from cache entries that contain the given employee ids at the given dates.
-     *
      * This will detect instances when a supervisor is no longer in an employee's transaction history,
      * but the employee is still in the supervisors cached emp group,
      * which is not doable using transaction history alone.
@@ -432,7 +428,6 @@ public class EssCachedSupervisorInfoService extends EmployeeIdCache<PrimarySupEm
 
     /**
      * Get sup ids of supervisors for the given emps at given dates according to current transaction history.
-     *
      * This will pick up new supervisors added to an employee's transaction history,
      * something not doable using the cache.
      * @see #getAffectedSupIdsInCache(Map), to get affected supervisors not necessarily covered by this method.

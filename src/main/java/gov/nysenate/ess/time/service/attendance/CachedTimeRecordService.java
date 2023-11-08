@@ -1,6 +1,7 @@
 package gov.nysenate.ess.time.service.attendance;
 
 import com.google.common.collect.*;
+import com.google.common.eventbus.EventBus;
 import gov.nysenate.ess.core.annotation.WorkInProgress;
 import gov.nysenate.ess.core.config.DatabaseConfig;
 import gov.nysenate.ess.core.model.cache.CacheType;
@@ -8,10 +9,8 @@ import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.period.Holiday;
 import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.model.transaction.TransactionHistory;
-import gov.nysenate.ess.core.service.cache.CachingService;
 import gov.nysenate.ess.core.service.cache.EmployeeIdCache;
 import gov.nysenate.ess.core.service.period.HolidayService;
-import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
 import gov.nysenate.ess.core.util.RangeUtils;
 import gov.nysenate.ess.core.util.ShiroUtils;
@@ -21,17 +20,13 @@ import gov.nysenate.ess.time.dao.attendance.TimeRecordDao;
 import gov.nysenate.ess.time.model.attendance.*;
 import gov.nysenate.ess.time.model.personnel.SupervisorEmpGroup;
 import gov.nysenate.ess.time.model.personnel.SupervisorException;
-import gov.nysenate.ess.time.service.accrual.AccrualInfoService;
 import gov.nysenate.ess.time.service.attendance.validation.TimeRecordValidationService;
-import gov.nysenate.ess.time.service.notification.DisapprovalEmailService;
 import gov.nysenate.ess.time.service.personnel.SupervisorInfoService;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
@@ -46,26 +41,31 @@ import static gov.nysenate.ess.time.model.attendance.TimeRecordAction.SUBMIT;
 import static gov.nysenate.ess.time.model.attendance.TimeRecordStatus.APPROVED;
 import static java.util.stream.Collectors.toList;
 
-@Service
 @WorkInProgress(author = "Ash", since = "2015/09/11", desc = "Reworking methods in the class, adding caching")
-public class EssCachedTimeRecordService
-        extends EmployeeIdCache<EssCachedTimeRecordService.TimeRecordCacheCollection>
+public class CachedTimeRecordService
+        extends EmployeeIdCache<CachedTimeRecordService.TimeRecordCacheCollection>
         implements TimeRecordService {
-    private static final Logger logger = LoggerFactory.getLogger(EssCachedTimeRecordService.class);
+    private static final Logger logger = LoggerFactory.getLogger(CachedTimeRecordService.class);
 
-    /** --- Daos --- */
-    @Autowired protected TimeRecordDao timeRecordDao;
-    @Autowired protected TimeRecordAuditDao auditDao;
+    private final TimeRecordDao timeRecordDao;
+    private final TimeRecordAuditDao auditDao;
+    private final EmpTransactionService transService;
+    private final SupervisorInfoService supervisorInfoService;
+    private final HolidayService holidayService;
+    private final TimeRecordValidationService trValidationService;
+    private final EventBus eventBus;
 
-    /** --- Services --- */
-    @Autowired protected TimeRecordManager timeRecordManager;
-    @Autowired protected EmployeeInfoService empInfoService;
-    @Autowired protected EmpTransactionService transService;
-    @Autowired protected AccrualInfoService accrualInfoService;
-    @Autowired protected SupervisorInfoService supervisorInfoService;
-    @Autowired protected HolidayService holidayService;
-    @Autowired protected DisapprovalEmailService disapprovalEmailService;
-    @Autowired protected TimeRecordValidationService trValidationService;
+    public CachedTimeRecordService(TimeRecordDao timeRecordDao, TimeRecordAuditDao auditDao,
+                                   EmpTransactionService transService, SupervisorInfoService supervisorInfoService,
+                                   HolidayService holidayService, TimeRecordValidationService trValidationService, EventBus eventBus) {
+        this.timeRecordDao = timeRecordDao;
+        this.auditDao = auditDao;
+        this.transService = transService;
+        this.supervisorInfoService = supervisorInfoService;
+        this.holidayService = holidayService;
+        this.trValidationService = trValidationService;
+        this.eventBus = eventBus;
+    }
 
     private LocalDateTime lastUpdateTime;
 
@@ -107,7 +107,7 @@ public class EssCachedTimeRecordService
         }
     }
 
-    /** --- TimeRecordService Implementation --- */
+    // --- TimeRecordService Implementation ---
 
     /** {@inheritDoc} */
     @Override
@@ -387,12 +387,9 @@ public class EssCachedTimeRecordService
                 // Set holiday hours if applicable
                 Optional<Holiday> holiday = holidayService.getActiveHoliday(entryDate);
                 if (holiday.isPresent()) {
-                    // Set the holiday hours to the specified amount if RA only if it is a new entry
-                    // not be overridden
                     if (entry.getPayType() == PayType.RA && newEntry) {
                         entry.setHolidayHours(holiday.get().getHours());
                     }
-                    // Otherwise (SA), set the holiday hours to zero if it is null and a new entry
                     else if (entry.getHolidayHours().isEmpty() && newEntry) {
                         entry.setHolidayHours(BigDecimal.ZERO);
                     }

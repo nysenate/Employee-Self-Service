@@ -25,10 +25,9 @@ public enum SqlPaycheckQuery implements BasicSqlQuery
     GET_EMPLOYEE_PAYCHECKS_BY_DATE(
         GET_ACTIVE_PAYCHECKS_FOR_EMP.getSql() + "\n" +
         "    AND m.DTCHECK BETWEEN :beginDate AND :endDate"
-    ),
-    ;
+    );
 
-    private String sql;
+    private final String sql;
 
     SqlPaycheckQuery(String sql) {
         this.sql = sql;

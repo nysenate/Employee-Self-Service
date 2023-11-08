@@ -127,10 +127,9 @@ public enum SqlSupervisorQuery implements BasicSqlQuery
     INSERT_SUP_GRANT(
         "INSERT INTO ${tsSchema}.PM23SUPOVRRD (NUXREFEM, NUXREFSVSUB, CDSTATUS, DTSTART, DTEND)\n" +
         "VALUES(:granteeSupId, :granterSupId, :status, :startDate, :endDate)"
-    )
-    ;
+    );
 
-    private String sql;
+    private final String sql;
 
     SqlSupervisorQuery(String sql) {
         this.sql = sql;

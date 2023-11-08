@@ -31,7 +31,7 @@ public class RecordPermittedModificationTRV implements TimeRecordValidator
     @Override
     public void checkTimeRecord(TimeRecord record, Optional<TimeRecord> previousState, TimeRecordAction action)
             throws TimeRecordErrorException {
-        if (!previousState.isPresent()) {
+        if (previousState.isEmpty()) {
             throw new TimeRecordErrorException(TimeRecordErrorCode.NO_EXISTING_RECORD);
         }
         TimeRecord prevRecord = previousState.get();

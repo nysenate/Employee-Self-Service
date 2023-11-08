@@ -26,7 +26,7 @@ public class SendSimpleEmail {
     }
 
     public void send(Employee sender, Employee receiver, List<Component> simpleEmailContent,
-                     SimpleEmailHeader simpleEmailHeader, SimpleEmailSubject simpleEmailSubject, int messageId) {
+                     SimpleEmailHeader simpleEmailHeader, SimpleEmailSubject simpleEmailSubject) {
         List<Component> components = new ArrayList<>(simpleEmailContent);
         components.add(simpleEmailSubject);
 
@@ -34,7 +34,7 @@ public class SendSimpleEmail {
         SimpleEmailReceiver simpleEmailReceiver = new SimpleEmailReceiver(receiver);
 
         SimpleEmailMessage simpleEmailMessage = new SimpleEmailMessage(
-                simpleEmailSender, simpleEmailReceiver, components, simpleEmailHeader.toMap(), messageId
+                simpleEmailSender, simpleEmailReceiver, components, simpleEmailHeader.toMap()
         );
         eventBus.post(simpleEmailMessage);
     }

@@ -70,7 +70,7 @@ public class EssTimeRecordManager implements TimeRecordManager
 
     /** --- Services --- */
     @Lazy
-    @Autowired protected EssCachedTimeRecordService timeRecordService;
+    @Autowired protected CachedTimeRecordService timeRecordService;
     @Autowired protected AccrualInfoService accrualInfoService;
     @Autowired protected PayPeriodService payPeriodService;
     @Autowired protected EmpTransactionService transService;

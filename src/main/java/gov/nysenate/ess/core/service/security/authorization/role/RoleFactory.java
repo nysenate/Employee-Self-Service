@@ -9,13 +9,11 @@ import java.util.stream.Stream;
  * Contains logic to assign roles to employees.
  */
 public interface RoleFactory {
-
     /**
      * Returns the roles for a given employee.
-     *
      * Roles should be an Enum. For example, {@link EssRole}.
      * @param employee
      * @return
      */
-    Stream<Enum> getRoles(Employee employee);
+    Stream<Enum<?>> getRoles(Employee employee);
 }

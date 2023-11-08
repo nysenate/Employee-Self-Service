@@ -18,7 +18,7 @@ public class EssRoleFactory implements RoleFactory {
     @Autowired private RoleDao essRoleDao;
 
     @Override
-    public Stream<Enum> getRoles(Employee employee) {
+    public Stream<Enum<?>> getRoles(Employee employee) {
         return Stream.concat(
                 // Everyone has the role of senate employee by default.
                 Stream.of(EssRole.SENATE_EMPLOYEE),

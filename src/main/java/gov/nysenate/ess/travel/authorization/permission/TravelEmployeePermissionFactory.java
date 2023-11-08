@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class TravelEmployeePermissionFactory implements PermissionFactory {
 
     @Override
-    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum> roles) {
+    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum<?>> roles) {
         WildcardPermission appPermission = new TravelPermissionBuilder()
                 .forEmpId(employee.getEmployeeId())
                 .forObject(TravelPermissionObject.TRAVEL_APPLICATION)

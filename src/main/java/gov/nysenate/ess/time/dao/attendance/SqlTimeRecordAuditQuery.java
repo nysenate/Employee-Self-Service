@@ -16,11 +16,9 @@ public enum SqlTimeRecordAuditQuery implements BasicSqlQuery {
         "   NUXREFSV, DEEXCEPTION, CDRESPCTRHD, CDUSRSPLIT, CDCONFLOK, NUXREFAPR  \n" +
         "FROM ${tsSchema}.PM23TIMESHEET\n" +
         "WHERE NUXRTIMESHEET = :timeRecordId"
-    )
+    );
 
-    ;
-
-    private String sql;
+    private final String sql;
 
     SqlTimeRecordAuditQuery(String sql) {
         this.sql = sql;

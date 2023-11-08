@@ -151,5 +151,5 @@ public interface TimeRecordService
     /**
      * Synchronize time record cache
      */
-    public void syncTimeRecords();
+    void syncTimeRecords();
 }

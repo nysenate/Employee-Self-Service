@@ -3,7 +3,7 @@ package gov.nysenate.ess.travel.report.pdf;
 import com.google.common.base.Preconditions;
 import gov.nysenate.ess.travel.application.TravelApplication;
 import gov.nysenate.ess.travel.application.route.destination.Destination;
-import org.apache.commons.lang3.text.WordUtils;
+import org.apache.commons.text.WordUtils;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 
 import java.io.IOException;
