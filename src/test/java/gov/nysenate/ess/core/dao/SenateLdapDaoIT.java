@@ -49,7 +49,7 @@ public class SenateLdapDaoIT extends BaseTest
     }
 
     @Test
-    public void testSenateLdapDaoAutowired() throws Exception {
+    public void testSenateLdapDaoAutowired() {
         assertNotNull(ldapAuthDao);
     }
 
@@ -65,7 +65,7 @@ public class SenateLdapDaoIT extends BaseTest
     }
 
     @Test(expected = NameNotFoundException.class)
-    public void testGetPersonThrowsNameNotFoundException() throws Exception {
+    public void testGetPersonThrowsNameNotFoundException() {
         SenateLdapPerson person = ldapAuthDao.getPerson(invalidLdapName);
     }
 
@@ -81,17 +81,17 @@ public class SenateLdapDaoIT extends BaseTest
     }
 
     @Test(expected = AuthenticationException.class)
-    public void testAuthenticateByUidWithWrongPassword_throwsAuthenticationException() throws Exception {
+    public void testAuthenticateByUidWithWrongPassword_throwsAuthenticationException() {
         ldapAuthDao.authenticateByUid(validUid, "clearlyAWrongPassword");
     }
 
     @Test(expected = EmptyResultDataAccessException.class)
-    public void testAuthenticateByUidWithWrongUidAndPassword_throwsEmptyResultException() throws Exception {
+    public void testAuthenticateByUidWithWrongUidAndPassword_throwsEmptyResultException() {
         ldapAuthDao.authenticateByUid(invalidUid, "clearlyAWrongPassword");
     }
 
     @Test(expected = EmptyResultDataAccessException.class)
-    public void testAuthenticateByUidWithNullUidAndPassword_throwsEmptyResultException() throws Exception {
+    public void testAuthenticateByUidWithNullUidAndPassword_throwsEmptyResultException() {
         ldapAuthDao.authenticateByUid(null, null);
     }
 }

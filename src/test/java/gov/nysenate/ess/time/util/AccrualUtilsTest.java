@@ -6,36 +6,32 @@ import org.junit.experimental.categories.Category;
 
 import java.math.BigDecimal;
 
-import static gov.nysenate.ess.time.model.EssTimeConstants.SICK_VAC_INCREMENT;
 import static gov.nysenate.ess.time.model.EssTimeConstants.MAX_YTD_HOURS;
-import static org.junit.Assert.*;
-import static gov.nysenate.ess.time.util.AccrualUtils.*;
+import static gov.nysenate.ess.time.model.EssTimeConstants.SICK_VAC_INCREMENT;
+import static gov.nysenate.ess.time.util.AccrualUtils.getProratePercentage;
+import static gov.nysenate.ess.time.util.AccrualUtils.roundSickVacHours;
+import static org.junit.Assert.assertEquals;
 
 @Category(UnitTest.class)
 public class AccrualUtilsTest {
 
     @Test
-    public void testGetProratePercentage() throws Exception {
+    public void testGetProratePercentage() {
         BigDecimal halfHours = MAX_YTD_HOURS.divide(new BigDecimal(2));
         BigDecimal quarterHours = MAX_YTD_HOURS.divide(new BigDecimal(4));
 
-        assertTrue(new BigDecimal(0.5).compareTo(getProratePercentage(halfHours)) == 0);
-        assertTrue(new BigDecimal(0.25).compareTo(getProratePercentage(quarterHours)) == 0);
+        assertEquals(new BigDecimal("0.5"), getProratePercentage(halfHours));
+        assertEquals(new BigDecimal("0.25"), getProratePercentage(quarterHours));
     }
 
     @Test
-    public void testRoundAccrualValue() throws Exception {
+    public void testRoundAccrualValue() {
         BigDecimal roundedValue = SICK_VAC_INCREMENT.multiply(new BigDecimal(26));
-
-        assertTrue(roundedValue.compareTo(roundSickVacHours(roundedValue)) == 0);
-
+        assertEquals(roundedValue, roundSickVacHours(roundedValue));
         BigDecimal lessThanAccInc = SICK_VAC_INCREMENT.divide(BigDecimal.TEN);
-
         BigDecimal unRoundedValue = roundedValue.add(lessThanAccInc);
-
-        BigDecimal expectedRound = new BigDecimal(6.75);
-
-        assertTrue(expectedRound.compareTo(roundSickVacHours(unRoundedValue)) == 0);
+        BigDecimal expectedRound = new BigDecimal("6.75");
+        assertEquals(expectedRound, roundSickVacHours(unRoundedValue));
     }
 
 }

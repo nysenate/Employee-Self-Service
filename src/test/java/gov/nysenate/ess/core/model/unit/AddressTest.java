@@ -27,7 +27,7 @@ public class AddressTest
 
     /** An address is only parsed if it contains anything other than an addr1 line. */
     @Test
-    public void testIsParsed() throws Exception {
+    public void testIsParsed() {
         assertTrue(addressList.get(0).isParsed());
         assertTrue(addressList.get(6).isParsed());  // Only zip5
         assertFalse(addressList.get(4).isParsed()); // Only addr1
@@ -37,7 +37,7 @@ public class AddressTest
 
     /** An address with no fields set is empty, regardless of whitespace. */
     @Test
-    public void testIsEmpty() throws Exception {
+    public void testIsEmpty() {
         assertTrue(addressList.get(7).isEmpty());
         assertTrue(new Address(" ").isEmpty());
         assertFalse(addressList.get(6).isEmpty());
@@ -45,7 +45,7 @@ public class AddressTest
 
     /** If the address is parse, the toString should display the address in a standard format. */
     @Test
-    public void testToString() throws Exception {
+    public void testToString() {
         assertEquals("71 14th Street, Troy, NY", addressList.get(0).toString());
         assertEquals("101 East State Street, Olean, NY 14760", addressList.get(2).toString());
         assertEquals("18542", addressList.get(6).toString());
@@ -53,7 +53,7 @@ public class AddressTest
 
     /** Normalized string will remove the dashes in the building number. */
     @Test
-    public void toStringStripBuildingNumber() throws Exception {
+    public void toStringStripBuildingNumber() {
         assertEquals("8510 143st, Sample City, NY 10000",
             new Address("85-10 143st", "", "Sample City", "NY", "10000", "").toStringStripBuildingNumber());
     }

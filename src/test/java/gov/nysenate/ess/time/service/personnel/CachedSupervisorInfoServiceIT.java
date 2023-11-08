@@ -26,7 +26,7 @@ public class CachedSupervisorInfoServiceIT extends BaseTest {
 
     private static final Logger logger = LoggerFactory.getLogger(CachedSupervisorInfoServiceIT.class);
 
-    @Autowired EssCachedSupervisorInfoService supInfoService;
+    @Autowired CachedSupervisorInfoService supInfoService;
 
     @Test
     public void getSupEmpGroupTest() throws InterruptedException {

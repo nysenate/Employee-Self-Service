@@ -14,10 +14,9 @@ import org.junit.experimental.categories.Category;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(UnitTest.class)
 public class MileagePerDiemsTest {
@@ -62,7 +61,7 @@ public class MileagePerDiemsTest {
         boolean isOutbound = true;
         Leg leg = new Leg(0, from, to, ModeOfTransportation.PERSONAL_AUTO, 99999.0, perDiem, isOutbound, true);
 
-        MileagePerDiems mpd = new MileagePerDiems(Arrays.asList(leg));
+        MileagePerDiems mpd = new MileagePerDiems(List.of(leg));
         assertTrue(mpd.tripQualifiesForReimbursement());
     }
 
@@ -78,7 +77,7 @@ public class MileagePerDiemsTest {
 
     private boolean modeOfTransportationQualifiesForReimbursement(ModeOfTransportation mot) {
         Leg leg = new Leg(0, from, to, mot, 100, perDiem, true, true);
-        MileagePerDiems mpd = new MileagePerDiems(Arrays.asList(leg));
+        MileagePerDiems mpd = new MileagePerDiems(List.of(leg));
         return mpd.tripQualifiesForReimbursement();
     }
 }

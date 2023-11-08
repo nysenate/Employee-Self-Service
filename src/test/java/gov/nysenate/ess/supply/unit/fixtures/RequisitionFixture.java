@@ -7,7 +7,6 @@ import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.requisition.model.DeliveryMethod;
 import gov.nysenate.ess.supply.requisition.model.PendingState;
 import gov.nysenate.ess.supply.requisition.model.Requisition;
-import gov.nysenate.ess.supply.requisition.model.RequisitionStatus;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -48,8 +47,7 @@ public class RequisitionFixture {
     }
 
     public static Set<LineItem> createStubLineItem() {
-        Set<LineItem> stubLineItems = new HashSet<>();
-        return stubLineItems;
+        return new HashSet<>();
     }
 
     public static Location createStubLocation() {

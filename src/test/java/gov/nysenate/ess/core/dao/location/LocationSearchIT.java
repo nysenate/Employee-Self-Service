@@ -7,8 +7,6 @@ import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.core.service.base.LocationService;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -19,15 +17,13 @@ import static org.junit.Assert.assertTrue;
 @Category({IntegrationTest.class, TestDependsOnDatabase.class})
 public class LocationSearchIT extends BaseTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(LocationSearchIT.class);
-
     @Autowired private LocationService locationService;
 
     @Test
     public void givenExactMatch_returnLocation() {
         String term = "A42FB";
         List<Location> results = locationService.searchLocations(term);
-        assertTrue(results.size() == 1);
+        assertEquals(1, results.size());
         assertEquals(term, results.get(0).getLocId().getCode());
     }
 
@@ -35,7 +31,7 @@ public class LocationSearchIT extends BaseTest {
     public void notCaseSensitive() {
         String term = "a42fb";
         List<Location> results = locationService.searchLocations(term);
-        assertTrue(results.size() == 1);
+        assertEquals(1, results.size());
         assertEquals("A42FB", results.get(0).getLocId().getCode());
     }
 
@@ -43,7 +39,7 @@ public class LocationSearchIT extends BaseTest {
     public void givenNull_returnEmptyCollection() {
         String term = null;
         List<Location> results = locationService.searchLocations(term);
-        assertTrue(results.size() == 0);
+        assertTrue(results.isEmpty());
     }
 
     @Test

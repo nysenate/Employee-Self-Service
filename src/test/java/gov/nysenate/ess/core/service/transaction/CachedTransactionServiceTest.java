@@ -29,7 +29,7 @@ public class CachedTransactionServiceTest extends BaseTest {
     private static final Logger logger = LoggerFactory.getLogger(CachedTransactionServiceTest.class);
 
     @Autowired EmpTransactionDao transDao;
-    @Autowired EssCachedEmpTransactionService transService;
+    @Autowired CachedEmpTransactionService transService;
 
     @Autowired EventBus eventBus;
 
@@ -58,7 +58,7 @@ public class CachedTransactionServiceTest extends BaseTest {
     }
 
     @Test
-    public void testTransactions() throws Exception {
+    public void testTransactions() {
         TransactionHistory transHistory = transDao.getTransHistory(1719, EmpTransDaoOption.NONE);
         logger.info("{}", transHistory.getEffectiveAccrualStatus(Range.upTo(LocalDate.now(), BoundType.CLOSED)));
     }

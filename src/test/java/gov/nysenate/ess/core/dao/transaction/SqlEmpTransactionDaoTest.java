@@ -18,22 +18,12 @@ public class SqlEmpTransactionDaoTest extends BaseTest
     @Autowired private SqlEmpTransactionDao empTransactionDao;
 
     @Test
-    public void testGetTransHistory() throws Exception {
+    public void testGetTransHistory() {
         logger.info("{}", OutputUtils.toJson(empTransactionDao.getTransHistory(10976, EmpTransDaoOption.INITIALIZE_AS_APP).getRecords(TransactionCode.SAL)));
     }
 
     @Test
-    public void testGetTransHistory1() throws Exception {
-
-    }
-
-    @Test
-    public void testGetTransHistory2() throws Exception {
-
-    }
-
-    @Test
-    public void testCheckForUpdatesSince() throws Exception {
+    public void testCheckForUpdatesSince() {
         logger.info("{}", empTransactionDao.getMaxUpdateDateTime());
     }
 }

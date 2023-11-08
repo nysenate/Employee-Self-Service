@@ -1,9 +1,9 @@
 package gov.nysenate.ess.time.model.personnel;
 
 import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Table;
-import com.google.common.collect.HashMultimap;
 import gov.nysenate.ess.core.annotation.UnitTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -18,10 +18,9 @@ public class SupervisorEmpGroupTest
 {
     /**
      * Get all employees should return a set of all employees in the sup emp group.
-     * @throws Exception
      */
     @Test
-    public void testGetAllEmployees() throws Exception {
+    public void testGetAllEmployees() {
         SupervisorEmpGroup empGroup = new SupervisorEmpGroup(0);
         LocalDate date = LocalDate.now();
 

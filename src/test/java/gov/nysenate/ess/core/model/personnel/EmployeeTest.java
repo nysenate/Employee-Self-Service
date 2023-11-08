@@ -11,16 +11,14 @@ import org.junit.experimental.categories.Category;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(UnitTest.class)
 public class EmployeeTest
 {
     /** A senator is an employee with an agency code of 04210 */
     @Test
-    public void testIsSenator() throws Exception {
+    public void testIsSenator() {
         Employee emp = new Employee();
         assertFalse(emp.isSenator());
 
@@ -38,7 +36,7 @@ public class EmployeeTest
 
     /** Return false for isSenator if the resp ctr and/or agency is null. */
     @Test
-    public void testIsSenator_returnsFalseIfRespCtrOrAgencyIsNull() throws Exception {
+    public void testIsSenator_returnsFalseIfRespCtrOrAgencyIsNull() {
         Employee emp = new Employee();
         emp.setRespCenter(null);
         assertFalse(emp.isSenator());
@@ -51,7 +49,7 @@ public class EmployeeTest
 
     /** Copy constructor should make identical employee object */
     @Test
-    public void testCopyConstructor() throws Exception {
+    public void testCopyConstructor() {
         Employee emp1 = new Employee();
         emp1.setActive(true);
         emp1.setDateOfBirth(LocalDate.now());
