@@ -140,7 +140,7 @@ public class SqlApplicationReviewDao extends SqlBaseDao implements ApplicationRe
                         " WHERE app_review_id = :appReviewId"
         );
 
-        private String sql;
+        private final String sql;
 
         SqlApplicationReviewQuery(String sql) {
             this.sql = sql;
@@ -157,7 +157,7 @@ public class SqlApplicationReviewDao extends SqlBaseDao implements ApplicationRe
         }
     }
 
-    private class ApplicationReviewRowMapper extends BaseRowMapper<ApplicationReview> {
+    private static class ApplicationReviewRowMapper extends BaseRowMapper<ApplicationReview> {
 
         private TravelApplicationDao travelApplicationDao;
         private EmployeeInfoService employeeInfoService;

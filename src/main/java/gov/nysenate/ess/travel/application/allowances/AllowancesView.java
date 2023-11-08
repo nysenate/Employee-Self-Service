@@ -4,22 +4,20 @@ import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.travel.utils.Dollars;
 
 public class AllowancesView implements ViewObject {
-
     double tolls;
     double parking;
     double trainAndPlane;
     double alternateTransportation;
     double registration;
 
-    public AllowancesView() {
-    }
+    public AllowancesView() {}
 
     public AllowancesView(Allowances allowances) {
-        this.tolls = Double.valueOf(allowances.tolls().toString());
-        this.parking = Double.valueOf(allowances.parking().toString());
-        this.trainAndPlane = Double.valueOf(allowances.trainAndPlane().toString());
-        this.alternateTransportation = Double.valueOf(allowances.alternateTransportation().toString());
-        this.registration = Double.valueOf(allowances.registration().toString());
+        this.tolls = allowances.tolls().toDouble();
+        this.parking = allowances.parking().toDouble();
+        this.trainAndPlane = allowances.trainAndPlane().toDouble();
+        this.alternateTransportation = allowances.alternateTransportation().toDouble();
+        this.registration = allowances.registration().toDouble();
     }
 
     public Allowances toAllowances() {

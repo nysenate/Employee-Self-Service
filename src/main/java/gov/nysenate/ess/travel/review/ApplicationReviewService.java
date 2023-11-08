@@ -50,8 +50,7 @@ public class ApplicationReviewService {
 
     public ApplicationReview createApplicationReview(TravelApplication app) {
         TravelRoles roles = travelRoleFactory.travelRolesForEmp(app.getTraveler());
-        ApplicationReview appReview = new ApplicationReview(app, roles.apex());
-        return appReview;
+        return new ApplicationReview(app, roles.apex());
     }
 
     public ApplicationReview getApplicationReview(int appReviewId) {

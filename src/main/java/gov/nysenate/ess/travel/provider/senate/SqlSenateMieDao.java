@@ -77,10 +77,9 @@ public class SqlSenateMieDao extends SqlBaseDao {
         SELECT_SENATE_MIE(
                 "SELECT * FROM ${travelSchema}.senate_mie\n" +
                         "WHERE fiscal_year = :fiscalYear AND total = :total"
-        )
-        ;
+        );
 
-        private String sql;
+        private final String sql;
 
         SqlSenateMieQuery(String sql) {
             this.sql = sql;
@@ -97,7 +96,7 @@ public class SqlSenateMieDao extends SqlBaseDao {
         }
     }
 
-    private class SenateMieRowMapper implements RowMapper<SenateMie> {
+    private static class SenateMieRowMapper implements RowMapper<SenateMie> {
 
         @Override
         public SenateMie mapRow(ResultSet rs, int i) throws SQLException {

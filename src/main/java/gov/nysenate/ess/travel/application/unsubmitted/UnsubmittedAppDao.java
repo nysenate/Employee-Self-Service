@@ -115,10 +115,9 @@ public class UnsubmittedAppDao extends SqlBaseDao {
         DELETE(
                 "DELETE FROM ${travelSchema}.unsubmitted_app\n" +
                         "WHERE user_id = :userId;"
-        ),
-        ;
+        );
 
-        private String sql;
+        private final String sql;
 
         SqlUnsubmittedAppQuery(String sql) {
             this.sql = sql;
@@ -135,7 +134,7 @@ public class UnsubmittedAppDao extends SqlBaseDao {
         }
     }
 
-    private class UnsubmittedAppRowMapper implements RowMapper<String> {
+    private static class UnsubmittedAppRowMapper implements RowMapper<String> {
         @Override
         public String mapRow(ResultSet rs, int i) throws SQLException {
             return rs.getString("app_json");

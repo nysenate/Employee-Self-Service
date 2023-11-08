@@ -112,8 +112,7 @@ public class TravelApplicationView implements ViewObject {
                 .withCreatedBy(modifiedBy.toEmployee())
                 // TODO modified time
                 .build();
-        TravelApplication a = new TravelApplication(id, traveler.toEmployee(), Lists.newArrayList(amd));
-        return a;
+        return new TravelApplication(id, traveler.toEmployee(), Lists.newArrayList(amd));
     }
 
     public int getId() {

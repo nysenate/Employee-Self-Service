@@ -29,7 +29,7 @@ public class SqlAmendmentStatusDao extends SqlBaseDao {
                         " VALUES(:amendmentId, :createdDateTime, :status, :note)"
         );
 
-        private String sql;
+        private final String sql;
 
         SqlTravelApplicationStatusQuery(String sql) {
             this.sql = sql;

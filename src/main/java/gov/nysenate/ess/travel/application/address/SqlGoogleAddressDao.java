@@ -106,7 +106,7 @@ public class SqlGoogleAddressDao extends SqlBaseDao {
                         "AND place_id = :placeId"
         );
 
-        private String sql;
+        private final String sql;
 
         SqlGoogleAddressQuery(String sql) {
             this.sql = sql;

@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.time.LocalDate;
 
 @Service
@@ -59,7 +58,6 @@ public class GsaAllowanceService {
     }
 
     private GsaResponse fetchGsaResponse(LocalDate date, Address address) throws ProviderException {
-        GsaResponse res = gsaApi.queryGsa(date, address.getZip5());
         // TODO Batch/bulk data will have to be refactored due to new GSA API. For now query the API every time.
 //        try {
 //            res = gsaBatchResponseDao.getGsaData(gsaResponseId);
@@ -77,7 +75,7 @@ public class GsaAllowanceService {
 //                gsaBatchResponseDao.handleNewData(res);
 //            }
 //        }
-        return res;
+        return gsaApi.queryGsa(date, address.getZip5());
     }
 
     private boolean addressIsOutsideUS(Address address) {
