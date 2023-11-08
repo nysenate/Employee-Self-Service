@@ -49,36 +49,6 @@ public interface Message {
     void setComponent(Component components);
 
     /**
-     * deep copy of message
-     * @return message
-     */
-    Message copyTo();
-
-    /**
-     * copy from message
-     * @param message message
-     */
-    void copyFrom(Message message);
-
-    /**
-     * get id of message
-     * @return message id
-     */
-    int getMessageId();
-
-    /**
-     * set id of message
-     * @param id message id
-     */
-    void setMessageId(int id);
-
-    /**
-     * return true if the message has been built successfully
-     * @return return true if the message has been built successfully
-     */
-    boolean isFalut();
-
-    /**
      * set headers
      * @param headers headers
      */
@@ -89,16 +59,4 @@ public interface Message {
      * @return the map
      */
     Map<String, String> getHeader();
-
-    /**
-     *  remove a header
-     * @param name theader
-     */
-    void removeHeader(String name);
-
-    String toString();
-
-    int hashCode();
-
-    boolean equals(Object o);
 }
