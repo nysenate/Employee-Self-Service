@@ -134,7 +134,7 @@ public class CsvTaskAssigner {
         int count = 0;
         for (CSVRecord csvRecord : csvParser) {
 
-            if (csvRecord.get(0).toLowerCase().equals("name")) {
+            if (csvRecord.get(0).equalsIgnoreCase("name")) {
                 continue;
             }
 

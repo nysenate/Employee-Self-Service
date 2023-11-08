@@ -13,7 +13,6 @@ import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.core.model.unit.LocationType;
 import gov.nysenate.ess.core.service.base.LocationService;
-import gov.nysenate.ess.core.service.cache.CachingService;
 import gov.nysenate.ess.core.service.cache.EmployeeIdCache;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
 import gov.nysenate.ess.core.util.DateUtils;
@@ -22,7 +21,6 @@ import gov.nysenate.ess.core.util.PaginatedList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -33,28 +31,23 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-@Service
-public class EssCachedEmployeeInfoService extends EmployeeIdCache<Employee>
+public class CachedEmployeeInfoService extends EmployeeIdCache<Employee>
         implements EmployeeInfoService {
-    private static final Logger logger = LoggerFactory.getLogger(EssCachedEmployeeInfoService.class);
+    private static final Logger logger = LoggerFactory.getLogger(CachedEmployeeInfoService.class);
 
     private final EmployeeDao employeeDao;
     private final EmpTransactionService transService;
     private final LocationService locationService;
     private LocalDateTime lastUpdateDateTime;
 
-    public EssCachedEmployeeInfoService(EmployeeDao employeeDao,
-                                        EmpTransactionService transService,
-                                        LocationService locationService) {
+    public CachedEmployeeInfoService(EmployeeDao employeeDao,
+                                     EmpTransactionService transService,
+                                     LocationService locationService) {
         this.employeeDao = employeeDao;
         this.transService = transService;
         this.locationService = locationService;
         lastUpdateDateTime = employeeDao.getLastUpdateTime();
     }
-
-    /** Employee Info Service Implemented Methods ---
-     * @see EmployeeInfoService
-     */
 
     /** {@inheritDoc} */
     @Override
@@ -150,8 +143,7 @@ public class EssCachedEmployeeInfoService extends EmployeeIdCache<Employee>
         return employeeDao.searchEmployees(employeeSearchBuilder, limitOffset);
     }
 
-    /** --- Caching Service Implemented Methods ---
-     * @see CachingService*/
+    // --- CachingService Implemented Methods ---
 
     /** {@inheritDoc} */
     @Override
@@ -192,11 +184,9 @@ public class EssCachedEmployeeInfoService extends EmployeeIdCache<Employee>
         }
     }
 
-    /** --- Internal Methods --- */
-
     /**
      *
-     * These methods extract the most up to date value of a particular employee field from a transaction history
+     * These methods extract the most up-to-date value of a particular employee field from a transaction history
      * effective after a given date
      * TODO: you can't get every value of these objects from the transaction layer
      */

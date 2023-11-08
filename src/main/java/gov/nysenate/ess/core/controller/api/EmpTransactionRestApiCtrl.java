@@ -2,6 +2,9 @@ package gov.nysenate.ess.core.controller.api;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Range;
+import gov.nysenate.ess.core.client.response.base.BaseResponse;
+import gov.nysenate.ess.core.client.response.base.ListViewResponse;
+import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.client.view.EmpTransItemView;
 import gov.nysenate.ess.core.client.view.EmpTransRecordView;
 import gov.nysenate.ess.core.client.view.base.MapView;
@@ -13,11 +16,7 @@ import gov.nysenate.ess.core.model.transaction.TransactionType;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.SortOrder;
-import gov.nysenate.ess.core.client.response.base.BaseResponse;
-import gov.nysenate.ess.core.client.response.base.ListViewResponse;
-import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.shiro.authz.permission.WildcardPermission;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,9 +91,8 @@ public class EmpTransactionRestApiCtrl extends BaseRestApiCtrl
         LocalDate localDate = (date != null) ? parseISODate(date, "date") : LocalDate.now();
         Map<String, EmpTransItemView> itemMap = new HashMap<>();
         transactionService.getTransHistory(empId).getRecordSnapshots()
-            .floorEntry(localDate).getValue().entrySet().stream().forEach(e -> {
-            itemMap.put(e.getKey(), new EmpTransItemView(e.getKey(), e.getValue()));
-        });
+            .floorEntry(localDate).getValue().entrySet()
+                .forEach(e -> itemMap.put(e.getKey(), new EmpTransItemView(e.getKey(), e.getValue())));
         return new ViewObjectResponse<>(MapView.of(itemMap), "snapshot");
     }
 

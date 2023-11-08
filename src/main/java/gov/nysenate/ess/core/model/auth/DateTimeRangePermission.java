@@ -65,11 +65,9 @@ public class DateTimeRangePermission extends WildcardPermission {
         }
         // Unless the effective range includes all dates,
         // A date time range permission cannot imply a standard permission
-        if (!(p instanceof DateTimeRangePermission)) {
+        if (!(p instanceof DateTimeRangePermission dtp)) {
             return effectiveRange.encloses(Range.all());
         }
-
-        DateTimeRangePermission dtp = (DateTimeRangePermission) p;
 
         if (dtp.requireEnclosing) {
             return this.effectiveRange.encloses(dtp.effectiveRange);

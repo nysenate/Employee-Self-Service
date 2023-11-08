@@ -11,6 +11,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Copied from https://github.com/gpedro/slack-webhook with some customizations
@@ -53,7 +54,7 @@ public class SlackApi {
             connection.setDoInput(true);
             connection.setDoOutput(true);
 
-            String payload = "payload=" + URLEncoder.encode(message.toString(), "UTF-8");
+            String payload = "payload=" + URLEncoder.encode(message.toString(), StandardCharsets.UTF_8);
 
             //Send request
             DataOutputStream wr = new DataOutputStream(

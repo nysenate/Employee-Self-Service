@@ -31,7 +31,7 @@ public class SlackField {
 
     public void addAllowedMarkdown(String field) {
         if (this.allowMarkdown == null) {
-            this.allowMarkdown = new ArrayList<String>();
+            this.allowMarkdown = new ArrayList<>();
         }
 
         if (field.matches("^(pretext|text|title|fields|fallback)$")) {

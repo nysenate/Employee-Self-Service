@@ -4,7 +4,6 @@ import gov.nysenate.ess.core.service.notification.base.message.base.Message;
 import gov.nysenate.ess.core.service.notification.base.message.base.Text;
 
 import java.awt.*;
-import java.io.IOException;
 
 /**
  *  the hyper link class in email message
@@ -68,7 +67,7 @@ public class Hyperlink implements Text {
     }
 
     @Override
-    public void attachTo(Message message) throws IOException {
+    public void attachTo(Message message) {
         message.setComponent(new Hyperlink(url, content, color,bindTo));
     }
 

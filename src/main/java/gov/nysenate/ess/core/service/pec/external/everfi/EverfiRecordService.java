@@ -78,7 +78,7 @@ public class EverfiRecordService implements ESSEverfiRecordService {
         if (everfiSyncEnabled) {
             final LocalDateTime jan2023 = LocalDateTime.of(2023, 1, 1, 0, 0, 0, 0);
             refreshCaches();
-            contactEverfiForUserRecords(jan2023.toString() + ":00.000");
+            contactEverfiForUserRecords(jan2023 + ":00.000");
         }
     }
 
@@ -120,7 +120,7 @@ public class EverfiRecordService implements ESSEverfiRecordService {
                 logger.error("Problem with Everfi email : " + e.getMessage());
             }
         } else {
-            throw new EmployeeNotFoundEx("Everfi user record cannot be matched" + everfiAssignmentUser.toString());
+            throw new EmployeeNotFoundEx("Everfi user record cannot be matched" + everfiAssignmentUser);
         }
         return empid;
     }
@@ -233,7 +233,7 @@ public class EverfiRecordService implements ESSEverfiRecordService {
                         }
                     }
                 } catch (Exception e) {
-                    logger.error("Could not pull in Everfi Record for an employee "  + user.toString());
+                    logger.error("Could not pull in Everfi Record for an employee "  + user);
                 }
 
             }

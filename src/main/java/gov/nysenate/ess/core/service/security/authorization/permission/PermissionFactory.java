@@ -11,10 +11,8 @@ import org.apache.shiro.authz.Permission;
  * Typically, each permission factory implementation grants permissions based on a single role or domain.
  */
 public interface PermissionFactory {
-
     /**
      * Returns granted permissions as defined under this permission factory
-     *
      * As there will be multiple {@link PermissionFactory} implementations,
      * this list will only include a subset of the employee's permissions
      *
@@ -22,5 +20,5 @@ public interface PermissionFactory {
      * @param roles {@link ImmutableSet<EssRole>} - a set of roles assigned to the authenticated user
      * @return {@link ImmutableList<Permission>} - a list of permissions granted
      */
-    ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum> roles);
+    ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum<?>> roles);
 }

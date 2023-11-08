@@ -70,8 +70,7 @@ public class SimpleEmailMessage implements Message {
 
     @Override
     public Message copyTo() {
-        Message clone = new SimpleEmailMessage(sender, receiver, comp, header, id);
-        return clone;
+        return new SimpleEmailMessage(sender, receiver, comp, header, id);
     }
 
     @Override

@@ -14,8 +14,9 @@ public enum LdapAuthStatus
     CONNECTION_ERROR(false, "Failed to connect with the authentication server."),
     UNKNOWN_EXCEPTION(false, "An exception occurred while attempting to authenticate LDAP user.");
 
-    private boolean authenticated;
-    private String message;
+    private final boolean authenticated;
+    private final String message;
+
     LdapAuthStatus(boolean authenticated, String message) {
         this.authenticated = authenticated;
         this.message = message;

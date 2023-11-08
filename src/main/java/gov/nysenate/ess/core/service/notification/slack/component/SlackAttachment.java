@@ -38,7 +38,7 @@ public class SlackAttachment {
 
     public SlackAttachment addFields(SlackField field) {
         if (this.fields == null) {
-            this.fields = new ArrayList<SlackField>();
+            this.fields = new ArrayList<>();
         }
 
         this.fields.add(field);

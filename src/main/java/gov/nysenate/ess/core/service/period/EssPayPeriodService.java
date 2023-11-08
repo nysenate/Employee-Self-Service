@@ -22,7 +22,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class EssPayPeriodService
-    // TODO: ignore beta?
         extends RefreshedCachedData<PayPeriodType, RangeMap<LocalDate, PayPeriod>>
         implements PayPeriodService {
     private final PayPeriodDao periodDao;

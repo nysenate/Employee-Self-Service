@@ -5,8 +5,8 @@ public enum DbVendor
     ORACLE_10g("10g", false),
     POSTGRES("9.3", true);
 
-    String version;
-    boolean supportsLimitOffset;
+    private final String version;
+    private final boolean supportsLimitOffset;
 
     DbVendor(String version, boolean supportsLimitOffset) {
         this.version = version;

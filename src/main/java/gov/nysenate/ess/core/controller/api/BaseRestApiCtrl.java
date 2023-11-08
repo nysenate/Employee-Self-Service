@@ -48,7 +48,7 @@ public class BaseRestApiCtrl
     @Autowired protected EventBus eventBus;
 
     @PostConstruct
-    public void init() throws Exception {
+    public void init() {
         this.eventBus.register(this);
     }
 
@@ -171,7 +171,7 @@ public class BaseRestApiCtrl
      * @param <T> T
      * @return Range<T>
      */
-    protected <T extends Comparable> Range<T> getRange(T lower, T upper, String lowerName, String upperName,
+    protected <T extends Comparable<?>> Range<T> getRange(T lower, T upper, String lowerName, String upperName,
                                                        BoundType lowerType, BoundType upperType) {
         try {
             return Range.range(lower, lowerType, upper, upperType);
@@ -183,19 +183,19 @@ public class BaseRestApiCtrl
         }
     }
 
-    protected <T extends Comparable> Range<T> getOpenRange(T lower, T upper, String lowerName, String upperName) {
+    protected <T extends Comparable<?>> Range<T> getOpenRange(T lower, T upper, String lowerName, String upperName) {
         return getRange(lower, upper, lowerName, upperName, BoundType.OPEN, BoundType.OPEN);
     }
 
-    protected <T extends Comparable> Range<T> getOpenClosedRange(T lower, T upper, String lowerName, String upperName) {
+    protected <T extends Comparable<?>> Range<T> getOpenClosedRange(T lower, T upper, String lowerName, String upperName) {
         return getRange(lower, upper, lowerName, upperName, BoundType.OPEN, BoundType.CLOSED);
     }
 
-    protected <T extends Comparable> Range<T> getClosedOpenRange(T lower, T upper, String lowerName, String upperName) {
+    protected <T extends Comparable<?>> Range<T> getClosedOpenRange(T lower, T upper, String lowerName, String upperName) {
         return getRange(lower, upper, lowerName, upperName, BoundType.CLOSED, BoundType.OPEN);
     }
 
-    protected <T extends Comparable> Range<T> getClosedRange(T lower, T upper, String lowerName, String upperName) {
+    protected <T extends Comparable<?>> Range<T> getClosedRange(T lower, T upper, String lowerName, String upperName) {
         return getRange(lower, upper, lowerName, upperName, BoundType.CLOSED, BoundType.CLOSED);
     }
 

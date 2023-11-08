@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import gov.nysenate.ess.core.service.pec.external.everfi.EverfiApiClient;
 import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategoryLabel;
 import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUser;
-import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUserService;
 import gov.nysenate.ess.core.util.OutputUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,8 +58,7 @@ public class EverfiAddUserRequest {
         ObjectMapper mapper = OutputUtils.jsonMapper;
         JsonNode rootNode = mapper.readTree(data);
         JsonNode emp = rootNode.get("data");
-        EverfiUser user = mapper.treeToValue(emp, EverfiUser.class);
-        return user;
+        return mapper.treeToValue(emp, EverfiUser.class);
     }
 
     private String generateJsonEntity() throws JsonProcessingException {

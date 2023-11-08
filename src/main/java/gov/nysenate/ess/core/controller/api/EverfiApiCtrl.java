@@ -5,9 +5,7 @@ import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.pec.external.everfi.EverfiRecordService;
 import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategoryService;
-import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUser;
 import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUserService;
-import gov.nysenate.ess.core.service.pec.external.everfi.user.add.EverfiAddUserRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +60,7 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/manual/user/sync", method = {POST})
     @ResponseStatus(value = HttpStatus.OK)
     public SimpleResponse manualUserSync(HttpServletRequest request,
-                                              HttpServletResponse response) throws Exception {
+                                              HttpServletResponse response) {
         checkPermission(ADMIN.getPermission());
         everfiUserService.runUpdateMethods();
         return new SimpleResponse(true, "Everfi Manual User Sync", "everfi-manual-user-sync");
@@ -130,8 +128,8 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
 
         //Contact everfi
         try {
-            logger.debug(ldtsince.toString() + ":00.000");
-            everfiRecordService.contactEverfiForUserRecords(ldtsince.toString() + ":00.000");
+            logger.debug(ldtsince + ":00.000");
+            everfiRecordService.contactEverfiForUserRecords(ldtsince + ":00.000");
         }
         catch (Exception e) {
             logger.info("Error contacting Everfi for records", e);
@@ -265,7 +263,7 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
     public SimpleResponse changeStatusForEverfiUserWithEmpID(HttpServletRequest request,
                                                         HttpServletResponse response,
                                                         @PathVariable int empid,
-                                                        @PathVariable boolean status) throws Exception {
+                                                        @PathVariable boolean status) {
         checkPermission(ADMIN.getPermission());
         everfiUserService.changeActiveStatusForUserWithEmpID(empid, status);
         return new SimpleResponse(true, "Everfi User Active Status Updated",
@@ -289,7 +287,7 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
     public SimpleResponse changeStatusForEverfiUserWithUUID(HttpServletRequest request,
                                                          HttpServletResponse response,
                                                        @PathVariable String uuid,
-                                                       @PathVariable boolean status) throws Exception {
+                                                       @PathVariable boolean status) {
         checkPermission(ADMIN.getPermission());
         everfiUserService.changeActiveStatusForUserWithUUID(uuid, status);
         return new SimpleResponse(true, "Everfi User Active Status Updated",
@@ -311,7 +309,7 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/inactivate/employees", method = {GET})
     @ResponseStatus(value = HttpStatus.OK)
     public SimpleResponse handleInactivatedEmployeesInEverfi(HttpServletRequest request,
-                                                HttpServletResponse response) throws Exception {
+                                                HttpServletResponse response) {
         checkPermission(ADMIN.getPermission());
         everfiUserService.handleInactivatedEmployeesInEverfi();
         return new SimpleResponse(true, "Updated inactive employees in Everfi",

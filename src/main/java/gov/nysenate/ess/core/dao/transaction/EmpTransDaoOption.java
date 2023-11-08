@@ -1,30 +1,23 @@
 package gov.nysenate.ess.core.dao.transaction;
 
-/** The options here have a mask associated with them that toggles a particular action based on the bits set.
- *
- *  Available Options: (set to 1 to enable)
- *
- *  Bit 0 : Earliest record should be the initial state.
- *  Bit 1 : Earliest record should be assigned a transaction code of APP if not already APP/RTP.
- */
-public enum EmpTransDaoOption
-{
-    NONE                (0),
-    INITIALIZE          (1),
-    SET_AS_APP          (2),
-    INITIALIZE_AS_APP   (3);
+public enum EmpTransDaoOption {
+    NONE                (false, false),
+    INITIALIZE          (true, false),
+    SET_AS_APP          (false, true),
+    INITIALIZE_AS_APP   (true, true);
 
-    int mask;
+    private final boolean shouldInitialize, shouldSetToApp;
 
-    EmpTransDaoOption(int mask) {
-        this.mask = mask;
+    EmpTransDaoOption(boolean shouldInitialize, boolean shouldSetToApp) {
+        this.shouldInitialize = shouldInitialize;
+        this.shouldSetToApp = shouldSetToApp;
     }
 
     public boolean shouldInitialize() {
-        return ((this.mask & 1) == 1);
+        return shouldInitialize;
     }
 
     public boolean shouldSetToApp() {
-        return (((this.mask >> 1) & 1) == 1);
+        return shouldSetToApp;
     }
 }

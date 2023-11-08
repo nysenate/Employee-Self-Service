@@ -23,7 +23,10 @@ import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 @Service
 public class EverfiUserService {
@@ -256,8 +259,7 @@ public class EverfiUserService {
     public List<Employee> getRecentlyInactiveEmployees() {
         try {
             LocalDateTime oneWeekFromToday = LocalDateTime.now().minusDays(7);
-            List<Employee> inactivatedEmployees = employeeDao.getInactivatedEmployeesSinceDate(oneWeekFromToday);
-            return inactivatedEmployees;
+            return employeeDao.getInactivatedEmployeesSinceDate(oneWeekFromToday);
         }
         catch (Exception e) {
             logger.error("There was a problem creating the list of recently deactivated employees");
@@ -396,16 +398,14 @@ public class EverfiUserService {
      * @param everfiUsers
      */
     private void handleUserRecords(List<EverfiUser> everfiUsers) {
-
         for (EverfiUser everfiUser : everfiUsers) {
             String UUID = everfiUser.getUuid();
 
             if (!isEverfiIdIgnored(UUID)) { //!ignored
-
                 try {
-                    Integer empid = getEmployeeId(everfiUser);
+                    int empid = getEmployeeId(everfiUser);
 
-                    if (empid.intValue() < 77000 && empid.intValue() != 0) {
+                    if (empid < 77000 && empid != 0) {
                         everfiUserDao.insertEverfiUserIDs(UUID, empid);
                     } else {
                         logger.warn("Everfi user with UUID " + UUID + " empid " + empid + " was improperly retrieved");
@@ -415,9 +415,7 @@ public class EverfiUserService {
                 } catch (EmployeeNotFoundEx e) {
                     logger.debug("Everfi user with UUID " + UUID + " cannot be matched");
                 }
-
             }
-
         }
     }
 
@@ -447,16 +445,16 @@ public class EverfiUserService {
             }
 
             //Both bad needs manual review
-            if (successByEmpID == false && successByEmail == false) {
+            if (!successByEmpID && !successByEmail) {
                 addBadEverfiUser(everfiUser, this.manualReviewUUIDs);
-                logger.warn("Everfi user record cannot be matched" + everfiUser.toString());
+                logger.warn("Everfi user record cannot be matched" + everfiUser);
                 return 99999;
             }
 
             //Both conflicting needs manual review
             if (empidByID != 99999 && (empidByID != empidByEmail) && empidByEmail != 99999) {
                 addBadEverfiUser(everfiUser, this.manualReviewUUIDs);
-                logger.warn("Everfi user record cannot be matched" + everfiUser.toString());
+                logger.warn("Everfi user record cannot be matched" + everfiUser);
                 return 99999;
             }
 
@@ -466,11 +464,11 @@ public class EverfiUserService {
             }
 
             //Good empid but bad email
-            if (successByEmpID == true && successByEmail == false) {
+            if (successByEmpID && !successByEmail) {
                 return empidByID;
             }
             //Good email but bad empid
-            else if (successByEmpID == false && successByEmail == true) {
+            else if (!successByEmpID && successByEmail) {
                 return empidByEmail;
             }
         }
@@ -547,7 +545,7 @@ public class EverfiUserService {
 
     }
 
-    public void updateAllEverfiUsers() throws IOException {
+    public void updateAllEverfiUsers() {
         try {
             EverfiUsersRequest request = new EverfiUsersRequest(everfiApiClient, 1, 1000);
             List<EverfiUser> everfiUsers;

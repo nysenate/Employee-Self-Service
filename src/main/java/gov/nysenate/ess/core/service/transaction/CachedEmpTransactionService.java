@@ -1,5 +1,6 @@
 package gov.nysenate.ess.core.service.transaction;
 
+import com.google.common.eventbus.EventBus;
 import gov.nysenate.ess.core.dao.transaction.EmpTransDaoOption;
 import gov.nysenate.ess.core.dao.transaction.EmpTransactionDao;
 import gov.nysenate.ess.core.model.cache.CacheType;
@@ -7,34 +8,33 @@ import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.model.transaction.TransactionHistoryMissingEx;
 import gov.nysenate.ess.core.model.transaction.TransactionHistoryUpdateEvent;
 import gov.nysenate.ess.core.model.transaction.TransactionRecord;
-import gov.nysenate.ess.core.service.cache.CachingService;
 import gov.nysenate.ess.core.service.cache.EmployeeIdCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Stream;
 
-@Service
-public class EssCachedEmpTransactionService extends EmployeeIdCache<TransactionHistory>
+public class CachedEmpTransactionService extends EmployeeIdCache<TransactionHistory>
         implements EmpTransactionService {
-    private static final Logger logger = LoggerFactory.getLogger(EssCachedEmpTransactionService.class);
+    private static final Logger logger = LoggerFactory.getLogger(CachedEmpTransactionService.class);
 
     private final EmpTransactionDao transactionDao;
+    private final EventBus eventBus;
     private LocalDateTime lastUpdateDateTime;
 
     @Autowired
-    public EssCachedEmpTransactionService(EmpTransactionDao transactionDao) {
+    public CachedEmpTransactionService(EmpTransactionDao transactionDao, EventBus eventBus) {
         this.transactionDao = transactionDao;
+        this.eventBus = eventBus;
         this.lastUpdateDateTime = transactionDao.getMaxUpdateDateTime();
     }
 
-    /** --- Transaction Service Methods --- */
+    // --- Transaction Service Methods ---
 
     /** {@inheritDoc} */
     @Override
@@ -49,8 +49,7 @@ public class EssCachedEmpTransactionService extends EmployeeIdCache<TransactionH
         return cache.get(empId);
     }
 
-    /** --- Caching Service Implemented Methods ---
-     * @see CachingService*/
+    // --- Caching Service Implemented Methods ---
 
     /** {@inheritDoc} */
     @Override
@@ -60,14 +59,10 @@ public class EssCachedEmpTransactionService extends EmployeeIdCache<TransactionH
 
     @Override
     protected void putId(int id) {
-        cache.put(id, getTransHistoryFromDao(id));
+        cache.put(id, transactionDao.getTransHistory(id, EmpTransDaoOption.INITIALIZE_AS_APP));
     }
 
     /** --- Internal Methods --- */
-
-    private TransactionHistory getTransHistoryFromDao(int empId) {
-        return transactionDao.getTransHistory(empId, EmpTransDaoOption.INITIALIZE_AS_APP);
-    }
 
     @Scheduled(fixedDelayString = "${cache.poll.delay.transactions:60000}")
     private void syncTransHistory() {
@@ -83,7 +78,7 @@ public class EssCachedEmpTransactionService extends EmployeeIdCache<TransactionH
             // Gather a set of affected employee ids and refresh their transaction cache
             transRecs.stream().map(TransactionRecord::getEmployeeId).distinct().forEach(empId -> {
                 logger.info("Re-Caching transactions for employee {}", empId);
-                cache.put(empId, getTransHistoryFromDao(empId));
+                putId(empId);
             });
             // Post the update event
             eventBus.post(new TransactionHistoryUpdateEvent(transRecs, lastCheckTime));

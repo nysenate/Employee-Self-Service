@@ -14,8 +14,7 @@ import java.util.Optional;
 import static gov.nysenate.ess.core.dao.base.SqlBaseDao.getLocalDate;
 
 public class MinimalEmployeeRowMapper extends BaseRowMapper<Employee> {
-
-    private String pfx = "";
+    private final String pfx;
 
     public MinimalEmployeeRowMapper(String pfx) {
         this.pfx = pfx;

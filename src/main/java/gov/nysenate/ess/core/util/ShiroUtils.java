@@ -1,6 +1,5 @@
 package gov.nysenate.ess.core.util;
 
-import gov.nysenate.ess.core.model.auth.SenateLdapPerson;
 import gov.nysenate.ess.core.model.auth.SenatePerson;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.UnauthenticatedException;
@@ -31,5 +30,5 @@ public abstract class ShiroUtils {
         return getAuthenticatedUser().getEmployeeId();
     }
 
-    public static String getAuthenticatedUid(){return getAuthenticatedUser().getUid();};
+    public static String getAuthenticatedUid(){return getAuthenticatedUser().getUid();}
 }

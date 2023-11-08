@@ -16,7 +16,7 @@ public interface ESSMoodleRecordService {
      * @return
      * @throws IOException
      */
-    public JsonNode convertStreamtoJson(InputStream inputStream) throws IOException;
+    JsonNode convertStreamtoJson(InputStream inputStream) throws IOException;
 
     /**
      * Parses a list of MoodleEmployeeRecords from a Json Node
@@ -24,13 +24,13 @@ public interface ESSMoodleRecordService {
      * @return
      * @throws IOException
      */
-    public List<MoodleEmployeeRecord> getMoodleRecordsFromJson(String jsonString) throws IOException;
+    List<MoodleEmployeeRecord> getMoodleRecordsFromJson(String jsonString) throws IOException;
 
     /**
      * Creates a PersonnelTask and then sends it to the PersonnelTaskDao for db insertion
      * @param moodleEmployeeRecords
      */
-    public void processMoodleEmployeeRecords(List<MoodleEmployeeRecord> moodleEmployeeRecords);
+    void processMoodleEmployeeRecords(List<MoodleEmployeeRecord> moodleEmployeeRecords);
 
     /**
      * Contacts the Moodle ethics app for data in a certain time range
@@ -40,5 +40,5 @@ public interface ESSMoodleRecordService {
      * @return
      * @throws IOException
      */
-    public JsonNode contactMoodleForRecords(LocalDateTime from, LocalDateTime to, String organization) throws IOException;
+    JsonNode contactMoodleForRecords(LocalDateTime from, LocalDateTime to, String organization) throws IOException;
 }

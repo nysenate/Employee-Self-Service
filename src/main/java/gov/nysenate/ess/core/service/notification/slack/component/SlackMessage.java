@@ -54,7 +54,7 @@ public class SlackMessage {
 
     public SlackMessage addAttachments(SlackAttachment attach) {
         if (this.attach == null) {
-            this.attach = new ArrayList<SlackAttachment>();
+            this.attach = new ArrayList<>();
         }
         this.attach.add(attach);
 
