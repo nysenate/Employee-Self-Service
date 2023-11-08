@@ -12,8 +12,6 @@ import gov.nysenate.ess.supply.item.OrderableItems;
 import gov.nysenate.ess.supply.item.dao.SupplyItemDao;
 import gov.nysenate.ess.supply.item.model.SupplyItem;
 import gov.nysenate.ess.supply.item.view.SupplyItemView;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,11 +23,8 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/supply/items")
 public class SupplyItemRestApiCtrl extends BaseRestApiCtrl {
-
-    private static final Logger logger = LoggerFactory.getLogger(SupplyItemRestApiCtrl.class);
-
-    private SupplyItemDao supplyItemDao;
-    private LocationService locationService;
+    private final SupplyItemDao supplyItemDao;
+    private final LocationService locationService;
 
     @Autowired
     public SupplyItemRestApiCtrl(SupplyItemDao supplyItemDao, LocationService locationService) {

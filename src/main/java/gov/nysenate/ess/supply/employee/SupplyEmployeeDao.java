@@ -1,7 +1,10 @@
 package gov.nysenate.ess.supply.employee;
 
 import com.google.common.collect.Sets;
-import gov.nysenate.ess.core.dao.base.*;
+import gov.nysenate.ess.core.dao.base.BaseHandler;
+import gov.nysenate.ess.core.dao.base.BasicSqlQuery;
+import gov.nysenate.ess.core.dao.base.DbVendor;
+import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +44,7 @@ public class SupplyEmployeeDao extends SqlBaseDao {
                 "WHERE issuing_emp_id is not NULL"
         );
 
-        private String sql;
+        private final String sql;
 
         SqlSupplyEmployeeQuery(String sql) {
             this.sql = sql;
@@ -58,7 +61,7 @@ public class SupplyEmployeeDao extends SqlBaseDao {
         }
     }
 
-    private class SupplyEmployeeHandler extends BaseHandler {
+    private static class SupplyEmployeeHandler extends BaseHandler {
 
         private Set<Integer> empIds;
         private EmployeeInfoService employeeInfoService;

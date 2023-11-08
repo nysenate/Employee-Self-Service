@@ -15,11 +15,10 @@ import java.util.Set;
 
 @Service
 public class DestinationService {
-
-    private LocationService locationService;
-    private TempResponsibilityHeadService trchService;
-    private RoleDao roleDao;
-    private AllowedDestinationService allowedDestinationService;
+    private final LocationService locationService;
+    private final TempResponsibilityHeadService trchService;
+    private final RoleDao roleDao;
+    private final AllowedDestinationService allowedDestinationService;
 
     @Autowired
     public DestinationService(LocationService locationService, TempResponsibilityHeadService trchService,

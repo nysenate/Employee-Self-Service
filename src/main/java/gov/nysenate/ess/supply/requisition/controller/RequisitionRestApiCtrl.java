@@ -25,8 +25,6 @@ import gov.nysenate.ess.supply.requisition.view.RequisitionView;
 import gov.nysenate.ess.supply.requisition.view.SubmitRequisitionView;
 import gov.nysenate.ess.supply.socket.RequisitionUpdateEvent;
 import org.apache.shiro.authz.UnauthorizedException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -40,12 +38,16 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/supply/requisitions")
 public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
+    private final RequisitionService requisitionService;
+    private final EmployeeInfoService employeeService;
+    private final LocationService locationService;
 
-    private static final Logger logger = LoggerFactory.getLogger(RequisitionRestApiCtrl.class);
-
-    @Autowired private RequisitionService requisitionService;
-    @Autowired private EmployeeInfoService employeeService;
-    @Autowired private LocationService locationService;
+    @Autowired
+    public RequisitionRestApiCtrl(RequisitionService requisitionService, EmployeeInfoService employeeService, LocationService locationService) {
+        this.requisitionService = requisitionService;
+        this.employeeService = employeeService;
+        this.locationService = locationService;
+    }
 
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public BaseResponse submitRequisition(@RequestBody SubmitRequisitionView submitRequisitionView) {

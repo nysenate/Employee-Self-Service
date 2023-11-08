@@ -1,7 +1,6 @@
 package gov.nysenate.ess.supply.requisition.model;
 
 import com.google.common.collect.ImmutableCollection;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.OrderBy;
@@ -100,7 +99,7 @@ public class RequisitionQuery {
         }
         else {
             throw new IllegalArgumentException("datefield " + dateField +
-                    " is not valid. Valid options are " + DATE_FIELDS.toString());
+                    " is not valid. Valid options are " + DATE_FIELDS);
         }
         return this;
     }

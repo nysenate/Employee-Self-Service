@@ -5,7 +5,6 @@ import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.notification.base.message.base.Component;
 import gov.nysenate.ess.core.service.notification.email.simple.component.SimpleEmailSubject;
 import gov.nysenate.ess.core.service.notification.email.simple.header.SimpleEmailHeader;
-import gov.nysenate.ess.core.service.notification.email.simple.message.SimpleEmailHandler;
 import gov.nysenate.ess.core.service.notification.email.simple.message.SimpleEmailMessage;
 import gov.nysenate.ess.core.service.notification.email.simple.user.SimpleEmailReceiver;
 import gov.nysenate.ess.core.service.notification.email.simple.user.SimpleEmailSender;
@@ -28,8 +27,7 @@ public class SendSimpleEmail {
 
     public void send(Employee sender, Employee receiver, List<Component> simpleEmailContent,
                      SimpleEmailHeader simpleEmailHeader, SimpleEmailSubject simpleEmailSubject, int messageId) {
-        List<Component> components = new ArrayList<>();
-        components.addAll(simpleEmailContent);
+        List<Component> components = new ArrayList<>(simpleEmailContent);
         components.add(simpleEmailSubject);
 
         SimpleEmailSender simpleEmailSender = new SimpleEmailSender(sender);

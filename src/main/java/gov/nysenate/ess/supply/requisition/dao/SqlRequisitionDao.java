@@ -1,7 +1,10 @@
 package gov.nysenate.ess.supply.requisition.dao;
 
 import com.google.common.collect.ImmutableList;
-import gov.nysenate.ess.core.dao.base.*;
+import gov.nysenate.ess.core.dao.base.BaseRowMapper;
+import gov.nysenate.ess.core.dao.base.PaginatedRowHandler;
+import gov.nysenate.ess.core.dao.base.SqlBaseDao;
+import gov.nysenate.ess.core.dao.base.SqlQueryUtils;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.core.service.base.LocationService;
@@ -12,8 +15,6 @@ import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.core.util.SortOrder;
 import gov.nysenate.ess.supply.requisition.model.*;
 import gov.nysenate.ess.supply.util.date.DateTimeFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -31,13 +32,19 @@ import java.util.stream.Collectors;
 
 @Repository
 public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
+    private final SqlLineItemDao lineItemDao;
+    private final EmployeeInfoService employeeInfoService;
+    private final LocationService locationService;
+    private final DateTimeFactory dateTimeFactory;
 
-    private Logger logger = LoggerFactory.getLogger(SqlRequisitionDao.class);
-
-    @Autowired private SqlLineItemDao lineItemDao;
-    @Autowired private EmployeeInfoService employeeInfoService;
-    @Autowired private LocationService locationService;
-    @Autowired private DateTimeFactory dateTimeFactory;
+    @Autowired
+    public SqlRequisitionDao(SqlLineItemDao lineItemDao, EmployeeInfoService employeeInfoService,
+                             LocationService locationService, DateTimeFactory dateTimeFactory) {
+        this.lineItemDao = lineItemDao;
+        this.employeeInfoService = employeeInfoService;
+        this.locationService = locationService;
+        this.dateTimeFactory = dateTimeFactory;
+    }
 
     @Override
     @Transactional(value = "localTxManager")
@@ -53,7 +60,6 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
 
     /**
      * Inserts a new requisition revision into the requisition_content table.
-     * @return Requisition with its revisionId set.
      */
     private void insertRequisitionContent(Requisition requisition) {
         MapSqlParameterSource params = requisitionParams(requisition);
@@ -193,105 +199,13 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
 
     private int getNextRevisionId() {
         String sql = SqlRequisitionQuery.GET_NEXT_REVISION_ID.getSql(schemaMap());
-        return localNamedJdbc.query(sql, (rs, i) -> { return rs.getInt("nextval"); }).get(0);
+        return localNamedJdbc.query(sql, (rs, i) -> rs.getInt("nextval")).get(0);
     }
 
-    private enum SqlRequisitionQuery implements BasicSqlQuery {
-        GET_NEXT_REVISION_ID(
-                "SELECT nextval('${supplySchema}.requisition_content_revision_id_seq'::regclass)"
-        ),
-
-        INSERT_REQUISITION(
-                "INSERT INTO ${supplySchema}.requisition(current_revision_id, ordered_date_time, \n" +
-                "processed_date_time, completed_date_time, approved_date_time, rejected_date_time, saved_in_sfms) \n" +
-                "VALUES (:revisionId, :orderedDateTime, :processedDateTime, :completedDateTime, \n" +
-                ":approvedDateTime, :rejectedDateTime, :savedInSfms)"
-        ),
-
-        UPDATE_REQUISITION(
-                "UPDATE ${supplySchema}.requisition SET current_revision_id = :revisionId, ordered_date_time = :orderedDateTime, \n" +
-                "processed_date_time = :processedDateTime, completed_date_time = :completedDateTime, \n" +
-                "approved_date_time = :approvedDateTime, rejected_date_time = :rejectedDateTime, \n" +
-                "saved_in_sfms = :savedInSfms \n" +
-                "WHERE requisition_id = :requisitionId"
-        ),
-
-        /** Never insert the revision id, let it auto increment. */
-        INSERT_REQUISITION_CONTENT(
-                "INSERT INTO ${supplySchema}.requisition_content(requisition_id, revision_id, destination, status, \n" +
-                "issuing_emp_id, note, customer_id, modified_by_id, modified_date_time, special_instructions,\n" +
-                "delivery_method, is_reconciled) \n" +
-                "VALUES (:requisitionId, :revisionId, :destination, :status::${supplySchema}.requisition_status, \n" +
-                ":issuerId, :note, :customerId, :modifiedBy, :modifiedDateTime, :specialInstructions,\n" +
-                ":deliveryMethod::${supplySchema}.delivery_method, :isReconciled)"
-        ),
-
-        GET_REQUISITION_BY_ID(
-                "SELECT * from ${supplySchema}.requisition r INNER JOIN ${supplySchema}.requisition_content c \n" +
-                "ON r.current_revision_id = c.revision_id \n" +
-                "WHERE r.requisition_id = :requisitionId"
-        ),
-
-        /** Must use {@link #generateSearchQuery(SqlRequisitionQuery, String, OrderBy, LimitOffset) generateSearchQuery}
-         * to complete this query. */
-        SEARCH_REQUISITIONS_PARTIAL(
-                "SELECT *, count(*) OVER() as total_rows \n" +
-                        "FROM ${supplySchema}.requisition as r \n" +
-                        "INNER JOIN ${supplySchema}.requisition_content as c ON r.current_revision_id = c.revision_id \n" +
-                        "WHERE c.destination LIKE :destination AND Coalesce(c.customer_id::text, '') LIKE :customerId \n" +
-                        "AND Coalesce(c.issuing_emp_id::text, '') LIKE :issuerId \n" +
-                        "AND c.revision_id IN (SELECT i.revision_id FROM ${supplySchema}.line_item i WHERE i.item_id::text LIKE :itemId) \n" +
-                        "AND c.status::text IN (:statuses) AND r.saved_in_sfms::text LIKE :savedInSfms AND c.is_reconciled::text LIKE :isReconciled AND r."
-        ),
-
-        /** Must use {@link #generateSearchQuery(SqlRequisitionQuery, String, OrderBy, LimitOffset) generateSearchQuery}
-         * to complete this query. */
-        ORDER_HISTORY_PARTIAL(
-                "SELECT *, count(*) OVER() as total_rows \n" +
-                "FROM ${supplySchema}.requisition as r \n" +
-                "INNER JOIN ${supplySchema}.requisition_content as c ON r.current_revision_id = c.revision_id \n" +
-                "WHERE (c.destination = :destination OR Coalesce(c.customer_id::text, '') LIKE :customerId) \n" +
-                "AND c.status::text IN (:statuses) AND r."
-        ),
-        GET_REQUISITION_HISTORY(
-                "SELECT * from ${supplySchema}.requisition r INNER JOIN ${supplySchema}.requisition_content c \n" +
-                "ON r.requisition_id = c.requisition_id \n" +
-                "WHERE r.requisition_id = :requisitionId \n"
-        ),
-        SET_SAVED_IN_SFMS(
-                "UPDATE ${supplySchema}.requisition \n" +
-                        "SET saved_in_sfms = :succeed, last_sfms_sync_date_time =  CURRENT_TIMESTAMP" + "\n" +
-                "WHERE requisition_id = :requisitionId"
-        ),
-        SET_RECONCILED(
-                "UPDATE ${supplySchema}.requisition \n" +
-                        "SET reconciled = :reconciled" + "\n" +
-                "WHERE requisition_id = :requisitionId"
-        )
-        ;
-
-        private String sql;
-
-        SqlRequisitionQuery(String sql) {
-            this.sql = sql;
-        }
-
-        @Override
-        public String getSql() {
-            return sql;
-        }
-
-        @Override
-        public DbVendor getVendor() {
-            return DbVendor.POSTGRES;
-        }
-    }
-
-    private class RequisitionRowMapper extends BaseRowMapper<Requisition> {
-
-        private EmployeeInfoService employeeInfoService;
-        private LocationService locationService;
-        private SqlLineItemDao lineItemDao;
+    private static class RequisitionRowMapper extends BaseRowMapper<Requisition> {
+        private final EmployeeInfoService employeeInfoService;
+        private final LocationService locationService;
+        private final SqlLineItemDao lineItemDao;
 
         protected RequisitionRowMapper(EmployeeInfoService employeeInfoService, LocationService locationService,
                                     SqlLineItemDao lineItemDao) {
