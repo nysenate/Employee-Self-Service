@@ -22,7 +22,8 @@ import gov.nysenate.ess.time.service.accrual.AccrualComputeService;
 import gov.nysenate.ess.time.service.attendance.TimeRecordService;
 import gov.nysenate.ess.time.util.AccrualUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -38,7 +39,8 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
-@RequestMapping(BaseRestApiCtrl.REST_PATH + "/donation")
+// TODO: re-enable mapping
+//@RequestMapping(BaseRestApiCtrl.REST_PATH + "/donation")
 public class DonationCtrl extends BaseRestApiCtrl {
     private static final BigDecimal MAX_DAYS_DONATED = new BigDecimal(20),
             MIN_DAYS_REMAINING = new BigDecimal(10), HALF = new BigDecimal("0.5");
@@ -63,7 +65,7 @@ public class DonationCtrl extends BaseRestApiCtrl {
         this.payPeriodService = payPeriodService;
     }
 
-    @GetMapping("/info")
+//    @GetMapping("/info")
     public BaseResponse getDonationInfo(@RequestParam int empId) {
         checkPermission(new EssTimePermission(empId, ACCRUAL, GET, Range.singleton(LocalDate.now())));
         Employee emp = employeeInfoService.getEmployee(empId);
@@ -92,7 +94,7 @@ public class DonationCtrl extends BaseRestApiCtrl {
         return new ViewObjectResponse<>(new DonationInfoView(roundedResult, accruedSickTime));
     }
 
-    @GetMapping("/history")
+//    @GetMapping("/history")
     // TODO: order sick time donations within days
     public BaseResponse getDonationHistory(@RequestParam int empId, @RequestParam int year) {
         checkPermission(new EssTimePermission(empId, ACCRUAL, GET, Range.singleton(LocalDate.now())));
@@ -104,7 +106,7 @@ public class DonationCtrl extends BaseRestApiCtrl {
         return new ViewObjectResponse<>(ListView.ofStringList(history));
     }
 
-    @PostMapping("/submit")
+//    @PostMapping("/submit")
     public BaseResponse submitDonation(@RequestParam int empId, @RequestParam String hoursToDonate) {
         checkPermission(new EssTimePermission(empId, ACCRUAL, POST, Range.singleton(LocalDate.now())));
         BigDecimal donation = BigDecimal.valueOf(Double.parseDouble(hoursToDonate));
