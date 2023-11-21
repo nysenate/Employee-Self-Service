@@ -25,7 +25,6 @@ import java.util.Objects;
 public class Amendment {
 
     private int amendmentId; // 0 if this amendment has not been saved to the database.
-    private final Version version;
     private final PurposeOfTravel purposeOfTravel;
     private final Route route;
     private final Allowances allowances;
@@ -38,7 +37,6 @@ public class Amendment {
 
     public Amendment(Builder builder) {
         amendmentId = builder.amendmentId;
-        version = builder.version;
         purposeOfTravel = builder.purposeOfTravel;
         route = builder.route;
         allowances = builder.allowances;
@@ -130,10 +128,6 @@ public class Amendment {
         return amendmentId;
     }
 
-    public Version version() {
-        return version;
-    }
-
     public PurposeOfTravel purposeOfTravel() {
         return purposeOfTravel;
     }
@@ -180,7 +174,6 @@ public class Amendment {
      */
     public static class Builder {
         private int amendmentId = 0;
-        private Version version = Version.A;
         private PurposeOfTravel purposeOfTravel = null;
         private Route route = Route.EMPTY_ROUTE;
         private Allowances allowances = new Allowances();
@@ -201,7 +194,6 @@ public class Amendment {
          */
         public Builder(Amendment amd) {
             withAmendmentId(amd.amendmentId());
-            withVersion(amd.version());
             withPurposeOfTravel(amd.purposeOfTravel());
             withRoute(amd.route());
             withAllowances(amd.allowances());
@@ -213,11 +205,6 @@ public class Amendment {
 
         public Builder withAmendmentId(int id) {
             this.amendmentId = id;
-            return this;
-        }
-
-        public Builder withVersion(Version version) {
-            this.version = version;
             return this;
         }
 
@@ -277,7 +264,6 @@ public class Amendment {
         if (o == null || getClass() != o.getClass()) return false;
         Amendment amendment = (Amendment) o;
         return amendmentId == amendment.amendmentId &&
-                version == amendment.version &&
                 Objects.equals(purposeOfTravel, amendment.purposeOfTravel) &&
                 Objects.equals(route, amendment.route) &&
                 Objects.equals(allowances, amendment.allowances) &&
@@ -290,6 +276,6 @@ public class Amendment {
 
     @Override
     public int hashCode() {
-        return Objects.hash(amendmentId, version, purposeOfTravel, route, allowances, attachments, createdDateTime, createdBy, mealPerDiems, lodgingPerDiems);
+        return Objects.hash(amendmentId, purposeOfTravel, route, allowances, attachments, createdDateTime, createdBy, mealPerDiems, lodgingPerDiems);
     }
 }

@@ -15,12 +15,18 @@ enum SqlTravelApplicationQuery implements BasicSqlQuery {
     ),
     INSERT_AMENDMENT(
             "INSERT INTO ${travelSchema}.amendment \n" +
-                    "(app_id, version, event_type, event_name, additional_purpose, created_by) \n" +
-                    "VALUES (:appId, :version, :eventType, :eventName, :additionalPurpose, :createdBy)"
+                    "(app_id, event_type, event_name, additional_purpose, created_by) \n" +
+                    "VALUES (:appId, :eventType, :eventName, :additionalPurpose, :createdBy)"
     ),
+    UPDATE_AMENDMENT("""
+            UPDATE ${travelSchema}.amendment
+            SET event_type = :eventType, event_name = :eventName, additional_purpose = :additionalPurpose
+                created_by = :createdBy
+            WHERE amendment_id = :amendmentId
+            """),
     TRAVEL_APP_SELECT(
             "SELECT app.app_id, app.traveler_id, app.status, app.status_note, app.traveler_dept_head_emp_id,\n" +
-                    " amendment.amendment_id, amendment.app_id, amendment.version,\n" +
+                    " amendment.amendment_id, amendment.app_id,\n" +
                     " amendment.event_type, amendment.event_name, amendment.additional_purpose,\n" +
                     " amendment.created_date_time, amendment.created_by\n" +
                     " FROM ${travelSchema}.app\n" +

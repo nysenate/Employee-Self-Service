@@ -3,17 +3,13 @@ package gov.nysenate.ess.travel.request.app;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import gov.nysenate.ess.core.model.personnel.Employee;
-import gov.nysenate.ess.travel.employee.TravelEmployee;
 import gov.nysenate.ess.travel.request.amendment.Amendment;
-import gov.nysenate.ess.travel.request.amendment.Version;
 
 import java.time.LocalDateTime;
 import java.util.*;
 
 public class TravelApplication {
-
-    /** Sort amendments by the declaration order of {@link Version} */
-    private static final Comparator<Amendment> amendmentComparator = Comparator.comparing(Amendment::version);
+    private static final Comparator<Amendment> amendmentComparator = Comparator.comparing(Amendment::amendmentId);
 
     protected int appId;
     protected Employee traveler;

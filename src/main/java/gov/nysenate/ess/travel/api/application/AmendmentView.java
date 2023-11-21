@@ -9,7 +9,6 @@ import gov.nysenate.ess.travel.request.allowances.AllowancesView;
 import gov.nysenate.ess.travel.request.allowances.lodging.LodgingPerDiemsView;
 import gov.nysenate.ess.travel.request.allowances.meal.MealPerDiemsView;
 import gov.nysenate.ess.travel.request.amendment.Amendment;
-import gov.nysenate.ess.travel.request.amendment.Version;
 import gov.nysenate.ess.travel.request.route.RouteView;
 import gov.nysenate.ess.travel.request.route.destination.Destination;
 
@@ -24,7 +23,6 @@ import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 public class AmendmentView implements ViewObject {
 
     private int amendmentId;
-    private String version;
     private PurposeOfTravelView purposeOfTravel;
     private RouteView route;
     private AllowancesView allowances;
@@ -62,7 +60,6 @@ public class AmendmentView implements ViewObject {
 
     public AmendmentView(Amendment amendment) {
         amendmentId = amendment.amendmentId();
-        version = amendment.version().name();
         purposeOfTravel = new PurposeOfTravelView(amendment.purposeOfTravel());
         route = new RouteView(amendment.route());
         allowances = new AllowancesView(amendment.allowances());
@@ -109,7 +106,6 @@ public class AmendmentView implements ViewObject {
                 .map(AttachmentView::toAttachment)
                 .collect(Collectors.toList());
         return new Amendment.Builder()
-                .withVersion(Version.valueOf(version))
                 .withPurposeOfTravel(purposeOfTravel.toPurposeOfTravel())
                 .withRoute(route.toRoute())
                 .withAllowances(allowances.toAllowances())
@@ -124,10 +120,6 @@ public class AmendmentView implements ViewObject {
 
     public int getAmendmentId() {
         return amendmentId;
-    }
-
-    public String getVersion() {
-        return version;
     }
 
     public PurposeOfTravelView getPurposeOfTravel() {

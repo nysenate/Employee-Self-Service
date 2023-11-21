@@ -19,7 +19,6 @@ import gov.nysenate.ess.travel.request.allowances.meal.MealPerDiemsFactory;
 import gov.nysenate.ess.travel.request.allowances.mileage.MileagePerDiem;
 import gov.nysenate.ess.travel.request.allowances.mileage.MileagePerDiems;
 import gov.nysenate.ess.travel.request.amendment.Amendment;
-import gov.nysenate.ess.travel.request.amendment.Version;
 import gov.nysenate.ess.travel.request.draft.Draft;
 import gov.nysenate.ess.travel.request.route.Leg;
 import gov.nysenate.ess.travel.request.route.Route;
@@ -241,7 +240,6 @@ public class TravelAppUpdateService {
     public TravelApplication submitTravelApplication(Draft draft, Employee submitter) {
         Amendment amd = new Amendment.Builder(draft.getAmendment())
                 .withAmendmentId(0)
-                .withVersion(Version.A)
                 .withCreatedBy(submitter)
                 .withCreatedDateTime(LocalDateTime.now())
                 .build();

@@ -40,7 +40,6 @@ public class TravelAppEditCtrl extends BaseRestApiCtrl {
 
         // The amendment to be edited is copied from the latest amendment and the version is incremented.
         Amendment editAmd = new Amendment.Builder(app.activeAmendment())
-                .withVersion(app.activeAmendment().version().next())
                 .build();
 
         Draft draft = new Draft(travelEmployeeService.getTravelEmployee(app.getTraveler()), editAmd);

@@ -62,7 +62,6 @@ public class SqlAmendmentDao extends SqlBaseDao {
         Employee createdBy = employeeInfoService.getEmployee(amdView.createdByEmpId);
         return new Amendment.Builder()
                 .withAmendmentId(amdView.amendmentId)
-                .withVersion(amdView.version)
                 .withPurposeOfTravel(amdView.pot)
                 .withRoute(route)
                 .withAllowances(allowances)
@@ -76,12 +75,9 @@ public class SqlAmendmentDao extends SqlBaseDao {
     }
 
     void saveAmendment(Amendment amd, int appId) {
-        // If amendment id is set, its already in the database.
-        // Amendments should never be modified so we can return.
-        if (amd.amendmentId() != 0) {
-            return;
+        if (insertAmendment(amd, appId) == 0) {
+            updateAmendment(amd, appId);
         }
-        insertAmendment(amd, appId);
         routeDao.saveRoute(amd.route(), amd.amendmentId());
         allowancesDao.saveAllowances(amd.allowances(), amd.amendmentId());
         mealPerDiemsDao.saveMealPerDiems(amd.mealPerDiems(), amd.amendmentId());
@@ -90,17 +86,29 @@ public class SqlAmendmentDao extends SqlBaseDao {
         attachmentDao.saveAmendmentAttachments(amd.attachments(), amd.amendmentId());
     }
 
-    private void insertAmendment(Amendment amd, int appId) {
+    private int insertAmendment(Amendment amd, int appId) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("appId", appId)
                 .addValue("eventType", amd.purposeOfTravel().eventType().name())
                 .addValue("eventName", amd.purposeOfTravel().eventName())
                 .addValue("additionalPurpose", amd.purposeOfTravel().additionalPurpose())
-                .addValue("createdBy", amd.createdBy().getEmployeeId())
-                .addValue("version", amd.version().name());
+                .addValue("createdBy", amd.createdBy().getEmployeeId());
         String sql = SqlTravelApplicationQuery.INSERT_AMENDMENT.getSql(schemaMap());
         KeyHolder kh = new GeneratedKeyHolder();
-        localNamedJdbc.update(sql, params, kh);
+        int updateCount = localNamedJdbc.update(sql, params, kh);
         amd.setAmendmentId((Integer) kh.getKeys().get("amendment_id"));
+        return updateCount;
+    }
+
+    private void updateAmendment(Amendment amd, int appId) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("appId", appId)
+                .addValue("amendmentId", amd.amendmentId())
+                .addValue("eventType", amd.purposeOfTravel().eventType().name())
+                .addValue("eventName", amd.purposeOfTravel().eventName())
+                .addValue("additionalPurpose", amd.purposeOfTravel().additionalPurpose())
+                .addValue("createdBy", amd.createdBy().getEmployeeId());
+        String sql = SqlTravelApplicationQuery.UPDATE_AMENDMENT.getSql(schemaMap());
+        localNamedJdbc.update(sql, params);
     }
 }
