@@ -109,8 +109,20 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
                 .map(v -> amendmentDao.selectAmendment(v))
                 .collect(Collectors.toList());
 
-        return new TravelApplication(view.appId, traveler,
+        TravelApplication app = new TravelApplication(view.appId, traveler,
                 view.travelerDeptHeadEmpId, view.status, amds);
+        Amendment amd = app.activeAmendment();
+        app.setAmendmentId(amd.amendmentId());
+        app.setPurposeOfTravel(amd.purposeOfTravel());
+        app.setRoute(amd.route());
+        app.setAllowances(amd.allowances());
+        app.setAttachments(amd.attachments());
+        app.setCreatedDateTime(amd.createdDateTime());
+        app.setCreatedBy(amd.createdBy());
+        app.setMealPerDiems(amd.mealPerDiems());
+        app.setLodgingPerDiems(amd.lodgingPerDiems());
+        app.setMileagePerDiems(amd.mileagePerDiems());
+        return app;
     }
 
     private MapSqlParameterSource travelAppParams(TravelApplication app) {
