@@ -38,11 +38,8 @@ public class TravelAppEditCtrl extends BaseRestApiCtrl {
         // Check the logged in user is allowed to modify this app.
         checkTravelAppPermission(app, RequestMethod.POST);
 
-        // The amendment to be edited is copied from the latest amendment and the version is incremented.
-        Amendment editAmd = new Amendment.Builder(app.activeAmendment())
-                .build();
-
-        Draft draft = new Draft(travelEmployeeService.getTravelEmployee(app.getTraveler()), editAmd);
+        Draft draft = new Draft(0, getSubjectEmployeeId(), travelEmployeeService.getTravelEmployee(app.getTraveler()));
+        draft.setTravelApplication(app);
         return new ViewObjectResponse<>(new DraftView(draft));
     }
 

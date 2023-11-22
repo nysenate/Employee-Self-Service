@@ -9,13 +9,11 @@ import gov.nysenate.ess.core.client.response.error.ErrorResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
-import gov.nysenate.ess.travel.allowedtravelers.AllowedTravelersService;
 import gov.nysenate.ess.travel.api.application.*;
 import gov.nysenate.ess.travel.employee.TravelEmployee;
 import gov.nysenate.ess.travel.employee.TravelEmployeeService;
 import gov.nysenate.ess.travel.request.app.*;
 import gov.nysenate.ess.travel.request.attachment.Attachment;
-import gov.nysenate.ess.travel.request.department.SqlDepartmentHeadDao;
 import gov.nysenate.ess.travel.request.draft.*;
 import gov.nysenate.ess.travel.request.route.*;
 import gov.nysenate.ess.travel.provider.ProviderException;
@@ -55,8 +53,8 @@ public class DraftCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "", method = RequestMethod.PUT)
     public BaseResponse createDraft() {
         Employee user = employeeInfoService.getEmployee(getSubjectEmployeeId());
-        TravelEmployee travelEmployee = travelEmployeeService.getTravelEmployee(user);
-        Draft draft = new Draft(travelEmployee);
+        TravelEmployee defaultTraveler = travelEmployeeService.getTravelEmployee(user);
+        Draft draft = new Draft(0, getSubjectEmployeeId(), defaultTraveler);
         DraftView draftView = new DraftView(draft);
         return new ViewObjectResponse<>(draftView);
     }
@@ -119,20 +117,20 @@ public class DraftCtrl extends BaseRestApiCtrl {
         for (DraftViewPatchOption option : draftPatches.getOptions()) {
             switch (option) {
                 case ROUTE:
-                    routeViewValidator.validateTravelDates(new RouteView(draft.getAmendment().route()));
-                    draft.setAmendment(appUpdateService.updateRoute(draft));
+                    routeViewValidator.validateTravelDates(new RouteView(draft.getTravelApplication().getRoute()));
+                    appUpdateService.updateRoute(draft);
                     break;
                 case ALLOWANCES:
-                    draft.setAmendment(appUpdateService.updateAllowances(draft.getAmendment(), draft.getAmendment().allowances()));
+//                    draft.setTravelApplication(appUpdateService.updateAllowances(draft.getTravelApplication(), draft.getTravelApplication().allowances()));
                     break;
                 case MEAL_PER_DIEMS:
-                    draft.setAmendment(appUpdateService.updateMealPerDiems(draft.getAmendment(), draft.getAmendment().mealPerDiems()));
+//                    draft.setTravelApplication(appUpdateService.updateMealPerDiems(draft.getTravelApplication(), draft.getTravelApplication().mealPerDiems()));
                     break;
                 case LODGING_PER_DIEMS:
-                    draft.setAmendment(appUpdateService.updateLodgingPerDiems(draft.getAmendment(), draft.getAmendment().lodgingPerDiems()));
+//                    draft.setTravelApplication(appUpdateService.updateLodgingPerDiems(draft.getTravelApplication(), draft.getTravelApplication().lodgingPerDiems()));
                     break;
                 case MILEAGE_PER_DIEMS:
-                    draft.setAmendment(appUpdateService.updateMileagePerDiems(draft.getAmendment(), draft.getAmendment().mileagePerDiems()));
+//                    draft.setTravelApplication(appUpdateService.updateMileagePerDiems(draft.getTravelApplication(), draft.getTravelApplication().mileagePerDiems()));
                     break;
                 default:
                     logger.info("Call to travel draft patch API did not contain a valid patch option. Patches were: " + draftPatches.getOptions());

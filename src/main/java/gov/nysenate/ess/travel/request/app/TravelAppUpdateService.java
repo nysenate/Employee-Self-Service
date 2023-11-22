@@ -88,27 +88,15 @@ public class TravelAppUpdateService {
         return amd;
     }
 
-    /**
-     * Returns a new Amendment with the provided route calculated and set on the returned amendment.
-     * This also calculates the MealPerDiems and LodgingPerDiems based on the route and sets them
-     * on the returned amendment.
-     * <p>
-     * Use this once both outbound and return legs have been added to the route so that
-     * mileage, per diems, etc can be calculated.
-     *
-     * @return A new Amendment with the full calculated Route added to it.
-     */
-    public Amendment updateRoute(Draft draft) { //Amendment amd, Route route) {
-        Route fullRoute = routeService.createRoute(draft.getAmendment().route());
+    public void updateRoute(Draft draft) {
+        Route fullRoute = routeService.createRoute(draft.getTravelApplication().getRoute());
         MileagePerDiems mileagePerDiems = createMileagePerDiems(fullRoute);
         MealPerDiems mealPerDiems = createMealPerDiems(fullRoute, draft.getTraveler());
         LodgingPerDiems lodgingPerDiems = createLodgingPerDiems(fullRoute);
-        return new Amendment.Builder(draft.getAmendment())
-                .withRoute(fullRoute)
-                .withMealPerDiems(mealPerDiems)
-                .withLodgingPerDiems(lodgingPerDiems)
-                .withMileagePerDiems(mileagePerDiems)
-                .build();
+        draft.getTravelApplication().setRoute(fullRoute);
+        draft.getTravelApplication().setMealPerDiems(mealPerDiems);
+                draft.getTravelApplication().setMileagePerDiems(mileagePerDiems);
+                draft.getTravelApplication().setLodgingPerDiems(lodgingPerDiems);
     }
 
     private MileagePerDiems createMileagePerDiems(Route route) {
@@ -238,18 +226,11 @@ public class TravelAppUpdateService {
      * This also creates and saves an ApplicationReview.
      */
     public TravelApplication submitTravelApplication(Draft draft, Employee submitter) {
-        Amendment amd = new Amendment.Builder(draft.getAmendment())
-                .withAmendmentId(0)
-                .withCreatedBy(submitter)
-                .withCreatedDateTime(LocalDateTime.now())
-                .build();
+        TravelApplication app = draft.getTravelApplication();
+        app.setCreatedBy(submitter);
+        app.setTravelerDeptHeadEmpId(draft.getTraveler().getDeptHeadId());
+        app.setStatus(new TravelApplicationStatus(getApprovalStatus(app.getTraveler())));
 
-        TravelApplication app = new TravelApplication(
-                draft.getTraveler(),
-                amd,
-                draft.getTraveler().getDeptHeadId(),
-                getApprovalStatus(draft.getTraveler())
-        );
         appService.saveApplication(app);
 
         ApplicationReview appReview = appReviewService.createApplicationReview(app);

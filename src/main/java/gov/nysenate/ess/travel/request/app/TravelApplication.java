@@ -41,13 +41,17 @@ public class TravelApplication {
     private TravelApplicationStatus status;
     protected SortedSet<Amendment> amendments;
 
+
+    public TravelApplication() {
+        this.amendments = new TreeSet<>(amendmentComparator);
+    }
+
     public TravelApplication(Employee traveler, Amendment amendment, int travelerDeptHeadEmpId, AppStatus appStatus) {
         this(0, traveler, travelerDeptHeadEmpId, new TravelApplicationStatus(appStatus), Lists.newArrayList(amendment));
     }
 
     public TravelApplication(int id, Employee traveler, int travelerDeptHeadEmpId,
                              TravelApplicationStatus status, Collection<Amendment> amendments) {
-        Preconditions.checkArgument(!amendments.isEmpty());
         this.appId = id;
         this.traveler = Preconditions.checkNotNull(traveler, "Travel Application requires a non null traveler.");
         this.travelerDeptHeadEmpId = travelerDeptHeadEmpId;
@@ -159,6 +163,10 @@ public class TravelApplication {
 
     public Employee getTraveler() {
         return traveler;
+    }
+
+    public void setTravelerDeptHeadEmpId(int travelerDeptHeadEmpId) {
+        this.travelerDeptHeadEmpId = travelerDeptHeadEmpId;
     }
 
     public int getTravelerDeptHeadEmpId() {

@@ -2,31 +2,24 @@ package gov.nysenate.ess.travel.request.draft;
 
 import gov.nysenate.ess.travel.employee.TravelEmployee;
 import gov.nysenate.ess.travel.request.amendment.Amendment;
+import gov.nysenate.ess.travel.request.app.AppStatus;
+import gov.nysenate.ess.travel.request.app.TravelApplication;
 
 import java.time.LocalDateTime;
 
 public class Draft {
 
     private int id;
-    private int userEmpId;
+    private int userEmpId; // The employee id of the user who created this draft.
     private TravelEmployee traveler;
-    private Amendment amendment;
-    private LocalDateTime updatedDateTime;
+    private TravelApplication travelApplication;
+    private LocalDateTime updatedDateTime; // DateTime this was last saved into the database.
 
-    public Draft(TravelEmployee user) {
-        this(0, user.getEmployeeId(), user, new Amendment.Builder().build(), LocalDateTime.now());
-    }
-
-    public Draft(TravelEmployee traveler, Amendment amendment) {
-        this(0, 0, traveler, amendment, LocalDateTime.now());
-    }
-
-    public Draft(int id, int userEmpId, TravelEmployee traveler, Amendment amendment, LocalDateTime updatedDateTime) {
+    public Draft(int id, int userEmpId, TravelEmployee traveler) {
         this.id = id;
         this.userEmpId = userEmpId;
         this.traveler = traveler;
-        this.amendment = amendment;
-        this.updatedDateTime = updatedDateTime;
+        this.travelApplication = new TravelApplication();
     }
 
     public int getId() {
@@ -53,12 +46,12 @@ public class Draft {
         this.traveler = traveler;
     }
 
-    public Amendment getAmendment() {
-        return amendment;
+    public TravelApplication getTravelApplication() {
+        return travelApplication;
     }
 
-    public void setAmendment(Amendment amendment) {
-        this.amendment = amendment;
+    public void setTravelApplication(TravelApplication travelApplication) {
+        this.travelApplication = travelApplication;
     }
 
     public LocalDateTime getUpdatedDateTime() {

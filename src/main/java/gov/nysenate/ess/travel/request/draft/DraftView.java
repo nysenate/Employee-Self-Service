@@ -2,7 +2,9 @@ package gov.nysenate.ess.travel.request.draft;
 
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.travel.api.application.AmendmentView;
+import gov.nysenate.ess.travel.api.application.TravelApplicationView;
 import gov.nysenate.ess.travel.employee.TravelEmployeeView;
+import gov.nysenate.ess.travel.request.app.TravelApplication;
 
 import java.time.LocalDateTime;
 
@@ -13,7 +15,8 @@ public class DraftView implements ViewObject {
     private int id;
     private int userEmpId;
     private TravelEmployeeView traveler;
-    private AmendmentView amendment;
+    private TravelApplicationView travelApplication;
+    private AmendmentView amendment; // TODO delete
     private String updatedDateTime;
 
     public DraftView() {
@@ -23,17 +26,16 @@ public class DraftView implements ViewObject {
         this.id = draft.getId();
         this.userEmpId = draft.getUserEmpId();
         this.traveler = new TravelEmployeeView(draft.getTraveler());
-        this.amendment = new AmendmentView(draft.getAmendment());
+        this.travelApplication = new TravelApplicationView(draft.getTravelApplication());
+        this.amendment = new AmendmentView(draft.getTravelApplication().activeAmendment()); // TODO delete
         this.updatedDateTime = draft.getUpdatedDateTime().format(ISO_DATE_TIME);
     }
 
     public Draft toDraft() {
-        return new Draft(id,
-                userEmpId,
-                traveler.toTravelEmployee(),
-                amendment.toAmendment(),
-                LocalDateTime.parse(updatedDateTime, ISO_DATE_TIME)
-        );
+        Draft d = new Draft(id, userEmpId, traveler.toTravelEmployee());
+        d.setTravelApplication(travelApplication.toTravelApplication());
+        d.setUpdatedDateTime(LocalDateTime.parse(updatedDateTime, ISO_DATE_TIME));
+        return d;
     }
 
     public int getId() {
