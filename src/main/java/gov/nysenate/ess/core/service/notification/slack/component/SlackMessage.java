@@ -10,55 +10,27 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class SlackMessage {
-
+    private final String text;
     private List<SlackAttachment> attach = null;
     private String channel = null;
     private String icon = null;
-
-    private String text = null;
     private String username = null;
     private List<String> mentions = null;
-
-    public SlackMessage() {
-
-    }
 
     public SlackMessage(String text) {
         this.text = text;
     }
 
-    public SlackMessage(String username, String text) {
-        this.username = username;
-        this.text = text;
-    }
-
-    public SlackMessage(String channel, String username, String text) {
-        this.channel = channel;
-        if (username != null) {
-            this.username = username;
-        }
-        this.text = text;
-    }
-
     public SlackMessage(SlackMessage other) {
+        this.text = other.text;
         this.channel = other.channel;
         this.icon = other.icon;
-        this.text = other.text;
         this.username = other.username;
         this.mentions = other.mentions != null ? new ArrayList<>(other.mentions) : null;
         this.attach = other.attach != null ? other.attach.stream()
                 .map(SlackAttachment::new)
                 .collect(Collectors.toList())
                 : null;
-    }
-
-    public SlackMessage addAttachments(SlackAttachment attach) {
-        if (this.attach == null) {
-            this.attach = new ArrayList<>();
-        }
-        this.attach.add(attach);
-
-        return this;
     }
 
     public JsonObject prepare() {
@@ -72,7 +44,6 @@ public class SlackMessage {
         }
 
         if (icon != null) {
-
             if (icon.contains("http")) {
                 slackMessage.addProperty("icon_url", icon);
             } else {
@@ -89,8 +60,8 @@ public class SlackMessage {
         // Allows for '@' mentions
         slackMessage.addProperty("link_names", 1);
 
-        if (attach != null && attach.size() > 0) {
-            slackMessage.add("attachments", this.prepareAttach());
+        if (attach != null && !attach.isEmpty()) {
+            slackMessage.add("attachments", prepareAttach());
         }
 
         return slackMessage;
@@ -98,66 +69,19 @@ public class SlackMessage {
 
     private JsonArray prepareAttach() {
         JsonArray attachs = new JsonArray();
-        for (SlackAttachment attach : this.attach) {
+        for (SlackAttachment attach : attach) {
             attachs.add(attach.toJson());
         }
-
         return attachs;
-    }
-
-    public SlackMessage removeAttachment(Integer index) {
-        if (this.attach != null) {
-            this.attach.remove(index);
-        }
-
-        return this;
-    }
-
-    public SlackMessage setAttachments(ArrayList<SlackAttachment> attach) {
-        this.attach = attach;
-
-        return this;
     }
 
     public SlackMessage setChannel(String channel) {
         this.channel = channel;
-
-        return this;
-    }
-
-    // http://www.emoji-cheat-sheet.com/
-    public SlackMessage setIcon(String icon) {
-        this.icon = icon;
-
-        return this;
-    }
-
-    public SlackMessage setText(String message) {
-        this.text = message;
-
-        return this;
-    }
-
-    public SlackMessage setUsername(String username) {
-        this.username = username;
-
         return this;
     }
 
     public SlackMessage setMentions(Collection<String> mentions) {
         this.mentions = mentions == null ? null : new ArrayList<>(mentions);
-
-        return this;
-    }
-
-    public SlackMessage addMention(String mention) {
-        if (StringUtils.isNotBlank(mention)) {
-            if (mentions == null) {
-                mentions = new ArrayList<>();
-            }
-            mentions.add(mention);
-        }
-
         return this;
     }
 
