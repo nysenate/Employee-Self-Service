@@ -270,8 +270,8 @@ public class BaseRestApiCtrl
     protected LimitOffset getLimitOffset(WebRequest webRequest, int defaultLimit) {
         int limit = defaultLimit;
         int offset = 0;
-        if (webRequest.getParameter("limit") != null) {
-            String limitStr = webRequest.getParameter("limit");
+        String limitStr = webRequest.getParameter("limit");
+        if (limitStr != null) {
             if (limitStr.equalsIgnoreCase("all")) {
                 limit = 0;
             }

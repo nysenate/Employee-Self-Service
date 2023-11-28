@@ -113,8 +113,7 @@ public class AllowedDestinationServiceTest {
 
     @Test
     public void workLocationNull_notAllowed() {
-        Location workLoc = null;
-        employee.setWorkLocation(workLoc);
+        employee.setWorkLocation(null);
 
         Set<Location> actualDestinations = adService.allowedDestinationsFor(employee,
                 Sets.newHashSet(randomLocation),

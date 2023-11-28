@@ -91,8 +91,8 @@ public class EmpTransactionRestApiCtrl extends BaseRestApiCtrl
         LocalDate localDate = (date != null) ? parseISODate(date, "date") : LocalDate.now();
         Map<String, EmpTransItemView> itemMap = new HashMap<>();
         transactionService.getTransHistory(empId).getRecordSnapshots()
-            .floorEntry(localDate).getValue().entrySet()
-                .forEach(e -> itemMap.put(e.getKey(), new EmpTransItemView(e.getKey(), e.getValue())));
+                .floorEntry(localDate).getValue().forEach(
+                        (key, value) -> itemMap.put(key, new EmpTransItemView(key, value)));
         return new ViewObjectResponse<>(MapView.of(itemMap), "snapshot");
     }
 

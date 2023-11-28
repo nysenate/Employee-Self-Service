@@ -14,7 +14,6 @@ import static org.junit.Assert.assertEquals;
 
 @Category(UnitTest.class)
 public class AccrualUtilsTest {
-
     @Test
     public void testGetProratePercentage() {
         BigDecimal halfHours = MAX_YTD_HOURS.divide(new BigDecimal(2));
@@ -27,11 +26,11 @@ public class AccrualUtilsTest {
     @Test
     public void testRoundAccrualValue() {
         BigDecimal roundedValue = SICK_VAC_INCREMENT.multiply(new BigDecimal(26));
-        assertEquals(roundedValue, roundSickVacHours(roundedValue));
+        // Must use compareTo() due to potential scale differences
+        assertEquals(0, roundedValue.compareTo(roundSickVacHours(roundedValue)));
         BigDecimal lessThanAccInc = SICK_VAC_INCREMENT.divide(BigDecimal.TEN);
         BigDecimal unRoundedValue = roundedValue.add(lessThanAccInc);
         BigDecimal expectedRound = new BigDecimal("6.75");
-        assertEquals(expectedRound, roundSickVacHours(unRoundedValue));
+        assertEquals(0, expectedRound.compareTo(roundSickVacHours(unRoundedValue)));
     }
-
 }

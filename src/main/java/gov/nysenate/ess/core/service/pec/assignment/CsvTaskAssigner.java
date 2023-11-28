@@ -97,7 +97,7 @@ public class CsvTaskAssigner {
                     logger.info("Creating task for emp " + empId + " for task " + taskId);
                     PersonnelTaskAssignment taskToInsertForEmp =
                             new PersonnelTaskAssignment(
-                                    taskId,empId,updateEmpID, LocalDateTime.now(),false, active, LocalDateTime.now(), null);
+                                    taskId,empId,updateEmpID, LocalDateTime.now(),false, true, LocalDateTime.now(), null);
 
                     personnelTaskAssignmentDao.updateAssignment(taskToInsertForEmp);
                 }

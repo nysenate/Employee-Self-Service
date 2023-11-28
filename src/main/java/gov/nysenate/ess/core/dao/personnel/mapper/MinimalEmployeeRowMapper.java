@@ -7,6 +7,7 @@ import gov.nysenate.ess.core.model.personnel.Gender;
 import gov.nysenate.ess.core.model.personnel.MaritalStatus;
 import gov.nysenate.ess.core.model.personnel.PersonnelStatus;
 
+import javax.annotation.Nonnull;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Optional;
@@ -21,6 +22,7 @@ public class MinimalEmployeeRowMapper extends BaseRowMapper<Employee> {
     }
 
     @Override
+    @Nonnull
     public Employee mapRow(ResultSet rs, int rowNum) throws SQLException {
         Employee emp = new Employee();
         emp.setEmployeeId(rs.getInt(pfx + "NUXREFEM"));
