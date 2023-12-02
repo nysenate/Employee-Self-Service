@@ -130,7 +130,7 @@
     <commons.lang3.version>3.12.0</commons.lang3.version>
     <commons.validator.version>1.7</commons.validator.version>
     <commons-csv.version>1.8</commons-csv.version>
-    <commons-fileupload.version>1.4</commons-fileupload.version>
+    <commons-fileupload.version>1.5</commons-fileupload.version>
     <c3p0.version>0.9.5.5</c3p0.version>
     <eh-cache.version>2.10.9.2</eh-cache.version>
     <freemarker.version>2.3.31</freemarker.version>
