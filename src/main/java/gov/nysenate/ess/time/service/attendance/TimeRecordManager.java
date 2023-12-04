@@ -13,7 +13,7 @@ public interface TimeRecordManager {
 
     /**
      * Ensure that the given employee has records that cover the given pay periods
-     * ensures that all records covering the pay periods contain correct and up to date employee information
+     * ensures that all records covering the pay periods contain correct and up-to-date employee information
      *
      * @param empId int - employee id
      * @param payPeriods

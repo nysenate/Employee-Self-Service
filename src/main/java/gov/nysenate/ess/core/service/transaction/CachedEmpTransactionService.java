@@ -8,7 +8,7 @@ import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.model.transaction.TransactionHistoryMissingEx;
 import gov.nysenate.ess.core.model.transaction.TransactionHistoryUpdateEvent;
 import gov.nysenate.ess.core.model.transaction.TransactionRecord;
-import gov.nysenate.ess.core.service.cache.EmployeeIdCache;
+import gov.nysenate.ess.core.service.cache.EmployeeCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class CachedEmpTransactionService extends EmployeeIdCache<TransactionHistory>
+public class CachedEmpTransactionService extends EmployeeCache<TransactionHistory>
         implements EmpTransactionService {
     private static final Logger logger = LoggerFactory.getLogger(CachedEmpTransactionService.class);
 

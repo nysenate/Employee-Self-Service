@@ -12,6 +12,9 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * Some common code for classes that cache data for quicker access, where the cache is periodically refreshed.
+ */
 @InheritedService
 public abstract class RefreshedCachedData<K, V> {
     private static final PooledTaskScheduler scheduler = new PooledTaskScheduler();

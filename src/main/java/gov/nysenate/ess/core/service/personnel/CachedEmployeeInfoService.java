@@ -13,13 +13,14 @@ import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.core.model.unit.LocationType;
 import gov.nysenate.ess.core.service.base.LocationService;
-import gov.nysenate.ess.core.service.cache.EmployeeIdCache;
+import gov.nysenate.ess.core.service.cache.EmployeeCache;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.PaginatedList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import java.time.LocalDate;
@@ -31,7 +32,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class CachedEmployeeInfoService extends EmployeeIdCache<Employee>
+public class CachedEmployeeInfoService extends EmployeeCache<Employee>
         implements EmployeeInfoService {
     private static final Logger logger = LoggerFactory.getLogger(CachedEmployeeInfoService.class);
 
@@ -40,6 +41,7 @@ public class CachedEmployeeInfoService extends EmployeeIdCache<Employee>
     private final LocationService locationService;
     private LocalDateTime lastUpdateDateTime;
 
+    @Autowired
     public CachedEmployeeInfoService(EmployeeDao employeeDao,
                                      EmpTransactionService transService,
                                      LocationService locationService) {

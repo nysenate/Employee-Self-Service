@@ -181,7 +181,7 @@ public class EssTimeRecordManager implements TimeRecordManager
     /* --- Internal Methods --- */
 
     /**
-     * Ensure that the employee has up to date records that cover all given pay periods
+     * Ensure that the employee has up-to-date records that cover all given pay periods
      * Existing records are split/modified as needed to ensure correctness
      * If createTempRecords is false, then records will only be created for periods with annual pay work days
      */

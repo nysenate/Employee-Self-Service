@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import java.lang.annotation.*;
 
 /**
- * Marks a class whose subclasses are all components.
+ * Marks a class whose subclasses are all services.
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

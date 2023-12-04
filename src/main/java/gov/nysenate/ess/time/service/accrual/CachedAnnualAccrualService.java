@@ -2,7 +2,7 @@ package gov.nysenate.ess.time.service.accrual;
 
 import com.google.common.collect.ImmutableSortedMap;
 import gov.nysenate.ess.core.model.cache.CacheType;
-import gov.nysenate.ess.core.service.cache.EmployeeIdCache;
+import gov.nysenate.ess.core.service.cache.EmployeeCache;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.time.dao.accrual.AccrualDao;
 import gov.nysenate.ess.time.model.accrual.AnnualAccSummary;
@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.TreeMap;
 
-class CachedAnnualAccrualService extends EmployeeIdCache<CachedAnnualAccrualService.AnnualAccCacheTree> {
+class CachedAnnualAccrualService extends EmployeeCache<CachedAnnualAccrualService.AnnualAccCacheTree> {
     private static final Logger logger = LoggerFactory.getLogger(CachedAnnualAccrualService.class);
     private final AccrualDao accrualDao;
     private LocalDateTime lastUpdateDateTime;
