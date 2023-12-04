@@ -103,7 +103,7 @@ public class CachedTimeRecordService
         TimeRecordCacheCollection cachedRecs = cache.get(empId);
         if (cachedRecs == null) {
             List<TimeRecord> records = timeRecordDao.getActiveRecords(empId);
-            cachedRecs = new TimeRecordCacheCollection(empId, records);
+            cachedRecs = new TimeRecordCacheCollection(records);
             cache.put(empId, cachedRecs);
         }
         // Initialize time entries before returning records

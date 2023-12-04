@@ -308,9 +308,6 @@ pec.everfi.client.secret =
 
 
 # --- PEC Toggle Config --------------------------------------------------
-#Toggle for the bad everfi email report
-pec.everfi.bad.email.report.enabled = false
-
 #If enabled, the cron will automatically update the DB with new ethics live codes and email the admins
 pec.ethics-code.autogen = false
 

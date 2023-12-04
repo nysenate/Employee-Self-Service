@@ -12,16 +12,10 @@ import static java.util.stream.Collectors.toList;
 
 /** Helper class to store a collection of time records in a cache. */
 class TimeRecordCacheCollection {
-    private final int empId;
     private final Map<BigInteger, TimeRecord> cachedTimeRecords = new LinkedHashMap<>();
 
-    public TimeRecordCacheCollection(int empId, Collection<TimeRecord> cachedTimeRecords) {
-        this.empId = empId;
+    public TimeRecordCacheCollection(Collection<TimeRecord> cachedTimeRecords) {
         cachedTimeRecords.forEach(this::update);
-    }
-
-    public int getEmpId() {
-        return empId;
     }
 
     public List<TimeRecord> getTimeRecords() {
