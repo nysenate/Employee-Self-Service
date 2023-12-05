@@ -2,7 +2,6 @@ package gov.nysenate.ess.time.model.accrual;
 
 import gov.nysenate.ess.core.model.period.PayPeriod;
 
-import javax.xml.bind.annotation.XmlRootElement;
 import java.math.BigDecimal;
 
 /**
@@ -22,7 +21,8 @@ public class AccrualsAvailable {
     private BigDecimal biWeekHrsExpected;
 
     public AccrualsAvailable(AccrualSummary summary, PayPeriod period,
-                             BigDecimal serviceYtdExpected, BigDecimal biWeekHrsExpected) {
+                             BigDecimal serviceYtdExpected, BigDecimal biWeekHrsExpected,
+                             BigDecimal sickHoursDonated) {
         this.empId = summary.getEmpId();
         this.payPeriod = period;
 
@@ -36,7 +36,8 @@ public class AccrualsAvailable {
         this.sickAvailable = summary.getEmpHoursBanked()
                 .add(summary.getEmpHoursAccrued())
                 .subtract(summary.getEmpHoursUsed())
-                .subtract(summary.getFamHoursUsed());
+                .subtract(summary.getFamHoursUsed())
+                .subtract(sickHoursDonated);
 
         this.serviceYtdExpected = serviceYtdExpected;
         this.serviceYtd = summary.getTotalHoursUsed();

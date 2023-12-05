@@ -177,6 +177,7 @@ function accrualProjectionDirective($timeout, $rootScope, appProps, AccrualHisto
             $scope.isVacValid = isVacValid;
             $scope.isSickEmpValid = isSickEmpValid;
             $scope.isSickFamValid = isSickFamValid;
+            $scope.isSickDonationValid = isSickDonationValid;
 
             /* --- Internal Methods --- */
 
@@ -204,7 +205,7 @@ function accrualProjectionDirective($timeout, $rootScope, appProps, AccrualHisto
             }
 
             /** Indicates delta fields that are used for input, used to init projection */
-            var deltaFields = ['biweekPersonalUsed', 'biweekVacationUsed', 'biweekSickEmpUsed', 'biweekSickFamUsed'];
+            var deltaFields = ['biweekPersonalUsed', 'biweekVacationUsed', 'biweekSickEmpUsed', 'biweekSickFamUsed', "biweekSickDonated"];
 
             /**
              * Initialize the given projection for display
@@ -280,7 +281,7 @@ function accrualProjectionDirective($timeout, $rootScope, appProps, AccrualHisto
              * Get the initial accrual state based on the base record,
              * or set everything to 0 if no base record exists
              * @param baseRec
-             * @returns {{per: (number), vac: (number), sickEmp: (number), sickFam: (number)}}
+             * @returns {{per: (number), vac: (number), sickEmp: (number), sickFam: (number), sickDon: (number)}}
              */
             function getInitialAccState (baseRec) {
                 baseRec = baseRec || {};
@@ -289,6 +290,7 @@ function accrualProjectionDirective($timeout, $rootScope, appProps, AccrualHisto
                     vac: baseRec.vacationUsed || 0,
                     sickEmp: baseRec.sickEmpUsed || 0,
                     sickFam: baseRec.sickFamUsed || 0,
+                    sickDon: baseRec.sickDonated || 0,
                     validation: getCleanValidation()
                 }
             }
@@ -306,7 +308,7 @@ function accrualProjectionDirective($timeout, $rootScope, appProps, AccrualHisto
                 record.vacationBanked = Math.min(lastRecord.vacationAvailable, maxVacationBanked);
                 record.sickBanked = Math.min(lastRecord.sickAvailable, maxSickBanked);
 
-                accState.per = accState.vac = accState.sickEmp = accState.sickFam = 0;
+                accState.per = accState.vac = accState.sickEmp = accState.sickFam = accState.sickDon = 0;
             }
 
             /**
@@ -319,6 +321,7 @@ function accrualProjectionDirective($timeout, $rootScope, appProps, AccrualHisto
                 accState.vac += rec.biweekVacationUsed || 0;
                 accState.sickEmp += rec.biweekSickEmpUsed || 0;
                 accState.sickFam += rec.biweekSickFamUsed || 0;
+                accState.sickDon += rec.biweekSickDonated || 0;
             }
 
             /**
@@ -331,6 +334,7 @@ function accrualProjectionDirective($timeout, $rootScope, appProps, AccrualHisto
                 rec.vacationUsed =  accState.vac;
                 rec.sickEmpUsed = accState.sickEmp;
                 rec.sickFamUsed = accState.sickFam;
+                rec.sickDonated = accState.sickDon;
                 rec.holidayUsed = rec.holidayUsed || 0;
             }
 
@@ -341,7 +345,7 @@ function accrualProjectionDirective($timeout, $rootScope, appProps, AccrualHisto
             function calculateAvailableHours (rec) {
                 rec.personalAvailable = rec.personalAccruedYtd - rec.personalUsed;
                 rec.vacationAvailable = rec.vacationAccruedYtd + rec.vacationBanked - rec.vacationUsed;
-                rec.sickAvailable = rec.sickAccruedYtd + rec.sickBanked - rec.sickEmpUsed - rec.sickFamUsed;
+                rec.sickAvailable = rec.sickAccruedYtd + rec.sickBanked - rec.sickEmpUsed - rec.sickFamUsed - rec.sickDonated;
             }
 
             /**
@@ -356,7 +360,7 @@ function accrualProjectionDirective($timeout, $rootScope, appProps, AccrualHisto
 
                 validation.per = validation.per && isPerValid(record);
                 validation.vac = validation.vac && isVacValid(record);
-                validation.sick = validation.sick && isSickEmpValid(record) && isSickFamValid(record);
+                validation.sick = validation.sick && isSickEmpValid(record) && isSickFamValid(record) && isSickDonationValid(record);
 
                 // Store a snapshot of the running validation to this record
                 record.validation = angular.copy(validation);
@@ -381,6 +385,10 @@ function accrualProjectionDirective($timeout, $rootScope, appProps, AccrualHisto
 
             function isSickFamValid(record) {
                 return isValidValue(record.biweekSickFamUsed, record.sickAvailable);
+            }
+
+            function isSickDonationValid(record) {
+                return isValidValue(record.biweekSickDonated, record.sickAvailable)
             }
 
             /**

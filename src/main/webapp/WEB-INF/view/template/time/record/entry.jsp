@@ -103,7 +103,7 @@
          ng-if="state.annualEntries && state.tempEntries">
       <p>
         There was a change in pay type during the time covered by this record.<br>
-        Record days have been split into two seperate entry tables, one for Regular/Special Annual pay, another for
+        Record days have been split into two separate entry tables, one for Regular/Special Annual pay, another for
         Temporary pay
       </p>
     </div>
@@ -133,10 +133,14 @@
             <li ng-show="errorTypes.raSa.notEnoughPersonalTime">Personal hours recorded exceeds hours available.</li>
             <li ng-show="errorTypes.raSa.notEnoughSickTime">Sick hours recorded exceeds hours available.</li>
             <li ng-show="errorTypes.raSa.noMiscTypeGiven">A Misc type must be given when using Miscellaneous hours.</li>
-            <li ng-show="errorTypes.raSa.noMiscHoursGiven">Miscellaneous hours must be present when a Misc type is
-              selected.
+            <li ng-show="errorTypes.raSa.noMiscHoursGiven">
+              Miscellaneous hours must be present when a Misc type is selected.
             </li>
             <li ng-show="errorTypes.raSa.halfHourIncrements">Hours must be in increments of 0.5</li>
+            <li ng-show="errorTypes.raSa.notEnoughMiscTime" ng-repeat="(name, data) in state.miscLeaveUsageErrors">
+              Your total of {{data.hoursUsed}} {{name}} hours
+              exceeds the limit of {{data.grantInfo.hoursRemaining}} for this pay period.
+            </li>
           </ul>
         </div>
         <table class="ess-table time-record-entry-table" id="ra-sa-time-record-table"

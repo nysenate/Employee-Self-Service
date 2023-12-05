@@ -29,16 +29,21 @@
         <div ng-hide="state.assignment.completed">
           <h2>Training Instructions</h2>
           <p>
+            Existing employees must attend a LIVE in-person or online ethics training within the calendar year.
             New employees must attend a LIVE in-person or online ethics training within 90 days of their employment (pursuant to Chapter 56 of the Laws of 2022).
+            Trainings will be held in Albany for employees who can attend in-person, and also streamed live online at the same time.
+            (Albany-based employees are highly encouraged to participate in the in-person training)
+          </p>
+          <p>
             More details on dates and times for in-person training and live broadcasts can be found at:
           </p>
-          <a ng-href="{{state.assignment.task.getCourseUrl()}}" target="_blank">https://my.nysenate.gov/department/personnel/training</a>
+          <a ng-href="{{state.assignment.task.getCourseUrl()}}" target="_blank">LINK TO COURSE URL</a>
 
           <hr style="margin-top: 30px; margin-bottom: 30px; margin-left: 80px; margin-right: 80px"/>
 
           <h2>Code Submission</h2>
           <p>
-            Once you have completed the course, enter the codes below to confirm your completion.
+            Once you have completed the course, enter the codes from the presenters below to confirm your completion.
           </p>
 
           <div class="content-info" ng-show="state.request.code">

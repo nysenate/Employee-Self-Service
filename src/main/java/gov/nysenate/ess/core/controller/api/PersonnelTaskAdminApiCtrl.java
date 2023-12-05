@@ -18,8 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 import java.util.stream.Collectors;
 
-import static gov.nysenate.ess.core.model.auth.SimpleEssPermission.ADMIN;
-import static gov.nysenate.ess.core.model.auth.SimpleEssPermission.RUN_PERSONNEL_TASK_ASSIGNER;
+import static gov.nysenate.ess.core.model.auth.SimpleEssPermission.*;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
@@ -109,7 +108,7 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping(value = "/scheduledInviteEmails", method = GET)
     public ListViewResponse<EmployeeEmailView> getScheduledInviteEmails() {
-        checkPermission(RUN_PERSONNEL_TASK_ASSIGNER.getPermission());
+        checkHasPermission(COMPLIANCE_REPORT_GENERATION.getPermission(), ADMIN.getPermission());
         var assignableTasks = taskAssigner.assignTasks(false);
         return ListViewResponse.of(pecNotificationService.getInviteEmails(assignableTasks).stream()
                 .map(EmployeeEmailView::new).collect(Collectors.toList()));
@@ -125,7 +124,7 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping(value = "/scheduledReminderEmails", method = GET)
     public ListViewResponse<EmployeeEmailView> getScheduledReminderEmails() {
-        checkPermission(RUN_PERSONNEL_TASK_ASSIGNER.getPermission());
+        checkHasPermission(COMPLIANCE_REPORT_GENERATION.getPermission(), ADMIN.getPermission());
         return ListViewResponse.of(pecNotificationService.getReminderEmails(false)
                 .stream().map(EmployeeEmailView::new).collect(Collectors.toList()));
     }
