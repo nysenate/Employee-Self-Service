@@ -256,10 +256,16 @@ public class EssAccrualComputeService implements AccrualComputeService
 
         // Compute accruals for each gap period
         for (PayPeriod period : gapPeriods) {
-            computeGapPeriodAccruals(period, accrualState, empTrans,
-                    timeRecords, periodUsages, accrualAllowedDates, expectedHourDates);
 
+            boolean countRemainingPeriod = false;
             if (remainingPeriods.contains(period)) {
+                countRemainingPeriod = true;
+            }
+
+            computeGapPeriodAccruals(period, accrualState, empTrans,
+                    timeRecords, periodUsages, accrualAllowedDates, expectedHourDates, countRemainingPeriod);
+
+            if (countRemainingPeriod) {
                 PeriodAccSummary periodAccSummary = accrualState.toPeriodAccrualSummary(refPeriod, period);
                 gapAccruals.add(periodAccSummary);
             }
@@ -450,7 +456,8 @@ public class EssAccrualComputeService implements AccrualComputeService
     private void computeGapPeriodAccruals(PayPeriod gapPeriod, AccrualState accrualState, TransactionHistory transHistory,
                                           List<TimeRecord> timeRecords, TreeMap<PayPeriod, PeriodAccUsage> periodUsages,
                                           RangeSet<LocalDate> accrualAllowedDates,
-                                          RangeSet<LocalDate> expectedHoursDates) {
+                                          RangeSet<LocalDate> expectedHoursDates,
+                                          boolean countRemainingPeriod) {
         Range<LocalDate> gapPeriodRange = gapPeriod.getDateRange();
 
         TreeMap<LocalDate, PersonnelStatus> statusTreeMap = transHistory.getEffectivePersonnelStatus(gapPeriodRange);
@@ -514,7 +521,9 @@ public class EssAccrualComputeService implements AccrualComputeService
 
         // As long as this is a valid accrual period, increment the accruals.
         if (!gapPeriod.isEndOfYearSplit()) {
-            accrualState.incrementPayPeriodCount();
+            if (countRemainingPeriod) {
+                accrualState.incrementPayPeriodCount();
+            }
             accrualState.computeRates();
             accrualState.incrementAccrualsEarned();
         }
