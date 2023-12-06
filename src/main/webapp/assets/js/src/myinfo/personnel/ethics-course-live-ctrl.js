@@ -1,4 +1,4 @@
-function () {
+(function () {
     angular.module('essMyInfo')
         .controller('EthicsCourseLiveCtrl', ['$scope', '$routeParams', '$location', 'appProps', 'modals','TaskUtils', 'PECEthicsCodeApi', EthicsCourseLiveCtrl]);
 
@@ -24,7 +24,7 @@ function () {
 
 
         //Placeholder Codes added now that the ethics_code table will need to accommodate multiple entries
-        let tempCodesEntries = [
+        var tempCodesEntries = [
             {
                 "videoId": 2,
                 "sequenceNo": 1,
