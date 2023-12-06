@@ -10,6 +10,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -59,12 +60,16 @@ public class PersonnelCodeGenerationService {
         boolean isFirstQuarter = isFirstQuarterOfTheYear();
         String code1 = createCode();
         String code2 = createCode();
+        LocalDateTime startDate=generateEthicsStartDate();
+        LocalDateTime endDate=generateEthicsEndDate();
+
+
 
         for (PersonnelTask task : ethicsLiveTasks) {
             int ethicsCodeID = personnelTaskDao.getEthicsCodeId(task.getTaskId());
-            personnelTaskDao.updateEthicsCode(code1, ethicsCodeID, 1);
-            personnelTaskDao.updateEthicsCode(code2, ethicsCodeID, 2);
-            pecNotificationService.sendCodeEmail(pecCodeAdminEmails, code1, code2, task);
+            personnelTaskDao.insertEthicsCode(ethicsCodeID, 1, "First Code", code1, startDate, endDate);
+            personnelTaskDao.insertEthicsCode(ethicsCodeID, 2, "Second Code",code2, startDate, endDate);
+            pecNotificationService.sendCodeEmail(pecCodeAdminEmails, code1, code2, task, startDate.toString(), endDate.toString());
             // Different codes per task
             if (!isFirstQuarter) {
                 code1 = createCode();
@@ -85,6 +90,40 @@ public class PersonnelCodeGenerationService {
     public static String createCode() {
         return new Random().ints(6, 0, charList.size()).boxed()
                 .map(i -> String.valueOf(charList.get(i))).collect(Collectors.joining());
+    }
+
+    public static LocalDateTime generateEthicsStartDate(){
+        LocalDate now = LocalDate.now();
+        LocalDateTime output = null;
+        if(now.getDayOfMonth()>=28){
+            output = LocalDateTime.of(now.getYear(), now.getMonthValue(), 28, 0, 0, 0);
+            return output;
+        }
+        else if(now.getDayOfMonth()<28&&now.getMonthValue()>1){
+            output = LocalDateTime.of(now.getYear(), now.getMonthValue()-1, 28, 0, 0 ,0);
+            return output;
+        }
+        else{
+            output = LocalDateTime.of(now.getYear()-1, 12, 28, 0, 0, 0);
+            return output;
+        }
+    }
+
+    public static LocalDateTime generateEthicsEndDate(){
+        LocalDate now = LocalDate.now();
+        LocalDateTime output = null;
+        if(now.getDayOfMonth()>=28){
+            output = LocalDateTime.of(now.getYear(), now.getMonthValue()+1, 28, 0,0,0);
+            return output;
+        }
+        else if(now.getDayOfMonth()<28&&now.getMonthValue()>1){
+            output = LocalDateTime.of(now.getYear(), now.getMonthValue(), 28, 0, 0, 0 );
+            return output;
+        }
+        else{
+            output = LocalDateTime.of(now.getYear()+1, 01, 28, 0, 0, 0);
+            return output;
+        }
     }
 
     private static boolean isFirstQuarterOfTheYear() {

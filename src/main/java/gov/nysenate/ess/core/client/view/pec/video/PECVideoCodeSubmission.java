@@ -11,6 +11,8 @@ public class PECVideoCodeSubmission {
     private int taskId;
     private List<String> codes;
 
+    private String trainingDate;
+
     private PECVideoCodeSubmission() {}
 
     public int getEmpId() {
@@ -24,4 +26,7 @@ public class PECVideoCodeSubmission {
     public List<String> getCodes() {
         return codes;
     }
+
+    public String getTrainingDate(){return trainingDate;}
+
 }
