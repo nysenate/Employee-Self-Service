@@ -2,102 +2,73 @@ package gov.nysenate.ess.travel.request.attachment;
 
 import gov.nysenate.ess.core.dao.base.*;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
 @Repository
 public class SqlAttachmentDao extends SqlBaseDao {
 
-    public void saveAttachment(Attachment attachment) {
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("attachmentId", attachment.getAttachmentId())
-                .addValue("originalFilename", attachment.getOriginalName())
-                .addValue("contentType", attachment.getContentType());
-        localNamedJdbc.update(SqlAttachmentQuery.INSERT_ATTACHMENTS.getSql(schemaMap()), params);
-    }
-
-    public void saveAttachments(List<Attachment> attachments) {
-        for (Attachment attachment : attachments) {
-            saveAttachment(attachment);
-        }
-    }
-
-    public List<Attachment> selectAttachments(int amendmentId) {
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("amendmentId", amendmentId);
+    public List<Attachment> selectAttachments(int appId) {
+        MapSqlParameterSource params = new MapSqlParameterSource("appId", appId);
         String sql = SqlAttachmentQuery.SELECT_ATTACHMENTS.getSql(schemaMap());
         AttachmentHandler handler = new AttachmentHandler();
         localNamedJdbc.query(sql, params, handler);
         return handler.getResult();
     }
 
-    public Attachment selectAttachment(String filename) {
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("attachmentId", UUID.fromString(filename));
-        String sql = SqlAttachmentQuery.SELECT_ATTACHMENT.getSql(schemaMap());
-        return localNamedJdbc.queryForObject(sql, params, new AttachmentMapper());
+    public void updateAttachments(Collection<Attachment> attachments, int appId) {
+        deleteAttachments(appId);
+        insertAttachments(attachments, appId);
     }
 
-    /**
-     * Saves a list of attachments to an Amendment.
-     * @param attachments
-     * @param amendmentId
-     */
-    public void saveAmendmentAttachments(List<Attachment> attachments, int amendmentId) {
+    private void deleteAttachments(int appId) {
+       MapSqlParameterSource params = new MapSqlParameterSource("appId", appId);
+       String sql = SqlAttachmentQuery.DELETE_ATTACHMENTS.getSql(schemaMap());
+       localNamedJdbc.update(sql, params);
+    }
+
+    private void insertAttachments(Collection<Attachment> attachments, int appId) {
+        List<SqlParameterSource> paramList = new ArrayList<>();
         for (Attachment attachment : attachments) {
             MapSqlParameterSource params = new MapSqlParameterSource()
-                    .addValue("amendmentId", amendmentId)
-                    .addValue("attachmentId", attachment.getAttachmentId());
-            localNamedJdbc.update(SqlAttachmentQuery.INSERT_AMENDMENT_ATTACHMENTS.getSql(schemaMap()), params);
+                    .addValue("appId", appId)
+                    .addValue("attachmentId", attachment.getAttachmentId())
+                    .addValue("originalFilename", attachment.getOriginalName())
+                    .addValue("contentType", attachment.getContentType());
+            paramList.add(params);
         }
+        String sql = SqlAttachmentQuery.INSERT_ATTACHMENTS.getSql(schemaMap());
+        SqlParameterSource[] batchParams = new SqlParameterSource[paramList.size()];
+        batchParams = paramList.toArray(batchParams);
+        localNamedJdbc.batchUpdate(sql, batchParams);
     }
 
-    public List<Attachment> selectAmendmentAttachments(int amendmentId) {
-        MapSqlParameterSource params = new MapSqlParameterSource("amendmentId", amendmentId);
-        String sql = SqlAttachmentQuery.SELECT_AMENDMENT_ATTACHMENTS.getSql(schemaMap());
-        AttachmentHandler handler = new AttachmentHandler();
-        localNamedJdbc.query(sql, params, handler);
-        return handler.getResult();
-    }
 
     private enum SqlAttachmentQuery implements BasicSqlQuery {
-        INSERT_ATTACHMENTS(
-                "INSERT INTO ${travelSchema}.attachment \n" +
-                        "(attachment_id, original_filename, content_type) \n" +
-                        "VALUES (:attachmentId, :originalFilename, :contentType) \n" +
-                        "ON CONFLICT DO NOTHING"
-        ),
-        SELECT(
-                "SELECT attachment_id, original_filename, content_type \n" +
-                        "FROM ${travelSchema}.attachment \n"
-        ),
-        SELECT_ATTACHMENTS(
-                SELECT.getSql() +
-                        "WHERE amendment_id = :amendmentId"
-        ),
-        SELECT_ATTACHMENT(
-                SELECT.getSql() +
-                        "WHERE attachment_id = :attachmentId"
-        ),
-        INSERT_AMENDMENT_ATTACHMENTS("""
-                INSERT INTO ${travelSchema}.amendment_attachment(amendment_id, attachment_id)
-                VALUES (:amendmentId, :attachmentId)
+        SELECT_ATTACHMENTS("""
+                SELECT *
+                FROM ${travelSchema}.app_attachment
+                WHERE app_id = :appId
                 """
         ),
-        SELECT_AMENDMENT_ATTACHMENTS("""
-                SELECT attachment.attachment_id, original_filename, content_type
-                FROM ${travelSchema}.attachment
-                JOIN ${travelSchema}.amendment_attachment
-                  ON amendment_attachment.attachment_id = attachment.attachment_id
-                WHERE amendment_id = :amendmentId
+        DELETE_ATTACHMENTS("""
+                DELETE FROM ${travelSchema}.app_attachment
+                WHERE app_id = :appId
                 """
-        )
-        ;
+        ),
+        INSERT_ATTACHMENTS("""
+                INSERT INTO ${travelSchema}.app_attachment(app_id, attachment_id, original_filename, content_type)
+                VALUES (:appId, :attachmentId, :originalFilename, :contentType)
+                """
+        ),
+       ;
 
         private String sql;
 

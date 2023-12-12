@@ -36,3 +36,38 @@ ALTER TABLE travel.app_allowance
 CREATE UNIQUE INDEX ON travel.app_allowance(app_id, type);
 
 
+----------------------------
+-- ** Refactor Attachments **
+----------------------------
+
+ALTER TABLE travel.attachment
+    ADD COLUMN app_id int;
+
+-- Initialize app_id column.
+UPDATE travel.attachment
+SET app_id = amendment.app_id
+    FROM travel.amendment
+    INNER JOIN travel.amendment_attachment USING (amendment_id)
+WHERE attachment.attachment_id = amendment_attachment.attachment_id;
+
+DELETE FROM travel.attachment
+WHERE app_id is null;
+
+DROP TABLE IF EXISTS travel.amendment_attachment;
+
+ALTER TABLE travel.attachment
+    RENAME TO app_attachment;
+
+ALTER TABLE travel.app_attachment
+    ADD CONSTRAINT app_attachment_app_app_id_fkey FOREIGN KEY(app_id)
+        REFERENCES travel.app(app_id)
+        ON DELETE CASCADE;
+
+ALTER TABLE travel.app_attachment
+    ALTER COLUMN app_id SET NOT NULL;
+
+CREATE INDEX ON travel.app_attachment(app_id);
+
+
+
+
