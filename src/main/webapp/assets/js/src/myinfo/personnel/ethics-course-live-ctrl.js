@@ -62,11 +62,6 @@
             if (assignment.task.taskType === 'ETHICS_LIVE_COURSE') {
                 $scope.state.assignment = assignment;
                 $scope.state.codes = tempCodesEntries;
-                console.log(assignment.task.codes);
-                //assignment.task.codes=tempCodesEntries;
-                console.log(assignment.task.codes);
-                //console.log(this.tempCodes);
-                //console.log(this.codes);
                 $scope.state.trainingDate = assignment.task.trainingDate;
             } else {
                 $scope.handleErrorResponse(assignment);

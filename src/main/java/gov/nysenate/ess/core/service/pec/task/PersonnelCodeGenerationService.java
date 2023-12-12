@@ -60,8 +60,8 @@ public class PersonnelCodeGenerationService {
         boolean isFirstQuarter = isFirstQuarterOfTheYear();
         String code1 = createCode();
         String code2 = createCode();
-        LocalDateTime startDate=generateEthicsStartDate();
-        LocalDateTime endDate=generateEthicsEndDate();
+        LocalDateTime startDate = generateEthicsStartDate();
+        LocalDateTime endDate = generateEthicsEndDate();
 
 
 

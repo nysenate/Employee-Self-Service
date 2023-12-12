@@ -27,6 +27,6 @@ public class PECVideoCodeSubmission {
         return codes;
     }
 
-    public String getTrainingDate(){return trainingDate;}
+    public String getTrainingDate() {return trainingDate;}
 
 }

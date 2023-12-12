@@ -65,7 +65,7 @@ public class PECCodeApiCtrl extends BaseRestApiCtrl {
         this.ethicsLiveCourseTaskDetailDao = ethicsLiveCourseTaskDetailDao;
         this.personnelCodeGenerationService = personnelCodeGenerationService;
         this.pecNotificationService = pecNotificationService;
-        this.personnelCodeVerificationService=personnelCodeVerificationService;
+        this.personnelCodeVerificationService = personnelCodeVerificationService;
     }
 
     /**
@@ -155,7 +155,6 @@ public class PECCodeApiCtrl extends BaseRestApiCtrl {
         validateCodeFormat(submission.getCodes(), ethicsLiveCourseTask, "codes");
 
         personnelCodeVerificationService.verifyDateRangedEthics(submission.getCodes(),trainingDate);
-        //ethicsLiveCourseTask.verifyCodes(submission.getCodes(), trainingDate);
         int authenticatedEmpId = ShiroUtils.getAuthenticatedEmpId();
         assignedTaskDao.setTaskComplete(submission.getEmpId(), ethicsLiveCourseTask.getTaskId(), authenticatedEmpId);
         pecNotificationService.sendCompletionEmail(submission.getEmpId(), ethicsLiveCourseTask);

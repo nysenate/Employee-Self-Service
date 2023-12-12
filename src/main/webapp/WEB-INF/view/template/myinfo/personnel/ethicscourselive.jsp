@@ -87,7 +87,7 @@
   <div modal-container>
     <modal modal-id="code-submit-success">
       <div confirm-modal rejectable="true" title="Code Submission Complete"
-           confirm-message="Video codes were successfully submitted."
+           confirm-message="Ethics codes were successfully submitted."
            resolve-button="Return to To-Do List" resolve-class="time-neutral-button"
            reject-button="Remain Here" reject-class="time-neutral-button">
       </div>
