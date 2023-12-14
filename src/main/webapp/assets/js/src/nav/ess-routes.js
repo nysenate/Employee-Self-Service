@@ -124,6 +124,10 @@ essApp.config(function ($routeProvider, $locationProvider) {
         templateUrl: ctxPath + '/template/time/accrual/projections'
     });
 
+    $routeProvider.when(ctxPath + '/time/accrual/donation', {
+        templateUrl: ctxPath + '/template/time/accrual/donation'
+    });
+
     $routeProvider.when(ctxPath + '/time/accrual/emphistory', {
         templateUrl: ctxPath + '/template/time/accrual/emp-history'
     });

@@ -43,6 +43,10 @@
               <td>Used YTD (Family)</td>
               <td ng-bind="-accruals.sickFamUsed | number:2"></td>
             </tr>
+            <tr>
+              <td>Donated YTD</td>
+              <td ng-bind="-accruals.sickDonated | number:2"></td>
+            </tr>
             <tr class="total-row">
               <td>Available for Period</td>
               <td ng-bind="accruals.sickAvailable | number:2"></td>
@@ -54,6 +58,10 @@
             <tr>
               <td>Used in Period (Family)</td>
               <td ng-bind="-accruals.biweekSickFamUsed | number:2"></td>
+            </tr>
+            <tr>
+              <td>Donated in Period</td>
+              <td ng-bind="-accruals.biweekSickDonated | number:2"></td>
             </tr>
           </tbody>
         </table>

@@ -25,6 +25,8 @@
         <shiro:hasPermission name="<%= SimpleTimePermission.ACCRUAL_PROJECTIONS.getPermissionString() %>">
             <li class="sub-topic teal"><a href="${ctxPath}/time/accrual/projections">Accrual Projections</a></li>
         </shiro:hasPermission>
+        <%-- TODO: re-enable this tab --%>
+  <%--      <li class="sub-topic teal"><a href="${ctxPath}/time/accrual/donation">Sick Leave Donation</a></li>--%>
     </ul>
   </shiro:hasPermission>
   <shiro:hasPermission name="<%= SimpleTimePermission.MANAGEMENT_PAGES.getPermissionString() %>">

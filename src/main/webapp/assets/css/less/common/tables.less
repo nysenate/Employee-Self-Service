@@ -77,3 +77,33 @@ table.simple-table {
     }
   }
 }
+
+table.donation-history-table {
+  width: 25%;
+  text-align: left;
+  thead {
+    tr {
+      border: 1px solid #000000;
+      border-collapse: collapse;
+      th {
+        padding: 5px;
+        border: 1px solid #000000;
+        border-collapse: collapse;
+      }
+    }
+  }
+  tbody {
+    tr {
+      border: 1px solid #000000;
+      border-collapse: collapse;
+      &:nth-child(odd ) {
+        background: #fafafa;
+      }
+      td {
+        border: 1px solid #000000;
+        border-collapse: collapse;
+        padding: 5px;
+      }
+    }
+  }
+}

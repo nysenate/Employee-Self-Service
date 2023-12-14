@@ -108,7 +108,7 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
      *
      * @return String
      * */
-    @RequestMapping(value = "/personnel/task/generate", method = POST)
+    @RequestMapping(value = "/personnel/task/generate", method = GET)
     @ResponseStatus(value = HttpStatus.OK)
     public SimpleResponse runEverfiImport(HttpServletRequest request,
                                           HttpServletResponse response,
@@ -124,6 +124,9 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
         else if (since.equals("2023")) {
             ldtsince = jan2023;
         }
+        else if (since.equals("90")) {
+            ldtsince = LocalDateTime.now().minusDays(90);
+        }
         else {
             ldtsince = stringToLocalDateTime(since);
         }
@@ -131,7 +134,7 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
         //Contact everfi
         try {
             logger.debug(ldtsince.toString() + ":00.000");
-            everfiRecordService.contactEverfiForUserRecords(ldtsince.toString() + ":00.000");
+            everfiRecordService.contactEverfiForUserRecords(ldtsince.toString());
         }
         catch (Exception e) {
             logger.info("Error contacting Everfi for records", e);

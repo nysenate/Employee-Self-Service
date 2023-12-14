@@ -28,8 +28,6 @@ public class AlertInfoValidationTest {
 
     @Before
     public void setUp() {
-
-
         alertInfoBuilder = AlertInfo.builder()
                 .setEmpId(empId)
                 .setHomePhone(homePhone)
