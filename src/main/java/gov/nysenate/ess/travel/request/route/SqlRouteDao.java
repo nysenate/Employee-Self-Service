@@ -24,22 +24,38 @@ public class SqlRouteDao extends SqlBaseDao implements RouteDao {
 
     @Override
     @Transactional(value = "localTxManager")
-    public void saveRoute(Route route, int amendmentId) {
-        // FIXME leg.to and nextLeg.from should reference same db row.
+    public void saveRoute(Route route, int appId) {
         List<Destination> destinations = route.getAllLegs().stream()
                 .flatMap(leg -> Stream.of(leg.from(), leg.to()))
                 .collect(Collectors.toList());
         destinationDao.insertDestinations(destinations);
 
+        deleteRoute(route, appId);
+        insertRoute(route, appId);
+    }
+
+    private void deleteRoute(Route route, int appId) {
+        MapSqlParameterSource params = new MapSqlParameterSource("appId", appId);
+        String sql = SqlRouteQuery.DELETE_ROUTE.getSql(schemaMap());
+        localNamedJdbc.update(sql, params);
+
+        for (Leg leg : route.getAllLegs()) {
+            params = new MapSqlParameterSource("legId", leg.getId());
+            sql = SqlRouteQuery.DELETE_LEG.getSql(schemaMap());
+            localNamedJdbc.update(sql, params);
+        }
+    }
+
+    private void insertRoute(Route route, int appId) {
         int sequenceNo = 0;
         for (Leg leg : route.getOutboundLegs()) {
             insertLeg(leg, true, sequenceNo);
-            insertIntoJoinTable(leg, amendmentId, route.firstLegQualifiesForBreakfast(), route.lastLegQualifiesForDinner());
+            insertIntoJoinTable(leg, appId, route.firstLegQualifiesForBreakfast(), route.lastLegQualifiesForDinner());
             sequenceNo++;
         }
         for (Leg leg : route.getReturnLegs()) {
             insertLeg(leg, false, sequenceNo);
-            insertIntoJoinTable(leg, amendmentId, route.firstLegQualifiesForBreakfast(), route.lastLegQualifiesForDinner());
+            insertIntoJoinTable(leg, appId, route.firstLegQualifiesForBreakfast(), route.lastLegQualifiesForDinner());
             sequenceNo++;
         }
     }
@@ -49,13 +65,13 @@ public class SqlRouteDao extends SqlBaseDao implements RouteDao {
         String sql = SqlRouteQuery.INSERT_LEG.getSql(schemaMap());
         KeyHolder keyHolder = new GeneratedKeyHolder();
         localNamedJdbc.update(sql, params, keyHolder);
-        leg.setId((Integer) keyHolder.getKeys().get("leg_id"));
+        leg.setId((Integer) keyHolder.getKeys().get("app_route_leg_id"));
     }
 
-    private void insertIntoJoinTable(Leg leg, int amendmentId,
+    private void insertIntoJoinTable(Leg leg, int appId,
                                      boolean firstLegQualifiesForBreakfast, boolean lastLegQualifiesForDinner) {
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("amendmentId", amendmentId)
+                .addValue("appId", appId)
                 .addValue("legId", leg.getId())
                 .addValue("firstLegQualifiesForBreakfast", firstLegQualifiesForBreakfast)
                 .addValue("lastLegQualifiesForDinner", lastLegQualifiesForDinner);
@@ -76,7 +92,7 @@ public class SqlRouteDao extends SqlBaseDao implements RouteDao {
 
     @Override
     public Route selectRoute(int amendmentId) {
-        MapSqlParameterSource params = new MapSqlParameterSource("amendmentId", amendmentId);
+        MapSqlParameterSource params = new MapSqlParameterSource("appId", amendmentId);
         String routeSql = SqlRouteQuery.SELECT_ROUTE.getSql(schemaMap());
         RouteHandler handler = new RouteHandler();
         localNamedJdbc.query(routeSql, params, handler);
@@ -90,27 +106,39 @@ public class SqlRouteDao extends SqlBaseDao implements RouteDao {
     }
 
     private enum SqlRouteQuery implements BasicSqlQuery {
-        INSERT_LEG(
-                "INSERT INTO ${travelSchema}.leg(from_destination_id, to_destination_id, travel_date," +
-                        " method_of_travel, method_of_travel_description, is_outbound, sequence_no) \n" +
-                        " VALUES(:fromDestinationId, :toDestinationId, :travelDate," +
-                        " :methodOfTravel, :methodOfTravelDescription, :isOutbound, :sequenceNo)"
+        DELETE_ROUTE("""
+                DELETE FROM ${travelSchema}.app_route
+                WHERE app_id = :appId
+                """
+        ),
+        DELETE_LEG("""
+                DELETE FROM ${travelSchema}.app_route_leg
+                WHERE app_route_leg_id = :legId
+                """
+        ),
+        INSERT_LEG("""
+                INSERT INTO ${travelSchema}.app_route_leg(from_destination_id, to_destination_id, travel_date,
+                        method_of_travel, method_of_travel_description, is_outbound, sequence_no)
+                        VALUES(:fromDestinationId, :toDestinationId, :travelDate,
+                        :methodOfTravel, :methodOfTravelDescription, :isOutbound, :sequenceNo)
+                """
         ),
         INSERT_JOIN_TABLE("""
-                INSERT INTO ${travelSchema}.amendment_legs(amendment_id, leg_id,
+                INSERT INTO ${travelSchema}.app_route(app_id, app_route_leg_id,
                     first_leg_qualifies_for_breakfast, last_leg_qualifies_for_dinner)
-                VALUES(:amendmentId, :legId, :firstLegQualifiesForBreakfast, :lastLegQualifiesForDinner)
+                VALUES(:appId, :legId, :firstLegQualifiesForBreakfast, :lastLegQualifiesForDinner)
                 """
         ),
         SELECT_ROUTE("""
                 SELECT first_leg_qualifies_for_breakfast, last_leg_qualifies_for_dinner,
-                    leg.leg_id, leg.from_destination_id, leg.to_destination_id, leg.travel_date, leg.method_of_travel,
-                    leg.method_of_travel_description, leg.is_outbound
-                FROM ${travelSchema}.leg
-                    INNER JOIN ${travelSchema}.amendment_legs
-                    ON amendment_legs.leg_id = leg.leg_id
-                WHERE amendment_id = :amendmentId
-                ORDER BY sequence_no ASC\s
+                    app_route_leg.app_route_leg_id, app_route_leg.from_destination_id, app_route_leg.to_destination_id,
+                    app_route_leg.travel_date, app_route_leg.method_of_travel,
+                    app_route_leg.method_of_travel_description, app_route_leg.is_outbound
+                FROM ${travelSchema}.app_route_leg
+                    INNER JOIN ${travelSchema}.app_route
+                    USING (app_route_leg_id)
+                WHERE app_id = :appId
+                ORDER BY sequence_no ASC
                 """
         );
 
@@ -169,7 +197,7 @@ public class SqlRouteDao extends SqlBaseDao implements RouteDao {
         @Override
         public Leg mapRow(ResultSet rs, int rowNum) throws SQLException {
             return new Leg(
-                    rs.getInt("leg_id"),
+                    rs.getInt("app_route_leg_id"),
                     new Destination(rs.getInt("from_destination_id")),
                     new Destination(rs.getInt("to_destination_id")),
                     new ModeOfTransportation(MethodOfTravel.of(rs.getString("method_of_travel")), rs.getString("method_of_travel_description")),

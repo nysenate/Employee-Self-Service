@@ -69,5 +69,71 @@ ALTER TABLE travel.app_attachment
 CREATE INDEX ON travel.app_attachment(app_id);
 
 
+----------------------------
+-- ** Refactor Route/Legs **
+----------------------------
+
+ALTER TABLE travel.amendment_legs
+    RENAME TO app_route;
+
+ALTER TABLE travel.app_route
+    ADD COLUMN app_id int;
+
+UPDATE travel.app_route
+SET app_id = amendment.app_id
+    FROM travel.amendment
+WHERE app_route.amendment_id = amendment.amendment_id;
+
+DELETE FROM travel.app_route
+WHERE app_id is null;
+
+ALTER TABLE travel.app_route
+    ALTER COLUMN app_id SET NOT NULL;
+
+ALTER TABLE travel.app_route
+DROP CONSTRAINT IF EXISTS amendment_legs_amendment_id_fkey;
+
+ALTER TABLE travel.app_route
+DROP COLUMN amendment_id;
+
+ALTER TABLE travel.app_route
+    RENAME COLUMN amendment_legs_id to app_route_id;
+
+ALTER SEQUENCE travel.amendment_legs_amendment_leg_id_seq
+    RENAME TO app_route_id_seq;
+
+ALTER TABLE travel.app_route
+    RENAME CONSTRAINT amendment_legs_leg_id_fkey to app_route_leg_id_fkey;
+
+ALTER TABLE travel.app_route
+    ADD CONSTRAINT app_route_app_app_id_fkey FOREIGN KEY(app_id)
+        REFERENCES travel.app(app_id)
+        ON DELETE CASCADE;
+
+CREATE UNIQUE INDEX ON travel.app_route(app_id, leg_id);
+
+ALTER TABLE travel.app_route
+    RENAME COLUMN leg_id to app_route_leg_id;
+
+-----
+
+ALTER TABLE travel.leg
+    RENAME TO app_route_leg;
+
+ALTER SEQUENCE travel.leg_leg_id_seq
+    RENAME TO app_route_leg_id_seq;
+
+ALTER TABLE travel.app_route_leg
+    RENAME COLUMN leg_id to app_route_leg_id;
+
+-- Remove ON DELETE CASCADE from destination FK.
+ALTER TABLE travel.app_route_leg DROP CONSTRAINT leg_from_destination_id_fkey,
+    ADD CONSTRAINT leg_from_destination_id_fkey FOREIGN
+    KEY (from_destination_id) REFERENCES travel.destination(destination_id);
+
+-- Remove ON DELETE CASCADE from destination FK.
+ALTER TABLE travel.app_route_leg DROP CONSTRAINT leg_to_destination_id_fkey,
+    ADD CONSTRAINT leg_to_destination_id_fkey FOREIGN
+    KEY (from_destination_id) REFERENCES travel.destination(destination_id);
 
 
