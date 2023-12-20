@@ -121,8 +121,8 @@ public class PECNotificationService {
         sendEmail(pecEmailUtils.getEmail(COMPLETION, Optional.empty(), new AssignmentWithTask(empId, task)));
     }
 
-    public void sendCodeEmail(List<String> emails, String code1, String code2, PersonnelTask task) {
-        pecEmailUtils.getEmails(emails, ADMIN_CODES, Optional.of(task), List.of(code1, code2))
+    public void sendCodeEmail(List<String> emails, String code1, String code2, PersonnelTask task, String startDate, String endDate) {
+        pecEmailUtils.getEmails(emails, ADMIN_CODES, Optional.of(task), List.of(code1, code2, startDate, endDate))
                 .forEach(this::sendEmail);
     }
 

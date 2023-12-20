@@ -1,9 +1,12 @@
 package gov.nysenate.ess.core.dao.pec.task;
 
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
+import gov.nysenate.ess.core.model.pec.ethics.DateRangedEthicsCode;
 
 import java.util.HashMap;
 import java.util.List;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * DAO for retrieving {@link PersonnelTask}s
@@ -57,4 +60,10 @@ public interface PersonnelTaskDao {
      * Update the ethics live codes table in the database with new codes
      */
     void updateEthicsCode(String code, int ethicsCodeId, int sequenceNo );
+
+    void updateEthicsCode(String code, int ethicsCodeId, int sequenceNo, String startDate, String endDate);
+
+    void insertEthicsCode(int ethicsCodeId, int sequenceNo, String Label, String code, LocalDateTime StartDate, LocalDateTime endDate);
+
+    List<DateRangedEthicsCode> getEthicsCodes();
 }
