@@ -52,6 +52,7 @@ public class PECCodeApiCtrl extends BaseRestApiCtrl {
     private final PECNotificationService pecNotificationService;
 
     private final PersonnelCodeVerificationService personnelCodeVerificationService;
+
     public PECCodeApiCtrl(PersonnelTaskService personnelTaskService,
                           PersonnelTaskAssignmentDao assignedTaskDao,
                           VideoTaskDetailDao videoTaskDetailDao,
@@ -65,6 +66,7 @@ public class PECCodeApiCtrl extends BaseRestApiCtrl {
         this.ethicsLiveCourseTaskDetailDao = ethicsLiveCourseTaskDetailDao;
         this.personnelCodeGenerationService = personnelCodeGenerationService;
         this.pecNotificationService = pecNotificationService;
+        this.personnelCodeVerificationService = personnelCodeVerificationService;
     }
 
     /**
