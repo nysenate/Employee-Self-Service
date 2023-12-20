@@ -128,8 +128,8 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
 
         //Contact everfi
         try {
-            logger.debug(ldtsince + ":00.000");
-            everfiRecordService.contactEverfiForUserRecords(ldtsince + ":00.000");
+            logger.debug(ldtsince.toString() + ":00.000");
+            everfiRecordService.contactEverfiForUserRecords(ldtsince.toString());
         }
         catch (Exception e) {
             logger.info("Error contacting Everfi for records", e);
@@ -263,7 +263,7 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
     public SimpleResponse changeStatusForEverfiUserWithEmpID(HttpServletRequest request,
                                                         HttpServletResponse response,
                                                         @PathVariable int empid,
-                                                        @PathVariable boolean status) {
+                                                        @PathVariable boolean status) throws Exception {
         checkPermission(ADMIN.getPermission());
         everfiUserService.changeActiveStatusForUserWithEmpID(empid, status);
         return new SimpleResponse(true, "Everfi User Active Status Updated",
@@ -287,7 +287,7 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
     public SimpleResponse changeStatusForEverfiUserWithUUID(HttpServletRequest request,
                                                          HttpServletResponse response,
                                                        @PathVariable String uuid,
-                                                       @PathVariable boolean status) {
+                                                       @PathVariable boolean status) throws Exception {
         checkPermission(ADMIN.getPermission());
         everfiUserService.changeActiveStatusForUserWithUUID(uuid, status);
         return new SimpleResponse(true, "Everfi User Active Status Updated",
@@ -309,7 +309,7 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/inactivate/employees", method = {GET})
     @ResponseStatus(value = HttpStatus.OK)
     public SimpleResponse handleInactivatedEmployeesInEverfi(HttpServletRequest request,
-                                                HttpServletResponse response) {
+                                                HttpServletResponse response) throws Exception {
         checkPermission(ADMIN.getPermission());
         everfiUserService.handleInactivatedEmployeesInEverfi();
         return new SimpleResponse(true, "Updated inactive employees in Everfi",

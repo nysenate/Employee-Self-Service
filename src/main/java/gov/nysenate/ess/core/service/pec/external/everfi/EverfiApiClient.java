@@ -48,6 +48,7 @@ public class EverfiApiClient {
      * @throws IOException If there is an error making the request.
      */
     public String get(String endpoint) throws IOException {
+        authenticate();
         String url = HOST + endpoint;
         HttpUriRequest req = new HttpGet(url);
         return makeRequest(req, null);
@@ -62,6 +63,7 @@ public class EverfiApiClient {
      * @throws IOException If there is an error making the request.
      */
     public String post(String endpoint, String body) throws IOException {
+        authenticate();
         String url = HOST + endpoint;
 
         HttpUriRequest post = new HttpPost(url);
@@ -77,6 +79,7 @@ public class EverfiApiClient {
      * @throws IOException If there is an error making the request.
      */
     public String patch(String endpoint, String body) throws IOException {
+        authenticate();
         String url = HOST + endpoint;
 
         HttpUriRequest patch = new HttpPatch(url);
@@ -84,6 +87,7 @@ public class EverfiApiClient {
     }
 
     private String makeRequest(HttpUriRequest req, String entity) throws IOException {
+
         if (req instanceof HttpPost) {
             ((HttpPost) req).setEntity(new StringEntity(entity));
         }

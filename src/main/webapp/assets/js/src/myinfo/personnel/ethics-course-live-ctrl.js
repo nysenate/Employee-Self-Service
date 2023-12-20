@@ -12,7 +12,9 @@
             assignment: null,
             loading: false,
             codes: [],
+            tempCodes:[],
             incorrectCode: false,
+            trainingDate: null,
 
             request: {
                 assignment: false,
@@ -20,9 +22,26 @@
             }
         };
 
+
+        //Placeholder Codes added now that the ethics_code table will need to accommodate multiple entries
+        var tempCodesEntries = [
+            {
+                "videoId": 2,
+                "sequenceNo": 1,
+                "label": "First Code"
+            },
+            {
+                "videoId": 2,
+                "sequenceNo": 2,
+                "label": "Second Code"
+            }
+        ]
+        console.log(tempCodesEntries);
+
         init();
 
         function init() {
+            console.log($scope.state = angular.copy(initState));
             $scope.state = angular.copy(initState);
             getEthicsCourseLiveAssignment();
         }
@@ -30,6 +49,7 @@
         function getEthicsCourseLiveAssignment() {
             $scope.state.loading = true;
             var empId = appProps.user.employeeId;
+            console.log(taskUtils.getPersonnelTaskAssignment(empId, $scope.state.taskId));
             taskUtils.getPersonnelTaskAssignment(empId, $scope.state.taskId)
                 .then(setAssignment)
                 .finally(function () {
@@ -41,7 +61,8 @@
             console.log(assignment)
             if (assignment.task.taskType === 'ETHICS_LIVE_COURSE') {
                 $scope.state.assignment = assignment;
-                $scope.state.codes = assignment.task.codes;
+                $scope.state.codes = tempCodesEntries;
+                $scope.state.trainingDate = assignment.task.trainingDate;
             } else {
                 $scope.handleErrorResponse(assignment);
             }
@@ -50,6 +71,8 @@
         $scope.submitEthicsCodes = function() {
             // console.log("Submitting ethics codes...")
 
+            var trainingDate =  $scope.state.trainingDate
+            console.log($scope.state);
             var codes = $scope.state.codes
                 .map(function (codeObj) {
                     return codeObj.value;
@@ -58,7 +81,8 @@
             var body = {
                 empId: $scope.state.empId,
                 taskId: $scope.state.taskId,
-                codes: codes
+                codes: codes,
+                trainingDate: trainingDate
             };
             console.log(body)
             $scope.state.request.code = true;
