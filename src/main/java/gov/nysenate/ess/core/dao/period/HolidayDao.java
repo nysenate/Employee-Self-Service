@@ -5,7 +5,6 @@ import gov.nysenate.ess.core.dao.base.BaseDao;
 import gov.nysenate.ess.core.model.period.Holiday;
 import gov.nysenate.ess.core.model.period.HolidayException;
 import gov.nysenate.ess.core.util.SortOrder;
-import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -22,7 +21,7 @@ public interface HolidayDao extends BaseDao
      * @return Holiday
      * @throws HolidayException if a holiday was not found for given date.
      */
-    public Holiday getHoliday(LocalDate date) throws HolidayException;
+    Holiday getHoliday(LocalDate date) throws HolidayException;
 
     /**
      * Retrieves a list of all the non-questionable holidays that occur within the given range.
@@ -31,7 +30,7 @@ public interface HolidayDao extends BaseDao
      * @param dateOrder SortOrder - Order the results by date.
      * @return List<Holiday>
      */
-    public List<Holiday> getHolidays(Range<LocalDate> dateRange, SortOrder dateOrder);
+    List<Holiday> getHolidays(Range<LocalDate> dateRange, SortOrder dateOrder);
 
     /**
      * Retrieves a list of all the holidays that occur between the given dates inclusively in order
@@ -42,5 +41,5 @@ public interface HolidayDao extends BaseDao
      * @param dateOrder SortOrder - Order the results by date.
      * @return List<Holiday>
      */
-    public List<Holiday> getHolidays(Range<LocalDate> dateRange, boolean includeQuestionable, SortOrder dateOrder);
+    List<Holiday> getHolidays(Range<LocalDate> dateRange, boolean includeQuestionable, SortOrder dateOrder);
 }

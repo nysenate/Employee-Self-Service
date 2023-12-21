@@ -16,7 +16,7 @@ public class EssTimeEmployeePermissionFactory implements PermissionFactory {
 
     /** {@inheritDoc} */
     @Override
-    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum> roles) {
+    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum<?>> roles) {
         return ImmutableList.of(new EssTimePermission(employee.getEmployeeId()));
     }
 }

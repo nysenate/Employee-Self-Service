@@ -115,7 +115,7 @@ public class SqlDelegationDao extends SqlBaseDao implements DelegationDao {
                         " WHERE delegate_emp_id = :delegateEmpId"
         );
 
-        private String sql;
+        private final String sql;
 
         SqlDelegateQuery(String sql) {
             this.sql = sql;
@@ -132,7 +132,7 @@ public class SqlDelegationDao extends SqlBaseDao implements DelegationDao {
         }
     }
 
-    private class DelegateRowMapper extends BaseRowMapper<Delegation> {
+    private static class DelegateRowMapper extends BaseRowMapper<Delegation> {
 
         private EmployeeInfoService employeeInfoService;
 

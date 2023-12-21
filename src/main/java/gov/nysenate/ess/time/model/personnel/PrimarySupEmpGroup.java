@@ -12,7 +12,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class PrimarySupEmpGroup {
-
     /** The employee id of the supervisor this group is associated with. */
     protected int supervisorId;
 
@@ -28,8 +27,6 @@ public class PrimarySupEmpGroup {
     protected Multimap<Integer, EmployeeSupInfo> primaryEmployees = HashMultimap.create();
 
     /** --- Constructors --- */
-
-    public PrimarySupEmpGroup() {}
 
     public PrimarySupEmpGroup(PrimarySupEmpGroup supEmpGroup) {
         if (supEmpGroup != null) {
@@ -148,10 +145,6 @@ public class PrimarySupEmpGroup {
 
     public int getSupervisorId() {
         return supervisorId;
-    }
-
-    public void setSupervisorId(int supervisorId) {
-        this.supervisorId = supervisorId;
     }
 
     public LocalDate getEndDate() {

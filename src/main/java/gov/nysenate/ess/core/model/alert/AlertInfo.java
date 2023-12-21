@@ -51,8 +51,7 @@ public class AlertInfo {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof AlertInfo)) return false;
-        AlertInfo that = (AlertInfo) o;
+        if (!(o instanceof AlertInfo that)) return false;
         return empId == that.empId &&
                 mobileOptions == that.mobileOptions &&
                 alternateOptions == that.alternateOptions &&

@@ -7,13 +7,13 @@ import gov.nysenate.ess.core.util.SortOrder;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 @Category(UnitTest.class)
 public class SqlQueryUtilsTest
 {
     @Test
-    public void testWithLimitOffsetClause_Oracle() throws Exception {
+    public void testWithLimitOffsetClause_Oracle() {
         String oracleLimitTemplate =
             "SELECT * FROM (SELECT ROWNUM AS rn, q.* FROM (%s) q)\n" +
             "WHERE rn >= %d AND rn <= %d";
@@ -39,7 +39,7 @@ public class SqlQueryUtilsTest
      * from the 10th item, which means skip the first 9 items.
      */
     @Test
-    public void testWithLimitOffsetClause_POSTGRES() throws Exception {
+    public void testWithLimitOffsetClause_POSTGRES() {
         // Null sql
         String sql = SqlQueryUtils.withLimitOffsetClause(null, LimitOffset.TEN, DbVendor.POSTGRES);
         assertEquals(" LIMIT 10", sql);
@@ -63,7 +63,7 @@ public class SqlQueryUtilsTest
     }
 
     @Test
-    public void testWithOrderByClause() throws Exception {
+    public void testWithOrderByClause() {
         // No order by
         String sql = SqlQueryUtils.withOrderByClause("ABCDEF", new OrderBy());
         assertEquals("ABCDEF", sql);

@@ -7,9 +7,9 @@ import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.client.response.error.ErrorCode;
 import gov.nysenate.ess.core.client.response.error.ErrorResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
-import gov.nysenate.ess.core.dao.unit.LocationDao;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.unit.LocationId;
+import gov.nysenate.ess.core.service.base.LocationService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.util.OrderBy;
 import gov.nysenate.ess.core.util.PaginatedList;
@@ -18,15 +18,13 @@ import gov.nysenate.ess.supply.authorization.permission.RequisitionPermission;
 import gov.nysenate.ess.supply.authorization.permission.SupplyPermission;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.item.view.LineItemView;
-import gov.nysenate.ess.supply.requisition.model.*;
 import gov.nysenate.ess.supply.requisition.exception.ConcurrentRequisitionUpdateException;
+import gov.nysenate.ess.supply.requisition.model.*;
 import gov.nysenate.ess.supply.requisition.service.RequisitionService;
 import gov.nysenate.ess.supply.requisition.view.RequisitionView;
 import gov.nysenate.ess.supply.requisition.view.SubmitRequisitionView;
 import gov.nysenate.ess.supply.socket.RequisitionUpdateEvent;
 import org.apache.shiro.authz.UnauthorizedException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -40,12 +38,16 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/supply/requisitions")
 public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
+    private final RequisitionService requisitionService;
+    private final EmployeeInfoService employeeService;
+    private final LocationService locationService;
 
-    private static final Logger logger = LoggerFactory.getLogger(RequisitionRestApiCtrl.class);
-
-    @Autowired private RequisitionService requisitionService;
-    @Autowired private EmployeeInfoService employeeService;
-    @Autowired private LocationDao locationDao;
+    @Autowired
+    public RequisitionRestApiCtrl(RequisitionService requisitionService, EmployeeInfoService employeeService, LocationService locationService) {
+        this.requisitionService = requisitionService;
+        this.employeeService = employeeService;
+        this.locationService = locationService;
+    }
 
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public BaseResponse submitRequisition(@RequestBody SubmitRequisitionView submitRequisitionView) {
@@ -55,7 +57,7 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
         }
         Requisition requisition = new Requisition.Builder()
                 .withCustomer(employeeService.getEmployee(submitRequisitionView.getCustomerId()))
-                .withDestination(locationDao.getLocation(new LocationId(submitRequisitionView.getDestinationId())))
+                .withDestination(locationService.getLocation(LocationId.ofString(submitRequisitionView.getDestinationId())))
                 .withDeliveryMethod(DeliveryMethod.valueOf(submitRequisitionView.getDeliveryMethod()))
                 .withLineItems(lineItems)
                 .withSpecialInstructions(submitRequisitionView.getSpecialInstructions())
@@ -104,7 +106,7 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
         if (requisition.getStatus() == RequisitionStatus.COMPLETED) {
             checkPermission(SupplyPermission.SUPPLY_REQUISITION_APPROVE.getPermission());
         }
-        if (!requisition.getIssuer().isPresent()) {
+        if (requisition.getIssuer().isEmpty()) {
             requisition = requisition.setIssuer(getModifiedBy());
         }
         requisition = requisition.setModifiedBy(getModifiedBy());

@@ -13,9 +13,8 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class AdminPermissionFactory implements PermissionFactory {
-
     @Override
-    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum> roles) {
+    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum<?>> roles) {
         return roles.contains(EssRole.ADMIN)
                 ? ImmutableList.of(SimpleEssPermission.ADMIN.getPermission())
                 : ImmutableList.of();

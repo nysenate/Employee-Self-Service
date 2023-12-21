@@ -119,7 +119,6 @@ public class EverfiApiClient {
                     // Increment the retry count and sleep.
                     retryCount++;
                     Thread.sleep(getWaitTimeExp(retryCount));
-                    retry = true;
                 } else {
                     logger.info(String.format("Received unknown response from Everfi: '%s %s'",
                             statusCode, EntityUtils.toString(response.getEntity())));

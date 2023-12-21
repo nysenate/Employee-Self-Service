@@ -4,8 +4,6 @@ import gov.nysenate.ess.core.dao.base.BasicSqlQuery;
 import gov.nysenate.ess.core.dao.base.DbVendor;
 
 public enum OracleItemInventoryQuery implements BasicSqlQuery {
-
-
     REC_ORDER_QUERY(
             "SELECT inv.NUXREFCO, inv.AMQTYOHSTD, inv.CDLOCAT, inv.CDLOCTYPE, unit.AmStdUnit \n" +
                     "FROM ${masterSchema}.FM12INVENTRY inv \n" +
@@ -18,7 +16,7 @@ public enum OracleItemInventoryQuery implements BasicSqlQuery {
                     "  AND inv.CDLOCTYPE = :cdloctype"
     );
 
-    private String sql;
+    private final String sql;
 
     OracleItemInventoryQuery(String sql) {
         this.sql = sql;

@@ -13,7 +13,7 @@ public class AccrualRateTest
 {    private static final Logger logger = LoggerFactory.getLogger(AccrualRateTest.class);
 
     @Test
-    public void testVacationRatesAreCorrect() throws Exception {
+    public void testVacationRatesAreCorrect() {
         assertEquals("0", AccrualRate.VACATION.getRate(3).toString());
         assertEquals("31.5", AccrualRate.VACATION.getRate(13).toString());
         assertEquals("3.5", AccrualRate.VACATION.getRate(14).toString());
@@ -24,7 +24,7 @@ public class AccrualRateTest
     }
 
     @Test
-    public void testSickRatesAreCorrect() throws Exception {
+    public void testSickRatesAreCorrect() {
         assertEquals("3.5", AccrualRate.SICK.getRate(3).toString());
         assertEquals("3.5", AccrualRate.SICK.getRate(13).toString());
         assertEquals("3.5", AccrualRate.SICK.getRate(900).toString());

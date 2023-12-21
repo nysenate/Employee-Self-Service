@@ -1,9 +1,9 @@
 package gov.nysenate.ess.time.service.accrual;
 
+import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.annotation.SillyTest;
 import gov.nysenate.ess.core.util.OutputUtils;
 import gov.nysenate.ess.core.util.SortOrder;
-import gov.nysenate.ess.core.BaseTest;
 import org.apache.commons.lang3.time.StopWatch;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -15,24 +15,14 @@ import java.time.LocalDate;
 import java.util.SortedSet;
 
 @Category(SillyTest.class)
-public class EssCachedAccrualInfoServiceTest extends BaseTest
+public class EssAccrualInfoServiceTest extends BaseTest
 {
-    private static final Logger logger = LoggerFactory.getLogger(EssCachedAccrualInfoServiceTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(EssAccrualInfoServiceTest.class);
 
     @Autowired private AccrualInfoService accrualInfoService;
 
     @Test
-    public void testInit() throws Exception {
-
-    }
-
-    @Test
-    public void testSetupCaches() throws Exception {
-
-    }
-
-    @Test
-    public void testGetAnnualAccruals() throws Exception {
+    public void testGetAnnualAccruals() {
         StopWatch sw = new StopWatch();
         sw.start();
         accrualInfoService.getAnnualAccruals(10976, 2013);
@@ -47,7 +37,7 @@ public class EssCachedAccrualInfoServiceTest extends BaseTest
     }
 
     @Test
-    public void testOpenAttendancePeriods() throws Exception {
+    public void testOpenAttendancePeriods() {
         StopWatch sw = new StopWatch();
         sw.start();
         accrualInfoService.getActiveAttendancePeriods(10976, LocalDate.now(), SortOrder.ASC);
@@ -63,9 +53,7 @@ public class EssCachedAccrualInfoServiceTest extends BaseTest
     @Test
     public void getAccrualYearsTest() {
         int empId = 4117;
-
         SortedSet<Integer> accrualYears = accrualInfoService.getAccrualYears(empId);
-
         logger.info("{}", accrualYears);
     }
 }

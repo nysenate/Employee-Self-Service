@@ -16,7 +16,7 @@ public class EmployeePermissionFactory implements PermissionFactory {
 
     /** {@inheritDoc} */
     @Override
-    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum> roles) {
+    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum<?>> roles) {
         return ImmutableList.of(
                 SimpleEssPermission.SENATE_EMPLOYEE.getPermission(),
                 new CorePermission(employee.getEmployeeId())

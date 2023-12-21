@@ -41,12 +41,11 @@ public enum SqlEmpTransactionQuery implements BasicSqlQuery
         "FROM ${masterSchema}.PM21PERAUDIT AUD\n" +
         "JOIN ${masterSchema}.PD21PTXNCODE PTX \n" +
         "   ON AUD.NUCHANGE = PTX.NUCHANGE"
-    )
-    ;
+    );
 
 
 
-    private String sql;
+    private final String sql;
 
     SqlEmpTransactionQuery(String sql) {
         this.sql = sql;

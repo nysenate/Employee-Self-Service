@@ -13,7 +13,6 @@ import java.util.Optional;
 /**
  * Contains data about a PEC email to be sent to an employee.
  */
-// TODO: Candidate for record in Java 17.
 public class EmployeeEmail {
     private static final String standardHtml =
             "<b>%s, our records indicate you have outstanding tasks to complete for Personnel.</b><br>" +
@@ -30,7 +29,7 @@ public class EmployeeEmail {
     private final String html;
 
     public EmployeeEmail(Employee to, PecEmailType type,
-                         List<AssignmentWithTask> dataList, String... extraData) {
+                         List<AssignmentWithTask> dataList, List<String> extraData) {
         this.employee = to;
         this.type = type;
         this.dataList = dataList;
@@ -79,13 +78,13 @@ public class EmployeeEmail {
         return Optional.of(ethicsLiveStr + " These live sessions run once a month.<br>");
     }
 
-    private String getHtml(String... extraData) {
-        return switch (this.type) {
+    private String getHtml(List<String> extraData) {
+        return switch (type) {
             case REPORT_MISSING -> String.join("<br>", extraData);
             case ADMIN_CODES -> "Dear " + employee.getFullName() + ", the new codes are <br>" +
-                    "CODE 1: " + extraData[0] + "<br>" + "CODE 2: " + extraData[1];
+                    "CODE 1: " + extraData.get(0) + "<br>" + "CODE 2: " + extraData.get(1);
             case INVITE, REMINDER -> standardHtml.formatted(employee.getFullName(),
-                    extraData[0] + "/myinfo/personnel/todo") + getTaskMapHtml(dataList);
+                    extraData.get(0) + "/myinfo/personnel/todo") + getTaskMapHtml(dataList);
             case COMPLETION -> completionHtml.formatted(first().getTitle());
         };
     }

@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * Basic model for a street address
@@ -67,7 +68,7 @@ public class Address {
      * i.e. 100 State Street, Albany, New York, 12208 (Albany County)
      */
     public String getFormattedAddressWithCounty() {
-        return this.toString() + (!county.isEmpty() ? " (" + county + " County)" : "");
+        return this + (!county.isEmpty() ? " (" + county + " County)" : "");
     }
 
     /**
@@ -169,28 +170,16 @@ public class Address {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) { return true; }
-        if (o == null || getClass() != o.getClass()) { return false; }
-
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
         Address address = (Address) o;
-
-        if (addr1 != null ? !addr1.equals(address.addr1) : address.addr1 != null) { return false; }
-        if (addr2 != null ? !addr2.equals(address.addr2) : address.addr2 != null) { return false; }
-        if (city != null ? !city.equals(address.city) : address.city != null) { return false; }
-        if (state != null ? !state.equals(address.state) : address.state != null) { return false; }
-        if (zip5 != null ? !zip5.equals(address.zip5) : address.zip5 != null) { return false; }
-        return !(zip4 != null ? !zip4.equals(address.zip4) : address.zip4 != null);
-
+        return Objects.equals(addr1, address.addr1) && Objects.equals(addr2, address.addr2)
+                && Objects.equals(city, address.city) && Objects.equals(state, address.state)
+                && Objects.equals(zip5, address.zip5) && Objects.equals(zip4, address.zip4);
     }
 
     @Override
     public int hashCode() {
-        int result = addr1 != null ? addr1.hashCode() : 0;
-        result = 31 * result + (addr2 != null ? addr2.hashCode() : 0);
-        result = 31 * result + (city != null ? city.hashCode() : 0);
-        result = 31 * result + (state != null ? state.hashCode() : 0);
-        result = 31 * result + (zip5 != null ? zip5.hashCode() : 0);
-        result = 31 * result + (zip4 != null ? zip4.hashCode() : 0);
-        return result;
+        return Objects.hash(addr1, addr2, city, state, zip5, zip4);
     }
 }

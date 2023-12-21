@@ -37,7 +37,7 @@ public enum SimpleTimePermission {
     TIME_RECORD_MANAGEMENT("admin:time:timerecords:manager"),
     ;
 
-    private String permissionString;
+    private final String permissionString;
 
     SimpleTimePermission(String permissionString) {
         this.permissionString = permissionString;

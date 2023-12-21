@@ -1,7 +1,6 @@
 package gov.nysenate.ess.core.client.response.base;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -76,7 +75,7 @@ public class ListViewResponse<ViewType> extends PaginationResponse
     public static class ListViewResponseJsonSerializer extends JsonSerializer<ListViewResponse>
     {
         @Override
-        public void serialize(ListViewResponse listViewResponse, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
+        public void serialize(ListViewResponse listViewResponse, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
             jsonGenerator.writeStartObject();
             listViewResponse.serialize(listViewResponse, jsonGenerator, serializerProvider);
             jsonGenerator.writeObjectField(listViewResponse.resultFieldName, listViewResponse.result);

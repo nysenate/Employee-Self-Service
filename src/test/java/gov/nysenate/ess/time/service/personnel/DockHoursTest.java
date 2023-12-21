@@ -13,7 +13,6 @@ import gov.nysenate.ess.core.util.RangeUtils;
 import gov.nysenate.ess.time.model.expectedhrs.ExpectedHours;
 import gov.nysenate.ess.time.service.expectedhrs.ExpectedHoursService;
 import gov.nysenate.ess.time.util.AccrualUtils;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
@@ -25,7 +24,7 @@ import java.time.LocalDate;
 import java.util.Set;
 import java.util.TreeMap;
 
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertEquals;
 
 @Category(SillyTest.class)
 public class DockHoursTest extends BaseTest {
@@ -62,11 +61,8 @@ public class DockHoursTest extends BaseTest {
 
                 ExpectedHours expectedHours = expHoursService.getExpectedHours(empId, Range.singleton(LocalDate.ofYearDay(2017, 1).minusDays(1)));
                 BigDecimal actualExpHours = expectedHours.getYtdHoursExpected();
-
-                assertThat("Calculated expected hours factors in docked hours.  Emp: " + empId,
-                        actualExpHours, Matchers.comparesEqualTo(expectedExpectedHours));
+                assertEquals(expectedExpectedHours, actualExpHours);
             }
         }
-        logger.info("done");
     }
 }

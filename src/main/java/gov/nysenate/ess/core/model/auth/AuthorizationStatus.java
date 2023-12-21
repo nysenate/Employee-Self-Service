@@ -6,8 +6,8 @@ public enum AuthorizationStatus
    UNAUTHORIZED(false, "Unauthorized access. The user does not have the necessary permissions."),
    UNAUTHENTICATED(false, "Authentication is required before proceeding.");
 
-   private boolean authorized;
-   private String message;
+   private final boolean authorized;
+   private final String message;
 
    AuthorizationStatus(boolean authorized, String message) {
        this.authorized = authorized;

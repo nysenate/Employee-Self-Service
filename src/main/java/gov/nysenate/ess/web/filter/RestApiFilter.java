@@ -16,7 +16,7 @@ public class RestApiFilter implements Filter
     private static final Logger logger = LoggerFactory.getLogger(RestApiFilter.class);
 
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {}
+    public void init(FilterConfig filterConfig) {}
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {

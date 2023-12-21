@@ -106,7 +106,7 @@ public class SqlMealPerDiemsDao extends SqlBaseDao {
                 """
         );
 
-        private String sql;
+        private final String sql;
 
         SqlMealPerDiemsQuery(String sql) {
             this.sql = sql;
@@ -123,7 +123,7 @@ public class SqlMealPerDiemsDao extends SqlBaseDao {
         }
     }
 
-    public class MealPerDiemsHandler extends BaseHandler {
+    public static class MealPerDiemsHandler extends BaseHandler {
 
         private int mealPerDiemsId;
         private Dollars overrideRate;

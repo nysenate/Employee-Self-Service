@@ -3,8 +3,6 @@ package gov.nysenate.ess.core.model.period;
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.annotation.UnitTest;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
@@ -19,16 +17,10 @@ public class PayPeriodTest
 {
     private static final Logger logger = LoggerFactory.getLogger(PayPeriodTest.class);
 
-    @Before
-    public void setUp() throws Exception {}
-
-    @After
-    public void tearDown() throws Exception {}
-
     /** --- Functional Getter/Setter Tests --- */
 
     @Test
-    public void testGetNumDaysInPeriod_simpleCases() throws Exception {
+    public void testGetNumDaysInPeriod_simpleCases() {
         PayPeriod p = new PayPeriod();
         p.setStartDate(LocalDate.of(2015, 11, 4));
         p.setEndDate(LocalDate.of(2015, 11, 11));
@@ -47,7 +39,7 @@ public class PayPeriodTest
 
     /** Test num days in pay period when there is a leap year */
     @Test
-    public void testGetNumDaysInPeriod_leapYear() throws Exception {
+    public void testGetNumDaysInPeriod_leapYear() {
         PayPeriod p = new PayPeriod();
         p.setStartDate(LocalDate.of(2012, 1, 1));
         p.setEndDate(LocalDate.of(2012, 12, 31));
@@ -56,7 +48,7 @@ public class PayPeriodTest
 
     /** Test invalid date range for num days in pay period */
     @Test(expected = IllegalStateException.class)
-    public void testGetNumDaysInPeriod_invalidDateRange() throws Exception {
+    public void testGetNumDaysInPeriod_invalidDateRange() {
         PayPeriod p = new PayPeriod();
         p.setStartDate(LocalDate.of(2015, 11, 4));
         p.setEndDate(LocalDate.of(2015, 11, 3));
@@ -65,7 +57,7 @@ public class PayPeriodTest
 
     /** Test invalid start end dates for num days in pay period */
     @Test(expected = IllegalStateException.class)
-    public void testGetNumDaysInPeriod_nullDateRange() throws Exception {
+    public void testGetNumDaysInPeriod_nullDateRange() {
         PayPeriod p = new PayPeriod();
         p.setStartDate(LocalDate.of(2015, 11, 4));
         p.setEndDate(null);
@@ -74,7 +66,7 @@ public class PayPeriodTest
 
     /** Test basic num week day cases */
     @Test
-    public void testGetNumWeekDaysInPeriod_simpleCases() throws Exception {
+    public void testGetNumWeekDaysInPeriod_simpleCases() {
         PayPeriod p = new PayPeriod();
         p.setStartDate(LocalDate.of(2015, 11, 4));
         p.setEndDate(LocalDate.of(2015, 11, 18));
@@ -91,7 +83,7 @@ public class PayPeriodTest
 
     /** Test invalid date range for num week days in pay period */
     @Test(expected = IllegalStateException.class)
-    public void testGetNumWeekDaysInPeriod_invalidDateRange() throws Exception {
+    public void testGetNumWeekDaysInPeriod_invalidDateRange() {
         PayPeriod p = new PayPeriod();
         p.setStartDate(LocalDate.of(2015, 11, 4));
         p.setEndDate(LocalDate.of(2015, 11, 3));
@@ -100,7 +92,7 @@ public class PayPeriodTest
 
     /** Test invalid start end dates for num week days in pay period */
     @Test(expected = IllegalStateException.class)
-    public void testGetNumWeekDaysInPeriod_nullDateRange() throws Exception {
+    public void testGetNumWeekDaysInPeriod_nullDateRange() {
         PayPeriod p = new PayPeriod();
         p.setStartDate(LocalDate.of(2015, 11, 4));
         p.setEndDate(null);
@@ -109,14 +101,14 @@ public class PayPeriodTest
 
     /** A pay period will typically have 14 days. */
     @Test
-    public void testDefaultPayPeriodDays() throws Exception {
+    public void testDefaultPayPeriodDays() {
         PayPeriod p = new PayPeriod();
-        assertEquals(14, p.DEFAULT_PAY_PERIOD_DAYS);
+        assertEquals(14, PayPeriod.DEFAULT_PAY_PERIOD_DAYS);
     }
 
     /** A pay period that ends cleanly on the year should not be an end of year split. */
     @Test
-    public void testIsEndOfYearSplit_perfectYear() throws Exception {
+    public void testIsEndOfYearSplit_perfectYear() {
         PayPeriod p = new PayPeriod();
         p.setStartDate(LocalDate.of(2014, 12, 18));
         p.setEndDate(LocalDate.of(2014, 12, 31));
@@ -126,7 +118,7 @@ public class PayPeriodTest
 
     /** A pay period that ends abruptly on the year should be an end of year split. */
     @Test
-    public void testIsEndOfYearSplit_hasSplit() throws Exception {
+    public void testIsEndOfYearSplit_hasSplit() {
         PayPeriod p = new PayPeriod();
         p.setStartDate(LocalDate.of(2014, 12, 19));
         p.setEndDate(LocalDate.of(2014, 12, 31));
@@ -136,7 +128,7 @@ public class PayPeriodTest
 
     /** A pay period that starts cleanly on the year should not be a start of year split. */
     @Test
-    public void testIsStartOfYearSplit_perfectYear() throws Exception {
+    public void testIsStartOfYearSplit_perfectYear() {
         PayPeriod p = new PayPeriod();
         p.setStartDate(LocalDate.of(2015, 1, 1));
         p.setEndDate(LocalDate.of(2015, 1, 14));
@@ -146,7 +138,7 @@ public class PayPeriodTest
 
     /** A pay period that starts abruptly on the year should be a start of year split. */
     @Test
-    public void testIsStartOfYearSplit_hasSplit() throws Exception {
+    public void testIsStartOfYearSplit_hasSplit() {
         PayPeriod p = new PayPeriod();
         p.setStartDate(LocalDate.of(2015, 1, 1));
         p.setEndDate(LocalDate.of(2015, 1, 10));
@@ -156,7 +148,7 @@ public class PayPeriodTest
 
     /** Get range should return a closed open range to make contiguous ranges easier. */
     @Test
-    public void testGetDateRange_returnsClosedOpenRange() throws Exception {
+    public void testGetDateRange_returnsClosedOpenRange() {
         PayPeriod p = new PayPeriod();
         p.setStartDate(LocalDate.of(2015, 1, 1));
         p.setEndDate(LocalDate.of(2015, 1, 14));
@@ -167,7 +159,7 @@ public class PayPeriodTest
 
     /** Get range should return an upper bound date of one after the end date. */
     @Test
-    public void testGetDateRange_returnsOnePlusEndDate() throws Exception {
+    public void testGetDateRange_returnsOnePlusEndDate() {
         PayPeriod p = new PayPeriod();
         p.setStartDate(LocalDate.of(2015, 1, 1));
         p.setEndDate(LocalDate.of(2015, 1, 14));
@@ -177,7 +169,7 @@ public class PayPeriodTest
     }
 
     @Test
-    public void testGetYear_returnsCorrectYear() throws Exception {
+    public void testGetYear_returnsCorrectYear() {
         PayPeriod p = new PayPeriod();
         p.setEndDate(LocalDate.of(2015, 1, 1));
         assertEquals(2015, p.getYear());
@@ -191,7 +183,7 @@ public class PayPeriodTest
 
     /** Two pay periods are equal if their type and dates are the same. */
     @Test
-    public void testEquals_identicalDatesReturnsTrue() throws Exception {
+    public void testEquals_identicalDatesReturnsTrue() {
         PayPeriod p1 = new PayPeriod();
         p1.setType(PayPeriodType.AF);
         p1.setStartDate(LocalDate.now());
@@ -207,7 +199,7 @@ public class PayPeriodTest
 
     /** Two pay periods are not equal if their type and/or dates are not the same. */
     @Test
-    public void testEquals_mismatchDatesReturnsFalse() throws Exception {
+    public void testEquals_mismatchDatesReturnsFalse() {
         PayPeriod p1 = new PayPeriod();
         p1.setType(PayPeriodType.AF);
         p1.setStartDate(LocalDate.now());
@@ -229,7 +221,7 @@ public class PayPeriodTest
 
     /** A pay period should be ordered based on it's start date. */
     @Test
-    public void testCompareTo_basedOnDate() throws Exception {
+    public void testCompareTo_basedOnDate() {
         PayPeriod p1 = new PayPeriod();
         p1.setStartDate(LocalDate.now());
         p1.setEndDate(LocalDate.now().plusDays(14));

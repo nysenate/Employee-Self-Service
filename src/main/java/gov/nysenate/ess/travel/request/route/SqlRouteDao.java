@@ -114,7 +114,7 @@ public class SqlRouteDao extends SqlBaseDao implements RouteDao {
                 """
         );
 
-        private String sql;
+        private final String sql;
 
         SqlRouteQuery(String sql) {
             this.sql = sql;
@@ -164,7 +164,7 @@ public class SqlRouteDao extends SqlBaseDao implements RouteDao {
         }
     }
 
-    private class LegMapper extends BaseRowMapper<Leg> {
+    private static class LegMapper extends BaseRowMapper<Leg> {
 
         @Override
         public Leg mapRow(ResultSet rs, int rowNum) throws SQLException {

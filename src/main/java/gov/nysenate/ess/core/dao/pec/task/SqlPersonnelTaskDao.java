@@ -2,10 +2,11 @@ package gov.nysenate.ess.core.dao.pec.task;
 
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
+import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignmentGroup;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
+import gov.nysenate.ess.core.model.pec.ethics.DateRangedEthicsCode;
 import gov.nysenate.ess.core.model.pec.everfi.EverfiAssignmentID;
 import gov.nysenate.ess.core.model.pec.everfi.EverfiContentID;
-import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignmentGroup;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
 import java.util.List;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static gov.nysenate.ess.core.dao.pec.task.SqlPersonnelTaskQuery.*;
 
@@ -33,7 +36,7 @@ public class SqlPersonnelTaskDao extends SqlBaseDao implements PersonnelTaskDao 
                 taskRowMapper
         );
 
-        if (personnelTasks.isEmpty() || personnelTasks == null) {
+        if (personnelTasks.isEmpty()) {
             throw new IncorrectResultSizeDataAccessException(0);
         }
         else {
@@ -104,6 +107,7 @@ public class SqlPersonnelTaskDao extends SqlBaseDao implements PersonnelTaskDao 
         return localNamedJdbc.queryForObject(SELECT_ETHICS_LIVE_COURSE_CODE_INFO.getSql(schemaMap()), params, Integer.class);
     }
 
+
     @Override
     public void updateEthicsCode(String code, int ethicsCodeId, int sequenceNo ) {
         MapSqlParameterSource updateParams = new MapSqlParameterSource();
@@ -111,6 +115,34 @@ public class SqlPersonnelTaskDao extends SqlBaseDao implements PersonnelTaskDao 
         updateParams.addValue("codeId",ethicsCodeId);
         updateParams.addValue("sequence_no",sequenceNo);
         localNamedJdbc.update(UPDATE_ETHICS_CODE.getSql(schemaMap()), updateParams );
+    }
+
+    @Override
+    public void updateEthicsCode(String code, int ethicsCodeId, int sequenceNo, String startDate, String endDate){
+        MapSqlParameterSource updateParams = new MapSqlParameterSource();
+        updateParams.addValue("code",code);
+        updateParams.addValue("codeId",ethicsCodeId);
+        updateParams.addValue("sequence_no",sequenceNo);
+        updateParams.addValue("start_date",startDate);
+        updateParams.addValue("end_date",endDate);
+        localNamedJdbc.update(UPDATE_ETHICS_CODE.getSql(schemaMap()), updateParams );
+
+    }
+
+    @Override
+    public void insertEthicsCode(int ethicsCodeId, int sequenceNo, String Label, String code, LocalDateTime StartDate, LocalDateTime EndDate){
+        MapSqlParameterSource updateParams = new MapSqlParameterSource();
+        updateParams.addValue("codeId",ethicsCodeId);
+        updateParams.addValue("sequence_no",sequenceNo);
+        updateParams.addValue("label",Label);
+        updateParams.addValue("code",code);
+        updateParams.addValue("startDate",StartDate);
+        updateParams.addValue("endDate",EndDate);
+        localNamedJdbc.update(INSERT_ETHICS_CODE.getSql(schemaMap()), updateParams);
+    }
+
+    public List<DateRangedEthicsCode> getEthicsCodes(){
+        return localNamedJdbc.query(SELECT_ETHICS_CODES.getSql(schemaMap()), ethicsCodeRowMapper);
     }
 
     private static final RowMapper<PersonnelTask> taskRowMapper = (rs, rowNum) ->
@@ -123,6 +155,17 @@ public class SqlPersonnelTaskDao extends SqlBaseDao implements PersonnelTaskDao 
                     getLocalDateTime(rs, "end_date_time"),
                     rs.getBoolean("active"),
                     rs.getBoolean("notifiable")
+            );
+
+    private static final RowMapper<DateRangedEthicsCode> ethicsCodeRowMapper = (rs, rowNum) ->
+            new DateRangedEthicsCode(
+                    rs.getInt("id"),
+                    rs.getInt("ethics_code_id"),
+                    rs.getInt("sequence_no"),
+                    rs.getString("label"),
+                    rs.getString("code"),
+                    getLocalDateTime(rs, "start_date"),
+                    getLocalDateTime(rs, "end_date")
             );
 
     private static final RowMapper<EverfiContentID> everfiContentIDRowMapper = (rs, rowNum) ->

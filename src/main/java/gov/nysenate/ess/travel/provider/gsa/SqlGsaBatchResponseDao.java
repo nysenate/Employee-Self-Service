@@ -77,10 +77,9 @@ public class SqlGsaBatchResponseDao extends SqlBaseDao implements GsaBatchRespon
                 "    set mealTier = :mealTier, lodgingRates = :lodgingRates\n" +
                 "    where fiscalYear = :fiscalYear and zipcode = :zipcode;"),
 
-        GET_GSA_DATA("select * from travel.gsa_data where zipcode = :zipcode and fiscalYear = :fiscalYear;"),
-        ;
+        GET_GSA_DATA("select * from travel.gsa_data where zipcode = :zipcode and fiscalYear = :fiscalYear;");
 
-        private String sql;
+        private final String sql;
 
         SqlGsaBatchResponseQuery(String sql) {
             this.sql = sql;
@@ -107,7 +106,7 @@ public class SqlGsaBatchResponseDao extends SqlBaseDao implements GsaBatchRespon
             try {
                 Map<Month, BigDecimal> lodgingRates =
                         objectMapper.readValue( rs.getString("lodgingRates"),
-                                new TypeReference<Map<Month, BigDecimal>>() {} );
+                                new TypeReference<>() {});
                 gsaResponse = new GsaResponse(new GsaResponseId(fiscalYear, zipcode), lodgingRates, mealTier);
                 gsaResponse.setCity(rs.getString("city"));
                 gsaResponse.setCounty(rs.getString("county"));

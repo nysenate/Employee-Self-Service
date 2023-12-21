@@ -1,7 +1,8 @@
 package gov.nysenate.ess.supply.item.model;
 
-public final class ItemUnit {
+import java.util.Objects;
 
+public final class ItemUnit {
     /**
      * A description of the unit. e.g 12/PKG
      */
@@ -39,8 +40,7 @@ public final class ItemUnit {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ItemUnit itemUnit = (ItemUnit) o;
-        if (quantity != itemUnit.quantity) return false;
-        return description != null ? description.equals(itemUnit.description) : itemUnit.description == null;
+        return quantity == itemUnit.quantity && Objects.equals(description, itemUnit.description);
     }
 
     @Override

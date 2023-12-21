@@ -54,4 +54,8 @@ public enum TravelRole {
             displayNameToRole.put(r.displayName, r);
         }
     }
+
+    public String getDisplayName() {
+        return displayName;
+    }
 }

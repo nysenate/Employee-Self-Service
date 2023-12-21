@@ -16,6 +16,7 @@ import gov.nysenate.ess.core.model.pec.video.IncorrectPECVideoCodeEx;
 import gov.nysenate.ess.core.model.pec.video.VideoTask;
 import gov.nysenate.ess.core.service.pec.notification.PECNotificationService;
 import gov.nysenate.ess.core.service.pec.task.PersonnelCodeGenerationService;
+import gov.nysenate.ess.core.service.pec.task.PersonnelCodeVerificationService;
 import gov.nysenate.ess.core.service.pec.task.PersonnelTaskNotFoundEx;
 import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
 import gov.nysenate.ess.core.util.ShiroUtils;
@@ -27,6 +28,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.List;
 
 import static gov.nysenate.ess.core.model.pec.PersonnelTaskType.ETHICS_LIVE_COURSE;
@@ -49,18 +51,22 @@ public class PECCodeApiCtrl extends BaseRestApiCtrl {
 
     private final PECNotificationService pecNotificationService;
 
+    private final PersonnelCodeVerificationService personnelCodeVerificationService;
+
     public PECCodeApiCtrl(PersonnelTaskService personnelTaskService,
                           PersonnelTaskAssignmentDao assignedTaskDao,
                           VideoTaskDetailDao videoTaskDetailDao,
                           EthicsLiveCourseTaskDetailDao ethicsLiveCourseTaskDetailDao,
                           PersonnelCodeGenerationService personnelCodeGenerationService,
-                          PECNotificationService pecNotificationService) {
+                          PECNotificationService pecNotificationService,
+                          PersonnelCodeVerificationService personnelCodeVerificationService) {
         this.personnelTaskService = personnelTaskService;
         this.assignedTaskDao = assignedTaskDao;
         this.videoTaskDetailDao = videoTaskDetailDao;
         this.ethicsLiveCourseTaskDetailDao = ethicsLiveCourseTaskDetailDao;
         this.personnelCodeGenerationService = personnelCodeGenerationService;
         this.pecNotificationService = pecNotificationService;
+        this.personnelCodeVerificationService = personnelCodeVerificationService;
     }
 
     /**
@@ -142,11 +148,14 @@ public class PECCodeApiCtrl extends BaseRestApiCtrl {
 
         ensureEmpIdExists(submission.getEmpId(), "empId");
 
+        String trainingDate = submission.getTrainingDate();
+
+
         EthicsLiveCourseTask ethicsLiveCourseTask = (EthicsLiveCourseTask) getEthicsLiveCourseFromIdParams(submission.getTaskId(), "taskId");
 
         validateCodeFormat(submission.getCodes(), ethicsLiveCourseTask, "codes");
 
-        ethicsLiveCourseTask.verifyCodes(submission.getCodes());
+        personnelCodeVerificationService.verifyDateRangedEthics(submission.getCodes(),trainingDate);
         int authenticatedEmpId = ShiroUtils.getAuthenticatedEmpId();
         assignedTaskDao.setTaskComplete(submission.getEmpId(), ethicsLiveCourseTask.getTaskId(), authenticatedEmpId);
         pecNotificationService.sendCompletionEmail(submission.getEmpId(), ethicsLiveCourseTask);

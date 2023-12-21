@@ -25,7 +25,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 public class EssTimePersonnelPermissionFactory implements PermissionFactory {
 
     @Override
-    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum> roles) {
+    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum<?>> roles) {
         List<Permission> personnelPermissions = new ArrayList<>();
 
         if (roles.contains(EssRole.TIME_MANAGER)) {

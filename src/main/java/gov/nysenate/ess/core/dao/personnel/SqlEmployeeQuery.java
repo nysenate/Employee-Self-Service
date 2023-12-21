@@ -118,11 +118,9 @@ public enum SqlEmployeeQuery implements BasicSqlQuery
 
     GET_INACTIVE_EMPLOYEES_SINCE_DATE(
             "SELECT * FROM ${masterSchema}.PM21PERSONN p WHERE p.CDEMPSTATUS = 'I' AND TRUNC(p.DTTXNUPDATE) >= TO_DATE(:since, 'DD-MON-RRRR')"
-    )
+    );
 
-    ;
-
-    private String sql;
+    private final String sql;
 
     SqlEmployeeQuery(String sql) {
         this.sql = sql;

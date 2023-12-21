@@ -95,8 +95,7 @@ public abstract class AttendanceHours {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof AttendanceHours)) return false;
-        AttendanceHours that = (AttendanceHours) o;
+        if (!(o instanceof AttendanceHours that)) return false;
         return Objects.equal(workHours, that.workHours) &&
                 Objects.equal(travelHours, that.travelHours) &&
                 Objects.equal(holidayHours, that.holidayHours) &&

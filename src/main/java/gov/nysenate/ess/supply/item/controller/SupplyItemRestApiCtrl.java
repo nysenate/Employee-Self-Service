@@ -4,16 +4,14 @@ import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
-import gov.nysenate.ess.core.dao.unit.LocationDao;
 import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.model.unit.LocationId;
+import gov.nysenate.ess.core.service.base.LocationService;
 import gov.nysenate.ess.supply.authorization.permission.SupplyPermission;
 import gov.nysenate.ess.supply.item.OrderableItems;
 import gov.nysenate.ess.supply.item.dao.SupplyItemDao;
 import gov.nysenate.ess.supply.item.model.SupplyItem;
 import gov.nysenate.ess.supply.item.view.SupplyItemView;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,16 +23,13 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/supply/items")
 public class SupplyItemRestApiCtrl extends BaseRestApiCtrl {
-
-    private static final Logger logger = LoggerFactory.getLogger(SupplyItemRestApiCtrl.class);
-
-    private SupplyItemDao supplyItemDao;
-    private LocationDao locationDao;
+    private final SupplyItemDao supplyItemDao;
+    private final LocationService locationService;
 
     @Autowired
-    public SupplyItemRestApiCtrl(SupplyItemDao supplyItemDao, LocationDao locationDao) {
+    public SupplyItemRestApiCtrl(SupplyItemDao supplyItemDao, LocationService locationService) {
         this.supplyItemDao = supplyItemDao;
-        this.locationDao = locationDao;
+        this.locationService = locationService;
     }
 
     @RequestMapping("/{itemId}")
@@ -64,7 +59,7 @@ public class SupplyItemRestApiCtrl extends BaseRestApiCtrl {
     @RequestMapping("/orderable/{locId}")
     public BaseResponse orderableSupplyItems(@PathVariable String locId) {
         LocationId locationId = LocationId.ofString(locId);
-        if (locationDao.getLocation(locationId) == null) {
+        if (locationService.getLocation(locationId) == null) {
             throw new InvalidRequestParamEx(locId, "locId", "String", "locId must represent a valid location with the format: locCode-locType. e.g. A42FB-W");
         }
 

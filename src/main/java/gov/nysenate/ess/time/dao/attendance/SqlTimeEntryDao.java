@@ -30,7 +30,7 @@ public class SqlTimeEntryDao extends SqlBaseDao implements TimeEntryDao
     private static final Logger logger = LoggerFactory.getLogger(SqlTimeEntryDao.class);
 
     @Override
-    public TimeEntry getTimeEntryById(BigInteger timeEntryId) throws TimeEntryException {
+    public TimeEntry getTimeEntryById(BigInteger timeEntryId) {
         throw new NotImplementedException("getTimeEntryById not yet implemented");
     }
 

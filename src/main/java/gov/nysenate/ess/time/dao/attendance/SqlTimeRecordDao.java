@@ -37,9 +37,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static gov.nysenate.ess.time.dao.attendance.SqlTimeRecordQuery.GET_EXISTING_TREC_ID;
-import static gov.nysenate.ess.time.dao.attendance.SqlTimeRecordQuery.INSERT_TIME_REC;
-import static gov.nysenate.ess.time.dao.attendance.SqlTimeRecordQuery.UPDATE_TIME_REC_SQL;
+import static gov.nysenate.ess.time.dao.attendance.SqlTimeRecordQuery.*;
 import static gov.nysenate.ess.time.model.attendance.TimeRecordStatus.APPROVED_PERSONNEL;
 
 @Repository
@@ -171,7 +169,7 @@ public class SqlTimeRecordDao extends SqlBaseDao implements TimeRecordDao
 
             if (this.getTimeRecord(record.getTimeRecordId()).getRecordStatus() == APPROVED_PERSONNEL) {
                 skipped = 1;
-                logger.warn("Skipping Time Record id#{} for emp #{} since it's existing record is already APPROCVED BY PERSONNEL.", record.getTimeRecordId(), record.getEmployeeId());
+                logger.warn("Skipping Time Record id#{} for emp #{} since it's existing record is already APPROVED BY PERSONNEL.", record.getTimeRecordId(), record.getEmployeeId());
             } else {
                 updated = remoteNamedJdbc.update(UPDATE_TIME_REC_SQL.getSql(schemaMap()), params);
             }

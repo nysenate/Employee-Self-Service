@@ -4,24 +4,29 @@ import com.google.common.collect.Sets;
 import gov.nysenate.ess.core.annotation.UnitTest;
 import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.core.model.unit.LocationId;
-import gov.nysenate.ess.supply.item.model.*;
 import gov.nysenate.ess.supply.item.LineItem;
+import gov.nysenate.ess.supply.item.model.ItemAllowance;
+import gov.nysenate.ess.supply.item.model.ItemStatus;
+import gov.nysenate.ess.supply.item.model.ItemUnit;
+import gov.nysenate.ess.supply.item.model.SupplyItem;
 import gov.nysenate.ess.supply.requisition.model.Requisition;
 import gov.nysenate.ess.supply.statistics.location.LocationStatistic;
 import gov.nysenate.ess.supply.unit.fixtures.RequisitionFixture;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-@org.junit.experimental.categories.Category(UnitTest.class)
+@Category(UnitTest.class)
 public class LocationStatisticTest {
 
-    private static final Location LOCATION = new Location(new LocationId("A42FB-W"));
-    private static final Location ALTERNATE_LOCATION = new Location(new LocationId("ZZZ-Z"));
+    private static final Location LOCATION = new Location(LocationId.ofString("A42FB-W"));
+    private static final Location ALTERNATE_LOCATION = new Location(LocationId.ofString("ZZZ-Z"));
     private Requisition requisition;
 
     @Before
@@ -32,12 +37,12 @@ public class LocationStatisticTest {
 
     @Test(expected = NullPointerException.class)
     public void givenNullRequisitions_throwNPE() {
-        LocationStatistic locationStatistic = new LocationStatistic(LOCATION, null);
+        new LocationStatistic(LOCATION, null);
     }
 
     @Test(expected = NullPointerException.class)
     public void givenNullLocation_throwNPE() {
-        LocationStatistic locationStatistic = new LocationStatistic(null, new HashSet<>());
+        new LocationStatistic(null, new HashSet<>());
     }
 
     @Test
@@ -109,11 +114,7 @@ public class LocationStatisticTest {
     }
 
     private Set<LineItem> copyLineItems(Requisition simple) {
-        Set<LineItem> lineItems = new HashSet<>();
-        for (LineItem lineItem : simple.getLineItems()) {
-            lineItems.add(lineItem);
-        }
-        return lineItems;
+        return new HashSet<>(simple.getLineItems());
     }
 
     private LineItem createLineItem(int itemId, String commodityCode, int quantity) {
@@ -122,7 +123,7 @@ public class LocationStatisticTest {
                 .withCommodityCode(commodityCode)
                 .withDescription("")
                 .withStatus(new ItemStatus(true, false, true, false))
-                .withCategory(new Category(""))
+                .withCategory(new gov.nysenate.ess.supply.item.model.Category(""))
                 .withAllowance(new ItemAllowance(1, 1))
                 .withUnit(new ItemUnit("1", 1))
                 .build();

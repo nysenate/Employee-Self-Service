@@ -1,14 +1,12 @@
 package gov.nysenate.ess.core.client.view.base;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.google.common.collect.ImmutableMap;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.io.IOException;
 import java.util.Map;
 
 @XmlRootElement
@@ -51,7 +49,7 @@ public class MapView<KeyType, ViewType> implements ViewObject
 
     public static class MapViewJsonSerializer extends JsonSerializer<MapView> {
         @Override
-        public void serialize(MapView kvMapView, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
+        public void serialize(MapView kvMapView, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) {
 //            jsonGenerator.writeStartObject();
 //            jsonGenerator.writeObjectField(kvMapView.getViewType(), kvMapView.items);
 //            jsonGenerator.writeEndObject();

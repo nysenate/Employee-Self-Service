@@ -34,11 +34,10 @@ public enum ErrorCode
     /** Travel Errors */
     DATA_PROVIDER_ERROR(301, "An error occurred while communicating with 3rd party data providers."),
     INVALID_TRAVEL_DATES(302, "One or more of your travel dates are invalid.");
-    ;
 
     /** Unique ID for error code */
-    private int code;
-    private String message;
+    private final int code;
+    private final String message;
 
     ErrorCode(int code, String message) {
         this.code = code;

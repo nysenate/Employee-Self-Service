@@ -11,7 +11,7 @@ public class LocationTypeTest
 {
     /** Test the value of code method, should be case insensitive. */
     @Test
-    public void testValueOfCode() throws Exception {
+    public void testValueOfCode() {
         assertEquals(LocationType.WAREHOUSE, LocationType.valueOfCode('H'));
         assertEquals(LocationType.WAREHOUSE, LocationType.valueOfCode('h'));
         assertEquals(LocationType.STORAGE, LocationType.valueOfCode('S'));

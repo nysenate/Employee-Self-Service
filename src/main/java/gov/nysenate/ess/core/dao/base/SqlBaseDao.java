@@ -14,8 +14,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Map;
 
-public abstract class SqlBaseDao
-{
+public abstract class SqlBaseDao implements BaseDao {
     @Resource(name = "localJdbcTemplate")
     protected JdbcTemplate localJdbc;
 

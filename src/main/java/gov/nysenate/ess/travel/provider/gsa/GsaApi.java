@@ -17,7 +17,7 @@ import java.util.HashMap;
 /**
  * Responsible for getting GsaResponse objects from the official GSA Api.
  *
- * GSA API Docs: https://open.gsa.gov/api/perdiem/
+ * GSA API Docs: <a href="https://open.gsa.gov/api/perdiem/">...</a>
  */
 @Service
 public class GsaApi {
@@ -54,7 +54,7 @@ public class GsaApi {
 
     private GsaResponse queryApi(GsaResponseId id) throws ProviderException {
         // Format the URL with the zip code and fiscal year of the request.
-        String url = String.format(baseUrl + ratesPathTemplate, id.getZipcode(), String.valueOf(id.getFiscalYear()));
+        String url = String.format(baseUrl + ratesPathTemplate, id.getZipcode(), id.getFiscalYear());
         try {
             String content = httpUtils.urlToString(url);
             if (dateTooFarInFuture(id, content)) {

@@ -8,9 +8,7 @@ import java.sql.ResultSet;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -27,7 +25,7 @@ public class BaseMapperTest
         assertEquals(LocalDate.of(2015, 5, 1), BaseMapper.getLocalDateFromRs(mockRs, "col"));
         // Null -> Null
         when(mockRs.getDate("col")).thenReturn(null);
-        assertEquals(null, BaseMapper.getLocalDateFromRs(mockRs, "col"));
+        assertNull(BaseMapper.getLocalDateFromRs(mockRs, "col"));
     }
 
     /** Should convert timestamp from result set to LocalDateTime. */
@@ -41,12 +39,12 @@ public class BaseMapperTest
                 BaseMapper.getLocalDateTimeFromRs(mockRs, "col"));
         // Null -> Null
         when(mockRs.getTimestamp("col")).thenReturn(null);
-        assertEquals(null, BaseMapper.getLocalDateTimeFromRs(mockRs, "col"));
+        assertNull(BaseMapper.getLocalDateTimeFromRs(mockRs, "col"));
     }
 
     /** get status from code should return true for A or Y. */
     @Test
-    public void testGetStatusFromCode() throws Exception {
+    public void testGetStatusFromCode() {
         // A, a, Y, y
         assertTrue(BaseMapper.getStatusFromCode("A"));
         assertTrue(BaseMapper.getStatusFromCode("Y"));

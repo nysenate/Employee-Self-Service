@@ -17,10 +17,9 @@ public class EventBusConfig
 
     @Bean
     public EventBus eventBus() {
-        SubscriberExceptionHandler errorHandler = (exception, context) -> {
-            logger.error("Exception thrown during event handling within {}: {}, {}", context.getSubscriberMethod(),
-                    exception, ExceptionUtils.getStackTrace(exception));
-        };
+        SubscriberExceptionHandler errorHandler = (exception, context) ->
+                logger.error("Exception thrown during event handling within {}: {}, {}", context.getSubscriberMethod(),
+                exception, ExceptionUtils.getStackTrace(exception));
         return new EventBus(errorHandler);
     }
 }

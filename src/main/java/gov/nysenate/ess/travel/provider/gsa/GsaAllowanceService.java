@@ -76,7 +76,7 @@ public class GsaAllowanceService {
 //                gsaBatchResponseDao.handleNewData(res);
 //            }
 //        }
-        return res;
+        return gsaApi.queryGsa(date, address.getZip5());
     }
 
     private boolean addressIsOutsideUS(TravelAddress address) {

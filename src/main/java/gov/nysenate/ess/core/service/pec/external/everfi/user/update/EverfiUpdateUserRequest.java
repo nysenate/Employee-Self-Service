@@ -55,8 +55,7 @@ public class EverfiUpdateUserRequest {
         ObjectMapper mapper = OutputUtils.jsonMapper;
         JsonNode rootNode = mapper.readTree(data);
         JsonNode emp = rootNode.get("data");
-        EverfiUser user = mapper.treeToValue(emp, EverfiUser.class);
-        return user;
+        return mapper.treeToValue(emp, EverfiUser.class);
     }
 
     private String generateJsonEntity() throws IOException {

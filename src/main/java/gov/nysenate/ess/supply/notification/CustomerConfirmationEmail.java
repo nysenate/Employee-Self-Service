@@ -22,18 +22,17 @@ import java.util.Map;
 @Service
 public class CustomerConfirmationEmail {
 
-    private SendMailService sendMailService;
-    private Configuration freemarkerCfg;
+    private final SendMailService sendMailService;
+    private final Configuration freemarkerCfg;
+    @Value("${domain.url}")
+    private String domainUrl;
     private static final String template = "requisition_confirmation.ftlh";
     private static final String subject = "Your supply requisition request has been submitted.";
-    private static String domainUrl;
 
     @Autowired
-    public CustomerConfirmationEmail(SendMailService sendMailService, Configuration freemarkerCfg,
-                                     @Value("${domain.url}") final String domainUrl) {
+    public CustomerConfirmationEmail(SendMailService sendMailService, Configuration freemarkerCfg) {
         this.sendMailService = sendMailService;
         this.freemarkerCfg = freemarkerCfg;
-        this.domainUrl = domainUrl;
     }
 
     public MimeMessage generateConfirmationEmail(Requisition requisition, String toEmail) {
@@ -43,7 +42,7 @@ public class CustomerConfirmationEmail {
 
     private String generateBody(Requisition requisition) {
         StringWriter out = new StringWriter();
-        Map dataModel = ImmutableMap.of("requisition", requisition, "domainUrl", domainUrl);
+        Map<String, Object> dataModel = ImmutableMap.of("requisition", requisition, "domainUrl", domainUrl);
         try {
             Template emailTemplate = freemarkerCfg.getTemplate(template);
             emailTemplate.process(dataModel, out);

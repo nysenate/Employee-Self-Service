@@ -17,6 +17,7 @@ import gov.nysenate.ess.core.util.SortOrder;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -366,7 +367,7 @@ public class PECVideoCSVService {
         if (office == null) {
             return "";
         }
-        return StringUtils.replacePattern(StringUtils.upperCase(office), "[^A-Z]", "");
+        return RegExUtils.replacePattern(StringUtils.upperCase(office), "[^A-Z]", "");
     }
 
     private boolean officeEquals(String office, String otherOffice) {
@@ -400,7 +401,7 @@ public class PECVideoCSVService {
     }
 
     private String normalizeName(String name) {
-        return StringUtils.replacePattern(StringUtils.upperCase(name), "[^A-Z ]", "");
+        return RegExUtils.replacePattern(StringUtils.upperCase(name), "[^A-Z ]", "");
     }
 
     private boolean nameMatches(String lhs, String rhs) {
