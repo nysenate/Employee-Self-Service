@@ -10,15 +10,14 @@ public class LodgingPerDiems {
 
     private final static Comparator<LodgingPerDiem> dateComparator = Comparator.comparing(LodgingPerDiem::date);
 
-    private int id;
     private final ImmutableSortedSet<LodgingPerDiem> lodgingPerDiems;
     private Dollars overrideRate;
 
     public LodgingPerDiems(Collection<LodgingPerDiem> lodgingPerDiems) {
-        this(0, lodgingPerDiems, Dollars.ZERO);
+        this(lodgingPerDiems, Dollars.ZERO);
     }
 
-    public LodgingPerDiems(int id, Collection<LodgingPerDiem> lodgingPerDiems, Dollars overrideRate) {
+    public LodgingPerDiems(Collection<LodgingPerDiem> lodgingPerDiems, Dollars overrideRate) {
         // If multiple LodgingPerDiem's for the same date, only keep the one with the highest rate.
         Map<LocalDate, LodgingPerDiem> dateToPerDiems = new HashMap<>();
         for (LodgingPerDiem lpd : lodgingPerDiems) {
@@ -32,20 +31,11 @@ public class LodgingPerDiems {
                 dateToPerDiems.put(lpd.date(), lpd);
             }
         }
-        this.id = id;
         this.lodgingPerDiems = ImmutableSortedSet
                 .orderedBy(dateComparator)
                 .addAll(dateToPerDiems.values())
                 .build();
         this.overrideRate = overrideRate == null ? Dollars.ZERO : overrideRate;
-    }
-
-    public int id() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public void setOverrideRate(Dollars rate) {

@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 
 public class LodgingPerDiemsView implements ViewObject {
 
-    private int id;
     private List<LodgingPerDiemView> allLodgingPerDiems;
     private List<LodgingPerDiemView> requestedLodgingPerDiems;
     private String totalPerDiem;
@@ -20,7 +19,6 @@ public class LodgingPerDiemsView implements ViewObject {
     }
 
     public LodgingPerDiemsView(LodgingPerDiems la) {
-        this.id = la.id();
         this.allLodgingPerDiems = la.allLodgingPerDiems().stream()
                 .map(LodgingPerDiemView::new)
                 .collect(Collectors.toList());
@@ -33,13 +31,9 @@ public class LodgingPerDiemsView implements ViewObject {
     }
 
     public LodgingPerDiems toLodgingPerDiems() {
-        return new LodgingPerDiems(id, allLodgingPerDiems.stream()
+        return new LodgingPerDiems(allLodgingPerDiems.stream()
                 .map(LodgingPerDiemView::toLodgingPerDiem)
                 .collect(Collectors.toList()), new Dollars(overrideRate));
-    }
-
-    public int getId() {
-        return id;
     }
 
     public List<LodgingPerDiemView> getAllLodgingPerDiems() {

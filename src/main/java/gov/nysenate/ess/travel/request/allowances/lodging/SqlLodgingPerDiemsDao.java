@@ -11,14 +11,16 @@ import gov.nysenate.ess.travel.request.allowances.PerDiem;
 import gov.nysenate.ess.travel.utils.Dollars;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Repository
@@ -26,72 +28,100 @@ public class SqlLodgingPerDiemsDao extends SqlBaseDao {
 
     @Autowired private SqlTravelAddressDao travelAddressDao;
 
-    public LodgingPerDiems selectLodgingPerDiems(int amendmentId) {
+    public LodgingPerDiems selectLodgingPerDiems(int appId) {
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("amendmentId", amendmentId);
+                .addValue("appId", appId);
         String sql = SqlLodgingPerDiemsQuery.SELECT_LODGING_PER_DIEMS.getSql(schemaMap());
         LodgingPerDiemsHandler handler = new LodgingPerDiemsHandler();
         localNamedJdbc.query(sql, params, handler);
         return handler.getResult();
     }
 
-    public void saveLodgingPerDiems(LodgingPerDiems lodgingPerDiems, int amendmentId) {
-        for (LodgingPerDiem lpd : lodgingPerDiems.allLodgingPerDiems()) {
-            // Ensure the address is in the database and update its id.
-            // Destination addresses are inserted earlier but they are different instances so these address's ids
-            // do not get updated. We need to call saveGoogleAddress here so the lodgingPerDiem addresses have the correct address_id.
-            travelAddressDao.saveAddress(lpd.address());
-            insertLodgingPerDiem(lpd);
-            int id = insertIntoJoinTable(lpd, amendmentId, lodgingPerDiems.overrideRate());
-            lodgingPerDiems.setId(id);
+    @Transactional
+    public void updateLodgingPerDiems(LodgingPerDiems lpds, int appId) {
+        deleteLodgingPerDiems(appId);
+        insertLodgingPerDiems(lpds, appId);
+        updateOverrideRate(lpds, appId);
+    }
+
+    private void deleteLodgingPerDiems(int appId) {
+        MapSqlParameterSource params = new MapSqlParameterSource("appId", appId);
+        String sql = SqlLodgingPerDiemsQuery.DELETE_LODGING_PER_DIEMS.getSql(schemaMap());
+        localNamedJdbc.update(sql, params);
+    }
+
+    private void insertLodgingPerDiems(LodgingPerDiems lpds, int appId) {
+        List<SqlParameterSource> paramList = new ArrayList<>();
+        for (LodgingPerDiem lpd : lpds.allLodgingPerDiems()) {
+            MapSqlParameterSource params = new MapSqlParameterSource()
+                    .addValue("appId", appId)
+                    .addValue("addressId", lpd.address().getId())
+                    .addValue("date", toDate(lpd.date()))
+                    .addValue("rate", lpd.rate().toString())
+                    .addValue("isReimbursementRequested", lpd.isReimbursementRequested());
+            paramList.add(params);
         }
-    }
-
-    private void insertLodgingPerDiem(LodgingPerDiem lpd) {
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("addressId", lpd.address().getId())
-                .addValue("date", toDate(lpd.date()))
-                .addValue("rate", lpd.rate().toString())
-                .addValue("isReimbursementRequested", lpd.isReimbursementRequested());
-
         String sql = SqlLodgingPerDiemsQuery.INSERT_LODGING_PER_DIEM.getSql(schemaMap());
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        localNamedJdbc.update(sql, params, keyHolder);
-        lpd.setId((Integer) keyHolder.getKeys().get("amendment_lodging_per_diem_id"));
+        SqlParameterSource[] batchParams = new SqlParameterSource[paramList.size()];
+        batchParams = paramList.toArray(batchParams);
+        localNamedJdbc.batchUpdate(sql, batchParams);
     }
 
-    private int insertIntoJoinTable(LodgingPerDiem lpd, int amendmentId, Dollars overrideRate) {
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("amendmentId", amendmentId)
-                .addValue("lpdId", lpd.id())
-                .addValue("overrideRate", overrideRate.toString());
-        String sql = SqlLodgingPerDiemsQuery.INSERT_JOIN_TABLE.getSql(schemaMap());
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        localNamedJdbc.update(sql, params, keyHolder);
-        return (Integer) keyHolder.getKeys().get("amendment_lodging_per_diems_id");
+    private void updateOverrideRate(LodgingPerDiems lpds, int appId) {
+        deleteOverrideRate(appId);
+        insertOverrideRate(lpds, appId);
     }
+
+    private void deleteOverrideRate(int appId) {
+        MapSqlParameterSource params = new MapSqlParameterSource("appId", appId);
+        String sql = SqlLodgingPerDiemsQuery.DELETE_LODGING_OVERRIDE_RATE.getSql(schemaMap());
+        localNamedJdbc.update(sql, params);
+    }
+
+    private void insertOverrideRate(LodgingPerDiems lpds, int appId) {
+        if (!lpds.isOverridden()) {
+            return;
+        }
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("appId", appId)
+                .addValue("overrideRate", lpds.overrideRate().toString());
+        String sql = SqlLodgingPerDiemsQuery.INSERT_LODGING_OVERRIDE_RATE.getSql(schemaMap());
+        localNamedJdbc.update(sql, params);
+    }
+
 
     private enum SqlLodgingPerDiemsQuery implements BasicSqlQuery {
         SELECT_LODGING_PER_DIEMS("""
-                SELECT lpds.amendment_lodging_per_diems_id, lpds.amendment_lodging_per_diem_id, lpds.override_rate,
-                  lpd.address_id, lpd.date, lpd.rate, lpd.is_reimbursement_requested,
-                  addr.street_1, addr.city, addr.state, addr.zip_5, addr.county, addr.country, addr.place_id, addr.name
-                FROM ${travelSchema}.amendment_lodging_per_diems lpds
-                INNER JOIN ${travelSchema}.amendment_lodging_per_diem lpd ON lpds.amendment_lodging_per_diem_id = lpd.amendment_lodging_per_diem_id
-                INNER JOIN ${travelSchema}.address addr ON lpd.address_id = addr.address_id
-                WHERE lpds.amendment_id = :amendmentId;
+                SELECT lpd.app_lodging_per_diem_id, lpd.address_id, lpd.date, lpd.rate, lpd.is_reimbursement_requested,
+                  addr.street_1, addr.city, addr.state, addr.zip_5, addr.county, addr.country, addr.place_id, addr.name,
+                  override_rate
+                FROM ${travelSchema}.app_lodging_per_diem lpd
+                LEFT JOIN ${travelSchema}.app_lodging_per_diem_override USING (app_id)
+                INNER JOIN ${travelSchema}.address addr USING (address_id)
+                WHERE lpd.app_id = :appId;
+                """
+        ),
+        DELETE_LODGING_PER_DIEMS("""
+                DELETE FROM ${travelSchema}.app_lodging_per_diem
+                WHERE app_id = :appId
                 """
         ),
         INSERT_LODGING_PER_DIEM("""
-                INSERT INTO ${travelSchema}.amendment_lodging_per_diem
-                  (address_id, date, rate, is_reimbursement_requested)
-                VALUES (:addressId, :date, :rate, :isReimbursementRequested)
+                INSERT INTO ${travelSchema}.app_lodging_per_diem
+                  (address_id, date, rate, is_reimbursement_requested, app_id)
+                VALUES (:addressId, :date, :rate, :isReimbursementRequested, :appId)
                 """
         ),
-        INSERT_JOIN_TABLE("""
-                INSERT INTO ${travelSchema}.amendment_lodging_per_diems
-                  (amendment_id, amendment_lodging_per_diem_id, override_rate)
-                VALUES (:amendmentId, :lpdId, :overrideRate)
+        DELETE_LODGING_OVERRIDE_RATE("""
+                DELETE FROM ${travelSchema}.app_lodging_per_diem_override
+                WHERE app_id = :appId
+                """
+        ),
+        INSERT_LODGING_OVERRIDE_RATE("""
+                INSERT INTO ${travelSchema}.app_lodging_per_diem_override
+                  (app_id, override_rate)
+                VALUES (:appId, :overrideRate)
                 """
         );
 
@@ -114,7 +144,6 @@ public class SqlLodgingPerDiemsDao extends SqlBaseDao {
 
     public static class LodgingPerDiemsHandler extends BaseHandler {
 
-        private int lodgingPerDiemsId;
         private Dollars overrideRate;
         private Set<LodgingPerDiem> lodgingPerDiems;
         private TravelAddressRowMapper addressRowMapper = new TravelAddressRowMapper();
@@ -125,10 +154,9 @@ public class SqlLodgingPerDiemsDao extends SqlBaseDao {
 
         @Override
         public void processRow(ResultSet rs) throws SQLException {
-            lodgingPerDiemsId = rs.getInt("amendment_lodging_per_diems_id");
             overrideRate = new Dollars(rs.getString("override_rate"));
 
-            int lpdId = rs.getInt("amendment_lodging_per_diem_id");
+            int lpdId = rs.getInt("app_lodging_per_diem_id");
             TravelAddress address = addressRowMapper.mapRow(rs, rs.getRow());
             PerDiem perDiem = new PerDiem(getLocalDate(rs, "date"), new BigDecimal(rs.getString("rate")));
             boolean isReimbursementRequested = rs.getBoolean("is_reimbursement_requested");
@@ -137,7 +165,7 @@ public class SqlLodgingPerDiemsDao extends SqlBaseDao {
         }
 
         public LodgingPerDiems getResult() {
-            return new LodgingPerDiems(lodgingPerDiemsId, lodgingPerDiems, overrideRate);
+            return new LodgingPerDiems(lodgingPerDiems, overrideRate);
         }
     }
 }
