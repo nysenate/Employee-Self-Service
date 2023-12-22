@@ -70,7 +70,7 @@ public class EssTimeRecordManager implements TimeRecordManager
 
     /** --- Services --- */
     @Lazy
-    @Autowired protected CachedTimeRecordService timeRecordService;
+    @Autowired protected TimeRecordService timeRecordService;
     @Autowired protected AccrualInfoService accrualInfoService;
     @Autowired protected PayPeriodService payPeriodService;
     @Autowired protected EmpTransactionService transService;
@@ -235,7 +235,7 @@ public class EssTimeRecordManager implements TimeRecordManager
         } catch (Exception ex) {
             // If anything goes wrong, attempt to clear the employee's record cache.
             logger.warn("Clearing time record cache for emp:{} due to time record manager error.", empId);
-            timeRecordService.evictContent(String.valueOf(empId));
+            timeRecordService.evictEmployee(empId);
             throw ex;
         }
     }

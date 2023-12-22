@@ -42,7 +42,6 @@ public abstract class RefreshedCachedData<K, V> {
     }
 
     private void refreshData() {
-        System.out.println("Refreshing " + getClass() + " at " + LocalTime.now());
         dataMap = ImmutableMap.copyOf(getMap());
     }
 

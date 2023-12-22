@@ -252,6 +252,11 @@ public class CachedTimeRecordService
         }
     }
 
+    @Override
+    public void evictEmployee(int empId) {
+        evictContent(String.valueOf(empId));
+    }
+
     /** {@inheritDoc} */
     @Override
     public CacheType cacheType() {
