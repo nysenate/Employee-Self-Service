@@ -4,11 +4,11 @@ import gov.nysenate.ess.core.dao.unit.SqlLocationDao;
 import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.core.service.RefreshedCachedData;
+import gov.nysenate.ess.core.util.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class LocationService extends RefreshedCachedData<LocationId, Location> {
@@ -16,13 +16,8 @@ public class LocationService extends RefreshedCachedData<LocationId, Location> {
 
     @Autowired
     public LocationService(SqlLocationDao sqlLocationDao, @Value("${cache.cron.location}") String cron) {
-        super(cron);
+        super(cron, () -> CollectionUtils.valuesToMap(sqlLocationDao.getAllLocations(), Location::getLocId));
         this.locationDao = sqlLocationDao;
-    }
-
-    @Override
-    protected Map<LocationId, Location> getMap() {
-        return toMap(locationDao.getAllLocations(), Location::getLocId);
     }
 
     /**

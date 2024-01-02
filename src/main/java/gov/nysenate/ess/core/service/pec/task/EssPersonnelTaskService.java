@@ -9,12 +9,12 @@ import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignmentGroup;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
 import gov.nysenate.ess.core.service.RefreshedCachedData;
+import gov.nysenate.ess.core.util.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -26,20 +26,13 @@ import java.util.stream.Stream;
 public class EssPersonnelTaskService
         extends RefreshedCachedData<Integer, PersonnelTask>
         implements PersonnelTaskService {
-    private final PersonnelTaskDao taskDao;
     private final ImmutableMap<PersonnelTaskType, PersonnelTaskDetailDao<? extends PersonnelTask>> taskDetailDaoMap;
 
     @Autowired
     public EssPersonnelTaskService(PersonnelTaskDao taskDao, @Value("${cache.cron.task}") String cron,
                                    List<PersonnelTaskDetailDao<?>> taskDetailDaos) {
-        super(cron);
-        this.taskDao = taskDao;
+        super(cron, () -> CollectionUtils.valuesToMap(taskDao.getAllTasks(), PersonnelTask::getTaskId));
         this.taskDetailDaoMap = Maps.uniqueIndex(taskDetailDaos, PersonnelTaskDetailDao::taskType);
-    }
-
-    @Override
-    protected Map<Integer, PersonnelTask> getMap() {
-        return toMap(taskDao.getAllTasks(), PersonnelTask::getTaskId);
     }
 
     /* --- PersonnelTaskService implementations --- */

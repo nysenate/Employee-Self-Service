@@ -9,33 +9,23 @@ import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.model.period.PayPeriodNotFoundEx;
 import gov.nysenate.ess.core.model.period.PayPeriodType;
 import gov.nysenate.ess.core.service.RefreshedCachedData;
+import gov.nysenate.ess.core.util.CollectionUtils;
 import gov.nysenate.ess.core.util.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class EssPayPeriodService
         extends RefreshedCachedData<PayPeriodType, RangeMap<LocalDate, PayPeriod>>
         implements PayPeriodService {
-    private final PayPeriodDao periodDao;
-
     @Autowired
     public EssPayPeriodService(PayPeriodDao payPeriodDao, @Value("${cache.cron.period}") String cron) {
-        super(cron);
-        this.periodDao = payPeriodDao;
-    }
-
-    @Override
-    protected Map<PayPeriodType, RangeMap<LocalDate, PayPeriod>> getMap() {
-        return Arrays.stream(PayPeriodType.values())
-                .collect(Collectors.toMap(Function.identity(), this::getPeriodMap));
+        super(cron, () -> CollectionUtils.keysToMap(List.of(PayPeriodType.values()),
+                type -> getPeriodMap(type, payPeriodDao)));
     }
 
     /** --- Pay Period Service Implemented Methods --- */
@@ -57,7 +47,7 @@ public class EssPayPeriodService
         return new ArrayList<>(normalMap.values());
     }
 
-    private RangeMap<LocalDate, PayPeriod> getPeriodMap(PayPeriodType type) {
+    private static RangeMap<LocalDate, PayPeriod> getPeriodMap(PayPeriodType type, PayPeriodDao periodDao) {
         final RangeMap<LocalDate, PayPeriod> rangeMap = TreeRangeMap.create();
         Range<LocalDate> cacheRange = Range.upTo(LocalDate.now().plusYears(2), BoundType.CLOSED);
         periodDao.getPayPeriods(type, cacheRange, SortOrder.ASC)

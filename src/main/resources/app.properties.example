@@ -134,7 +134,7 @@ mail.test.address =
 
 # Set to true if caches should be warmed when the application deploys, false
 # otherwise.
-cache.warm.onstartup = true
+cache.warm.on.startup = true
 
 # Specific Cache Warming
 # Set these to true/false to enable/disable startup warming for specific caches

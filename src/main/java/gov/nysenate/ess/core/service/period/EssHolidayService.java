@@ -5,6 +5,7 @@ import com.google.common.collect.Range;
 import gov.nysenate.ess.core.dao.period.HolidayDao;
 import gov.nysenate.ess.core.model.period.Holiday;
 import gov.nysenate.ess.core.service.RefreshedCachedData;
+import gov.nysenate.ess.core.util.CollectionUtils;
 import gov.nysenate.ess.core.util.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,18 +19,12 @@ import java.util.stream.Collectors;
 public class EssHolidayService
         extends RefreshedCachedData<LocalDate, Holiday>
         implements HolidayService {
-    private final HolidayDao holidayDao;
-
     @Autowired
     public EssHolidayService(HolidayDao holidayDao, @Value("${cache.cron.holiday}") String cron) {
-        super(cron);
-        this.holidayDao = holidayDao;
-    }
-
-    @Override
-    protected Map<LocalDate, Holiday> getMap() {
-        var range = Range.upTo(LocalDate.now().plusYears(2), BoundType.CLOSED);
-        return toMap(holidayDao.getHolidays(range, true, SortOrder.ASC), Holiday::getDate);
+        super(cron, () -> {
+            var range = Range.upTo(LocalDate.now().plusYears(2), BoundType.CLOSED);
+            return CollectionUtils.valuesToMap(holidayDao.getHolidays(range, true, SortOrder.ASC), Holiday::getDate);
+        });
     }
 
     @Override
