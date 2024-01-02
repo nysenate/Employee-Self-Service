@@ -2,51 +2,54 @@ package gov.nysenate.ess.core.service;
 
 import com.google.common.collect.ImmutableMap;
 import gov.nysenate.ess.core.config.InheritedService;
-import org.springframework.scheduling.config.CronTask;
-import org.springframework.scheduling.support.CronExpression;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.scheduling.support.CronTrigger;
 
 import javax.annotation.PostConstruct;
-import java.time.LocalTime;
-import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.function.Supplier;
 
 /**
  * Some common code for classes that cache data for quicker access, where the cache is periodically refreshed.
  */
 @InheritedService
 public abstract class RefreshedCachedData<K, V> {
-    private static final PooledTaskScheduler scheduler = new PooledTaskScheduler();
     private static final String defaultCron = "0 0 0 * * *";
-    private final String cron;
+    @Autowired()
+    private ThreadPoolTaskScheduler cronScheduler;
+    private final CronTrigger cronTrigger;
+    private final Supplier<Map<K, V>> mapSupplier;
     private ImmutableMap<K, V> dataMap = null;
 
-    protected RefreshedCachedData(String cron) {
-        this.cron = CronExpression.isValidExpression(cron) ? cron : defaultCron;
+    protected RefreshedCachedData(Supplier<Map<K, V>> mapSupplier) {
+        this(defaultCron, mapSupplier);
     }
 
-    protected abstract Map<K, V> getMap();
+    protected RefreshedCachedData(String cron, Supplier<Map<K, V>> mapSupplier) {
+        this.cronTrigger = new CronTrigger(cron);
+        this.mapSupplier = mapSupplier;
+    }
 
-    // Access to the internal map is only allowed through this method,
-    // ensuring the map always exists, though it need not be created on start-up.
-    protected Map<K, V> dataMap() {
+    /**
+     * Access to the internal map is only allowed through this method,
+     * ensuring the map always exists, though it need not be created on start-up.
+     * @return the current data.
+     */
+    public Map<K, V> dataMap() {
         if (dataMap == null) {
             refreshData();
         }
         return dataMap;
     }
 
-    protected Map<K, V> toMap(List<V> values, Function<V, K> keyFunction) {
-        return values.stream().collect(Collectors.toMap(keyFunction, Function.identity()));
-    }
-
     private void refreshData() {
-        dataMap = ImmutableMap.copyOf(getMap());
+        dataMap = ImmutableMap.copyOf(mapSupplier.get());
     }
 
     @PostConstruct
     private void scheduler() {
-        scheduler.scheduleCronTask(new CronTask(this::refreshData, cron));
+        cronScheduler.schedule(this::refreshData, cronTrigger);
     }
 }
