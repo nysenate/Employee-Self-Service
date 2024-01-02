@@ -19,6 +19,12 @@ public record LocationId(String code, LocationType type) {
         return new LocationId(parts[0], LocationType.valueOfCode(parts[1].charAt(0)));
     }
 
+    @Override
+    // API calls rely on this.
+    public String toString() {
+        return code + '-' + type.getCode();
+    }
+
     public String getCode() {
         return code;
     }

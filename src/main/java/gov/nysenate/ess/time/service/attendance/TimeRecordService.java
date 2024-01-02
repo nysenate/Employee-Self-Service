@@ -145,6 +145,12 @@ public interface TimeRecordService
     boolean saveRecord(TimeRecord newRecord, TimeRecordAction action);
 
     /**
+     * Evict an employee's data from the cache.
+     * @param empId
+     */
+    void evictEmployee(int empId);
+
+    /**
      * Synchronize time record cache
      */
     void syncTimeRecords();
