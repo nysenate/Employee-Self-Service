@@ -3,7 +3,6 @@ package gov.nysenate.ess.core.service;
 import com.google.common.collect.ImmutableMap;
 import gov.nysenate.ess.core.config.InheritedService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 

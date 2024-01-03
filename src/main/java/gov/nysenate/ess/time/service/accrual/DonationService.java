@@ -6,7 +6,7 @@ import java.util.Map;
 
 public interface DonationService {
     /**
-     * Gets the total hours the given employee has ever donated.
+     * Gets the total hours donated in the given year.
      */
     BigDecimal getHoursDonated(int empId, int year);
 
