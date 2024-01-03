@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class EssDonationService implements DonationService {
-    private static final LocalDate beforeImplementation = LocalDate.of(2023, 6, 1);
     private final DonationDao donationDao;
 
     public EssDonationService(DonationDao donationDao) {
@@ -19,15 +18,8 @@ public class EssDonationService implements DonationService {
     }
 
     @Override
-    public BigDecimal getHoursDonated(int empId) {
-        try {
-            Range<LocalDate> dateRange = Range.closed(beforeImplementation, LocalDate.now());
-            return donationDao.getDonatedTime(empId, dateRange)
-                    .values().stream().reduce(BigDecimal.ZERO, BigDecimal::add);
-        }
-        catch (IllegalArgumentException ex) {
-            return BigDecimal.ZERO;
-        }
+    public BigDecimal getHoursDonated(int empId, int year) {
+        return donationDao.getDonatedTime(empId, year).values().stream().reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     @Override
