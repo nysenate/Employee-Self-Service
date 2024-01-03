@@ -15,7 +15,7 @@ public final class MealPerDiem {
     /**
      * The daily meal reimbursement rate for this address and date.
      * The same as the mie.total() if mie is not null. {@code rate} should never be null,
-     * however an mie may be null if the senate has not yet defined meal rates for the {@code date} yet.
+     * however a mie may be null if the senate has not yet defined meal rates for the {@code date} yet.
      */
     private final Dollars rate;
     private final SenateMie mie;

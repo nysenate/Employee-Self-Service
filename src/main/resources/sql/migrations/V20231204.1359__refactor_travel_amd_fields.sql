@@ -8,8 +8,7 @@ ALTER TABLE travel.allowance
 
 -- Initialize app_id column.
 UPDATE travel.allowance
-SET app_id = amendment.app_id
-FROM travel.amendment
+SET app_id = amendment.app_id FROM travel.amendment
          INNER JOIN travel.amendment_allowances USING (amendment_id)
 WHERE allowance.allowance_id = amendment_allowances.allowance_id;
 
@@ -20,7 +19,8 @@ WHERE app_id is null;
 
 
 ALTER TABLE travel.amendment_allowances
-    DROP CONSTRAINT IF EXISTS amendment_allowances_amendment_allowances_id_fkey;
+DROP
+CONSTRAINT IF EXISTS amendment_allowances_amendment_allowances_id_fkey;
 
 DROP TABLE IF EXISTS travel.amendment_allowances;
 
@@ -46,8 +46,7 @@ ALTER TABLE travel.attachment
 
 -- Initialize app_id column.
 UPDATE travel.attachment
-SET app_id = amendment.app_id
-FROM travel.amendment
+SET app_id = amendment.app_id FROM travel.amendment
          INNER JOIN travel.amendment_attachment USING (amendment_id)
 WHERE attachment.attachment_id = amendment_attachment.attachment_id;
 
@@ -82,8 +81,7 @@ ALTER TABLE travel.app_route
     ADD COLUMN app_id int;
 
 UPDATE travel.app_route
-SET app_id = amendment.app_id
-FROM travel.amendment
+SET app_id = amendment.app_id FROM travel.amendment
 WHERE app_route.amendment_id = amendment.amendment_id;
 
 DELETE
@@ -94,10 +92,12 @@ ALTER TABLE travel.app_route
     ALTER COLUMN app_id SET NOT NULL;
 
 ALTER TABLE travel.app_route
-    DROP CONSTRAINT IF EXISTS amendment_legs_amendment_id_fkey;
+DROP
+CONSTRAINT IF EXISTS amendment_legs_amendment_id_fkey;
 
 ALTER TABLE travel.app_route
-    DROP COLUMN amendment_id;
+DROP
+COLUMN amendment_id;
 
 ALTER TABLE travel.app_route
     RENAME COLUMN amendment_legs_id to app_route_id;
@@ -131,13 +131,15 @@ ALTER TABLE travel.app_route_leg
 
 -- Remove ON DELETE CASCADE from destination FK.
 ALTER TABLE travel.app_route_leg
-    DROP CONSTRAINT leg_from_destination_id_fkey,
+DROP
+CONSTRAINT leg_from_destination_id_fkey,
     ADD CONSTRAINT leg_from_destination_id_fkey FOREIGN
         KEY (from_destination_id) REFERENCES travel.destination (destination_id);
 
 -- Remove ON DELETE CASCADE from destination FK.
 ALTER TABLE travel.app_route_leg
-    DROP CONSTRAINT leg_to_destination_id_fkey,
+DROP
+CONSTRAINT leg_to_destination_id_fkey,
     ADD CONSTRAINT leg_to_destination_id_fkey FOREIGN
         KEY (from_destination_id) REFERENCES travel.destination (destination_id);
 
@@ -153,8 +155,7 @@ ALTER TABLE travel.app_lodging_per_diem
     ADD COLUMN app_id int;
 
 UPDATE travel.app_lodging_per_diem
-SET app_id = amendment.app_id
-FROM travel.amendment
+SET app_id = amendment.app_id FROM travel.amendment
          JOIN travel.amendment_lodging_per_diems
               USING (amendment_id)
 WHERE amendment_lodging_per_diems.amendment_lodging_per_diem_id = app_lodging_per_diem.amendment_lodging_per_diem_id;
@@ -173,26 +174,28 @@ ALTER SEQUENCE travel.amendment_lodging_per_diem_amendment_lodging_per_diem_id_s
     RENAME TO app_lodging_per_diem_id_seq;
 
 ALTER TABLE travel.amendment_lodging_per_diems
-    DROP CONSTRAINT IF EXISTS amendment_lodging_per_diems_per_diem_id_fkey;
-
+DROP
+CONSTRAINT IF EXISTS amendment_lodging_per_diems_per_diem_id_fkey;
 
 ALTER TABLE travel.app_lodging_per_diem
-    DROP CONSTRAINT amendment_lodging_per_diem_address_id_fkey,
+DROP
+CONSTRAINT amendment_lodging_per_diem_address_id_fkey,
     ADD CONSTRAINT app_lodging_per_diem_address_id_fkey
         FOREIGN KEY (address_id) REFERENCES travel.address (address_id);
 
-ALTER INDEX travel.amendment_lodging_per_diem_pkey RENAME TO app_lodging_per_diem_pkey;
+ALTER
+INDEX travel.amendment_lodging_per_diem_pkey RENAME TO app_lodging_per_diem_pkey;
 
 -- Delete inactive lodging per diems.
 DELETE
-FROM travel.app_lodging_per_diem a
-    USING (SELECT app_id, date, max(app_lodging_per_diem_id) as mostRecentId
+FROM travel.app_lodging_per_diem a USING (SELECT app_id, date, max(app_lodging_per_diem_id) as mostRecentId
            FROM travel.app_lodging_per_diem
            GROUP BY app_id, date
            order by app_id, date) b
 WHERE a.app_id = b.app_id
   AND a.date = b.date
-  AND a.app_lodging_per_diem_id < b.mostRecentId;
+  AND a.app_lodging_per_diem_id
+    < b.mostRecentId;
 
 CREATE UNIQUE INDEX ON travel.app_lodging_per_diem (app_id, date);
 
@@ -201,7 +204,7 @@ ALTER TABLE travel.app_lodging_per_diem
         REFERENCES travel.app (app_id)
         ON DELETE CASCADE;
 
--- Store overrides in a separate table
+-- Store lodging per diem overrides in a separate table
 CREATE TABLE travel.app_lodging_per_diem_override
 (
     app_lodging_per_diem_override_id serial,
@@ -210,3 +213,94 @@ CREATE TABLE travel.app_lodging_per_diem_override
 );
 
 DROP TABLE travel.amendment_lodging_per_diems;
+
+CREATE INDEX ON travel.app_lodging_per_diem_override(app_id);
+
+ALTER TABLE travel.app_lodging_per_diem_override
+    ADD CONSTRAINT app_lodging_per_diem_override_app_id_fkey FOREIGN KEY (app_id)
+        REFERENCES travel.app (app_id)
+        ON DELETE CASCADE;
+
+-----------------------------------
+-- ** Amendment Meal Per Diem **
+-----------------------------------
+
+ALTER TABLE travel.amendment_meal_per_diem
+    RENAME TO app_meal_per_diem;
+
+ALTER TABLE travel.app_meal_per_diem
+    ADD COLUMN app_id int;
+
+UPDATE travel.app_meal_per_diem
+SET app_id = amendment.app_id FROM travel.amendment
+        JOIN travel.amendment_meal_per_diems USING(amendment_id)
+WHERE amendment_meal_per_diems.amendment_meal_per_diem_id = app_meal_per_diem.amendment_meal_per_diem_id;
+
+DELETE
+FROM travel.app_meal_per_diem
+WHERE app_id is null;
+
+ALTER TABLE travel.app_meal_per_diem
+    ALTER COLUMN app_id SET NOT NULL;
+
+ALTER TABLE travel.app_meal_per_diem
+    RENAME COLUMN amendment_meal_per_diem_id TO app_meal_per_diem_id;
+
+ALTER SEQUENCE travel.amendment_meal_per_diem_amendment_meal_per_diem_id_seq
+    RENAME TO app_meal_per_diem_id_seq;
+
+ALTER TABLE travel.amendment_meal_per_diems
+DROP
+CONSTRAINT IF EXISTS amendment_meal_per_diems_per_diem_id_fkey;
+
+ALTER TABLE travel.app_meal_per_diem
+DROP
+CONSTRAINT amendment_meal_per_diem_address_id_fkey,
+    ADD CONSTRAINT app_meal_per_diem_address_id_fkey
+         FOREIGN KEY (address_id) REFERENCES travel.address(address_id),
+    DROP
+CONSTRAINT amendment_meal_per_diem_senate_mie_id_fkey,
+    ADD CONSTRAINT app_meal_per_diem_senate_mie_id_fkey
+         FOREIGN KEY (senate_mie_id) REFERENCES travel.senate_mie(senate_mie_id);
+
+ALTER
+INDEX travel.amendment_meal_per_diem_pkey RENAME TO app_meal_per_diem_pkey;
+
+-- Delete inactive meal per diems.
+DELETE
+FROM travel.app_meal_per_diem a USING (
+        SELECT app_id, date, max(app_meal_per_diem_id) as mostRecentId
+        FROM travel.app_meal_per_diem
+        GROUP BY app_id, date
+        ORDER BY app_id, date
+    ) b
+WHERE a.app_id = b.app_id
+  AND a.date = b.date
+  AND a.app_meal_per_diem_id
+    < b.mostRecentId;
+
+CREATE UNIQUE INDEX ON travel.app_meal_per_diem(app_id, date);
+
+ALTER TABLE travel.app_meal_per_diem
+    ADD CONSTRAINT app_meal_per_diem_app_id_fkey FOREIGN KEY (app_id)
+        REFERENCES travel.app (app_id)
+        ON DELETE CASCADE;
+
+-- Store meal per diem overrides in a separate table
+CREATE TABLE travel.app_meal_per_diem_override
+(
+    app_meal_per_diem_override_id serial,
+    app_id                        int  NOT NULL,
+    override_rate                 text NOT NULL
+);
+
+DROP TABLE travel.amendment_meal_per_diems;
+
+CREATE INDEX ON travel.app_meal_per_diem_override(app_id);
+
+ALTER TABLE travel.app_meal_per_diem_override
+    ADD CONSTRAINT app_meal_per_diem_override_app_id_fkey FOREIGN KEY (app_id)
+        REFERENCES travel.app (app_id)
+        ON DELETE CASCADE;
+
+

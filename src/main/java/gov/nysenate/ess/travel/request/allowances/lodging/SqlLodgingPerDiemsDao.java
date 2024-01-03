@@ -26,8 +26,6 @@ import java.util.Set;
 @Repository
 public class SqlLodgingPerDiemsDao extends SqlBaseDao {
 
-    @Autowired private SqlTravelAddressDao travelAddressDao;
-
     public LodgingPerDiems selectLodgingPerDiems(int appId) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("appId", appId);

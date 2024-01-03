@@ -15,27 +15,21 @@ public class MealPerDiems {
 
     private final static Comparator<MealPerDiem> dateComparator = Comparator.comparing(MealPerDiem::date);
 
-    private int id;
     private final ImmutableSortedSet<MealPerDiem> mealPerDiems;
     private Dollars overrideRate;
-    private final boolean isAllowedMeals;
+    // TODO remove, put in TravelApplication.
+    private boolean isAllowedMeals;
 
     public MealPerDiems(Collection<MealPerDiem> mealPerDiems) {
-        this(0, mealPerDiems, Dollars.ZERO, true);
+        this(mealPerDiems, Dollars.ZERO);
     }
 
-    public MealPerDiems(Collection<MealPerDiem> mealPerDiems, boolean isAllowedMeals) {
-        this(0, mealPerDiems, Dollars.ZERO, isAllowedMeals);
-    }
-
-    public MealPerDiems(int id, Collection<MealPerDiem> mealPerDiems, Dollars overrideRate, boolean isAllowedMeals) {
-        this.id = id;
+    public MealPerDiems(Collection<MealPerDiem> mealPerDiems, Dollars overrideRate) {
         this.mealPerDiems = ImmutableSortedSet
                 .orderedBy(dateComparator)
                 .addAll(mealPerDiems)
                 .build();
         this.overrideRate = overrideRate == null ? Dollars.ZERO : overrideRate;
-        this.isAllowedMeals = isAllowedMeals;
     }
 
     public Dollars total() {
@@ -47,14 +41,6 @@ public class MealPerDiems {
                 : requestedMealPerDiems().stream()
                 .map(MealPerDiem::total)
                 .reduce(Dollars.ZERO, Dollars::add);
-    }
-
-    public int id() {
-        return this.id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public void setOverrideRate(Dollars rate) {
