@@ -1,9 +1,9 @@
 package gov.nysenate.ess.time.dao.attendance;
 
 import com.google.common.collect.Range;
+import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.annotation.SillyTest;
 import gov.nysenate.ess.core.util.OutputUtils;
-import gov.nysenate.ess.core.BaseTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
@@ -21,7 +21,7 @@ public class SqlRemoteRecordDaoTest extends BaseTest
     private SqlTimeRecordDao sqlTimeRecordDao;
 
     @Test
-    public void getRecordByEmployeeId() throws Exception {
+    public void getRecordByEmployeeId() {
         logger.info(
             OutputUtils.toJson(sqlTimeRecordDao.getRecordsDuring(10976, Range.closed(LocalDate.of(2014, 1, 1), LocalDate.of(2014, 2, 1))
             )));

@@ -11,9 +11,9 @@ import org.slf4j.LoggerFactory;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
-import static org.junit.Assert.*;
-import static java.time.DayOfWeek.*;
 import static gov.nysenate.ess.core.util.DateUtils.*;
+import static java.time.DayOfWeek.*;
+import static org.junit.Assert.*;
 
 @Category(UnitTest.class)
 @WorkInProgress(author = "sam", since = "2/17/2017", desc = "needs to cover more methods")
@@ -22,7 +22,7 @@ public class DateUtilsTest {
     private static final Logger logger = LoggerFactory.getLogger(DateUtilsTest.class);
 
     @Test
-    public void testIsWeekday() throws Exception {
+    public void testIsWeekday() {
         LocalDate monday = LocalDate.of(2017, 1, 16);
         LocalDate saturday = LocalDate.of(2017, 1, 21);
         assertEquals(MONDAY, monday.getDayOfWeek());
@@ -35,13 +35,12 @@ public class DateUtilsTest {
                     isWeekday(date));
         }
         for (LocalDate date = saturday; date.isBefore(saturday.plusDays(2)); date = date.plusDays(1)) {
-            assertTrue(String.format("%s(%s) should not be considered a weekday", date, date.getDayOfWeek()),
-                    !isWeekday(date));
+            assertFalse(String.format("%s(%s) should not be considered a weekday", date, date.getDayOfWeek()), isWeekday(date));
         }
     }
 
     @Test
-    public void testGetNumberOfWeekdays() throws Exception {
+    public void testGetNumberOfWeekdays() {
         LocalDate monday = LocalDate.of(2017, 1, 16);
         assertEquals(MONDAY, monday.getDayOfWeek());
         LocalDate wednesday = LocalDate.of(2017, 1, 18);
@@ -88,8 +87,7 @@ public class DateUtilsTest {
 
         Range<LocalDate> all = Range.all();
         LocalDate allStart = startOfDateRange(all);
-        LocalDate allStartExpected = LONG_AGO;
-        assertEquals(allStartExpected, allStart);
+        assertEquals(LONG_AGO, allStart);
 
         Range<LocalDate> greaterThan = Range.greaterThan(now);
         LocalDate gtStart = startOfDateRange(greaterThan);
@@ -98,8 +96,7 @@ public class DateUtilsTest {
 
         Range<LocalDate> atLeast = Range.atLeast(now);
         LocalDate atLeastStart = startOfDateRange(atLeast);
-        LocalDate atLeastStartExpected = now;
-        assertEquals(atLeastStartExpected, atLeastStart);
+        assertEquals(now, atLeastStart);
     }
 
     @Test
@@ -108,8 +105,7 @@ public class DateUtilsTest {
 
         Range<LocalDate> all = Range.all();
         LocalDate allEnd = endOfDateRange(all);
-        LocalDate allEndExpected = THE_FUTURE;
-        assertEquals(allEndExpected, allEnd);
+        assertEquals(THE_FUTURE, allEnd);
 
         Range<LocalDate> lessThan = Range.lessThan(now);
         LocalDate ltEnd = endOfDateRange(lessThan);
@@ -118,8 +114,7 @@ public class DateUtilsTest {
 
         Range<LocalDate> atMost = Range.atMost(now);
         LocalDate atMostEnd = endOfDateRange(atMost);
-        LocalDate atMostEndExpected = now;
-        assertEquals(atMostEndExpected, atMostEnd);
+        assertEquals(now, atMostEnd);
     }
 
     @Test

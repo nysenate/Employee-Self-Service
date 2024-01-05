@@ -3,38 +3,26 @@ package gov.nysenate.ess.core.model.unit;
 /**
  * The location code together with the location type uniquely identify a location.
  */
-public final class LocationId {
-
-    private final String code;
-    private final LocationType type;
-
-    public LocationId(String code, LocationType type) {
-        this.code = code;
-        this.type = type;
-    }
-
+public record LocationId(String code, LocationType type) {
     public LocationId(String locCode, char locType) {
-        this.code = locCode;
-        this.type = LocationType.valueOfCode(locType);
+        this(locCode, LocationType.valueOfCode(locType));
         // TODO error if locType is invalid. isSyntacticallyValid kinda handles this but is never called?
-    }
-
-    public LocationId(String locationId) {
-        // Don't throw IllegalArgumentException if missing '-'
-        if (locationId == null || !locationId.contains("-")) {
-            this.code = null;
-            this.type = null;
-        }
-        else {
-            String[] parts = locationId.split("-");
-            this.code = parts[0];
-            this.type = LocationType.valueOfCode(parts[1].charAt(0));
-        }
     }
 
     /** Creates a location Id from its toString() output. */
     public static LocationId ofString(String locString) {
-        return new LocationId(locString);
+        // Don't throw IllegalArgumentException if missing '-'
+        if (locString == null || !locString.contains("-")) {
+            return new LocationId(null, null);
+        }
+        String[] parts = locString.split("-");
+        return new LocationId(parts[0], LocationType.valueOfCode(parts[1].charAt(0)));
+    }
+
+    @Override
+    // API calls rely on this.
+    public String toString() {
+        return code + '-' + type.getCode();
     }
 
     public String getCode() {
@@ -51,37 +39,12 @@ public final class LocationId {
 
     /**
      * Was this locationId constructed with valid syntax.
-     *
      * May want to replace with NullObjectPattern.
      *
      * @return <code>false</code> if its impossible for this to represent a {@link Location}.
      * <code>true</code> otherwise.
      */
     public boolean isSyntacticallyValid() {
-        if (code == null || type == null || code.isEmpty()) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return code + '-' + type.getCode();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        LocationId that = (LocationId) o;
-        if (code != null ? !code.equals(that.code) : that.code != null) return false;
-        return type == that.type;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = code != null ? code.hashCode() : 0;
-        result = 31 * result + (type != null ? type.hashCode() : 0);
-        return result;
+        return code != null && type != null && !code.isEmpty();
     }
 }

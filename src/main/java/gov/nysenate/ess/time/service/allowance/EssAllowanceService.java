@@ -11,6 +11,7 @@ import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.RangeUtils;
 import gov.nysenate.ess.time.dao.attendance.AttendanceDao;
+import gov.nysenate.ess.time.dao.attendance.TimeRecordDao;
 import gov.nysenate.ess.time.model.allowances.AllowanceUsage;
 import gov.nysenate.ess.time.model.allowances.HourlyWorkPayment;
 import gov.nysenate.ess.time.model.allowances.PeriodAllowanceUsage;
@@ -18,10 +19,8 @@ import gov.nysenate.ess.time.model.attendance.AttendanceRecord;
 import gov.nysenate.ess.time.model.attendance.TimeEntry;
 import gov.nysenate.ess.time.model.attendance.TimeRecord;
 import gov.nysenate.ess.time.model.attendance.TimeRecordStatus;
-import gov.nysenate.ess.time.service.attendance.TimeRecordService;
+import gov.nysenate.ess.time.service.attendance.TimeRecordInitializer;
 import org.apache.commons.lang3.tuple.Pair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,21 +38,19 @@ import static java.util.stream.Collectors.*;
 
 @Service
 public class EssAllowanceService implements AllowanceService {
-
-    private static final Logger logger = LoggerFactory.getLogger(EssAllowanceService.class);
-
     private final EmpTransactionService transService;
-    private final TimeRecordService tRecS;
+    private final TimeRecordDao timeRecordDao;
+    private final TimeRecordInitializer timeRecordInitializer;
     private final AttendanceDao attendanceDao;
     private final PayPeriodService payPeriodService;
 
     @Autowired
-    public EssAllowanceService(EmpTransactionService transService,
-                               TimeRecordService tRecS,
-                               AttendanceDao attendanceDao,
+    public EssAllowanceService(EmpTransactionService transService, TimeRecordDao timeRecordDao,
+                               TimeRecordInitializer timeRecordInitializer, AttendanceDao attendanceDao,
                                PayPeriodService payPeriodService) {
         this.transService = transService;
-        this.tRecS = tRecS;
+        this.timeRecordDao = timeRecordDao;
+        this.timeRecordInitializer = timeRecordInitializer;
         this.attendanceDao = attendanceDao;
         this.payPeriodService = payPeriodService;
     }
@@ -335,8 +332,7 @@ public class EssAllowanceService implements AllowanceService {
                 .flatMap(Collection::stream)
                 .filter(e -> e.getPayType() == TE &&
                         validDates.contains(e.getDate()) &&
-                        !e.isEmpty())
-                .collect(toList());
+                        !e.isEmpty()).toList();
 
         RangeSet<LocalDate> appliedDates = TreeRangeSet.create();
 
@@ -418,8 +414,7 @@ public class EssAllowanceService implements AllowanceService {
 
         List<TransactionRecord> effectiveRecords = transHistory.getRecords(TransactionCode.HWT).stream()
                 // Filter out records more than a year before or after the requested year
-                .filter(record -> auditDateRange.contains(record.getAuditDate().toLocalDate()))
-                .collect(toList());
+                .filter(record -> auditDateRange.contains(record.getAuditDate().toLocalDate())).toList();
 
         Map<LocalDate, TransactionRecord> priorYearPayments = transHistory.getRecords(TransactionCode.PYA).stream()
                 .collect(Collectors.toMap(TransactionRecord::getEffectDate, Function.identity()));
@@ -484,7 +479,7 @@ public class EssAllowanceService implements AllowanceService {
                 Sets.difference(TimeRecordStatus.getAll(), TimeRecordStatus.unlockedForEmployee());
         Set<Integer> employeeIdSet = Collections.singleton(empId);
 
-        List<TimeRecord> tRecs = tRecS.getTimeRecords(employeeIdSet, DateUtils.yearDateRange(year), submittedStatuses);
+        List<TimeRecord> tRecs = getTimeRecords(employeeIdSet, DateUtils.yearDateRange(year), submittedStatuses);
 
         RangeMap<LocalDate, AttendanceRecord> aRecRangeMap = TreeRangeMap.create();
         attendRecs.forEach(arec -> aRecRangeMap.put(arec.getDateRange(), arec));
@@ -494,6 +489,18 @@ public class EssAllowanceService implements AllowanceService {
                     AttendanceRecord aRec = aRecRangeMap.get(tRec.getBeginDate());
                     return aRec == null || aRec.getTimesheetIds().contains(tRec.getTimeRecordId());
                 })
+                .collect(toList());
+    }
+
+    // TODO: Yes this function is in CachedTimeRecordService too, it's here to avoid a circular dependency.
+    private List<TimeRecord> getTimeRecords(Set<Integer> empIds, Range<LocalDate> dateRange,
+                                           Set<TimeRecordStatus> statuses) {
+        TreeMultimap<PayPeriod, TimeRecord> records = TreeMultimap.create();
+        timeRecordDao.getRecordsDuring(empIds, dateRange).values()
+                .forEach(rec -> records.put(rec.getPayPeriod(), rec));
+        return records.values().stream()
+                .filter(record -> statuses.contains(record.getRecordStatus()))
+                .peek(timeRecordInitializer::initializeEntries)
                 .collect(toList());
     }
 }

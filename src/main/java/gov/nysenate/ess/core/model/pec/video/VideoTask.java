@@ -41,8 +41,7 @@ public class VideoTask extends PersonnelTask {
     public void verifyCodes(List<String> codeSubmission) throws IncorrectPECVideoCodeEx {
         List<String> expectedCodes = codes.stream()
                 .sorted()
-                .map(VideoTaskCode::getCode)
-                .collect(toList());
+                .map(VideoTaskCode::getCode).toList();
 
         if (!expectedCodes.equals(codeSubmission)) {
             throw new IncorrectPECVideoCodeEx();

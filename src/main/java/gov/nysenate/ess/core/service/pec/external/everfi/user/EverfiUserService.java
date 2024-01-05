@@ -1,5 +1,6 @@
 package gov.nysenate.ess.core.service.pec.external.everfi.user;
 
+import com.google.common.base.Strings;
 import gov.nysenate.ess.core.dao.pec.everfi.EverfiUserDao;
 import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
 import gov.nysenate.ess.core.model.pec.everfi.EverfiUserIDs;
@@ -11,6 +12,7 @@ import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategory
 import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategoryService;
 import gov.nysenate.ess.core.service.pec.external.everfi.user.add.EverfiAddUserRequest;
 import gov.nysenate.ess.core.service.pec.external.everfi.user.update.EverfiUpdateUserRequest;
+import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,31 +29,21 @@ import java.util.*;
 
 @Service
 public class EverfiUserService {
-
-    private EverfiApiClient everfiApiClient;
-    private EmployeeDao employeeDao;
-    private EverfiUserDao everfiUserDao;
-    private SendMailService sendMailService;
     private static final Logger logger = LoggerFactory.getLogger(EverfiUserService.class);
-    private HashMap<String, EverfiUser> badEmpIDEverfiUsers = new HashMap<>();
-    private HashMap<String, EverfiUser> badEmailEverfiUsers = new HashMap<>();
-    private HashMap<String, EverfiUser> manualReviewUUIDs = new HashMap<>();
-    private List<EverfiUserIDs> ignoredEverfiUserIDs;
-    private EverfiCategoryService categoryService;
+    private static final int MIN_TEST_ID = 77000;
 
-    @Value("${mail.smtp.from}")
-    private String mailFromAddress;
-
-    @Value("${report.email}")
-    private String mailToAddress;
+    private final EverfiApiClient everfiApiClient;
+    private final EmployeeDao employeeDao;
+    private final EverfiUserDao everfiUserDao;
+    private final SendMailService sendMailService;
+    private final EverfiCategoryService categoryService;
+    private final Map<String, EverfiUser> manualReviewUUIDs = new HashMap<>();
+    private List<EverfiUserIDs> ignoredEverfiUserIds;
 
     @Value("${scheduler.everfi.sync.enabled:false}")
     private boolean everfiSyncEnabled;
 
-    @Value("${pec.everfi.bad.email.report.enabled:false}")
-    private boolean everfiBadEmailReportEnabled;
-
-    private List<String> everfiReportEmails;
+    private final List<String> everfiReportEmails;
 
 
     @Autowired
@@ -62,7 +54,7 @@ public class EverfiUserService {
         this.everfiUserDao = everfiUserDao;
         this.sendMailService = sendMailService;
         this.categoryService = categoryService;
-        this.ignoredEverfiUserIDs = everfiUserDao.getIgnoredEverfiUserIDs();
+        this.ignoredEverfiUserIds = everfiUserDao.getIgnoredEverfiUserIDs();
         this.everfiReportEmails = Arrays.asList(everfiReportEmailList.replaceAll(" ","").split(","));
     }
 
@@ -80,8 +72,11 @@ public class EverfiUserService {
         }
     }
 
-    public void handleInactivatedEmployeesInEverfi() {
+    public static boolean isValid(Integer empId) {
+        return empId != null && empId != 0 && empId < MIN_TEST_ID;
+    }
 
+    public void handleInactivatedEmployeesInEverfi() {
         try {
             logger.info("Beginning Everfi deactivation process for inactive employees");
             List<Employee> inactiveEmployees = getRecentlyInactiveEmployees();
@@ -114,12 +109,9 @@ public class EverfiUserService {
         catch (Exception e) {
             logger.error("An error occurred when changing the active status for a user " + submittedEmpID, e);
         }
-
-
     }
 
     public void changeActiveStatusForUserWithUUID(String submittedUUID, boolean status) {
-
         try { //Ensure UUID is an everfi UUID
             EverfiUserIDs everfiUserID = everfiUserDao.getEverfiUserIDsWithEverfiUUID(submittedUUID);
             if (everfiUserID == null) {
@@ -130,82 +122,6 @@ public class EverfiUserService {
         catch (Exception e) {
             logger.error("An error occurred when changing the active status for a user " + submittedUUID, e);
         }
-
-    }
-
-    private void changeActiveStatusForUser(EverfiUserIDs everfiUserID, boolean activeStatus) {
-
-        try {
-            EverfiSingleUserRequest everfiSingleUserRequest =
-                    new EverfiSingleUserRequest(everfiApiClient, everfiUserID.getEverfiUUID());
-            EverfiUser everfiUser = everfiSingleUserRequest.getUser();
-
-            if (!everfiUser.isActive() && !activeStatus) {
-                try {
-                    //Ensure that the employees are actually deactivated
-                    everfiUserDao.insertIgnoredID(everfiUser.getUuid(), everfiUser.getEmployeeId());
-                    this.ignoredEverfiUserIDs = everfiUserDao.getIgnoredEverfiUserIDs();
-                }
-                catch (DuplicateKeyException e) {
-                 // Do nothing, it means they are already deactivated, and ignored
-                }
-                return; //No need to deactivate someone who is deactivated
-            }
-
-            //normalize category labels
-            //Normalize labels that the everfi user already has. This prevents null pointer exception
-            List<EverfiCategoryLabel> normalizedCategoryLabels = this.categoryService.normalizeUsersCategoryLabel(everfiUser.getUserCategoryLabels());
-            everfiUser.setUserCategoryLabels(normalizedCategoryLabels);
-
-            if (activeStatus) {
-                logger.info("Reactivating of " + everfiUser.getFirstName() + " " + everfiUser.getLastName() + " " + everfiUser.getUuid() );
-                //Set them to true
-                EverfiUpdateUserRequest activationStatusRequest = new EverfiUpdateUserRequest(everfiApiClient, everfiUser.getUuid(),
-                        everfiUser.getEmployeeId(), everfiUser.getFirstName(), everfiUser.getLastName(), everfiUser.getEmail(),
-                        null, everfiUser.getUserCategoryLabels(), true);
-                EverfiUser nowActiveUser = activationStatusRequest.updateUser();
-
-                String changedEmail = "";
-                if (nowActiveUser.getEmail().endsWith("x")) {
-                    changedEmail = nowActiveUser.getEmail().substring(0, nowActiveUser.getEmail().length() - 1);
-                }
-                else {
-                    changedEmail = nowActiveUser.getEmail();
-                }
-
-                //change email back
-                EverfiUpdateUserRequest changeEmailRequest = new EverfiUpdateUserRequest(everfiApiClient, nowActiveUser.getUuid(),
-                        nowActiveUser.getEmployeeId(), nowActiveUser.getFirstName(), nowActiveUser.getLastName(), changedEmail,
-                        null, nowActiveUser.getUserCategoryLabels(), true);
-                EverfiUser changedEmailUser = changeEmailRequest.updateUser();
-
-                //remove from ignored users
-                everfiUserDao.removeIgnoredID(everfiUser.getUuid());
-                this.ignoredEverfiUserIDs = everfiUserDao.getIgnoredEverfiUserIDs();
-
-            }
-            if (!activeStatus) {
-                logger.info("Beginning deactivation of " + everfiUser.getFirstName() + " " + everfiUser.getLastName() + " " + everfiUser.getUuid());
-                //Change email
-                EverfiUpdateUserRequest changeEmailRequest = new EverfiUpdateUserRequest(everfiApiClient, everfiUser.getUuid(),
-                        everfiUser.getEmployeeId(), everfiUser.getFirstName(), everfiUser.getLastName(), everfiUser.getEmail() + "x",
-                        null, everfiUser.getUserCategoryLabels(), true);
-                EverfiUser changedEmailUser = changeEmailRequest.updateUser();
-
-                //Set them to inactive
-                EverfiUpdateUserRequest activationStatusRequest = new EverfiUpdateUserRequest(everfiApiClient, changedEmailUser.getUuid(),
-                        changedEmailUser.getEmployeeId(), changedEmailUser.getFirstName(), changedEmailUser.getLastName(), changedEmailUser.getEmail(),
-                        null, changedEmailUser.getUserCategoryLabels(), false);
-                activationStatusRequest.updateUser();
-
-                //send id to dao to ignore
-                everfiUserDao.insertIgnoredID(everfiUser.getUuid(), everfiUser.getEmployeeId());
-                this.ignoredEverfiUserIDs = everfiUserDao.getIgnoredEverfiUserIDs();
-            }
-        }
-        catch (Exception e) {
-            logger.error("There was an exception when trying to change the active status of a user " + everfiUserID.getEverfiUUID() + " to an active status of " + activeStatus);
-        }
     }
 
     /**
@@ -214,7 +130,6 @@ public class EverfiUserService {
      * @return
      */
     public List<Employee> getNewEmployeesToAddToEverfi() {
-
         try {
             //Minimal Employee Objects -- Must be converted to full employees
             List<Employee> newEmployees = employeeDao.getNewEmployees();
@@ -256,8 +171,7 @@ public class EverfiUserService {
     public List<Employee> getRecentlyInactiveEmployees() {
         try {
             LocalDateTime oneWeekFromToday = LocalDateTime.now().minusDays(7);
-            List<Employee> inactivatedEmployees = employeeDao.getInactivatedEmployeesSinceDate(oneWeekFromToday);
-            return inactivatedEmployees;
+            return employeeDao.getInactivatedEmployeesSinceDate(oneWeekFromToday);
         }
         catch (Exception e) {
             logger.error("There was a problem creating the list of recently deactivated employees");
@@ -276,8 +190,6 @@ public class EverfiUserService {
             EverfiUsersRequest request = new EverfiUsersRequest(everfiApiClient, 1, 1000);
             List<EverfiUser> everfiUsers;
             logger.info("Contacting Everfi for User records");
-            this.badEmpIDEverfiUsers.clear();
-            this.badEmailEverfiUsers.clear();
             this.manualReviewUUIDs.clear();
 
             while (request != null) {
@@ -297,6 +209,80 @@ public class EverfiUserService {
         logger.info("Completed Everfi ID import");
     }
 
+    private void changeActiveStatusForUser(EverfiUserIDs everfiUserID, boolean activeStatus) {
+        try {
+            EverfiSingleUserRequest everfiSingleUserRequest =
+                    new EverfiSingleUserRequest(everfiApiClient, everfiUserID.getEverfiUUID());
+            EverfiUser everfiUser = everfiSingleUserRequest.getUser();
+
+            if (!everfiUser.isActive() && !activeStatus) {
+                try {
+                    //Ensure that the employees are actually deactivated
+                    everfiUserDao.insertIgnoredID(everfiUser.getUuid(), everfiUser.getEmployeeId());
+                    this.ignoredEverfiUserIds = everfiUserDao.getIgnoredEverfiUserIDs();
+                }
+                catch (DuplicateKeyException e) {
+                    // Do nothing, it means they are already deactivated, and ignored
+                }
+                return; //No need to deactivate someone who is deactivated
+            }
+
+            //normalize category labels
+            //Normalize labels that the everfi user already has. This prevents null pointer exception
+            List<EverfiCategoryLabel> normalizedCategoryLabels = this.categoryService.normalizeUsersCategoryLabel(everfiUser.getUserCategoryLabels());
+            everfiUser.setUserCategoryLabels(normalizedCategoryLabels);
+
+            if (activeStatus) {
+                logger.info("Reactivating of " + everfiUser.getFirstName() + " " + everfiUser.getLastName() + " " + everfiUser.getUuid() );
+                //Set them to true
+                EverfiUpdateUserRequest activationStatusRequest = new EverfiUpdateUserRequest(everfiApiClient, everfiUser.getUuid(),
+                        everfiUser.getEmployeeId(), everfiUser.getFirstName(), everfiUser.getLastName(), everfiUser.getEmail(),
+                        null, everfiUser.getUserCategoryLabels(), true);
+                EverfiUser nowActiveUser = activationStatusRequest.updateUser();
+
+                String changedEmail = "";
+                if (nowActiveUser.getEmail().endsWith("x")) {
+                    changedEmail = nowActiveUser.getEmail().substring(0, nowActiveUser.getEmail().length() - 1);
+                }
+                else {
+                    changedEmail = nowActiveUser.getEmail();
+                }
+
+                //change email back
+                EverfiUpdateUserRequest changeEmailRequest = new EverfiUpdateUserRequest(everfiApiClient, nowActiveUser.getUuid(),
+                        nowActiveUser.getEmployeeId(), nowActiveUser.getFirstName(), nowActiveUser.getLastName(), changedEmail,
+                        null, nowActiveUser.getUserCategoryLabels(), true);
+                EverfiUser changedEmailUser = changeEmailRequest.updateUser();
+
+                //remove from ignored users
+                everfiUserDao.removeIgnoredID(everfiUser.getUuid());
+                this.ignoredEverfiUserIds = everfiUserDao.getIgnoredEverfiUserIDs();
+
+            }
+            if (!activeStatus) {
+                logger.info("Beginning deactivation of " + everfiUser.getFirstName() + " " + everfiUser.getLastName() + " " + everfiUser.getUuid());
+                //Change email
+                EverfiUpdateUserRequest changeEmailRequest = new EverfiUpdateUserRequest(everfiApiClient, everfiUser.getUuid(),
+                        everfiUser.getEmployeeId(), everfiUser.getFirstName(), everfiUser.getLastName(), everfiUser.getEmail() + "x",
+                        null, everfiUser.getUserCategoryLabels(), true);
+                EverfiUser changedEmailUser = changeEmailRequest.updateUser();
+
+                //Set them to inactive
+                EverfiUpdateUserRequest activationStatusRequest = new EverfiUpdateUserRequest(everfiApiClient, changedEmailUser.getUuid(),
+                        changedEmailUser.getEmployeeId(), changedEmailUser.getFirstName(), changedEmailUser.getLastName(), changedEmailUser.getEmail(),
+                        null, changedEmailUser.getUserCategoryLabels(), false);
+                activationStatusRequest.updateUser();
+
+                //send id to dao to ignore
+                everfiUserDao.insertIgnoredID(everfiUser.getUuid(), everfiUser.getEmployeeId());
+                this.ignoredEverfiUserIds = everfiUserDao.getIgnoredEverfiUserIDs();
+            }
+        }
+        catch (Exception e) {
+            logger.error("There was an exception when trying to change the active status of a user " + everfiUserID.getEverfiUUID() + " to an active status of " + activeStatus);
+        }
+    }
+
     private void sendEmailToEverfiReportEmails(String subject, String html) {
         for (String email : this.everfiReportEmails) {
             sendEmail(email, subject, html);
@@ -314,39 +300,18 @@ public class EverfiUserService {
         }
     }
 
-    /**
-     * Ensure manual review ID's are not included with the automated data correction attempts
-     */
-    private void ensureNonManualReviewIDs() {
-        this.badEmpIDEverfiUsers.entrySet()
-                .removeIf(entry -> (this.manualReviewUUIDs.containsKey(entry.getKey())));
-
-        this.badEmailEverfiUsers.entrySet()
-                .removeIf(entry -> (this.manualReviewUUIDs.containsKey(entry.getKey())));
-    }
-
-    public void handleEverfiUsersWithBadEmpID() {
-        for (EverfiUser everfiUser : this.badEmpIDEverfiUsers.values()) {
-            updateEverfiUserWithEmpData(getEmpIDByEmail(everfiUser), everfiUser);
-        }
-    }
-
-    public void handleEverfiUsersWithBadEmail() {
-        for (EverfiUser everfiUser : this.badEmailEverfiUsers.values()) {
-            updateEverfiUserWithEmpData(getEmpIDByID(everfiUser), everfiUser);
-        }
-    }
-
     private String generateEmployeeListString(List<Employee> emps) {
-        String employeeListDetails = "";
+        StringBuilder employeeListDetails = new StringBuilder();
         for (Employee employee: emps) {
-            employeeListDetails = employeeListDetails + " NAME: " + employee.getFullName() + " EMAIL: " + employee.getEmail() + " EMPID: " + employee.getEmployeeId() + "<br>\n";
+            employeeListDetails.append(" NAME: ").append(employee.getFullName())
+                    .append(" EMAIL: ").append(employee.getEmail()).append(" EMPID: ")
+                    .append(employee.getEmployeeId()).append("<br>\n");
         }
 
         if (employeeListDetails.isEmpty()) {
-            employeeListDetails = "There are no employees to perform this operation on";
+            employeeListDetails = new StringBuilder("There are no employees to perform this operation on");
         }
-        return employeeListDetails;
+        return employeeListDetails.toString();
     }
 
     /**
@@ -385,169 +350,10 @@ public class EverfiUserService {
                     logger.error("There was an exception trying to add a new employee " + emp.getEmployeeId() + " to Everfi" + e);
                 }
             }
-
         logger.info("Completed Everfi add employee process");
-
     }
 
-    /**
-     * This method finds and inserts an everfi user UUID with a Senate Emp ID into the database
-     *
-     * @param everfiUsers
-     */
-    private void handleUserRecords(List<EverfiUser> everfiUsers) {
-
-        for (EverfiUser everfiUser : everfiUsers) {
-            String UUID = everfiUser.getUuid();
-
-            if (!isEverfiIdIgnored(UUID)) { //!ignored
-
-                try {
-                    Integer empid = getEmployeeId(everfiUser);
-
-                    if (empid.intValue() < 77000 && empid.intValue() != 0) {
-                        everfiUserDao.insertEverfiUserIDs(UUID, empid);
-                    } else {
-                        logger.warn("Everfi user with UUID " + UUID + " empid " + empid + " was improperly retrieved");
-                    }
-                } catch (DuplicateKeyException e) {
-                    //Do nothing, it means we already have the user stored in the DB
-                } catch (EmployeeNotFoundEx e) {
-                    logger.debug("Everfi user with UUID " + UUID + " cannot be matched");
-                }
-
-            }
-
-        }
-    }
-
-    public boolean isEverfiIdIgnored(String everfiUUID) {
-        return this.ignoredEverfiUserIDs.stream()
-                .anyMatch(ignoredID -> ignoredID.getEverfiUUID().equals(everfiUUID));
-    }
-
-    /**
-     * Gets the employee object and then their id base off of the everfi email or emp id on file
-     */
-    private int getEmployeeId(EverfiUser everfiUser) throws EmployeeNotFoundEx {
-        int empid = 99999;
-        boolean successByEmail = false;
-        boolean successByEmpID = false;
-
-        try {
-            //We have to test both cases because they could be different / then we must correct that
-            int empidByID = getEmpIDByID(everfiUser);
-            int empidByEmail = getEmpIDByEmail(everfiUser);
-
-            if (empidByID != 99999) {
-                successByEmpID = true;
-            }
-            if (empidByEmail != 99999) {
-                successByEmail = true;
-            }
-
-            //Both bad needs manual review
-            if (successByEmpID == false && successByEmail == false) {
-                addBadEverfiUser(everfiUser, this.manualReviewUUIDs);
-                logger.warn("Everfi user record cannot be matched" + everfiUser.toString());
-                return 99999;
-            }
-
-            //Both conflicting needs manual review
-            if (empidByID != 99999 && (empidByID != empidByEmail) && empidByEmail != 99999) {
-                addBadEverfiUser(everfiUser, this.manualReviewUUIDs);
-                logger.warn("Everfi user record cannot be matched" + everfiUser.toString());
-                return 99999;
-            }
-
-            //They agree, Good Data, return either
-            if (empidByID == empidByEmail) {
-                return empidByID;
-            }
-
-            //Good empid but bad email
-            if (successByEmpID == true && successByEmail == false) {
-                return empidByID;
-            }
-            //Good email but bad empid
-            else if (successByEmpID == false && successByEmail == true) {
-                return empidByEmail;
-            }
-        }
-        catch (Exception e) {
-            logger.error("There was an exception when attempting to find the empid for an Everfi User");
-        }
-
-        return empid;
-    }
-
-    private void addBadEverfiUser(EverfiUser everfiUser, HashMap<String, EverfiUser> badList) {
-        if (!badList.containsKey(everfiUser.getUuid())) {
-            badList.put(everfiUser.getUuid(), everfiUser);
-        }
-    }
-
-    private int getEmpIDByID(EverfiUser everfiUser) {
-        int empid = 99999;
-        Integer everfiUserEmpID = (Integer) everfiUser.getEmployeeId();
-
-        if (!isNullorZero(everfiUserEmpID)) {
-            try {
-                empid = employeeDao.getEmployeeById(everfiUserEmpID).getEmployeeId();
-            } catch (Exception e) {
-                addBadEverfiUser(everfiUser, this.badEmpIDEverfiUsers);
-            }
-        } else {
-            addBadEverfiUser(everfiUser, this.badEmpIDEverfiUsers);
-        }
-        return empid;
-    }
-
-    private int getEmpIDByEmail(EverfiUser everfiUser) {
-        int empid = 99999;
-
-        if (everfiUser.getEmail() != null && !everfiUser.getEmail().isEmpty()) {
-            try {
-                empid = employeeDao.getEmployeeByEmail(everfiUser.getEmail()).getEmployeeId();
-            } catch (Exception e) {
-                addBadEverfiUser(everfiUser, this.badEmailEverfiUsers);
-            }
-        } else {
-            addBadEverfiUser(everfiUser, this.badEmailEverfiUsers);
-        }
-        return empid;
-    }
-
-    private void updateEverfiUserWithEmpData(int empID, EverfiUser everfiUser) {
-        try {
-            Employee emp = employeeDao.getEmployeeById(empID);
-
-            String properEmail = "";
-
-            if (emp.getEmail().endsWith("@nysenate.gov") && everfiUser.getEmail().endsWith("@nysenate.gov")
-                    && !emp.getEmail().equals(everfiUser.getEmail())) {
-                properEmail = emp.getEmail();
-            } else {
-                properEmail = everfiUser.getEmail();
-            }
-
-            //Normalize category labels that the everfi user already has. This prevents null pointer exception
-            List<EverfiCategoryLabel> normalizedCategoryLabels = this.categoryService.normalizeUsersCategoryLabel(everfiUser.getUserCategoryLabels());
-            everfiUser.setUserCategoryLabels(normalizedCategoryLabels);
-
-            EverfiUpdateUserRequest updateUserRequest =
-                    new EverfiUpdateUserRequest(everfiApiClient, everfiUser.getUuid(), emp.getEmployeeId(),
-                            emp.getFirstName(), emp.getLastName(), properEmail, "",
-                            getOrCreateEmpCategoryLabels(emp, everfiUser), emp.isActive());
-            updateUserRequest.updateUser();
-
-        } catch (Exception e) {
-            logger.warn("error " + e);
-        }
-
-    }
-
-    public void updateAllEverfiUsers() throws IOException {
+    public void updateAllEverfiUsers() {
         try {
             EverfiUsersRequest request = new EverfiUsersRequest(everfiApiClient, 1, 1000);
             List<EverfiUser> everfiUsers;
@@ -573,8 +379,112 @@ public class EverfiUserService {
         }
     }
 
-    private static boolean isNullorZero(Integer i) {
-        return 0 == (i == null ? 0 : i);
+    /**
+     * This method finds and inserts an everfi user UUID with a Senate Emp ID into the database
+     *
+     * @param everfiUsers
+     */
+    private void handleUserRecords(List<EverfiUser> everfiUsers) {
+        for (EverfiUser everfiUser : everfiUsers) {
+            String UUID = everfiUser.getUuid();
+            if (isEverfiIdIgnored(UUID)) {
+                continue;
+            }
+
+            try {
+                Integer empId = getEmployeeId(everfiUser);
+
+                if (isValid(empId)) {
+                    everfiUserDao.insertEverfiUserIDs(UUID, empId);
+                } else {
+                    logger.warn("Everfi user with UUID " + UUID + " empid " + empId + " was improperly retrieved");
+                }
+            } catch (DuplicateKeyException e) {
+                //Do nothing, it means we already have the user stored in the DB
+            } catch (EmployeeNotFoundEx e) {
+                logger.debug("Everfi user with UUID " + UUID + " cannot be matched");
+            }
+        }
+    }
+
+    public boolean isEverfiIdIgnored(String everfiUUID) {
+        return this.ignoredEverfiUserIds.stream()
+                .anyMatch(ignoredID -> ignoredID.getEverfiUUID().equals(everfiUUID));
+    }
+
+    private static boolean areNullOrNonnullAndUnequal(Object o1, Object o2) {
+        if (o1 == null) {
+            return o2 == null;
+        }
+        return o2 != null && !o1.equals(o2);
+    }
+
+    /**
+     * Gets the employee object and then their id base off of the everfi email or emp id on file
+     */
+    private Integer getEmployeeId(EverfiUser everfiUser) throws EmployeeNotFoundEx {
+        Integer empIdById = getEmpIdById(everfiUser);
+        Integer empIdByEmail = getEmpIdByEmail(everfiUser);
+        if (areNullOrNonnullAndUnequal(empIdById, empIdByEmail)) {
+            manualReviewUUIDs.putIfAbsent(everfiUser.getUuid(), everfiUser);
+            logger.warn("Everfi user record cannot be matched: " + everfiUser);
+            return null;
+        }
+        if (empIdById == null) {
+            updateEverfiUserWithEmpData(empIdByEmail, everfiUser);
+        }
+        if (empIdByEmail == null) {
+            updateEverfiUserWithEmpData(empIdById, everfiUser);
+        }
+        return ObjectUtils.firstNonNull(empIdById, empIdByEmail);
+    }
+
+    private Integer getEmpIdById(EverfiUser everfiUser) {
+        int everfiUserEmpID = everfiUser.getEmployeeId();
+        if (everfiUserEmpID != 0) {
+            try {
+                return employeeDao.getEmployeeById(everfiUserEmpID).getEmployeeId();
+            } catch (Exception ignored) {}
+        }
+        return null;
+    }
+
+    private Integer getEmpIdByEmail(EverfiUser everfiUser) {
+        if (!Strings.isNullOrEmpty(everfiUser.getEmail())) {
+            try {
+                return employeeDao.getEmployeeByEmail(everfiUser.getEmail()).getEmployeeId();
+            } catch (Exception ignored) {}
+        }
+        return null;
+    }
+
+    private void updateEverfiUserWithEmpData(Integer empId, EverfiUser everfiUser) {
+        try {
+            Employee emp = employeeDao.getEmployeeById(empId);
+
+            String properEmail;
+
+            if (emp.getEmail().endsWith("@nysenate.gov") && everfiUser.getEmail().endsWith("@nysenate.gov")
+                    && !emp.getEmail().equals(everfiUser.getEmail())) {
+                properEmail = emp.getEmail();
+            } else {
+                properEmail = everfiUser.getEmail();
+            }
+
+            //Normalize category labels that the everfi user already has. This prevents null pointer exception
+            List<EverfiCategoryLabel> normalizedCategoryLabels = this.categoryService.normalizeUsersCategoryLabel(everfiUser.getUserCategoryLabels());
+            everfiUser.setUserCategoryLabels(normalizedCategoryLabels);
+
+            EverfiUpdateUserRequest updateUserRequest =
+                    new EverfiUpdateUserRequest(everfiApiClient, everfiUser.getUuid(), emp.getEmployeeId(),
+                            emp.getFirstName(), emp.getLastName(), properEmail, "",
+                            getOrCreateEmpCategoryLabels(emp, everfiUser), emp.isActive());
+            updateUserRequest.updateUser();
+
+        } catch (Exception e) {
+            logger.warn("error " + e);
+        }
+
     }
 
     private List<EverfiCategoryLabel> getOrCreateEmpCategoryLabels(Employee emp, EverfiUser user) throws IOException {
@@ -618,7 +528,6 @@ public class EverfiUserService {
                 label = categoryService.createUploadListLabel(LocalDate.now());
             }
         }
-
         return label;
     }
 }

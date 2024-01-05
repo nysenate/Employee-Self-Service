@@ -95,7 +95,7 @@ public class SqlLodgingPerDiemsDao extends SqlBaseDao {
                 """
         );
 
-        private String sql;
+        private final String sql;
 
         SqlLodgingPerDiemsQuery(String sql) {
             this.sql = sql;
@@ -112,7 +112,7 @@ public class SqlLodgingPerDiemsDao extends SqlBaseDao {
         }
     }
 
-    public class LodgingPerDiemsHandler extends BaseHandler {
+    public static class LodgingPerDiemsHandler extends BaseHandler {
 
         private int lodgingPerDiemsId;
         private Dollars overrideRate;

@@ -14,8 +14,8 @@ public enum AuthenticationStatus
     FAILURE(false, "Sorry, the username or password is not recognized."),
     ERROR(false, "An error occurred during authentication.");
 
-    protected boolean authenticated;
-    protected String statusMessage;
+    private final boolean authenticated;
+    private final String statusMessage;
 
     AuthenticationStatus(boolean authenticated, String statusMessage) {
         this.authenticated = authenticated;

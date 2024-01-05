@@ -109,20 +109,20 @@ public enum SqlEmployeeQuery implements BasicSqlQuery
             "SELECT *\n" +
                     "FROM  ${masterSchema}.pm21personn\n" +
                     "WHERE cdempstatus = 'A'\n" +
-                    "AND nuxrefem IN (SELECT nuxrefem\n" +
+                    "  AND nuxrefem IN (SELECT nuxrefem\n" +
                     "                   FROM  ${masterSchema}.pd21ptxncode\n" +
-                    "                 WHERE cdtrans IN ('APP', 'RTP')\n" +
-                    "                   AND dteffect >= TRUNC(SYSDATE)- 30\n" +
-                    "                   AND cdstatus = 'A')"
+                    "                   WHERE cdtrans IN ('APP', 'RTP')\n" +
+                    "                     AND CASE WHEN dteffect >= TRUNC(dttxnorigin) THEN dteffect\n" +
+                    "                              ELSE TRUNC(dttxnorigin)\n" +
+                    "                             END >= TRUNC(SYSDATE) - 30\n" +
+                    "                     AND cdstatus = 'A')"
     ),
 
     GET_INACTIVE_EMPLOYEES_SINCE_DATE(
             "SELECT * FROM ${masterSchema}.PM21PERSONN p WHERE p.CDEMPSTATUS = 'I' AND TRUNC(p.DTTXNUPDATE) >= TO_DATE(:since, 'DD-MON-RRRR')"
-    )
+    );
 
-    ;
-
-    private String sql;
+    private final String sql;
 
     SqlEmployeeQuery(String sql) {
         this.sql = sql;

@@ -37,7 +37,7 @@ public enum EmpTaskOrderBy {
     ),
     ;
 
-    private Comparator<EmployeeTaskSearchResult> comparator;
+    private final Comparator<EmployeeTaskSearchResult> comparator;
 
     EmpTaskOrderBy(Comparator<EmployeeTaskSearchResult> comparator) {
         this.comparator = comparator;

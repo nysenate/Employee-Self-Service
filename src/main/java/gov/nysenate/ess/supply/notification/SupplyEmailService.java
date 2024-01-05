@@ -2,13 +2,7 @@ package gov.nysenate.ess.supply.notification;
 
 import com.google.common.collect.ImmutableSet;
 import gov.nysenate.ess.core.service.mail.SendMailService;
-import gov.nysenate.ess.core.service.notification.base.message.base.Component;
-import gov.nysenate.ess.core.service.notification.email.simple.component.SimpleEmailContent;
-import gov.nysenate.ess.core.service.notification.email.simple.component.SimpleEmailSubject;
-import gov.nysenate.ess.core.service.notification.email.simple.component.SimpleEmailTemplate;
-import gov.nysenate.ess.core.service.notification.email.simple.header.SimpleEmailHeader;
 import gov.nysenate.ess.supply.requisition.model.Requisition;
-import gov.nysenate.ess.supply.util.mail.SendSimpleEmail;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,9 +12,9 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.mail.internet.MimeMessage;
-import java.awt.*;
-import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service

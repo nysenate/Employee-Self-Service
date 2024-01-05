@@ -48,7 +48,7 @@ public class PermittedUserScopeTRV implements TimeRecordValidator
     public void checkTimeRecord(TimeRecord record, Optional<TimeRecord> previousState, TimeRecordAction action)
             throws TimeRecordErrorException {
         // Only check if previous record exists
-        if (!previousState.isPresent()) {
+        if (previousState.isEmpty()) {
             return;
         }
         TimeRecord prevRecord = previousState.get();

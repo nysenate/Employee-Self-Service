@@ -24,7 +24,7 @@ public enum SimpleTravelPermission {
     // Allowed to view the "Reconcile Travel" navigation pages.
     TRAVEL_UI_RECONCILE_TRAVEL("travel:ui:reconcile-travel");
 
-    private String permissionString;
+    private final String permissionString;
 
     SimpleTravelPermission(String permissionString) {
         this.permissionString = permissionString;

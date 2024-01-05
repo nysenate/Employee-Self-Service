@@ -6,5 +6,5 @@ public enum NotificationLevel
     WARN,
     PROMPT,
     ERROR,
-    DEBUG;
+    DEBUG
 }

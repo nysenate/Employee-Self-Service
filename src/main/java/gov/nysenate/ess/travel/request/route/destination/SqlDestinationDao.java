@@ -127,7 +127,7 @@ public class SqlDestinationDao extends SqlBaseDao implements DestinationDao {
                         " WHERE dest.destination_id = :destinationId"
         );
 
-        private String sql;
+        private final String sql;
 
         SqlDestinationQuery(String sql) {
             this.sql = sql;
@@ -144,7 +144,7 @@ public class SqlDestinationDao extends SqlBaseDao implements DestinationDao {
         }
     }
 
-    private class DestinationHandler extends BaseHandler {
+    private static class DestinationHandler extends BaseHandler {
 
         private int id;
         private LocalDate arrivalDate;

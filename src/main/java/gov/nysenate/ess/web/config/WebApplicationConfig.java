@@ -21,7 +21,6 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 import javax.annotation.PostConstruct;
@@ -80,8 +79,8 @@ public class WebApplicationConfig implements WebMvcConfigurer
             if (ackDocSubdir == null) {
                 logger.warn("Ack doc subdirectory not set in props.  Ack docs will not be served!");
             } else {
-                String ackDocDir = Paths.get(dataDir, ackDocSubdir).toString() + "/";
-                String ackDocUri = Paths.get(resourcePath, ackDocSubdir).toString() + "/";
+                String ackDocDir = Paths.get(dataDir, ackDocSubdir) + "/";
+                String ackDocUri = Paths.get(resourcePath, ackDocSubdir) + "/";
                 logger.info("Registering resource path {} for files under {}", ackDocUri, ackDocDir);
                 registry.addResourceHandler(ackDocUri + "**")
                         .addResourceLocations("file:" + ackDocDir);
@@ -89,8 +88,8 @@ public class WebApplicationConfig implements WebMvcConfigurer
             if (pecVidSubdir == null) {
                 logger.warn("PEC video subdirectory not set in props.  PEC videos will not be served!");
             } else {
-                String pecVidDir = Paths.get(dataDir, pecVidSubdir).toString() + "/";
-                String pecVidUri = Paths.get(resourcePath, pecVidSubdir).toString() + "/";
+                String pecVidDir = Paths.get(dataDir, pecVidSubdir) + "/";
+                String pecVidUri = Paths.get(resourcePath, pecVidSubdir) + "/";
                 logger.info("Registering resource path {} for files under {}", pecVidUri, pecVidDir);
                 registry.addResourceHandler(pecVidUri + "**")
                         .addResourceLocations("file:" + pecVidDir);

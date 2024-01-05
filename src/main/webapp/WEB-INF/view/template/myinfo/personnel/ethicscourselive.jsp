@@ -55,10 +55,17 @@
                             ng-show="state.incorrectCode"
                             message="One or more of the submitted codes were incorrect.  Please double check them and resubmit."
           ></ess-notification>
+
           <form name="videoCodeForm"
                 class="pec-video-code-form"
                 ng-submit="submitEthicsCodes()">
-            <label ng-repeat="code in state.assignment.task.codes">
+
+            <%--Front End for Date Picker--%>
+            <label for="ethicsDate">Date of Training
+              <input type="date" ng-model="state.trainingDate" id="ethicsDate" required/>
+            </label>
+
+            <label ng-repeat="code in state.codes">
               {{code.label}}
               <br/>
               <input type="text" ng-model="code.value" required/>
@@ -80,7 +87,7 @@
   <div modal-container>
     <modal modal-id="code-submit-success">
       <div confirm-modal rejectable="true" title="Code Submission Complete"
-           confirm-message="Video codes were successfully submitted."
+           confirm-message="Ethics codes were successfully submitted."
            resolve-button="Return to To-Do List" resolve-class="time-neutral-button"
            reject-button="Remain Here" reject-class="time-neutral-button">
       </div>

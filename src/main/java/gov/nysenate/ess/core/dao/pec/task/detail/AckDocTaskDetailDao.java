@@ -33,7 +33,7 @@ public class AckDocTaskDetailDao extends SqlBaseDao implements PersonnelTaskDeta
                 new MapSqlParameterSource("taskId", task.getTaskId()),
                 new AckDocRowMapper(task)
         );
-        if (ackDocList.isEmpty() || ackDocList == null) {
+        if (ackDocList.isEmpty()) {
             throw new IncorrectResultSizeDataAccessException(0);
         }
         else {
@@ -55,8 +55,7 @@ public class AckDocTaskDetailDao extends SqlBaseDao implements PersonnelTaskDeta
     }
 
     private enum Query implements BasicSqlQuery {
-        SELECT_ACK_DOC("SELECT * FROM ${essSchema}.ack_doc WHERE task_id = :taskId"),
-        ;
+        SELECT_ACK_DOC("SELECT * FROM ${essSchema}.ack_doc WHERE task_id = :taskId");
 
         private final String sql;
 

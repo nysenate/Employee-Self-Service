@@ -12,11 +12,11 @@ public enum PayType
     SE("Session", 910, true),
     TE("Temporary", 0, false);
 
-    private String desc;
-    private int minHours;
-    private boolean biweekly;
+    private final String desc;
+    private final int minHours;
+    private final boolean biweekly;
 
-    private PayType(String desc, int minHours, boolean biweekly) {
+    PayType(String desc, int minHours, boolean biweekly) {
         this.desc = desc;
         this.minHours = minHours;
         this.biweekly = biweekly;

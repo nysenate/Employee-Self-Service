@@ -19,7 +19,7 @@ public enum SqlDonationQuery implements BasicSqlQuery {
 
     // Used as a sub-query to be incremented.
     GET_MAX_NUPOOLTXN(
-            "SELECT MAX(NUPOOLTXN)\n" +
+            "SELECT COALESCE(MAX(NUPOOLTXN), 0)\n" +
             "FROM ${baseSfmsSchema}.PM23TIMEPOOL"
     ),
 

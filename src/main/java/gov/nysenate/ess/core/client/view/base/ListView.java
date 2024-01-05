@@ -1,7 +1,6 @@
 package gov.nysenate.ess.core.client.view.base;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -45,7 +44,7 @@ public class ListView<ViewType> implements ViewObject
     public static class ListViewJsonSerializer extends JsonSerializer<ListView>
     {
         @Override
-        public void serialize(ListView listView, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
+        public void serialize(ListView listView, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
             jsonGenerator.writeStartArray(listView.items.size());
             for (Object o : listView.items) {
                 jsonGenerator.writeObject(o);

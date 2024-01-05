@@ -26,7 +26,7 @@ public class CachedSupervisorInfoServiceIT extends BaseTest {
 
     private static final Logger logger = LoggerFactory.getLogger(CachedSupervisorInfoServiceIT.class);
 
-    @Autowired EssCachedSupervisorInfoService supInfoService;
+    @Autowired CachedSupervisorInfoService supInfoService;
 
     @Test
     public void getSupEmpGroupTest() throws InterruptedException {
@@ -61,15 +61,11 @@ public class CachedSupervisorInfoServiceIT extends BaseTest {
     @Test
     public void warmCacheTest() {
         Stopwatch sw = Stopwatch.createStarted();
-        logger.info("Starting cache warm...");
-        supInfoService.warmCache();
         logger.info("Cache warmed in {} sec", sw.stop().elapsed(TimeUnit.SECONDS));
     }
 
     @Test
     public void updateTest() {
-        logger.info("Starting cache warm...");
-        supInfoService.warmCache();
         TransactionInfo transactionInfo = new TransactionInfo();
         transactionInfo.setEmployeeId(11423);
         transactionInfo.setEffectDate(LocalDate.of(2019, 7, 12));

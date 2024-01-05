@@ -30,11 +30,10 @@ public enum TimeRecordErrorCode {
     TOTAL_LESS_THAN_ZERO(25, "The saved record contains daily totals less than 0."),
     TOTAL_GREATER_THAN_TWENTYFOUR(26, "The saved record contains daily totals greater than 24."),
     FIELD_LESS_THAN_ZERO(27, "The saved record contains a field with a value less than 0."),
-    FIELD_GREATER_THAN_MAX(28, "The saved record contains a field with a value greater than the max value."),
-    ;
+    FIELD_GREATER_THAN_MAX(28, "The saved record contains a field with a value greater than the max value.");
 
-    private int code;
-    private String message;
+    private final int code;
+    private final String message;
 
     TimeRecordErrorCode(int code, String message) {
         this.code = code;

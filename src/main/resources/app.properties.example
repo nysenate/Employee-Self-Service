@@ -132,31 +132,23 @@ mail.test.address =
 
 # --- Eh Cache Configuration --------------------------------------------------
 
-# The amount of memory to allocate to Eh Cache for all heap based caches (MB).
-# This value cannot exceed the maximum jvm heap size or the application will
-# fail to startup. (Recommended: 1000)
-cache.max.size = 1000
-
 # Set to true if caches should be warmed when the application deploys, false
 # otherwise.
-cache.warm.onstartup = true
+cache.warm.on.startup = true
 
 # Specific Cache Warming
 # Set these to true/false to enable/disable startup warming for specific caches
 # Warming will still be disabled for all caches if cache.warm.onstartup = false
 cache.warm.onstartup.supervisors = true
 
-# Holiday cache
+# Crons for how often to refresh certain cached data.
 cache.cron.holiday = 0 0 0 * * *
-
-# Pay Period cache
 cache.cron.period = 0 0 0 * * *
-
-# Locations cache
 cache.cron.location = 0 0 0 * * *
+cache.cron.task = 0 0 0 * * *
 
-# Travel Mileage Rate cache
-cache.cron.mileage.rate = 0 0 0 * * *
+# Travel Mileage Rate refresh
+refresh.mileage.rate.cron = 0 0 0 * * *
 
 # GSA Data Cron
 gsa.cron.data = 0 0 7 1,7,14,21,28 * *
@@ -316,9 +308,6 @@ pec.everfi.client.secret =
 
 
 # --- PEC Toggle Config --------------------------------------------------
-#Toggle for the bad everfi email report
-pec.everfi.bad.email.report.enabled = false
-
 #If enabled, the cron will automatically update the DB with new ethics live codes and email the admins
 pec.ethics-code.autogen = false
 

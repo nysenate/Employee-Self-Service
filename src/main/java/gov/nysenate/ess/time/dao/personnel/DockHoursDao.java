@@ -2,7 +2,7 @@ package gov.nysenate.ess.time.dao.personnel;
 
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.dao.base.BaseDao;
-import gov.nysenate.ess.time.model.personnel.*;
+import gov.nysenate.ess.time.model.personnel.DockHoursRecord;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -24,5 +24,5 @@ public interface DockHoursDao extends BaseDao
      * @return List<DockHoursRecord>
      */
 
-    public List<DockHoursRecord> getDockHourRecords(Integer empId, Range<LocalDate> dates);
+    List<DockHoursRecord> getDockHourRecords(Integer empId, Range<LocalDate> dates);
 }

@@ -71,7 +71,7 @@ public enum SqlAccrualQuery implements BasicSqlQuery
                     "FROM ${masterSchema}.pm21personn where NUXREFEM = :empId"
     );
 
-    private String sql;
+    private final String sql;
 
     SqlAccrualQuery(String sql) {
         this.sql = sql;

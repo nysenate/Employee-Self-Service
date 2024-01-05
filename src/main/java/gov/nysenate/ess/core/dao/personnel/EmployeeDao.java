@@ -111,5 +111,5 @@ public interface EmployeeDao extends BaseDao
      * @param since
      * @return
      */
-    public List<Employee> getInactivatedEmployeesSinceDate(LocalDateTime since);
+    List<Employee> getInactivatedEmployeesSinceDate(LocalDateTime since);
 }

@@ -1,12 +1,9 @@
 package gov.nysenate.ess.core.service.pec;
 
 import com.google.common.base.Stopwatch;
-import com.google.common.eventbus.EventBus;
 import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.annotation.SillyTest;
 import gov.nysenate.ess.core.dao.pec.assignment.PTAQueryBuilder;
-import gov.nysenate.ess.core.model.cache.CacheWarmEvent;
-import gov.nysenate.ess.core.model.cache.ContentCache;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.pec.search.*;
@@ -19,8 +16,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.annotation.PostConstruct;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static gov.nysenate.ess.core.util.SortOrder.ASC;
@@ -32,12 +31,6 @@ public class EssEmpTaskSearchServiceTest extends BaseTest {
     private static final Logger logger = LoggerFactory.getLogger(EssEmpTaskSearchServiceTest.class);
 
     @Autowired private EmpTaskSearchService taskSearchService;
-    @Autowired private EventBus eventBus;
-
-    @PostConstruct
-    public void init() {
-        eventBus.post(new CacheWarmEvent(Collections.singleton(ContentCache.EMPLOYEE)));
-    }
 
     @Test
     public void speedTest() {

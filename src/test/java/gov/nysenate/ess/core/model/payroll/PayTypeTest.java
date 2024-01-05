@@ -11,7 +11,7 @@ public class PayTypeTest
 {
     /** Checks the minimum hours for each pay type */
     @Test
-    public void testGetMinHours() throws Exception {
+    public void testGetMinHours() {
         assertEquals(1820, PayType.RA.getMinHours());
         assertEquals(0, PayType.SA.getMinHours());
         assertEquals(910, PayType.SE.getMinHours());
@@ -20,7 +20,7 @@ public class PayTypeTest
 
     /** Checks the biweekly status for each pay type */
     @Test
-    public void testIsBiweekly() throws Exception {
+    public void testIsBiweekly() {
         assertTrue(PayType.RA.isBiweekly());
         assertTrue(PayType.SA.isBiweekly());
         assertTrue(PayType.SE.isBiweekly());

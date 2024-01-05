@@ -12,7 +12,6 @@ import org.springframework.ldap.core.DirContextAdapter;
 import org.springframework.ldap.core.LdapTemplate;
 
 import javax.naming.Name;
-import javax.naming.NamingException;
 import java.util.List;
 
 import static org.springframework.ldap.query.LdapQueryBuilder.query;
@@ -26,13 +25,13 @@ public class SpringLdapTest extends WebTest
     LdapTemplate ldapTemplate;
 
     @Test
-    public void testLDAP() throws Exception {
+    public void testLDAP() {
 
         String uid = "";
 
         List<Name> name = ldapTemplate.search(query().where("uid").is(uid), new ContextMapper<Name>() {
             @Override
-            public Name mapFromContext(Object ctx) throws NamingException {
+            public Name mapFromContext(Object ctx) {
                 return ((DirContextAdapter) ctx).getDn();
             }
         });

@@ -43,7 +43,7 @@ public class EntryPermittedModificationTRV implements TimeRecordValidator {
      **/
     @Override
     public void checkTimeRecord(TimeRecord record, Optional<TimeRecord> previousState, TimeRecordAction action) throws TimeRecordErrorException {
-        if (!previousState.isPresent()) {
+        if (previousState.isEmpty()) {
             return;
         }
         TimeRecord prevState = previousState.get();

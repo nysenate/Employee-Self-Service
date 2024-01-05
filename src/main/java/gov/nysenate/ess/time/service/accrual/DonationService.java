@@ -6,9 +6,9 @@ import java.util.Map;
 
 public interface DonationService {
     /**
-     * Gets the total hours the given employee has ever donated.
+     * Gets the total hours donated in the given year.
      */
-    BigDecimal getHoursDonated(int empId);
+    BigDecimal getHoursDonated(int empId, int year);
 
     /**
      * Maps each PayPeriod to the hours donated in that period for a given employee.

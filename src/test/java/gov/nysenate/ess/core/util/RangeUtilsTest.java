@@ -8,7 +8,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import static org.junit.Assert.*;
 
@@ -18,7 +21,7 @@ public class RangeUtilsTest
     private Logger logger = LoggerFactory.getLogger(RangeUtilsTest.class);
 
     @Test
-    public void testToRangeMap() throws Exception {
+    public void testToRangeMap() {
         TreeMap<LocalDate, Boolean> evenNumberOfDates = new TreeMap<>();
         evenNumberOfDates.put(LocalDate.ofYearDay(2013, 1), true);
         evenNumberOfDates.put(LocalDate.ofYearDay(2014, 1), false);
@@ -45,7 +48,7 @@ public class RangeUtilsTest
     }
 
     @Test
-    public void testSplitRange() throws Exception {
+    public void testSplitRange() {
         Range<Integer> intRange = Range.open(1, 4);
         List<Integer> splitValues = Arrays.asList(0, 1, 2, 3, 4, 5);
         List<Range<Integer>> splitResult = RangeUtils.splitRange(intRange, splitValues);
@@ -56,7 +59,7 @@ public class RangeUtilsTest
     }
 
     @Test
-    public void testToRanges() throws Exception {
+    public void testToRanges() {
         TreeSet<Integer> intSet = new TreeSet<>(Arrays.asList(1, 2, 3));
         List<Range<Integer>> rangeResult = RangeUtils.toRanges(intSet, 4, BoundType.CLOSED);
         assertEquals("correct number of ranges", 3, rangeResult.size());
@@ -66,7 +69,7 @@ public class RangeUtilsTest
     }
 
     @Test
-    public void testGetRangeSet() throws Exception {
+    public void testGetRangeSet() {
         List<Range<Integer>> ranges = Arrays.asList(Range.closedOpen(1, 3), Range.closedOpen(4, 5),
                 Range.closed(5, 7), Range.closed(5, 6));
         RangeSet<Integer> targetRangeSet = TreeRangeSet.create();
@@ -82,7 +85,7 @@ public class RangeUtilsTest
     }
 
     @Test
-    public void testIntersection() throws Exception {
+    public void testIntersection() {
         RangeSet<Integer> rs1 = TreeRangeSet.create();
         RangeSet<Integer> rs2 = TreeRangeSet.create();
         rs1.add(Range.closedOpen(1, 3));
@@ -100,7 +103,7 @@ public class RangeUtilsTest
     }
 
     @Test
-    public void testIntersects() throws Exception {
+    public void testIntersects() {
         Range<Integer> r1 = Range.closedOpen(1, 3);
         Range<Integer> r2 = Range.openClosed(2, 4);
         Range<Integer> r3 = Range.closedOpen(3, 4);

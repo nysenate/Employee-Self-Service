@@ -3,19 +3,15 @@ package gov.nysenate.ess.supply.employee;
 import com.google.common.collect.ImmutableList;
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
+import gov.nysenate.ess.core.client.view.EmployeeView;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.dao.security.authorization.RoleDao;
 import gov.nysenate.ess.core.model.auth.EssRole;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.supply.authorization.permission.SupplyPermission;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.Set;
 
 /**
@@ -24,10 +20,8 @@ import java.util.Set;
 @RestController
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/supply/employees")
 public class SupplyEmployeeApiCtrl extends BaseRestApiCtrl {
-
-    private static final Logger logger = LoggerFactory.getLogger(SupplyEmployeeApiCtrl.class);
-    private RoleDao roleDao;
-    private SupplyEmployeeDao supplyEmployeeDao;
+    private final RoleDao roleDao;
+    private final SupplyEmployeeDao supplyEmployeeDao;
 
     @Autowired
     public SupplyEmployeeApiCtrl(RoleDao roleDao, SupplyEmployeeDao supplyEmployeeDao) {
@@ -39,7 +33,7 @@ public class SupplyEmployeeApiCtrl extends BaseRestApiCtrl {
     public BaseResponse getSupplyEmployees() {
         checkPermission(SupplyPermission.SUPPLY_STAFF_VIEW.getPermission());
         ImmutableList<Employee> employees = roleDao.getEmployeesWithRole(EssRole.SUPPLY_EMPLOYEE);
-        return ListViewResponse.of(new ArrayList(employees));
+        return ListViewResponse.of(employees.stream().map(EmployeeView::new).toList());
     }
 
     /**
@@ -49,6 +43,6 @@ public class SupplyEmployeeApiCtrl extends BaseRestApiCtrl {
     public BaseResponse getIssuers() {
         checkPermission(SupplyPermission.SUPPLY_STAFF_VIEW.getPermission());
         Set<Employee> employees = supplyEmployeeDao.getDistinctIssuers();
-        return ListViewResponse.of(new ArrayList(employees));
+        return ListViewResponse.of(employees.stream().map(EmployeeView::new).toList());
     }
 }

@@ -29,12 +29,12 @@ public enum MiscLeaveType
     VOTING_LEAVE("T", "Voting", "Voting Leave", false, new BigInteger("186214696577130514392638601662177149240")),
     WITNESS_LEAVE("W", "Witness Leave", "Witness Leave", false, new BigInteger("191601132010618813984000877237922836616"));
 
-    String code;
-    String shortName;
-    String fullName;
+    private final String code;
+    private final String shortName;
+    private final String fullName;
     /** If true, this leave type requires permission to use */
-    boolean restricted;
-    BigInteger miscLeaveId;
+    private final boolean restricted;
+    private final BigInteger miscLeaveId;
 
     MiscLeaveType(String code, String shortName, String fullName, boolean restricted, BigInteger miscLeaveId) {
         this.code = code;

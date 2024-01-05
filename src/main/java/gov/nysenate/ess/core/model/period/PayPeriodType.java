@@ -4,8 +4,7 @@ package gov.nysenate.ess.core.model.period;
  * Maps the various pay period codes used by the Senate. For time and attendance
  * purposes, the Attendance Fiscal Period (AF) type is primarily used.
  */
-public enum PayPeriodType
-{
+public enum PayPeriodType {
     AF("AF", "Attendance Fiscal Period"),
     PF("PF", "Payroll's Fiscal Period"),
     PA("PA", "Payroll Allotment Period"),
@@ -15,8 +14,8 @@ public enum PayPeriodType
     FC("FC", "Fiscal's Calendar Period"),
     PC("PC", "Payroll's Calendar Period");
 
-    String code;
-    String desc;
+    private final String code;
+    private final String desc;
 
     PayPeriodType(String code, String desc) {
         this.code = code;

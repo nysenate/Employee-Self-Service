@@ -9,8 +9,7 @@ public enum PTAQueryCompletionStatus {
     ALL_INCOMPLETE(true, false),
     SOME_INCOMPLETE(false, false),
     SOME_COMPLETE(false, true),
-    ALL_COMPLETE(true, true),
-    ;
+    ALL_COMPLETE(true, true);
 
     PTAQueryCompletionStatus(boolean all, boolean completed) {
         this.all = all;
@@ -18,9 +17,9 @@ public enum PTAQueryCompletionStatus {
     }
 
     /** Requires match for all results if true, at least one match if false */
-    private boolean all;
+    private final boolean all;
     /** Match complete tasks if true, incomplete otherwise */
-    private boolean completed;
+    private final boolean completed;
 
     public boolean isAll() {
         return all;

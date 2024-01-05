@@ -14,11 +14,8 @@ import gov.nysenate.ess.core.service.notification.email.simple.user.SimpleEmailR
 import gov.nysenate.ess.core.service.notification.email.simple.user.SimpleEmailSender;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +25,6 @@ import java.util.List;
 
 @Category(SillyTest.class)
 public class SimpleEmailIT extends BaseTest {
-    private static final Logger logger = LoggerFactory.getLogger(SimpleEmailIT.class);
     @Autowired
     EventBus eventBus;
     @Autowired
@@ -39,8 +35,8 @@ public class SimpleEmailIT extends BaseTest {
         /*
             email content
          */
-        SimpleEmailSubject simpleEmailSubject = new SimpleEmailSubject(Color.black, "hello" + "$hello$");
-        SimpleEmailContent simpleEmailContent = new SimpleEmailContent(Color.black, "test content", "$hello$");
+        SimpleEmailSubject simpleEmailSubject = new SimpleEmailSubject("hello" + "$hello$");
+        SimpleEmailContent simpleEmailContent = new SimpleEmailContent("test content", "$hello$");
         List<Component> componentList = new ArrayList<>();
         componentList.add(simpleEmailContent);
         componentList.add(simpleEmailSubject);
@@ -61,7 +57,7 @@ public class SimpleEmailIT extends BaseTest {
         /**
          * compose email
          */
-        SimpleEmailMessage simpleEmailMessage = new SimpleEmailMessage(simpleEmailSender, simpleEmailReceiver, componentList, simpleEmailHeader.toMap(), 1);
+        SimpleEmailMessage simpleEmailMessage = new SimpleEmailMessage(simpleEmailSender, simpleEmailReceiver, componentList, simpleEmailHeader.toMap());
         simpleEmailMessage.setComponent(simpleEmailContent);
         simpleEmailMessage.setComponent(simpleEmailSubject);
 //

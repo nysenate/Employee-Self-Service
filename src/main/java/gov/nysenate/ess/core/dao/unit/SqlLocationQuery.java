@@ -35,10 +35,9 @@ public enum SqlLocationQuery implements BasicSqlQuery {
     SEARCH_LOCATIONS(
             GET_LOCATIONS.getSql() + " \n" +
             "AND loc.cdlocat like :term"
-    )
-    ;
+    );
 
-    private String sql;
+    private final String sql;
 
     SqlLocationQuery(String sql) {
         this.sql = sql;

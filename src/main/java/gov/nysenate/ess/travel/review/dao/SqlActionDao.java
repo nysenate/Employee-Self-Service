@@ -87,10 +87,9 @@ public class SqlActionDao extends SqlBaseDao {
                 "SELECT app_review_action_id, employee_id, role, type, notes, date_time\n" +
                         " FROM ${travelSchema}.app_review_action\n" +
                         " WHERE app_review_id = :appReviewId"
-        ),
-        ;
+        );
 
-        private String sql;
+        private final String sql;
 
         SqlActionQuery(String sql) {
             this.sql = sql;
@@ -107,7 +106,7 @@ public class SqlActionDao extends SqlBaseDao {
         }
     }
 
-    private class ActionRowMapper extends BaseRowMapper<ActionRepositoryView> {
+    private static class ActionRowMapper extends BaseRowMapper<ActionRepositoryView> {
 
         ActionRowMapper() {
         }

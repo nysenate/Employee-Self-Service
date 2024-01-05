@@ -21,6 +21,5 @@ public enum EssRole {
     MAJORITY_LEADER,
     TRAVEL_ADMIN,
     SECRETARY_OF_SENATE,
-    ACCOUNTS_PAYABLE
     ;
 }

@@ -77,10 +77,9 @@ public class SqlSenateMieDao extends SqlBaseDao {
         SELECT_SENATE_MIE(
                 "SELECT * FROM ${travelSchema}.senate_mie\n" +
                         "WHERE fiscal_year = :fiscalYear AND total = :total"
-        )
-        ;
+        );
 
-        private String sql;
+        private final String sql;
 
         SqlSenateMieQuery(String sql) {
             this.sql = sql;
@@ -94,6 +93,20 @@ public class SqlSenateMieDao extends SqlBaseDao {
         @Override
         public DbVendor getVendor() {
             return DbVendor.POSTGRES;
+        }
+    }
+
+    private static class SenateMieRowMapper implements RowMapper<SenateMie> {
+
+        @Override
+        public SenateMie mapRow(ResultSet rs, int i) throws SQLException {
+            return new SenateMie(
+                    rs.getInt("senate_mie_id"),
+                    rs.getInt("fiscal_year"),
+                    new Dollars(rs.getString("total")),
+                    new Dollars(rs.getString("breakfast")),
+                    new Dollars(rs.getString("dinner"))
+            );
         }
     }
 }

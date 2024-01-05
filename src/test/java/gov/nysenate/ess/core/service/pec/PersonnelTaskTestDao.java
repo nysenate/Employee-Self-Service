@@ -3,18 +3,18 @@ package gov.nysenate.ess.core.service.pec;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.eventbus.EventBus;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
-import gov.nysenate.ess.core.model.cache.CacheEvictEvent;
-import gov.nysenate.ess.core.model.cache.ContentCache;
+import gov.nysenate.ess.core.model.cache.CacheType;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskTestBuilder;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
+import gov.nysenate.ess.core.service.cache.EssCacheManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
+import java.util.Set;
 
 import static gov.nysenate.ess.core.model.pec.PersonnelTaskType.*;
 
@@ -91,8 +91,6 @@ public class PersonnelTaskTestDao extends SqlBaseDao {
 
         localNamedJdbc.update(detailInsertSql, new MapSqlParameterSource("taskId", taskId));
 
-        clearTaskCache();
-
         return taskBuilder.setTaskId(taskId)
                 .build();
     }
@@ -105,12 +103,6 @@ public class PersonnelTaskTestDao extends SqlBaseDao {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("taskId", taskId)
                 .addValue("active", active);
-        int updated = localNamedJdbc.update(setActiveSql, params);
-        clearTaskCache();
-        return updated;
-    }
-
-    private void clearTaskCache() {
-        eventBus.post(new CacheEvictEvent(Collections.singleton(ContentCache.PERSONNEL_TASK)));
+        return localNamedJdbc.update(setActiveSql, params);
     }
 }

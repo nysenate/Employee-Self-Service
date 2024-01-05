@@ -26,22 +26,21 @@ public enum PersonnelStatus {
     DECD("DECEASED",                    false,      true,       1,              false),
     LWOP("LEAVE WITHOUT PAY",           true,       false,      0,              true),
     WCMP("WORKERS' COMPENSATION",       true,       true,       0,              true),
-    TRNW("TRANSFER WITHIN",             true,       true,       0,              true),
-    ;
+    TRNW("TRANSFER WITHIN",             true,       true,       0,              true);
 
     /** TODO: this field is present in the database but I'm not sure what it means */
-    private boolean CDENCLV;
+    private final boolean CDENCLV;
     /** Brief description of personnel status */
-    private String description;
+    private final String description;
     /** Indicates whether the status applies to current employees (true) or former employees (false) */
-    private boolean employed;
+    private final boolean employed;
     /** True iff employees with this status are required to enter timesheets */
-    private boolean timeEntryRequired;
+    private final boolean timeEntryRequired;
     /**
      * Certain personnel statuses are not effective on their listed effect dates
      * but are effective according to an offset (typically 1 day after)
      */
-    int effectDateOffset;
+    private final int effectDateOffset;
 
     PersonnelStatus(String description, boolean employed, boolean timeEntryRequired,
                     int effectDateOffset, boolean CDENCLV) {

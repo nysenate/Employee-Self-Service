@@ -6,6 +6,7 @@ import org.junit.experimental.categories.Category;
 
 import java.math.BigDecimal;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @Category(UnitTest.class)
@@ -21,7 +22,7 @@ public class DeductionTest {
         assertTrue(nyTax.compareTo(healthInsurance) < 0);
         assertTrue(nyTax.compareTo(fedTax) < 0);
         assertTrue(fedTax.compareTo(nyTax) > 0);
-        assertTrue(nyTax.compareTo(nysTax) == 0);
+        assertEquals(nyTax, nysTax);
     }
 
 }

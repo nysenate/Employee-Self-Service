@@ -14,15 +14,10 @@ import java.util.Map;
  * Created by Chenguang He on 6/14/2016.
  */
 public class SimpleEmailMessage implements Message {
-    private List<Component> comp;
-    private Map<String, String> header;
-    private Integer id;
-    private SimpleEmailReceiver receiver;
-    private SimpleEmailSender sender;
-    private String subject;
-
-    private SimpleEmailMessage() {
-    }
+    private final List<Component> comp;
+    private final Map<String, String> header;
+    private final SimpleEmailReceiver receiver;
+    private final SimpleEmailSender sender;
 
     /**
      * the constructor
@@ -31,10 +26,8 @@ public class SimpleEmailMessage implements Message {
      * @param receiver receiver
      * @param comp     the list of component
      * @param header   the headers
-     * @param id       the id of message
      */
-    public SimpleEmailMessage(SimpleEmailSender sender, SimpleEmailReceiver receiver, List<Component> comp, Map<String, String> header, Integer id) {
-        this.id = id;
+    public SimpleEmailMessage(SimpleEmailSender sender, SimpleEmailReceiver receiver, List<Component> comp, Map<String, String> header) {
         this.header = header;
         this.comp = comp;
         this.sender = sender;
@@ -69,34 +62,6 @@ public class SimpleEmailMessage implements Message {
     }
 
     @Override
-    public Message copyTo() {
-        Message clone = new SimpleEmailMessage(sender, receiver, comp, header, id);
-        return clone;
-    }
-
-    @Override
-    public void copyFrom(Message message) {
-        this.id = message.getMessageId();
-        this.comp = message.getComponent();
-        this.header = message.getHeader();
-    }
-
-    @Override
-    public int getMessageId() {
-        return id;
-    }
-
-    @Override
-    public void setMessageId(int id) {
-        this.id = id;
-    }
-
-    @Override
-    public boolean isFalut() {
-        return false;
-    }
-
-    @Override
     public void setHeader(Header... headers) {
         for (Header h : headers)
             header.put(h.getHeaderName(), h.getHeaderValue());
@@ -107,8 +72,4 @@ public class SimpleEmailMessage implements Message {
         return header;
     }
 
-    @Override
-    public void removeHeader(String name) {
-        header.remove(name);
-    }
 }

@@ -8,7 +8,7 @@ public enum Gender
     M("Male"),
     F("Female");
 
-    String desc;
+    private final String desc;
 
     Gender(String desc) {
         this.desc = desc;

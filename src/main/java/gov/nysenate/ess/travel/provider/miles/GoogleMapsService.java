@@ -18,14 +18,11 @@ import java.io.IOException;
 
 @Service
 public class GoogleMapsService implements MapService {
-
-    private String apiKey;
     private final GeoApiContext context;
 
     @Autowired
     public GoogleMapsService(@Value("${google.maps.api.key}") String apiKey) {
-        this.apiKey = apiKey;
-        context = new GeoApiContext.Builder().apiKey(apiKey).build();
+        this.context = new GeoApiContext.Builder().apiKey(apiKey).build();
     }
 
     /**
@@ -52,7 +49,6 @@ public class GoogleMapsService implements MapService {
 
     /**
      * Get the address param to be passed into google distance matrix.
-     *
      * Use the place_id if it exists, otherwise use the address string.
      * @param address
      * @return

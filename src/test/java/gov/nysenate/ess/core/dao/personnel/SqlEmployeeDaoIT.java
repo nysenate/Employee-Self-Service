@@ -30,32 +30,30 @@ public class SqlEmployeeDaoIT extends BaseTest
     private EmployeeDao employeeDao;
 
     @Test
-    public void testGetEmployeeById_validIdReturnsEmployee() throws Exception {
+    public void testGetEmployeeById_validIdReturnsEmployee() {
         int validId = 1719;
         Employee emp = employeeDao.getEmployeeById(validId);
         assertNotNull(emp);
         assertEquals(validId, emp.getEmployeeId());
-//        logger.debug(OutputUtils.toJson(emp));
     }
 
     @Test
-    public void testGetEmployeeByEmail_validIdReturnsEmployee() throws Exception {
+    public void testGetEmployeeByEmail_validIdReturnsEmployee() {
         String validEmail = "stouffer@nysenate.gov";
         Employee emp = employeeDao.getEmployeeByEmail(validEmail);
         assertNotNull(emp);
         assertEquals(validEmail, emp.getEmail());
-//        logger.debug(OutputUtils.toJson(emp));
     }
 
     @Test(expected = EmployeeNotFoundEx.class)
-    public void testGetEmployeeById_invalidIdThrowsEmployeeNotFoundEx() throws Exception {
+    public void testGetEmployeeById_invalidIdThrowsEmployeeNotFoundEx() {
         assertNotNull(employeeDao);
         int invalidEmpId = 999999;
         employeeDao.getEmployeeById(invalidEmpId);
     }
 
     @Test(expected = EmployeeNotFoundEx.class)
-    public void testGetEmployeeByEmail_invalidEmailThrowsEmployeeNotFoundEx() throws Exception {
+    public void testGetEmployeeByEmail_invalidEmailThrowsEmployeeNotFoundEx() {
         assertNotNull(employeeDao);
         String invalidEmail = "moose@kitten.com";
         employeeDao.getEmployeeByEmail(invalidEmail);
@@ -83,12 +81,12 @@ public class SqlEmployeeDaoIT extends BaseTest
     }
 
     @Test
-    public void testGetActiveEmployess_returnsUniqueEmployeeList() throws Exception {
+    public void testGetActiveEmployess_returnsUniqueEmployeeList() {
         Map<Integer, Employee> dupMapCheck = new HashMap<>();
         Set<Integer> dups = new HashSet<>();
         Set<Employee> employees = employeeDao.getActiveEmployees();
         assertNotNull(employees);
-        assertTrue("At least one active employee is returned", employees.size() > 0);
+        assertFalse("At least one active employee is returned", employees.isEmpty());
         for (Employee e : employees) {
             if (dupMapCheck.get(e.getEmployeeId()) != null) {
                 dups.add(e.getEmployeeId());
@@ -97,7 +95,7 @@ public class SqlEmployeeDaoIT extends BaseTest
                 dupMapCheck.put(e.getEmployeeId(), e);
             }
         }
-        assertTrue("Duplicate employee records exist for empIds: " + dups, dups.size() == 0);
+        assertTrue("Duplicate employee records exist for empIds: " + dups, dups.isEmpty());
         logger.info("Active employee count: " + employees.size());
     }
 
@@ -124,7 +122,7 @@ public class SqlEmployeeDaoIT extends BaseTest
 
         // Generate search text using fragments of employee's name
         Employee employee = employeeDao.getEmployeeById(expectedEmpId);
-        String searchText = employee.getLastName() + ", " + employee.getFirstName().substring(0, 1);
+        String searchText = employee.getLastName() + ", " + employee.getFirstName().charAt(0);
         EmployeeSearchBuilder esb = new EmployeeSearchBuilder()
                 .setName(searchText);
 
@@ -191,28 +189,35 @@ public class SqlEmployeeDaoIT extends BaseTest
 
     @Test
     public void activeEmpSearchTest() {
+        logger.warn("Start: " + LocalDateTime.now());
+        logger.warn("Getting active Ids: " + LocalDateTime.now());
         Set<Integer> activeEmployeeIds = employeeDao.getActiveEmployeeIds();
         EmployeeSearchBuilder activeSearchBuilder = new EmployeeSearchBuilder()
                 .setActive(true);
+        logger.warn("Getting from search: " + LocalDateTime.now());
         Set<Integer> activeSearchEmpIds = employeeDao.searchEmployees(activeSearchBuilder, LimitOffset.ALL).getResults().stream()
                 .map(Employee::getEmployeeId)
                 .collect(Collectors.toSet());
         assertEquals("Active empid search  should match active emp query",
                 activeEmployeeIds, activeSearchEmpIds);
 
+        logger.warn("Getting from search 2: " + LocalDateTime.now());
         Set<Integer> allEmpIds = employeeDao.getAllEmployees().stream()
                 .map(Employee::getEmployeeId)
                 .collect(Collectors.toSet());
 
         EmployeeSearchBuilder inactiveSearchBuilder = new EmployeeSearchBuilder()
                 .setActive(false);
-        Set<Integer> inactiveSearchEmpIds = employeeDao.searchEmployees(inactiveSearchBuilder, LimitOffset.ALL).getResults().stream()
+        logger.warn("Getting from search 3: " + LocalDateTime.now());
+        Set<Integer> inactiveSearchEmpIds = employeeDao.searchEmployees(inactiveSearchBuilder, LimitOffset.ALL)
+                .getResults().stream()
                 .map(Employee::getEmployeeId)
                 .collect(Collectors.toSet());
         assertTrue("Inactive and active searches must have no overlap",
                 Sets.intersection(activeSearchEmpIds, inactiveSearchEmpIds).isEmpty());
         assertEquals("Active and Inactive searches must combine to a set of all emps",
                 allEmpIds, Sets.union(activeEmployeeIds, inactiveSearchEmpIds));
+        logger.warn("End: " + LocalDateTime.now());
     }
 
     @Test

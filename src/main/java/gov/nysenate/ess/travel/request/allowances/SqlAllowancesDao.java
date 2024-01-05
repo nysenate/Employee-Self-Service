@@ -87,7 +87,7 @@ public class SqlAllowancesDao extends SqlBaseDao {
                         " WHERE allowance_id IN (:allowanceIds)"
         );
 
-        private String sql;
+        private final String sql;
 
         SqlAllowancesQuery(String sql) {
             this.sql = sql;
@@ -104,7 +104,7 @@ public class SqlAllowancesDao extends SqlBaseDao {
         }
     }
 
-    private class AllowanceHandler extends BaseHandler {
+    private static class AllowanceHandler extends BaseHandler {
 
         private Allowances allowances;
 

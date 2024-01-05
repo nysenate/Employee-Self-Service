@@ -14,7 +14,6 @@ import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.model.transaction.TransactionHistoryUpdateEvent;
 import gov.nysenate.ess.core.model.transaction.TransactionRecord;
 import gov.nysenate.ess.core.service.pec.notification.AssignmentWithTask;
-import gov.nysenate.ess.core.service.pec.task.CachedPersonnelTaskService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
 import org.slf4j.Logger;
@@ -42,7 +41,6 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
     private final EmpTransactionService transactionService;
     private final PersonnelTaskDao personnelTaskDao;
     private final PersonnelTaskAssignmentDao assignmentDao;
-    private final CachedPersonnelTaskService cachedPersonnelTaskService;
 
     /** Classes which handle assignment for different {@link PersonnelTaskAssignmentGroup} */
     private final List<GroupTaskAssigner> groupTaskAssigners;
@@ -51,7 +49,6 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
                                     EmpTransactionService transactionService,
                                     List<GroupTaskAssigner> groupTaskAssigners,
                                     PersonnelTaskDao personnelTaskDao,
-                                    CachedPersonnelTaskService cachedPersonnelTaskService,
                                     PersonnelTaskAssignmentDao assignmentDao,
                                     EventBus eventBus) {
         this.empInfoService = empInfoService;
@@ -59,13 +56,11 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
         this.groupTaskAssigners = groupTaskAssigners;
         this.personnelTaskDao = personnelTaskDao;
         this.assignmentDao = assignmentDao;
-        this.cachedPersonnelTaskService = cachedPersonnelTaskService;
         eventBus.register(this);
     }
 
     @Override
     public List<AssignmentWithTask> assignTasks(boolean updateDb) {
-        cachedPersonnelTaskService.warmCache();
         if (updateDb) {
             logger.info("Determining and assigning personnel tasks for all active employees...");
         }

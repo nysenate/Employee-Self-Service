@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class EssEmpTaskSearchService implements EmpTaskSearchService {
-
     private static final Logger logger = LoggerFactory.getLogger(EssEmpTaskSearchService.class);
 
     private static final LocalDate placeholderContSrvDate = LocalDate.of(1995, 1, 1);

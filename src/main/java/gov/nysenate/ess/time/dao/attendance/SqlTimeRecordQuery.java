@@ -140,9 +140,9 @@ public enum SqlTimeRecordQuery implements BasicSqlQuery {
     ),
     DELETE_TIME_REC_ENTRIES_SQL(
             "DELETE FROM ${tsSchema}.PD23TIMESHEET WHERE NUXRTIMESHEET = :timesheetId"
-    ),;
+    );
 
-    private String sql;
+    private final String sql;
 
     SqlTimeRecordQuery(String sql) {
         this.sql = sql;

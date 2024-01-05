@@ -30,12 +30,12 @@ public class SqlHolidayDaoIT extends BaseTest
 
     /** Holiday not found exception should be thrown if no holiday matches the given date. */
     @Test(expected = HolidayNotFoundForDateEx.class)
-    public void testGetHoliday_noHoliday() throws Exception {
+    public void testGetHoliday_noHoliday() {
         holidayDao.getHoliday(of(2014, 4, 4));
     }
 
     @Test
-    public void testGetHoliday_official() throws Exception {
+    public void testGetHoliday_official() {
         // CHRISTMAS DAY
         Holiday holiday = holidayDao.getHoliday(of(2014, 12, 25));
         assertNotNull(holiday);
@@ -47,13 +47,13 @@ public class SqlHolidayDaoIT extends BaseTest
     }
 
     @Test
-    public void testGetHolidays_none() throws Exception {
+    public void testGetHolidays_none() {
         assertTrue(holidayDao.getHolidays(
                 Range.closed(of(2040, 1, 1), of(2041, 1, 1)), false, SortOrder.ASC).isEmpty());
     }
 
     @Test
-    public void testGetHolidays_2014() throws Exception {
+    public void testGetHolidays_2014() {
         List<Holiday> holidays = holidayDao.getHolidays(Range.closed(of(2014, 1, 1), of(2014, 12, 31)), true, SortOrder.ASC);
         assertFalse(holidays.isEmpty());
         // Includes new years
@@ -69,7 +69,7 @@ public class SqlHolidayDaoIT extends BaseTest
     }
 
     @Test
-    public void testGetHolidays_ranges() throws Exception {
+    public void testGetHolidays_ranges() {
         // between new years and christmas
         List<Holiday> closedRangeHolidays = holidayDao.getHolidays(Range.closed(of(2014, 1, 1), of(2014, 12, 25)), false, SortOrder.ASC);
         List<Holiday> openRangeHolidays = holidayDao.getHolidays(Range.open(of(2014, 1, 1), of(2014, 12, 25)), false, SortOrder.ASC);
@@ -78,13 +78,13 @@ public class SqlHolidayDaoIT extends BaseTest
     }
 
     @Test
-    public void testGetHolidays_noQuestionable() throws Exception {
+    public void testGetHolidays_noQuestionable() {
         List<Holiday> holidays = holidayDao.getHolidays(Range.closed(of(2011, 1, 1), now()), false, SortOrder.ASC);
         assertTrue(holidays.stream().noneMatch(Holiday::isQuestionable));
     }
 
     @Test
-    public void testGetHolidays_someQuestionable() throws Exception {
+    public void testGetHolidays_someQuestionable() {
         List<Holiday> holidays = holidayDao.getHolidays(Range.open(of(2011, 1, 1), DateUtils.THE_FUTURE), true, SortOrder.ASC);
         assertTrue(holidays.stream().anyMatch(Holiday::isQuestionable));
     }

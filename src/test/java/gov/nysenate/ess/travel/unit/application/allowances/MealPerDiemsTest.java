@@ -16,7 +16,6 @@ import org.junit.experimental.categories.Category;
 import java.time.LocalDate;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 @Category(UnitTest.class)
 public class MealPerDiemsTest {
@@ -37,7 +36,7 @@ public class MealPerDiemsTest {
         MealPerDiem capitolMealPerDiem = new MealPerDiem(CAPITOL, TODAY, new Dollars("100"), createMieWithTotal("100"));
         MealPerDiem agencyMealPerDiem = new MealPerDiem(AGENCY, TODAY, new Dollars("100"), createMieWithTotal("100"));
         MealPerDiems mpds = new MealPerDiems(Sets.newHashSet(capitolMealPerDiem, agencyMealPerDiem));
-        assertTrue(mpds.allMealPerDiems().size() == 1);
+        assertEquals(1, mpds.allMealPerDiems().size());
     }
 
     @Test

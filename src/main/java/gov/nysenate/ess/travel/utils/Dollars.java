@@ -9,16 +9,14 @@ import java.util.Objects;
  * Auto scales and rounds to two digits.
  */
 public final class Dollars implements Comparable<Dollars> {
-
     private static final int SCALE = 2;
     private static final RoundingMode ROUNDING_MODE = RoundingMode.HALF_UP;
-    public static final Dollars ZERO = new Dollars("0");
+    public static final Dollars ZERO = new Dollars(0);
 
     private final BigDecimal dollars;
 
     public Dollars(BigDecimal dollars) {
-        dollars = dollars.setScale(SCALE, ROUNDING_MODE);
-        this.dollars = dollars;
+        this.dollars = dollars.setScale(SCALE, ROUNDING_MODE);
     }
 
     public Dollars(String dollars) {
@@ -30,24 +28,24 @@ public final class Dollars implements Comparable<Dollars> {
     }
 
     public Dollars add(Dollars dollars) {
-        return new Dollars(this.getDollars().add(dollars.getDollars()));
+        return new Dollars(this.dollars.add(dollars.dollars));
     }
 
     public Dollars multiply(Dollars dollars) {
-        return new Dollars(this.getDollars().multiply(dollars.getDollars()));
+        return new Dollars(this.dollars.multiply(dollars.dollars));
     }
 
     public Dollars divide(int divisor) {
-        return new Dollars(this.getDollars().divide(new BigDecimal(divisor)));
+        return new Dollars(dollars.divide(new BigDecimal(divisor)));
     }
 
-    private BigDecimal getDollars() {
-        return dollars;
+    public double toDouble() {
+        return dollars.doubleValue();
     }
 
     @Override
     public String toString() {
-        return this.dollars.toString();
+        return dollars.toString();
     }
 
     @Override
