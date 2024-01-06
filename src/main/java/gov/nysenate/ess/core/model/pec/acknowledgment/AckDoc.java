@@ -7,7 +7,6 @@ import gov.nysenate.ess.core.model.pec.PersonnelTask;
  */
 public class AckDoc extends PersonnelTask {
 
-    /** Path to document pdf */
     private String filename;
 
     public AckDoc(PersonnelTask task, String filename) {

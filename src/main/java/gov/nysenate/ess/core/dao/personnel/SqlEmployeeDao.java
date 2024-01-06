@@ -4,13 +4,16 @@ import gov.nysenate.ess.core.dao.base.PaginatedRowHandler;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.dao.personnel.mapper.EmployeeRowMapper;
 import gov.nysenate.ess.core.dao.personnel.mapper.MinimalEmployeeRowMapper;
-import gov.nysenate.ess.core.dao.unit.LocationDao;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.personnel.EmployeeException;
 import gov.nysenate.ess.core.model.personnel.EmployeeNotFoundEx;
 import gov.nysenate.ess.core.model.transaction.TransactionCode;
+import gov.nysenate.ess.core.service.base.LocationService;
 import gov.nysenate.ess.core.service.personnel.EmployeeSearchBuilder;
-import gov.nysenate.ess.core.util.*;
+import gov.nysenate.ess.core.util.LimitOffset;
+import gov.nysenate.ess.core.util.OrderBy;
+import gov.nysenate.ess.core.util.PaginatedList;
+import gov.nysenate.ess.core.util.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,37 +23,33 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.*;
 
 @Repository
-public class SqlEmployeeDao extends SqlBaseDao implements EmployeeDao
-{
+public class SqlEmployeeDao extends SqlBaseDao implements EmployeeDao {
     private static final Logger logger = LoggerFactory.getLogger(SqlEmployeeDao.class);
 
-    @Autowired private LocationDao locationDao;
+    private final LocationService locationService;
+
+    @Autowired
+    public SqlEmployeeDao(LocationService locationService) {
+        this.locationService = locationService;
+    }
 
     /** {@inheritDoc} */
     @Override
     public Employee getEmployeeById(int empId) throws EmployeeException {
-        Employee employee;
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("empId", empId);
         try {
             List<Employee> employeeList = remoteNamedJdbc.query(SqlEmployeeQuery.GET_EMP_BY_ID_SQL.getSql(schemaMap()), params, getEmployeeRowMapper());
             if (employeeList.isEmpty()) {
-                logger.warn("Retrieve employee {} error: {}", empId);
-                throw new EmployeeNotFoundEx("No matching employee record for employee id: " + empId);
+                throw new DataRetrievalFailureException("No matching employee found.");
             }
-            else {
-                return employeeList.get(0);
-            }
+            return employeeList.get(0);
         }
         catch (DataRetrievalFailureException ex) {
             logger.warn("Retrieve employee {} error: {}", empId, ex.getMessage());
@@ -69,17 +68,14 @@ public class SqlEmployeeDao extends SqlBaseDao implements EmployeeDao
     /** {@inheritDoc} */
     @Override
     public Employee getEmployeeByEmail(String email) throws EmployeeException {
-        Employee employee;
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("email", email);
         try {
             List<Employee> employees = remoteNamedJdbc.query(SqlEmployeeQuery.GET_EMP_BY_EMAIL_SQL.getSql(schemaMap()), params, getEmployeeRowMapper());
-            if (employees.isEmpty() || employees == null)  {
-                throw new EmployeeNotFoundEx("No matching employee record for email: " + email);
+            if (employees.isEmpty())  {
+                throw new DataRetrievalFailureException("");
             }
-            else {
-                return employees.get(0);
-            }
+            return employees.get(0);
         }
         catch (DataRetrievalFailureException ex) {
             throw new EmployeeNotFoundEx("No matching employee record for email: " + email);
@@ -141,16 +137,15 @@ public class SqlEmployeeDao extends SqlBaseDao implements EmployeeDao
     public Map<String, String> getRawEmployeeColumns(int empId) {
         final String getRawEmpColsSql = SqlEmployeeQuery.GET_EMP_BY_ID_SQL.getSql(
                 schemaMap(), new OrderBy("DTTXNUPDATE", SortOrder.DESC), LimitOffset.ONE);
-        Map<String, String> employeeColumns = new HashMap<String, String>();
+        Map<String, String> employeeColumns = new HashMap<>();
         remoteNamedJdbc.query(getRawEmpColsSql, new MapSqlParameterSource("empId", empId),
                 (rs, rowNum) -> {
-
                     for (String colName : TransactionCode.getAllDbColumnsList()) {
+                        String col = null;
                         try {
-                            employeeColumns.put(colName, rs.getString(colName));
-                        } catch (SQLException ex) {
-                            employeeColumns.put(colName, null);
-                        }
+                            col = rs.getString(colName);
+                        } catch (SQLException ignored) {}
+                        employeeColumns.put(colName, col);
                     }
                     return employeeColumns;
                 }
@@ -229,7 +224,7 @@ public class SqlEmployeeDao extends SqlBaseDao implements EmployeeDao
 
     /** Returns a EmployeeRowMapper that's configured for use in this dao */
     private EmployeeRowMapper getEmployeeRowMapper() {
-        return new EmployeeRowMapper("", "RCTR_", "RCTRHD_", "AGCY_", "LOC_", locationDao);
+        return new EmployeeRowMapper("", "RCTR_", "RCTRHD_", "AGCY_", "LOC_", locationService);
     }
 
     private MinimalEmployeeRowMapper getMinimalEmployeeRowMapper() {

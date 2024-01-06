@@ -9,9 +9,7 @@ import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.model.transaction.TransactionRecord;
 import gov.nysenate.ess.core.util.DateUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.StrSubstitutor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.text.StringSubstitutor;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
@@ -25,10 +23,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
-public class SqlEmpTransactionDao extends SqlBaseDao implements EmpTransactionDao
-{
-    private static final Logger logger = LoggerFactory.getLogger(SqlEmpTransactionDao.class);
-
+public class SqlEmpTransactionDao extends SqlBaseDao implements EmpTransactionDao {
     /** {@inheritDoc} */
     @Override
     public TransactionHistory getTransHistory(int empId, EmpTransDaoOption options) {
@@ -59,7 +54,7 @@ public class SqlEmpTransactionDao extends SqlBaseDao implements EmpTransactionDa
             sql = SqlEmpTransactionQuery.GET_TRANS_HISTORY_SQL.getSql(schemaMap());
         }
         else {
-            params.addValue("transCodes", (!options.shouldInitialize()) ? getTransCodesFromSet(codes) : getAllTransCodes());
+            params.addValue("transCodes", getTransCodesFromSet(codes));
             sql = SqlEmpTransactionQuery.GET_TRANS_HISTORY_SQL_FILTER_BY_CODE.getSql(schemaMap());
         }
         sql = applyAuditColsToSql(sql, "audColumns", "AUD.", codes, options);
@@ -119,7 +114,7 @@ public class SqlEmpTransactionDao extends SqlBaseDao implements EmpTransactionDa
         // because those serve as initial snapshots and therefore need all the columns. */
         List<String> auditColList = new ArrayList<>();
         if (!options.shouldInitialize() && restrictSet != null && !restrictSet.isEmpty() &&
-            !restrictSet.stream().anyMatch(TransactionCode::isAppointType)) {
+                restrictSet.stream().noneMatch(TransactionCode::isAppointType)) {
             restrictSet.forEach(t -> auditColList.addAll(t.getDbColumnList()));
         }
         else {
@@ -127,15 +122,12 @@ public class SqlEmpTransactionDao extends SqlBaseDao implements EmpTransactionDa
         }
         // Apply the prefix to the names if requested */
         if (StringUtils.isNotEmpty(pfx)) {
-            for (int i = 0; i < auditColList.size(); i++) {
-                auditColList.set(i, pfx + auditColList.get(i));
-            }
+            auditColList.replaceAll(s -> pfx + s);
         }
         // Apply to the sql statement */
         String auditColumns = StringUtils.join(auditColList, ",");
         selectMap.put(replaceKey, (!auditColumns.isEmpty()) ? ("," + auditColumns) : "");
-        StrSubstitutor strSub = new StrSubstitutor(selectMap);
-        return strSub.replace(selectSql);
+        return new StringSubstitutor(selectMap).replace(selectSql);
     }
 
     /**
@@ -146,16 +138,5 @@ public class SqlEmpTransactionDao extends SqlBaseDao implements EmpTransactionDa
      */
     private Set<String> getTransCodesFromSet(Set<TransactionCode> codes) {
         return codes.stream().map(Enum::name).collect(Collectors.toSet());
-    }
-
-    /**
-     * Returns the code strings for all the TransactionCodes.
-     *
-     * @return Set<String>
-     */
-    private Set<String> getAllTransCodes() {
-        Set<TransactionCode> allCodes = new HashSet<>();
-        Collections.addAll(allCodes, TransactionCode.values());
-        return getTransCodesFromSet(allCodes);
     }
 }

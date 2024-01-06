@@ -58,8 +58,7 @@ public class EssLdapDbAuthzRealm extends AuthorizingRealm
      */
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
-        if (token != null && token instanceof UsernamePasswordToken) {
-            UsernamePasswordToken userPassToken = (UsernamePasswordToken) token;
+        if (token instanceof UsernamePasswordToken userPassToken) {
             String username = userPassToken.getUsername();
             String password = new String(userPassToken.getPassword());
             logger.info("Authenticating user {} through the Senate LDAP.{}",
@@ -129,7 +128,7 @@ public class EssLdapDbAuthzRealm extends AuthorizingRealm
             Employee employee = employeeInfoService.getEmployee(empId);
 
             // Get and set employee roles
-            ImmutableSet<Enum> roles = essRoleService.getRoles(employee).collect(ImmutableSet.toImmutableSet());
+            ImmutableSet<Enum<?>> roles = essRoleService.getRoles(employee).collect(ImmutableSet.toImmutableSet());
             List<String> roleStrings = roles.stream()
                     .map(Enum::name)
                     .collect(Collectors.toList());

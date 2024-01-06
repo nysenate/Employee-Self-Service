@@ -1,7 +1,9 @@
 package gov.nysenate.ess.travel.authorization.role;
 
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public enum TravelRole {
 
@@ -19,7 +21,13 @@ public enum TravelRole {
     SECRETARY_OF_THE_SENATE("Secretary of the Senate"),
     MAJORITY_LEADER("Majority Leader");
 
-    protected String displayName;
+    /**
+     * Map of display names to TravelRole's for construction from display names.
+     */
+    private static final Map<String, TravelRole> displayNameToRole = Arrays.stream(values())
+            .collect(Collectors.toMap(role -> role.displayName, Function.identity()));
+
+    private final String displayName;
 
     TravelRole(String displayName) {
         this.displayName = displayName;
@@ -38,14 +46,7 @@ public enum TravelRole {
         return role;
     }
 
-    /**
-     * Map of display names to TravelRole's for construction from display names.
-     */
-    private static final Map<String, TravelRole> displayNameToRole = new HashMap<>(values().length, 1);
-
-    static {
-        for (TravelRole r: values()) {
-            displayNameToRole.put(r.displayName, r);
-        }
+    public String getDisplayName() {
+        return displayName;
     }
 }

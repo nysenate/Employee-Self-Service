@@ -39,7 +39,7 @@ public class EverfiCategoryService {
 
     @Autowired
     public EverfiCategoryService(EverfiApiClient client, ResponsibilityHeadDao respHeadDao,
-                                 EmployeeInfoService employeeInfoService) throws IOException {
+                                 EmployeeInfoService employeeInfoService) {
         this.client = client;
         this.respHeadDao = respHeadDao;
         this.employeeInfoService = employeeInfoService;
@@ -86,7 +86,7 @@ public class EverfiCategoryService {
     }
 
     @Scheduled(cron = "${scheduler.everfi.category.update.cron}")
-    public void ensureDepartmentIsUpToDate() throws IOException {
+    public void ensureDepartmentIsUpToDate() {
         if (everfiSyncEnabled) {
             logger.info("Beginning Everfi department category label update");
             try {

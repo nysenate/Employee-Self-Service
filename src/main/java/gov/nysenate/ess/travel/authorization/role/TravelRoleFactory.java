@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -30,7 +29,7 @@ public class TravelRoleFactory implements RoleFactory {
     @Autowired private DelegationDao delegateDao;
 
     @Override
-    public Stream<Enum> getRoles(Employee employee) {
+    public Stream<Enum<?>> getRoles(Employee employee) {
         // Add TravelRole.DELEGATE role if user has delegated roles.
         TravelRoles roles = travelRolesForEmp(employee);
         if (!roles.delegate().isEmpty()) {
@@ -41,8 +40,7 @@ public class TravelRoleFactory implements RoleFactory {
             roles = new TravelRoles(roles.primary(), delegatedRoles);
         }
 
-        return roles.all().stream()
-                .map(role -> (Enum) role);
+        return roles.all().stream().map(role -> role);
     }
 
     /**
@@ -82,7 +80,7 @@ public class TravelRoleFactory implements RoleFactory {
         // Roles this employee has been assigned as a delegate.
         List<TravelRole> delegatedRoles = new ArrayList<>();
         List<Delegation> delegations = delegateDao.findByDelegateEmpId(employee.getEmployeeId());
-        List<Delegation> active = delegations.stream().filter(Delegation::isActive).collect(Collectors.toList());
+        List<Delegation> active = delegations.stream().filter(Delegation::isActive).toList();
 
         for (Delegation d : active) {
             delegatedRoles.addAll(primaryRoles(d.principal()));

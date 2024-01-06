@@ -21,7 +21,7 @@ public class OrderableItemsTest {
     @Test
     public void givenNullItemsList_returnEmptyList() {
         assertTrue(OrderableItems.forItems(null).isEmpty());
-        assertTrue(OrderableItems.forItemsAndLoc(null, new LocationId("A42FB-W")).isEmpty());
+        assertTrue(OrderableItems.forItemsAndLoc(null, LocationId.ofString("A42FB-W")).isEmpty());
     }
 
     /**
@@ -69,7 +69,7 @@ public class OrderableItemsTest {
     @Test
     public void givenNullLocationAndRestrictedItems_returnList() {
         SupplyItem item = SupplyItemFixture.getDefaultBuilder().build();
-        item.setRestriction(new ItemRestriction(ImmutableSet.of(new LocationId("A42FB-W"))));
+        item.setRestriction(new ItemRestriction(ImmutableSet.of(LocationId.ofString("A42FB-W"))));
         ImmutableSet<SupplyItem> items = ImmutableSet.of(item);
         assertFalse(OrderableItems.forItemsAndLoc(items, null).isEmpty());
     }
@@ -77,16 +77,16 @@ public class OrderableItemsTest {
     @Test
     public void filterOutRestrictedItems() {
         SupplyItem item = SupplyItemFixture.getDefaultBuilder().build();
-        item.setRestriction(new ItemRestriction(ImmutableSet.of(new LocationId("A42FB-W"))));
+        item.setRestriction(new ItemRestriction(ImmutableSet.of(LocationId.ofString("A42FB-W"))));
         ImmutableSet<SupplyItem> items = ImmutableSet.of(item);
-        assertTrue(OrderableItems.forItemsAndLoc(items, new LocationId("D5001-W")).isEmpty());
+        assertTrue(OrderableItems.forItemsAndLoc(items, LocationId.ofString("D5001-W")).isEmpty());
     }
 
     @Test
     public void restrictedItemCanBeOrderedFromAllowedLocation() {
         SupplyItem item = SupplyItemFixture.getDefaultBuilder().build();
-        item.setRestriction(new ItemRestriction(ImmutableSet.of(new LocationId("A42FB-W"))));
+        item.setRestriction(new ItemRestriction(ImmutableSet.of(LocationId.ofString("A42FB-W"))));
         ImmutableSet<SupplyItem> items = ImmutableSet.of(item);
-        assertFalse(OrderableItems.forItemsAndLoc(items, new LocationId("A42FB-W")).isEmpty());
+        assertFalse(OrderableItems.forItemsAndLoc(items, LocationId.ofString("A42FB-W")).isEmpty());
     }
 }

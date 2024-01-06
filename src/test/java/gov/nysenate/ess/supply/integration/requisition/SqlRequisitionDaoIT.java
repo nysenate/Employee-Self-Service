@@ -1,14 +1,11 @@
 package gov.nysenate.ess.supply.integration.requisition;
 
-import com.google.common.collect.Range;
 import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.annotation.IntegrationTest;
-import gov.nysenate.ess.core.config.DatabaseConfig;
 import gov.nysenate.ess.core.util.LimitOffset;
+import gov.nysenate.ess.supply.requisition.dao.RequisitionDao;
 import gov.nysenate.ess.supply.requisition.model.Requisition;
 import gov.nysenate.ess.supply.requisition.model.RequisitionQuery;
-import gov.nysenate.ess.supply.requisition.dao.RequisitionDao;
-import gov.nysenate.ess.supply.requisition.model.RequisitionStatus;
 import gov.nysenate.ess.supply.unit.fixtures.RequisitionFixture;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -17,11 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.EnumSet;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 @Ignore
 @Category(IntegrationTest.class)
@@ -39,7 +32,7 @@ public class SqlRequisitionDaoIT extends BaseTest {
     @Test
     public void canGetRequisition() {
         Requisition requisition = requisitionDao.getRequisitionById(2).get();
-        assertTrue(requisition.getRequisitionId() == 2);
+        assertEquals(2, requisition.getRequisitionId());
     }
 
     @Test

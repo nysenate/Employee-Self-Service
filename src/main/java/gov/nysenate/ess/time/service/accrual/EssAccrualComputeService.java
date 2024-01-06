@@ -243,9 +243,8 @@ public class EssAccrualComputeService implements AccrualComputeService
         Range<LocalDate> gapDateRange = Range.closedOpen(
                 accrualState.getEndDate().plusDays(1),
                 lastPeriod.getEndDate().plusDays(1));
-        LinkedList<PayPeriod> gapPeriods = new LinkedList<>(unMatchedPeriods.stream()
-                .filter(p -> RangeUtils.intersects(gapDateRange, p.getDateRange()))
-                .collect(Collectors.toList()));
+        LinkedList<PayPeriod> gapPeriods = unMatchedPeriods.stream()
+                .filter(p -> RangeUtils.intersects(gapDateRange, p.getDateRange())).collect(Collectors.toCollection(LinkedList::new));
         PayPeriod refPeriod = optPeriodAccRecord
                 .map(PeriodAccSummary::getRefPayPeriod)
                 .orElseGet(gapPeriods::getFirst); // FIXME?
@@ -304,7 +303,7 @@ public class EssAccrualComputeService implements AccrualComputeService
     private TreeSet<PayPeriod> getMissingPeriods(
             TreeMap<PayPeriod, PeriodAccSummary> accrualRecords, Collection<PayPeriod> payPeriods) {
         return payPeriods.stream()
-                .filter(period -> !accrualRecords.keySet().contains(period))
+                .filter(period -> !accrualRecords.containsKey(period))
                 .collect(Collectors.toCollection(TreeSet::new));
     }
 

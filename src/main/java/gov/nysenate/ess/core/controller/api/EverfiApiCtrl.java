@@ -5,9 +5,7 @@ import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.pec.external.everfi.EverfiRecordService;
 import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategoryService;
-import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUser;
 import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUserService;
-import gov.nysenate.ess.core.service.pec.external.everfi.user.add.EverfiAddUserRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +60,7 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/manual/user/sync", method = {POST})
     @ResponseStatus(value = HttpStatus.OK)
     public SimpleResponse manualUserSync(HttpServletRequest request,
-                                              HttpServletResponse response) throws Exception {
+                                              HttpServletResponse response) {
         checkPermission(ADMIN.getPermission());
         everfiUserService.runUpdateMethods();
         return new SimpleResponse(true, "Everfi Manual User Sync", "everfi-manual-user-sync");
@@ -108,7 +106,7 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
      *
      * @return String
      * */
-    @RequestMapping(value = "/personnel/task/generate", method = GET)
+    @RequestMapping(value = "/personnel/task/generate", method = POST)
     @ResponseStatus(value = HttpStatus.OK)
     public SimpleResponse runEverfiImport(HttpServletRequest request,
                                           HttpServletResponse response,
@@ -123,9 +121,6 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
         }
         else if (since.equals("2023")) {
             ldtsince = jan2023;
-        }
-        else if (since.equals("90")) {
-            ldtsince = LocalDateTime.now().minusDays(90);
         }
         else {
             ldtsince = stringToLocalDateTime(since);

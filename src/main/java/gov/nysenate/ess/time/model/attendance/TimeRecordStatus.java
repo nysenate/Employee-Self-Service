@@ -23,13 +23,13 @@ public enum TimeRecordStatus
     DISAPPROVED_PERSONNEL("DP","Disapproved by Personnel", EMPLOYEE),
     ;
 
-    protected String code;
-    protected String name;
+    private final String code;
+    private final String name;
 
     /** The scope indicates who can perform an action on the time record at that given stage.
      *  For example when the status is 'Submitted' the supervisor scope 'S' can only take action (i.e approve/disapprove).
      */
-    protected TimeRecordScope scope;
+    private final TimeRecordScope scope;
 
     TimeRecordStatus(String code, String name, TimeRecordScope scope) {
         this.code = code;

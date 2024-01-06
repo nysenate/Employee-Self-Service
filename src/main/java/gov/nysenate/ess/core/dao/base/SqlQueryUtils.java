@@ -5,11 +5,9 @@ import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.OrderBy;
 import gov.nysenate.ess.core.util.SortOrder;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.StrSubstitutor;
-import org.springframework.beans.factory.annotation.Value;
+import org.apache.commons.text.StringSubstitutor;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,8 +22,7 @@ public abstract class SqlQueryUtils
      * Return the sql with schemas substituted.
      */
     public static String substituteSchema(Map<String, String> schemaMap, String sql) {
-        StrSubstitutor strSub = new StrSubstitutor(schemaMap);
-        return strSub.replace(sql);
+        return new StringSubstitutor(schemaMap).replace(sql);
     }
 
     /**

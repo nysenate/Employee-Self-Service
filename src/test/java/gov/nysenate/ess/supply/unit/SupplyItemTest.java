@@ -3,8 +3,9 @@ package gov.nysenate.ess.supply.unit;
 import com.google.common.collect.ImmutableSet;
 import gov.nysenate.ess.core.annotation.UnitTest;
 import gov.nysenate.ess.core.model.unit.LocationId;
-import gov.nysenate.ess.supply.item.model.*;
 import gov.nysenate.ess.supply.item.model.ItemRestriction;
+import gov.nysenate.ess.supply.item.model.ItemStatus;
+import gov.nysenate.ess.supply.item.model.SupplyItem;
 import gov.nysenate.ess.supply.unit.fixtures.SupplyItemFixture;
 import org.junit.Before;
 import org.junit.Test;
@@ -65,7 +66,7 @@ public class SupplyItemTest {
     @Test
     public void givenRestrictedLocations_itemIsRestricted() {
         SupplyItem item = builder.build();
-        item.setRestriction(new ItemRestriction(ImmutableSet.of(new LocationId("A42FB-W"))));
+        item.setRestriction(new ItemRestriction(ImmutableSet.of(LocationId.ofString("A42FB-W"))));
         assertTrue(item.isRestricted());
     }
 

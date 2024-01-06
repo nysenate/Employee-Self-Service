@@ -27,8 +27,7 @@ public class AllowedTravelersService {
     public Set<Employee> forEmp(Employee emp) {
         Set<String> allowedRchs = allowedRchs(emp);
         Set<Employee> allEmployees = employeeInfoService.getAllEmployees(true);
-        Set<Employee> allowedTravelers = empsInRchs(allEmployees, allowedRchs);
-        return allowedTravelers;
+        return empsInRchs(allEmployees, allowedRchs);
     }
 
     /**

@@ -22,7 +22,7 @@ public enum SimpleTravelPermission {
     // Allowed to browse the assign delegates page and assign delegates.
     TRAVEL_ASSIGN_DELEGATES("travel:assign-delegates");
 
-    private String permissionString;
+    private final String permissionString;
 
     SimpleTravelPermission(String permissionString) {
         this.permissionString = permissionString;

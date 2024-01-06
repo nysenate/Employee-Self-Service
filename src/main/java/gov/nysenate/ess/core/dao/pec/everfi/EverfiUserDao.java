@@ -26,32 +26,32 @@ public interface EverfiUserDao {
      * @param empID
      * @return
      */
-    public int insertEverfiUserIDs(String everfiUUID, Integer empID);
+    int insertEverfiUserIDs(String everfiUUID, Integer empID);
 
     /**
      * Returns a list of everfi ids that we want to ignore
      * @return
      */
-    public List<EverfiUserIDs> getIgnoredEverfiUserIDs();
+    List<EverfiUserIDs> getIgnoredEverfiUserIDs();
 
     /**
      * Returns a count of all ID's in the DB. Useful for correction logic
      * @return
      */
-    public int everfiUserIDCount();
+    int everfiUserIDCount();
 
     /**
      * Insert a UUID into the ignored everfi uuid table
      * @param everfiUUID
      * @param empID
      */
-    public void insertIgnoredID(String everfiUUID, Integer empID);
+    void insertIgnoredID(String everfiUUID, Integer empID);
 
     /**
      * Remove a UUID from the ignored everfi uuid table
      * @param everfiUUID
      */
-    public void removeIgnoredID(String everfiUUID);
+    void removeIgnoredID(String everfiUUID);
 
 }
 

@@ -94,9 +94,8 @@ public class NotificationUtils {
      * @param cla class
      * @param c component
      * @return the object of class
-     * @throws ClassNotFoundException
      */
-    public static Object deCompoent(Class<?> cla, Component c) throws ClassNotFoundException {
+    public static Object deCompoent(Class<?> cla, Component c) {
         return cla.cast(c);
     }
 

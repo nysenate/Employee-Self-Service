@@ -8,7 +8,6 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -19,16 +18,16 @@ import java.util.List;
 public class IrsMileageRateDao extends SqlBaseDao {
 
     public void insertIrsRate(MileageRate mileageRate) {
-        MapSqlParameterSource params = new MapSqlParameterSource("rate", mileageRate.getRate());
-        params.addValue("startDate", toDate(mileageRate.getStartDate()));
-        params.addValue("endDate", toDate(mileageRate.getEndDate()));
+        MapSqlParameterSource params = new MapSqlParameterSource("rate", mileageRate.getRate())
+                .addValue("startDate", toDate(mileageRate.getStartDate()))
+                .addValue("endDate", toDate(mileageRate.getEndDate()));
         String sql = IrsMileageRateDao.SqlIrsRateQuery.INSERT_MILEAGE_RATE.getSql(schemaMap());
         localNamedJdbc.update(sql, params);
     }
 
     public void updateEndDate(LocalDate oldStartDate, LocalDate newEndDate) {
-        MapSqlParameterSource params = new MapSqlParameterSource("old_start_date", Date.valueOf(oldStartDate));
-        params.addValue("new_end_date", toDate(newEndDate));
+        MapSqlParameterSource params = new MapSqlParameterSource("old_start_date", Date.valueOf(oldStartDate))
+                .addValue("new_end_date", toDate(newEndDate));
         String sql = SqlIrsRateQuery.UPDATE_END_DATE.getSql(schemaMap());
         localNamedJdbc.update(sql, params);
     }
@@ -38,7 +37,7 @@ public class IrsMileageRateDao extends SqlBaseDao {
         String sql = SqlIrsRateQuery.GET_MILEAGE_RATE.getSql(schemaMap());
         IrsMileageRateDao.MileageRateMapper mapper = new MileageRateMapper();
         List<MileageRate> mileageRateList = localNamedJdbc.query(sql, params, mapper);
-        if (mileageRateList.isEmpty() || mileageRateList == null) {
+        if (mileageRateList.isEmpty()) {
             throw new IncorrectResultSizeDataAccessException(0);
         }
         else {
@@ -67,7 +66,7 @@ public class IrsMileageRateDao extends SqlBaseDao {
             this.sql = sql;
         }
 
-        private String sql;
+        private final String sql;
 
         @Override
         public String getSql() {
@@ -80,14 +79,13 @@ public class IrsMileageRateDao extends SqlBaseDao {
         }
     }
 
-    private class MileageRateMapper extends BaseRowMapper<MileageRate> {
-
+    private static class MileageRateMapper extends BaseRowMapper<MileageRate> {
         @Override
         public MileageRate mapRow(ResultSet resultSet, int i) throws SQLException {
             return new MileageRate(
                     resultSet.getDate("start_date").toLocalDate(),
                     resultSet.getDate("end_date").toLocalDate(),
-                    resultSet.getString("rate").replaceAll("$", ""));
+                    resultSet.getString("rate").replace("$", ""));
         }
     }
 }

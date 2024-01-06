@@ -21,13 +21,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.*;
-import java.util.function.Predicate;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static gov.nysenate.ess.core.model.pec.PersonnelTaskType.DOCUMENT_ACKNOWLEDGMENT;
 import static gov.nysenate.ess.core.model.pec.PersonnelTaskType.VIDEO_CODE_ENTRY;
-import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -55,7 +56,7 @@ public class PersonnelTaskAssignmentDaoIT extends BaseTest {
         assertEquals(1, assignments.size());
 
         boolean isSameAssignment = initialAssignment.equals(assignments.get(0));
-        assertEquals(isSameAssignment, true);
+        assertTrue(isSameAssignment);
         // Update the initial assignment with different data
         final PersonnelTaskAssignment updatedTask =
                 new PersonnelTaskAssignment(taskId, empId, empId, LocalDateTime.now(), true, true, null, null);
@@ -102,7 +103,7 @@ public class PersonnelTaskAssignmentDaoIT extends BaseTest {
                 .setEmpId(9999999);
         List<PersonnelTaskAssignment> results = assignmentDao.getTasks(taskTypeQuery);
         for (PersonnelTaskAssignment result: results) {
-            assertTrue( getTaskType( result ) == DOCUMENT_ACKNOWLEDGMENT );
+            assertSame(getTaskType(result), DOCUMENT_ACKNOWLEDGMENT);
         }
 
         // Query by completed status
@@ -124,12 +125,12 @@ public class PersonnelTaskAssignmentDaoIT extends BaseTest {
                 .setCompletedTo(partialCompTo)
                 .setEmpId(9999999);
         results = assignmentDao.getTasks(partialCompDateQuery);
-        assertTrue(results != null);
+        assertNotNull(results);
 
         List<LocalDateTime> firstTimestamps = allAssignments.stream()
                 .map(PersonnelTaskAssignment::getUpdateTime)
                 .filter(Objects::nonNull)
-                .limit(10).collect(toList());
+                .limit(10).toList();
         LocalDateTime compFrom = firstTimestamps.get(0);
         LocalDateTime compTo = firstTimestamps.get(firstTimestamps.size() - 1);
         Range<LocalDateTime> compRange = Range.closed(partialCompFrom, compTo);
@@ -160,7 +161,7 @@ public class PersonnelTaskAssignmentDaoIT extends BaseTest {
                 .setTaskIds(Collections.singleton(taskId));
         results = assignmentDao.getTasks(taskIdQuery);
         for (PersonnelTaskAssignment result: results) {
-            assertTrue( taskId == result.getTaskId() );
+            assertEquals(taskId, result.getTaskId());
         }
 
         Set<Integer> taskIds = allDummyTasks.subList(0, allDummyTasks.size() - 1)

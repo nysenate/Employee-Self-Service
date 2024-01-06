@@ -1,39 +1,26 @@
 package gov.nysenate.ess;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 
 /**
  * Property config that will execute only when the spring profile is in 'test' mode.
  * This allows for loading test.app.properties for unit tests.
  */
 @Configuration
+@PropertySource("classpath:/app.properties")
+@PropertySource("classpath:/test.app.properties")
+@PropertySource("classpath:/test.data.properties")
+@PropertySource("classpath:/shiro.ini")
 @Profile({"test"})
-public class TestConfig
-{
-    private static final Logger logger = LoggerFactory.getLogger(TestConfig.class);
-
-    public static final String TEST_PROPERTY_FILENAME = "test.app.properties";
-    public static final String TEST_DATA_PROPERTY_FILENAME = "test.data.properties";
-    public static final String SHIRO_PROPERTY_FILENAME = "shiro.ini";
-
+public class TestConfig {
     @Bean
     public static PropertySourcesPlaceholderConfigurer properties() {
-        PropertySourcesPlaceholderConfigurer pspc = new PropertySourcesPlaceholderConfigurer();
-        Resource[] resources = new ClassPathResource[]{
-                new ClassPathResource(TEST_PROPERTY_FILENAME),
-                new ClassPathResource(TEST_DATA_PROPERTY_FILENAME),
-                new ClassPathResource(SHIRO_PROPERTY_FILENAME)
-        };
-        pspc.setLocations(resources);
+        var pspc = new PropertySourcesPlaceholderConfigurer();
         pspc.setIgnoreUnresolvablePlaceholders(true);
-        logger.info("Test property file loaded");
         return pspc;
     }
 }

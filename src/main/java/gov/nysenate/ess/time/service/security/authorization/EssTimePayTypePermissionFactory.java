@@ -19,7 +19,7 @@ public class EssTimePayTypePermissionFactory implements PermissionFactory {
 
     /** {@inheritDoc} */
     @Override
-    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum> roles) {
+    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum<?>> roles) {
         PayType payType = employee.getPayType();
         ImmutableList.Builder<Permission> permListBldr = ImmutableList.builder();
         if (payType != null) {

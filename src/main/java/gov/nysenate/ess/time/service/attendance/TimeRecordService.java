@@ -1,8 +1,6 @@
 package gov.nysenate.ess.time.service.attendance;
 
-import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Range;
+import com.google.common.collect.*;
 import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.util.SortOrder;
 import gov.nysenate.ess.time.model.attendance.TimeRecord;
@@ -13,8 +11,11 @@ import gov.nysenate.ess.time.model.personnel.SupervisorException;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
+import static java.util.stream.Collectors.toList;
 
 public interface TimeRecordService
 {
@@ -61,8 +62,17 @@ public interface TimeRecordService
      * @param statuses Set<TimeRecordStatus> - time record statuses to retrieve
      * @return List<TimeRecord>
      */
-    List<TimeRecord> getTimeRecords(Set<Integer> empIds,
-                                    Collection<PayPeriod> payPeriods, Set<TimeRecordStatus> statuses);
+    default List<TimeRecord> getTimeRecords(Set<Integer> empIds,
+                                    Collection<PayPeriod> payPeriods, Set<TimeRecordStatus> statuses) {
+        RangeSet<LocalDate> dateRanges = TreeRangeSet.create();
+        payPeriods.forEach(period -> dateRanges.add(period.getDateRange()));
+        if (dateRanges.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return getTimeRecords(empIds, dateRanges.span(), statuses).stream()
+                .filter(record -> dateRanges.encloses(record.getDateRange()))
+                .collect(toList());
+    }
 
     /**
      * Given a map of employee ids to record begin dates,
@@ -129,27 +139,19 @@ public interface TimeRecordService
      * @see TimeRecordStatus
      * @see TimeRecordAction
      * The record is then saved and a snapshot is recorded as an audit if specific actions are taken
-     * @param record TimeRecord - the time record to be submitted
+     * @param newRecord TimeRecord - the time record to be submitted
      * @return boolean - true iff record successfully submitted
      */
-    boolean saveRecord(TimeRecord record, TimeRecordAction action);
+    boolean saveRecord(TimeRecord newRecord, TimeRecordAction action);
 
     /**
-     * Remove the time record with the specified time record id
-     * @param timeRecordId BigInteger
-     * @return true if a time record was removed
+     * Evict an employee's data from the cache.
+     * @param empId
      */
-    boolean deleteRecord(BigInteger timeRecordId);
-
-    /**
-     * @see #deleteRecord(BigInteger)
-     */
-    default boolean deleteRecord(TimeRecord timeRecord) {
-        return timeRecord.getTimeRecordId() != null && deleteRecord(timeRecord.getTimeRecordId());
-    }
+    void evictEmployee(int empId);
 
     /**
      * Synchronize time record cache
      */
-    public void syncTimeRecords();
+    void syncTimeRecords();
 }

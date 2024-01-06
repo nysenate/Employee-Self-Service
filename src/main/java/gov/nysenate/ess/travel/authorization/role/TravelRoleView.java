@@ -7,12 +7,9 @@ public class TravelRoleView implements ViewObject {
     private String name;
     private String displayName;
 
-    public TravelRoleView() {
-    }
-
     public TravelRoleView(TravelRole role) {
         this.name = role.name();
-        this.displayName = role.displayName;
+        this.displayName = role.getDisplayName();
     }
 
     public String getName() {

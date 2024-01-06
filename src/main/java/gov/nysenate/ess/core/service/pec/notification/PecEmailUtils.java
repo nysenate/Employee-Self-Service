@@ -43,7 +43,7 @@ class PecEmailUtils {
     }
 
     public EmployeeEmail getEmail(PecEmailType type, Employee employee, List<AssignmentWithTask> dataList) {
-        return new EmployeeEmail(employee, type, dataList, domainUrl);
+        return new EmployeeEmail(employee, type, dataList, List.of(domainUrl));
     }
 
     public List<EmployeeEmail> getEmails(List<String> addresses, PecEmailType type,
@@ -54,7 +54,7 @@ class PecEmailUtils {
             Employee emp = employeeDao.getEmployeeByEmail(address);
             var dataList = new ArrayList<AssignmentWithTask>();
             taskOpt.ifPresent(task -> dataList.add(new AssignmentWithTask(emp.getEmployeeId(), task)));
-            emails.add(new EmployeeEmail(emp, type, dataList, extraData.toArray(new String[0])));
+            emails.add(new EmployeeEmail(emp, type, dataList, extraData));
         }
         return emails;
     }

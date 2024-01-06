@@ -26,7 +26,7 @@ public enum SimpleEssPermission {
     RUN_PERSONNEL_TASK_ASSIGNER("admin:personnel-task-assigner"),
     ;
 
-    private String permissionString;
+    private final String permissionString;
 
     SimpleEssPermission(String permissionString) {
         this.permissionString = permissionString;

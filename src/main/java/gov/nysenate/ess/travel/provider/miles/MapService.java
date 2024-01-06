@@ -6,6 +6,5 @@ import gov.nysenate.ess.travel.application.address.GoogleAddress;
 import java.io.IOException;
 
 public interface MapService {
-
     double drivingDistance(GoogleAddress from, GoogleAddress to) throws InterruptedException, ApiException, IOException;
 }

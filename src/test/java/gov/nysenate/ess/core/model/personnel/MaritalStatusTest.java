@@ -4,13 +4,14 @@ import gov.nysenate.ess.core.annotation.UnitTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 @Category(UnitTest.class)
 public class MaritalStatusTest
 {
     @Test
-    public void testValueOfCode() throws Exception {
+    public void testValueOfCode() {
         assertEquals(MaritalStatus.SINGLE, MaritalStatus.valueOfCode("S"));
         assertEquals(MaritalStatus.MARRIED, MaritalStatus.valueOfCode("M"));
         assertEquals(MaritalStatus.DIVORCED, MaritalStatus.valueOfCode("D"));

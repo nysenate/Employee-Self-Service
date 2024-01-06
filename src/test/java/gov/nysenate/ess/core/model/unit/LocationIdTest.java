@@ -30,13 +30,13 @@ public class LocationIdTest {
         locId = new LocationId(null, 'W');
         assertFalse(locId.isSyntacticallyValid());
 
-        locId = new LocationId(null);
+        locId = LocationId.ofString(null);
         assertFalse(locId.isSyntacticallyValid());
     }
 
     @Test
     public void handlesStringsMissingDash() {
-        LocationId locId = new LocationId("A42FBW");
+        LocationId locId = LocationId.ofString("A42FBW");
         assertFalse(locId.isSyntacticallyValid());
     }
 

@@ -33,7 +33,7 @@ public class EthicsCourseTaskDetailDao extends SqlBaseDao implements PersonnelTa
                 new MapSqlParameterSource("taskId", task.getTaskId()),
                 new EthicsCourseRowMapper(task)
         );
-        if (ethicsCourseTaskList.isEmpty() || ethicsCourseTaskList == null) {
+        if (ethicsCourseTaskList.isEmpty()) {
             throw new IncorrectResultSizeDataAccessException(0);
         }
         else {

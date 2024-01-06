@@ -30,7 +30,7 @@ public enum SqlTempResponsibilityHeadQuery implements BasicSqlQuery {
                     "WHERE id = :id"
     );
 
-    private String sql;
+    private final String sql;
 
     SqlTempResponsibilityHeadQuery(String sql) {
         this.sql = sql;

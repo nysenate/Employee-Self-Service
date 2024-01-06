@@ -2,6 +2,8 @@ package gov.nysenate.ess.supply.item;
 
 import gov.nysenate.ess.supply.item.model.SupplyItem;
 
+import java.util.Objects;
+
 /** A Line item represents an item in an order.
  * It contains the an item id and the quantity ordered. */
 public final class LineItem {
@@ -36,9 +38,7 @@ public final class LineItem {
         if (o == null || getClass() != o.getClass()) return false;
 
         LineItem lineItem = (LineItem) o;
-
-        if (quantity != lineItem.quantity) return false;
-        return !(item != null ? !item.equals(lineItem.item) : lineItem.item != null);
+        return quantity == lineItem.quantity && Objects.equals(item, lineItem.item);
 
     }
 

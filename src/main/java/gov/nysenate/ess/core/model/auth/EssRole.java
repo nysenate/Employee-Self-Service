@@ -16,5 +16,4 @@ public enum EssRole {
     TIME_MANAGER,
     /* Travel */
     MAJORITY_LEADER,
-    ;
 }

@@ -163,7 +163,7 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
                         "WHERE (app.traveler_id = :userId OR app.submitted_by_id = :userId)"
         );
 
-        private String sql;
+        private final String sql;
 
         SqlTravelApplicationQuery(String sql) {
             this.sql = sql;
@@ -240,7 +240,7 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
         }
     }
 
-    private class AmendmentRowMapper extends BaseRowMapper<Amendment> {
+    private static class AmendmentRowMapper extends BaseRowMapper<Amendment> {
         private RouteDao routeDao;
         private SqlAllowancesDao allowancesDao;
         private EmployeeInfoService employeeInfoService;
@@ -280,7 +280,7 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
             MealPerDiems mpds = mealPerDiemsDao.selectMealPerDiems(amdId);
             LodgingPerDiems lpds = lodgingPerDiemsDao.selectLodgingPerDiems(amdId);
 
-            Amendment amd = new Amendment.Builder()
+            return new Amendment.Builder()
                     .withAmendmentId(amdId)
                     .withVersion(version)
                     .withPurposeOfTravel(pot)
@@ -292,7 +292,6 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
                     .withCreatedDateTime(createdDateTime)
                     .withCreatedBy(createdBy)
                     .build();
-            return amd;
         }
     }
 }

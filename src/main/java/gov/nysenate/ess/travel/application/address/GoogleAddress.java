@@ -7,36 +7,34 @@ import java.util.Objects;
 public class GoogleAddress extends Address {
 
     private int id;
-    private String placeId;
-    private String name;
-    private String formattedAddress;
+    private final String placeId;
+    private final String name;
+    private final String formattedAddress;
 
     public GoogleAddress(int id, String placeId, String name, String formattedAddress) {
         this.id = id;
-        // If we dont have values, use empty string instead of null so that db unique constraint works.
+        // If we don't have values, use empty string instead of null so the unique constraint works.
         this.placeId = placeId == null ? "" : placeId;
         this.name = name == null ? "" : name.trim();
         this.formattedAddress = formattedAddress == null ? "" : formattedAddress.trim();
     }
 
     /**
-     * A formatted version of this address including county info in parenthesis.
+     * A formatted version of this address including county info in parentheses.
      * Usually just the address but for some types of addresses, like establishments, it will use
      * the name of the establishment instead of street1.
-     *
-     * Overrides a method in {@link Address} to provide a more accurate description for GooglgeAddress's.
+     * Overrides a method in {@link Address} to provide a more accurate description for GoogleAddress's.
      *
      * @return
      */
     @Override
     public String getFormattedAddressWithCounty() {
-        String desc = getName().isEmpty() ? getAddr1() : getName();
-        desc += getCity().isEmpty() ? "" : ", " + getCity();
-        desc += getState().isEmpty() ? "" : ", " + getState();
-        desc += getZip5().isEmpty() ? "" : " " + getZip5();
-        desc += getCounty().isEmpty() ? "" : " (" + getCounty() + " County)";
-        desc.trim();
-        return desc;
+        String desc = name.isEmpty() ? addr1 : name;
+        desc += city.isEmpty() ? "" : ", " + city;
+        desc += state.isEmpty() ? "" : ", " + state;
+        desc += zip5.isEmpty() ? "" : " " + zip5;
+        desc += county.isEmpty() ? "" : " (" + county + " County)";
+        return desc.trim();
     }
 
     public int getId() {

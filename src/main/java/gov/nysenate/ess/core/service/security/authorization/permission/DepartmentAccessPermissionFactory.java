@@ -22,7 +22,7 @@ public class DepartmentAccessPermissionFactory implements PermissionFactory {
 
     /** {@inheritDoc} */
     @Override
-    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum> roles) {
+    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum<?>> roles) {
         return deptWhitelistService.isAllowed(employee)
                 ? ImmutableList.of(SimpleEssPermission.DEPARTMENT_ACCESS.getPermission())
                 : ImmutableList.of();

@@ -32,7 +32,7 @@ public enum SqlTimeEntryQuery implements BasicSqlQuery
         "WHERE NUXREFEM = :empId AND DTDAY = :dayDate"
     );
 
-    private String sql;
+    private final String sql;
 
     SqlTimeEntryQuery(String sql) {
         this.sql = sql;

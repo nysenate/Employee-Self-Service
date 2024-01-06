@@ -1,6 +1,5 @@
 package gov.nysenate.ess.core.controller.api;
 
-import com.google.common.collect.Maps;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.client.response.error.ErrorCode;
@@ -17,7 +16,10 @@ import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentNotFoundE
 import gov.nysenate.ess.core.model.auth.CorePermission;
 import gov.nysenate.ess.core.model.auth.SimpleEssPermission;
 import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
-import gov.nysenate.ess.core.model.pec.*;
+import gov.nysenate.ess.core.model.pec.EmpPATSearchResultView;
+import gov.nysenate.ess.core.model.pec.PersonnelTask;
+import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
+import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
 import gov.nysenate.ess.core.model.pec.acknowledgment.AckDoc;
 import gov.nysenate.ess.core.model.pec.ethics.EthicsCourseTask;
 import gov.nysenate.ess.core.model.pec.ethics.EthicsLiveCourseTask;
@@ -25,7 +27,6 @@ import gov.nysenate.ess.core.model.pec.everfi.EverfiCourseTask;
 import gov.nysenate.ess.core.model.pec.moodle.MoodleCourseTask;
 import gov.nysenate.ess.core.model.pec.video.VideoTask;
 import gov.nysenate.ess.core.service.pec.search.*;
-import gov.nysenate.ess.core.service.pec.task.CachedPersonnelTaskService;
 import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
 import gov.nysenate.ess.core.service.personnel.EmployeeSearchBuilder;
 import gov.nysenate.ess.core.util.LimitOffset;
@@ -33,7 +34,6 @@ import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.core.util.SortOrder;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -75,16 +75,12 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
     private final PersonnelTaskAssignmentDao taskDao;
     private final EmpTaskSearchService empTaskSearchService;
 
-    private final CachedPersonnelTaskService cachedPersonnelTaskService;
-
     public PersonnelTaskApiCtrl(PersonnelTaskService taskService,
                                 PersonnelTaskAssignmentDao taskDao,
-                                EmpTaskSearchService empTaskSearchService,
-                                CachedPersonnelTaskService cachedPersonnelTaskService) {
+                                EmpTaskSearchService empTaskSearchService) {
         this.taskService = taskService;
         this.taskDao = taskDao;
         this.empTaskSearchService = empTaskSearchService;
-        this.cachedPersonnelTaskService = cachedPersonnelTaskService;
     }
 
     /** Get Tasks API
@@ -100,7 +96,7 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "", method = {GET, HEAD})
     public ListViewResponse<PersonnelTaskView> getTasks(@RequestParam(defaultValue = "false") boolean activeOnly) {
         return ListViewResponse.of(
-                taskService.getPersonnelTasks(activeOnly).stream()
+                taskService.getPersonnelTasks(activeOnly, true).stream()
                         .map(this::getPersonnelTaskView)
                         .collect(Collectors.toList()),
                 "tasks"
@@ -119,7 +115,7 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
      * Path params:
      * @param empId int - employee id
      *
-     * @return {@link ListViewResponse< PersonnelTaskAssignmentView >} list of tasks assigned to given emp.
+     * @return {@link ListViewResponse<PersonnelTaskAssignmentView>} list of tasks assigned to given emp.
      */
     @RequestMapping(value = "/assignment/{empId:\\d+}", method = {GET, HEAD})
     public ListViewResponse<PersonnelTaskAssignmentView> getAssignmentsForEmployee(
@@ -152,7 +148,7 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
      * @param empId int - employee id
      * @param taskId int - task id
      *
-     * @return {@link ViewObjectResponse< PersonnelTaskAssignmentView >}
+     * @return {@link ViewObjectResponse<PersonnelTaskAssignmentView>}
      */
     @RequestMapping(value = "/assignment/{empId}/{taskId}", method = {GET, HEAD})
     public ViewObjectResponse<DetailPersonnelTaskAssignmentView> getSpecificTaskForEmployee(
@@ -182,7 +178,7 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
      * limit - int - default 10 - limit the number of results
      * offset - int - default 1 - start the result list from this result.
      *
-     * @return {@link ViewObjectResponse< PersonnelTaskAssignmentView >}
+     * @return {@link ViewObjectResponse<PersonnelTaskAssignmentView>}
      */
     @RequestMapping(value = "/emp/search", method = {GET, HEAD})
     public ListViewResponse<EmpPATSearchResultView> empTaskSearch(WebRequest request) {
@@ -241,7 +237,7 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
         CSVPrinter csvPrinter = createProperCSVPrinter(maxNumOfTasks, response);
         for (EmpPATSearchResultView searchResultView: resultViews) {
             DetailedEmployeeView currentEmployee =  searchResultView.getEmployee();
-            handleCSVPrinting(csvPrinter,currentEmployee,getRespCenter(currentEmployee), searchResultView.getTasks(), maxNumOfTasks);
+            handleCSVPrinting(csvPrinter,currentEmployee, getRespCenter(currentEmployee), searchResultView.getTasks(), maxNumOfTasks);
         }
         csvPrinter.close();
     }
@@ -260,7 +256,7 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
      * Get a map of all personnel tasks and their ids
      */
     private Map<Integer, PersonnelTaskView> getPersonnelTaskIdMap() {
-        return taskService.getPersonnelTasks(false).stream()
+        return taskService.getPersonnelTasks(false, true).stream()
                 .map(this::getPersonnelTaskView)
                 .collect(Collectors.toMap(PersonnelTaskView::getTaskId, Function.identity()));
     }
@@ -283,14 +279,14 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
      * Returns a complete CSV printer with the header set
      */
     private CSVPrinter createProperCSVPrinter(int maxNumOfTasks, HttpServletResponse response) throws IOException {
-        String testOriginalTaskString = "EmpId, Name, Email, Work Phone, Resp Center, Continuous Service, ";
+        StringBuilder testOriginalTaskString = new StringBuilder("EmpId, Name, Email, Work Phone, Resp Center, Continuous Service, ");
 
         for (int i = 1; i < maxNumOfTasks+1; i++) {
-            testOriginalTaskString = testOriginalTaskString + createTaskStrings(i);
+            testOriginalTaskString.append(createTaskStrings(i));
         }
 
          return new CSVPrinter(response.getWriter(), CSVFormat.DEFAULT
-                    .withHeader(testOriginalTaskString.split(",")));
+                    .withHeader(testOriginalTaskString.toString().split(",")));
     }
 
     /**
@@ -335,9 +331,7 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
         csvPrinter.printRecord(recordToPrint);
     }
 
-    /*
-    Ensures that a record that doesnt have data for all tasks will show up empty in the csv
-     */
+    /* Ensures that a record that doesn't have data for all tasks will show up empty in the csv */
     private void addEmptyTask(ArrayList<Object> recordToPrint) {
         for (int i = 0; i < 5; i++) {
             recordToPrint.add("");
@@ -362,37 +356,30 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
 
     /**
      * Generate a detailed task view from the given task.
-     * This involves loading task details and packinging it with the task.
+     * This involves loading task details and packaging it with the task.
      */
     private DetailPersonnelTaskAssignmentView getDetailedTaskView(
             PersonnelTaskAssignment taskAssignment) {
-        PersonnelTask personnelTask = taskService.getPersonnelTask(taskAssignment.getTaskId());
-        PersonnelTaskView taskView = getPersonnelTaskView(personnelTask);
+        PersonnelTask detailedTask = taskService.getPersonnelTask(taskAssignment.getTaskId(), true);
+        PersonnelTaskView taskView = getPersonnelTaskView(detailedTask);
         return new DetailPersonnelTaskAssignmentView(taskAssignment, taskView);
     }
 
-
     /** Generate a task view for the given task */
-    @SuppressWarnings("unchecked")
-    private PersonnelTaskView getPersonnelTaskView(PersonnelTask personnelTask) {
-
-        PersonnelTaskType type = personnelTask.getTaskType();
-
-        return switch (type) {
+    private PersonnelTaskView getPersonnelTaskView(PersonnelTask detailedTask) {
+        return switch (detailedTask.getTaskType()) {
             case DOCUMENT_ACKNOWLEDGMENT ->
-                    new AckDocView((AckDoc) cachedPersonnelTaskService.getDetailedTask(personnelTask), assets + ackDocPath);
+                    new AckDocView((AckDoc) detailedTask, assets + ackDocPath);
             case MOODLE_COURSE ->
-                    new MoodleTaskView((MoodleCourseTask) cachedPersonnelTaskService.getDetailedTask(personnelTask));
+                    new MoodleTaskView((MoodleCourseTask) detailedTask);
             case VIDEO_CODE_ENTRY ->
-                    new PECVideoView((VideoTask) cachedPersonnelTaskService.getDetailedTask(personnelTask), assets + pecVidPath);
+                    new PECVideoView((VideoTask) detailedTask, assets + pecVidPath);
             case EVERFI_COURSE ->
-                    new EverfiTaskView((EverfiCourseTask) cachedPersonnelTaskService.getDetailedTask(personnelTask));
+                    new EverfiTaskView((EverfiCourseTask) detailedTask);
             case ETHICS_COURSE ->
-                    new EthicsCourseTaskView((EthicsCourseTask) cachedPersonnelTaskService.getDetailedTask(personnelTask));
+                    new EthicsCourseTaskView((EthicsCourseTask) detailedTask);
             case ETHICS_LIVE_COURSE ->
-                    new EthicsLiveCourseTaskView((EthicsLiveCourseTask) cachedPersonnelTaskService.getDetailedTask(personnelTask));
-            default -> throw new IllegalArgumentException("No PersonnelTask exists of class: "
-                    + personnelTask.getClass().getName());
+                    new EthicsLiveCourseTaskView((EthicsLiveCourseTask) detailedTask);
         };
     }
 

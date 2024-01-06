@@ -1,6 +1,5 @@
 package gov.nysenate.ess.time.model.attendance;
 
-import com.google.common.base.Objects;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Range;
@@ -14,10 +13,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.Optional;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -94,29 +90,29 @@ public class TimeRecord implements Comparable<TimeRecord>
         if (!(o instanceof TimeRecord)) return false;
         TimeRecord that = (TimeRecord) o;
         return active == that.active &&
-                Objects.equal(timeRecordId, that.timeRecordId) &&
-                Objects.equal(employeeId, that.employeeId) &&
-                Objects.equal(supervisorId, that.supervisorId) &&
-                Objects.equal(lastUser, that.lastUser) &&
-                Objects.equal(respHeadCode, that.respHeadCode) &&
-                Objects.equal(beginDate, that.beginDate) &&
-                Objects.equal(endDate, that.endDate) &&
-                Objects.equal(payPeriod, that.payPeriod) &&
-                Objects.equal(remarks, that.remarks) &&
-                Objects.equal(exceptionDetails, that.exceptionDetails) &&
-                Objects.equal(processedDate, that.processedDate) &&
+                Objects.equals(timeRecordId, that.timeRecordId) &&
+                Objects.equals(employeeId, that.employeeId) &&
+                Objects.equals(supervisorId, that.supervisorId) &&
+                Objects.equals(lastUser, that.lastUser) &&
+                Objects.equals(respHeadCode, that.respHeadCode) &&
+                Objects.equals(beginDate, that.beginDate) &&
+                Objects.equals(endDate, that.endDate) &&
+                Objects.equals(payPeriod, that.payPeriod) &&
+                Objects.equals(remarks, that.remarks) &&
+                Objects.equals(exceptionDetails, that.exceptionDetails) &&
+                Objects.equals(processedDate, that.processedDate) &&
                 recordStatus == that.recordStatus &&
-                Objects.equal(originalUserId, that.originalUserId) &&
-                Objects.equal(updateUserId, that.updateUserId) &&
-                Objects.equal(createdDate, that.createdDate) &&
-                Objects.equal(updateDate, that.updateDate) &&
-                Objects.equal(timeEntryMap, that.timeEntryMap) &&
-                Objects.equal(approvalEmpId, that.approvalEmpId);
+                Objects.equals(originalUserId, that.originalUserId) &&
+                Objects.equals(updateUserId, that.updateUserId) &&
+                Objects.equals(createdDate, that.createdDate) &&
+                Objects.equals(updateDate, that.updateDate) &&
+                Objects.equals(timeEntryMap, that.timeEntryMap) &&
+                Objects.equals(approvalEmpId, that.approvalEmpId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(timeRecordId, employeeId, supervisorId, lastUser, respHeadCode, active, beginDate,
+        return Objects.hash(timeRecordId, employeeId, supervisorId, lastUser, respHeadCode, active, beginDate,
                 endDate, payPeriod, remarks, exceptionDetails, processedDate, recordStatus, originalUserId,
                 updateUserId, createdDate, updateDate, timeEntryMap, approvalEmpId);
     }
@@ -140,9 +136,9 @@ public class TimeRecord implements Comparable<TimeRecord>
      * Return true iff the employee info in this time record matches the given employee info
      */
     public boolean checkEmployeeInfo(Employee empInfo) {
-        return Objects.equal(this.employeeId, empInfo.getEmployeeId()) &&
-                Objects.equal(this.supervisorId, empInfo.getSupervisorId()) &&
-                Objects.equal(this.respHeadCode,
+        return Objects.equals(this.employeeId, empInfo.getEmployeeId()) &&
+                Objects.equals(this.supervisorId, empInfo.getSupervisorId()) &&
+                Objects.equals(this.respHeadCode,
                         empInfo.getRespCenter() != null && empInfo.getRespCenter().getHead() != null
                                 ? empInfo.getRespCenter().getHead().getCode() : null);
     }
@@ -248,7 +244,7 @@ public class TimeRecord implements Comparable<TimeRecord>
     public LocalDateTime getOverallUpdateDate() {
         return timeEntryMap.values().stream()
                 .map(TimeEntry::getUpdateDate)
-                .filter(i -> i != null)
+                .filter(java.util.Objects::nonNull)
                 .filter(this.updateDate::isBefore)
                 .max(LocalDateTime::compareTo)
                 .orElse(this.updateDate);

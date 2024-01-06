@@ -1,8 +1,6 @@
 package gov.nysenate.ess.core.service.period;
 
-import com.google.common.collect.Range;
 import gov.nysenate.ess.core.model.period.Holiday;
-import gov.nysenate.ess.core.util.SortOrder;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -19,16 +17,13 @@ public interface HolidayService
      * @param date LocalDate
      * @return {@link Optional<Holiday>}
      */
-    public Optional<Holiday> getActiveHoliday(LocalDate date);
+    Optional<Holiday> getActiveHoliday(LocalDate date);
 
     /**
-     * Retrieves a list of all the holidays that occur between the given dates inclusively in order
-     * of earliest first.
+     * Retrieves a list of all the holidays that occur between the given dates.
      *
-     * @param dateRange Range<LocalDate> - The date range to search.
      * @param includeQuestionable boolean - Include questionable holidays
-     * @param dateOrder SortOrder - Order the results by date.
      * @return List<Holiday>
      */
-    public List<Holiday> getHolidays(Range<LocalDate> dateRange, boolean includeQuestionable, SortOrder dateOrder);
+    List<Holiday> getHolidays(LocalDate fromDate, LocalDate toDate, boolean includeQuestionable);
 }

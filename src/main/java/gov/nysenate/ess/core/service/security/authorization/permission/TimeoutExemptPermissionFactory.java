@@ -16,7 +16,7 @@ import static gov.nysenate.ess.core.model.auth.EssRole.TIMEOUT_EXEMPT;
 public class TimeoutExemptPermissionFactory implements PermissionFactory {
 
     @Override
-    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum> roles) {
+    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum<?>> roles) {
         return roles.contains(TIMEOUT_EXEMPT)
                 ? ImmutableList.of(SimpleEssPermission.TIMEOUT_EXEMPT.getPermission())
                 : ImmutableList.of();

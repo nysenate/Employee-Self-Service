@@ -9,7 +9,6 @@ import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.util.OutputUtils;
-import gov.nysenate.ess.time.service.attendance.validation.InvalidTimeRecordException;
 import gov.nysenate.ess.travel.allowedtravelers.AllowedTravelersService;
 import gov.nysenate.ess.travel.application.*;
 import gov.nysenate.ess.travel.application.allowances.AllowancesView;
@@ -121,47 +120,47 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
         // Perform all updates specified in the patch.
         for (Map.Entry<String, String> patch : patches.entrySet()) {
             switch (patch.getKey()) {
-                case "traveler":
-                    int travelerEmpId = Integer.valueOf(patch.getValue());
+                case "traveler" -> {
+                    int travelerEmpId = Integer.parseInt(patch.getValue());
                     if (travelerEmpId != app.getTraveler().getEmployeeId()) {
                         app.setTraveler(employeeInfoService.getEmployee(travelerEmpId));
                     }
-                    break;
-                case "purposeOfTravel":
+                }
+                case "purposeOfTravel" -> {
                     PurposeOfTravelView potView = OutputUtils.jsonToObject(patch.getValue(), PurposeOfTravelView.class);
                     app.activeAmendment().setPurposeOfTravel(potView.toPurposeOfTravel());
-                    break;
-                case "outbound":
+                }
+                case "outbound" -> {
                     RouteView outboundRouteView = OutputUtils.jsonToObject(patch.getValue(), RouteView.class);
                     Route outboundRoute = outboundRouteView.toRoute();
                     if (!outboundRoute.equals(app.activeAmendment().route())) {
                         app.activeAmendment().setOutboundRoute(outboundRoute);
                     }
-                    break;
-                case "route":
+                }
+                case "route" -> {
                     RouteView routeView = OutputUtils.jsonToObject(patch.getValue(), RouteView.class);
                     routeViewValidator.validateTravelDates(routeView);
                     Route fullRoute = routeService.createRoute(routeView.toRoute());
                     amendmentService.setRoute(app.activeAmendment(), fullRoute);
-                    break;
-                case "allowances":
+                }
+                case "allowances" -> {
                     AllowancesView allowancesView = OutputUtils.jsonToObject(patch.getValue(), AllowancesView.class);
                     app.activeAmendment().setAllowances(allowancesView.toAllowances());
-                    break;
-                case "mealPerDiems":
+                }
+                case "mealPerDiems" -> {
                     MealPerDiemsView mealPerDiemsView = OutputUtils.jsonToObject(patch.getValue(), MealPerDiemsView.class);
                     app.activeAmendment().setMealPerDiems(mealPerDiemsView.toMealPerDiems());
-                    break;
-                case "lodgingPerDiems":
+                }
+                case "lodgingPerDiems" -> {
                     LodgingPerDiemsView lodgingPerDiemsView = OutputUtils.jsonToObject(patch.getValue(), LodgingPerDiemsView.class);
                     app.activeAmendment().setLodingPerDiems(lodgingPerDiemsView.toLodgingPerDiems());
-                    break;
-                case "mileagePerDiems":
+                }
+                case "mileagePerDiems" -> {
                     MileagePerDiemsView mileagePerDiemView = OutputUtils.jsonToObject(patch.getValue(), MileagePerDiemsView.class);
                     travelApplicationService.updateMileagePerDiems(app, mileagePerDiemView.toMileagePerDiems());
-                    break;
-                default:
-                    logger.info("Call to travel application patch API did not contain a valid patch key. Patches were: " + patches.toString());
+                }
+                default ->
+                        logger.info("Call to travel application patch API did not contain a valid patch key. Patches were: " + patches.toString());
             }
         }
 

@@ -6,9 +6,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
 import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentNotFoundEx;
 import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
-import gov.nysenate.ess.core.model.pec.moodle.MoodleEmployeeRecord;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
+import gov.nysenate.ess.core.model.pec.moodle.MoodleEmployeeRecord;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.personnel.EmployeeException;
 import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
@@ -69,7 +69,7 @@ public class MoodleRecordService implements ESSMoodleRecordService {
 
     //get record list
     public List<MoodleEmployeeRecord> getMoodleRecordsFromJson(String jsonString) throws IOException {
-        return  objectMapper.readValue(jsonString, new TypeReference<List<MoodleEmployeeRecord>>(){});
+        return objectMapper.readValue(jsonString, new TypeReference<>() {});
     }
 
     //process records into tasks for completion
@@ -145,7 +145,7 @@ public class MoodleRecordService implements ESSMoodleRecordService {
         HttpClient client = HttpClientBuilder.create().build();
         HttpPost post = new HttpPost(moodleUrl + moodleApiPath);
         post.setHeader("User-Agent", USER_AGENT);
-        List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
+        List<NameValuePair> urlParameters = new ArrayList<>();
         urlParameters.add(new BasicNameValuePair("from_date", Long.toString(from.atZone(zoneId).toEpochSecond())));
         urlParameters.add(new BasicNameValuePair("to_date", Long.toString(to.atZone(zoneId).toEpochSecond())));
         urlParameters.add(new BasicNameValuePair("org", organization));

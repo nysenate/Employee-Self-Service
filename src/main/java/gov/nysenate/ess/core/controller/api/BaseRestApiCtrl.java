@@ -39,7 +39,7 @@ public class BaseRestApiCtrl
 
     public static final String REST_PATH = "/api/v1/";
     
-    public static final String ADMIN_REST_PATH = "/api/v1/admin";
+    public static final String ADMIN_REST_PATH = REST_PATH + "admin";
 
     /** Maximum number of results that can be requested via the query params. */
     private static final int MAX_LIMIT = 1000;
@@ -48,7 +48,7 @@ public class BaseRestApiCtrl
     @Autowired protected EventBus eventBus;
 
     @PostConstruct
-    public void init() throws Exception {
+    public void init() {
         this.eventBus.register(this);
     }
 
@@ -171,7 +171,7 @@ public class BaseRestApiCtrl
      * @param <T> T
      * @return Range<T>
      */
-    protected <T extends Comparable> Range<T> getRange(T lower, T upper, String lowerName, String upperName,
+    protected <T extends Comparable<?>> Range<T> getRange(T lower, T upper, String lowerName, String upperName,
                                                        BoundType lowerType, BoundType upperType) {
         try {
             return Range.range(lower, lowerType, upper, upperType);
@@ -183,19 +183,19 @@ public class BaseRestApiCtrl
         }
     }
 
-    protected <T extends Comparable> Range<T> getOpenRange(T lower, T upper, String lowerName, String upperName) {
+    protected <T extends Comparable<?>> Range<T> getOpenRange(T lower, T upper, String lowerName, String upperName) {
         return getRange(lower, upper, lowerName, upperName, BoundType.OPEN, BoundType.OPEN);
     }
 
-    protected <T extends Comparable> Range<T> getOpenClosedRange(T lower, T upper, String lowerName, String upperName) {
+    protected <T extends Comparable<?>> Range<T> getOpenClosedRange(T lower, T upper, String lowerName, String upperName) {
         return getRange(lower, upper, lowerName, upperName, BoundType.OPEN, BoundType.CLOSED);
     }
 
-    protected <T extends Comparable> Range<T> getClosedOpenRange(T lower, T upper, String lowerName, String upperName) {
+    protected <T extends Comparable<?>> Range<T> getClosedOpenRange(T lower, T upper, String lowerName, String upperName) {
         return getRange(lower, upper, lowerName, upperName, BoundType.CLOSED, BoundType.OPEN);
     }
 
-    protected <T extends Comparable> Range<T> getClosedRange(T lower, T upper, String lowerName, String upperName) {
+    protected <T extends Comparable<?>> Range<T> getClosedRange(T lower, T upper, String lowerName, String upperName) {
         return getRange(lower, upper, lowerName, upperName, BoundType.CLOSED, BoundType.CLOSED);
     }
 
@@ -270,8 +270,8 @@ public class BaseRestApiCtrl
     protected LimitOffset getLimitOffset(WebRequest webRequest, int defaultLimit) {
         int limit = defaultLimit;
         int offset = 0;
-        if (webRequest.getParameter("limit") != null) {
-            String limitStr = webRequest.getParameter("limit");
+        String limitStr = webRequest.getParameter("limit");
+        if (limitStr != null) {
             if (limitStr.equalsIgnoreCase("all")) {
                 limit = 0;
             }

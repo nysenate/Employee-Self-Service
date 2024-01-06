@@ -52,6 +52,7 @@ public class PECCodeApiCtrl extends BaseRestApiCtrl {
     private final PECNotificationService pecNotificationService;
 
     private final PersonnelCodeVerificationService personnelCodeVerificationService;
+
     public PECCodeApiCtrl(PersonnelTaskService personnelTaskService,
                           PersonnelTaskAssignmentDao assignedTaskDao,
                           VideoTaskDetailDao videoTaskDetailDao,
@@ -258,7 +259,7 @@ public class PECCodeApiCtrl extends BaseRestApiCtrl {
     }
 
     private void validateCodeFormat(List<String> codeSubmission, EthicsLiveCourseTask ethicsLiveCourseTask, String codeParamName) {
-        if (codeSubmission == null || codeSubmission.size() != 2) { //The user is prompted for two codes, if more or less codes are submitted, throw an error
+        if (codeSubmission == null || codeSubmission.size() != ethicsLiveCourseTask.getCodes().size()) {
             throw new InvalidRequestParamEx(
                     codeSubmission, codeParamName, "string list",
                     "Submitted code list must have the same number of codes as video specification."

@@ -41,13 +41,13 @@ public class GsaCtrl extends BaseRestApiCtrl {
     }
 
     @RequestMapping(value = "/{zip}")
-    public StringView updateGsaInformation(@PathVariable String zip) throws IOException {
+    public StringView updateGsaInformation(@PathVariable String zip) {
         checkPermission(SimpleEssPermission.ADMIN.getPermission());
 
         GsaResponse gsaResponse = gsaApi.queryGsa(LocalDate.now(), zip);
         String responseText = "";
         if (gsaResponse != null) {
-            responseText = "Success: " + gsaResponse.toString();
+            responseText = "Success: " + gsaResponse;
         }
         else {
             responseText = "Failure: The GSA data was not updated";

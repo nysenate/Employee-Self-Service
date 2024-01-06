@@ -22,10 +22,9 @@ public enum SqlResponsibilityHeadQuery implements BasicSqlQuery {
             "    UPPER(CDRESPCTRHD) LIKE '%' || UPPER(:term) || '%'\n" +
             "    OR UPPER(FFDERESPCTRHDF) LIKE '%' || UPPER(:term) || '%'\n" +
             "  )"
-    ),
-    ;
+    );
 
-    private String sql;
+    private final String sql;
 
     SqlResponsibilityHeadQuery(String sql) {
         this.sql = sql;

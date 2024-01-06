@@ -1,10 +1,8 @@
 package gov.nysenate.ess.travel.provider.miles;
 
 import com.google.maps.errors.ApiException;
-import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.travel.application.address.GoogleAddress;
 import gov.nysenate.ess.travel.provider.ProviderException;
-import gov.nysenate.ess.travel.provider.addressvalidation.DistrictAssignmentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +22,6 @@ public class MileageAllowanceService {
     private GoogleMapsService googleMapsService;
     @Autowired
     private IrsMileageRateDao irsMileageRateDao;
-    @Autowired
-    private DistrictAssignmentService districtAssignmentService;
-    @Autowired
-    private EmployeeInfoService employeeInfoService;
     @Autowired
     private MileageRateScraper mileageRateScraper;
 
@@ -71,7 +65,7 @@ public class MileageAllowanceService {
         }
     }
 
-    @Scheduled(cron = "${cache.cron.mileage.rate:0 0 0 * * *}")
+    @Scheduled(cron = "${refresh.mileage.rate.cron:0 0 0 * * *}")
     private void scrapeMileageRate() {
         logger.info("Scraping Mileage Rates...");
         scrapeCurrentMileageRate();

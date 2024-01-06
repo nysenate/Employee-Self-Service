@@ -49,7 +49,7 @@ public class SqlGoogleAddressDao extends SqlBaseDao {
     private GoogleAddress selectMatchingAddress(GoogleAddress address) {
         String sql = SqlGoogleAddressQuery.SELECT_MATCHING_ADDRESS.getSql(schemaMap());
         List<GoogleAddress> googleAddressList = localNamedJdbc.query(sql, googleAddressParams(address), new GoogleAddressRowMapper());
-        if (googleAddressList.isEmpty() || googleAddressList == null) {
+        if (googleAddressList.isEmpty()) {
             throw new IncorrectResultSizeDataAccessException(0);
         }
         else {
@@ -106,7 +106,7 @@ public class SqlGoogleAddressDao extends SqlBaseDao {
                         "AND place_id = :placeId"
         );
 
-        private String sql;
+        private final String sql;
 
         SqlGoogleAddressQuery(String sql) {
             this.sql = sql;

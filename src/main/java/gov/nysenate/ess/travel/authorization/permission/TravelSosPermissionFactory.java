@@ -16,7 +16,7 @@ import java.util.List;
 public class TravelSosPermissionFactory implements PermissionFactory {
 
     @Override
-    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum> roles) {
+    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum<?>> roles) {
         List<Permission> permissions = new ArrayList<>();
         if (roles.contains(TravelRole.SECRETARY_OF_THE_SENATE)) {
             permissions.add(SimpleTravelPermission.TRAVEL_UI_MANAGE.getPermission());

@@ -13,8 +13,7 @@ import org.junit.experimental.categories.Category;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(UnitTest.class)
 public class ReconcilerTest {
@@ -63,7 +62,7 @@ public class ReconcilerTest {
     @Test
     public void unequalInventories_returnError() {
         ReconciliationResults results = reconciler.reconcile(INV_ONE, INV_TWO);
-        assertTrue(!results.success());
+        assertFalse(results.success());
 
         ReconciliationError error = results.errors().iterator().next();
         assertEquals(1, error.getItemId());

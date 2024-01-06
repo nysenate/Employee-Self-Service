@@ -3,9 +3,9 @@ package gov.nysenate.ess.core.dao.pec.task.detail;
 import gov.nysenate.ess.core.dao.base.BasicSqlQuery;
 import gov.nysenate.ess.core.dao.base.DbVendor;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
-import gov.nysenate.ess.core.model.pec.everfi.EverfiCourseTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
+import gov.nysenate.ess.core.model.pec.everfi.EverfiCourseTask;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -33,7 +33,7 @@ public class EverfiTaskDetailDao extends SqlBaseDao implements PersonnelTaskDeta
                 new MapSqlParameterSource("taskId", task.getTaskId()),
                 new EverfiCourseRowMapper(task)
         );
-        if (everfiCourseTasks.isEmpty() || everfiCourseTasks == null) {
+        if (everfiCourseTasks.isEmpty()) {
             throw new IncorrectResultSizeDataAccessException(0);
         }
         else {

@@ -1,8 +1,6 @@
 package gov.nysenate.ess.core.service.notification.slack.service;
 
-import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Multimaps;
 import gov.nysenate.ess.core.service.notification.slack.component.SlackAddress;
 import gov.nysenate.ess.core.service.notification.slack.component.SlackMessage;
@@ -18,7 +16,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class DefaultSlackChatService implements SlackChatService {
-
     private static final Logger logger = LoggerFactory.getLogger(DefaultSlackChatService.class);
 
     @Value("${slack.webhook.url}")
@@ -74,7 +71,6 @@ public class DefaultSlackChatService implements SlackChatService {
      */
     @Override
     public void sendMessage(SlackMessage messageContent, Collection<SlackAddress> addresses) {
-
         // Clear any existing channel or mentions
         messageContent.setChannel(null);
         messageContent.setMentions(null);
@@ -107,19 +103,5 @@ public class DefaultSlackChatService implements SlackChatService {
 
             this.sendMessage(message);
         }
-    }
-
-    /* --- Internal Methods --- */
-
-    /**
-     * Takes a collection of addresses and transforms it into
-     * a multimap of channels with all usernames attached to that channel
-     */
-    private ListMultimap<String, String> getChannelMentionsMap(
-            Collection<SlackAddress> addresses) {
-        ListMultimap<String, String> channelMentionsMap = ArrayListMultimap.create();
-        addresses.forEach(address ->
-                channelMentionsMap.put(address.getChannel(), address.getUsername()));
-        return channelMentionsMap;
     }
 }

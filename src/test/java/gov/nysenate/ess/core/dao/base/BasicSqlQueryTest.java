@@ -10,7 +10,7 @@ import org.junit.experimental.categories.Category;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 @Category(UnitTest.class)
 public class BasicSqlQueryTest
@@ -53,7 +53,7 @@ public class BasicSqlQueryTest
 
     /** Limit offset and order by should be added as well. */
     @Test
-    public void testGetSqlUsingSchemaMap_And_LimitOffsetWithOrderBy() throws Exception {
+    public void testGetSqlUsingSchemaMap_And_LimitOffsetWithOrderBy() {
         Map<String, String> schemaMap = new HashMap<>();
         schemaMap.put("sampleSchema", "MEOW");
         schemaMap.put("sampleSchema2", "WOOF");
