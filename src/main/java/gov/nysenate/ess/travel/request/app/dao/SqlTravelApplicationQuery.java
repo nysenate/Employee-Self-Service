@@ -4,33 +4,26 @@ import gov.nysenate.ess.core.dao.base.BasicSqlQuery;
 import gov.nysenate.ess.core.dao.base.DbVendor;
 
 enum SqlTravelApplicationQuery implements BasicSqlQuery {
-    INSERT_APP(
-            "INSERT INTO ${travelSchema}.app(traveler_id, submitted_by_id, status, status_note, traveler_dept_head_emp_id) \n" +
-                    "VALUES (:travelerId, :submittedById, :status, :note, :travelerDeptHeadEmpId)"
+    INSERT_APP("""
+            INSERT INTO ${travelSchema}.app(traveler_id, submitted_by_id, status, status_note, traveler_dept_head_emp_id,
+              event_type, event_name, additional_purpose, modified_by)
+            VALUES (:travelerId, :submittedById, :status, :note, :travelerDeptHeadEmpId,
+              :eventType, :eventName, :additionalPurpose, :modifiedBy)
+            """
     ),
-    UPDATE_APP(
-            "UPDATE ${travelSchema}.app \n" +
-                    "SET status = :status, status_note = :note, traveler_dept_head_emp_id = :travelerDeptHeadEmpId \n" +
-                    "WHERE app_id = :appId"
+    UPDATE_APP("""
+            UPDATE ${travelSchema}.app
+              SET status = :status, status_note = :note, traveler_dept_head_emp_id = :travelerDeptHeadEmpId, 
+              event_type = :eventType, event_name = :eventName, additional_purpose = :additionalPurpose,
+              modified_by = :modifiedBy, modified_date_time = :modifiedDateTime
+            WHERE app_id = :appId
+            """
     ),
-    INSERT_AMENDMENT(
-            "INSERT INTO ${travelSchema}.amendment \n" +
-                    "(app_id, event_type, event_name, additional_purpose, created_by) \n" +
-                    "VALUES (:appId, :eventType, :eventName, :additionalPurpose, :createdBy)"
-    ),
-    UPDATE_AMENDMENT("""
-            UPDATE ${travelSchema}.amendment
-            SET event_type = :eventType, event_name = :eventName, additional_purpose = :additionalPurpose
-                created_by = :createdBy
-            WHERE amendment_id = :amendmentId
-            """),
-    TRAVEL_APP_SELECT(
-            "SELECT app.app_id, app.traveler_id, app.status, app.status_note, app.traveler_dept_head_emp_id,\n" +
-                    " amendment.amendment_id, amendment.app_id,\n" +
-                    " amendment.event_type, amendment.event_name, amendment.additional_purpose,\n" +
-                    " amendment.created_date_time, amendment.created_by\n" +
-                    " FROM ${travelSchema}.app\n" +
-                    " INNER JOIN ${travelSchema}.amendment amendment ON amendment.app_id = app.app_id \n"
+    TRAVEL_APP_SELECT("""
+            SELECT app_id, traveler_id, status, status_note, traveler_dept_head_emp_id, event_type, event_name,
+              additional_purpose, modified_by, modified_date_time
+            FROM ${travelSchema}.app
+            """
     ),
     SELECT_APP_BY_ID(
             TRAVEL_APP_SELECT.getSql() + " \n" +

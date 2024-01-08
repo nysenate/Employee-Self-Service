@@ -1,7 +1,9 @@
 package gov.nysenate.ess.travel.request.app.dao;
 
+import gov.nysenate.ess.travel.request.app.PurposeOfTravel;
 import gov.nysenate.ess.travel.request.app.TravelApplicationStatus;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,21 +17,10 @@ class TravelAppRepositoryView {
     public int travelerEmpId;
     public int travelerDeptHeadEmpId;
     public TravelApplicationStatus status;
-    public List<AmendmentRepositoryView> amendmentViews;
+    public PurposeOfTravel pot;
+    public LocalDateTime modifiedDateTime;
+    public int modifiedByEmpId;
 
     public TravelAppRepositoryView() {
-        this.amendmentViews = new ArrayList<>();
-    }
-
-    public TravelAppRepositoryView(int appId,
-                                   int travelerEmpId,
-                                   int travelerDeptHeadEmpId,
-                                   TravelApplicationStatus status,
-                                   List<AmendmentRepositoryView> amendmentViews) {
-        this.appId = appId;
-        this.travelerEmpId = travelerEmpId;
-        this.travelerDeptHeadEmpId = travelerDeptHeadEmpId;
-        this.status = status;
-        this.amendmentViews = amendmentViews;
     }
 }

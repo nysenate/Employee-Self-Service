@@ -5,8 +5,20 @@ import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.travel.employee.TravelEmployee;
 import gov.nysenate.ess.travel.employee.TravelEmployeeService;
+import gov.nysenate.ess.travel.request.allowances.Allowances;
+import gov.nysenate.ess.travel.request.allowances.SqlAllowancesDao;
+import gov.nysenate.ess.travel.request.allowances.lodging.LodgingPerDiems;
+import gov.nysenate.ess.travel.request.allowances.lodging.SqlLodgingPerDiemsDao;
+import gov.nysenate.ess.travel.request.allowances.meal.MealPerDiems;
+import gov.nysenate.ess.travel.request.allowances.meal.SqlMealPerDiemsDao;
+import gov.nysenate.ess.travel.request.allowances.mileage.MileagePerDiems;
+import gov.nysenate.ess.travel.request.allowances.mileage.SqlMileagePerDiemsDao;
 import gov.nysenate.ess.travel.request.amendment.Amendment;
 import gov.nysenate.ess.travel.request.app.*;
+import gov.nysenate.ess.travel.request.attachment.Attachment;
+import gov.nysenate.ess.travel.request.attachment.SqlAttachmentDao;
+import gov.nysenate.ess.travel.request.route.Route;
+import gov.nysenate.ess.travel.request.route.RouteDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +28,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,8 +37,13 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
 
     private Logger logger = LoggerFactory.getLogger(SqlTravelApplicationDao.class);
 
-    @Autowired private SqlAmendmentDao amendmentDao;
     @Autowired private EmployeeInfoService employeeInfoService;
+    @Autowired private RouteDao routeDao;
+    @Autowired private SqlAllowancesDao allowancesDao;
+    @Autowired private SqlMealPerDiemsDao mealPerDiemsDao;
+    @Autowired private SqlLodgingPerDiemsDao lodgingPerDiemsDao;
+    @Autowired private SqlMileagePerDiemsDao mileagePerDiemsDao;
+    @Autowired private SqlAttachmentDao attachmentDao;
 
     /**
      * Persists a {@link TravelApplication} to the database.
@@ -46,11 +64,12 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
     @Transactional(value = "localTxManager")
     public synchronized void saveTravelApplication(TravelApplication app) {
         saveApplication(app);
-        for (Amendment amd : app.amendments()) {
-            if (amd.amendmentId() == 0) {
-                amendmentDao.saveAmendment(amd, app.id());
-            }
-        }
+        routeDao.saveRoute(app.getRoute(), app.getAppId());
+        allowancesDao.saveAllowances(app.getAllowances(), app.getAppId());
+        mealPerDiemsDao.updateMealPerDiems(app.getMealPerDiems(), app.getAppId());
+        lodgingPerDiemsDao.updateLodgingPerDiems(app.getLodgingPerDiems(), app.getAppId());
+        mileagePerDiemsDao.updateMileagePerDiems(app.getMileagePerDiems(), app.getAppId());
+        attachmentDao.updateAttachments(app.getAttachments(), app.getAppId());
     }
 
     private void saveApplication(TravelApplication app) {
@@ -59,11 +78,6 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
         }
     }
 
-    /*
-     * Attempts to update the Travel Application status and status note.
-     * All other fields in this table should be considered immutable.
-     * Returns 1 if the app was updated, 0 if the app did not exist in the table.
-     */
     private int updateApplication(TravelApplication app) {
         MapSqlParameterSource params = travelAppParams(app);
         String sql = SqlTravelApplicationQuery.UPDATE_APP.getSql(schemaMap());
@@ -85,9 +99,7 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
     public TravelApplication selectTravelApplication(int appId) {
         MapSqlParameterSource params = new MapSqlParameterSource("appId", appId);
         String sql = SqlTravelApplicationQuery.SELECT_APP_BY_ID.getSql(schemaMap());
-        TravelApplicationHandler handler = new TravelApplicationHandler();
-        localNamedJdbc.query(sql, params, handler);
-        TravelAppRepositoryView appRepView = handler.results();
+        TravelAppRepositoryView appRepView = localNamedJdbc.queryForObject(sql, params, new TravelApplicationRowMapper());
         return populateApplicationDetails(appRepView);
     }
 
@@ -95,9 +107,7 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
     public List<TravelApplication> selectTravelApplications(int userId) {
         MapSqlParameterSource params = new MapSqlParameterSource("userId", userId);
         String sql = SqlTravelApplicationQuery.SELECT_APP_BY_TRAVELER.getSql(schemaMap());
-        TravelApplicationListHandler handler = new TravelApplicationListHandler();
-        localNamedJdbc.query(sql, params, handler);
-        List<TravelAppRepositoryView> appRepViews = handler.getApplications();
+        List<TravelAppRepositoryView> appRepViews = localNamedJdbc.query(sql, params, new TravelApplicationRowMapper());
         return appRepViews.stream()
                 .map(this::populateApplicationDetails)
                 .collect(Collectors.toList());
@@ -105,23 +115,27 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
 
     private TravelApplication populateApplicationDetails(TravelAppRepositoryView view) {
         Employee traveler = employeeInfoService.getEmployee(view.travelerEmpId);
-        List<Amendment> amds = view.amendmentViews.stream()
-                .map(v -> amendmentDao.selectAmendment(v))
-                .collect(Collectors.toList());
+        Employee modifiedBy = employeeInfoService.getEmployee(view.modifiedByEmpId);
 
         TravelApplication app = new TravelApplication(view.appId, traveler,
-                view.travelerDeptHeadEmpId, view.status, amds);
-        Amendment amd = app.activeAmendment();
-        app.setAmendmentId(amd.amendmentId());
-        app.setPurposeOfTravel(amd.purposeOfTravel());
-        app.setRoute(amd.route());
-        app.setAllowances(amd.allowances());
-        app.setAttachments(amd.attachments());
-        app.setCreatedDateTime(amd.createdDateTime());
-        app.setCreatedBy(amd.createdBy());
-        app.setMealPerDiems(amd.mealPerDiems());
-        app.setLodgingPerDiems(amd.lodgingPerDiems());
-        app.setMileagePerDiems(amd.mileagePerDiems());
+                view.travelerDeptHeadEmpId, view.status);
+
+        Route route = routeDao.selectRoute(view.appId);
+        Allowances allowances = allowancesDao.selectAllowances(view.appId);
+        MealPerDiems mpds = mealPerDiemsDao.selectMealPerDiems(view.appId);
+        LodgingPerDiems lpds = lodgingPerDiemsDao.selectLodgingPerDiems(view.appId);
+        MileagePerDiems mileagePerDiems = mileagePerDiemsDao.selectMileagePerDiems(view.appId);
+        List<Attachment> attachments = attachmentDao.selectAttachments(view.appId);
+
+        app.setPurposeOfTravel(view.pot);
+        app.setModifiedBy(modifiedBy);
+        app.setModifiedDateTime(view.modifiedDateTime);
+        app.setRoute(route);
+        app.setAllowances(allowances);
+        app.setMealPerDiems(mpds);
+        app.setLodgingPerDiems(lpds);
+        app.setMileagePerDiems(mileagePerDiems);
+        app.setAttachments(attachments);
         return app;
     }
 
@@ -132,6 +146,11 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
                 .addValue("travelerDeptHeadEmpId", app.getTravelerDeptHeadEmpId())
                 .addValue("submittedById", app.getSubmittedBy().getEmployeeId())
                 .addValue("status", app.status().status().name())
-                .addValue("note", app.status().note());
+                .addValue("note", app.status().note())
+                .addValue("eventType", app.getPurposeOfTravel().eventType().name())
+                .addValue("eventName", app.getPurposeOfTravel().eventName())
+                .addValue("additionalPurpose", app.getPurposeOfTravel().additionalPurpose())
+                .addValue("modifiedBy", app.getModifiedBy().getEmployeeId())
+                .addValue("modifiedDateTime", toDate(LocalDateTime.now()));
     }
 }

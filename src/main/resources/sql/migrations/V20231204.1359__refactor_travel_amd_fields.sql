@@ -456,15 +456,18 @@ ALTER TABLE travel.app
     ADD COLUMN additional_purpose text,
 ADD COLUMN event_type text,
 ADD COLUMN event_name text,
-ADD COLUMN modified_by int;
+ADD COLUMN modified_by int,
+ADD COLUMN modified_date_time timestamp with time zone default now();
 
 UPDATE travel.app
 SET additional_purpose = amd.additional_purpose,
     event_type = amd.event_type,
     event_name = amd.event_name,
-    modified_by = amd.created_by
-FROM (SELECT * FROM travel.amendment) as amd
+    modified_by = amd.created_by,
+    modified_date_time = amd.created_date_time
+    FROM (SELECT * FROM travel.amendment) as amd
 WHERE app.app_id = amd.app_id;
 
 DROP TABLE travel.amendment;
+
 

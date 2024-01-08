@@ -17,13 +17,9 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 public class TravelApplication {
-    private static final Comparator<Amendment> amendmentComparator = Comparator.comparing(Amendment::amendmentId);
-
     protected int appId;
     protected Employee traveler;
     protected int travelerDeptHeadEmpId;
-
-    private int amendmentId; // 0 if this amendment has not been saved to the database.
     private PurposeOfTravel purposeOfTravel;
     private Route route;
     private Allowances allowances;
@@ -33,6 +29,8 @@ public class TravelApplication {
     private MealPerDiems mealPerDiems;
     private LodgingPerDiems lodgingPerDiems;
     private MileagePerDiems mileagePerDiems;
+    private Employee modifiedBy;
+    private LocalDateTime modifiedDateTime;
 
     /**
      * The Review Status of this application.
@@ -43,21 +41,18 @@ public class TravelApplication {
 
 
     public TravelApplication() {
-        this.amendments = new TreeSet<>(amendmentComparator);
     }
 
     public TravelApplication(Employee traveler, Amendment amendment, int travelerDeptHeadEmpId, AppStatus appStatus) {
-        this(0, traveler, travelerDeptHeadEmpId, new TravelApplicationStatus(appStatus), Lists.newArrayList(amendment));
+        this(0, traveler, travelerDeptHeadEmpId, new TravelApplicationStatus(appStatus));
     }
 
     public TravelApplication(int id, Employee traveler, int travelerDeptHeadEmpId,
-                             TravelApplicationStatus status, Collection<Amendment> amendments) {
+                             TravelApplicationStatus status) {
         this.appId = id;
         this.traveler = Preconditions.checkNotNull(traveler, "Travel Application requires a non null traveler.");
         this.travelerDeptHeadEmpId = travelerDeptHeadEmpId;
         this.status = status;
-        this.amendments = new TreeSet<>(amendmentComparator);
-        this.amendments.addAll(amendments);
     }
 
     public int id() {
@@ -205,14 +200,6 @@ public class TravelApplication {
         this.status = status;
     }
 
-    public int getAmendmentId() {
-        return amendmentId;
-    }
-
-    public void setAmendmentId(int amendmentId) {
-        this.amendmentId = amendmentId;
-    }
-
     public PurposeOfTravel getPurposeOfTravel() {
         return purposeOfTravel;
     }
@@ -285,19 +272,13 @@ public class TravelApplication {
         this.mileagePerDiems = mileagePerDiems;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        TravelApplication that = (TravelApplication) o;
-        return appId == that.appId &&
-                Objects.equals(traveler, that.traveler) &&
-                Objects.equals(status, that.status) &&
-                Objects.equals(amendments, that.amendments);
+    public void setModifiedBy(Employee modifiedBy) {
+        this.modifiedBy = modifiedBy;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(appId, traveler, status, amendments);
+    public void setModifiedDateTime(LocalDateTime modifiedDateTime) {
+        this.modifiedDateTime = modifiedDateTime;
     }
+
+
 }
