@@ -2,6 +2,22 @@
 -- ** Refactor Allowances **
 ----------------------------
 
+-- Delete inactive allowances.
+DELETE
+FROM travel.amendment_allowances
+WHERE amendment_id NOT IN (
+    SELECT max(amendment_id) as curramd
+    FROM travel.amendment
+    GROUP BY app_id
+);
+
+DELETE
+FROM travel.allowance
+WHERE allowance_id NOT IN (
+    SELECT allowance_id
+    FROM travel.amendment_allowances
+);
+
 -- Add FK to app_id
 ALTER TABLE travel.allowance
     ADD COLUMN app_id int;
@@ -16,7 +32,6 @@ WHERE allowance.allowance_id = amendment_allowances.allowance_id;
 DELETE
 FROM travel.allowance
 WHERE app_id is null;
-
 
 ALTER TABLE travel.amendment_allowances
 DROP
@@ -40,6 +55,22 @@ CREATE UNIQUE INDEX ON travel.app_allowance (app_id, type);
 ----------------------------
 -- ** Refactor Attachments **
 ----------------------------
+
+-- Delete inactive attachments.
+DELETE
+FROM travel.amendment_attachment
+WHERE amendment_id NOT IN (
+    SELECT max(amendment_id) as curramd
+    FROM travel.amendment
+    GROUP BY app_id
+);
+
+DELETE
+FROM travel.attachment
+WHERE attachment_id NOT IN (
+    SELECT attachment_id
+    FROM travel.amendment_attachment
+);
 
 ALTER TABLE travel.attachment
     ADD COLUMN app_id int;
@@ -73,6 +104,22 @@ CREATE INDEX ON travel.app_attachment (app_id);
 ----------------------------
 -- ** Refactor Route/Legs **
 ----------------------------
+
+-- Delete inactive legs
+DELETE
+FROM travel.amendment_legs
+WHERE amendment_id NOT IN (
+    SELECT max(amendment_id) as curramd
+    FROM travel.amendment
+    GROUP BY app_id
+);
+
+DELETE
+FROM travel.leg
+WHERE leg_id NOT IN (
+    SELECT leg_id
+    FROM travel.amendment_legs
+);
 
 ALTER TABLE travel.amendment_legs
     RENAME TO app_route;
@@ -148,6 +195,22 @@ CONSTRAINT leg_to_destination_id_fkey,
 -- ** Amendment Lodging Per Diem **
 -----------------------------------
 
+-- Delete inactive lodging per diems.
+DELETE
+FROM travel.amendment_lodging_per_diems
+WHERE amendment_id NOT IN (
+    SELECT max(amendment_id) as curramd
+    FROM travel.amendment
+    GROUP BY app_id
+);
+
+DELETE
+FROM travel.amendment_lodging_per_diem
+WHERE amendment_lodging_per_diem_id NOT IN (
+    SELECT amendment_lodging_per_diem_id
+    FROM travel.amendment_lodging_per_diems
+);
+
 ALTER TABLE travel.amendment_lodging_per_diem
     RENAME TO app_lodging_per_diem;
 
@@ -186,17 +249,6 @@ CONSTRAINT amendment_lodging_per_diem_address_id_fkey,
 ALTER
 INDEX travel.amendment_lodging_per_diem_pkey RENAME TO app_lodging_per_diem_pkey;
 
--- Delete inactive lodging per diems.
-DELETE
-FROM travel.app_lodging_per_diem a USING (SELECT app_id, date, max(app_lodging_per_diem_id) as mostRecentId
-           FROM travel.app_lodging_per_diem
-           GROUP BY app_id, date
-           order by app_id, date) b
-WHERE a.app_id = b.app_id
-  AND a.date = b.date
-  AND a.app_lodging_per_diem_id
-    < b.mostRecentId;
-
 CREATE UNIQUE INDEX ON travel.app_lodging_per_diem (app_id, date);
 
 ALTER TABLE travel.app_lodging_per_diem
@@ -225,6 +277,21 @@ ALTER TABLE travel.app_lodging_per_diem_override
 -- ** Amendment Meal Per Diem **
 -----------------------------------
 
+DELETE
+FROM travel.amendment_meal_per_diems
+WHERE amendment_id NOT IN (
+    SELECT max(amendment_id) as curramd
+    FROM travel.amendment
+    GROUP BY app_id
+);
+
+DELETE
+FROM travel.amendment_meal_per_diem
+WHERE amendment_meal_per_diem_id NOT IN (
+    SELECT amendment_meal_per_diem_id
+    FROM travel.amendment_meal_per_diems
+);
+
 ALTER TABLE travel.amendment_meal_per_diem
     RENAME TO app_meal_per_diem;
 
@@ -235,6 +302,10 @@ UPDATE travel.app_meal_per_diem
 SET app_id = amendment.app_id FROM travel.amendment
         JOIN travel.amendment_meal_per_diems USING(amendment_id)
 WHERE amendment_meal_per_diems.amendment_meal_per_diem_id = app_meal_per_diem.amendment_meal_per_diem_id;
+
+ALTER TABLE travel.amendment_meal_per_diems
+DROP
+CONSTRAINT IF EXISTS amendment_meal_per_diems_per_diem_id_fkey;
 
 DELETE
 FROM travel.app_meal_per_diem
@@ -249,10 +320,6 @@ ALTER TABLE travel.app_meal_per_diem
 ALTER SEQUENCE travel.amendment_meal_per_diem_amendment_meal_per_diem_id_seq
     RENAME TO app_meal_per_diem_id_seq;
 
-ALTER TABLE travel.amendment_meal_per_diems
-DROP
-CONSTRAINT IF EXISTS amendment_meal_per_diems_per_diem_id_fkey;
-
 ALTER TABLE travel.app_meal_per_diem
 DROP
 CONSTRAINT amendment_meal_per_diem_address_id_fkey,
@@ -265,19 +332,6 @@ CONSTRAINT amendment_meal_per_diem_senate_mie_id_fkey,
 
 ALTER
 INDEX travel.amendment_meal_per_diem_pkey RENAME TO app_meal_per_diem_pkey;
-
--- Delete inactive meal per diems.
-DELETE
-FROM travel.app_meal_per_diem a USING (
-        SELECT app_id, date, max(app_meal_per_diem_id) as mostRecentId
-        FROM travel.app_meal_per_diem
-        GROUP BY app_id, date
-        ORDER BY app_id, date
-    ) b
-WHERE a.app_id = b.app_id
-  AND a.date = b.date
-  AND a.app_meal_per_diem_id
-    < b.mostRecentId;
 
 CREATE UNIQUE INDEX ON travel.app_meal_per_diem(app_id, date);
 
@@ -303,4 +357,114 @@ ALTER TABLE travel.app_meal_per_diem_override
         REFERENCES travel.app (app_id)
         ON DELETE CASCADE;
 
+-----------------------------------
+-- ** Amendment Mileage Per Diem **
+-----------------------------------
+
+-- Delete date from old amendments.
+DELETE
+FROM travel.amendment_mileage_per_diems
+WHERE amendment_id NOT IN (SELECT max(amendment_id) as curramd
+                           FROM travel.amendment
+                           GROUP BY app_id);
+
+DELETE
+FROM travel.amendment_mileage_per_diem
+WHERE amendment_mileage_per_diem_id NOT IN (SELECT amendment_mileage_per_diem_id
+                                            FROM travel.amendment_mileage_per_diems);
+
+ALTER TABLE travel.amendment_mileage_per_diem
+    RENAME TO app_mileage_per_diem;
+
+ALTER TABLE travel.app_mileage_per_diem
+    ADD COLUMN app_id int;
+
+UPDATE travel.app_mileage_per_diem
+SET app_id = amendment.app_id FROM travel.amendment
+        JOIN travel.amendment_mileage_per_diems USING(amendment_id)
+WHERE amendment_mileage_per_diems.amendment_mileage_per_diem_id = app_mileage_per_diem.amendment_mileage_per_diem_id;
+
+ALTER TABLE travel.amendment_mileage_per_diems
+DROP
+CONSTRAINT IF EXISTS amendment_mileage_per_diems_amendment_mileage_per_diem_id_fkey;
+
+DELETE
+FROM travel.app_mileage_per_diem
+WHERE app_id is null;
+
+ALTER TABLE travel.app_mileage_per_diem
+    ALTER COLUMN app_id SET NOT NULL;
+
+ALTER TABLE travel.app_mileage_per_diem
+    RENAME COLUMN amendment_mileage_per_diem_id TO app_mileage_per_diem_id;
+
+ALTER SEQUENCE travel.amendment_mileage_per_diem_amendment_mileage_per_diem_id_seq
+    RENAME TO app_mileage_per_diem_id_seq;
+
+ALTER TABLE travel.app_mileage_per_diem
+DROP
+CONSTRAINT amendment_mileage_per_diem_from_address_id_fkey,
+     ADD CONSTRAINT app_mileage_per_diem_from_address_id_fkey
+        FOREIGN KEY (from_address_id) REFERENCES travel.address(address_id),
+DROP
+CONSTRAINT amendment_mileage_per_diem_to_address_id_fkey,
+     ADD CONSTRAINT app_mileage_per_diem_to_address_id_fkey
+        FOREIGN KEY (to_address_id) REFERENCES travel.address(address_id);
+
+ALTER
+INDEX travel.amendment_mileage_per_diem_pkey
+      RENAME TO app_mileage_per_diem_pkey;
+
+CREATE UNIQUE INDEX ON travel.app_mileage_per_diem(app_id, sequence_no);
+
+ALTER TABLE travel.app_mileage_per_diem
+    ADD CONSTRAINT app_mileage_per_diem_app_id_fkey FOREIGN KEY (app_id)
+        REFERENCES travel.app (app_id)
+        ON DELETE CASCADE;
+
+-- Store meal per diem overrides in a separate table
+CREATE TABLE travel.app_mileage_per_diem_override
+(
+    app_mileage_per_diem_override_id serial,
+    app_id                           int  NOT NULL,
+    override_rate                    text NOT NULL
+);
+
+DROP TABLE travel.amendment_mileage_per_diems;
+
+CREATE INDEX ON travel.app_mileage_per_diem_override(app_id);
+
+ALTER TABLE travel.app_mileage_per_diem_override
+    ADD CONSTRAINT app_mileage_per_diem_override_app_id_fkey FOREIGN KEY (app_id)
+        REFERENCES travel.app (app_id)
+        ON DELETE CASCADE;
+
+
+-----------------------------------
+-- ** Amendment **
+-----------------------------------
+
+DELETE
+FROM travel.amendment
+WHERE amendment_id NOT IN (
+    SELECT max(amendment_id) as curramd
+    FROM travel.amendment
+    GROUP BY app_id
+);
+
+ALTER TABLE travel.app
+    ADD COLUMN additional_purpose text,
+ADD COLUMN event_type text,
+ADD COLUMN event_name text,
+ADD COLUMN modified_by int;
+
+UPDATE travel.app
+SET additional_purpose = amd.additional_purpose,
+    event_type = amd.event_type,
+    event_name = amd.event_name,
+    modified_by = amd.created_by
+FROM (SELECT * FROM travel.amendment) as amd
+WHERE app.app_id = amd.app_id;
+
+DROP TABLE travel.amendment;
 
