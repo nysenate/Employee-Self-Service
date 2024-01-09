@@ -1,13 +1,11 @@
 package gov.nysenate.ess.travel.request.app;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.travel.request.allowances.Allowances;
 import gov.nysenate.ess.travel.request.allowances.lodging.LodgingPerDiems;
 import gov.nysenate.ess.travel.request.allowances.meal.MealPerDiems;
 import gov.nysenate.ess.travel.request.allowances.mileage.MileagePerDiems;
-import gov.nysenate.ess.travel.request.amendment.Amendment;
 import gov.nysenate.ess.travel.request.attachment.Attachment;
 import gov.nysenate.ess.travel.request.route.Route;
 import gov.nysenate.ess.travel.utils.Dollars;
@@ -29,21 +27,21 @@ public class TravelApplication {
     private MealPerDiems mealPerDiems;
     private LodgingPerDiems lodgingPerDiems;
     private MileagePerDiems mileagePerDiems;
+    private Employee submittedBy;
     private Employee modifiedBy;
     private LocalDateTime modifiedDateTime;
-
     /**
      * The Review Status of this application.
      * null if this application was created before the review process was implemented.
      */
     private TravelApplicationStatus status;
-    protected SortedSet<Amendment> amendments;
 
 
-    public TravelApplication() {
+    public TravelApplication(Employee traveler) {
+        this(traveler, 0, null);
     }
 
-    public TravelApplication(Employee traveler, Amendment amendment, int travelerDeptHeadEmpId, AppStatus appStatus) {
+    public TravelApplication(Employee traveler, int travelerDeptHeadEmpId, AppStatus appStatus) {
         this(0, traveler, travelerDeptHeadEmpId, new TravelApplicationStatus(appStatus));
     }
 
@@ -53,18 +51,18 @@ public class TravelApplication {
         this.traveler = Preconditions.checkNotNull(traveler, "Travel Application requires a non null traveler.");
         this.travelerDeptHeadEmpId = travelerDeptHeadEmpId;
         this.status = status;
+        this.purposeOfTravel = null;
+        this.route = Route.EMPTY_ROUTE;
+        this.allowances = new Allowances();
+        this.mealPerDiems = new MealPerDiems(new HashSet<>());
+        this.lodgingPerDiems = new LodgingPerDiems(new HashSet<>());
+        this.mileagePerDiems = new MileagePerDiems(new HashSet<>());
+        this.status = new TravelApplicationStatus(AppStatus.DRAFT);
+        this.attachments = new ArrayList<>();
     }
 
     public int id() {
         return this.appId;
-    }
-
-    public Amendment activeAmendment() {
-        return amendments.last();
-    }
-
-    public SortedSet<Amendment> amendments() {
-        return this.amendments;
     }
 
     public TravelApplicationStatus status() {
@@ -169,31 +167,27 @@ public class TravelApplication {
     }
 
     public LocalDateTime getSubmittedDateTime() {
-        return amendments.first().createdDateTime();
+        return createdDateTime;
+    }
+
+    public void setSubmittedBy(Employee submittedBy) {
+        this.submittedBy = submittedBy;
     }
 
     public Employee getSubmittedBy() {
-        return amendments.first().createdBy();
+        return submittedBy;
     }
 
     public LocalDateTime getModifiedDateTime() {
-        return amendments.last().createdDateTime();
+        return modifiedDateTime;
     }
 
     public Employee getModifiedBy() {
-        return amendments.last().createdBy();
-    }
-
-    public SortedSet<Amendment> getAmendments() {
-        return amendments;
+        return modifiedBy;
     }
 
     public void setAppId(int id) {
         appId = id;
-    }
-
-    protected void addAmendment(Amendment a) {
-        amendments.add(a);
     }
 
     public void setStatus(TravelApplicationStatus status) {

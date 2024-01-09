@@ -1,8 +1,6 @@
 package gov.nysenate.ess.travel.request.draft;
 
 import gov.nysenate.ess.travel.employee.TravelEmployee;
-import gov.nysenate.ess.travel.request.amendment.Amendment;
-import gov.nysenate.ess.travel.request.app.AppStatus;
 import gov.nysenate.ess.travel.request.app.TravelApplication;
 
 import java.time.LocalDateTime;
@@ -19,7 +17,7 @@ public class Draft {
         this.id = id;
         this.userEmpId = userEmpId;
         this.traveler = traveler;
-        this.travelApplication = new TravelApplication();
+        this.travelApplication = new TravelApplication(traveler);
     }
 
     public int getId() {

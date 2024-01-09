@@ -23,9 +23,9 @@ public class TravelAppEmailView {
     public TravelAppEmailView(TravelApplication app) {
         appId = String.valueOf(app.getAppId());
         travelerFullName = app.getTraveler().getFullName();
-        datesOfTravel = app.activeAmendment().startDate().format(DATE_FORMAT);
-        if (!app.activeAmendment().startDate().equals(app.activeAmendment().endDate())) {
-            datesOfTravel += " - " + app.activeAmendment().endDate().format(DATE_FORMAT);
+        datesOfTravel = app.startDate().format(DATE_FORMAT);
+        if (!app.startDate().equals(app.endDate())) {
+            datesOfTravel += " - " + app.endDate().format(DATE_FORMAT);
         }
     }
 

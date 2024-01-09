@@ -23,6 +23,21 @@ public class SqlAttachmentDao extends SqlBaseDao {
         return handler.getResult();
     }
 
+    public Attachment selectAttachment(String filename) {
+        MapSqlParameterSource params = new MapSqlParameterSource("originalFilename", filename);
+        String sql = SqlAttachmentQuery.SELECT_ATTACHMENT_BY_FILENAME.getSql(schemaMap());
+        return localNamedJdbc.queryForObject(sql, params, new AttachmentMapper());
+    }
+
+    public void saveAttachment(Attachment attachment) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("attachmentId", attachment.getAttachmentId())
+                .addValue("originalFilename", attachment.getOriginalName())
+                .addValue("contentType", attachment.getContentType());
+        String sql = SqlAttachmentQuery.INSERT_ATTACHMENT.getSql(schemaMap());
+        localNamedJdbc.update(sql, params);
+    }
+
     public void updateAttachments(Collection<Attachment> attachments, int appId) {
         deleteAttachments(appId);
         insertAttachments(attachments, appId);
@@ -44,7 +59,7 @@ public class SqlAttachmentDao extends SqlBaseDao {
                     .addValue("contentType", attachment.getContentType());
             paramList.add(params);
         }
-        String sql = SqlAttachmentQuery.INSERT_ATTACHMENTS.getSql(schemaMap());
+        String sql = SqlAttachmentQuery.INSERT_ATTACHMENT.getSql(schemaMap());
         SqlParameterSource[] batchParams = new SqlParameterSource[paramList.size()];
         batchParams = paramList.toArray(batchParams);
         localNamedJdbc.batchUpdate(sql, batchParams);
@@ -58,12 +73,18 @@ public class SqlAttachmentDao extends SqlBaseDao {
                 WHERE app_id = :appId
                 """
         ),
+        SELECT_ATTACHMENT_BY_FILENAME("""
+                SELECT *
+                FROM ${travelSchema}.app_attachment
+                WHERE original_filename = :originalFilename
+                """
+        ),
         DELETE_ATTACHMENTS("""
                 DELETE FROM ${travelSchema}.app_attachment
                 WHERE app_id = :appId
                 """
         ),
-        INSERT_ATTACHMENTS("""
+        INSERT_ATTACHMENT("""
                 INSERT INTO ${travelSchema}.app_attachment(app_id, attachment_id, original_filename, content_type)
                 VALUES (:appId, :attachmentId, :originalFilename, :contentType)
                 """

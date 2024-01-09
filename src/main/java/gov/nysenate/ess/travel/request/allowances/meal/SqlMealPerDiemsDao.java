@@ -12,6 +12,7 @@ import gov.nysenate.ess.travel.utils.Dollars;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -33,6 +34,7 @@ public class SqlMealPerDiemsDao extends SqlBaseDao {
         return handler.getResult();
     }
 
+//    @Transactional(value = "localTxManager")
     public void updateMealPerDiems(MealPerDiems mpds, int appId) {
         deleteMealPerDiems(appId);
         insertMealPerDiems(mpds, appId);
@@ -93,14 +95,15 @@ public class SqlMealPerDiemsDao extends SqlBaseDao {
         SELECT_MEAL_PER_DIEMS("""
                 SELECT mpd.app_meal_per_diem_id, mpd.date, mpd.rate, mpd.is_reimbursement_requested,
                   mpd.qualifies_for_breakfast, mpd.qualifies_for_dinner,
-                  addr.street_1, addr.city, addr.state, addr.zip_5, addr.county, addr.country, addr.place_id, addr.name,
-                  mie.fiscal_year, mie.total, mie.breakfast, mie.dinner,
+                  addr.address_id, addr.street_1, addr.city, addr.state, addr.zip_5, addr.county, addr.country,
+                  addr.place_id, addr.name,
+                  mie.senate_mie_id, mie.fiscal_year, mie.total, mie.breakfast, mie.dinner,
                   override_rate
                 FROM ${travelSchema}.app_meal_per_diem mpd
                 LEFT JOIN ${travelSchema}.app_meal_per_diem_override USING (app_id)
                 INNER JOIN ${travelSchema}.address addr USING (address_id)
                 INNER JOIN ${travelSchema}.senate_mie mie USING (senate_mie_id)
-                WHERE lpd.app_id = :appId
+                WHERE mpd.app_id = :appId
                 """
         ),
         DELETE_MEAL_PER_DIEMS("""

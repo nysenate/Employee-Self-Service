@@ -7,7 +7,6 @@ import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.travel.employee.TravelEmployeeService;
-import gov.nysenate.ess.travel.request.amendment.Amendment;
 import gov.nysenate.ess.travel.request.app.*;
 import gov.nysenate.ess.travel.request.draft.Draft;
 import gov.nysenate.ess.travel.request.draft.DraftView;
@@ -53,14 +52,12 @@ public class TravelAppEditCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/edit/{appId}", method = RequestMethod.POST)
     public BaseResponse saveEditedApplication(@PathVariable int appId,
                                               @RequestBody DraftView draftView) {
-        TravelApplication app = appService.getTravelApplication(appId);
         // Check the logged in user is allowed to modify this app
-        checkTravelAppPermission(app, RequestMethod.POST);
+        checkTravelAppPermission(appService.getTravelApplication(appId), RequestMethod.POST);
 
-        Amendment amd = draftView.getAmendment().toAmendment();
+        TravelApplication editedApp = draftView.toDraft().getTravelApplication();
         Employee user = employeeInfoService.getEmployee(getSubjectEmployeeId());
-        appUpdateService.editTravelApp(app.getAppId(), amd, user);
-
+        appUpdateService.editTravelApp(appId, editedApp, user);
         return new SimpleResponse(true, "Edits saved", "");
     }
 
@@ -74,13 +71,12 @@ public class TravelAppEditCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/edit/resubmit/{appId}", method = RequestMethod.POST)
     public BaseResponse saveAndResubmitEditedApplication(@PathVariable int appId,
                                               @RequestBody DraftView draftView) {
-        TravelApplication app = appService.getTravelApplication(appId);
         // Check the logged in user is allowed to modify this app
-        checkTravelAppPermission(app, RequestMethod.POST);
+        checkTravelAppPermission(appService.getTravelApplication(appId), RequestMethod.POST);
 
-        Amendment amd = draftView.getAmendment().toAmendment();
+        TravelApplication app = draftView.toDraft().getTravelApplication();
         Employee user = employeeInfoService.getEmployee(getSubjectEmployeeId());
-        appUpdateService.resubmitApp(app.getAppId(), amd, user);
+        appUpdateService.resubmitApp(appId, app, user);
 
         return new SimpleResponse(true, "Edits saved", "");
     }

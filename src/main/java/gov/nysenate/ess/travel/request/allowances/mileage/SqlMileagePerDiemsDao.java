@@ -35,7 +35,7 @@ public class SqlMileagePerDiemsDao extends SqlBaseDao {
         return handler.getResults();
     }
 
-    @Transactional
+//    @Transactional(value = "localTxManager")
     public void updateMileagePerDiems(MileagePerDiems mpds, int appId) {
         deleteMileagePerDiems(appId);
         insertMileagePerDiems(mpds, appId);

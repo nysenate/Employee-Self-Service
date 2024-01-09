@@ -3,8 +3,6 @@ package gov.nysenate.ess.travel.request.app.dao;
 import gov.nysenate.ess.core.dao.base.*;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
-import gov.nysenate.ess.travel.employee.TravelEmployee;
-import gov.nysenate.ess.travel.employee.TravelEmployeeService;
 import gov.nysenate.ess.travel.request.allowances.Allowances;
 import gov.nysenate.ess.travel.request.allowances.SqlAllowancesDao;
 import gov.nysenate.ess.travel.request.allowances.lodging.LodgingPerDiems;
@@ -13,7 +11,6 @@ import gov.nysenate.ess.travel.request.allowances.meal.MealPerDiems;
 import gov.nysenate.ess.travel.request.allowances.meal.SqlMealPerDiemsDao;
 import gov.nysenate.ess.travel.request.allowances.mileage.MileagePerDiems;
 import gov.nysenate.ess.travel.request.allowances.mileage.SqlMileagePerDiemsDao;
-import gov.nysenate.ess.travel.request.amendment.Amendment;
 import gov.nysenate.ess.travel.request.app.*;
 import gov.nysenate.ess.travel.request.attachment.Attachment;
 import gov.nysenate.ess.travel.request.attachment.SqlAttachmentDao;
@@ -41,7 +38,7 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
     @Autowired private RouteDao routeDao;
     @Autowired private SqlAllowancesDao allowancesDao;
     @Autowired private SqlMealPerDiemsDao mealPerDiemsDao;
-    @Autowired private SqlLodgingPerDiemsDao lodgingPerDiemsDao;
+    @Autowired private SqlLodgingPerDiemsDao sqlLodgingPerDiemsDao;
     @Autowired private SqlMileagePerDiemsDao mileagePerDiemsDao;
     @Autowired private SqlAttachmentDao attachmentDao;
 
@@ -67,7 +64,7 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
         routeDao.saveRoute(app.getRoute(), app.getAppId());
         allowancesDao.saveAllowances(app.getAllowances(), app.getAppId());
         mealPerDiemsDao.updateMealPerDiems(app.getMealPerDiems(), app.getAppId());
-        lodgingPerDiemsDao.updateLodgingPerDiems(app.getLodgingPerDiems(), app.getAppId());
+        sqlLodgingPerDiemsDao.updateLodgingPerDiems(app.getLodgingPerDiems(), app.getAppId());
         mileagePerDiemsDao.updateMileagePerDiems(app.getMileagePerDiems(), app.getAppId());
         attachmentDao.updateAttachments(app.getAttachments(), app.getAppId());
     }
@@ -115,6 +112,7 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
 
     private TravelApplication populateApplicationDetails(TravelAppRepositoryView view) {
         Employee traveler = employeeInfoService.getEmployee(view.travelerEmpId);
+        Employee submittedBy = employeeInfoService.getEmployee(view.submittedByEmpId);
         Employee modifiedBy = employeeInfoService.getEmployee(view.modifiedByEmpId);
 
         TravelApplication app = new TravelApplication(view.appId, traveler,
@@ -123,11 +121,13 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
         Route route = routeDao.selectRoute(view.appId);
         Allowances allowances = allowancesDao.selectAllowances(view.appId);
         MealPerDiems mpds = mealPerDiemsDao.selectMealPerDiems(view.appId);
-        LodgingPerDiems lpds = lodgingPerDiemsDao.selectLodgingPerDiems(view.appId);
+        LodgingPerDiems lpds = sqlLodgingPerDiemsDao.selectLodgingPerDiems(view.appId);
         MileagePerDiems mileagePerDiems = mileagePerDiemsDao.selectMileagePerDiems(view.appId);
         List<Attachment> attachments = attachmentDao.selectAttachments(view.appId);
 
         app.setPurposeOfTravel(view.pot);
+        app.setCreatedDateTime(view.submittedDateTime);
+        app.setSubmittedBy(submittedBy);
         app.setModifiedBy(modifiedBy);
         app.setModifiedDateTime(view.modifiedDateTime);
         app.setRoute(route);

@@ -95,9 +95,6 @@ ALTER TABLE travel.app_attachment
         REFERENCES travel.app (app_id)
         ON DELETE CASCADE;
 
-ALTER TABLE travel.app_attachment
-    ALTER COLUMN app_id SET NOT NULL;
-
 CREATE INDEX ON travel.app_attachment (app_id);
 
 
@@ -470,4 +467,11 @@ WHERE app.app_id = amd.app_id;
 
 DROP TABLE travel.amendment;
 
+
+-----------------------------------
+-- ** Drafts **
+-----------------------------------
+
+ALTER TABLE travel.draft
+    RENAME COLUMN amendment_json TO app_json;
 

@@ -16,8 +16,10 @@ class TravelAppRepositoryView {
     public int appId;
     public int travelerEmpId;
     public int travelerDeptHeadEmpId;
+    public int submittedByEmpId;
     public TravelApplicationStatus status;
     public PurposeOfTravel pot;
+    public LocalDateTime submittedDateTime;
     public LocalDateTime modifiedDateTime;
     public int modifiedByEmpId;
 

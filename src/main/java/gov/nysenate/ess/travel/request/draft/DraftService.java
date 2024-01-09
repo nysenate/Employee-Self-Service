@@ -1,11 +1,9 @@
 package gov.nysenate.ess.travel.request.draft;
 
 import gov.nysenate.ess.core.util.OutputUtils;
-import gov.nysenate.ess.travel.api.application.AmendmentView;
 import gov.nysenate.ess.travel.api.application.TravelApplicationView;
 import gov.nysenate.ess.travel.employee.TravelEmployee;
 import gov.nysenate.ess.travel.employee.TravelEmployeeService;
-import gov.nysenate.ess.travel.request.amendment.Amendment;
 import gov.nysenate.ess.travel.request.app.TravelApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,15 +68,11 @@ public class DraftService {
             app = OutputUtils.jsonToObject(record.travelAppJson, TravelApplicationView.class).toTravelApplication();
         } catch (IOException ex) {
             logger.error("Unable to deserialize amendment for Draft with id: " + record.id);
-            app = new TravelApplication();
+            app = new TravelApplication(travelEmployee);
         }
         Draft d = new Draft(record.id, record.userEmpId, travelEmployee);
         d.setTravelApplication(app);
         d.setUpdatedDateTime(record.updatedDateTime);
         return d;
-    }
-
-    private String serializeAmendment(Amendment amd) {
-        return OutputUtils.toJson(new AmendmentView(amd));
     }
 }

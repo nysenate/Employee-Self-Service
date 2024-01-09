@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 @Service
 public class TravelApplicationService {
 
-    @Autowired private TravelApplicationDao applicationDao;
+    @Autowired private TravelApplicationDao travelApplicationDao;
 
     /**
      * Get Travel application by application id
@@ -18,7 +18,7 @@ public class TravelApplicationService {
      * @return
      */
     public TravelApplication getTravelApplication(int appId) {
-        return applicationDao.selectTravelApplication(appId);
+        return travelApplicationDao.selectTravelApplication(appId);
     }
 
     /**
@@ -27,12 +27,12 @@ public class TravelApplicationService {
      * @return
      */
     public List<TravelApplication> selectTravelApplications(int userId) {
-        return applicationDao.selectTravelApplications(userId).stream()
+        return travelApplicationDao.selectTravelApplications(userId).stream()
                 .filter(app -> app.getSubmittedDateTime() != null)
                 .collect(Collectors.toList());
     }
 
     public void saveApplication(TravelApplication app) {
-        applicationDao.saveTravelApplication(app);
+        travelApplicationDao.saveTravelApplication(app);
     }
 }

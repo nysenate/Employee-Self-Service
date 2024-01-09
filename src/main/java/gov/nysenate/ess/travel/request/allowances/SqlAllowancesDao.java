@@ -51,7 +51,7 @@ public class SqlAllowancesDao extends SqlBaseDao {
                 .addValue("allowance_id", allowance.allowanceId)
                 .addValue("type", allowance.type.name())
                 .addValue("value", allowance.dollars.toString())
-                .addValue("app_id", appId);
+                .addValue("appId", appId);
     }
 
     /**
@@ -76,7 +76,7 @@ public class SqlAllowancesDao extends SqlBaseDao {
         ),
         INSERT_ALLOWANCE("""
                 INSERT INTO ${travelSchema}.app_allowance(type, value, app_id)
-                VALUES(:type, :value, app_id)
+                VALUES(:type, :value, :appId)
                 """
         ),
         SELECT_ALLOWANCES("""

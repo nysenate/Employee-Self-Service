@@ -25,11 +25,16 @@ public class MealPerDiems {
     }
 
     public MealPerDiems(Collection<MealPerDiem> mealPerDiems, Dollars overrideRate) {
+        this(mealPerDiems, overrideRate, true);
+    }
+
+    public MealPerDiems(Collection<MealPerDiem> mealPerDiems, Dollars overrideRate, boolean isAllowedMeals) {
         this.mealPerDiems = ImmutableSortedSet
                 .orderedBy(dateComparator)
                 .addAll(mealPerDiems)
                 .build();
         this.overrideRate = overrideRate == null ? Dollars.ZERO : overrideRate;
+        this.isAllowedMeals = isAllowedMeals;
     }
 
     public Dollars total() {

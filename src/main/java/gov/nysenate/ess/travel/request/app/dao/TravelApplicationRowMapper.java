@@ -15,13 +15,15 @@ public class TravelApplicationRowMapper extends BaseRowMapper<TravelAppRepositor
         view.appId = rs.getInt("app_id");
         view.travelerEmpId = rs.getInt("traveler_id");
         view.travelerDeptHeadEmpId = rs.getInt("traveler_dept_head_emp_id");
+        view.submittedByEmpId = rs.getInt("submitted_by_id");
         view.status = new TravelApplicationStatus(rs.getString("status"), rs.getString("status_note"));
         view.pot =  new PurposeOfTravel(
                 EventType.valueOf(rs.getString("event_type")),
                 rs.getString("event_name"),
                 rs.getString("additional_purpose"));
+        view.submittedDateTime = getLocalDateTimeFromRs(rs, "created_date_time");
         view.modifiedDateTime = getLocalDateTimeFromRs(rs, "modified_date_time");
-        view.modifiedByEmpId = rs.getInt("created_by");
+        view.modifiedByEmpId = rs.getInt("modified_by");
         return view;
     }
 }

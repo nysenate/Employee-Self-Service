@@ -92,21 +92,21 @@ public class DraftDao extends SqlBaseDao {
                 .addValue("draftId", d.id)
                 .addValue("userEmpId", d.userEmpId)
                 .addValue("travelerEmpId", d.travelerEmpId)
-                .addValue("travelAppJson", d.travelAppJson)
+                .addValue("appJson", d.travelAppJson)
                 .addValue("updatedDateTime", toDate(d.updatedDateTime));
     }
 
 
     private enum SqlDraftQuery implements BasicSqlQuery {
         FIND_BY_DRAFT_ID("""
-                SELECT draft_id, user_emp_id, travel_app_json, traveler_emp_id, updated_date_time
+                SELECT draft_id, user_emp_id, app_json, traveler_emp_id, updated_date_time
                 FROM ${travelSchema}.draft
                 WHERE draft_id = :draftId
                   AND user_emp_id = :userEmpId
                 """
         ),
         FIND_BY_USER_ID("""
-                SELECT draft_id, user_emp_id, travel_app_json, traveler_emp_id, updated_date_time
+                SELECT draft_id, user_emp_id, app_json, traveler_emp_id, updated_date_time
                 FROM ${travelSchema}.draft
                 WHERE user_emp_id = :userEmpId
                 ORDER BY updated_date_time desc
@@ -116,14 +116,14 @@ public class DraftDao extends SqlBaseDao {
                 UPDATE ${travelSchema}.draft
                 SET user_emp_id = :userEmpId,
                 traveler_emp_id = :travelerEmpId,
-                travel_app_json = :travelAppJson,
+                app_json = :appJson,
                 updated_date_time = :updatedDateTime
                 WHERE draft_id = :draftId;
                 """
         ),
         INSERT("""
-                INSERT INTO ${travelSchema}.draft(user_emp_id, traveler_emp_id, travel_app_json, updated_date_time)
-                VALUES(:userEmpId, :travelerEmpId, :travelAppJson, :updatedDateTime)
+                INSERT INTO ${travelSchema}.draft(user_emp_id, traveler_emp_id, app_json, updated_date_time)
+                VALUES(:userEmpId, :travelerEmpId, :appJson, :updatedDateTime)
                 """
         ),
         DELETE("""
@@ -175,7 +175,7 @@ public class DraftDao extends SqlBaseDao {
             d.id = rs.getInt("draft_id");
             d.userEmpId = rs.getInt("user_emp_id");
             d.travelerEmpId = rs.getInt("traveler_emp_id");
-            d.travelAppJson = rs.getString("travel_app_json");
+            d.travelAppJson = rs.getString("app_json");
             d.updatedDateTime = getLocalDateTime(rs, "updated_date_time");
             return d;
         }

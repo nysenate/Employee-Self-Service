@@ -16,7 +16,7 @@ public class DraftView implements ViewObject {
     private int userEmpId;
     private TravelEmployeeView traveler;
     private TravelApplicationView travelApplication;
-    private AmendmentView amendment; // TODO delete
+    private AmendmentView amendment;
     private String updatedDateTime;
 
     public DraftView() {
@@ -27,14 +27,18 @@ public class DraftView implements ViewObject {
         this.userEmpId = draft.getUserEmpId();
         this.traveler = new TravelEmployeeView(draft.getTraveler());
         this.travelApplication = new TravelApplicationView(draft.getTravelApplication());
-        this.amendment = new AmendmentView(draft.getTravelApplication().activeAmendment()); // TODO delete
-        this.updatedDateTime = draft.getUpdatedDateTime().format(ISO_DATE_TIME);
+        this.amendment = new AmendmentView(draft.getTravelApplication());
+        this.updatedDateTime = draft.getUpdatedDateTime() == null ? null : draft.getUpdatedDateTime().format(ISO_DATE_TIME);
     }
 
     public Draft toDraft() {
         Draft d = new Draft(id, userEmpId, traveler.toTravelEmployee());
-        d.setTravelApplication(travelApplication.toTravelApplication());
-        d.setUpdatedDateTime(LocalDateTime.parse(updatedDateTime, ISO_DATE_TIME));
+        TravelApplication app = travelApplication == null ? new TravelApplication(d.getTraveler()) : travelApplication.toTravelApplication();
+        amendment.updateTravelApplication(app);
+        d.setTravelApplication(app);
+        if (updatedDateTime != null) {
+            d.setUpdatedDateTime(LocalDateTime.parse(updatedDateTime, ISO_DATE_TIME));
+        }
         return d;
     }
 

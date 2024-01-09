@@ -3,12 +3,12 @@ package gov.nysenate.ess.travel.api.application;
 import gov.nysenate.ess.core.client.view.DetailedEmployeeView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.travel.request.allowances.mileage.MileagePerDiemsView;
+import gov.nysenate.ess.travel.request.app.TravelApplication;
 import gov.nysenate.ess.travel.request.attachment.Attachment;
 import gov.nysenate.ess.travel.request.address.TravelAddress;
 import gov.nysenate.ess.travel.request.allowances.AllowancesView;
 import gov.nysenate.ess.travel.request.allowances.lodging.LodgingPerDiemsView;
 import gov.nysenate.ess.travel.request.allowances.meal.MealPerDiemsView;
-import gov.nysenate.ess.travel.request.amendment.Amendment;
 import gov.nysenate.ess.travel.request.route.RouteView;
 import gov.nysenate.ess.travel.request.route.destination.Destination;
 
@@ -22,7 +22,6 @@ import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 
 public class AmendmentView implements ViewObject {
 
-    private int amendmentId;
     private PurposeOfTravelView purposeOfTravel;
     private RouteView route;
     private AllowancesView allowances;
@@ -58,38 +57,37 @@ public class AmendmentView implements ViewObject {
     public AmendmentView() {
     }
 
-    public AmendmentView(Amendment amendment) {
-        amendmentId = amendment.amendmentId();
-        purposeOfTravel = new PurposeOfTravelView(amendment.purposeOfTravel());
-        route = new RouteView(amendment.route());
-        allowances = new AllowancesView(amendment.allowances());
-        mealPerDiems = new MealPerDiemsView(amendment.mealPerDiems());
-        lodgingPerDiems = new LodgingPerDiemsView(amendment.lodgingPerDiems());
-        mileagePerDiems = new MileagePerDiemsView(amendment.mileagePerDiems());
-        createdDateTime = amendment.createdDateTime() == null
+    public AmendmentView(TravelApplication app) {
+        purposeOfTravel = new PurposeOfTravelView(app.getPurposeOfTravel());
+        route = new RouteView(app.getRoute());
+        allowances = new AllowancesView(app.getAllowances());
+        mealPerDiems = new MealPerDiemsView(app.getMealPerDiems());
+        lodgingPerDiems = new LodgingPerDiemsView(app.getLodgingPerDiems());
+        mileagePerDiems = new MileagePerDiemsView(app.getMileagePerDiems());
+        createdDateTime = app.getCreatedDateTime() == null
                 ? null
-                : amendment.createdDateTime().format(ISO_DATE_TIME);
-        createdBy = amendment.createdBy() == null
+                : app.getCreatedDateTime().format(ISO_DATE_TIME);
+        createdBy = app.getCreatedBy() == null
                 ? null
-                : new DetailedEmployeeView(amendment.createdBy());
-        attachments = amendment.attachments().stream().map(AttachmentView::new).collect(Collectors.toList());
+                : new DetailedEmployeeView(app.getCreatedBy());
+        attachments = app.getAttachments().stream().map(AttachmentView::new).collect(Collectors.toList());
 
-        startDate = amendment.startDate() == null ? "" : amendment.startDate().format(ISO_DATE);
-        endDate = amendment.endDate() == null ? "" : amendment.endDate().format(ISO_DATE);
+        startDate = app.startDate() == null ? "" : app.startDate().format(ISO_DATE);
+        endDate = app.endDate() == null ? "" : app.endDate().format(ISO_DATE);
 
-        mileageAllowance = amendment.mileageAllowance().toString();
-        mealAllowance = amendment.mealAllowance().toString();
-        lodgingAllowance = amendment.lodgingAllowance().toString();
-        tollsAllowance = amendment.tollsAllowance().toString();
-        parkingAllowance = amendment.parkingAllowance().toString();
-        trainAndPlaneAllowance = amendment.trainAndPlaneAllowance().toString();
-        alternateTransportationAllowance = amendment.alternateTransportationAllowance().toString();
-        registrationAllowance = amendment.registrationAllowance().toString();
-        transportationAllowance = amendment.transportationAllowance().toString();
-        tollsAndParkingAllowance = amendment.tollsAndParkingAllowance().toString();
-        totalAllowance = amendment.totalAllowance().toString();
+        mileageAllowance = app.mileageAllowance().toString();
+        mealAllowance = app.mealAllowance().toString();
+        lodgingAllowance = app.lodgingAllowance().toString();
+        tollsAllowance = app.tollsAllowance().toString();
+        parkingAllowance = app.parkingAllowance().toString();
+        trainAndPlaneAllowance = app.trainAndPlaneAllowance().toString();
+        alternateTransportationAllowance = app.alternateTransportationAllowance().toString();
+        registrationAllowance = app.registrationAllowance().toString();
+        transportationAllowance = app.transportationAllowance().toString();
+        tollsAndParkingAllowance = app.tollsAndParkingAllowance().toString();
+        totalAllowance = app.totalAllowance().toString();
 
-        List<Destination> destinations = amendment.route().destinations();
+        List<Destination> destinations = app.getRoute().destinations();
         if (!destinations.isEmpty()) {
             TravelAddress address = destinations.get(0).getAddress();
             destinationSummary = address.getSummary();
@@ -99,27 +97,23 @@ public class AmendmentView implements ViewObject {
         }
     }
 
-    public Amendment toAmendment() {
+    public void updateTravelApplication(TravelApplication app) {
         List<Attachment> attachments = this.attachments == null || this.attachments.isEmpty()
-            ? new ArrayList<>()
-            : this.attachments.stream()
+                ? new ArrayList<>()
+                : this.attachments.stream()
                 .map(AttachmentView::toAttachment)
                 .collect(Collectors.toList());
-        return new Amendment.Builder()
-                .withPurposeOfTravel(purposeOfTravel.toPurposeOfTravel())
-                .withRoute(route.toRoute())
-                .withAllowances(allowances.toAllowances())
-                .withAttachments(attachments)
-                .withCreatedDateTime(createdDateTime == null ? null : LocalDateTime.parse(createdDateTime, ISO_DATE_TIME))
-                .withCreatedBy(createdBy == null ? null : createdBy.toEmployee())
-                .withMealPerDiems(mealPerDiems.toMealPerDiems())
-                .withLodgingPerDiems(lodgingPerDiems.toLodgingPerDiems())
-                .withMileagePerDiems(mileagePerDiems.toMileagePerDiems())
-                .build();
-    }
 
-    public int getAmendmentId() {
-        return amendmentId;
+        app.setAttachments(attachments);
+        app.setPurposeOfTravel(purposeOfTravel.toPurposeOfTravel());
+        app.setRoute(route.toRoute());
+        app.setAllowances(allowances.toAllowances());
+        app.setAttachments(attachments);
+        app.setCreatedDateTime(createdDateTime == null ? null : LocalDateTime.parse(createdDateTime, ISO_DATE_TIME));
+        app.setCreatedBy(createdBy == null ? null : createdBy.toEmployee());
+        app.setMealPerDiems(mealPerDiems.toMealPerDiems());
+        app.setLodgingPerDiems(lodgingPerDiems.toLodgingPerDiems());
+        app.setMileagePerDiems(mileagePerDiems.toMileagePerDiems());
     }
 
     public PurposeOfTravelView getPurposeOfTravel() {

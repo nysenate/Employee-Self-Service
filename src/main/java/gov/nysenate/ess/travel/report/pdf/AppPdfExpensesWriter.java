@@ -24,7 +24,7 @@ public class AppPdfExpensesWriter implements AppPdfWriter {
 
     @Override
     public float write() throws IOException {
-        boolean isAllowedMeals = app.activeAmendment().mealPerDiems().isAllowedMeals();
+        boolean isAllowedMeals = app.getMealPerDiems().isAllowedMeals();
         float currentY = y;
         final float leading = config.leadingRatio * config.fontSize;
         float boxStartX = x + 295f;
@@ -41,34 +41,34 @@ public class AppPdfExpensesWriter implements AppPdfWriter {
 
         // Transportation
         drawEstimatedTravelCostsRow(cs, boxTextStartX, boxRightAlignEndX, currentY,
-                "Transportation (" + app.activeAmendment().mileagePerDiems().totalMileage() + " Miles)",
-                app.activeAmendment().transportationAllowance().toString());
+                "Transportation (" + String.valueOf(app.getMileagePerDiems().totalMileage()) + " Miles)",
+                app.transportationAllowance().toString());
         currentY -= leading;
 
         // Food
         if (isAllowedMeals) {
-            drawEstimatedTravelCostsRow(cs, boxTextStartX, boxRightAlignEndX, currentY, "Food", app.activeAmendment().mealAllowance().toString());
+            drawEstimatedTravelCostsRow(cs, boxTextStartX, boxRightAlignEndX, currentY, "Food", app.mealAllowance().toString());
             currentY -= leading;
         }
 
         // Lodging
-        drawEstimatedTravelCostsRow(cs, boxTextStartX, boxRightAlignEndX, currentY, "Lodging", app.activeAmendment().lodgingAllowance().toString());
+        drawEstimatedTravelCostsRow(cs, boxTextStartX, boxRightAlignEndX, currentY, "Lodging", app.lodgingAllowance().toString());
         currentY -= leading;
 
         // Parking/Tolls
-        drawEstimatedTravelCostsRow(cs, boxTextStartX, boxRightAlignEndX, currentY, "Parking/Tolls", app.activeAmendment().tollsAndParkingAllowance().toString());
+        drawEstimatedTravelCostsRow(cs, boxTextStartX, boxRightAlignEndX, currentY, "Parking/Tolls", app.tollsAndParkingAllowance().toString());
         currentY -= leading;
 
         // Taxi/Bus/Subway
-        drawEstimatedTravelCostsRow(cs, boxTextStartX, boxRightAlignEndX, currentY, "Taxi/Bus/Subway", app.activeAmendment().alternateTransportationAllowance().toString());
+        drawEstimatedTravelCostsRow(cs, boxTextStartX, boxRightAlignEndX, currentY, "Taxi/Bus/Subway", app.alternateTransportationAllowance().toString());
         currentY -= leading;
 
         // Registration Fee
-        drawEstimatedTravelCostsRow(cs, boxTextStartX, boxRightAlignEndX, currentY, "Registration Fee", app.activeAmendment().registrationAllowance().toString());
+        drawEstimatedTravelCostsRow(cs, boxTextStartX, boxRightAlignEndX, currentY, "Registration Fee", app.registrationAllowance().toString());
         currentY -= leading;
 
         // Total
-        drawEstimatedTravelCostsRow(cs, boxTextStartX, boxRightAlignEndX, currentY, "TOTAL", app.activeAmendment().totalAllowance().toString());
+        drawEstimatedTravelCostsRow(cs, boxTextStartX, boxRightAlignEndX, currentY, "TOTAL", app.totalAllowance().toString());
         currentY -= leading;
 
         return currentY;

@@ -55,7 +55,7 @@ public class AppPdfExpenseSummaryWriter implements AppPdfWriter {
 
     private PDPage writeMealSummary(PDPage page) throws IOException {
         // If no meal per diem's, don't draw anything.
-        if (app.activeAmendment().mealPerDiems().total().equals(Dollars.ZERO)) {
+        if (app.getMealPerDiems().total().equals(Dollars.ZERO)) {
             return page;
         }
 
@@ -68,7 +68,7 @@ public class AppPdfExpenseSummaryWriter implements AppPdfWriter {
         createHeaderCell(headerRow, 15, "Dinner");
         createHeaderCell(headerRow, 15, "Total");
         dataTable.addHeaderRow(headerRow);
-        for (MealPerDiem mpd : app.activeAmendment().mealPerDiems().requestedMealPerDiems()) {
+        for (MealPerDiem mpd : app.getMealPerDiems().requestedMealPerDiems()) {
             if (mpd.isReimbursementRequested()) {
                 Row<PDPage> row = dataTable.createRow(16f);
                 createBodyCell(row, 15, mpd.date().format(DATE_FORMAT), HorizontalAlignment.LEFT);
@@ -84,7 +84,7 @@ public class AppPdfExpenseSummaryWriter implements AppPdfWriter {
         createBodyCell(row, 40, "", HorizontalAlignment.LEFT);
         createBodyCell(row, 15, "", HorizontalAlignment.LEFT);
         createBodyCell(row, 15, "", HorizontalAlignment.LEFT);
-        createBodyCell(row, 15, "$" + app.activeAmendment().mealAllowance(), HorizontalAlignment.RIGHT,
+        createBodyCell(row, 15, "$" + app.mealAllowance(), HorizontalAlignment.RIGHT,
                 config.fontBold, tableFontSize);
 
         y = dataTable.draw();
@@ -92,7 +92,7 @@ public class AppPdfExpenseSummaryWriter implements AppPdfWriter {
     }
 
     private PDPage writeLodgingSummary(PDPage page) throws IOException {
-        if (app.activeAmendment().lodgingPerDiems().requestedLodgingPerDiems().size() == 0) {
+        if (app.getLodgingPerDiems().requestedLodgingPerDiems().isEmpty()) {
             return page;
         }
 
@@ -104,7 +104,7 @@ public class AppPdfExpenseSummaryWriter implements AppPdfWriter {
         createHeaderCell(headerRow, 15, "Rate");
         dataTable.addHeaderRow(headerRow);
 
-        for(LodgingPerDiem lpd : app.activeAmendment().lodgingPerDiems().requestedLodgingPerDiems()) {
+        for(LodgingPerDiem lpd : app.getLodgingPerDiems().requestedLodgingPerDiems()) {
             Row<PDPage> row = dataTable.createRow(16f);
             createBodyCell(row, 15, lpd.date().format(DATE_FORMAT), HorizontalAlignment.LEFT);
             createBodyCell(row, 70, lpd.address().getFormattedAddressWithCounty(), HorizontalAlignment.LEFT);
@@ -115,7 +115,7 @@ public class AppPdfExpenseSummaryWriter implements AppPdfWriter {
         Row<PDPage> row = dataTable.createRow(16f);
         createBodyCell(row, 15, "Total", HorizontalAlignment.LEFT, config.fontBold, tableFontSize);
         createBodyCell(row, 70, "", HorizontalAlignment.LEFT);
-        createBodyCell(row, 15, "$" + app.activeAmendment().lodgingPerDiems().totalPerDiem().toString(),
+        createBodyCell(row, 15, "$" + app.getLodgingPerDiems().totalPerDiem().toString(),
                 HorizontalAlignment.RIGHT, config.fontBold, tableFontSize);
 
         y = dataTable.draw();
@@ -123,7 +123,7 @@ public class AppPdfExpenseSummaryWriter implements AppPdfWriter {
     }
 
     private PDPage writeMileageExpenses(PDPage page) throws IOException {
-        if (app.activeAmendment().mileagePerDiems().requestedPerDiems().size() == 0) {
+        if (app.getMileagePerDiems().requestedPerDiems().isEmpty()) {
             return page;
         }
 
@@ -137,7 +137,7 @@ public class AppPdfExpenseSummaryWriter implements AppPdfWriter {
         createHeaderCell(headerRow, 10, "Total");
         dataTable.addHeaderRow(headerRow);
 
-        for (MileagePerDiem mpd : app.activeAmendment().mileagePerDiems().requestedPerDiems()) {
+        for (MileagePerDiem mpd : app.getMileagePerDiems().requestedPerDiems()) {
             Row<PDPage> row = dataTable.createRow(16f);
             createBodyCell(row, 35, mpd.getFrom().getFormattedAddressWithCounty(), HorizontalAlignment.LEFT);
             createBodyCell(row, 35, mpd.getTo().getFormattedAddressWithCounty(), HorizontalAlignment.LEFT);
@@ -151,9 +151,9 @@ public class AppPdfExpenseSummaryWriter implements AppPdfWriter {
         createBodyCell(row, 35, "Total", HorizontalAlignment.LEFT, config.fontBold, tableFontSize);
         createBodyCell(row, 35, "", HorizontalAlignment.LEFT);
         createBodyCell(row, 10, "", HorizontalAlignment.LEFT);
-        createBodyCell(row, 10, String.valueOf(app.activeAmendment().mileagePerDiems().totalMileage()),
+        createBodyCell(row, 10, String.valueOf(app.getMileagePerDiems().totalMileage()),
                 HorizontalAlignment.RIGHT, config.fontBold, tableFontSize);
-        createBodyCell(row, 10, "$" + app.activeAmendment().mileagePerDiems().totalPerDiemValue().toString(),
+        createBodyCell(row, 10, "$" + app.getMileagePerDiems().totalPerDiemValue().toString(),
                 HorizontalAlignment.RIGHT, config.fontBold, tableFontSize);
 
         y = dataTable.draw();

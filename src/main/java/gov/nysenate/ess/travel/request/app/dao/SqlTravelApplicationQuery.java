@@ -21,7 +21,7 @@ enum SqlTravelApplicationQuery implements BasicSqlQuery {
     ),
     TRAVEL_APP_SELECT("""
             SELECT app_id, traveler_id, status, status_note, traveler_dept_head_emp_id, event_type, event_name,
-              additional_purpose, modified_by, modified_date_time
+              additional_purpose, submitted_by_id, created_date_time, modified_by, modified_date_time
             FROM ${travelSchema}.app
             """
     ),

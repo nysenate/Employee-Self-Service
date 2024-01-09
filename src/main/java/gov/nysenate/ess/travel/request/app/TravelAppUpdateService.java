@@ -10,7 +10,6 @@ import gov.nysenate.ess.travel.notifications.email.events.TravelAppEditedEmailEv
 import gov.nysenate.ess.travel.notifications.email.events.TravelPendingReviewEmailEvent;
 import gov.nysenate.ess.travel.provider.gsa.GsaAllowanceService;
 import gov.nysenate.ess.travel.provider.miles.MileageAllowanceService;
-import gov.nysenate.ess.travel.request.allowances.Allowances;
 import gov.nysenate.ess.travel.request.allowances.PerDiem;
 import gov.nysenate.ess.travel.request.allowances.lodging.LodgingPerDiem;
 import gov.nysenate.ess.travel.request.allowances.lodging.LodgingPerDiems;
@@ -18,7 +17,6 @@ import gov.nysenate.ess.travel.request.allowances.meal.MealPerDiems;
 import gov.nysenate.ess.travel.request.allowances.meal.MealPerDiemsFactory;
 import gov.nysenate.ess.travel.request.allowances.mileage.MileagePerDiem;
 import gov.nysenate.ess.travel.request.allowances.mileage.MileagePerDiems;
-import gov.nysenate.ess.travel.request.amendment.Amendment;
 import gov.nysenate.ess.travel.request.draft.Draft;
 import gov.nysenate.ess.travel.request.route.Leg;
 import gov.nysenate.ess.travel.request.route.Route;
@@ -28,7 +26,6 @@ import gov.nysenate.ess.travel.notifications.email.TravelEmailService;
 import gov.nysenate.ess.travel.review.ApplicationReview;
 import gov.nysenate.ess.travel.review.ApplicationReviewService;
 import gov.nysenate.ess.travel.review.strategy.ReviewerStrategy;
-import gov.nysenate.ess.travel.utils.Dollars;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +42,7 @@ public class TravelAppUpdateService {
 
     @Autowired private RouteService routeService;
     @Autowired private MealPerDiemsFactory mealPerDiemsFactory;
-    @Autowired private TravelApplicationService appService;
+    @Autowired private TravelApplicationService travelApplicationService;
     @Autowired private ApplicationReviewService appReviewService;
     @Autowired private TravelEmailService emailService;
     @Autowired private EventBus eventBus;
@@ -60,11 +57,11 @@ public class TravelAppUpdateService {
      * @param pot The PurposeOfTravel to add to the amendment.
      * @return A new amendment which has been updated.
      */
-    public Amendment updatePurposeOfTravel(Amendment amd, PurposeOfTravel pot) {
-        return new Amendment.Builder(amd)
-                .withPurposeOfTravel(pot)
-                .build();
-    }
+//    public Amendment updatePurposeOfTravel(Amendment amd, PurposeOfTravel pot) {
+//        return new Amendment.Builder(amd)
+//                .withPurposeOfTravel(pot)
+//                .build();
+//    }
 
     /**
      * Returns a new Amendment with the provided outbound route added to it.
@@ -77,16 +74,16 @@ public class TravelAppUpdateService {
      * @return A new amendment which has been updated. Or {@code amd} if the
      * outbound legs have not been updated.
      */
-    public Amendment updateOutboundRoute(Amendment amd, Route outboundRoute) {
-        if (!amd.route().equals(outboundRoute)) {
-            // Don't override the route if nothing has changed.
-            // That would delete the users returnLegs if they were already set.
-            amd = new Amendment.Builder(amd)
-                    .withRoute(outboundRoute)
-                    .build();
-        }
-        return amd;
-    }
+//    public Amendment updateOutboundRoute(Amendment amd, Route outboundRoute) {
+//        if (!amd.route().equals(outboundRoute)) {
+//             Don't override the route if nothing has changed.
+//             That would delete the users returnLegs if they were already set.
+//            amd = new Amendment.Builder(amd)
+//                    .withRoute(outboundRoute)
+//                    .build();
+//        }
+//        return amd;
+//    }
 
     public void updateRoute(Draft draft) {
         Route fullRoute = routeService.createRoute(draft.getTravelApplication().getRoute());
@@ -95,8 +92,8 @@ public class TravelAppUpdateService {
         LodgingPerDiems lodgingPerDiems = createLodgingPerDiems(fullRoute);
         draft.getTravelApplication().setRoute(fullRoute);
         draft.getTravelApplication().setMealPerDiems(mealPerDiems);
-                draft.getTravelApplication().setMileagePerDiems(mileagePerDiems);
-                draft.getTravelApplication().setLodgingPerDiems(lodgingPerDiems);
+        draft.getTravelApplication().setMileagePerDiems(mileagePerDiems);
+        draft.getTravelApplication().setLodgingPerDiems(lodgingPerDiems);
     }
 
     private MileagePerDiems createMileagePerDiems(Route route) {
@@ -135,11 +132,11 @@ public class TravelAppUpdateService {
      * @param allowances The allowances to add to the amendment.
      * @return A new Amendment with the allowances set.
      */
-    public Amendment updateAllowances(Amendment amd, Allowances allowances) {
-        return new Amendment.Builder(amd)
-                .withAllowances(allowances)
-                .build();
-    }
+//    public Amendment updateAllowances(Amendment amd, Allowances allowances) {
+//        return new Amendment.Builder(amd)
+//                .withAllowances(allowances)
+//                .build();
+//    }
 
     /**
      * Returns a new Amendment with the provided meal per diems added to it.
@@ -148,11 +145,11 @@ public class TravelAppUpdateService {
      * @param mpds The MealPerDiems to add to the amendment.
      * @return A new Amendment with the MealPerDiems set.
      */
-    public Amendment updateMealPerDiems(Amendment amd, MealPerDiems mpds) {
-        return new Amendment.Builder(amd)
-                .withMealPerDiems(mpds)
-                .build();
-    }
+//    public Amendment updateMealPerDiems(Amendment amd, MealPerDiems mpds) {
+//        return new Amendment.Builder(amd)
+//                .withMealPerDiems(mpds)
+//                .build();
+//    }
 
     /**
      * Returns a new Amendment with the provided lodging per diems added to it.
@@ -161,16 +158,16 @@ public class TravelAppUpdateService {
      * @param lpds The LodgingPerDiems to add ot the amendment.
      * @return A new Amendment with the LodgingPerDiems set.
      */
-    public Amendment updateLodgingPerDiems(Amendment amd, LodgingPerDiems lpds) {
-        for (LodgingPerDiem lpd : lpds.allLodgingPerDiems()) {
-            if (lpd.rate().equals(Dollars.ZERO)) {
-                lpd.setRate(gsaAllowanceService.fetchLodgingRate(lpd.date(), lpd.address()));
-            }
-        }
-        return new Amendment.Builder(amd)
-                .withLodgingPerDiems(lpds)
-                .build();
-    }
+//    public Amendment updateLodgingPerDiems(Amendment amd, LodgingPerDiems lpds) {
+//        for (LodgingPerDiem lpd : lpds.allLodgingPerDiems()) {
+//            if (lpd.rate().equals(Dollars.ZERO)) {
+//                lpd.setRate(gsaAllowanceService.fetchLodgingRate(lpd.date(), lpd.address()));
+//            }
+//        }
+//        return new Amendment.Builder(amd)
+//                .withLodgingPerDiems(lpds)
+//                .build();
+//    }
 
     /**
      * Returns a new Amendment with the provided MileagePerDiems.
@@ -179,43 +176,37 @@ public class TravelAppUpdateService {
      * @param mpds The MileagePerDiems to reference when updating the Route.
      * @return The amd Amendment with the Route Legs `Leg.isReimbursementRequested` field updated.
      */
-    public Amendment updateMileagePerDiems(Amendment amd, MileagePerDiems mpds) {
-        return new Amendment.Builder(amd)
-                .withMileagePerDiems(mpds)
-                .build();
-    }
+//    public Amendment updateMileagePerDiems(Amendment amd, MileagePerDiems mpds) {
+//        return new Amendment.Builder(amd)
+//                .withMileagePerDiems(mpds)
+//                .build();
+//    }
 
     /**
      * Persists the edits in {@code amd} to the application.
      *
      * @param appId The id of the TravelApplication to modify.
-     * @param amd   An amendment with all desired changes made to it.
+     * @param app The edited travel application.
      * @param user  The logged in user who is making these changes.
      * @return
      */
-    public TravelApplication editTravelApp(int appId, Amendment amd, Employee user) {
-        TravelApplication app = saveAppEdits(appId, amd, user);
+    public TravelApplication editTravelApp(int appId, TravelApplication app, Employee user) {
+        saveAppEdits(app, user);
         eventBus.post(new TravelAppEditedEmailEvent(app));
         return app;
     }
 
-    private TravelApplication saveAppEdits(int appId, Amendment amd, Employee user) {
-        amd = new Amendment.Builder(amd)
-                .withAmendmentId(0)
-                .withCreatedBy(user)
-                .withCreatedDateTime(LocalDateTime.now())
-                .build();
-
-        TravelApplication app = appService.getTravelApplication(appId);
-        app.addAmendment(amd);
-        appService.saveApplication(app);
+    private TravelApplication saveAppEdits(TravelApplication app, Employee user) {
+        app.setModifiedBy(user);
+        app.setModifiedDateTime(LocalDateTime.now());
+        travelApplicationService.saveApplication(app);
         return app;
     }
 
-    public TravelApplication resubmitApp(int appId, Amendment amd, Employee user) {
-        TravelApplication app = saveAppEdits(appId, amd, user);
+    public TravelApplication resubmitApp(int appId, TravelApplication app, Employee user) {
+        saveAppEdits(app, user);
         app.setStatus(new TravelApplicationStatus(getApprovalStatus(app.getTraveler())));
-        appService.saveApplication(app);
+        travelApplicationService.saveApplication(app);
         ApplicationReview applicationReview = appReviewService.getApplicationReviewByAppId(app.getAppId());
         eventBus.post(new TravelPendingReviewEmailEvent(applicationReview));
         return app;
@@ -228,10 +219,12 @@ public class TravelAppUpdateService {
     public TravelApplication submitTravelApplication(Draft draft, Employee submitter) {
         TravelApplication app = draft.getTravelApplication();
         app.setCreatedBy(submitter);
+        app.setSubmittedBy(submitter);
+        app.setModifiedBy(submitter);
         app.setTravelerDeptHeadEmpId(draft.getTraveler().getDeptHeadId());
         app.setStatus(new TravelApplicationStatus(getApprovalStatus(app.getTraveler())));
 
-        appService.saveApplication(app);
+        travelApplicationService.saveApplication(app);
 
         ApplicationReview appReview = appReviewService.createApplicationReview(app);
         appReviewService.saveApplicationReview(appReview);

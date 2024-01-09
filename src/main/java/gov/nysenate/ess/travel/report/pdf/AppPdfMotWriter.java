@@ -50,9 +50,9 @@ public class AppPdfMotWriter implements AppPdfWriter {
 
         for (MethodOfTravel mot : MethodOfTravel.values()) {
             if (mot.equals(MethodOfTravel.OTHER)) {
-                if (app.activeAmendment().route().hasMethodOfTravel(mot)) {
+                if (app.getRoute().hasMethodOfTravel(mot)) {
                     // If method of travel is OTHER, display the method of travel description which describes how they are traveling.
-                    Set<String> otherDescriptions = app.activeAmendment().route().getMethodOfTravelDescriptions(mot);
+                    Set<String> otherDescriptions = app.getRoute().getMethodOfTravelDescriptions(mot);
                     Optional<String> firstDescription = otherDescriptions.stream().findFirst();
                     drawText(boxTextStartX, currentY, config.font, config.fontSize, mot.getDisplayName() + ": " + firstDescription.orElse(""));
                 } else {
@@ -63,7 +63,7 @@ public class AppPdfMotWriter implements AppPdfWriter {
             }
             float checkBoxWidth = 8f;
             float checkBoxStartY = currentY + checkBoxWidth; // Calculate the Y needed to center the checkbox in this line of text. boxY is the bottom of the text.
-            drawCheckbox(checkboxStartX, checkBoxStartY, checkBoxWidth, checkBoxWidth, 1f, app.activeAmendment().route().hasMethodOfTravel(mot));
+            drawCheckbox(checkboxStartX, checkBoxStartY, checkBoxWidth, checkBoxWidth, 1f, app.getRoute().hasMethodOfTravel(mot));
             currentY -= leading;
         }
 

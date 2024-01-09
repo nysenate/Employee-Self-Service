@@ -38,7 +38,7 @@ public class MealPerDiemsFactory {
             mpds.get(0).setQualifiesForBreakfast(route.firstLegQualifiesForBreakfast());
             mpds.get(mpds.size() - 1).setQualifiesForDinner(route.lastLegQualifiesForDinner());
         }
-        return new MealPerDiems(mpds, isAllowedMeals);
+        return new MealPerDiems(mpds, Dollars.ZERO, isAllowedMeals);
     }
 
     private Set<MealPerDiem> init(Route route) {
