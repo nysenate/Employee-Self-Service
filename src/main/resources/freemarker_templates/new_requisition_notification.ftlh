@@ -16,7 +16,7 @@
     <br/>
     <b>Customer:</b> ${requisition.customer.firstName} ${requisition.customer.lastName}
     <br/>
-    <b>Destination:</b> ${requisition.destination.locId.code} - ${requisition.destination.locationDescription}
+    <b>Destination:</b> ${requisition.destination.locId.getCode()} - ${requisition.destination.locationDescription}
     <br/>
     <b>Delivery Method:</b>  ${requisition.deliveryMethod}
     <br/>
