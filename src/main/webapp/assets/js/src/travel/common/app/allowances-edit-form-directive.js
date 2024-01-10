@@ -50,7 +50,8 @@ function allowancesEditForm(appProps, draftsApi) {
 
             scope.tripHasMeals = function () {
                 return scope.dirtyDraft.amendment.mealPerDiems.allMealPerDiems.length > 0
-                    && scope.dirtyDraft.amendment.mealPerDiems.isAllowedMeals;
+                    && scope.dirtyDraft.amendment.mealPerDiems.isAllowedMeals
+                    && scope.dirtyDraft.amendment.mealPerDiems.totalPerDiem !== "0.00";
             };
 
             scope.tripHasLodging = function () {
