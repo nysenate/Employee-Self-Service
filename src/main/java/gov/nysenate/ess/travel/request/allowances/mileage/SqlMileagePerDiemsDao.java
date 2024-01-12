@@ -143,7 +143,7 @@ public class SqlMileagePerDiemsDao extends SqlBaseDao {
                     addressRowMapper.mapRow(rs, rs.getRow(), "from_"),
                     addressRowMapper.mapRow(rs, rs.getRow(), "to_"),
                     new ModeOfTransportation(MethodOfTravel.of(rs.getString("method_of_travel")), rs.getString("method_of_travel_description")),
-                    rs.getInt("miles"),
+                    rs.getDouble("miles"),
                     new PerDiem(getLocalDate(rs, "travel_date"), new BigDecimal(rs.getString("mileage_rate"))),
                     rs.getBoolean("is_outbound"),
                     rs.getBoolean("is_reimbursement_requested")
