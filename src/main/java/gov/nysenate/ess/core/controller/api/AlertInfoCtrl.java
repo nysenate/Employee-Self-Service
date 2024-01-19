@@ -22,12 +22,15 @@ import gov.nysenate.ess.core.model.personnel.EmployeeNotFoundEx;
 import gov.nysenate.ess.core.model.alert.InvalidAlertInfoEx;
 import gov.nysenate.ess.core.service.alert.AlertInfoValidation;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
+import gov.nysenate.ess.core.util.HttpResponseUtils;
 import gov.nysenate.ess.core.util.OutputUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
@@ -114,13 +117,13 @@ public class AlertInfoCtrl extends BaseRestApiCtrl {
      * Get an alert info csv dump for all active senate employees:
      * (GET) /api/v1/alert-info/contact-dump
      * <p>
-     * Request Param:
+     * Headers:
      *
-     * @param format string - Specifies which format the dump should be returned in. One of "CSV" or "XML".
+     * Accept: If an Accept header that is compatible with XML is set, this will respond with the XML format, otherwise
+     * it will respond with the CSV format.
      */
     @RequestMapping(value = "contact-dump", method = RequestMethod.GET)
-    public void generateContactList(@RequestParam(defaultValue = "CSV") String format, WebRequest request,
-                                    HttpServletResponse response) throws IOException {
+    public void generateContactList(HttpServletRequest request, HttpServletResponse response) throws IOException {
         checkPermission(SimpleEssPermission.ADMIN.getPermission());
 
         List<AlertInfo> alertInfos = alertInfoDao.getAllAlertInfo();
@@ -128,18 +131,18 @@ public class AlertInfoCtrl extends BaseRestApiCtrl {
                 .collect(Collectors.toMap(AlertInfo::getEmpId, Function.identity()));
         Set<Employee> employees = employeeInfoService.getAllEmployees(true);
 
-        if (format.equalsIgnoreCase("CSV")) {
-            response.setContentType("text/plain");
-            SendWordNowCsv csv = new SendWordNowCsv();
-            csv.createCsv(response, employees, alertInfoMap);
-            response.setStatus(200);
-        } else if (format.equalsIgnoreCase("XML")) {
+        MediaType mediaType = HttpResponseUtils.getRequestedMediaType(request);
+        if (mediaType.equals(MediaType.APPLICATION_XML)) {
             ContactBatch batch = ContactBatchFactory.create(employees, alertInfoMap);
             response.setContentType("text/xml");
             response.getWriter().print(OutputUtils.toXml(batch));
             response.setStatus(200);
-        } else {
-            throw new InvalidRequestParamEx(format, "format", "String", "format must be either CSV or XML.");
+        }
+        else {
+            response.setContentType("text/plain");
+            SendWordNowCsv csv = new SendWordNowCsv();
+            csv.createCsv(response, employees, alertInfoMap);
+            response.setStatus(200);
         }
     }
 
