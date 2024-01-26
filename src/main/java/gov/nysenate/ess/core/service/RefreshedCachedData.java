@@ -36,7 +36,7 @@ public abstract class RefreshedCachedData<K, V> {
      * ensuring the map always exists, though it need not be created on start-up.
      * @return the current data.
      */
-    public Map<K, V> dataMap() {
+    protected Map<K, V> dataMap() {
         if (dataMap == null) {
             refreshData();
         }

@@ -1,5 +1,6 @@
 package gov.nysenate.ess.core.service.cache;
 
+import gov.nysenate.ess.core.service.personnel.ActiveEmployeeIdService;
 import gov.nysenate.ess.core.util.AsyncRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +19,7 @@ public abstract class EmployeeCache<Value> extends CachingService<Integer, Value
     @Autowired
     private AsyncRunner asyncRunner;
     @Autowired
-    private ActiveEmployeeIdCache empIdCache;
+    private ActiveEmployeeIdService empIdService;
     @org.springframework.beans.factory.annotation.Value("${cache.warm.on.startup:true}")
     private boolean warmOnStartup;
 
@@ -30,7 +31,7 @@ public abstract class EmployeeCache<Value> extends CachingService<Integer, Value
         Set<Integer> empIds;
         // Ensures we only regenerate this data once.
         synchronized (logger) {
-            empIds = empIdCache.dataMap().keySet();
+            empIds = empIdService.getActiveEmployeeIds();
         }
         this.cache = EssCacheManager.createCache(Integer.class, valueClass, this, empIds.size());
         if (warmOnStartup) {
@@ -48,7 +49,7 @@ public abstract class EmployeeCache<Value> extends CachingService<Integer, Value
         logger.info("Clearing " + cacheType().name() + " cache...");
         cache.clear();
         if (warmCache) {
-            asyncRunner.run(() -> empIdCache.dataMap().keySet().forEach(this::putId));
+            asyncRunner.run(() -> empIdService.getActiveEmployeeIds().forEach(this::putId));
         }
         logger.info("Done clearing cache.");
     }
