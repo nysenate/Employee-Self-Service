@@ -37,15 +37,18 @@ public class CachedEmployeeInfoService extends EmployeeCache<Employee>
     private static final Logger logger = LoggerFactory.getLogger(CachedEmployeeInfoService.class);
 
     private final EmployeeDao employeeDao;
+    private final ActiveEmployeeIdService employeeIdService;
     private final EmpTransactionService transService;
     private final LocationService locationService;
     private LocalDateTime lastUpdateDateTime;
 
     @Autowired
     public CachedEmployeeInfoService(EmployeeDao employeeDao,
+                                     ActiveEmployeeIdService employeeIdService,
                                      EmpTransactionService transService,
                                      LocationService locationService) {
         this.employeeDao = employeeDao;
+        this.employeeIdService = employeeIdService;
         this.transService = transService;
         this.locationService = locationService;
         lastUpdateDateTime = employeeDao.getLastUpdateTime();
@@ -124,13 +127,19 @@ public class CachedEmployeeInfoService extends EmployeeCache<Employee>
     /** {@inheritDoc} */
     @Override
     public Set<Integer> getActiveEmpIds() {
-        return employeeDao.getActiveEmployeeIds();
+        return employeeIdService.getActiveEmployeeIds();
     }
 
     /** {@inheritDoc} */
     @Override
     public Set<Employee> getAllEmployees(boolean activeOnly) {
-        return activeOnly ? employeeDao.getActiveEmployees() : employeeDao.getAllEmployees();
+        return activeOnly ? getActiveEmployeesFromCache() : employeeDao.getAllEmployees();
+    }
+
+    private Set<Employee> getActiveEmployeesFromCache() {
+        return employeeIdService.getActiveEmployeeIds().stream()
+                .map(this::getEmployee)
+                .collect(Collectors.toSet());
     }
 
     /** {@inheritDoc} */
