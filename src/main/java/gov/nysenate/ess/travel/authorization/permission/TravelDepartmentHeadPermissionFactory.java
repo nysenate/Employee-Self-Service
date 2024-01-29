@@ -27,7 +27,8 @@ public class TravelDepartmentHeadPermissionFactory implements PermissionFactory 
             permissions.add(SimpleTravelPermission.TRAVEL_UI_REVIEW_HISTORY.getPermission());
             if (!roles.contains(TravelRole.DELEGATE)) {
                 // Delegates do not get permission to modify delegates.
-                permissions.add(SimpleTravelPermission.TRAVEL_ASSIGN_DELEGATES.getPermission());
+                // As of 1/29/24, SOS does not want people to have this permission.
+//                permissions.add(SimpleTravelPermission.TRAVEL_ASSIGN_DELEGATES.getPermission());
             }
 
             permissions.add(new TravelPermissionBuilder()
