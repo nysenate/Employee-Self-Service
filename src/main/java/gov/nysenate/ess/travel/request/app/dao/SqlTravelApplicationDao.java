@@ -136,6 +136,7 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
         app.setLodgingPerDiems(lpds);
         app.setMileagePerDiems(mileagePerDiems);
         app.setAttachments(attachments);
+        app.setStatus(view.status);
         return app;
     }
 
