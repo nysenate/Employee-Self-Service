@@ -52,6 +52,8 @@ public class SqlMileagePerDiemsDao extends SqlBaseDao {
         List<SqlParameterSource> paramList = new ArrayList<>();
         for (int seqNo = 0; seqNo < mpds.allPerDiems().size(); seqNo++) {
             MileagePerDiem mpd = mpds.allPerDiems().get(seqNo);
+            travelAddressDao.saveAddress(mpd.getFrom());
+            travelAddressDao.saveAddress(mpd.getTo());
             MapSqlParameterSource params = new MapSqlParameterSource()
                     .addValue("appId", appId)
                     .addValue("sequenceNo", seqNo)
@@ -126,7 +128,7 @@ public class SqlMileagePerDiemsDao extends SqlBaseDao {
                   (app_id, sequence_no, travel_date, from_address_id, to_address_id, method_of_travel,
                   method_of_travel_description, miles, mileage_rate, is_outbound, is_reimbursement_requested)
                 VALUES (:appId, :sequenceNo, :travelDate, :fromAddressId, :toAddressId, :methodOfTravel,
-                  :methodOfTravelDescription, :miles, :mileageRate, :isOutbound, :isReimbursement_requested)
+                  :methodOfTravelDescription, :miles, :mileageRate, :isOutbound, :isReimbursementRequested)
                 """
         ),
         DELETE_OVERRIDE_RATE("""

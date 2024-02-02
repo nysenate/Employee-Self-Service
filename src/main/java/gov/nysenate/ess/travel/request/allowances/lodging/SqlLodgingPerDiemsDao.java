@@ -4,10 +4,12 @@ import gov.nysenate.ess.core.dao.base.BaseHandler;
 import gov.nysenate.ess.core.dao.base.BasicSqlQuery;
 import gov.nysenate.ess.core.dao.base.DbVendor;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
+import gov.nysenate.ess.travel.request.address.SqlTravelAddressDao;
 import gov.nysenate.ess.travel.request.address.TravelAddress;
 import gov.nysenate.ess.travel.request.address.TravelAddressRowMapper;
 import gov.nysenate.ess.travel.request.allowances.PerDiem;
 import gov.nysenate.ess.travel.utils.Dollars;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
@@ -23,6 +25,8 @@ import java.util.Set;
 
 @Repository
 public class SqlLodgingPerDiemsDao extends SqlBaseDao {
+
+    @Autowired private SqlTravelAddressDao travelAddressDao;
 
     public LodgingPerDiems selectLodgingPerDiems(int appId) {
         MapSqlParameterSource params = new MapSqlParameterSource()
@@ -49,6 +53,7 @@ public class SqlLodgingPerDiemsDao extends SqlBaseDao {
     private void insertLodgingPerDiems(LodgingPerDiems lpds, int appId) {
         List<SqlParameterSource> paramList = new ArrayList<>();
         for (LodgingPerDiem lpd : lpds.allLodgingPerDiems()) {
+            travelAddressDao.saveAddress(lpd.address());
             MapSqlParameterSource params = new MapSqlParameterSource()
                     .addValue("appId", appId)
                     .addValue("addressId", lpd.address().getId())

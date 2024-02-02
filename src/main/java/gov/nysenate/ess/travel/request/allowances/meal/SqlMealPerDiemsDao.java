@@ -4,11 +4,13 @@ import gov.nysenate.ess.core.dao.base.BaseHandler;
 import gov.nysenate.ess.core.dao.base.BasicSqlQuery;
 import gov.nysenate.ess.core.dao.base.DbVendor;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
+import gov.nysenate.ess.travel.request.address.SqlTravelAddressDao;
 import gov.nysenate.ess.travel.request.address.TravelAddress;
 import gov.nysenate.ess.travel.request.address.TravelAddressRowMapper;
 import gov.nysenate.ess.travel.provider.senate.SenateMie;
 import gov.nysenate.ess.travel.provider.senate.SenateMieRowMapper;
 import gov.nysenate.ess.travel.utils.Dollars;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
@@ -24,6 +26,8 @@ import java.util.Set;
 
 @Repository
 public class SqlMealPerDiemsDao extends SqlBaseDao {
+
+    @Autowired private SqlTravelAddressDao travelAddressDao;
 
     public MealPerDiems selectMealPerDiems(int appId) {
         MapSqlParameterSource params = new MapSqlParameterSource()
@@ -50,6 +54,7 @@ public class SqlMealPerDiemsDao extends SqlBaseDao {
     private void insertMealPerDiems(MealPerDiems mpds, int appId) {
         List<SqlParameterSource> paramList = new ArrayList<>();
         for (MealPerDiem mpd : mpds.allMealPerDiems()) {
+            travelAddressDao.saveAddress(mpd.address());
             MapSqlParameterSource params = new MapSqlParameterSource()
                     .addValue("appId", appId)
                     .addValue("addressId", mpd.address().getId())
