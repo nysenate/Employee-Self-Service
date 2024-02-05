@@ -97,7 +97,7 @@ public class BaseRestApiCtrl
     protected void checkTravelAppPermission(TravelApplication app, RequestMethod method) {
         TravelPermissionBuilder submitterPerm = new TravelPermissionBuilder()
                 .forObject(TravelPermissionObject.TRAVEL_APPLICATION)
-                .forEmpId(app.getSubmittedBy().getEmployeeId())
+                .forEmpId(app.getCreatedBy().getEmployeeId())
                 .forAction(method);
 
         TravelPermissionBuilder travelerPerm = new TravelPermissionBuilder()

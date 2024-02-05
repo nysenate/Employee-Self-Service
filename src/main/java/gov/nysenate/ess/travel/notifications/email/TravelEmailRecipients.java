@@ -42,7 +42,7 @@ public class TravelEmailRecipients {
      */
     public Set<Employee> forStatusUpdate(TravelApplication app) {
         Set<Integer> empIds = new HashSet<>();
-        empIds.add(app.getSubmittedBy().getEmployeeId());
+        empIds.add(app.getCreatedBy().getEmployeeId());
         empIds.add(app.getTraveler().getEmployeeId());
         return empIds.stream()
                 .map(employeeInfoService::getEmployee)

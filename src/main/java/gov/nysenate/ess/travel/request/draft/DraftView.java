@@ -32,8 +32,11 @@ public class DraftView implements ViewObject {
     }
 
     public Draft toDraft() {
-        Draft d = new Draft(id, userEmpId, traveler.toTravelEmployee());
-        TravelApplication app = travelApplication == null ? new TravelApplication(d.getTraveler()) : travelApplication.toTravelApplication();
+        Draft d = new Draft(userEmpId, traveler.toTravelEmployee());
+        d.setId(id);
+        TravelApplication app = travelApplication == null
+                ? new TravelApplication.Builder(d.getTraveler(), d.getTraveler().getDeptHeadId()).build()
+                : travelApplication.toTravelApplication();
         amendment.updateTravelApplication(app);
         d.setTravelApplication(app);
         if (updatedDateTime != null) {

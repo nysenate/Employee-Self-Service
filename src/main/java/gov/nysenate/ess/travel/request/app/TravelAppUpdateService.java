@@ -219,7 +219,6 @@ public class TravelAppUpdateService {
     public TravelApplication submitTravelApplication(Draft draft, Employee submitter) {
         TravelApplication app = draft.getTravelApplication();
         app.setCreatedBy(submitter);
-        app.setSubmittedBy(submitter);
         app.setModifiedBy(submitter);
         app.setTravelerDeptHeadEmpId(draft.getTraveler().getDeptHeadId());
         app.setStatus(new TravelApplicationStatus(getApprovalStatus(app.getTraveler())));

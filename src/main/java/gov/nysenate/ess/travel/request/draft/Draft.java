@@ -13,11 +13,11 @@ public class Draft {
     private TravelApplication travelApplication;
     private LocalDateTime updatedDateTime; // DateTime this was last saved into the database.
 
-    public Draft(int id, int userEmpId, TravelEmployee traveler) {
-        this.id = id;
+    public Draft(int userEmpId, TravelEmployee traveler) {
+        this.id = 0;
         this.userEmpId = userEmpId;
         this.traveler = traveler;
-        this.travelApplication = new TravelApplication(traveler);
+        this.travelApplication = new TravelApplication.Builder(traveler, traveler.getDeptHeadId()).build();
     }
 
     public int getId() {

@@ -3,6 +3,7 @@ package gov.nysenate.ess.travel.api.application;
 import gov.nysenate.ess.core.client.view.DetailedEmployeeView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.travel.request.app.TravelApplication;
+import gov.nysenate.ess.travel.request.app.TravelApplicationStatus;
 
 import java.util.Arrays;
 import java.util.List;
@@ -40,7 +41,10 @@ public class TravelApplicationView implements ViewObject {
     }
 
     public TravelApplication toTravelApplication() {
-        TravelApplication app = new TravelApplication(id, traveler.toEmployee(), travelerDeptHeadEmpId, status.toTravelApplicationStatus());
+        TravelApplication app = new TravelApplication.Builder(traveler.toEmployee(), travelerDeptHeadEmpId)
+                .withAppId(id)
+                .withStatus(status.toTravelApplicationStatus())
+                .build();
         activeAmendment.updateTravelApplication(app);
         return app;
     }

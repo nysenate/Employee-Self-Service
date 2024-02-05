@@ -68,9 +68,10 @@ public class DraftService {
             app = OutputUtils.jsonToObject(record.travelAppJson, TravelApplicationView.class).toTravelApplication();
         } catch (IOException ex) {
             logger.error("Unable to deserialize amendment for Draft with id: " + record.id);
-            app = new TravelApplication(travelEmployee);
+            app = new TravelApplication.Builder(travelEmployee, travelEmployee.getDeptHeadId()).build();
         }
-        Draft d = new Draft(record.id, record.userEmpId, travelEmployee);
+        Draft d = new Draft(record.userEmpId, travelEmployee);
+        d.setId(record.id);
         d.setTravelApplication(app);
         d.setUpdatedDateTime(record.updatedDateTime);
         return d;

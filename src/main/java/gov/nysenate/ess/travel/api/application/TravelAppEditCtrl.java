@@ -37,7 +37,7 @@ public class TravelAppEditCtrl extends BaseRestApiCtrl {
         // Check the logged in user is allowed to modify this app.
         checkTravelAppPermission(app, RequestMethod.POST);
 
-        Draft draft = new Draft(0, getSubjectEmployeeId(), travelEmployeeService.getTravelEmployee(app.getTraveler()));
+        Draft draft = new Draft(getSubjectEmployeeId(), travelEmployeeService.getTravelEmployee(app.getTraveler()));
         draft.setTravelApplication(app);
         return new ViewObjectResponse<>(new DraftView(draft));
     }

@@ -3,18 +3,12 @@ package gov.nysenate.ess.travel.request.app.dao;
 import gov.nysenate.ess.core.dao.base.*;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
-import gov.nysenate.ess.travel.request.allowances.Allowances;
 import gov.nysenate.ess.travel.request.allowances.SqlAllowancesDao;
-import gov.nysenate.ess.travel.request.allowances.lodging.LodgingPerDiems;
 import gov.nysenate.ess.travel.request.allowances.lodging.SqlLodgingPerDiemsDao;
-import gov.nysenate.ess.travel.request.allowances.meal.MealPerDiems;
 import gov.nysenate.ess.travel.request.allowances.meal.SqlMealPerDiemsDao;
-import gov.nysenate.ess.travel.request.allowances.mileage.MileagePerDiems;
 import gov.nysenate.ess.travel.request.allowances.mileage.SqlMileagePerDiemsDao;
 import gov.nysenate.ess.travel.request.app.*;
-import gov.nysenate.ess.travel.request.attachment.Attachment;
 import gov.nysenate.ess.travel.request.attachment.SqlAttachmentDao;
-import gov.nysenate.ess.travel.request.route.Route;
 import gov.nysenate.ess.travel.request.route.RouteDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -112,32 +106,21 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
 
     private TravelApplication populateApplicationDetails(TravelAppRepositoryView view) {
         Employee traveler = employeeInfoService.getEmployee(view.travelerEmpId);
-        Employee submittedBy = employeeInfoService.getEmployee(view.submittedByEmpId);
-        Employee modifiedBy = employeeInfoService.getEmployee(view.modifiedByEmpId);
-
-        TravelApplication app = new TravelApplication(view.appId, traveler,
-                view.travelerDeptHeadEmpId, view.status);
-
-        Route route = routeDao.selectRoute(view.appId);
-        Allowances allowances = allowancesDao.selectAllowances(view.appId);
-        MealPerDiems mpds = mealPerDiemsDao.selectMealPerDiems(view.appId);
-        LodgingPerDiems lpds = sqlLodgingPerDiemsDao.selectLodgingPerDiems(view.appId);
-        MileagePerDiems mileagePerDiems = mileagePerDiemsDao.selectMileagePerDiems(view.appId);
-        List<Attachment> attachments = attachmentDao.selectAttachments(view.appId);
-
-        app.setPurposeOfTravel(view.pot);
-        app.setCreatedDateTime(view.submittedDateTime);
-        app.setSubmittedBy(submittedBy);
-        app.setModifiedBy(modifiedBy);
-        app.setModifiedDateTime(view.modifiedDateTime);
-        app.setRoute(route);
-        app.setAllowances(allowances);
-        app.setMealPerDiems(mpds);
-        app.setLodgingPerDiems(lpds);
-        app.setMileagePerDiems(mileagePerDiems);
-        app.setAttachments(attachments);
-        app.setStatus(view.status);
-        return app;
+        return new TravelApplication.Builder(traveler, view.travelerDeptHeadEmpId)
+                .withAppId(view.appId)
+                .withPurposeOfTravel(view.pot)
+                .withRoute(routeDao.selectRoute(view.appId))
+                .withAllowances(allowancesDao.selectAllowances(view.appId))
+                .withAttachments(attachmentDao.selectAttachments(view.appId))
+                .withMealPerDiems(mealPerDiemsDao.selectMealPerDiems(view.appId))
+                .withLodgingPerDiems(sqlLodgingPerDiemsDao.selectLodgingPerDiems(view.appId))
+                .withMileagePerDiems(mileagePerDiemsDao.selectMileagePerDiems(view.appId))
+                .withStatus(view.status)
+                .withCreatedBy(employeeInfoService.getEmployee(view.createdByEmpId))
+                .withModifiedBy(employeeInfoService.getEmployee(view.modifiedByEmpId))
+                .withCreatedDateTime(view.submittedDateTime)
+                .withModifiedDateTime(view.modifiedDateTime)
+                .build();
     }
 
     private MapSqlParameterSource travelAppParams(TravelApplication app) {
@@ -145,7 +128,7 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
                 .addValue("appId", app.getAppId())
                 .addValue("travelerId", app.getTraveler().getEmployeeId())
                 .addValue("travelerDeptHeadEmpId", app.getTravelerDeptHeadEmpId())
-                .addValue("submittedById", app.getSubmittedBy().getEmployeeId())
+                .addValue("submittedById", app.getCreatedBy().getEmployeeId())
                 .addValue("status", app.status().status().name())
                 .addValue("note", app.status().note())
                 .addValue("eventType", app.getPurposeOfTravel().eventType().name())

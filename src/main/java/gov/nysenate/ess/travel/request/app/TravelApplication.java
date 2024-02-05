@@ -22,43 +22,35 @@ public class TravelApplication {
     private Route route;
     private Allowances allowances;
     private List<Attachment> attachments;
-    private LocalDateTime createdDateTime;
-    private Employee createdBy;
     private MealPerDiems mealPerDiems;
     private LodgingPerDiems lodgingPerDiems;
     private MileagePerDiems mileagePerDiems;
-    private Employee submittedBy;
-    private Employee modifiedBy;
-    private LocalDateTime modifiedDateTime;
     /**
      * The Review Status of this application.
      * null if this application was created before the review process was implemented.
      */
     private TravelApplicationStatus status;
+    private Employee createdBy;
+    private Employee modifiedBy;
+    private LocalDateTime createdDateTime;
+    private LocalDateTime modifiedDateTime;
 
-
-    public TravelApplication(Employee traveler) {
-        this(traveler, 0, null);
-    }
-
-    public TravelApplication(Employee traveler, int travelerDeptHeadEmpId, AppStatus appStatus) {
-        this(0, traveler, travelerDeptHeadEmpId, new TravelApplicationStatus(appStatus));
-    }
-
-    public TravelApplication(int id, Employee traveler, int travelerDeptHeadEmpId,
-                             TravelApplicationStatus status) {
-        this.appId = id;
-        this.traveler = Preconditions.checkNotNull(traveler, "Travel Application requires a non null traveler.");
-        this.travelerDeptHeadEmpId = travelerDeptHeadEmpId;
-        this.status = status;
-        this.purposeOfTravel = null;
-        this.route = Route.EMPTY_ROUTE;
-        this.allowances = new Allowances();
-        this.mealPerDiems = new MealPerDiems(new HashSet<>());
-        this.lodgingPerDiems = new LodgingPerDiems(new HashSet<>());
-        this.mileagePerDiems = new MileagePerDiems(new HashSet<>());
-        this.status = new TravelApplicationStatus(AppStatus.DRAFT);
-        this.attachments = new ArrayList<>();
+    public TravelApplication(Builder builder) {
+        this.appId = builder.appId;
+        this.traveler = Preconditions.checkNotNull(builder.traveler, "A Travel Application requires a non null traveler.");
+        this.travelerDeptHeadEmpId = builder.travelerDeptHeadEmpId;
+        this.purposeOfTravel = builder.purposeOfTravel;
+        this.route = builder.route;
+        this.allowances = builder.allowances;
+        this.attachments = builder.attachments;
+        this.mealPerDiems = builder.mealPerDiems;
+        this.lodgingPerDiems = builder.lodgingPerDiems;
+        this.mileagePerDiems = builder.mileagePerDiems;
+        this.status = builder.status;
+        this.createdBy = builder.createdBy;
+        this.modifiedBy = builder.modifiedBy;
+        this.createdDateTime = builder.createdDateTime;
+        this.modifiedDateTime = builder.modifiedDateTime;
     }
 
     public int id() {
@@ -170,12 +162,12 @@ public class TravelApplication {
         return createdDateTime;
     }
 
-    public void setSubmittedBy(Employee submittedBy) {
-        this.submittedBy = submittedBy;
+    public void setCreatedBy(Employee createdBy) {
+        this.createdBy = createdBy;
     }
 
-    public Employee getSubmittedBy() {
-        return submittedBy;
+    public Employee getCreatedBy() {
+        return createdBy;
     }
 
     public LocalDateTime getModifiedDateTime() {
@@ -234,14 +226,6 @@ public class TravelApplication {
         this.createdDateTime = createdDateTime;
     }
 
-    public Employee getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(Employee createdBy) {
-        this.createdBy = createdBy;
-    }
-
     public MealPerDiems getMealPerDiems() {
         return mealPerDiems;
     }
@@ -274,5 +258,96 @@ public class TravelApplication {
         this.modifiedDateTime = modifiedDateTime;
     }
 
+    public static class Builder {
+        private int appId = 0;
+        private final Employee traveler;
+        private final int travelerDeptHeadEmpId;
+        private PurposeOfTravel purposeOfTravel;
+        private Route route = Route.EMPTY_ROUTE;
+        private Allowances allowances = new Allowances();
+        private List<Attachment> attachments = new ArrayList<>();
+        private MealPerDiems mealPerDiems = new MealPerDiems(new HashSet<>());
+        private LodgingPerDiems lodgingPerDiems = new LodgingPerDiems(new HashSet<>());
+        private MileagePerDiems mileagePerDiems = new MileagePerDiems(new HashSet<>());
+        private TravelApplicationStatus status = new TravelApplicationStatus(AppStatus.DRAFT);
+        private Employee createdBy;
+        private Employee modifiedBy;
+        private LocalDateTime createdDateTime;
+        private LocalDateTime modifiedDateTime;
+
+        public Builder(Employee traveler, int travelerDeptHeadEmpId) {
+            this.traveler = traveler;
+            this.travelerDeptHeadEmpId = travelerDeptHeadEmpId;
+        }
+
+        public Builder withAppId(int appId) {
+            this.appId = appId;
+            return this;
+        }
+
+        public Builder withPurposeOfTravel(PurposeOfTravel purposeOfTravel) {
+            this.purposeOfTravel = purposeOfTravel;
+            return this;
+        }
+
+        public Builder withRoute(Route route) {
+            this.route = route;
+            return this;
+        }
+
+        public Builder withAllowances(Allowances allowances) {
+            this.allowances = allowances;
+            return this;
+        }
+
+        public Builder withAttachments(List<Attachment> attachments) {
+            this.attachments = attachments;
+            return this;
+        }
+
+        public Builder withCreatedDateTime(LocalDateTime createdDateTime) {
+            this.createdDateTime = createdDateTime;
+            return this;
+        }
+
+        public Builder withMealPerDiems(MealPerDiems mealPerDiems) {
+            this.mealPerDiems = mealPerDiems;
+            return this;
+        }
+
+        public Builder withLodgingPerDiems(LodgingPerDiems lodgingPerDiems) {
+            this.lodgingPerDiems = lodgingPerDiems;
+            return this;
+        }
+
+        public Builder withMileagePerDiems(MileagePerDiems mileagePerDiems) {
+            this.mileagePerDiems = mileagePerDiems;
+            return this;
+        }
+
+        public Builder withCreatedBy(Employee createdBy) {
+            this.createdBy = createdBy;
+            return this;
+        }
+
+        public Builder withModifiedBy(Employee modifiedBy) {
+            this.modifiedBy = modifiedBy;
+            return this;
+        }
+
+        public Builder withModifiedDateTime(LocalDateTime modifiedDateTime) {
+            this.modifiedDateTime = modifiedDateTime;
+            return this;
+        }
+
+        public Builder withStatus(TravelApplicationStatus status) {
+            this.status = status;
+            return this;
+        }
+
+        public TravelApplication build() {
+            return new TravelApplication(this);
+        }
+    }
 
 }

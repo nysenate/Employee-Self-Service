@@ -54,7 +54,7 @@ public class DraftCtrl extends BaseRestApiCtrl {
     public BaseResponse createDraft() {
         Employee user = employeeInfoService.getEmployee(getSubjectEmployeeId());
         TravelEmployee defaultTraveler = travelEmployeeService.getTravelEmployee(user);
-        Draft draft = new Draft(0, getSubjectEmployeeId(), defaultTraveler);
+        Draft draft = new Draft(getSubjectEmployeeId(), defaultTraveler);
         DraftView draftView = new DraftView(draft);
         return new ViewObjectResponse<>(draftView);
     }
