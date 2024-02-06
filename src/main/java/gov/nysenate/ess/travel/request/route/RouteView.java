@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 public class RouteView implements ViewObject {
 
+    private int id;
     private List<LegView> outboundLegs;
     private List<LegView> returnLegs;
     private List<DestinationView> destinations;
@@ -24,6 +25,7 @@ public class RouteView implements ViewObject {
     }
 
     public RouteView(Route route) {
+        id = route.getId();
         outboundLegs = route.getOutboundLegs().stream()
                 .map(LegView::new)
                 .collect(Collectors.toList());
@@ -39,12 +41,18 @@ public class RouteView implements ViewObject {
     }
 
     public Route toRoute() {
-        return new Route(
+        Route route = new Route(
                 outboundLegs.stream().map(LegView::toLeg).collect(Collectors.toList()),
                 returnLegs.stream().map(LegView::toLeg).collect(Collectors.toList()),
                 firstLegQualifiesForBreakfast,
                 lastLegQualifiesForDinner
         );
+        route.setId(id);
+        return route;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public List<LegView> getOutboundLegs() {

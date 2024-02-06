@@ -53,9 +53,12 @@ public class TravelAppEditCtrl extends BaseRestApiCtrl {
     public BaseResponse saveEditedApplication(@PathVariable int appId,
                                               @RequestBody DraftView draftView) {
         // Check the logged in user is allowed to modify this app
-        checkTravelAppPermission(appService.getTravelApplication(appId), RequestMethod.POST);
+        TravelApplication originalApp = appService.getTravelApplication(appId);
+        checkTravelAppPermission(originalApp, RequestMethod.POST);
 
         TravelApplication editedApp = draftView.toDraft().getTravelApplication();
+        editedApp.setAppId(appId); // TODO hacky way around messed up views for now.
+        editedApp.setStatus(originalApp.status());
         Employee user = employeeInfoService.getEmployee(getSubjectEmployeeId());
         appUpdateService.editTravelApp(appId, editedApp, user);
         return new SimpleResponse(true, "Edits saved", "");

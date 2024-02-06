@@ -39,7 +39,7 @@ public class ApplicationReview {
     }
 
     public void addAction(Action action) {
-        Preconditions.checkArgument(action.role() == nextReviewerRole());
+        Preconditions.checkArgument(action.role().equals(nextReviewerRole()));
         actions.add(action);
     }
 

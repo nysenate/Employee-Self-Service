@@ -2,7 +2,6 @@ package gov.nysenate.ess.travel.request.route;
 
 import com.google.common.collect.ImmutableList;
 import gov.nysenate.ess.travel.request.address.TravelAddress;
-import gov.nysenate.ess.travel.request.allowances.mileage.MileagePerDiems;
 import gov.nysenate.ess.travel.request.route.destination.Destination;
 
 import java.time.LocalDate;
@@ -16,6 +15,7 @@ public class Route {
 
     public static final Route EMPTY_ROUTE = new Route(ImmutableList.of(), ImmutableList.of(), true, true);
 
+    private int id;
     private final ImmutableList<Leg> outboundLegs;
     private final ImmutableList<Leg> returnLegs;
     private final boolean firstLegQualifiesForBreakfast;
@@ -117,6 +117,14 @@ public class Route {
 
     public boolean lastLegQualifiesForDinner() {
         return lastLegQualifiesForDinner;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     @Override

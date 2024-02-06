@@ -187,6 +187,28 @@ CONSTRAINT leg_to_destination_id_fkey,
     ADD CONSTRAINT leg_to_destination_id_fkey FOREIGN
         KEY (from_destination_id) REFERENCES travel.destination (destination_id);
 
+ALTER TABLE travel.app_route_leg
+ADD COLUMN app_route_id int;
+
+UPDATE travel.app_route_leg
+SET app_route_id = app_route.app_route_id
+FROM travel.app_route
+WHERE app_route_leg.app_route_leg_id = app_route.app_route_leg_id;
+
+ALTER TABLE travel.app_route_leg
+ALTER COLUMN app_route_id SET NOT NULL;
+
+ALTER TABLE travel.app_route
+DROP COLUMN app_route_leg_id;
+
+ALTER TABLE travel.app_route_leg
+ADD CONSTRAINT app_route_leg_app_route_id_fkey FOREIGN KEY (app_route_id)
+REFERENCES travel.app_route (app_route_id)
+ON DELETE CASCADE;
+
+CREATE INDEX ON travel.app_route_leg(app_route_id, sequence_no);
+
+CREATE INDEX ON travel.app_route(app_id);
 
 -----------------------------------
 -- ** Amendment Lodging Per Diem **
