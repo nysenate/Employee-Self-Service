@@ -88,15 +88,45 @@ WHERE app_id is null;
 DROP TABLE IF EXISTS travel.amendment_attachment;
 
 ALTER TABLE travel.attachment
-    RENAME TO app_attachment;
+    RENAME TO attachment;
 
-ALTER TABLE travel.app_attachment
-    ADD CONSTRAINT app_attachment_app_app_id_fkey FOREIGN KEY (app_id)
+ALTER TABLE travel.attachment
+    ADD CONSTRAINT attachment_app_app_id_fkey FOREIGN KEY (app_id)
         REFERENCES travel.app (app_id)
         ON DELETE CASCADE;
 
+CREATE INDEX ON travel.attachment (app_id);
+
+CREATE TABLE travel.app_attachment(
+    app_attachment_id SERIAL PRIMARY KEY,
+    attachment_id UUID,
+    app_id INT
+);
+
+INSERT INTO travel.app_attachment(attachment_id, app_id)
+SELECT attachment_id, app_id FROM travel.attachment;
+
+ALTER TABLE travel.app_attachment
+ALTER COLUMN attachment_id SET NOT NULL,
+ALTER COLUMN app_id SET NOT NULL;
+
 CREATE INDEX ON travel.app_attachment (app_id);
 
+ALTER TABLE travel.app_attachment
+ADD CONSTRAINT app_attachment_attachment_id_fkey FOREIGN KEY (attachment_id)
+REFERENCES travel.attachment (attachment_id)
+ON DELETE CASCADE;
+
+ALTER TABLE travel.app_attachment
+ADD CONSTRAINT app_attachment_app_id_fkey FOREIGN KEY (app_id)
+REFERENCES travel.app (app_id)
+ON DELETE CASCADE;
+
+ALTER TABLE travel.attachment
+DROP COLUMN app_id;
+
+ALTER TABLE travel.attachment
+ALTER COLUMN original_filename SET NOT NULL;
 
 ----------------------------
 -- ** Refactor Route/Legs **

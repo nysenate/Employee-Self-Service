@@ -60,7 +60,7 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
         mealPerDiemsDao.updateMealPerDiems(app.getMealPerDiems(), app.getAppId());
         sqlLodgingPerDiemsDao.updateLodgingPerDiems(app.getLodgingPerDiems(), app.getAppId());
         mileagePerDiemsDao.updateMileagePerDiems(app.getMileagePerDiems(), app.getAppId());
-        attachmentDao.updateAttachments(app.getAttachments(), app.getAppId());
+        attachmentDao.saveTravelAppAttachments(app.getAttachments(), app.getAppId());
     }
 
     private void saveApplication(TravelApplication app) {

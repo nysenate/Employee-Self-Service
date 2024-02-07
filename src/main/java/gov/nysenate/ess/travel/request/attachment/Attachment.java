@@ -1,8 +1,17 @@
 package gov.nysenate.ess.travel.request.attachment;
 
+import gov.nysenate.ess.travel.request.app.TravelApplication;
+import gov.nysenate.ess.travel.utils.AttachmentService;
+
 import java.util.Objects;
 import java.util.UUID;
 
+/**
+ * Represents a file attached to a {@link TravelApplication}.
+ * <p>
+ * This only contains metadata about the attachment, the file itself is saved on disk and can be loaded
+ * by calling {@link AttachmentService#getAttachmentFile(String)}
+ */
 public class Attachment {
 
     private final UUID attachmentId;

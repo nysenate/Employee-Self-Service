@@ -1,6 +1,7 @@
 package gov.nysenate.ess.travel.request.attachment;
 
 import gov.nysenate.ess.core.dao.base.*;
+import gov.nysenate.ess.travel.request.app.TravelApplication;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
@@ -15,6 +16,11 @@ import java.util.UUID;
 @Repository
 public class SqlAttachmentDao extends SqlBaseDao {
 
+    /**
+     * Fetch all Attachments linked to a given Travel Application.
+     * @param appId
+     * @return
+     */
     public List<Attachment> selectAttachments(int appId) {
         MapSqlParameterSource params = new MapSqlParameterSource("appId", appId);
         String sql = SqlAttachmentQuery.SELECT_ATTACHMENTS.getSql(schemaMap());
@@ -23,12 +29,26 @@ public class SqlAttachmentDao extends SqlBaseDao {
         return handler.getResult();
     }
 
-    public Attachment selectAttachment(String filename) {
-        MapSqlParameterSource params = new MapSqlParameterSource("originalFilename", filename);
+    /**
+     * Load an Attachment from the database.
+     *
+     * @param uuid The UUID of the attachment to load.
+     * @return {@link Attachment}
+     */
+    public Attachment selectAttachment(String uuid) {
+        MapSqlParameterSource params = new MapSqlParameterSource("attachmentId", uuid);
         String sql = SqlAttachmentQuery.SELECT_ATTACHMENT_BY_FILENAME.getSql(schemaMap());
         return localNamedJdbc.queryForObject(sql, params, new AttachmentMapper());
     }
 
+    /**
+     * Saves an {@link Attachment Attachment's} metadata to the database.
+     * <p>
+     * This does not associate the attachment with a {@link TravelApplication},
+     * for that, see {@link #saveTravelAppAttachments(Collection, int)}.
+     *
+     * @param attachment
+     */
     public void saveAttachment(Attachment attachment) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("attachmentId", attachment.getAttachmentId())
@@ -38,15 +58,21 @@ public class SqlAttachmentDao extends SqlBaseDao {
         localNamedJdbc.update(sql, params);
     }
 
-    public void updateAttachments(Collection<Attachment> attachments, int appId) {
+    /**
+     * Links an {@link Attachment} to a {@link TravelApplication}.
+     * @param attachments The attachment to link to a Travel App. This attachment should already be
+     *                    persisted to the database.
+     * @param appId The id of the travel app.
+     */
+    public void saveTravelAppAttachments(Collection<Attachment> attachments, int appId) {
         deleteAttachments(appId);
         insertAttachments(attachments, appId);
     }
 
     private void deleteAttachments(int appId) {
-       MapSqlParameterSource params = new MapSqlParameterSource("appId", appId);
-       String sql = SqlAttachmentQuery.DELETE_ATTACHMENTS.getSql(schemaMap());
-       localNamedJdbc.update(sql, params);
+        MapSqlParameterSource params = new MapSqlParameterSource("appId", appId);
+        String sql = SqlAttachmentQuery.DELETE_ATTACHMENTS.getSql(schemaMap());
+        localNamedJdbc.update(sql, params);
     }
 
     private void insertAttachments(Collection<Attachment> attachments, int appId) {
@@ -54,12 +80,10 @@ public class SqlAttachmentDao extends SqlBaseDao {
         for (Attachment attachment : attachments) {
             MapSqlParameterSource params = new MapSqlParameterSource()
                     .addValue("appId", appId)
-                    .addValue("attachmentId", attachment.getAttachmentId())
-                    .addValue("originalFilename", attachment.getOriginalName())
-                    .addValue("contentType", attachment.getContentType());
+                    .addValue("attachmentId", attachment.getAttachmentId());
             paramList.add(params);
         }
-        String sql = SqlAttachmentQuery.INSERT_ATTACHMENT.getSql(schemaMap());
+        String sql = SqlAttachmentQuery.INSERT_APP_ATTACHMENT.getSql(schemaMap());
         SqlParameterSource[] batchParams = new SqlParameterSource[paramList.size()];
         batchParams = paramList.toArray(batchParams);
         localNamedJdbc.batchUpdate(sql, batchParams);
@@ -70,13 +94,14 @@ public class SqlAttachmentDao extends SqlBaseDao {
         SELECT_ATTACHMENTS("""
                 SELECT *
                 FROM ${travelSchema}.app_attachment
+                JOIN ${travelSchema}.attachment USING (attachment_id)
                 WHERE app_id = :appId
                 """
         ),
         SELECT_ATTACHMENT_BY_FILENAME("""
                 SELECT *
-                FROM ${travelSchema}.app_attachment
-                WHERE original_filename = :originalFilename
+                FROM ${travelSchema}.attachment
+                WHERE attachment_id = :attachmentId::uuid
                 """
         ),
         DELETE_ATTACHMENTS("""
@@ -85,11 +110,15 @@ public class SqlAttachmentDao extends SqlBaseDao {
                 """
         ),
         INSERT_ATTACHMENT("""
-                INSERT INTO ${travelSchema}.app_attachment(app_id, attachment_id, original_filename, content_type)
-                VALUES (:appId, :attachmentId, :originalFilename, :contentType)
+                INSERT INTO ${travelSchema}.attachment(attachment_id, original_filename, content_type)
+                VALUES (:attachmentId, :originalFilename, :contentType)
                 """
         ),
-       ;
+        INSERT_APP_ATTACHMENT("""
+                INSERT INTO ${travelSchema}.app_attachment(attachment_id, app_id)
+                VALUES (:attachmentId, :appId)
+                """
+        );
 
         private String sql;
 

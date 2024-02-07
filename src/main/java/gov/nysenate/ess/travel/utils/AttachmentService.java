@@ -29,24 +29,29 @@ public class AttachmentService {
 
     /**
      * Saves an uploaded file to disk and the database.
-     * File is saved with a random name in the 'data.travel.attachments.dir' directory.
+     * Saved with filename = to the attachment's UUID in the 'data.travel.attachments.dir' directory.
      * @param upload
      * @return A {@link Attachment} containing metadata about the file.
-     * @throws IOException
      */
     public Attachment uploadAttachment(MultipartFile upload) throws IOException {
         UUID attachmentId = UUID.randomUUID();
         String originalName = upload.getOriginalFilename();
         String contentType = upload.getContentType();
 
+        // Save attachment to disk
         File attachmentFile = new File(getUploadPath() + attachmentId);
         upload.transferTo(attachmentFile);
 
         Attachment attachment = new Attachment(attachmentId, originalName, contentType);
+        // Save attachment to database.
         attachmentDao.saveAttachment(attachment);
         return attachment;
     }
 
+    /**
+     * Returns a File representing this attachment on disk.
+     * @param attachmentId The UUID of the attachment.
+     */
     public File getAttachmentFile(String attachmentId) {
         return new File(getUploadPath() + attachmentId);
     }
