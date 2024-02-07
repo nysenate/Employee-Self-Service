@@ -527,3 +527,4 @@ DROP TABLE travel.amendment;
 ALTER TABLE travel.draft
     RENAME COLUMN amendment_json TO app_json;
 
+TRUNCATE TABLE travel.draft;
