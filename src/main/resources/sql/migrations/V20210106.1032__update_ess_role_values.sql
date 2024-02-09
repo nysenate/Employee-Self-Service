@@ -1,4 +1,5 @@
 ALTER TYPE ess.ess_role ADD VALUE 'ACCOUNTS_PAYABLE';
+COMMIT;
 
 INSERT INTO ess.user_roles(employee_id, role)
 VALUES (3117, 'ACCOUNTS_PAYABLE'),

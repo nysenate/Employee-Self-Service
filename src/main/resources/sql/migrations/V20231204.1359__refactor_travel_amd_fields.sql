@@ -88,9 +88,6 @@ WHERE app_id is null;
 DROP TABLE IF EXISTS travel.amendment_attachment;
 
 ALTER TABLE travel.attachment
-    RENAME TO attachment;
-
-ALTER TABLE travel.attachment
     ADD CONSTRAINT attachment_app_app_id_fkey FOREIGN KEY (app_id)
         REFERENCES travel.app (app_id)
         ON DELETE CASCADE;
@@ -525,6 +522,6 @@ DROP TABLE travel.amendment;
 -----------------------------------
 
 ALTER TABLE travel.draft
-    RENAME COLUMN amendment_json TO app_json;
+    RENAME COLUMN travel_app_json TO app_json;
 
 TRUNCATE TABLE travel.draft;

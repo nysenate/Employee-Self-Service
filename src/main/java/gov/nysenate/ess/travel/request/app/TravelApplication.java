@@ -258,6 +258,34 @@ public class TravelApplication {
         this.modifiedDateTime = modifiedDateTime;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TravelApplication that = (TravelApplication) o;
+        return travelerDeptHeadEmpId == that.travelerDeptHeadEmpId
+                && Objects.equals(traveler, that.traveler)
+                && Objects.equals(purposeOfTravel, that.purposeOfTravel)
+                && Objects.equals(route, that.route)
+                && Objects.equals(allowances, that.allowances)
+                && Objects.equals(attachments, that.attachments)
+                && Objects.equals(mealPerDiems, that.mealPerDiems)
+                && Objects.equals(lodgingPerDiems, that.lodgingPerDiems)
+                && Objects.equals(mileagePerDiems, that.mileagePerDiems)
+                && Objects.equals(status, that.status)
+                && Objects.equals(createdBy, that.createdBy)
+                && Objects.equals(modifiedBy, that.modifiedBy)
+                && Objects.equals(createdDateTime, that.createdDateTime)
+                && Objects.equals(modifiedDateTime, that.modifiedDateTime);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(traveler, travelerDeptHeadEmpId, purposeOfTravel, route, allowances, attachments,
+                mealPerDiems, lodgingPerDiems, mileagePerDiems, status, createdBy, modifiedBy, createdDateTime,
+                modifiedDateTime);
+    }
+
     public static class Builder {
         private int appId = 0;
         private final Employee traveler;
