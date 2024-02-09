@@ -12,6 +12,7 @@
 # Revised: 2021-04-05 - add ability to specify custom API call
 # Revised: 2021-04-07 - add options to specify HTTP method
 # Revised: 2021-10-26 - modify HTTP Accept header for ESS/Alert XML output
+# Revised: 2023-01-18 - add --csv option; change "eax" default output to CSV
 #
 
 prog=`basename $0`
@@ -27,6 +28,7 @@ usage() {
   echo "  --force-get: Force HTTP GET method to be used" >&2
   echo "  --force-post: Force HTTP POST method to be used" >&2
   echo "  --force-delete: Force HTTP DELETE method to be used" >&2
+  echo "  --csv: Use application/csv instead of application/json for Accept header" >&2
   echo "  --xml: Use application/xml instead of application/json for Accept header" >&2
   echo "  --verbose: generate lots of output" >&2
   echo "  --help: this usage message" >&2
@@ -41,7 +43,7 @@ usage() {
   echo "  cc-pp  = clear the Pay Period cache" >&2
   echo "  cc-seg = clear the Supervisor Emp Group cache" >&2
   echo "  cc-txn = clear the Transaction cache" >&2
-  echo "  eax    = dump the ESS/Alert XML feed" >&2
+  echo "  eax    = dump the ESS/Alert employee feed (default format is CSV)" >&2
   echo "or a custom API command can be sent, using the form:" >&2
   echo "  /path/to/api/call" >&2
   echo "(in other words, the command must begin with a slash)" >&2
@@ -66,14 +68,15 @@ curl_opts="-s"
 
 while [ $# -gt 0 ]; do
   case "$1" in
-    --conf*|-c) shift; cfgfile="$1" ;;
-    --host*|-h) shift; esshost="$1" ;;
-    --user*|-u) shift; essuser="$1" ;;
-    --pass*|-p) shift; esspass="$1" ;;
+    --conf*|-C) shift; cfgfile="$1" ;;
+    --host*|-H) shift; esshost="$1" ;;
+    --user*|-U) shift; essuser="$1" ;;
+    --pass*|-P) shift; esspass="$1" ;;
     --no-auth|-n) no_auth=1 ;;
     --force-get|--get|-g) method=GET ;;
-    --force-post|--post) method=POST ;;
-    --force-delete|--delete) method=DELETE ;;
+    --force-post|--post|-p) method=POST ;;
+    --force-delete|--delete|-d) method=DELETE ;;
+    --csv|-c) format=csv ;;
     --xml|-x) format=xml ;;
     --verbose|-v) set -x; curl_opts="-v" ;;
     --help) usage; exit 0 ;;
@@ -136,7 +139,8 @@ case "$cmd" in
     ;;
   eax)
     http_req=GET
-    format=xml
+    no_auth=1
+    [ "$format" ] || format=csv
     url="/alert-info/contact-dump"
     ;;
   *) echo "$prog: $cmd: Unknown API command" >&2; usage; exit 1 ;;
