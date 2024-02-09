@@ -28,7 +28,7 @@ public class SendWordNowCsv {
                             : alertInfos.get(emp.getEmployeeId());
 
                     printer.printRecord(
-                            "nyssenate",
+                            emp.getUid(),
                             emp.getFirstName(),
                             emp.getLastName(),
                             "en-US",
