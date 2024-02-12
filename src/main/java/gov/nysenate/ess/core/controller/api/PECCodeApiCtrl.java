@@ -150,10 +150,7 @@ public class PECCodeApiCtrl extends BaseRestApiCtrl {
 
         String trainingDate = submission.getTrainingDate();
 
-
         EthicsLiveCourseTask ethicsLiveCourseTask = (EthicsLiveCourseTask) getEthicsLiveCourseFromIdParams(submission.getTaskId(), "taskId");
-
-        validateCodeFormat(submission.getCodes(), ethicsLiveCourseTask, "codes");
 
         personnelCodeVerificationService.verifyDateRangedEthics(submission.getCodes(),trainingDate);
         int authenticatedEmpId = ShiroUtils.getAuthenticatedEmpId();
