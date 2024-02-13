@@ -9,6 +9,7 @@ import gov.nysenate.ess.core.model.transaction.TransactionHistoryMissingEx;
 import gov.nysenate.ess.core.model.transaction.TransactionHistoryUpdateEvent;
 import gov.nysenate.ess.core.model.transaction.TransactionRecord;
 import gov.nysenate.ess.core.service.cache.EmployeeCache;
+import gov.nysenate.ess.core.service.personnel.ActiveEmployeeIdService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,19 +25,24 @@ public class CachedEmpTransactionService extends EmployeeCache<TransactionHistor
     private static final Logger logger = LoggerFactory.getLogger(CachedEmpTransactionService.class);
 
     private final EmpTransactionDao transactionDao;
+    private final ActiveEmployeeIdService employeeIdService;
     private final EventBus eventBus;
     private LocalDateTime lastUpdateDateTime;
 
     @Autowired
-    public CachedEmpTransactionService(EmpTransactionDao transactionDao, EventBus eventBus) {
+    public CachedEmpTransactionService(EmpTransactionDao transactionDao, ActiveEmployeeIdService employeeIdService,
+                                       EventBus eventBus) {
         this.transactionDao = transactionDao;
+        this.employeeIdService = employeeIdService;
         this.eventBus = eventBus;
         this.lastUpdateDateTime = transactionDao.getMaxUpdateDateTime();
     }
 
     // --- Transaction Service Methods ---
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public TransactionHistory getTransHistory(int empId) {
         if (!cache.containsKey(empId)) {
@@ -51,18 +57,28 @@ public class CachedEmpTransactionService extends EmployeeCache<TransactionHistor
 
     // --- Caching Service Implemented Methods ---
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public CacheType cacheType() {
         return CacheType.TRANSACTION;
     }
 
     @Override
-    protected void putId(int id) {
-        cache.put(id, transactionDao.getTransHistory(id, EmpTransDaoOption.INITIALIZE_AS_APP));
+    protected void warmCache() {
+        for (var empId : employeeIdService.getActiveEmployeeIds()) {
+            putId(empId);
+        }
     }
 
-    /** --- Internal Methods --- */
+    private void putId(int empId) {
+        cache.put(empId, transactionDao.getTransHistory(empId, EmpTransDaoOption.INITIALIZE_AS_APP));
+    }
+
+    /**
+     * --- Internal Methods ---
+     */
 
     @Scheduled(fixedDelayString = "${cache.poll.delay.transactions:60000}")
     private void syncTransHistory() {

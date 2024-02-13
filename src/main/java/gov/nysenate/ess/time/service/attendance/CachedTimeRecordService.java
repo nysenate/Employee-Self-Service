@@ -8,6 +8,7 @@ import gov.nysenate.ess.core.model.cache.CacheType;
 import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.service.cache.EmployeeCache;
+import gov.nysenate.ess.core.service.personnel.ActiveEmployeeIdService;
 import gov.nysenate.ess.core.util.ShiroUtils;
 import gov.nysenate.ess.core.util.SortOrder;
 import gov.nysenate.ess.time.dao.attendance.TimeRecordAuditDao;
@@ -51,6 +52,7 @@ public class CachedTimeRecordService
     private final TimeRecordInitializer timeRecordInitializer;
     private final SupervisorInfoService supervisorInfoService;
     private final TimeRecordValidationService trValidationService;
+    private final ActiveEmployeeIdService employeeIdService;
     private final EventBus eventBus;
     @Value("${ts.schema}")
     protected String TS_SCHEMA;
@@ -58,12 +60,14 @@ public class CachedTimeRecordService
     @Autowired
     public CachedTimeRecordService(TimeRecordDao timeRecordDao, TimeRecordAuditDao auditDao,
                                    EssTimeRecordInitializer timeRecordInitializer, SupervisorInfoService supervisorInfoService,
-                                   TimeRecordValidationService trValidationService, EventBus eventBus) {
+                                   TimeRecordValidationService trValidationService, ActiveEmployeeIdService employeeIdService,
+                                   EventBus eventBus) {
         this.timeRecordDao = timeRecordDao;
         this.auditDao = auditDao;
         this.timeRecordInitializer = timeRecordInitializer;
         this.supervisorInfoService = supervisorInfoService;
         this.trValidationService = trValidationService;
+        this.employeeIdService = employeeIdService;
         this.eventBus = eventBus;
     }
 
@@ -264,8 +268,10 @@ public class CachedTimeRecordService
     }
 
     @Override
-    protected void putId(int id) {
-        getActiveTimeRecords(id);
+    protected void warmCache() {
+        for (var empId : employeeIdService.getActiveEmployeeIds()) {
+            getActiveTimeRecords(empId);
+        }
     }
 
     /**

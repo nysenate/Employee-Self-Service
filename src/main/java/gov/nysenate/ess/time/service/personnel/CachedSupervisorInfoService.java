@@ -10,6 +10,7 @@ import gov.nysenate.ess.core.model.transaction.TransactionCode;
 import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.model.transaction.TransactionHistoryUpdateEvent;
 import gov.nysenate.ess.core.service.cache.EmployeeCache;
+import gov.nysenate.ess.core.service.personnel.ActiveEmployeeIdService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
 import gov.nysenate.ess.core.util.DateUtils;
@@ -42,16 +43,18 @@ public class CachedSupervisorInfoService extends EmployeeCache<PrimarySupEmpGrou
     private final EmpTransactionService empTransService;
     private final EmployeeInfoService empInfoService;
     private final SupervisorDao supervisorDao;
+    private final ActiveEmployeeIdService employeeIdService;
     private final EventBus eventBus;
     private LocalDateTime lastSupOvrUpdate;
 
     @Autowired
-    public CachedSupervisorInfoService(EmpTransactionService empTransService,
-                                       EmployeeInfoService empInfoService,
-                                       SupervisorDao supervisorDao, EventBus eventBus) {
+    public CachedSupervisorInfoService(EmpTransactionService empTransService, EmployeeInfoService empInfoService,
+                                       SupervisorDao supervisorDao, ActiveEmployeeIdService employeeIdService,
+                                       EventBus eventBus) {
         this.empTransService = empTransService;
         this.empInfoService = empInfoService;
         this.supervisorDao = supervisorDao;
+        this.employeeIdService = employeeIdService;
         this.eventBus = eventBus;
         this.lastSupOvrUpdate = supervisorDao.getLastSupUpdateDate();
     }
@@ -205,11 +208,13 @@ public class CachedSupervisorInfoService extends EmployeeCache<PrimarySupEmpGrou
     }
 
     @Override
-    protected void putId(int id) {
-        try {
-            cachePrimarySupEmpGroup(id);
+    protected void warmCache() {
+        for (var empId : employeeIdService.getActiveEmployeeIds()) {
+            try {
+                cachePrimarySupEmpGroup(empId);
+            }
+            catch (SupervisorException ignored) {}
         }
-        catch (SupervisorException ignored) {}
     }
 
     /* --- Internal Methods --- */

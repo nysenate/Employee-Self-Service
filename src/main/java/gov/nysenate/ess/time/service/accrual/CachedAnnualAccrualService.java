@@ -3,6 +3,7 @@ package gov.nysenate.ess.time.service.accrual;
 import com.google.common.collect.ImmutableSortedMap;
 import gov.nysenate.ess.core.model.cache.CacheType;
 import gov.nysenate.ess.core.service.cache.EmployeeCache;
+import gov.nysenate.ess.core.service.personnel.ActiveEmployeeIdService;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.time.dao.accrual.AccrualDao;
 import gov.nysenate.ess.time.model.accrual.AnnualAccSummary;
@@ -19,18 +20,26 @@ class CachedAnnualAccrualService extends EmployeeCache<CachedAnnualAccrualServic
     private static final Logger logger = LoggerFactory.getLogger(CachedAnnualAccrualService.class);
     private final AccrualDao accrualDao;
     private LocalDateTime lastUpdateDateTime;
+    private final ActiveEmployeeIdService employeeIdService;
 
     @Autowired
-    CachedAnnualAccrualService(AccrualDao accrualDao) {
+    CachedAnnualAccrualService(AccrualDao accrualDao, ActiveEmployeeIdService employeeIdService) {
         this.accrualDao = accrualDao;
         lastUpdateDateTime = LocalDateTime.now();
+        this.employeeIdService = employeeIdService;
     }
 
     @Override
-    protected void putId(int id) {
-        var annualAccCacheTree = new AnnualAccCacheTree(accrualDao
-                .getAnnualAccruals(id, DateUtils.THE_FUTURE.getYear()));
-        cache.put(id, annualAccCacheTree);
+    protected void warmCache() {
+        for (var empId : employeeIdService.getActiveEmployeeIds()) {
+            putId(empId);
+        }
+    }
+
+    /* Fetch and add to the cache Annual Accruals for the given employee id. */
+    private void putId(int empId) {
+        var annualAccCacheTree = new AnnualAccCacheTree(accrualDao.getAnnualAccruals(empId, DateUtils.THE_FUTURE.getYear()));
+        cache.put(empId, annualAccCacheTree);
     }
 
     /**

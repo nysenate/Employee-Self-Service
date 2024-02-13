@@ -54,7 +54,9 @@ public class CachedEmployeeInfoService extends EmployeeCache<Employee>
         lastUpdateDateTime = employeeDao.getLastUpdateTime();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Employee getEmployee(int empId) throws EmployeeNotFoundEx {
         Employee employee = cache.get(empId);
@@ -65,45 +67,54 @@ public class CachedEmployeeInfoService extends EmployeeCache<Employee>
         return employee;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Employee getEmployee(int empId, LocalDate effectiveDate) throws EmployeeNotFoundEx {
         Employee employee = new Employee(getEmployee(empId));
         TransactionHistory transHistory = transService.getTransHistory(empId);
         employee.setActive(transHistory.latestValueOf("CDEMPSTATUS", effectiveDate, true).orElse("I").equals("A"));
         employee.setSupervisorId(
-            Integer.parseInt(transHistory.latestValueOf("NUXREFSV", effectiveDate, true).orElse("0")));
+                Integer.parseInt(transHistory.latestValueOf("NUXREFSV", effectiveDate, true).orElse("0")));
         employee.setJobTitle(transHistory.latestValueOf("CDEMPTITLE", effectiveDate, false).orElse(null));
         try {
             employee.setPayType(PayType.valueOf(transHistory.latestValueOf("CDPAYTYPE", effectiveDate, true).orElse(null)));
-        } catch (NullPointerException | IllegalArgumentException ignored) {}
+        } catch (NullPointerException | IllegalArgumentException ignored) {
+        }
         setRespCenterAtDate(employee, transHistory, effectiveDate);
         employee.setWorkLocation(getWorkLocAtDate(transHistory, effectiveDate));
         return employee;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public RangeSet<LocalDate> getEmployeeActiveDatesService(int empId) {
         TransactionHistory transHistory = transService.getTransHistory(empId);
         return transHistory.getActiveDates();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public LocalDate getEmployeesMostRecentContinuousServiceDate(int empId) {
         RangeSet<LocalDate> activeServiceDates =
                 getEmployeeActiveDatesService(empId);
         Set<Range<LocalDate>> descendingSetRange = activeServiceDates.asDescendingSetOfRanges(); //[[2023-01-01..+∞), [2007-02-08..2018-12-15)]
         Optional<Range<LocalDate>> firstString = descendingSetRange.stream().findFirst();
-        if(firstString.isPresent()){
+        if (firstString.isPresent()) {
             Range<LocalDate> activeServiceRange = firstString.get();
-           return activeServiceRange.lowerEndpoint();
+            return activeServiceRange.lowerEndpoint();
         }
         return null;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Integer> getEmployeeActiveYearsService(int empId, boolean fiscalYears) {
         RangeSet<LocalDate> rangeSet = getEmployeeActiveDatesService(empId);
@@ -124,13 +135,17 @@ public class CachedEmployeeInfoService extends EmployeeCache<Employee>
                 .collect(Collectors.toList());
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Set<Integer> getActiveEmpIds() {
         return employeeIdService.getActiveEmployeeIds();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Set<Employee> getAllEmployees(boolean activeOnly) {
         return activeOnly ? getActiveEmployeesFromCache() : employeeDao.getAllEmployees();
@@ -142,13 +157,17 @@ public class CachedEmployeeInfoService extends EmployeeCache<Employee>
                 .collect(Collectors.toSet());
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public PaginatedList<Employee> searchEmployees(String term, boolean activeOnly, LimitOffset limitOffset) {
         return employeeDao.searchEmployees(term, activeOnly, limitOffset);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public PaginatedList<Employee> searchEmployees(EmployeeSearchBuilder employeeSearchBuilder, LimitOffset limitOffset) {
         return employeeDao.searchEmployees(employeeSearchBuilder, limitOffset);
@@ -156,15 +175,20 @@ public class CachedEmployeeInfoService extends EmployeeCache<Employee>
 
     // --- CachingService Implemented Methods ---
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public CacheType cacheType() {
         return CacheType.EMPLOYEE;
     }
 
     @Override
-    protected void putId(int id) {
-        cache.put(id, employeeDao.getEmployeeById(id));
+    protected void warmCache() {
+        var activeEmployees = employeeDao.getActiveEmployees();
+        for (var emp : activeEmployees) {
+            cache.put(emp.getEmployeeId(), emp);
+        }
     }
 
     @Scheduled(fixedDelayString = "${cache.poll.delay.employees:43200000}")
@@ -196,7 +220,6 @@ public class CachedEmployeeInfoService extends EmployeeCache<Employee>
     }
 
     /**
-     *
      * These methods extract the most up-to-date value of a particular employee field from a transaction history
      * effective after a given date
      * TODO: you can't get every value of these objects from the transaction layer
