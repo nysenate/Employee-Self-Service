@@ -9,6 +9,7 @@
   <section class="left-nav-content flex-header" ess-navigation>
 
     <ess-component-nav:nav-header topicTitle="Travel Menu" colorClass="orange"/>
+    <shiro:hasPermission name="<%= SimpleTravelPermission.TRAVEL_SUBMIT_APP.getPermissionString() %>">
     <h3 class="main-topic">My Travel</h3>
     <ul class="sub-topic-list">
       <li class="sub-topic orange"><a href="${ctxPath}/travel/application/new">Submit Travel Application</a></li>
@@ -16,6 +17,7 @@
       <li class="sub-topic orange"><a href="${ctxPath}/travel/drafts">Drafts</a></li>
       <%--<li class="sub-topic"><a href="${ctxPath}/travel/config">User Configuration</a></li>--%>
     </ul>
+    </shiro:hasPermission>
 
     <shiro:hasPermission name="<%= SimpleTravelPermission.TRAVEL_UI_MANAGE.getPermissionString() %>">
       <h3 class="main-topic">Manage Travel</h3>

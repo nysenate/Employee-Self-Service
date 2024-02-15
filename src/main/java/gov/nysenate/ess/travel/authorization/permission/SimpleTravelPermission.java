@@ -4,6 +4,8 @@ import org.apache.shiro.authz.permission.WildcardPermission;
 
 public enum SimpleTravelPermission {
 
+    // Allowed to submit a travel application.
+    TRAVEL_SUBMIT_APP("travel:submit-app"),
     // Allowed to view Manage sub section in navigation
     TRAVEL_UI_MANAGE("travel:ui:manage"),
     // Allowed to browse the application review page
