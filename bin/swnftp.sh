@@ -102,7 +102,7 @@ else
   exit 1
 fi
 
-lftp_cmds="cd $swndir; put $tmpdir/$tmpfile; mv $tmpfile $swnfilename; exit"
+lftp_cmds="cd $swndir; put $tmpdir/$tmpfile; rm $swnfilename; mv $tmpfile $swnfilename; exit"
 lftp_mode="file transfer"
 
 if [ $no_export -eq 1 ]; then
