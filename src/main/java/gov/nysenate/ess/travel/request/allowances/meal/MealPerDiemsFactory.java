@@ -31,6 +31,9 @@ public class MealPerDiemsFactory {
 
     public MealPerDiems create(Route route, TravelEmployee traveler) {
         boolean isAllowedMeals = traveler.getRespCenter().isAdministrativeOffice();
+        MealPerDiemAdjustments adjustments = new MealPerDiemAdjustments.Builder()
+                .withIsAllowedMeals(isAllowedMeals)
+                .build();
         Set<MealPerDiem> mealPerDiemSet = init(route);
         List<MealPerDiem> mpds = dedupe(mealPerDiemSet);
         mpds.sort(dateComparator);
@@ -38,7 +41,7 @@ public class MealPerDiemsFactory {
             mpds.get(0).setQualifiesForBreakfast(route.firstLegQualifiesForBreakfast());
             mpds.get(mpds.size() - 1).setQualifiesForDinner(route.lastLegQualifiesForDinner());
         }
-        return new MealPerDiems(mpds, Dollars.ZERO, isAllowedMeals);
+        return new MealPerDiems(mpds, adjustments);
     }
 
     private Set<MealPerDiem> init(Route route) {

@@ -8,7 +8,7 @@ import java.util.*;
 /**
  * A collection of MealPerDiem's for a Travel Application Amendment.
  * Only uses the highest rate MealPerDiem for each day.
- *
+ * <p>
  * If these per diems are overridden, {@code overrideRate} will be non zero.
  */
 public class MealPerDiems {
@@ -16,48 +16,31 @@ public class MealPerDiems {
     private final static Comparator<MealPerDiem> dateComparator = Comparator.comparing(MealPerDiem::date);
 
     private final ImmutableSortedSet<MealPerDiem> mealPerDiems;
-    private Dollars overrideRate;
-    // TODO remove, put in TravelApplication.
-    private boolean isAllowedMeals;
+    private MealPerDiemAdjustments adjustments;
 
     public MealPerDiems(Collection<MealPerDiem> mealPerDiems) {
-        this(mealPerDiems, Dollars.ZERO);
+        this(mealPerDiems, new MealPerDiemAdjustments.Builder().build());
     }
 
-    public MealPerDiems(Collection<MealPerDiem> mealPerDiems, Dollars overrideRate) {
-        this(mealPerDiems, overrideRate, true);
-    }
-
-    public MealPerDiems(Collection<MealPerDiem> mealPerDiems, Dollars overrideRate, boolean isAllowedMeals) {
+    public MealPerDiems(Collection<MealPerDiem> mealPerDiems, MealPerDiemAdjustments adjustments) {
         this.mealPerDiems = ImmutableSortedSet
                 .orderedBy(dateComparator)
                 .addAll(mealPerDiems)
                 .build();
-        this.overrideRate = overrideRate == null ? Dollars.ZERO : overrideRate;
-        this.isAllowedMeals = isAllowedMeals;
+        this.adjustments = adjustments == null
+                ? new MealPerDiemAdjustments.Builder().build()
+                : adjustments;
     }
 
     public Dollars total() {
-        if (!isAllowedMeals) {
+        if (!adjustments.isAllowedMeals()) {
             return Dollars.ZERO;
         }
-        return isOverridden() ?
-                overrideRate
+        return adjustments.isOverridden()
+                ? adjustments.overrideRate()
                 : requestedMealPerDiems().stream()
                 .map(MealPerDiem::total)
                 .reduce(Dollars.ZERO, Dollars::add);
-    }
-
-    public void setOverrideRate(Dollars rate) {
-        this.overrideRate = rate;
-    }
-
-    public Dollars overrideRate() {
-        return this.overrideRate;
-    }
-
-    public boolean isOverridden() {
-        return !overrideRate.equals(Dollars.ZERO);
     }
 
     /**
@@ -76,14 +59,27 @@ public class MealPerDiems {
                 .collect(ImmutableSortedSet.toImmutableSortedSet(dateComparator));
     }
 
+    public boolean isOverridden() {
+        return this.adjustments.isOverridden();
+    }
+
+    public Dollars overrideRate() {
+        return this.adjustments.overrideRate();
+    }
+
     public boolean isAllowedMeals() {
-        return isAllowedMeals;
+        return this.adjustments.isAllowedMeals();
+    }
+
+    protected MealPerDiemAdjustments getAdjustments() {
+        return this.adjustments;
     }
 
     @Override
     public String toString() {
-        return "MealExpenses{" +
+        return "MealPerDiems{" +
                 "mealPerDiems=" + mealPerDiems +
+                ", adjustments=" + adjustments +
                 '}';
     }
 
@@ -92,11 +88,12 @@ public class MealPerDiems {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         MealPerDiems that = (MealPerDiems) o;
-        return Objects.equals(mealPerDiems, that.mealPerDiems);
+        return Objects.equals(mealPerDiems, that.mealPerDiems)
+                && Objects.equals(adjustments, that.adjustments);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(mealPerDiems);
+        return Objects.hash(mealPerDiems, adjustments);
     }
 }

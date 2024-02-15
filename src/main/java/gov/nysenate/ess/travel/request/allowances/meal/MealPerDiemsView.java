@@ -37,8 +37,11 @@ public class MealPerDiemsView implements ViewObject {
     public MealPerDiems toMealPerDiems() {
         return new MealPerDiems(
                 allMealPerDiems.stream().map(MealPerDiemView::toMealPerDiem).collect(Collectors.toList()),
-                new Dollars(overrideRate),
-                isAllowedMeals);
+                new MealPerDiemAdjustments.Builder()
+                        .withIsAllowedMeals(isAllowedMeals)
+                        .withOverrideRate(new Dollars(overrideRate))
+                        .build()
+        );
     }
 
     public List<MealPerDiemView> getAllMealPerDiems() {
