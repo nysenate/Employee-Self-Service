@@ -1,7 +1,6 @@
 package gov.nysenate.ess.travel.department;
 
 import gov.nysenate.ess.core.model.personnel.Employee;
-import org.apache.commons.lang3.ObjectUtils;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -15,13 +14,13 @@ public class TravelDepartmentAssigner {
 
     private final Set<Employee> activeEmployees;
     private final Set<Integer> departmentHeadIds;
-    private final Map<Integer, Integer> empIdToDeptHdId;
+    private final Map<Integer, Integer> deptHdOverrides; // map of employee id to department head emp id.
 
     public TravelDepartmentAssigner(Set<Employee> activeEmployees, Set<Integer> departmentHeadIds,
-                                    Map<Integer, Integer> empIdToDeptHdId) {
+                                    Map<Integer, Integer> deptHdOverrides) {
         this.activeEmployees = activeEmployees;
         this.departmentHeadIds = departmentHeadIds;
-        this.empIdToDeptHdId = empIdToDeptHdId;
+        this.deptHdOverrides = deptHdOverrides;
     }
 
     /**
@@ -62,7 +61,7 @@ public class TravelDepartmentAssigner {
     }
 
     private Optional<Employee> overrideDeptHead(Employee employee) {
-        Integer deptHeadId = empIdToDeptHdId.get(employee.getEmployeeId());
+        Integer deptHeadId = deptHdOverrides.get(employee.getEmployeeId());
         if (deptHeadId == null) {
             return Optional.empty();
         }
