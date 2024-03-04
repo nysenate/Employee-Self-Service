@@ -95,6 +95,10 @@ public final class Requisition {
         return state.process(this, processedDateTime);
     }
 
+    public Requisition undoProcess(LocalDateTime dateTime) {
+        return state.undo(this, dateTime);
+    }
+
     public Requisition reject(LocalDateTime rejectedDateTime) {
         return state.reject(this, rejectedDateTime);
     }

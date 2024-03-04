@@ -267,6 +267,10 @@ essApi.factory('SupplyRequisitionProcessApi', ['$resource', 'appProps', function
     return $resource(appProps.apiPath + '/supply/requisitions/:id/process', {id: '@id'})
 }]);
 
+essApi.factory('SupplyRequisitionUndoApi', ['$resource', 'appProps', function($resource, appProps) {
+    return $resource(appProps.apiPath + '/supply/requisitions/:id/undo', {id: '@id'})
+}]);
+
 essApi.factory('SupplyRequisitionRejectApi', ['$resource', 'appProps', function($resource, appProps) {
     return $resource(appProps.apiPath + '/supply/requisitions/:id/reject', {id: '@id'})
 }]);

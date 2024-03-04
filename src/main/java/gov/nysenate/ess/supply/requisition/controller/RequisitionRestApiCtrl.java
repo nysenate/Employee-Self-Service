@@ -67,7 +67,7 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
                 .build();
         Requisition savedRequisition = requisitionService.submitRequisition(requisition);
         RequisitionView requisitionView = new RequisitionView(savedRequisition);
-        eventBus.post(new RequisitionUpdateEvent(requisitionView));
+        broadcastRequisitionUpdate(requisitionView);
         return new ViewObjectResponse<>(requisitionView);
     }
 
@@ -90,7 +90,7 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
 
         requisition = requisition.setModifiedBy(getModifiedBy());
         requisition = requisitionService.saveRequisition(requisition);
-        eventBus.post(new RequisitionUpdateEvent(new RequisitionView(requisition)));
+        broadcastRequisitionUpdate(new RequisitionView(requisition));
     }
 
     /**
@@ -111,7 +111,23 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
         }
         requisition = requisition.setModifiedBy(getModifiedBy());
         requisition = requisitionService.processRequisition(requisition);
-        eventBus.post(new RequisitionUpdateEvent(new RequisitionView(requisition)));
+        broadcastRequisitionUpdate(new RequisitionView(requisition));
+    }
+
+    /**
+     * Undo a processing step on a requisition and save the changes.
+     * @param id
+     * @param requisitionView
+     */
+    @RequestMapping(value = "/{id}/undo", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void undoRequisition(@PathVariable int id, @RequestBody RequisitionView requisitionView) {
+        Requisition requisition = requisitionView.toRequisition();
+        // Only Supply Approvers may Undo an action.
+        checkPermission(SupplyPermission.SUPPLY_REQUISITION_APPROVE.getPermission());
+
+        requisition = requisition.setModifiedBy(getModifiedBy());
+        requisition = requisitionService.undoRequisition(requisition);
+        broadcastRequisitionUpdate(new RequisitionView(requisition));
     }
 
     /**
@@ -126,7 +142,7 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
 
         requisition = requisition.setModifiedBy(getModifiedBy());
         requisition = requisitionService.rejectRequisition(requisition);
-        eventBus.post(new RequisitionUpdateEvent(new RequisitionView(requisition)));
+        broadcastRequisitionUpdate(new RequisitionView(requisition));
     }
 
     /**
@@ -299,5 +315,14 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
 
     private Employee getModifiedBy() {
         return employeeService.getEmployee(getSubjectEmployeeId());
+    }
+
+    /**
+     * Broadcast an updated requisition to the STOMP service so users connected on the front end are notified of the update.
+     * <p>
+     * See {@link gov.nysenate.ess.supply.socket.RequisitionStompService}
+     */
+    private void broadcastRequisitionUpdate(RequisitionView requisitionView) {
+        eventBus.post(new RequisitionUpdateEvent(requisitionView));
     }
 }
