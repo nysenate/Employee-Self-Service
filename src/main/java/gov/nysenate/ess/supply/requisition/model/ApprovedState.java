@@ -11,6 +11,12 @@ public class ApprovedState extends RequisitionState {
     }
 
     @Override
+    public Requisition undo(Requisition requisition, LocalDateTime undoDateTime) {
+        // Do Nothing
+        return requisition;
+    }
+
+    @Override
     public Requisition reject(Requisition requisition, LocalDateTime rejectedDateTime) {
         // Do nothing, can't reject an Approved Requisition.
         return requisition;

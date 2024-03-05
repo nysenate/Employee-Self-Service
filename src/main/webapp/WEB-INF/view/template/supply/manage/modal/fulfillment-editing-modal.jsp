@@ -135,6 +135,12 @@
   <%--Action buttons--%>
   <div class="padding-top-10" style="text-align: center">
 
+    <%--Undo button--%>
+    <shiro:hasPermission name="<%= SupplyPermission.SUPPLY_REQUISITION_APPROVE.getPermissionString() %>">
+    <input ng-hide="originalRequisition.status === 'PENDING'"
+           ng-click="undo()" class="link-button" style="width: 15%" type="button" value="Undo">
+    </shiro:hasPermission>
+
     <%--Cancel button--%>
     <input ng-click="closeModal()" class="neutral-button" style="width: 15%" type="button" value="Cancel">
 

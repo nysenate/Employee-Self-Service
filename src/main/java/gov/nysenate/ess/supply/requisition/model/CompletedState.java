@@ -11,6 +11,12 @@ public class CompletedState extends RequisitionState {
     }
 
     @Override
+    public Requisition undo(Requisition requisition, LocalDateTime undoDateTime) {
+        requisition = requisition.setCompletedDateTime(null); // Reset completed date time.
+        return requisition.setState(new ProcessingState());
+    }
+
+    @Override
     public RequisitionStatus getStatus() {
         return RequisitionStatus.COMPLETED;
     }

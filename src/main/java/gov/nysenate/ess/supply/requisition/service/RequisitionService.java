@@ -20,6 +20,11 @@ public interface RequisitionService {
 
     Requisition processRequisition(Requisition requisition);
 
+    /**
+     * Returns the requisition state to its previous state, if possible.
+     */
+    Requisition undoRequisition(Requisition requisition);
+
     Requisition rejectRequisition(Requisition requisition);
 
     Optional<Requisition> getRequisitionById(int requisitionId);
