@@ -35,7 +35,6 @@ import static gov.nysenate.ess.core.model.transaction.TransactionCode.RTP;
 public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
     private static final Logger logger = LoggerFactory.getLogger(EssPersonnelTaskAssigner.class);
     private static final ImmutableSet<TransactionCode> newEmpCodes = ImmutableSet.of(APP, RTP);
-    private static final Set<Integer> empIdsSkipAssignment = Set.of(7689, 9268, 12867);
 
     private final EmployeeInfoService empInfoService;
     private final EmpTransactionService transactionService;
@@ -157,7 +156,7 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
      * Determine if the employee is eligible for task assignment.
      */
     private boolean needsTaskAssignment(int empId) {
-        if (empIdsSkipAssignment.contains(empId) || empInfoService.getEmployee(empId).isSenator()) {
+        if (empInfoService.getEmployee(empId).isSenator()) {
             return false;
         }
         TransactionHistory transHistory = transactionService.getTransHistory(empId);

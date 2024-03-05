@@ -15,6 +15,7 @@
 #                     - export as CSV instead of XML by default
 #                     - add --xml option to force XML; remove --pretty
 #                     - authenticate using SSH keys
+# Revised: 2024-02-15 - add --delete-and-rename option
 #
 
 prog=`basename $0`
@@ -24,7 +25,7 @@ swnfilebase=nysenate_onsolve
 tmpfile=ess_batch_contact_export_$$.tmp
 
 usage() {
-  echo "Usage: $prog [--config-file file] [--export-file file] [--keep-tmpfile] [--no-export | --no-ftp] [--swnfilename filename] [--tmpdir dir] [--verbose] [--xml]" >&2
+  echo "Usage: $prog [--config-file file] [--delete-and-rename] [--export-file file] [--keep-tmpfile] [--no-export | --no-ftp] [--swnfilename filename] [--tmpdir dir] [--verbose] [--xml]" >&2
 }
 
 logdt() {
@@ -33,6 +34,7 @@ logdt() {
 
 
 cfgfile=/etc/sendwordnow.cfg
+delrename=0
 export_file=
 export_file_filter=cat
 export_format=csv
@@ -47,6 +49,7 @@ verbose=0
 while [ $# -gt 0 ]; do
   case "$1" in
     --conf*|-c) shift; cfgfile="$1" ;;
+    --delete*|-d) delrename=1 ;;
     --export*|-f) shift; export_file="$1" ;;
     --keep*|-k) keep_tmpfile=1 ;;
     --no-export|-n) no_export=1 ;;
@@ -102,7 +105,11 @@ else
   exit 1
 fi
 
-lftp_cmds="cd $swndir; mrm *.csv *.xml; put $tmpdir/$tmpfile; mv $tmpfile $swnfilename; exit"
+if [ $delrename -eq 0 ]; then
+  lftp_cmds="cd $swndir; put $tmpdir/$tmpfile -o $swnfilename; exit"
+else
+  lftp_cmds="cd $swndir; put $tmpdir/$tmpfile; rm $swnfilename; mv $tmpfile $swnfilename; exit"
+fi
 lftp_mode="file transfer"
 
 if [ $no_export -eq 1 ]; then

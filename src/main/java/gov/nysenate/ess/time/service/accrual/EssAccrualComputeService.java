@@ -27,6 +27,7 @@ import gov.nysenate.ess.time.util.AccrualUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -209,6 +210,12 @@ public class EssAccrualComputeService implements AccrualComputeService
                 .map(AnnualAccSummary::getEndDate)
                 .map(date -> date.plusDays(1))
                 .orElseGet(() -> empInfoService.getEmployee(empId).getSenateContServiceDate());
+
+        //if previous year is closed && fromDate is before current year then fromDate is jan 1 of current year
+        List<PayPeriod> listOfOpenPayPeriods = accrualInfoService.getOpenPayPeriods(PayPeriodType.AF, empId, SortOrder.ASC);
+        if (!listOfOpenPayPeriods.isEmpty() && fromDate.isBefore(listOfOpenPayPeriods.get(0).getStartDate())) {
+            fromDate = listOfOpenPayPeriods.get(0).getStartDate();
+        }
 
         // Throw accrual exception if from date is null
         if (fromDate == null) {

@@ -37,6 +37,8 @@ public abstract class RequisitionState {
      */
     abstract Requisition process(Requisition requisition, LocalDateTime processedDateTime);
 
+    abstract Requisition undo(Requisition requisition, LocalDateTime undoDateTime);
+
     /**
      * This method rejects a Requisition.
      * @param requisition The requisition to reject
