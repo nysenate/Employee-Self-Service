@@ -28,8 +28,8 @@ public class PersonnelCodeVerificationService {
         Collections.sort(codeList);
 
         //User submitted codes
-        String code1 = codeSubmission.get(0);
-        String code2 = codeSubmission.get(1);
+        String code1 = codeSubmission.get(0).toUpperCase();
+        String code2 = codeSubmission.get(1).toUpperCase();
         LocalDateTime parsedDate = LocalDateTime.parse(dateInput.substring(0, 19));
         LocalDate codeDate = parsedDate.toLocalDate();
         int matchedEntries = 0;
