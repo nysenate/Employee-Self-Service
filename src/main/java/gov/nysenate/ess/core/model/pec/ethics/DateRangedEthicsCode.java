@@ -38,6 +38,10 @@ public class DateRangedEthicsCode implements Comparable<DateRangedEthicsCode> {
         return id;
     }
 
+    public int getEthicsCodeId() {
+        return ethics_code_id;
+    }
+
     @Override
     public int compareTo(DateRangedEthicsCode o){
         if (o.getId() < id) {

@@ -14,7 +14,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
 import java.util.List;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static gov.nysenate.ess.core.dao.pec.task.SqlPersonnelTaskQuery.*;
@@ -141,7 +140,7 @@ public class SqlPersonnelTaskDao extends SqlBaseDao implements PersonnelTaskDao 
         localNamedJdbc.update(INSERT_ETHICS_CODE.getSql(schemaMap()), updateParams);
     }
 
-    public List<DateRangedEthicsCode> getEthicsCodes(){
+    public List<DateRangedEthicsCode> getEthicsCodes() {
         return localNamedJdbc.query(SELECT_ETHICS_CODES.getSql(schemaMap()), ethicsCodeRowMapper);
     }
 
