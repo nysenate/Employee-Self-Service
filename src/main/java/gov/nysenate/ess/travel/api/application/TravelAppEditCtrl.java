@@ -58,7 +58,7 @@ public class TravelAppEditCtrl extends BaseRestApiCtrl {
 
         TravelApplication editedApp = draftView.toDraft().getTravelApplication();
         editedApp.setAppId(appId); // TODO hacky way around messed up views for now.
-        editedApp.setStatus(originalApp.status());
+        editedApp.setStatus(originalApp.getStatus());
         Employee user = employeeInfoService.getEmployee(getSubjectEmployeeId());
         appUpdateService.editTravelApp(appId, editedApp, user);
         return new SimpleResponse(true, "Edits saved", "");
@@ -81,7 +81,7 @@ public class TravelAppEditCtrl extends BaseRestApiCtrl {
         TravelApplication app = draftView.toDraft().getTravelApplication();
         // TODO hacky fix around messed up views. Ideally, these fields would be correct on the views.
         app.setAppId(originalApp.getAppId());
-        app.setStatus(originalApp.status());
+        app.setStatus(originalApp.getStatus());
 
         Employee user = employeeInfoService.getEmployee(getSubjectEmployeeId());
         appUpdateService.resubmitApp(appId, app, user);

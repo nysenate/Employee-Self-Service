@@ -53,19 +53,6 @@ public class TravelApplication {
         this.modifiedDateTime = builder.modifiedDateTime;
     }
 
-    public int id() {
-        return this.appId;
-    }
-
-    public TravelApplicationStatus status() {
-        return status;
-    }
-
-    public boolean isApproved() {
-        return status().isApproved();
-    }
-
-
     public Dollars mileageAllowance() {
         return getMileagePerDiems().totalPerDiemValue();
     }
@@ -142,6 +129,8 @@ public class TravelApplication {
         return getRoute().endDate();
     }
 
+    /* --- Getters/Setters --- */
+
     public int getAppId() {
         return appId;
     }
@@ -180,6 +169,10 @@ public class TravelApplication {
 
     public void setAppId(int id) {
         appId = id;
+    }
+
+    public TravelApplicationStatus getStatus() {
+        return status;
     }
 
     public void setStatus(TravelApplicationStatus status) {

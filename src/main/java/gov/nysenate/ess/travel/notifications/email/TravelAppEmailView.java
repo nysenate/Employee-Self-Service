@@ -33,7 +33,7 @@ public class TravelAppEmailView {
         this(appReview.application());
         try {
             Action lastAction = appReview.lastAction();
-            if (lastAction.isDisapproval() && appReview.application().status().isDisapproved()) {
+            if (lastAction.isDisapproval() && appReview.application().getStatus().isDisapproved()) {
                 disapproverFullName = appReview.lastAction().user().getFullName();
                 disapprovalReason = appReview.lastAction().notes();
             }

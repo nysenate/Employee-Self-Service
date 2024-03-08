@@ -1,7 +1,6 @@
 package gov.nysenate.ess.travel.review;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import gov.nysenate.ess.travel.request.app.TravelApplication;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
 import gov.nysenate.ess.travel.review.strategy.*;
@@ -48,9 +47,9 @@ public class ApplicationReview {
      * If the application has been disapproved there is no need to continue the review workflow.
      */
     public TravelRole nextReviewerRole() {
-        if (application.status().isDisapproved()) {
+        if (application.getStatus().isDisapproved()) {
             return TravelRole.NONE;
-        } else if (mostRecentAction() != null && mostRecentAction().isDisapproval() && application.status().isPending()) {
+        } else if (mostRecentAction() != null && mostRecentAction().isDisapproval() && application.getStatus().isPending()) {
             // App has been resubmitted.
             return reviewerStrategy.after(null);
         } else {

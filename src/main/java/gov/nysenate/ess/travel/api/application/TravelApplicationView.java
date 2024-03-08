@@ -3,7 +3,6 @@ package gov.nysenate.ess.travel.api.application;
 import gov.nysenate.ess.core.client.view.DetailedEmployeeView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.travel.request.app.TravelApplication;
-import gov.nysenate.ess.travel.request.app.TravelApplicationStatus;
 
 import java.util.Arrays;
 import java.util.List;
@@ -34,7 +33,7 @@ public class TravelApplicationView implements ViewObject {
         submittedDateTime = app.getSubmittedDateTime() == null ? null : app.getSubmittedDateTime().format(ISO_DATE_TIME);
         lastModifiedDateTime = app.getModifiedDateTime() == null ? null : app.getModifiedDateTime().format(ISO_DATE_TIME);
         lastModifiedBy = app.getModifiedBy() == null ? null : new DetailedEmployeeView(app.getModifiedBy());
-        status = new TravelApplicationStatusView(app.status());
+        status = new TravelApplicationStatusView(app.getStatus());
         activeAmendment = new AmendmentView(app);
         amendments = Arrays.asList(activeAmendment);
         this.travelStartDate = app.startDate() == null ? null : app.startDate().format(ISO_DATE);
