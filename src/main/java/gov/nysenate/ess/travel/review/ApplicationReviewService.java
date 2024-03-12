@@ -41,20 +41,25 @@ public class ApplicationReviewService {
         Action approvalAction = new Action(0, approver, approverRole,
                 ActionType.APPROVE, notes, LocalDateTime.now());
         applicationReview.addAction(approvalAction);
-        saveApplicationReview(applicationReview);
 
         if (applicationReview.nextReviewerRole() == TravelRole.NONE) {
             // If no one else needs to review, the application is completely approved.
-            applicationReview.application().setStatus(new TravelApplicationStatus(AppStatus.APPROVED, ""));
+            travelApplicationService.updateApplicationStatus(
+                    applicationReview.application().getAppId(),
+                    new TravelApplicationStatus(AppStatus.APPROVED, "")
+            );
             eventBus.post(new TravelApprovalEmailEvent(applicationReview));
         } else {
             if (applicationReview.nextReviewerRole() == TravelRole.TRAVEL_ADMIN
                     || applicationReview.nextReviewerRole() == TravelRole.SECRETARY_OF_THE_SENATE) {
-                applicationReview.application().setStatus(new TravelApplicationStatus(AppStatus.TRAVEL_UNIT, ""));
+                travelApplicationService.updateApplicationStatus(
+                        applicationReview.application().getAppId(),
+                        new TravelApplicationStatus(AppStatus.TRAVEL_UNIT, "")
+                );
             }
             eventBus.post(new TravelPendingReviewEmailEvent(applicationReview));
         }
-        travelApplicationService.saveApplication(applicationReview.application());
+        saveApplicationReview(applicationReview);
     }
 
     public void disapproveApplication(ApplicationReview applicationReview, Employee disapprover,
@@ -62,11 +67,13 @@ public class ApplicationReviewService {
         Action disapproveAction = new Action(0, disapprover, disapproverRole, ActionType.DISAPPROVE,
                 reason, LocalDateTime.now());
         applicationReview.addAction(disapproveAction);
-        saveApplicationReview(applicationReview);
 
-        applicationReview.application().setStatus(new TravelApplicationStatus(AppStatus.DISAPPROVED, reason));
-        travelApplicationService.saveApplication(applicationReview.application());
+        travelApplicationService.updateApplicationStatus(
+                applicationReview.application().getAppId(),
+                new TravelApplicationStatus(AppStatus.DISAPPROVED, reason)
+        );
         eventBus.post(new TravelDisapprovalEmailEvent(applicationReview));
+        saveApplicationReview(applicationReview);
     }
 
     public ApplicationReview createApplicationReview(TravelApplication app) {

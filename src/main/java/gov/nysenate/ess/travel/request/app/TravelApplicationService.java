@@ -35,4 +35,8 @@ public class TravelApplicationService {
     public void saveApplication(TravelApplication app) {
         travelApplicationDao.saveTravelApplication(app);
     }
+
+    public void updateApplicationStatus(int appId, TravelApplicationStatus status) {
+        travelApplicationDao.updateTravelApplicationStatus(appId, status);
+    }
 }

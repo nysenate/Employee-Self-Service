@@ -63,6 +63,16 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
         attachmentDao.saveTravelAppAttachments(app.getAttachments(), app.getAppId());
     }
 
+    @Override
+    public void updateTravelApplicationStatus(int appId, TravelApplicationStatus status) {
+       MapSqlParameterSource params = new MapSqlParameterSource()
+               .addValue("appId", appId)
+               .addValue("status", status.status().name())
+               .addValue("note", status.note());
+       String sql = SqlTravelApplicationQuery.UPDATE_APP_STATUS.getSql(schemaMap());
+       localNamedJdbc.update(sql, params);
+    }
+
     private void saveApplication(TravelApplication app) {
         if (updateApplication(app) == 0) {
             insertApplication(app);

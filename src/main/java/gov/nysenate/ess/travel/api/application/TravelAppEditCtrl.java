@@ -93,10 +93,7 @@ public class TravelAppEditCtrl extends BaseRestApiCtrl {
     public BaseResponse cancelTravelApp(@PathVariable int appId) {
         TravelApplication app = appService.getTravelApplication(appId);
         checkTravelAppPermission(app, RequestMethod.POST);
-
-        app.setStatus(new TravelApplicationStatus(AppStatus.CANCELED));
-        appService.saveApplication(app);
-
+        appService.updateApplicationStatus(appId, new TravelApplicationStatus(AppStatus.CANCELED));
         return new ViewObjectResponse<>(new TravelApplicationView(app));
     }
 }
