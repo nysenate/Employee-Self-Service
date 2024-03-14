@@ -27,6 +27,8 @@ public class PECCodeSubmission {
         return codes;
     }
 
-    public String getTrainingDate() {return trainingDate;}
+    public String getTrainingDate() {
+        return trainingDate;
+    }
 
 }

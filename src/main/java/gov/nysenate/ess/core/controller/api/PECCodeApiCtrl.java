@@ -83,11 +83,9 @@ public class PECCodeApiCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/codes/generate", method = GET)
     public SimpleResponse generateNewCodes() throws AuthorizationException {
         Subject subject = SecurityUtils.getSubject();
-        if (subject.hasRole("ADMIN") || subject.hasRole("PERSONNEL_COMPLIANCE_MANAGER") ) {
-
+        if (subject.hasRole("ADMIN") || subject.hasRole("PERSONNEL_COMPLIANCE_MANAGER")) {
             String code1 = PersonnelCodeGenerationService.createCode();
             String code2 = PersonnelCodeGenerationService.createCode();
-
             return new SimpleResponse(true,
                     "The new codes were generated successfully. " + "Code 1: " + code1 + " Code 2: " + code2,
                     "manual-code-generation");
@@ -113,10 +111,8 @@ public class PECCodeApiCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/codes/autogen", method = POST)
     public SimpleResponse autoGenerateNewCodes() throws AuthorizationException {
         Subject subject = SecurityUtils.getSubject();
-        if (subject.hasRole("ADMIN") || subject.hasRole("PERSONNEL_COMPLIANCE_MANAGER") ) {
-
+        if (subject.hasRole("ADMIN") || subject.hasRole("PERSONNEL_COMPLIANCE_MANAGER")) {
             personnelCodeGenerationService.handleCodeChangesForEthicsLiveCourses();
-
             return new SimpleResponse(true,
                     "The ethics live code auto generation was successful",
                     "ethics-live-autogen");
@@ -146,11 +142,9 @@ public class PECCodeApiCtrl extends BaseRestApiCtrl {
 
         ensureEmpIdExists(submission.getEmpId(), "empId");
 
-        String trainingDate = submission.getTrainingDate();
-
         EthicsLiveCourseTask ethicsLiveCourseTask = (EthicsLiveCourseTask) getEthicsLiveCourseFromIdParams(submission.getTaskId(), "taskId");
 
-        personnelCodeVerificationService.verifyDateRangedEthics(submission, trainingDate);
+        personnelCodeVerificationService.verifyDateRangedEthics(submission);
         int authenticatedEmpId = ShiroUtils.getAuthenticatedEmpId();
         assignedTaskDao.setTaskComplete(submission.getEmpId(), ethicsLiveCourseTask.getTaskId(), authenticatedEmpId);
         pecNotificationService.sendCompletionEmail(submission.getEmpId(), ethicsLiveCourseTask);
@@ -209,15 +203,17 @@ public class PECCodeApiCtrl extends BaseRestApiCtrl {
                 "int",
                 "Task id must correspond to active Video code entry task."
         );
+
         try {
             PersonnelTask task = personnelTaskService.getPersonnelTask(taskId);
 
-            if (!(task.getTaskType() == VIDEO_CODE_ENTRY)) {
+            if (task.getTaskType() != VIDEO_CODE_ENTRY) {
                 throw invalidTaskIdEx;
             }
 
             return videoTaskDetailDao.getTaskDetails(task);
-        } catch (PersonnelTaskNotFoundEx ex) {
+        }
+        catch (PersonnelTaskNotFoundEx ex) {
             throw invalidTaskIdEx;
         }
     }
@@ -240,15 +236,17 @@ public class PECCodeApiCtrl extends BaseRestApiCtrl {
                 "int",
                 "Task id must correspond to active Ethics Live code entry task."
         );
+
         try {
             PersonnelTask task = personnelTaskService.getPersonnelTask(taskId);
 
-            if (!(task.getTaskType() == ETHICS_LIVE_COURSE)) {
+            if (task.getTaskType() != ETHICS_LIVE_COURSE) {
                 throw invalidTaskIdEx;
             }
 
             return ethicsLiveCourseTaskDetailDao.getTaskDetails(task);
-        } catch (PersonnelTaskNotFoundEx ex) {
+        }
+        catch (PersonnelTaskNotFoundEx ex) {
             throw invalidTaskIdEx;
         }
     }
