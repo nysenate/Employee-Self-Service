@@ -1,6 +1,7 @@
 package gov.nysenate.ess.core.model.pec.video;
 
 import com.google.common.collect.ImmutableList;
+import gov.nysenate.ess.core.model.pec.IncorrectCodeException;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 
 import java.util.Collection;
@@ -36,15 +37,15 @@ public class VideoTask extends PersonnelTask {
      * Verify the given codes, throwing an exception if they don't match the codes for this video
      *
      * @param codeSubmission List<String>
-     * @throws IncorrectPECCodeEx if the codes are wrong.
+     * @throws IncorrectCodeException if the codes are wrong.
      */
-    public void verifyCodes(List<String> codeSubmission) throws IncorrectPECCodeEx {
+    public void verifyCodes(List<String> codeSubmission) throws IncorrectCodeException {
         List<String> expectedCodes = codes.stream()
                 .sorted()
                 .map(VideoTaskCode::getCode).toList();
 
         if (!expectedCodes.equals(codeSubmission)) {
-            throw new IncorrectPECCodeEx();
+            throw new IncorrectCodeException();
         }
     }
 

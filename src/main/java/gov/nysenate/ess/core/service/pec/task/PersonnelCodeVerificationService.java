@@ -2,9 +2,8 @@ package gov.nysenate.ess.core.service.pec.task;
 
 import gov.nysenate.ess.core.client.view.pec.video.PECCodeSubmission;
 import gov.nysenate.ess.core.dao.pec.task.PersonnelTaskDao;
+import gov.nysenate.ess.core.model.pec.IncorrectCodeException;
 import gov.nysenate.ess.core.model.pec.ethics.DateRangedEthicsCode;
-import gov.nysenate.ess.core.model.pec.ethics.IncorrectPECCodeAmountEx;
-import gov.nysenate.ess.core.model.pec.ethics.IncorrectPECEthicsCodeEx;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,15 +21,14 @@ public class PersonnelCodeVerificationService {
         this.personnelTaskDao = personnelTaskDao;
     }
 
-    public void verifyDateRangedEthics(PECCodeSubmission codeSubmission)
-                throws IncorrectPECCodeAmountEx, IncorrectPECEthicsCodeEx {
+    public void verifyDateRangedEthics(PECCodeSubmission codeSubmission) throws IncorrectCodeException {
         //History of codes
         List<DateRangedEthicsCode> codeList = personnelTaskDao.getEthicsCodes();
         Collections.sort(codeList);
 
         //error out if missing codes
         if (codeSubmission.getCodes().isEmpty() || codeSubmission.getCodes().size() < 2) {
-            throw new IncorrectPECCodeAmountEx();
+            throw new IncorrectCodeException("A minimum of two codes must be submitted");
         }
 
         //User submitted codes and training date (converted to Epoch days)
@@ -42,9 +40,9 @@ public class PersonnelCodeVerificationService {
         //Attempt to match submitted task id to the ethics code id
         Integer confirmedEthicsCodeId = personnelTaskDao.getEthicsCodeId(codeSubmission.getTaskId());
 
-        //Cant confirm task
+        // Unable to reference the EthicsCodeId using the TaskId
         if (confirmedEthicsCodeId == null) {
-            throw new IncorrectPECEthicsCodeEx();
+            throw new IncorrectCodeException("Unable to reference the Ethics Code ID for this task");
         }
 
         //Cycle thru the history of codes to see if 2 codes that are associated
@@ -66,7 +64,7 @@ public class PersonnelCodeVerificationService {
 
         // Must match both codes.  If not, then throw an error.
         if (matchedEntries < 2) {
-            throw new IncorrectPECEthicsCodeEx();
+            throw new IncorrectCodeException();
         }
 
     }

@@ -10,9 +10,9 @@ import gov.nysenate.ess.core.dao.pec.task.detail.VideoTaskDetailDao;
 import gov.nysenate.ess.core.model.auth.CorePermission;
 import gov.nysenate.ess.core.model.auth.CorePermissionObject;
 import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
+import gov.nysenate.ess.core.model.pec.IncorrectCodeException;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.ethics.EthicsLiveCourseTask;
-import gov.nysenate.ess.core.model.pec.video.IncorrectPECCodeEx;
 import gov.nysenate.ess.core.model.pec.video.VideoTask;
 import gov.nysenate.ess.core.service.pec.notification.PECNotificationService;
 import gov.nysenate.ess.core.service.pec.task.PersonnelCodeGenerationService;
@@ -185,13 +185,13 @@ public class PECCodeApiCtrl extends BaseRestApiCtrl {
     /**
      * Handles submission of incorrect codes by returning a special error response.
      *
-     * @param ex {@link IncorrectPECCodeEx}
+     * @param ex {@link IncorrectCodeException}
      * @return {@link ErrorResponse}
      */
-    @ExceptionHandler(IncorrectPECCodeEx.class)
+    @ExceptionHandler(IncorrectCodeException.class)
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     @ResponseBody
-    public ErrorResponse handleIncorrectCode(IncorrectPECCodeEx ex) {
+    public ErrorResponse handleIncorrectCode(IncorrectCodeException ex) {
         return new ErrorResponse(ErrorCode.INVALID_PEC_CODE);
     }
 
