@@ -72,11 +72,11 @@ public class PECNotificationService {
      * @param sendAdminEmails whether to send emails about employees with missing emails.
      * @return List of email information.
      */
-    public List<EmployeeEmail> getReminderEmails(boolean sendAdminEmails) {
+    public List<EmployeeEmail> getReminderEmails(boolean sendAdminEmails, boolean allNotifs) {
         // Document all employees with missing info to report to admins
         List<String> missingEmails = new ArrayList<>();
         List<EmployeeEmail> emailsToSend = new ArrayList<>();
-        for (var entry : pecEmailUtils.getNotifiableTaskMap().entrySet()) {
+        for (var entry : pecEmailUtils.getNotifiableTaskMap(allNotifs).entrySet()) {
             // Continue processing employee if they have outstanding assignments and a valid email
             Employee employee = entry.getKey();
             if (Strings.isBlank(employee.getEmail())) {
@@ -100,7 +100,7 @@ public class PECNotificationService {
     public void sendReminderEmails() {
         logger.info("Starting PEC Reminder Process");
         emailCount = 0;
-        getReminderEmails(true).forEach(this::sendEmail);
+        getReminderEmails(true, false).forEach(this::sendEmail);
         logger.info("Completed PEC Reminder Process");
     }
 

@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Structure for the request body of a video code submission.
  */
-public class PECVideoCodeSubmission {
+public class PECCodeSubmission {
 
     private int empId;
     private int taskId;
@@ -13,7 +13,7 @@ public class PECVideoCodeSubmission {
 
     private String trainingDate;
 
-    private PECVideoCodeSubmission() {}
+    private PECCodeSubmission() {}
 
     public int getEmpId() {
         return empId;
@@ -27,6 +27,8 @@ public class PECVideoCodeSubmission {
         return codes;
     }
 
-    public String getTrainingDate() {return trainingDate;}
+    public String getTrainingDate() {
+        return trainingDate;
+    }
 
 }
