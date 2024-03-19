@@ -4,7 +4,11 @@ import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
 import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.personnel.Employee;
+import gov.nysenate.ess.core.model.personnel.EmployeeNotFoundEx;
+import gov.nysenate.ess.core.service.personnel.CachedEmployeeInfoService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -19,6 +23,8 @@ import java.util.*;
  */
 @Service
 class PecEmailUtils {
+
+    private static final Logger logger = LoggerFactory.getLogger(PecEmailUtils.class);
     private final PersonnelTaskAssignmentDao assignmentDao;
     private final EmployeeDao employeeDao;
     private final EmployeeInfoService employeeInfoService;
@@ -59,11 +65,13 @@ class PecEmailUtils {
         return emails;
     }
 
-    public Map<Employee, List<AssignmentWithTask>> getNotifiableTaskMap() {
+    public Map<Employee, List<AssignmentWithTask>> getNotifiableTaskMap(boolean allNotifs) {
         var idToTaskMap = new HashMap<Integer, List<AssignmentWithTask>>();
         for (var task : assignmentDao.getNotifiableAssignmentsWithTasks()) {
             if (!shouldSendReminder(task.assignment().getDueDate())) {
-                continue;
+                if (!allNotifs) {
+                    continue;
+                }
             }
             int id = task.assignment().getEmpId();
             if (!idToTaskMap.containsKey(id)) {
@@ -73,9 +81,15 @@ class PecEmailUtils {
         }
         var empToTaskMap = new HashMap<Employee, List<AssignmentWithTask>>();
         for (var entry : idToTaskMap.entrySet()) {
-            Employee emp = employeeInfoService.getEmployee(entry.getKey());
-            if (emp.isActive() && !emp.isSenator()) {
-                empToTaskMap.put(emp, entry.getValue());
+            try {
+                Employee emp = employeeInfoService.getEmployee(entry.getKey());
+                if (emp.isActive() && !emp.isSenator()) {
+                    empToTaskMap.put(emp, entry.getValue());
+                }
+            }
+            catch (EmployeeNotFoundEx e) {
+                logger.error("Error retrieving employee: " + e);
+                continue;
             }
         }
         return empToTaskMap;

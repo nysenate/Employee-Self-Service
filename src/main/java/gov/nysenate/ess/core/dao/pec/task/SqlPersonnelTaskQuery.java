@@ -44,6 +44,11 @@ public enum SqlPersonnelTaskQuery implements BasicSqlQuery {
                     "FROM ${essSchema}.ethics_live_course where task_id = :taskId"
     ),
 
+    GET_ETHICS_LIVE_COURSE_TASK_CODE_INFO(
+            "SELECT task_id, ethics_code_id\n" +
+                    "FROM ${essSchema}.ethics_live_course"
+    ),
+
     GET_ETHICS_CODE_NEXT_ENTRY(
             "SELECT count(*) FROM ${essSchema}.ethics_code"
     ),

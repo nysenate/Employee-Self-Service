@@ -13,6 +13,7 @@ import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
@@ -120,12 +121,14 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
      * Determine personnel tasks for all employees and assign those that are missing.
      * Usage:
      * (GET)   /api/v1/admin/personnel/task/scheduledReminderEmails
+     * (GET)   /api/v1/admin/personnel/task/scheduledReminderEmails?allNotifs=true
      * @return {@link ListViewResponse<EmployeeEmailView>}
      */
     @RequestMapping(value = "/scheduledReminderEmails", method = GET)
-    public ListViewResponse<EmployeeEmailView> getScheduledReminderEmails() {
+    public ListViewResponse<EmployeeEmailView> getScheduledReminderEmails(
+            @RequestParam(name="allNotifs", required = false, defaultValue = "false") boolean allNotifs) {
         checkHasPermission(COMPLIANCE_REPORT_GENERATION.getPermission(), ADMIN.getPermission());
-        return ListViewResponse.of(pecNotificationService.getReminderEmails(false)
+        return ListViewResponse.of(pecNotificationService.getReminderEmails(false, allNotifs)
                 .stream().map(EmployeeEmailView::new).collect(Collectors.toList()));
     }
 

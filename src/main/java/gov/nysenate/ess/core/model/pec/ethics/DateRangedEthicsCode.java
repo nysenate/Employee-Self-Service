@@ -3,6 +3,7 @@ package gov.nysenate.ess.core.model.pec.ethics;
 import gov.nysenate.ess.core.util.DateUtils;
 
 import java.time.LocalDateTime;
+
 public class DateRangedEthicsCode implements Comparable<DateRangedEthicsCode> {
 
     //Fields in this class are a 1 to 1 mapping of the ethics code table. It's ok for some fields to be unused
@@ -15,7 +16,7 @@ public class DateRangedEthicsCode implements Comparable<DateRangedEthicsCode> {
     private final LocalDateTime end_date;
 
     public DateRangedEthicsCode(int id, int ethics_code_id, int sequence_no, String label,
-                                String code, LocalDateTime start_date, LocalDateTime end_date){
+                                String code, LocalDateTime start_date, LocalDateTime end_date) {
         this.id = id;
         this.ethics_code_id = ethics_code_id;
         this.sequence_no = sequence_no;
@@ -25,25 +26,32 @@ public class DateRangedEthicsCode implements Comparable<DateRangedEthicsCode> {
         this.end_date = end_date;
     }
 
-    public LocalDateTime getStartDate(){
+    public LocalDateTime getStartDate() {
         return start_date;
     }
 
-    public LocalDateTime getEndDate(){
+    public LocalDateTime getEndDate() {
         return end_date;
     }
 
-    public String getCode(){return code;}
-    int getId(){
+    public String getCode() {
+        return code;
+    }
+
+    int getId() {
         return id;
     }
 
+    public int getEthicsCodeId() {
+        return ethics_code_id;
+    }
+
     @Override
-    public int compareTo(DateRangedEthicsCode o){
+    public int compareTo(DateRangedEthicsCode o) {
         if (o.getId() < id) {
             return 1;
         }
-        else{
+        else {
             return -1;
         }
     }

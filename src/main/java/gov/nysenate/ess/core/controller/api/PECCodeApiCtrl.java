@@ -3,16 +3,16 @@ package gov.nysenate.ess.core.controller.api;
 import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.client.response.error.ErrorCode;
 import gov.nysenate.ess.core.client.response.error.ErrorResponse;
-import gov.nysenate.ess.core.client.view.pec.video.PECVideoCodeSubmission;
+import gov.nysenate.ess.core.client.view.pec.video.PECCodeSubmission;
 import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
 import gov.nysenate.ess.core.dao.pec.task.detail.EthicsLiveCourseTaskDetailDao;
 import gov.nysenate.ess.core.dao.pec.task.detail.VideoTaskDetailDao;
 import gov.nysenate.ess.core.model.auth.CorePermission;
 import gov.nysenate.ess.core.model.auth.CorePermissionObject;
 import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
+import gov.nysenate.ess.core.model.pec.IncorrectCodeException;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.ethics.EthicsLiveCourseTask;
-import gov.nysenate.ess.core.model.pec.video.IncorrectPECVideoCodeEx;
 import gov.nysenate.ess.core.model.pec.video.VideoTask;
 import gov.nysenate.ess.core.service.pec.notification.PECNotificationService;
 import gov.nysenate.ess.core.service.pec.task.PersonnelCodeGenerationService;
@@ -27,8 +27,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-import java.sql.Timestamp;
 import java.util.List;
 
 import static gov.nysenate.ess.core.model.pec.PersonnelTaskType.ETHICS_LIVE_COURSE;
@@ -85,11 +83,9 @@ public class PECCodeApiCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/codes/generate", method = GET)
     public SimpleResponse generateNewCodes() throws AuthorizationException {
         Subject subject = SecurityUtils.getSubject();
-        if (subject.hasRole("ADMIN") || subject.hasRole("PERSONNEL_COMPLIANCE_MANAGER") ) {
-
+        if (subject.hasRole("ADMIN") || subject.hasRole("PERSONNEL_COMPLIANCE_MANAGER")) {
             String code1 = PersonnelCodeGenerationService.createCode();
             String code2 = PersonnelCodeGenerationService.createCode();
-
             return new SimpleResponse(true,
                     "The new codes were generated successfully. " + "Code 1: " + code1 + " Code 2: " + code2,
                     "manual-code-generation");
@@ -115,10 +111,8 @@ public class PECCodeApiCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/codes/autogen", method = POST)
     public SimpleResponse autoGenerateNewCodes() throws AuthorizationException {
         Subject subject = SecurityUtils.getSubject();
-        if (subject.hasRole("ADMIN") || subject.hasRole("PERSONNEL_COMPLIANCE_MANAGER") ) {
-
+        if (subject.hasRole("ADMIN") || subject.hasRole("PERSONNEL_COMPLIANCE_MANAGER")) {
             personnelCodeGenerationService.handleCodeChangesForEthicsLiveCourses();
-
             return new SimpleResponse(true,
                     "The ethics live code auto generation was successful",
                     "ethics-live-autogen");
@@ -138,21 +132,19 @@ public class PECCodeApiCtrl extends BaseRestApiCtrl {
      * (POST)    /api/v1/personnel/task/ethics/live/code
      *
      * Request body:
-     * @param submission {@link PECVideoCodeSubmission}
+     * @param submission {@link PECCodeSubmission}
      *
      * @return {@link SimpleResponse} if successful
      */
     @RequestMapping(value = "/ethics/live/code", method = POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public SimpleResponse submitEthicsLiveCourseCodes(@RequestBody PECVideoCodeSubmission submission) {
+    public SimpleResponse submitEthicsLiveCourseCodes(@RequestBody PECCodeSubmission submission) {
         checkPermission(new CorePermission(submission.getEmpId(), CorePermissionObject.PERSONNEL_TASK, POST));
 
         ensureEmpIdExists(submission.getEmpId(), "empId");
 
-        String trainingDate = submission.getTrainingDate();
-
         EthicsLiveCourseTask ethicsLiveCourseTask = (EthicsLiveCourseTask) getEthicsLiveCourseFromIdParams(submission.getTaskId(), "taskId");
 
-        personnelCodeVerificationService.verifyDateRangedEthics(submission.getCodes(),trainingDate);
+        personnelCodeVerificationService.verifyDateRangedEthics(submission);
         int authenticatedEmpId = ShiroUtils.getAuthenticatedEmpId();
         assignedTaskDao.setTaskComplete(submission.getEmpId(), ethicsLiveCourseTask.getTaskId(), authenticatedEmpId);
         pecNotificationService.sendCompletionEmail(submission.getEmpId(), ethicsLiveCourseTask);
@@ -169,12 +161,12 @@ public class PECCodeApiCtrl extends BaseRestApiCtrl {
      * (POST)    /api/v1/personnel/task/video/code
      *
      * Request body:
-     * @param submission {@link PECVideoCodeSubmission}
+     * @param submission {@link PECCodeSubmission}
      *
      * @return {@link SimpleResponse} if successful
      */
     @RequestMapping(value = "/video/code", method = POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public SimpleResponse submitVideoCodes(@RequestBody PECVideoCodeSubmission submission) {
+    public SimpleResponse submitVideoCodes(@RequestBody PECCodeSubmission submission) {
         checkPermission(new CorePermission(submission.getEmpId(), CorePermissionObject.PERSONNEL_TASK, POST));
 
         ensureEmpIdExists(submission.getEmpId(), "empId");
@@ -193,13 +185,13 @@ public class PECCodeApiCtrl extends BaseRestApiCtrl {
     /**
      * Handles submission of incorrect codes by returning a special error response.
      *
-     * @param ex {@link IncorrectPECVideoCodeEx}
+     * @param ex {@link IncorrectCodeException}
      * @return {@link ErrorResponse}
      */
-    @ExceptionHandler(IncorrectPECVideoCodeEx.class)
+    @ExceptionHandler(IncorrectCodeException.class)
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     @ResponseBody
-    public ErrorResponse handleIncorrectCode(IncorrectPECVideoCodeEx ex) {
+    public ErrorResponse handleIncorrectCode(IncorrectCodeException ex) {
         return new ErrorResponse(ErrorCode.INVALID_PEC_CODE);
     }
 
@@ -211,15 +203,17 @@ public class PECCodeApiCtrl extends BaseRestApiCtrl {
                 "int",
                 "Task id must correspond to active Video code entry task."
         );
+
         try {
             PersonnelTask task = personnelTaskService.getPersonnelTask(taskId);
 
-            if (!(task.getTaskType() == VIDEO_CODE_ENTRY)) {
+            if (task.getTaskType() != VIDEO_CODE_ENTRY) {
                 throw invalidTaskIdEx;
             }
 
             return videoTaskDetailDao.getTaskDetails(task);
-        } catch (PersonnelTaskNotFoundEx ex) {
+        }
+        catch (PersonnelTaskNotFoundEx ex) {
             throw invalidTaskIdEx;
         }
     }
@@ -242,15 +236,17 @@ public class PECCodeApiCtrl extends BaseRestApiCtrl {
                 "int",
                 "Task id must correspond to active Ethics Live code entry task."
         );
+
         try {
             PersonnelTask task = personnelTaskService.getPersonnelTask(taskId);
 
-            if (!(task.getTaskType() == ETHICS_LIVE_COURSE)) {
+            if (task.getTaskType() != ETHICS_LIVE_COURSE) {
                 throw invalidTaskIdEx;
             }
 
             return ethicsLiveCourseTaskDetailDao.getTaskDetails(task);
-        } catch (PersonnelTaskNotFoundEx ex) {
+        }
+        catch (PersonnelTaskNotFoundEx ex) {
             throw invalidTaskIdEx;
         }
     }
