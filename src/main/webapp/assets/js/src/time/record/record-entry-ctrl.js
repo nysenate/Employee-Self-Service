@@ -29,7 +29,7 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
             empId: appProps.user.employeeId,    // Employee Id
             miscLeaves: appProps.miscLeaves,    // Listing of misc leave types
             miscLeaveGrantInfoList: null,       // List of info about grants of a misc leave type for the currently selected record
-            miscLeaveUsageErrors: {},           // Data on misc leave that too much is being used of
+            miscLeaveUsageErrors: [],           // Data on misc leave that too much is being used of
             accrual: null,                      // Accrual info for selected record
             expectedHrs: null,                  // An object containing expected hour data for the selected record
             allowances: {},                     // A map that stores yearly temp employee allowances
@@ -846,7 +846,7 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
     $scope.preValidation = function() {
         var record = $scope.getSelectedRecord();
         $scope.errorTypes.reset();
-        $scope.state.miscLeaveUsageErrors = {};
+        $scope.state.miscLeaveUsageErrors = [];
         checkForPrevUnsubmittedRaSa(record);
     };
 
@@ -985,6 +985,19 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
         return false;
     }
 
+    function grantApplies(grant, entry) {
+        var entryDate = new Date(entry.date);
+        return entry.miscHours && entry.miscType === grant.miscLeaveType
+            && new Date(grant.beginDate) <= entryDate && entryDate <= new Date(grant.endDate);
+    }
+
+    // e.g. turns "2024-01-04" into "1/4/24"
+    function dateToStr(date) {
+        var year = date.substring(0, 4)
+        var month = parseInt(date.substring(5, 7));
+        var dayOfMonth = parseInt(date.substring(8, 10));
+        return month + "/" + dayOfMonth + "/" + year;
+    }
 
     /**
      * Checks that the given hours are divisible by 0.25
@@ -1108,7 +1121,7 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
             miscHours: function (entry) {
                 var hrs = entry.miscHours;
                 var isValid = true;
-                if (hrs === 0 || hrs === null) { // Short circuit to true if hours are null or 0
+                if (hrs === 0 || hrs === null) {
                     return true;
                 }
                 if (typeof hrs === 'undefined') {
@@ -1116,36 +1129,29 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
                     isValid = false;
                 }
                 isValid &= checkRaSaHourIncrements(hrs);
-
-                var dateMoment = moment(entry.date);
                 var entries = $scope.state.records[$scope.state.iSelectedRecord].timeEntries;
                 var grantInfoList = $scope.state.miscLeaveGrantInfoList;
 
                 for (var grantIndex = 0; grantIndex < grantInfoList.length; grantIndex++) {
                     var grantInfo = grantInfoList[grantIndex];
-                    // Null signifies no limit to time used
-                    if (grantInfo.hoursRemaining === null) {
+                    // Also checks that the grant time is not unlimited.
+                    if (grantInfo.hoursRemaining === null || !grantApplies(grantInfo.grant, entry)) {
                         continue;
                     }
                     var hoursUsed = 0.0;
-                    var grant = grantInfo.grant;
-                    for (var entryIndex = 0; entryIndex < entries.length; entryIndex++) {
+
+                    for (var entryIndex = 0; entryIndex <= entry.index; entryIndex++) {
                         var currEntry = entries[entryIndex];
-                        if (currEntry.miscHours && currEntry.miscType === grant.miscLeaveType
-                            && !dateMoment.isBefore(grant.beginDate, 'day')
-                            && !dateMoment.isAfter(grant.endDate, 'day')) {
+                        if (grantApplies(grantInfo.grant, currEntry)) {
                             hoursUsed += currEntry.miscHours;
                         }
-                        // We don't need to check entries beyond the entry parameter.
-                        if (currEntry === entry) {
-                            break;
-                        }
                     }
-                    // Can only invalidate entries with the same misc leave type.
-                    if (hoursUsed > grantInfo.hoursRemaining && entry.miscType === grant.miscLeaveType) {
+                    if (hoursUsed > grantInfo.hoursRemaining) {
                         $scope.errorTypes.raSa.notEnoughMiscTime = true;
-                        var shortname = $scope.state.miscLeavesShortnameMap[grantInfo.grant.miscLeaveType];
-                        $scope.state.miscLeaveUsageErrors[shortname] = {grantInfo: grantInfo, hoursUsed: hoursUsed};
+                        var shortname = $scope.state.miscLeavesShortnameMap[entry.miscType];
+                        var range = dateToStr(grantInfo.grant.beginDate) + " - " + dateToStr(grantInfo.grant.endDate);
+                        var data = {shortname: shortname, range: range, hoursUsed: hoursUsed, hoursRemaining: grantInfo.hoursRemaining};
+                        $scope.state.miscLeaveUsageErrors.push(data);
                         isValid = false;
                     }
                 }
