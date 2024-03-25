@@ -11,9 +11,9 @@ public enum PecEmailType {
 
     public String getSubject(PersonnelTask task) {
         return switch (this) {
-            case INVITE -> "You have to complete the task: " + task.getTitle();
-            case REMINDER -> "You have outstanding Personnel Tasks.";
-            case COMPLETION -> "You have completed the task: " + task.getTitle();
+            case INVITE -> "You have to complete the training: " + task.getTitle();
+            case REMINDER -> "You have outstanding trainings to complete.";
+            case COMPLETION -> "You have completed the training: " + task.getTitle();
             case REPORT_MISSING -> "Employees With Missing Emails";
             case ADMIN_CODES -> "New Codes for Ethics Live Course: " + task.getTitle();
         };
