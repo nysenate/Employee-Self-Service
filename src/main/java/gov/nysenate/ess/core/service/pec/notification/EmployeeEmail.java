@@ -15,11 +15,11 @@ import java.util.Optional;
  */
 public class EmployeeEmail {
     private static final String standardHtml =
-            "<b>%s, our records indicate you have outstanding trainings to complete for Personnel.</b><br>" +
+            "<b>%s, our records indicate you have outstanding trainings to which is mandatory by law.</b><br>" +
                     "You can find instructions to complete them by logging into ESS, " +
                     "then clicking the My Info tab and clicking on the To Do List. " +
                     "Or, go to this link <a href=\"%s\">HERE</a><br><br>" +
-                    "<b>You must complete the following tasks: </b><br>",
+                    "<b>You must complete the following trainings: </b><br>",
             completionHtml = "Our records have been updated to indicate you have completed %s.",
             assignLengthStr = "You have %d days from your hiring date to complete this assignment. It is due by %s.<br>";
 
@@ -66,17 +66,12 @@ public class EmployeeEmail {
         if (type == PersonnelTaskType.MOODLE_COURSE) {
             return Optional.of(assignLengthStr.formatted(30, unambiguousDate));
         }
-        if (type != PersonnelTaskType.ETHICS_LIVE_COURSE) {
-            return Optional.empty();
-        }
         String ethicsLiveStr;
-        if (dueDate.getMonth() == Month.DECEMBER && dueDate.getDayOfMonth() == 31) {
-            ethicsLiveStr = "You have until the end of the current calendar year to complete this course.";
-        }
-        else {
+        if (type == PersonnelTaskType.ETHICS_LIVE_COURSE) {
             ethicsLiveStr = assignLengthStr.formatted(90, unambiguousDate);
+            return Optional.of(ethicsLiveStr + " These live sessions are run a limited amount of times a month.<br>");
         }
-        return Optional.of(ethicsLiveStr + " These live sessions run once a month.<br>");
+        return Optional.empty();
     }
 
     private String getHtml(List<String> extraData) {
