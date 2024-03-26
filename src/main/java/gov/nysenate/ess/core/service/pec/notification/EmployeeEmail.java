@@ -15,7 +15,7 @@ import java.util.Optional;
  */
 public class EmployeeEmail {
     private static final String standardHtml =
-            "<b>%s, our records indicate you have outstanding trainings to which is mandatory by law.</b><br>" +
+            "<b>%s, our records indicate you have outstanding trainings to complete which is mandatory by law.</b><br>" +
                     "You can find instructions to complete them by logging into ESS, " +
                     "then clicking the My Info tab and clicking on the To Do List. " +
                     "Or, go to this link <a href=\"%s\">HERE</a><br><br>" +
