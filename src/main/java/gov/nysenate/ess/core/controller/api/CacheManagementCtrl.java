@@ -6,7 +6,6 @@ import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.client.view.CacheStatsView;
 import gov.nysenate.ess.core.model.cache.CacheType;
 import gov.nysenate.ess.core.service.cache.EssCacheManager;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,7 +14,7 @@ import java.util.EnumSet;
 import java.util.Set;
 
 import static gov.nysenate.ess.core.controller.api.BaseRestApiCtrl.ADMIN_REST_PATH;
-import static gov.nysenate.ess.core.controller.api.BaseRestApiCtrl.REST_PATH;
+import static gov.nysenate.ess.core.model.auth.SimpleEssPermission.ADMIN;
 
 @RestController
 @RequestMapping(value = ADMIN_REST_PATH + "/cache")
@@ -33,9 +32,9 @@ public class CacheManagementCtrl extends BaseRestApiCtrl {
      * @return ListViewResponse<CacheStatsView>
      * @see CacheStatsView for response format
      */
-    @RequiresPermissions("admin:cache:get")
     @RequestMapping(value = "/stats", method = {RequestMethod.GET, RequestMethod.HEAD})
     public ListViewResponse<CacheStatsView> getCacheStats() {
+        checkPermission(ADMIN.getPermission());
         return ListViewResponse.of(Arrays.stream(CacheType.values())
                 .map(EssCacheManager::getStatsView).toList());
     }
@@ -56,9 +55,9 @@ public class CacheManagementCtrl extends BaseRestApiCtrl {
      *
      * @return SimpleResponse - indicating cache warm success
      */
-    @RequiresPermissions("admin:cache:put")
     @RequestMapping(value = "/{cacheName}", method = RequestMethod.PUT)
     public SimpleResponse warmCache(@PathVariable String cacheName) {
+        checkPermission(ADMIN.getPermission());
         EssCacheManager.clearCaches(getAffectedCaches(cacheName), true);
         return new SimpleResponse(true, "warmed cache: " + cacheName, "cache-warm-success");
     }
@@ -77,9 +76,9 @@ public class CacheManagementCtrl extends BaseRestApiCtrl {
      *
      * @return SimpleResponse - indicating cache evict success
      */
-    @RequiresPermissions("admin:cache:delete")
     @RequestMapping(value = "/{cacheName}", method = RequestMethod.DELETE)
     public SimpleResponse evictCache(@PathVariable String cacheName) {
+        checkPermission(ADMIN.getPermission());
         EssCacheManager.clearCaches(getAffectedCaches(cacheName), false);
         return new SimpleResponse(true, "evicted cache: " + cacheName, "cache-evict-success");
     }
@@ -100,10 +99,10 @@ public class CacheManagementCtrl extends BaseRestApiCtrl {
      *
      * @return SimpleResponse - indicating cache element evict success
      */
-    @RequiresPermissions("admin:cache:delete")
     @RequestMapping(value = "/{cacheName}", params = {"key"}, method = RequestMethod.DELETE)
     public SimpleResponse evictCacheElement(@PathVariable String cacheName,
                                             @RequestParam String key) {
+        checkPermission(ADMIN.getPermission());
         CacheType type = getEnumParameter("cacheName", cacheName, CacheType.class);
         EssCacheManager.removeEntry(type, key);
         return new SimpleResponse(true,

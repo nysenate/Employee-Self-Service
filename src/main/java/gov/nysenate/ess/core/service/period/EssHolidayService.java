@@ -3,6 +3,7 @@ package gov.nysenate.ess.core.service.period;
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.dao.period.HolidayDao;
+import gov.nysenate.ess.core.model.cache.CacheType;
 import gov.nysenate.ess.core.model.period.Holiday;
 import gov.nysenate.ess.core.service.RefreshedCachedData;
 import gov.nysenate.ess.core.util.CollectionUtils;
@@ -39,5 +40,10 @@ public class EssHolidayService
         return dataMap().entrySet().stream()
                 .filter(entry -> range.contains(entry.getKey()) && (includeQuestionable || !entry.getValue().isQuestionable()))
                 .map(Map.Entry::getValue).collect(Collectors.toList());
+    }
+
+    @Override
+    public CacheType cacheType() {
+        return CacheType.HOLIDAY;
     }
 }
