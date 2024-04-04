@@ -9,7 +9,7 @@ import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.transaction.TransactionCode;
 import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.model.transaction.TransactionHistoryUpdateEvent;
-import gov.nysenate.ess.core.service.cache.EmployeeCache;
+import gov.nysenate.ess.core.service.cache.EmployeeEhCache;
 import gov.nysenate.ess.core.service.personnel.ActiveEmployeeIdService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
@@ -31,7 +31,7 @@ import static gov.nysenate.ess.core.model.transaction.TransactionCode.*;
 import static gov.nysenate.ess.time.model.personnel.SupOverrideType.EMPLOYEE;
 import static gov.nysenate.ess.time.model.personnel.SupOverrideType.SUPERVISOR;
 
-public class CachedSupervisorInfoService extends EmployeeCache<PrimarySupEmpGroup>
+public class CachedSupervisorInfoService extends EmployeeEhCache<PrimarySupEmpGroup>
         implements SupervisorInfoService {
     private static final Logger logger = LoggerFactory.getLogger(CachedSupervisorInfoService.class);
     // This is how we represent an employee that isn't a supervisor.

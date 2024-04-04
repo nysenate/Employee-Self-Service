@@ -22,11 +22,41 @@ public final class EssCacheManager {
     private static final StatisticsService statisticsService = new DefaultStatisticsService();
     private static final CacheManager cacheManager = CacheManagerBuilder.newCacheManagerBuilder()
             .using(statisticsService).build(true);
-    private static final EnumMap<CacheType, CachingService<?, ?>> cacheTypeMap =
+    private static final EnumMap<CacheType, CachingService> cacheTypeMap =
             new EnumMap<>(CacheType.class);
     private static final EnumMap<CacheType, Integer> cacheCapacityMap = new EnumMap<>(CacheType.class);
 
-    static <K, V> Cache<K, V> createCache(Class<K> keyClass, Class<V> valueClass, CachingService<K, V> service, int size) {
+    public static void addCachingService(CachingService service) {
+        cacheTypeMap.put(service.cacheType(), service);
+    }
+
+    public static void removeEntry(CacheType type, String key) {
+        cacheTypeMap.get(type).evictContent(key);
+    }
+
+    public static CacheStatsView getStatsView(CacheType type) {
+        Integer capacity = cacheCapacityMap.get(type);
+        try {
+            CacheStatistics stats = statisticsService.getCacheStatistics(type.name());
+            return new CacheStatsView(type.name(),
+                    stats.getTierStatistics().get("OnHeap").getMappings(), capacity,
+                    stats.getCachePuts(), stats.getCacheRemovals(), stats.getCacheEvictions(),
+                    stats.getCacheExpirations(), stats.getCacheHits(), stats.getCacheMisses(),
+                    stats.getCacheHitPercentage());
+        } catch (IllegalArgumentException ex) {
+            return CacheStatsView.defaultView(type.name());
+        }
+    }
+
+    public static synchronized void clearCaches(Set<CacheType> types, boolean warmCaches) {
+        for (var cachingService : types.stream().map(cacheTypeMap::get).toList()) {
+            try {
+                cachingService.clearCache(warmCaches);
+            } catch (UnsupportedOperationException ignored) {}
+        }
+    }
+
+    static <K, V> Cache<K, V> createCache(Class<K> keyClass, Class<V> valueClass, CachingService service, int size) {
         var type = service.cacheType();
 
         size = (int) ((Math.floor(size * 1.1/FOR_ROUNDING) + 1) * FOR_ROUNDING);
@@ -35,27 +65,7 @@ public final class EssCacheManager {
                 .newCacheConfigurationBuilder(keyClass, valueClass,
                         ResourcePoolsBuilder.heap(size)).withSizeOfMaxObjectGraph(100000)
                 .withExpiry(ExpiryPolicy.NO_EXPIRY);
-        cacheTypeMap.put(type, service);
+        addCachingService(service);
         return cacheManager.createCache(type.name(), config);
-    }
-
-    public static void removeEntry(CacheType type, String key) {
-        cacheTypeMap.get(type).evictContent(key);
-    }
-
-    public static CacheStatsView getStatsView(CacheType type) {
-        int capacity = cacheCapacityMap.get(type);
-        CacheStatistics stats = statisticsService.getCacheStatistics(type.name());
-        return new CacheStatsView(type.name(),
-                stats.getTierStatistics().get("OnHeap").getMappings(), capacity,
-                stats.getCachePuts(), stats.getCacheRemovals(), stats.getCacheEvictions(),
-                stats.getCacheExpirations(), stats.getCacheHits(), stats.getCacheMisses(),
-                stats.getCacheHitPercentage());
-    }
-
-    public static synchronized void clearCaches(Set<CacheType> types, boolean warmCaches) {
-        for (var cachingService : types.stream().map(cacheTypeMap::get).toList()) {
-            cachingService.clearCache(warmCaches);
-        }
     }
 }

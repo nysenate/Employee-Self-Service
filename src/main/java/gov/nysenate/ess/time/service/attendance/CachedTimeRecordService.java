@@ -7,7 +7,7 @@ import gov.nysenate.ess.core.config.DatabaseConfig;
 import gov.nysenate.ess.core.model.cache.CacheType;
 import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.period.PayPeriod;
-import gov.nysenate.ess.core.service.cache.EmployeeCache;
+import gov.nysenate.ess.core.service.cache.EmployeeEhCache;
 import gov.nysenate.ess.core.service.personnel.ActiveEmployeeIdService;
 import gov.nysenate.ess.core.util.ShiroUtils;
 import gov.nysenate.ess.core.util.SortOrder;
@@ -43,7 +43,7 @@ import static java.util.stream.Collectors.toList;
 
 @WorkInProgress(author = "Ash", since = "2015/09/11", desc = "Reworking methods in the class, adding caching")
 public class CachedTimeRecordService
-        extends EmployeeCache<TimeRecordCacheCollection>
+        extends EmployeeEhCache<TimeRecordCacheCollection>
         implements TimeRecordService {
     private static final Logger logger = LoggerFactory.getLogger(CachedTimeRecordService.class);
 

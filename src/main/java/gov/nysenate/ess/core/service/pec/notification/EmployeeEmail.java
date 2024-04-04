@@ -15,13 +15,13 @@ import java.util.Optional;
  */
 public class EmployeeEmail {
     private static final String standardHtml =
-            "<b>%s, our records indicate you have outstanding tasks to complete for Personnel.</b><br>" +
+            "<b>%s, our records indicate you have outstanding trainings to complete which is mandatory by law.</b><br>" +
                     "You can find instructions to complete them by logging into ESS, " +
                     "then clicking the My Info tab and clicking on the To Do List. " +
                     "Or, go to this link <a href=\"%s\">HERE</a><br><br>" +
-                    "<b>You must complete the following tasks: </b><br>",
+                    "<b>You must complete the following trainings: </b><br>",
             completionHtml = "Our records have been updated to indicate you have completed %s.",
-            assignLengthStr = "You have %d days to complete this assignment from your hiring date. It is due by %s.<br>";
+            assignLengthStr = "You have %d days from your hiring date to complete this assignment. It is due by %s.<br>";
 
     private final PecEmailType type;
     private final Employee employee;
@@ -49,7 +49,7 @@ public class EmployeeEmail {
             if (strOpt.isPresent()) {
                 html.append(": ").append(strOpt.get());
                 if (LocalDate.now().isAfter(dueDateTime.toLocalDate())) {
-                    html.append("<b>").append("This is past its due date.").append("</b>");
+                    html.append("<b>").append("This is past its due date. Failure to complete this mandatory training may result in the holding of your paycheck.").append("</b>");
                 }
             }
             html.append("</li>");
@@ -62,20 +62,16 @@ public class EmployeeEmail {
             return Optional.empty();
         }
         LocalDate dueDate = dueDateTime.toLocalDate();
+        String unambiguousDate = dueDate.getMonth() + ", " + dueDate.getDayOfMonth() + " " + dueDate.getYear();
         if (type == PersonnelTaskType.MOODLE_COURSE) {
-            return Optional.of(assignLengthStr.formatted(30, dueDate));
-        }
-        if (type != PersonnelTaskType.ETHICS_LIVE_COURSE) {
-            return Optional.empty();
+            return Optional.of(assignLengthStr.formatted(30, unambiguousDate));
         }
         String ethicsLiveStr;
-        if (dueDate.getMonth() == Month.DECEMBER && dueDate.getDayOfMonth() == 31) {
-            ethicsLiveStr = "You have until the end of the current calendar year to complete this course.";
+        if (type == PersonnelTaskType.ETHICS_LIVE_COURSE) {
+            ethicsLiveStr = assignLengthStr.formatted(90, unambiguousDate);
+            return Optional.of(ethicsLiveStr + " These live sessions are run a limited amount of times a month.<br>");
         }
-        else {
-            ethicsLiveStr = assignLengthStr.formatted(90, dueDate);
-        }
-        return Optional.of(ethicsLiveStr + " These live sessions run once a month.<br>");
+        return Optional.empty();
     }
 
     private String getHtml(List<String> extraData) {

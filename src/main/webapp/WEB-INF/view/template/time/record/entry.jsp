@@ -137,9 +137,9 @@
               Miscellaneous hours must be present when a Misc type is selected.
             </li>
             <li ng-show="errorTypes.raSa.halfHourIncrements">Hours must be in increments of 0.5</li>
-            <li ng-show="errorTypes.raSa.notEnoughMiscTime" ng-repeat="(name, data) in state.miscLeaveUsageErrors">
-              Your total of {{data.hoursUsed}} {{name}} hours
-              exceeds the limit of {{data.grantInfo.hoursRemaining}} for this pay period.
+            <li ng-show="errorTypes.raSa.notEnoughMiscTime" ng-repeat="data in state.miscLeaveUsageErrors">
+              Your total of {{data.hoursUsed}} {{data.shortname}} hours
+              exceeds the limit of {{data.hoursRemaining}} for the period {{data.range}}
             </li>
           </ul>
         </div>

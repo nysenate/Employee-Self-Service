@@ -1,6 +1,7 @@
 package gov.nysenate.ess.core.service.personnel;
 
 import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
+import gov.nysenate.ess.core.model.cache.CacheType;
 import gov.nysenate.ess.core.service.RefreshedCachedData;
 import gov.nysenate.ess.core.util.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,5 +23,10 @@ public class ActiveEmployeeIdService extends RefreshedCachedData<Integer, Object
 
     public Set<Integer> getActiveEmployeeIds() {
         return dataMap().keySet();
+    }
+
+    @Override
+    public CacheType cacheType() {
+        return CacheType.ACTIVE_EMPLOYEE_IDS;
     }
 }

@@ -5,6 +5,7 @@ import com.google.common.collect.Range;
 import com.google.common.collect.RangeMap;
 import com.google.common.collect.TreeRangeMap;
 import gov.nysenate.ess.core.dao.period.PayPeriodDao;
+import gov.nysenate.ess.core.model.cache.CacheType;
 import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.model.period.PayPeriodNotFoundEx;
 import gov.nysenate.ess.core.model.period.PayPeriodType;
@@ -53,5 +54,10 @@ public class EssPayPeriodService
         periodDao.getPayPeriods(type, cacheRange, SortOrder.ASC)
                 .forEach(p -> rangeMap.put(Range.closed(p.getStartDate(), p.getEndDate()), p));
         return rangeMap;
+    }
+
+    @Override
+    public CacheType cacheType() {
+        return CacheType.PAY_PERIOD;
     }
 }

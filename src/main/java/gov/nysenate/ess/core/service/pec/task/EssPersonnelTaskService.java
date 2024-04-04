@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import gov.nysenate.ess.core.dao.pec.task.PersonnelTaskDao;
 import gov.nysenate.ess.core.dao.pec.task.detail.PersonnelTaskDetailDao;
+import gov.nysenate.ess.core.model.cache.CacheType;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignmentGroup;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
@@ -72,5 +73,10 @@ public class EssPersonnelTaskService
 
     private PersonnelTask getDetailedTask(PersonnelTask basicTask) {
         return taskDetailDaoMap.get(basicTask.getTaskType()).getTaskDetails(basicTask);
+    }
+
+    @Override
+    public CacheType cacheType() {
+        return CacheType.PERSONNEL_TASK;
     }
 }

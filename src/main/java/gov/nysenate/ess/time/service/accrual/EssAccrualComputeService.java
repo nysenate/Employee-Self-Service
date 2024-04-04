@@ -217,6 +217,10 @@ public class EssAccrualComputeService implements AccrualComputeService
             fromDate = listOfOpenPayPeriods.get(0).getStartDate();
         }
 
+        if (fromDate.isAfter(LocalDate.now())) {
+            fromDate = listOfOpenPayPeriods.get(0).getStartDate();
+        }
+
         // Throw accrual exception if from date is null
         if (fromDate == null) {
             throw new AccrualException(empId, AccrualExceptionType.NO_FROM_DATE_FOUND);
@@ -416,7 +420,12 @@ public class EssAccrualComputeService implements AccrualComputeService
         // Use the day before the from date as the end date if none exists
         // (this means that there have been no accruals posted yet for the employee)
         if (accrualState.getEndDate() == null) {
-            accrualState.setEndDate(fromDate.minusDays(1));
+            if (fromDate.minusDays(1).getYear() < LocalDate.now().getYear() && accrualState.getBeginDate() != null) {
+                accrualState.setEndDate(accrualState.getBeginDate().minusDays(1));
+            }
+            else {
+                accrualState.setEndDate(fromDate.minusDays(1));
+            }
         }
 
         PayPeriod firstPayPeriod = payPeriodService.getPayPeriod(PayPeriodType.AF, fromDate);
