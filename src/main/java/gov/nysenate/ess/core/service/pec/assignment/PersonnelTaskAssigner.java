@@ -40,5 +40,5 @@ public interface PersonnelTaskAssigner {
     /**
      * Assigns due dates to active, incomplete tasks in the database.
      */
-    void generateDueDatesForExistingTaskAssignments();
+    void generateDueDatesForExistingTaskAssignments(boolean overrideExistingDueDates);
 }

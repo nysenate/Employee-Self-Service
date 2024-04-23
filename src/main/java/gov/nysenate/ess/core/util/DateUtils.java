@@ -339,26 +339,6 @@ public class DateUtils
     }
 
     /**
-     * Gets the due date for a given service date and task type.
-     */
-    public static LocalDate getDueDate(LocalDate continuousServiceDate, PersonnelTaskType type) {
-        LocalDate dueDate = null;
-        if (type == PersonnelTaskType.MOODLE_COURSE) {
-            dueDate = addDays(continuousServiceDate,30);
-        } else if (type == PersonnelTaskType.ETHICS_LIVE_COURSE) {
-            LocalDate ninetyDaysAgo = LocalDate.now(ZoneId.systemDefault()).minus(Period.ofDays(90));
-            // Checks whether this is an old employee.
-            if (continuousServiceDate.isBefore(ninetyDaysAgo)) {
-                dueDate = LocalDate.of(LocalDate.now().getYear(), 12,31);
-            }
-            else {
-                dueDate = addDays(continuousServiceDate,90);
-            }
-        }
-        return dueDate;
-    }
-
-    /**
      * Adds the specified number of days to the base date.
      */
     public static LocalDate addDays(LocalDate baseDate, int daysToAdd) {

@@ -6,6 +6,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
 import gov.nysenate.ess.core.dao.pec.task.PersonnelTaskDao;
+import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignmentGroup;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
@@ -16,11 +17,13 @@ import gov.nysenate.ess.core.model.transaction.TransactionRecord;
 import gov.nysenate.ess.core.service.pec.notification.AssignmentWithTask;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
+import org.checkerframework.checker.units.qual.A;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -110,31 +113,53 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
     }
 
     @Override
-    public void generateDueDatesForExistingTaskAssignments() {
+    public void generateDueDatesForExistingTaskAssignments(boolean overrideExistingDueDates) {
         logger.info("Beginning Date Assignment Processing");
+        List<PersonnelTask> personnelTasks = personnelTaskDao.getAllTasks();
         for (Integer empId : empInfoService.getActiveEmpIds()) {
             List<PersonnelTaskAssignment> empAssignments = assignmentDao.getAssignmentsForEmp(empId);
+            boolean hasCompletedAnEthicsLiveTraining = false;
+
             for (PersonnelTaskAssignment assignment : empAssignments) {
-                if (!assignment.isActive() || assignment.isCompleted() || assignment.getDueDate() != null) {
+                for (PersonnelTask task: personnelTasks) {
+                    if (assignment.getTaskId() == task.getTaskId() && assignment.isCompleted()
+                            && task.getTaskType() == PersonnelTaskType.ETHICS_LIVE_COURSE) {
+                        hasCompletedAnEthicsLiveTraining = true;
+                    }
+                }
+            }
+
+            for (PersonnelTaskAssignment assignment : empAssignments) {
+                if (!assignment.isActive() || assignment.isCompleted()) {
                     continue;
                 }
-                PersonnelTaskType type;
-                if (assignment.getTaskId() == 5) {
-                    type = PersonnelTaskType.MOODLE_COURSE;
+                if ( !overrideExistingDueDates && assignment.getDueDate() != null) {
+                    continue;
                 }
-                else if (assignment.getTaskId() == 16) {
-                    type = PersonnelTaskType.ETHICS_LIVE_COURSE;
-                }
-                else {
+                PersonnelTaskType type = getPersonnelTaskType(assignment, personnelTasks);
+                if (type == null) {
                     continue;
                 }
                 LocalDate continuousServiceDate = empInfoService.getEmployeesMostRecentContinuousServiceDate(empId);
-                assignmentDao.updateAssignmentDates(assignment.withDates(continuousServiceDate, type, false));
+                assignmentDao.updateAssignmentDates(assignment.withDates(continuousServiceDate, type, false, hasCompletedAnEthicsLiveTraining));
                 logger.info("Completed update for Emp: " + assignment.getEmpId() +
                         ". Updated Task ID " + assignment.getTaskId());
             }
         }
         logger.info("Completed Date Assignment Processing");
+    }
+
+    private PersonnelTaskType getPersonnelTaskType(PersonnelTaskAssignment assignment, List<PersonnelTask> personnelTasks) {
+        PersonnelTaskType type = null;
+        for (PersonnelTask task: personnelTasks) {
+            if (assignment.getTaskId() == task.getTaskId() && task.getTaskType() == PersonnelTaskType.MOODLE_COURSE) {
+                type = PersonnelTaskType.MOODLE_COURSE;
+            }
+            else if (assignment.getTaskId() == task.getTaskId() && task.getTaskType() == PersonnelTaskType.ETHICS_LIVE_COURSE) {
+                type = PersonnelTaskType.ETHICS_LIVE_COURSE;
+            }
+        }
+        return type;
     }
 
     /**

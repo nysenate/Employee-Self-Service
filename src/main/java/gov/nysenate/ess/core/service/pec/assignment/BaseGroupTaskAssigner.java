@@ -3,8 +3,10 @@ package gov.nysenate.ess.core.service.pec.assignment;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
+import gov.nysenate.ess.core.dao.pec.task.PersonnelTaskDao;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
+import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
 import gov.nysenate.ess.core.service.pec.notification.AssignmentWithTask;
 import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
@@ -25,12 +27,16 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
 
     private final EmployeeInfoService employeeInfoService;
 
+    private final PersonnelTaskDao personnelTaskDao;
+
     public BaseGroupTaskAssigner(PersonnelTaskAssignmentDao assignmentDao,
                                  PersonnelTaskService taskService,
-                                 EmployeeInfoService employeeInfoService) {
+                                 EmployeeInfoService employeeInfoService,
+                                 PersonnelTaskDao personnelTaskDao) {
         this.assignmentDao = assignmentDao;
         this.taskService = taskService;
         this.employeeInfoService = employeeInfoService;
+        this.personnelTaskDao = personnelTaskDao;
     }
 
     @Override
@@ -49,6 +55,16 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
         Set<Integer> existingTaskIds = assignmentMap.keySet();
         assignableTaskIds = removeManualOverrides(assignableTaskIds, empId);
         existingTaskIds = removeManualOverrides(existingTaskIds, empId);
+        boolean hasCompletedAnEthicsLiveTraining = false;
+
+        for (PersonnelTask task: personnelTaskDao.getAllTasks()) {
+            if (task.getTaskType() == PersonnelTaskType.ETHICS_LIVE_COURSE && assignmentMap.containsKey(task.getTaskId())) {
+                PersonnelTaskAssignment assignment = assignmentMap.get(task.getTaskId());
+                if (assignment.isCompleted()) {
+                    hasCompletedAnEthicsLiveTraining = true;
+                }
+            }
+        }
 
         // Get active tasks that are not currently assigned to the employee.
         Set<PersonnelTask> activeUnassigned = Sets.difference(assignableTaskIds, existingTaskIds)
@@ -58,7 +74,7 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
             LocalDate continuousServiceDate = employeeInfoService.getEmployeesMostRecentContinuousServiceDate(empId);
 
             PersonnelTaskAssignment assignmentWithDueDate = PersonnelTaskAssignment.newTask(empId, task.getTaskId())
-                    .withDates(continuousServiceDate, task.getTaskType(), true);
+                    .withDates(continuousServiceDate, task.getTaskType(), true, hasCompletedAnEthicsLiveTraining);
             taskData.add(new AssignmentWithTask(assignmentWithDueDate, task));
             if (updateDb) {
                 assignmentDao.updateAssignment(assignmentWithDueDate);
