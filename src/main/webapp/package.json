@@ -30,7 +30,7 @@
   },
   "scripts": {
     "build": "NODE_ENV='production' webpack",
-    "start": "webpack serve",
+    "dev": "webpack serve",
     "postinstall": "npm run build && bower install && grunt compile"
   },
   "babel": {
