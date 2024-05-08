@@ -2,10 +2,9 @@ package gov.nysenate.ess.core.model.cache;
 
 /**
  * Content caches store various types of data. The cache types enumerated here should
- * be able to manage themselves, have configurable sizes, and have functionality to warm
- * up upon request.
+ * have functionality to warm up upon request.
  */
 public enum CacheType {
-    EMPLOYEE, ACCRUAL_ANNUAL, TRANSACTION,
-    SUPERVISOR_EMP_GROUP, ACTIVE_TIME_RECORDS
+    ACCRUAL_ANNUAL, ACTIVE_EMPLOYEE_IDS, ACTIVE_TIME_RECORDS, EMPLOYEE,
+    HOLIDAY, LOCATION, PAY_PERIOD, PERSONNEL_TASK, SUPERVISOR_EMP_GROUP, TRANSACTION
 }

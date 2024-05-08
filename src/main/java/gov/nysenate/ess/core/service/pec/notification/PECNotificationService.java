@@ -54,7 +54,7 @@ public class PECNotificationService {
         this.pecNotificationDao = pecNotificationDao;
         this.reportEmails = List.of(reportEmailList.replaceAll(" ", "").split(","));
         this.pecTestMode = pecTestMode;
-        this.emailLimit = pecTestMode ? 5 : Double.POSITIVE_INFINITY;
+        this.emailLimit = pecTestMode ? 15 : Double.POSITIVE_INFINITY;
         new File(dataDir + "/" + logDir).mkdir();
         this.emailLogPath = Path.of(dataDir, logDir, "emailLog.txt");
     }

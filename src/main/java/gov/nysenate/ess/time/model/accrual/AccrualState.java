@@ -232,6 +232,10 @@ public class AccrualState extends AccrualSummary
         this.endDate = endDate;
     }
 
+    public LocalDate getBeginDate() {
+        return beginDate;
+    }
+
     public boolean isEmpAccruing() {
         return empAccruing;
     }

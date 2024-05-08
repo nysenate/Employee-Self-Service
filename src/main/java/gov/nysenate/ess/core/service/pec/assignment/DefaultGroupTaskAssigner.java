@@ -1,6 +1,7 @@
 package gov.nysenate.ess.core.service.pec.assignment;
 
 import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
+import gov.nysenate.ess.core.dao.pec.task.PersonnelTaskDao;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignmentGroup;
 import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
@@ -15,8 +16,9 @@ public class DefaultGroupTaskAssigner extends BaseGroupTaskAssigner {
 
     public DefaultGroupTaskAssigner(PersonnelTaskAssignmentDao assignmentDao,
                                     PersonnelTaskService taskService,
-                                    EmployeeInfoService employeeInfoService) {
-        super(assignmentDao, taskService, employeeInfoService);
+                                    EmployeeInfoService employeeInfoService,
+                                    PersonnelTaskDao personnelTaskDao) {
+        super(assignmentDao, taskService, employeeInfoService, personnelTaskDao);
     }
 
     @Override

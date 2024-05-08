@@ -8,19 +8,16 @@ import org.ehcache.Cache;
  * Defines methods that are required to manage a service that depends on one or more caches.
  */
 @InheritedService
-public abstract class CachingService<Key, Value> {
-    // Cache creation is left up to implementations.
-    protected Cache<Key, Value> cache;
-
+public abstract class CachingService {
     /**
      * @return Specifies which cache this is.
      */
     public abstract CacheType cacheType();
 
-    protected abstract void evictContent(String key);
-
     /**
      * Clears all the cache entries from cache.
      */
     public abstract void clearCache(boolean warmCache);
+
+    protected abstract void evictContent(String key);
 }

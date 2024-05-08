@@ -66,14 +66,14 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
      * This Api call will generate the assignment date and due dates for moodle and ethics live course for employees
      *
      * Usage:
-     * (POST)   /api/v1/admin/personnel/task/generate/taskdates
+     * (POST)   /api/v1/admin/personnel/task/generate/taskdates/{overrideExistingDueDates}
      *
      * @return {@link SimpleResponse}
      */
-    @RequestMapping(value = "/generate/taskdates", method = POST)
-    public SimpleResponse generateTaskDates() {
+    @RequestMapping(value = "/generate/taskdates/{overrideExistingDueDates}", method = POST)
+    public SimpleResponse generateTaskDates(@PathVariable boolean overrideExistingDueDates) {
         checkPermission(ADMIN.getPermission());
-        taskAssigner.generateDueDatesForExistingTaskAssignments();
+        taskAssigner.generateDueDatesForExistingTaskAssignments(overrideExistingDueDates);
         return new SimpleResponse(true,
                 "pec task date generation complete",
                 "pec-task-date-generation-complete");

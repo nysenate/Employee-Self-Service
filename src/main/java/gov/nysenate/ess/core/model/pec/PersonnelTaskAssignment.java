@@ -6,6 +6,8 @@ import gov.nysenate.ess.core.util.DateUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
+import java.time.ZoneId;
 import java.util.StringJoiner;
 
 /**
@@ -165,12 +167,29 @@ public class PersonnelTaskAssignment implements Comparable<PersonnelTaskAssignme
      * @param isNew if this is a newly created assignment.
      * @return a new PersonnelTaskAssignment with the proper dates.
      */
-    public PersonnelTaskAssignment withDates(LocalDate continuousServiceDate, PersonnelTaskType type, boolean isNew) {
+    public PersonnelTaskAssignment withDates(LocalDate continuousServiceDate, PersonnelTaskType type, boolean isNew, boolean hasCompletedAnEthicsLiveTraining) {
         LocalDateTime assignmentDateTime = (isNew ? LocalDate.now() : continuousServiceDate).atStartOfDay();
-        LocalDate dueDate = DateUtils.getDueDate(continuousServiceDate, type);
+        LocalDate dueDate = getDueDate(continuousServiceDate, type, hasCompletedAnEthicsLiveTraining);
         return new PersonnelTaskAssignment(
                 getTaskId(), getEmpId(), getUpdateEmpId(),
                 getUpdateTime(), isCompleted(), isActive(),
                 assignmentDateTime, dueDate == null ? null : dueDate.atStartOfDay());
+    }
+
+    public LocalDate getDueDate(LocalDate continuousServiceDate, PersonnelTaskType type, boolean hasCompletedAnEthicsLiveTraining) {
+        LocalDate dueDate = null;
+        if (type == PersonnelTaskType.MOODLE_COURSE) {
+            dueDate = DateUtils.addDays(continuousServiceDate,30);
+        } else if (type == PersonnelTaskType.ETHICS_LIVE_COURSE) {
+            LocalDate ninetyDaysAgo = LocalDate.now(ZoneId.systemDefault()).minus(Period.ofDays(90));
+            // Checks whether this is an old employee.
+            if (continuousServiceDate.isBefore(ninetyDaysAgo) || hasCompletedAnEthicsLiveTraining) {
+                dueDate = LocalDate.of(LocalDate.now().getYear(), 12,31);
+            }
+            else {
+                dueDate = DateUtils.addDays(continuousServiceDate,90);
+            }
+        }
+        return dueDate;
     }
 }

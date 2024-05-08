@@ -36,11 +36,13 @@ usage() {
   echo "  trm    = run the Time Record Manager" >&2
   echo "  cc-all = clear all ESS/Time caches" >&2
   echo "  cc-aa  = clear the Annual Accrual cache" >&2
+  echo "  cc-ae  = clear the Annual Employee cache" >&2
   echo "  cc-atr = clear the Active Time Record cache" >&2
   echo "  cc-emp = clear the Employee cache" >&2
   echo "  cc-hol = clear the Holiday cache" >&2
   echo "  cc-loc = clear the Location cache" >&2
   echo "  cc-pp  = clear the Pay Period cache" >&2
+  echo "  cc-pt  = clear the Personnel Task cache" >&2
   echo "  cc-seg = clear the Supervisor Emp Group cache" >&2
   echo "  cc-txn = clear the Transaction cache" >&2
   echo "  eax    = dump the ESS/Alert employee feed (default format is CSV)" >&2
@@ -121,16 +123,18 @@ case "$cmd" in
     http_req=POST
     url="/admin/time/timerecords/manager" ;;
   cc-*)
-    http_req=DELETE
+    http_req=PUT
     subcmd=`echo $cmd | cut -d"-" -f2`
     case "$subcmd" in
       all) cache="ALL" ;;
       aa)  cache="ACCRUAL_ANNUAL" ;;
+      ae)  cache="ACTIVE_EMPLOYEE_IDS" ;;
       atr) cache="ACTIVE_TIME_RECORDS" ;;
       emp) cache="EMPLOYEE" ;;
       hol) cache="HOLIDAY" ;;
       loc) cache="LOCATION" ;;
       pp)  cache="PAY_PERIOD" ;;
+      pt)  cache="PERSONNEL_TASK" ;;
       seg) cache="SUPERVISOR_EMP_GROUP" ;;
       txn) cache="TRANSACTION" ;;
       *) echo "$prog: $cmd: Unknown clear-cache command" >&2; usage; exit 1 ;;

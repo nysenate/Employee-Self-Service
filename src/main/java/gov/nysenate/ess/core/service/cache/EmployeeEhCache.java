@@ -2,9 +2,11 @@ package gov.nysenate.ess.core.service.cache;
 
 import gov.nysenate.ess.core.service.personnel.ActiveEmployeeIdService;
 import gov.nysenate.ess.core.util.AsyncRunner;
+import org.ehcache.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.lang.reflect.ParameterizedType;
@@ -15,8 +17,10 @@ import java.util.Set;
  *
  * @param <Value>
  */
-public abstract class EmployeeCache<Value> extends CachingService<Integer, Value> {
-    private static final Logger logger = LoggerFactory.getLogger(EmployeeCache.class);
+@Service
+public abstract class EmployeeEhCache<Value> extends CachingService {
+    private static final Logger logger = LoggerFactory.getLogger(EmployeeEhCache.class);
+    protected Cache<Integer, Value> cache;
     @Autowired
     private AsyncRunner asyncRunner;
     @Autowired

@@ -1,6 +1,7 @@
 package gov.nysenate.ess.core.service.base;
 
 import gov.nysenate.ess.core.dao.unit.SqlLocationDao;
+import gov.nysenate.ess.core.model.cache.CacheType;
 import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.core.service.RefreshedCachedData;
@@ -45,5 +46,10 @@ public class LocationService extends RefreshedCachedData<LocationId, Location> {
      */
     public List<Location> searchLocations(String term) {
         return locationDao.searchLocations(term);
+    }
+
+    @Override
+    public CacheType cacheType() {
+        return CacheType.LOCATION;
     }
 }
