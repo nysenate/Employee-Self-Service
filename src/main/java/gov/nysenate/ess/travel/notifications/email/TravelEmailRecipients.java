@@ -37,6 +37,7 @@ public class TravelEmailRecipients {
     /**
      * Determines which employees should be notified about a status change to an application.
      * Examples of status change: approved, disapproved, edited.
+     *
      * @param app
      * @return A set of employees who should be emailed.
      */
@@ -51,6 +52,7 @@ public class TravelEmailRecipients {
 
     /**
      * Determines which reviewers should be notified when there is a change in the AppReview next reviewer.
+     *
      * @param appReview The ApplicationReview an email notification is being sent for.
      * @return A set of employees who should be emailed.
      */
@@ -94,7 +96,10 @@ public class TravelEmailRecipients {
 
     private Set<Employee> employeeDelegates(Employee emp) {
         Set<Employee> delegates = new HashSet<>();
-        List<Delegation> delegations = delegationDao.findByPrincipalEmpId(emp.getEmployeeId());
+        List<Delegation> delegations = delegationDao.findByPrincipalEmpId(emp.getEmployeeId())
+                .stream()
+                .filter(Delegation::isActive)
+                .toList();
         for (Delegation delegation : delegations) {
             delegates.add(delegation.delegate());
         }

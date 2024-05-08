@@ -125,6 +125,7 @@ public class ApplicationReviewService {
             // Find all Dept head roles this user has been delegated.
             var deptHeadDelegations = delegationDao.findByDelegateEmpId(employee.getEmployeeId())
                     .stream()
+                    .filter(Delegation::isActive)
                     .filter(d -> d.role().equals(TravelRole.DEPARTMENT_HEAD))
                     .collect(Collectors.toSet());
             for (var delegation : deptHeadDelegations) {
@@ -176,7 +177,10 @@ public class ApplicationReviewService {
         }
         // If the DeptHd role is delegated, we need to add the reviewHistory for their delegate principal.
         if (roles.delegate().contains(TravelRole.DEPARTMENT_HEAD)) {
-            List<Delegation> delegations = delegationDao.findByDelegateEmpId(emp.getEmployeeId());
+            List<Delegation> delegations = delegationDao.findByDelegateEmpId(emp.getEmployeeId())
+                    .stream()
+                    .filter(Delegation::isActive)
+                    .toList();
             for (Delegation delegation : delegations) {
                 appReviews.addAll(appReviewDao.reviewHistoryForDeptHead(delegation.principal()));
             }
