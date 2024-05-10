@@ -46,6 +46,16 @@ module.exports = {
       {
         context: [ '/api', '/assets' ],
         target: 'http://localhost:8080',
+        secure: false,
+        changeOrigin: true,
+      },
+      // For the /login page, only proxy POST requests.
+      {
+        context: [ '/login' ],
+        target: 'http://localhost:8080',
+        secure: false,
+        changeOrigin: true,
+        bypass: req => req.method !== 'POST' ? '/login' : undefined
       }
     ],
     historyApiFallback: {

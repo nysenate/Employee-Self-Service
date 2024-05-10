@@ -1,4 +1,3 @@
-/* Import tailwind */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -8,9 +7,88 @@
     html {
         @apply font-openSans;
     }
+
+    body {
+        @apply m-0 font-openSans text-base text-gray-800 bg-gray-100;
+    }
+
+    input {
+        @apply focus-visible:outline-0;
+    }
+
+    select {
+        @apply focus-visible:outline-0;
+    }
 }
+
 
 /*  Custom css classes */
 @layer components {
 
+    .input {
+        @apply p-1 border-1 border-gray-300 bg-gray-50
+        focus-visible:border-gray-600
+        disabled:bg-white disabled:border-none;
+    }
+
+    .input--invalid {
+        @apply border-1 border-red-600;
+    }
+
+    .select {
+        @apply p-1 border-1 border-gray-300 bg-gray-50;
+    }
+
+    /* --- Table  Classes --- */
+    .table {
+        @apply w-full overflow-x-auto;
+    }
+
+    .table--sticky thead tr:nth-child(1) th {
+        @apply sticky bg-white top-[45px] z-10 border-b-1 border-teal-600 shadow;
+    }
+
+    .table__head__row {
+        @apply border-b-1 border-teal-600;
+    }
+
+    .table__head__cell {
+        @apply py-3 px-1 text-sm font-semibold;
+    }
+
+    .table__body {
+        @apply text-center border-b-1 border-gray-75;
+    }
+
+    .table__body--striped .table__row:nth-child(odd) {
+        @apply bg-gray-75;
+    }
+
+    .table__body--highlight .table__row {
+        @apply hover:brightness-90 transition duration-75;
+    }
+
+    .table__row {
+        @apply bg-gray-25;
+    }
+
+    .table__cell {
+        @apply p-1.5;
+    }
+
+    .table__cell--bold {
+        @apply font-semibold;
+    }
+
+    .table__cell--right {
+        @apply text-right;
+    }
+
+    .table__cell--left {
+        @apply text-left;
+    }
+
+    .table__totals {
+        @apply font-semibold border-t-2 border-teal-600;
+    }
 }

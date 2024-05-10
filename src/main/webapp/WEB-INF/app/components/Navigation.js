@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import { ThemeContext, themes } from "app/contexts/ThemeContext";
 import { NavLink } from "react-router-dom";
-import Card from "app/shared/Card";
+import Card from "app/components/Card";
 
 
 const Navigation = ({ children }) => {

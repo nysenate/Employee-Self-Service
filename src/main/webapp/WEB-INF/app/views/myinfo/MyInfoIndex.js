@@ -1,17 +1,17 @@
 import React from "react"
 import { ThemeContext, themes } from "app/contexts/ThemeContext";
 import { Routes, Route, Navigate } from "react-router-dom";
-import Navigation from "app/shared/Navigation";
-import AppLayout from "app/shared/AppLayout";
+import Navigation from "app/components/Navigation";
+import AppLayout from "app/components/AppLayout";
+import SummaryIndex from "app/views/myinfo/personnel/summary/SummaryIndex";
 
 
-// TODO remove Routes, instead use it so that loaders, etc can be used.
-export default function MyInfo() {
+export default function MyInfoIndex() {
   return (
     <ThemeContext.Provider value={themes.myinfo}>
       <Routes>
         <Route path="" element={<MyInfoLayout/>}>
-          <Route path="personnel/summary" element={<h1>Personnel Summary</h1>}/>
+          <Route path="personnel/summary" element={<SummaryIndex/>}/>
           <Route path="personnel/emergency-alert-info" element={<h1>Emergency Alert Info</h1>}/>
           <Route path="personnel/todo" element={<h1>Personnel To-Do List</h1>}/>
           <Route path="payroll/checkhistory" element={<h1>Paycheck History</h1>}/>
