@@ -4,7 +4,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Navigation from "app/components/Navigation";
 import AppLayout from "app/components/AppLayout";
 import SummaryIndex from "app/views/myinfo/personnel/summary/SummaryIndex";
-
+import useAuth from "app/core/Auth/useAuth";
 
 export default function MyInfoIndex() {
   return (
