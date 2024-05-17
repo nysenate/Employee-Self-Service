@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import Card from "app/components/Card";
 import Hero from "app/components/Hero";
 import LoginTitle from "app/views/login/LoginTitle";
-import LoadingCircle from "app/views/login/LoadingCircle";
+import LoginLoadingCircle from "app/views/login/LoginLoadingCircle";
 import useAuth from "app/core/Auth/useAuth";
 import { useNavigate } from "react-router-dom";
 
@@ -81,7 +81,7 @@ function LoginForm() {
           </p>
           {isLoading
            ? <span className="text-teal-600">
-                  <LoadingCircle textColor="text-teal-600"/>
+                  <LoginLoadingCircle textColor="text-teal-600"/>
                   Logging in...
                 </span>
            : <button type="submit" className={`${LOGIN_BUTTON_CLASSES} grow`}>

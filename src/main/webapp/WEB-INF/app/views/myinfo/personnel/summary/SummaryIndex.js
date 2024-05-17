@@ -6,25 +6,19 @@ import PersonnelInfo from "app/views/myinfo/personnel/summary/PersonnelInfo";
 import OrganizationInfo from "app/views/myinfo/personnel/summary/OrganizationInfo";
 import PayrollInfo from "app/views/myinfo/personnel/summary/PayrollInfo";
 import { FederalTax, NewYorkCityTax, StateTax, YonkersTax } from "app/views/myinfo/personnel/summary/TaxInfo";
+import { loadAuth } from "app/core/Auth/authStorage";
+import { useLoaderData } from "react-router-dom";
+import { json } from "react-router-dom";
 
+export async function summaryLoader() {
+  const auth = loadAuth();
+  const emp = await getEmpDetails(auth.empId)
+  const transactions = await getEmpTransactionSnapshot(auth.empId)
+  return json({ emp: emp, transactions: transactions })
+}
 
 export default function SummaryIndex() {
-  const auth = useAuth();
-  const [ emp, setEmp ] = React.useState()
-  const [ transactions, setTransactions ] = React.useState()
-
-  React.useEffect(() => {
-    getEmpDetails(auth.empId())
-      .then((res) => setEmp(res))
-    getEmpTransactionSnapshot(auth.empId())
-      .then((res) => setTransactions(res))
-  }, [])
-
-
-  if (!emp || !transactions) {
-    // TODO
-    return null
-  }
+  const { emp, transactions } = useLoaderData()
 
   return (
     <div>

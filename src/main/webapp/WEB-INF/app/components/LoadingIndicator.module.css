@@ -1,0 +1,68 @@
+/* Credit to http://codepen.io/desandro/pen/igHbG */
+
+.loader {
+    position: relative;
+    width: 4em;
+    height: 1em;
+}
+
+.large {
+    font-size: 20px;
+    margin: 100px auto;
+}
+
+.small {
+    font-size: 14px;
+    margin: 40px auto;
+}
+
+.dot {
+    width: 1em;
+    height: 1em;
+    border-radius: 0.5em;
+    background: #ddd;
+    position: absolute;
+    animation-duration: 0.5s;
+    animation-timing-function: ease;
+    animation-iteration-count: infinite;
+}
+
+.dot1, .dot2 {
+    left: 0;
+}
+
+.dot3 {
+    left: 1.5em;
+}
+
+.dot4 {
+    left: 3em;
+}
+
+@keyframes reveal {
+    from {
+        transform: scale(0.001);
+    }
+    to {
+        transform: scale(1);
+    }
+}
+
+@keyframes slide {
+    to {
+        transform: translateX(1.5em)
+    }
+}
+
+.dot1 {
+    animation-name: reveal;
+}
+
+.dot2, .dot3 {
+    animation-name: slide;
+}
+
+.dot4 {
+    animation-name: reveal;
+    animation-direction: reverse; /* thx @HugoGiraudel */
+}
