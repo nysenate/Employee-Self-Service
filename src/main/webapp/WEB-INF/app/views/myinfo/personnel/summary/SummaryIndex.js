@@ -1,5 +1,4 @@
 import React from "react"
-import useAuth from "app/core/Auth/useAuth";
 import SummaryTitle from "app/views/myinfo/personnel/summary/SummayTitle";
 import Card from "app/components/Card";
 import PersonnelInfo from "app/views/myinfo/personnel/summary/PersonnelInfo";
@@ -9,11 +8,16 @@ import { FederalTax, NewYorkCityTax, StateTax, YonkersTax } from "app/views/myin
 import { loadAuth } from "app/core/Auth/authStorage";
 import { useLoaderData } from "react-router-dom";
 import { json } from "react-router-dom";
+import { fetchApiJson } from "app/utils/fetchJson";
+
 
 export async function summaryLoader() {
   const auth = loadAuth();
-  const emp = await getEmpDetails(auth.empId)
-  const transactions = await getEmpTransactionSnapshot(auth.empId)
+  const emp = await fetchApiJson(`/employees?detail=true&empId=${auth.empId}`)
+    .then((body) => body.employee)
+  const transactions = await fetchApiJson(`/empTransactions/snapshot/current?empId=${auth.empId}`)
+    .then((body) => body.snapshot.items)
+
   return json({ emp: emp, transactions: transactions })
 }
 
@@ -52,33 +56,4 @@ function RightColumn({ emp, transactions }) {
       <YonkersTax transactions={transactions}/>
     </div>
   )
-}
-
-
-async function getEmpDetails(empId) {
-  const res = await fetch(
-    `/api/v1/employees?detail=true&empId=${empId}`,
-    {
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-      },
-      cache: 'no-store',
-    })
-  const data = await res.json()
-  return data.employee
-}
-
-async function getEmpTransactionSnapshot(empId) {
-  const res = await fetch(
-    `/api/v1/empTransactions/snapshot/current?empId=${empId}`,
-    {
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-      },
-      cache: 'no-store',
-    })
-  const data = await res.json()
-  return data.snapshot.items
 }
