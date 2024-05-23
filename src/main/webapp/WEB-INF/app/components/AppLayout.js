@@ -5,13 +5,11 @@ import LoadingIndicator from "app/components/LoadingIndicator";
 
 
 export default function AppLayout({ children }) {
-  const nav = useNavigation()
   return (
     <div className="flex flex-row justify-between">
       {children}
       <main className="w-[880px] flex-none">
-        {nav.state === "loading" && <LoadingIndicator/>}
-        {nav.state === "idle" && <Outlet/>}
+        <Outlet/>
       </main>
     </div>
   )
