@@ -4,6 +4,7 @@ import Navigation from "app/components/Navigation";
 import AppLayout from "app/components/AppLayout";
 import { Navigate, Route, Routes } from "react-router-dom";
 import SummaryIndex, { summaryLoader } from "app/views/myinfo/personnel/summary/SummaryIndex";
+import CheckHistoryIndex from "app/views/myinfo/payroll/checkhistory/CheckHistoryIndex";
 
 
 export default function MyInfoRouter() {
@@ -14,7 +15,7 @@ export default function MyInfoRouter() {
           <Route path="personnel/summary" element={<SummaryIndex/>}/>
           <Route path="personnel/emergency-alert-info" element={<h1>Emergency Alert Info</h1>}/>
           <Route path="personnel/todo" element={<h1>Personnel To-Do List</h1>}/>
-          <Route path="payroll/checkhistory" element={<h1>Paycheck History</h1>}/>
+          <Route path="payroll/checkhistory" element={<CheckHistoryIndex/>}/>
           <Route path="" element={<Navigate to="personnel/summary" replace/>}/>
         </Route>
       </Routes>
