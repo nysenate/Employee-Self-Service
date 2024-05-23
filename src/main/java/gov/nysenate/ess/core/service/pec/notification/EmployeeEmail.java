@@ -6,7 +6,6 @@ import gov.nysenate.ess.core.model.personnel.Employee;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Month;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,14 +13,24 @@ import java.util.Optional;
  * Contains data about a PEC email to be sent to an employee.
  */
 public class EmployeeEmail {
-    private static final String standardHtml =
-            "<b>%s, our records indicate you have outstanding trainings to complete which is mandatory by law.</b><br>" +
+    private static final String multiTaskHtml =
+            "<b>%s, our records indicate you have mandatory outstanding training assignments.</b><br>" +
                     "You can find instructions to complete them by logging into ESS, " +
                     "then clicking the My Info tab and clicking on the To Do List. " +
                     "Or, go to this link <a href=\"%s\">HERE</a><br><br>" +
                     "<b>You must complete the following trainings: </b><br>",
+
+            singleTaskHtml =
+            "<b>%s, our records indicate you have a mandatory outstanding training assignment.</b><br>" +
+                    "You can find instructions to complete it by logging into ESS, " +
+                    "then clicking the My Info tab and clicking on the To Do List. " +
+                    "Or, go to this link <a href=\"%s\">HERE</a><br><br>" +
+                    "<b>You must complete the following training: </b><br>",
             completionHtml = "Our records have been updated to indicate you have completed %s.",
-            assignLengthStr = "You have %d days from your hiring date to complete this assignment. It is due by %s.<br>";
+            assignLengthStr = "You have %d days from your hiring date to complete this assignment. It is due by %s.<br>",
+
+            pastDueAssignLengthStr = "You had %d days from your hiring date to complete this assignment. It was due by %s.<br>";
+    ;
 
     private final PecEmailType type;
     private final Employee employee;
@@ -30,6 +39,10 @@ public class EmployeeEmail {
 
     public EmployeeEmail(Employee to, PecEmailType type,
                          List<AssignmentWithTask> dataList, List<String> extraData) {
+        if (dataList.size() == 1 && type == PecEmailType.REMINDER) {
+            type = PecEmailType.SINGLE_REMINDER;
+        }
+
         this.employee = to;
         this.type = type;
         this.dataList = dataList;
@@ -62,14 +75,30 @@ public class EmployeeEmail {
             return Optional.empty();
         }
         LocalDate dueDate = dueDateTime.toLocalDate();
+        boolean pastDue = false;
+        if (LocalDate.now().isAfter(dueDateTime.toLocalDate())) {
+            pastDue = true;
+        }
         String unambiguousDate = dueDate.getMonth() + ", " + dueDate.getDayOfMonth() + " " + dueDate.getYear();
         if (type == PersonnelTaskType.MOODLE_COURSE) {
-            return Optional.of(assignLengthStr.formatted(30, unambiguousDate));
+            if (pastDue) {
+                return Optional.of(pastDueAssignLengthStr.formatted(30, unambiguousDate));
+            }
+            else {
+                return Optional.of(assignLengthStr.formatted(30, unambiguousDate));
+            }
+
         }
         String ethicsLiveStr;
         if (type == PersonnelTaskType.ETHICS_LIVE_COURSE) {
-            ethicsLiveStr = assignLengthStr.formatted(90, unambiguousDate);
-            return Optional.of(ethicsLiveStr + " These live sessions are run a limited amount of times a month.<br>");
+            if (pastDue) {
+                ethicsLiveStr = pastDueAssignLengthStr.formatted(90, unambiguousDate);
+                return Optional.of(ethicsLiveStr + " These live sessions are run a limited number of times a month.<br>");
+            }
+            else {
+                ethicsLiveStr = assignLengthStr.formatted(90, unambiguousDate);
+                return Optional.of(ethicsLiveStr + " These live sessions are run a limited number of times a month.<br>");
+            }
         }
         return Optional.empty();
     }
@@ -79,7 +108,9 @@ public class EmployeeEmail {
             case REPORT_MISSING -> String.join("<br>", extraData);
             case ADMIN_CODES -> "Dear " + employee.getFullName() + ", the new codes are <br>" +
                     "CODE 1: " + extraData.get(0) + "<br>" + "CODE 2: " + extraData.get(1);
-            case INVITE, REMINDER -> standardHtml.formatted(employee.getFullName(),
+            case INVITE, SINGLE_REMINDER -> singleTaskHtml.formatted(employee.getFullName(),
+                    extraData.get(0) + "/myinfo/personnel/todo") + getTaskMapHtml(dataList);
+            case REMINDER -> multiTaskHtml.formatted(employee.getFullName(),
                     extraData.get(0) + "/myinfo/personnel/todo") + getTaskMapHtml(dataList);
             case COMPLETION -> completionHtml.formatted(first().getTitle());
         };
