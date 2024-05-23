@@ -13,6 +13,9 @@ import LoginIndex from "app/views/login/LoginIndex";
 import React from "react";
 import SummaryIndex, { summaryLoader } from "app/views/myinfo/personnel/summary/SummaryIndex";
 import MyInfoLayout from "app/views/myinfo/MyInfoLayout";
+import EmergencyAlertIndex, {
+  emergencyAlertLoader
+} from "app/views/myinfo/personnel/emergency-alert-info/EmergencyAlertInfoIndex";
 
 const RoutesJSX = (
   <>
@@ -21,8 +24,12 @@ const RoutesJSX = (
       <Route path="/myinfo" element={<MyInfoLayout/>}>
         <Route path="/myinfo/personnel/summary"
                element={<SummaryIndex/>}
-               loader={summaryLoader}/>
-        <Route path="/myinfo/personnel/emergency-alert-info" element={<h1>Emergency Alert Info</h1>}/>
+               loader={summaryLoader}
+        />
+        <Route path="/myinfo/personnel/emergency-alert-info"
+               element={<EmergencyAlertIndex/>}
+               loader={emergencyAlertLoader}
+        />
         <Route path="/myinfo/personnel/todo" element={<h1>Personnel To-Do List</h1>}/>
         <Route path="/myinfo/payroll/checkhistory" element={<h1>Paycheck History</h1>}/>
         <Route index element={<Navigate to="/myinfo/personnel/summary" replace/>}/>
