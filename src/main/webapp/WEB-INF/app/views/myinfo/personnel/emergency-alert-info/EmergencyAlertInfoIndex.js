@@ -1,7 +1,7 @@
 import React from "react"
 import Hero from "app/components/Hero";
 import Card from "app/components/Card";
-import { loadAuth } from "app/core/Auth/authStorage";
+import { loadAuth } from "app/contexts/Auth/authStorage";
 import { fetchApiJson } from "app/utils/fetchJson";
 import { json, useLoaderData } from "react-router-dom";
 import AlertInfoForm from "app/views/myinfo/personnel/emergency-alert-info/AlertInfoForm";

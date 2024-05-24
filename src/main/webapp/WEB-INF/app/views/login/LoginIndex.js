@@ -3,7 +3,7 @@ import Card from "app/components/Card";
 import Hero from "app/components/Hero";
 import LoginTitle from "app/views/login/LoginTitle";
 import LoginLoadingCircle from "app/views/login/LoginLoadingCircle";
-import useAuth from "app/core/Auth/useAuth";
+import useAuth from "app/contexts/Auth/useAuth";
 import { useNavigate } from "react-router-dom";
 
 

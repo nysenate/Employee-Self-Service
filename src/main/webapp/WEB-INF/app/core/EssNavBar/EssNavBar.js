@@ -2,7 +2,7 @@ import { NavLink, useLocation } from "react-router-dom";
 import React from "react";
 import './essNavBar.css'
 import { themes } from "app/contexts/ThemeContext";
-import useAuth from "app/core/Auth/useAuth";
+import useAuth from "app/contexts/Auth/useAuth";
 
 
 export default function EssNavBar() {

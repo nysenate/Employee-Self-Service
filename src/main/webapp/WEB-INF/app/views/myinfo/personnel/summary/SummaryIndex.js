@@ -6,7 +6,7 @@ import OrganizationInfo from "app/views/myinfo/personnel/summary/OrganizationInf
 import PayrollInfo from "app/views/myinfo/personnel/summary/PayrollInfo";
 import { FederalTax, NewYorkCityTax, StateTax, YonkersTax } from "app/views/myinfo/personnel/summary/TaxInfo";
 import { fetchApiJson } from "app/utils/fetchJson";
-import useAuth from "app/core/Auth/useAuth";
+import useAuth from "app/contexts/Auth/useAuth";
 
 
 const getEmpDetails = async empId => {
