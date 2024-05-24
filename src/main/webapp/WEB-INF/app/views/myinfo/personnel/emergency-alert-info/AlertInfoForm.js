@@ -1,10 +1,14 @@
 import React from "react"
-import { Form, Router } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { fetchApiJson } from "app/utils/fetchJson";
+import PhoneInputs from "app/views/myinfo/personnel/emergency-alert-info/PhoneInputs";
+import EmailInputs from "app/views/myinfo/personnel/emergency-alert-info/EmailInputs";
+import { Button } from "app/components/Button";
 
 
 export default function AlertInfoForm({ alertInfo }) {
+  const navigate = useNavigate();
   const useFormDefaultProps = {
     mode: "onBlur",
     defaultValues: {
@@ -36,18 +40,20 @@ export default function AlertInfoForm({ alertInfo }) {
     setErrorMsg("")
     data.empId = alertInfo.empId
 
+    console.log("ON SUBMIT")
+
     // Check for and notify user of any duplicate phone numbers.
     const duplicatePhoneFields = duplicatePhoneNumbers(data)
     if (duplicatePhoneFields.length > 0) {
       duplicatePhoneFields.forEach(
-        field => setError(field, { type: 'custom', message: "Please remove duplicate phone numbers" }))
+        field => setError(field, { type: 'custom', message: "Remove duplicate phone numbers" }))
     }
 
     // Check for and notify user of any duplicate email addresses.
     const duplicateEmailFields = duplicateEmails(data)
     if (duplicateEmailFields.length > 0) {
       duplicateEmailFields.forEach(
-        field => setError(field, { type: 'custom', message: "Please remove duplicate email addresses" }))
+        field => setError(field, { type: 'custom', message: "Remove duplicate email addresses" }))
     }
 
     if (duplicatePhoneFields.length > 0 || duplicateEmailFields.length > 0) {
@@ -56,7 +62,7 @@ export default function AlertInfoForm({ alertInfo }) {
     }
 
     fetchApiJson(`/alert-info`, { method: "POST", payload: data })
-      .then((res) => Router.replace(Router.asPath))
+      .then((res) => navigate(0))
       .catch((err) => setErrorMsg(err.data.message))
   }
 
@@ -64,87 +70,22 @@ export default function AlertInfoForm({ alertInfo }) {
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="p-3 grid grid-cols-4 gap-3">
 
-        <div className="row-span-4 text-center">
-          <h3 className="text-xl font-semibold">Phone</h3>
-        </div>
+        <PhoneInputs register={register} errors={errors}/>
+        {/*Spacer*/}
+        <div className="col-span-4 my-3"></div>
+        <EmailInputs register={register} errors={errors}/>
 
-        <div className="col-span-3">
-          <ContactLabel id="workPhone">Work</ContactLabel>
-          <PhoneInput id="workPhone" register={register} errors={errors} readOnly/>
+        {/*Submit Button*/}
+        <div className="text-center py-3">
+          <Button type="submit"
+                  color="success"
+                  disabled={Object.keys(dirtyFields).length <= 0 || !isValid}>
+            Save
+          </Button>
         </div>
-
-        <div className="col-span-3">
-          <ContactLabel id="homePhone">Home</ContactLabel>
-          <PhoneInput id="homePhone" register={register} errors={errors}/>
-          <ErrorText id="homePhone" errors={errors}/>
-        </div>
-
-        <div className="col-span-3">
-          <ContactLabel id="alternatePhone">Alternate</ContactLabel>
-          <PhoneInput id="alternatePhone" register={register} errors={errors}/>
-          <PhoneContactOptionsSelect name="alternateOptions" register={register}/>
-          <ErrorText id="alternatePhone" errors={errors}/>
-        </div>
-
-        <div className="col-span-3">
-          <ContactLabel id="mobilePhone">Mobile</ContactLabel>
-          <PhoneInput id="mobilePhone" register={register} errors={errors}/>
-          <PhoneContactOptionsSelect name="mobileOptions" register={register}/>
-          <ErrorText id="mobilePhone" errors={errors}/>
-        </div>
-
-        <button type="submit">SAVE</button>
       </div>
     </form>
   )
-}
-
-function ContactLabel({ id, children }) {
-  return (
-    <label htmlFor={id}
-           className="inline-block w-16 text-right text-teal-700 font-semibold">
-      {children}
-    </label>
-  )
-}
-
-function PhoneInput({ id, register, errors, readOnly = false }) {
-  return (
-    <input id={id}
-           name={id}
-           className={`${!readOnly && 'input'} mx-3 ${errors[id] ? "input--invalid" : ""}`}
-           {...register(id, {
-             pattern: {
-               value: /^ *(\([0-9]{3}\)|[0-9]{3} *-?) *[0-9]{3} *-? *[0-9]{4} *$/,
-               message: "Please enter a valid phone number",
-             }
-           })}
-           type="tel"
-           readOnly={readOnly}
-    />
-  )
-}
-
-function PhoneContactOptionsSelect({ name, register }) {
-  return (
-    <select name={name} className="select" {...register(name)}>
-      <option value="Only calls">Only calls</option>
-      <option value="Only texts">Only texts</option>
-      <option value="Both calls and texts">Both calls and texts</option>
-    </select>
-  )
-}
-
-function ErrorText({ id, errors }) {
-  if (errors[id]?.message) {
-    return (
-      <div className="inline-block">
-        <p className="pl-1 mt-0.5 text-red-600 inline-block">{errors[id]?.message}</p>
-      </div>
-    )
-  }
-
-  return null
 }
 
 /**
@@ -158,7 +99,7 @@ function formatPhoneNumber(phoneNumberString) {
   if (match) {
     return `(${match[1]}) ${match[2]}-${match[3]}`
   }
-  return null;
+  return "";
 }
 
 /**
@@ -169,6 +110,7 @@ function formatPhoneNumber(phoneNumberString) {
 const duplicatePhoneNumbers = (formData) => {
   const phoneNumberFields = [ "workPhone", "homePhone", "alternatePhone", "mobilePhone" ]
   const phoneNumbers = phoneNumberFields.map(f => formatPhoneNumber(formData[f]))
+    .filter(f => f !== "") // don't check empty phone numbers for duplicates.
   const duplicateNumbers = findDuplicates(phoneNumbers)
   return phoneNumberFields.filter(field => duplicateNumbers.includes(formatPhoneNumber(formData[field])))
 }
@@ -182,6 +124,7 @@ const duplicateEmails = (formData) => {
   const cleanEmail = email => email?.trim().toLowerCase()
   const emailFields = [ "workEmail", "personalEmail", "alternateEmail" ]
   const emailAddresses = emailFields.map(e => cleanEmail(formData[e] ?? ""))
+    .filter(e => e !== "") // don't check empty emails for duplicates.
   const duplicateEmailAddresses = findDuplicates(emailAddresses)
   return emailFields.filter(field => duplicateEmailAddresses.includes(cleanEmail(formData[field])))
 }

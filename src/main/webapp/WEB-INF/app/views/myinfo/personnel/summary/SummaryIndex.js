@@ -7,13 +7,16 @@ import PayrollInfo from "app/views/myinfo/personnel/summary/PayrollInfo";
 import { FederalTax, NewYorkCityTax, StateTax, YonkersTax } from "app/views/myinfo/personnel/summary/TaxInfo";
 import { fetchApiJson } from "app/utils/fetchJson";
 import useAuth from "app/contexts/Auth/useAuth";
+import LoadingIndicator from "app/components/LoadingIndicator";
 
 
+// TODO handle errors
 const getEmpDetails = async empId => {
   return await fetchApiJson(`/employees?detail=true&empId=${empId}`)
     .then((body) => body.employee)
 }
 
+// TODO handle errors
 const getEmpTransactionSnapshot = async empId => {
   return await fetchApiJson(`/empTransactions/snapshot/current?empId=${empId}`)
     .then((body) => body.snapshot.items)
@@ -31,10 +34,8 @@ export default function SummaryIndex() {
       .then((res) => setTransactions(res))
   }, [])
 
-
   if (!emp || !transactions) {
-    // TODO
-    return null
+    return <LoadingIndicator/>
   }
 
   return (

@@ -25,7 +25,7 @@ export function Button({ variant = "contained", color, children, ...passThroughP
     "className": `transition disabled:pointer-events-none disabled:opacity-50
                   ${variantStyles[variant].core} ${variantStyles[variant].color[color]}`,
   }
-  const props = { ...passThroughProps, ...controlledProps }
+  const props = { ...controlledProps, ...passThroughProps }
 
   return (
     <span className={props.disabled ? 'cursor-not-allowed' : ''}>
