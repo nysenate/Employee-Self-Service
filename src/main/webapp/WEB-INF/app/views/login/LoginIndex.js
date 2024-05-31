@@ -1,10 +1,9 @@
 import React, { useState } from 'react'
 import Card from "app/components/Card";
 import Hero from "app/components/Hero";
-import LoginTitle from "app/views/login/LoginTitle";
-import LoginLoadingCircle from "app/views/login/LoginLoadingCircle";
 import useAuth from "app/contexts/Auth/useAuth";
 import { useNavigate } from "react-router-dom";
+import LoginForm from "app/views/login/LoginForm";
 
 
 export const LOGIN_BUTTON_CLASSES = `py-0.5 bg-gray-100 border-1 border-gray-400 transition
@@ -38,71 +37,5 @@ export default function LoginIndex() {
         </Card>
       </div>
     </div>
-  )
-}
-
-function LoginForm() {
-  const auth = useAuth()
-  const [ errorMsg, setErrorMsg ] = useState('')
-  const [ isLoading, setIsLoading ] = useState(false)
-
-  // Form submit
-
-  const onSubmit = async (e) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setErrorMsg('')
-
-    try {
-      auth.login(e.currentTarget.username.value, e.currentTarget.password.value)
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const labelStyles = "block font-light"
-  return (
-    <>
-      <LoginTitle>Sign in to proceed</LoginTitle>
-      <form onSubmit={onSubmit}>
-        <label htmlFor="username" className={labelStyles}>Username</label>
-        <input id="username" type="text" name="username" autoComplete="username" className="input w-full"/>
-        <label htmlFor="password" className={labelStyles + " mt-1"}>Password</label>
-        <input id="password"
-               type="password"
-               name="password"
-               autoComplete="current-password"
-               className="input w-full"/>
-        <div className="mt-3 flex items-center">
-          <p className="w-44">
-            <LoginTextLink>
-              Having trouble logging in?
-            </LoginTextLink>
-          </p>
-          {isLoading
-           ? <span className="text-teal-600">
-                  <LoginLoadingCircle textColor="text-teal-600"/>
-                  Logging in...
-                </span>
-           : <button type="submit" className={`${LOGIN_BUTTON_CLASSES} grow`}>
-             Login
-           </button>
-          }
-        </div>
-      </form>
-      <div>
-        <span className="absolute w-[296px] text-red-700"></span>
-      </div>
-    </>
-  )
-}
-
-
-function LoginTextLink({ onClick, children }) {
-  return (
-    <span onClick={onClick}
-          className="text-gray-500 transition duration-300 hover:text-teal-600 hover:cursor-pointer">
-        {children}
-      </span>
   )
 }

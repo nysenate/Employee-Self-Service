@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { loadAuth, saveAuth } from "app/contexts/Auth/authStorage";
 import { add, isAfter } from "date-fns";
+import { fetchJson } from "app/utils/fetchJson";
 
 
 const AuthContext = React.createContext()
@@ -68,24 +69,26 @@ async function loginUser(username, password) {
   body.append("username", username)
   body.append("password", password)
 
+  let data
   try {
-    const res = await fetch(`/login`, {
+    data = await fetchJson(`/login`, {
         method: 'POST',
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: body,
       }
     )
-
-    const data = await res.json()
-    if (data.authenticated) {
-      // successfully logged in.
-      return data;
-    } else {
-      // TODO throw error??? failed
-      console.log("ERROR logging in")
-    }
-    console.log(data)
   } catch (error) {
-    // TODO
+    console.error(error)
+  }
+
+  if (data.authenticated) {
+    // successfully logged in.
+    return data;
+  } else {
+    // Unsuccessful login.
+    throw new Error(data.message)
   }
 }
 
