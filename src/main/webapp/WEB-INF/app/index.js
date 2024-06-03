@@ -9,6 +9,7 @@ import Travel from "app/views/travel/Travel";
 import LoginIndex from "app/views/login/LoginIndex";
 import MyInfoRouter from "app/views/myinfo/MyInfoRouter";
 import SupplyRouter from "app/views/supply/SupplyRouter";
+import Logout from "app/views/logout/Logout";
 
 
 function App() {
@@ -24,7 +25,8 @@ function App() {
             <Route path="/travel/*" element={<Travel/>}/>
           </Route>
           <Route path="/login" element={<LoginIndex/>}/>
-          {/* TODO Login, Errors, etc */}
+          <Route path="/logout" element={<Logout/>}/>
+          {/* TODO Errors page, 404 page. */}
         </Routes>
         {/*</TimeoutChecker>*/}
       </AuthProvider>
