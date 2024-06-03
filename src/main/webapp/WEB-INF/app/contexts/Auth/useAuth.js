@@ -74,7 +74,7 @@ async function loginUser(username, password) {
     data = await fetchJson(`/login`, {
         method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
         },
         body: body,
       }
