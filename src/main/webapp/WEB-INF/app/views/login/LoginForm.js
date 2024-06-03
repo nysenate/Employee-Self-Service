@@ -2,11 +2,11 @@ import useAuth from "app/contexts/Auth/useAuth";
 import React, { useState } from "react";
 import LoginTitle from "app/views/login/LoginTitle";
 import LoginLoadingCircle from "app/views/login/LoginLoadingCircle";
-import { LOGIN_BUTTON_CLASSES } from "app/views/login/LoginIndex";
+import { LOGIN_BUTTON_CLASSES, LOGIN_STATES } from "app/views/login/LoginIndex";
 import { useForm } from "react-hook-form";
 
 
-export default function LoginForm() {
+export default function LoginForm({ setState }) {
   const auth = useAuth()
   const [ isLoading, setIsLoading ] = useState(false)
   const {
@@ -49,7 +49,7 @@ export default function LoginForm() {
         />
         <div className="mt-3 flex items-center">
           <p className="w-44">
-            <LoginTextLink>
+            <LoginTextLink onClick={() => setState(LOGIN_STATES.HELP)}>
               Having trouble logging in?
             </LoginTextLink>
           </p>

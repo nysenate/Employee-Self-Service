@@ -5,14 +5,21 @@ import useAuth from "app/contexts/Auth/useAuth";
 import { useNavigate } from "react-router-dom";
 import LoginForm from "app/views/login/LoginForm";
 import LoginDevBanner from "app/views/login/LoginDevBanner";
+import LoginHelp from "app/views/login/LoginHelp";
 
+
+export const LOGIN_STATES = {
+  LOGIN: 0,
+  HELP: 1,
+}
 
 export const LOGIN_BUTTON_CLASSES = `py-0.5 bg-gray-100 border-1 border-gray-400 transition
 duration-500 hover:bg-gray-50 hover:text-teal-600 disabled:pointer-events-none disabled:opacity-50`
 
 export default function LoginIndex() {
-  const navigate = useNavigate();
   const auth = useAuth()
+  const navigate = useNavigate();
+  const [ state, setState ] = useState(LOGIN_STATES.LOGIN)
 
   React.useEffect(() => {
     // If the user is already logged in, redirect them.
@@ -33,7 +40,8 @@ export default function LoginIndex() {
                  height="270"
                  alt="New York State Senate Capital Building"/>
             <div className="w-[400px] pl-10 py-10 pr-16 bg-white">
-              <LoginForm/>
+              {state === LOGIN_STATES.LOGIN && <LoginForm setState={setState}/>}
+              {state === LOGIN_STATES.HELP && <LoginHelp setState={setState}/>}
             </div>
           </div>
         </Card>
