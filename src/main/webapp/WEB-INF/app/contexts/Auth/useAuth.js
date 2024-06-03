@@ -17,9 +17,6 @@ function useProvideAuth() {
   }
 
   React.useEffect(() => {
-    console.log(isAuthed)
-    console.log(expiresTime)
-    console.log(empId)
     // TODO will this overwrite local storage on initial load?
     // TODO save isAuthed = isAuthed()???? so once expires isAuthed = false
     saveAuth(isAuthed, expiresTime, empId)

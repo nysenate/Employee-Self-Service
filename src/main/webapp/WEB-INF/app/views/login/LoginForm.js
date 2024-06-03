@@ -17,13 +17,13 @@ export default function LoginForm({ setState }) {
     clearErrors
   } = useForm({ mode: 'onSubmit' })
 
-  const onSubmit = async data => {
+  const onSubmit = data => {
     setIsLoading(true)
     clearErrors()
 
     auth.login(data.username, data.password)
       .catch(e => setError('validationError', { type: 'custom', message: e.message }))
-      .finally(setIsLoading(false))
+      .finally(() => setIsLoading(false))
   }
 
   const labelStyles = "block font-light"
