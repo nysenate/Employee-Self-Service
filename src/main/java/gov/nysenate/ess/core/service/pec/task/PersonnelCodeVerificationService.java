@@ -37,14 +37,6 @@ public class PersonnelCodeVerificationService {
         long submitEpochDays = LocalDateTime.parse(codeSubmission.getTrainingDate().substring(0, 19)).toLocalDate().toEpochDay();
         int matchedEntries = 0;
 
-        //Attempt to match submitted task id to the ethics code id
-        Integer confirmedEthicsCodeId = personnelTaskDao.getEthicsCodeId(codeSubmission.getTaskId());
-
-        // Unable to reference the EthicsCodeId using the TaskId
-        if (confirmedEthicsCodeId == null) {
-            throw new IncorrectCodeException("Unable to reference the Ethics Code ID for this task");
-        }
-
         //Cycle thru the history of codes to see if 2 codes that are associated
         //with the submitted task id match and are within the correct date range
         for (DateRangedEthicsCode drec : codeList) {
@@ -53,11 +45,11 @@ public class PersonnelCodeVerificationService {
             }
 
             String drecCode = drec.getCode();
-            Integer drecEthicsCodeId = drec.getEthicsCodeId();
+            Integer drecTaskId = drec.getTaskId();
             long startEpochDays = drec.getStartDate().toLocalDate().toEpochDay();
             long endEpochDays = drec.getEndDate().toLocalDate().toEpochDay();
 
-            if (drecEthicsCodeId == confirmedEthicsCodeId && submitEpochDays >= startEpochDays && submitEpochDays <= endEpochDays && (drecCode.equals(code1) || drecCode.equals(code2))) {
+            if (drecTaskId == codeSubmission.getTaskId() && submitEpochDays >= startEpochDays && submitEpochDays <= endEpochDays && (drecCode.equals(code1) || drecCode.equals(code2))) {
                 matchedEntries++;
             }
         }

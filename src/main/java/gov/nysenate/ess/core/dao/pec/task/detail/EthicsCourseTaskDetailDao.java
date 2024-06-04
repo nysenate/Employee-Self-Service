@@ -28,50 +28,6 @@ public class EthicsCourseTaskDetailDao extends SqlBaseDao implements PersonnelTa
 
     @Override
     public EthicsCourseTask getTaskDetails(PersonnelTask task) {
-        List<EthicsCourseTask> ethicsCourseTaskList = localNamedJdbc.query(
-                Query.SELECT_ETHICS_COURSE.getSql(schemaMap()),
-                new MapSqlParameterSource("taskId", task.getTaskId()),
-                new EthicsCourseRowMapper(task)
-        );
-        if (ethicsCourseTaskList.isEmpty()) {
-            throw new IncorrectResultSizeDataAccessException(0);
-        }
-        else {
-            return ethicsCourseTaskList.get(0);
-        }
-    }
-
-    private static class EthicsCourseRowMapper implements RowMapper<EthicsCourseTask> {
-        private final PersonnelTask personnelTask;
-
-        private EthicsCourseRowMapper(PersonnelTask personnelTask) {
-            this.personnelTask = personnelTask;
-        }
-
-        @Override
-        public EthicsCourseTask mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return new EthicsCourseTask(personnelTask, rs.getString("url"));
-        }
-    }
-
-    private enum Query implements BasicSqlQuery {
-        SELECT_ETHICS_COURSE("SELECT * FROM ${essSchema}.ethics_course WHERE task_id = :taskId"),
-        ;
-
-        private final String sql;
-
-        Query(String sql) {
-            this.sql = sql;
-        }
-
-        @Override
-        public String getSql() {
-            return sql;
-        }
-
-        @Override
-        public DbVendor getVendor() {
-            return DbVendor.POSTGRES;
-        }
+        return new EthicsCourseTask(task);
     }
 }

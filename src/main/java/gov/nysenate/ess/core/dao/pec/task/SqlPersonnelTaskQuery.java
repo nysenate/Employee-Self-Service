@@ -39,27 +39,14 @@ public enum SqlPersonnelTaskQuery implements BasicSqlQuery {
             "SELECT *\n" +
                     "FROM ${essSchema}.everfi_course_assignment_id"
     ),
-    SELECT_ETHICS_LIVE_COURSE_CODE_INFO(
-            "SELECT ethics_code_id\n" +
-                    "FROM ${essSchema}.ethics_live_course where task_id = :taskId"
-    ),
-
-    GET_ETHICS_LIVE_COURSE_TASK_CODE_INFO(
-            "SELECT task_id, ethics_code_id\n" +
-                    "FROM ${essSchema}.ethics_live_course"
-    ),
-
-    GET_ETHICS_CODE_NEXT_ENTRY(
-            "SELECT count(*) FROM ${essSchema}.ethics_code"
-    ),
     UPDATE_ETHICS_CODE("" +
             "UPDATE ${essSchema}.ethics_code SET code = :code " +
-            "WHERE ethics_code_id = :codeId AND sequence_no = :sequence_no " +
+            "WHERE task_id = :taskId AND sequence_no = :sequence_no " +
             "AND start_date = :startDate AND end_date = :endDate"),
 
     INSERT_ETHICS_CODE("INSERT INTO ${essSchema}.ethics_code"+
-            "(ethics_code_id, sequence_no, label, code, start_date, end_date)"+
-            "VALUES (:codeId, :sequence_no, :label, :code, :startDate, :endDate)"
+            "(task_id, sequence_no, label, code, start_date, end_date)"+
+            "VALUES (:taskId, :sequence_no, :label, :code, :startDate, :endDate)"
     ),
 
     SELECT_ETHICS_CODES("SELECT * FROM ${essSchema}.ethics_code"

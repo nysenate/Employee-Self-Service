@@ -9,9 +9,9 @@ public class AckDoc extends PersonnelTask {
 
     private String filename;
 
-    public AckDoc(PersonnelTask task, String filename) {
+    public AckDoc(PersonnelTask task) {
         super(task);
-        this.filename = filename;
+        this.filename = task.getResource();
     }
 
     public String getFilename() {

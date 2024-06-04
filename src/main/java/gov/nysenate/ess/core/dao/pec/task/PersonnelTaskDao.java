@@ -53,18 +53,11 @@ public interface PersonnelTaskDao extends BaseDao {
     HashMap<Integer, Integer> getEverfiAssignmentIDs();
 
     /**
-     * Gets the ethics code id for any ethics live task
-     */
-    int getEthicsCodeId(int taskId);
-
-    /**
      * Update the ethics live codes table in the database with new codes
      */
-    void updateEthicsCode(String code, int ethicsCodeId, int sequenceNo );
+    void updateEthicsCode(String code, int taskId, int sequenceNo, String startDate, String endDate);
 
-    void updateEthicsCode(String code, int ethicsCodeId, int sequenceNo, String startDate, String endDate);
-
-    void insertEthicsCode(int ethicsCodeId, int sequenceNo, String Label, String code, LocalDateTime StartDate, LocalDateTime endDate);
+    void insertEthicsCode(int taskId, int sequenceNo, String Label, String code, LocalDateTime StartDate, LocalDateTime endDate);
 
     List<DateRangedEthicsCode> getEthicsCodes();
 }

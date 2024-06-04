@@ -63,12 +63,9 @@ public class PersonnelCodeGenerationService {
         LocalDateTime startDate = generateEthicsStartDate();
         LocalDateTime endDate = generateEthicsEndDate();
 
-
-
         for (PersonnelTask task : ethicsLiveTasks) {
-            int ethicsCodeID = personnelTaskDao.getEthicsCodeId(task.getTaskId());
-            personnelTaskDao.insertEthicsCode(ethicsCodeID, 1, "First Code", code1, startDate, endDate);
-            personnelTaskDao.insertEthicsCode(ethicsCodeID, 2, "Second Code",code2, startDate, endDate);
+            personnelTaskDao.insertEthicsCode(task.getTaskId(), 1, "First Code", code1, startDate, endDate);
+            personnelTaskDao.insertEthicsCode(task.getTaskId(), 2, "Second Code",code2, startDate, endDate);
             pecNotificationService.sendCodeEmail(pecCodeAdminEmails, code1, code2, task, startDate.toString(), endDate.toString());
             // Different codes per task
             if (!isFirstQuarter) {

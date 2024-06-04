@@ -11,13 +11,13 @@ public class PECVideoView extends PersonnelTaskView {
 
     private final String path;
 
-    private final List<PECVideoCodeView> codes;
+    private final List<PECCodeView> codes;
 
     public PECVideoView(VideoTask video, String pecVidResPath) {
         super(video);
         this.path = Paths.get(pecVidResPath, video.getFilename()).toString();
         this.codes = video.getCodes().stream()
-                .map(PECVideoCodeView::new)
+                .map(PECCodeView::new)
                 .collect(Collectors.toList());
     }
 
@@ -25,7 +25,7 @@ public class PECVideoView extends PersonnelTaskView {
         return path;
     }
 
-    public List<PECVideoCodeView> getCodes() {
+    public List<PECCodeView> getCodes() {
         return codes;
     }
 }

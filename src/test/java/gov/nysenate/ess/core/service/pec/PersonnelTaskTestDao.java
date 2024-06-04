@@ -28,9 +28,9 @@ public class PersonnelTaskTestDao extends SqlBaseDao {
 
     private static final String taskInsertSql = "" +
             "INSERT INTO ess.personnel_task(\n" +
-            "  task_type, title, effective_date_time, end_date_time, active, assignment_group)\n" +
+            "  task_type, title, effective_date_time, end_date_time, active, assignment_group, url, resource)\n" +
             "VALUES(:taskType::ess.personnel_task_type, :title, :effectiveDateTime, :endDateTime, :active,\n" +
-            "  :assignmentGroup::ess.personnel_task_assignment_group)\n"
+            "  :assignmentGroup::ess.personnel_task_assignment_group, :url, :resource)\n"
             ;
 
     private static final String taskIdCol = "task_id";
@@ -39,26 +39,6 @@ public class PersonnelTaskTestDao extends SqlBaseDao {
             "UPDATE ess.personnel_task\n" +
             "SET active = :active\n" +
             "WHERE task_id = :taskId";
-
-    /**
-     * Insert statements for each task type to put dummy data into the proper detail table.
-     * This will make dummy tasks work with the task service, which attempts to get details for all tasks.
-     */
-    private static final ImmutableMap<PersonnelTaskType, String> taskDetailInsertMap =
-            ImmutableMap.<PersonnelTaskType, String>builder()
-                    .put(DOCUMENT_ACKNOWLEDGMENT,
-                            "INSERT INTO ess.ack_doc(task_id, filename) VALUES (:taskId, 'test')")
-                    .put(VIDEO_CODE_ENTRY,
-                            "INSERT INTO ess.pec_video(task_id, filename) VALUES(:taskId, 'test')")
-                    .put(MOODLE_COURSE,
-                            "INSERT INTO ess.moodle_course(task_id, url) VALUES(:taskId, 'https://www.example.com')")
-                    .put(EVERFI_COURSE,
-                            "INSERT INTO ess.everfi_course(task_id, url) VALUES(:taskId, 'https://www.example.com')")
-                    .put(ETHICS_COURSE,
-                            "INSERT INTO ess.ethics_course(task_id, url) VALUES(:taskId, 'https://www.example.com')")
-                    .put(ETHICS_LIVE_COURSE,
-                            "INSERT INTO ess.ethics_live_course(task_id, url) VALUES(:taskId, 'https://www.example.com')")
-                    .build();
 
     private final EventBus eventBus;
 
@@ -81,15 +61,14 @@ public class PersonnelTaskTestDao extends SqlBaseDao {
                 .addValue("effectiveDateTime", toDate(dummyTask.getEffectiveDateTime()))
                 .addValue("endDateTime", toDate(dummyTask.getEndDateTime()))
                 .addValue("active", dummyTask.isActive())
-                .addValue("assignmentGroup", dummyTask.getAssignmentGroup().name());
+                .addValue("assignmentGroup", dummyTask.getAssignmentGroup().name())
+                .addValue("url", dummyTask.getUrl())
+                .addValue("resource", dummyTask.getResource());
         GeneratedKeyHolder taskIdKeyHolder = new GeneratedKeyHolder();
 
         localNamedJdbc.update(taskInsertSql, params, taskIdKeyHolder, new String[]{taskIdCol});
 
         int taskId = (Integer) taskIdKeyHolder.getKeys().get(taskIdCol);
-        String detailInsertSql = taskDetailInsertMap.get(taskBuilder.getTaskType());
-
-        localNamedJdbc.update(detailInsertSql, new MapSqlParameterSource("taskId", taskId));
 
         return taskBuilder.setTaskId(taskId)
                 .build();
