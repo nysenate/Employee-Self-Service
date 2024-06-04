@@ -1,18 +1,22 @@
 import React from 'react'
 import EssNavBar from "app/core/EssNavBar/EssNavBar";
-import { Outlet } from "react-router-dom";
-import PrivateContent from "app/core/PrivateContent";
+import { Navigate, Outlet } from "react-router-dom";
+import useAuth from "app/contexts/Auth/useAuth";
 
 
 export default function EssLayout() {
-  return (
-    <div className="w-screen">
-      <PrivateContent>
+  const auth = useAuth()
+
+  if (auth.isAuthed()) {
+    return (
+      <div className="w-screen">
         <EssNavBar/>
         <div className="w-[1150px] pt-[70px] mx-auto">
           <Outlet/>
         </div>
-      </PrivateContent>
-    </div>
-  )
+      </div>
+    )
+  } else {
+    return <Navigate to="/login"/>
+  }
 }
