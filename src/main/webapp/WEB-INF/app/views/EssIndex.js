@@ -1,14 +1,7 @@
 import React from "react"
-import { useNavigate } from "react-router-dom";
-import LoadingIndicator from "app/components/LoadingIndicator";
+import { Navigate } from "react-router-dom";
 
 
 export default function EssIndex() {
-  const navigate = useNavigate()
-
-  React.useEffect(() => {
-    navigate("/login")
-  }, [])
-
-  return <LoadingIndicator/>
+  return <Navigate to="/login"/>
 }
