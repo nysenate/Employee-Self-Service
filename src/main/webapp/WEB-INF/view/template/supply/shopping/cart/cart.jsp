@@ -1,5 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib prefix="ess-component-nav" tagdir="/WEB-INF/tags/component/nav" %>
+<%@ taglib prefix="ess-component-naSv" tagdir="/WEB-INF/tags/component/nav" %>
 
 <div ng-controller="SupplyCartController">
     <div class="supply-order-hero inline-block width-100">
