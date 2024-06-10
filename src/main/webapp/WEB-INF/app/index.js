@@ -4,7 +4,7 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "app/contexts/Auth/useAuth";
 import EssLayout from "app/views/EssLayout";
-import Time from "app/views/time/Time";
+import TimeRouter from "app/views/time/TimeRouter";
 import Travel from "app/views/travel/Travel";
 import LoginIndex from "app/views/login/LoginIndex";
 import MyInfoRouter from "app/views/myinfo/MyInfoRouter";
@@ -19,7 +19,7 @@ function App() {
         <Routes>
           <Route path="/" element={<EssLayout/>}>
             <Route path="/myinfo/*" element={<MyInfoRouter/>}/>
-            <Route path="/time/*" element={<Time/>}/>
+            <Route path="/time/*" element={<TimeRouter/>}/>
             <Route path="/supply/*" element={<SupplyRouter/>}/>
             <Route path="/travel/*" element={<Travel/>}/>
           </Route>
