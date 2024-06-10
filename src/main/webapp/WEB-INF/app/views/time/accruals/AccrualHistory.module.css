@@ -1,0 +1,127 @@
+/* AccrualHistory.module.css */
+
+.subHeroContainer {
+    background: #fff;
+    padding: 10px;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .subHeroMessage {
+    font-size: 1.2em;
+    color: #007b8a; /* Use the desired color */
+  }
+  
+  .selectYear {
+    font-size: 1em;
+    padding: 5px;
+    margin-left: 10px;
+  }
+  
+  .accrualHistory {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .tableContainer {
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+  }
+  
+  .table {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    background: #fff;
+  }
+  
+  .tableHeader {
+    display: flex;
+    background: #ffffff;
+  }
+  
+  .tableSubHeader {
+    display: flex;
+    border-bottom: 1px solid #3f8f9f;
+  }
+  
+  .cell {
+    flex: 1;
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+  }
+  
+  .tableBody .row {
+    display: flex;
+  }
+  
+  .tableBody .cell {
+    flex: 1;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  /* Period */
+  .period .tableBody .cell {
+    color: gray;
+  }
+
+  /* Personal */
+  .personal .tableSubHeader {
+    color: #e9f2f4;
+    background: #4196a7;
+  }
+  
+  .personal .tableBody .cell {
+    color: gray;
+    background-color: #ebf3f5;
+  }
+  
+  .personalAvail {
+    flex: 1;
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+    background-color: #d8e9ec;
+  }
+  
+  /* Vacation */
+  .vacation .tableSubHeader {
+    color: #e9f2f4;
+    background: #799933;
+  }
+  
+  .vacation .tableBody .cell {
+    color: gray;
+    background-color: #f0f4e9;
+  }
+  
+  .vacationAvail {
+    flex: 1;
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+    background-color: #e3ead5;
+  }  
+  
+  /* Sick */
+  .sick .tableSubHeader {
+    color: #e9f2f4;
+    background: #d19525;
+  }
+  
+  .sick .tableBody .cell {
+    color: gray;
+    background-color: #f0eadf;
+  }
+  
+  .sickAvail {
+    flex: 1;
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+    background-color: #f5e9d2;
+  } 

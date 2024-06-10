@@ -31,12 +31,15 @@
     margin-bottom: 10px;
     text-align: center;
     font-weight: bold;
+    border-bottom: 1px solid #3f8f9f;
   }
   
   .sectionDescription {
     text-align: center;
     color: #666;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #3f8f9f;
   }
   
   .attendanceTable {
@@ -46,14 +49,12 @@
   }
   
   .attendanceTable th, .attendanceTable td {
-    border: 1px solid #ddd;
     padding: 10px;
     text-align: center;
   }
   
   .attendanceTable th {
-    background: #f4f4f4;
-    font-weight: bold;
+    border-bottom: 1px solid #3f8f9f;
   }
   
   .attendanceTable tr:hover {
@@ -63,4 +64,5 @@
   .attendanceTotals {
     font-weight: bold;
     text-align: center;
+    background-color: #f4f4f4;
   }
