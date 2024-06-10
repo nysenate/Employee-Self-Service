@@ -1,0 +1,66 @@
+/* AttendanceHistory.module.css */
+
+  .subHeroContainer {
+    background: #fff;
+    padding: 10px;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .subHeroMessage {
+    font-size: 1.2em;
+    color: #007b8a; /* Use the desired color */
+  }
+  
+  .selectYear {
+    font-size: 1em;
+    padding: 5px;
+    margin-left: 10px;
+  }
+  
+  .recordSection {
+    background: #fff;
+    margin: 20px 0;
+    padding: 20px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+  
+  .sectionHeader {
+    font-size: 1.2em;
+    color: #007b8a; /* Use the desired color */
+    margin-bottom: 10px;
+    text-align: center;
+    font-weight: bold;
+  }
+  
+  .sectionDescription {
+    text-align: center;
+    color: #666;
+    margin-bottom: 20px;
+  }
+  
+  .attendanceTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+  
+  .attendanceTable th, .attendanceTable td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  .attendanceTable th {
+    background: #f4f4f4;
+    font-weight: bold;
+  }
+  
+  .attendanceTable tr:hover {
+    background: #f9f9f9;
+  }
+  
+  .attendanceTotals {
+    font-weight: bold;
+    text-align: center;
+  }
