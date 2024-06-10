@@ -6,9 +6,9 @@ ALTER TABLE ess.personnel_task
 alter table ess.ethics_code drop constraint ethics_code_ethics_code_id_fkey;
 alter table ess.ethics_code rename ethics_code_id to task_id;
 
-alter table ess.acknowledgment drop constraint acknowledgment_ack_doc_id_fkey;
+alter table ess.acknowledgment drop constraint acknowledgement_ack_doc_id_fkey;
 alter table ess.acknowledgment add column task_id integer;
-alter table ess.acknowledgment drop constraint acknowledgment_pkey;
+alter table ess.acknowledgment drop constraint acknowledgement_pkey;
 alter table ess.acknowledgment add PRIMARY KEY (emp_id, task_id);
 
 alter table ess.pec_video_code add column task_id integer;
