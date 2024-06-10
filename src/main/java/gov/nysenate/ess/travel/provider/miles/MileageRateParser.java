@@ -1,23 +1,18 @@
 package gov.nysenate.ess.travel.provider.miles;
 
 import gov.nysenate.ess.core.util.DateUtils;
-import org.joda.time.DateTime;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
-import java.time.Month;
 import java.time.format.DateTimeFormatter;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 
 @Component
 public class MileageRateParser {
-
     /**
      * Parses the gsa irs reimbursement rates website to extract the current {@link MileageRate}.
      * https://www.gsa.gov/travel/plan-book/transportation-airfare-rates-pov-rates-etc/privately-owned-vehicle-pov-mileage-reimbursement-rates
@@ -31,7 +26,7 @@ public class MileageRateParser {
 
         // Parse mileage rate.
         Document document = Jsoup.parse(content);
-        Element bodyContentEl = document.getElementById("asto-content");
+        Element bodyContentEl = document.getElementById("block-gsa-content");
         Element tableBodyEl = bodyContentEl.getElementsByTag("tbody").first();
         Element autoRowEl = tableBodyEl.getElementsByTag("tr").get(1);
         Element autoRateEl = autoRowEl.getElementsByTag("td").last();

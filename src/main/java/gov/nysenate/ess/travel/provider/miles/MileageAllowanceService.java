@@ -1,6 +1,7 @@
 package gov.nysenate.ess.travel.provider.miles;
 
 import com.google.maps.errors.ApiException;
+import gov.nysenate.ess.core.service.notification.slack.service.SlackChatService;
 import gov.nysenate.ess.travel.application.address.GoogleAddress;
 import gov.nysenate.ess.travel.provider.ProviderException;
 import org.slf4j.Logger;
@@ -15,15 +16,21 @@ import java.time.LocalDate;
 
 @Service
 public class MileageAllowanceService {
-
     private static final Logger logger = LoggerFactory.getLogger(MileageAllowanceService.class);
 
+    private final GoogleMapsService googleMapsService;
+    private final IrsMileageRateDao irsMileageRateDao;
+    private final MileageRateScraper mileageRateScraper;
+    private final SlackChatService slackChatService;
+
     @Autowired
-    private GoogleMapsService googleMapsService;
-    @Autowired
-    private IrsMileageRateDao irsMileageRateDao;
-    @Autowired
-    private MileageRateScraper mileageRateScraper;
+    public MileageAllowanceService(GoogleMapsService googleMapsService, IrsMileageRateDao irsMileageRateDao,
+                                   MileageRateScraper mileageRateScraper, SlackChatService slackChatService) {
+        this.googleMapsService = googleMapsService;
+        this.irsMileageRateDao = irsMileageRateDao;
+        this.mileageRateScraper = mileageRateScraper;
+        this.slackChatService = slackChatService;
+    }
 
     /**
      * Calculates the driving mileage from one address to another
@@ -59,8 +66,10 @@ public class MileageAllowanceService {
                 logger.info("The mileage rate did not change. No updates were made to the database");
             }
             return scrapedRate;
-        } catch (IOException e) {
-            logger.warn("Mileage rate scraping failed! \n" + e);
+        } catch (Exception e) {
+            String msg = "Mileage rate scraping failed! \n" + e;
+            logger.error(msg);
+            slackChatService.sendMessage(msg);
             return null;
         }
     }
