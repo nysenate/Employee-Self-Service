@@ -41,8 +41,8 @@ const SpecialInstructions = () => {
       />
       <div className={styles.buttonGroup}>
         <Button style={{ backgroundColor: "grey", margin: "5 px" }} onClick={() => setInstructions('')}>Empty Cart</Button>
-        <Button style={{ backgroundColor: "grey", margin: "5 px" }}>Continue Browsing</Button>
-        <Button style={{ margin: "5 px" }} bgColor="#4caf50" hoverColor="#388e3c">Checkout</Button>
+        <Button style={{ marginLeft: '5px', backgroundColor: "grey", margin: "5 px" }}>Continue Browsing</Button>
+        <Button style={{ marginLeft: '5px', margin: "5 px" }} >Checkout</Button>
       </div>
       <div className={styles.clearfix}></div>
     </div>

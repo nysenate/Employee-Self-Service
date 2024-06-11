@@ -30,7 +30,7 @@ const SubHero = () => {
       {/* Search Abilities */}
       <div className={styles.searchContainer}>
         <div className={styles.searchItem}>
-          <label htmlFor="from-date">From:</label>
+          <label htmlFor="from-date">From: </label>
           <input
             type="date"
             id="from-date"
@@ -40,7 +40,7 @@ const SubHero = () => {
           />
         </div>
         <div className={styles.searchItem}>
-          <label htmlFor="to-date">To:</label>
+          <label htmlFor="to-date">To: </label>
           <input
             type="date"
             id="to-date"
