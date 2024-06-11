@@ -40,8 +40,6 @@ export default function AlertInfoForm({ alertInfo }) {
     setErrorMsg("")
     data.empId = alertInfo.empId
 
-    console.log("ON SUBMIT")
-
     // Check for and notify user of any duplicate phone numbers.
     const duplicatePhoneFields = duplicatePhoneNumbers(data)
     if (duplicatePhoneFields.length > 0) {
@@ -73,6 +71,7 @@ export default function AlertInfoForm({ alertInfo }) {
         <PhoneInputs register={register} errors={errors}/>
         {/*Spacer*/}
         <div className="col-span-4 my-3"></div>
+
         <EmailInputs register={register} errors={errors}/>
 
         {/*Submit Button*/}

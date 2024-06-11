@@ -1,4 +1,4 @@
-import { NavLink, useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import React from "react";
 import './essNavBar.css'
 import { themes } from "app/contexts/ThemeContext";
@@ -7,6 +7,8 @@ import useAuth from "app/contexts/Auth/useAuth";
 
 export default function EssNavBar() {
   const auth = useAuth()
+  const navigate = useNavigate()
+
   return (
     <nav className="fixed h-[45px] w-screen bg-gray-50 shadow" aria-label="Main">
       <div className="w-[1150px] h-full mx-auto">
@@ -32,8 +34,10 @@ export default function EssNavBar() {
               </li>
             </ul>
           </div>
-          <div onClick={() => auth.logout()}>
-            Sign Out
+          <div>
+              <span className="text-[14.3px] cursor-pointer" onClick={() => navigate("/logout")}>
+              Sign Out
+              </span>
           </div>
         </div>
       </div>

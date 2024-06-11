@@ -9,6 +9,9 @@ import Travel from "app/views/travel/Travel";
 import LoginIndex from "app/views/login/LoginIndex";
 import MyInfoRouter from "app/views/myinfo/MyInfoRouter";
 import SupplyRouter from "app/views/supply/SupplyRouter";
+import Logout from "app/views/logout/Logout";
+import EssIndex from "app/views/EssIndex";
+import NotFound from "app/views/NotFound";
 
 
 function App() {
@@ -17,6 +20,7 @@ function App() {
       <AuthProvider>
         {/*<TimeoutChecker>*/}
         <Routes>
+          <Route path="/" element={<EssIndex/>}/>
           <Route path="/" element={<EssLayout/>}>
             <Route path="/myinfo/*" element={<MyInfoRouter/>}/>
             <Route path="/time/*" element={<TimeRouter/>}/>
@@ -24,7 +28,10 @@ function App() {
             <Route path="/travel/*" element={<Travel/>}/>
           </Route>
           <Route path="/login" element={<LoginIndex/>}/>
-          {/* TODO Login, Errors, etc */}
+          <Route path="/logout" element={<Logout/>}/>
+          <Route path="/404" element={<NotFound/>}/>
+          <Route path="*" element={<NotFound/>}/>
+          {/* TODO Errors page, 404 page. */}
         </Routes>
         {/*</TimeoutChecker>*/}
       </AuthProvider>
