@@ -62,6 +62,7 @@
     flex: 1;
     padding: 10px;
     text-align: center;
+    font-weight: normal;
   }
   
   /* Period */
@@ -84,7 +85,6 @@
     flex: 1;
     padding: 10px;
     text-align: center;
-    font-weight: bold;
     background-color: #d8e9ec;
   }
   
@@ -103,7 +103,6 @@
     flex: 1;
     padding: 10px;
     text-align: center;
-    font-weight: bold;
     background-color: #e3ead5;
   }  
   
@@ -122,6 +121,5 @@
     flex: 1;
     padding: 10px;
     text-align: center;
-    font-weight: bold;
     background-color: #f5e9d2;
   } 
