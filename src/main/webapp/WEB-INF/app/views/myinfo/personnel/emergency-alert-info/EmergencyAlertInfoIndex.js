@@ -1,24 +1,13 @@
-import React, { useState } from "react"
+import React from "react"
 import Hero from "app/components/Hero";
 import Card from "app/components/Card";
-import { fetchApiJson } from "app/utils/fetchJson";
 import AlertInfoForm from "app/views/myinfo/personnel/emergency-alert-info/AlertInfoForm";
-import useAuth from "app/contexts/Auth/useAuth";
+import { useAlertInfo } from "app/api/alertInfoApi";
+import LoadingIndicator from "app/components/LoadingIndicator";
 
-
-const getAlertInfo = async empId => {
-  return await fetchApiJson(`/alert-info?empId=${empId}`)
-    .then((body) => body.result)
-}
 
 export default function EmergencyAlertInfoIndex() {
-  const auth = useAuth()
-  const [ alertInfo, setAlertInfo ] = useState()
-
-  React.useEffect(() => {
-    getAlertInfo(auth.empId())
-      .then((info) => setAlertInfo(info))
-  }, [])
+  const alertInfo = useAlertInfo()
 
   return (
     <div>
@@ -29,7 +18,8 @@ export default function EmergencyAlertInfoIndex() {
           event of a Senate-wide emergency.
         </Card.Header>
 
-        {alertInfo && <AlertInfoForm alertInfo={alertInfo}/>}
+        {alertInfo.isPending && <LoadingIndicator/>}
+        {alertInfo.isSuccess && <AlertInfoForm alertInfo={alertInfo.data}/>}
       </Card>
     </div>
   )

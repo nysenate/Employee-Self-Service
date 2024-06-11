@@ -8,6 +8,8 @@
   "license": "(BSD-2-Clause OR GPL-3.0)",
   "dependencies": {
     "@headlessui/react": "^1.7.1",
+    "@tanstack/react-query": "^5.40.1",
+    "@tanstack/react-query-devtools": "^5.40.1",
     "bower": "^1.8.12",
     "core-js": "^3.24.1",
     "date-fns": "^3.6.0",
@@ -44,6 +46,7 @@
     "@babel/core": "^7.15.8",
     "@babel/preset-env": "^7.15.8",
     "@babel/preset-react": "^7.14.5",
+    "@tanstack/eslint-plugin-query": "^5.43.1",
     "autoprefixer": "^9.8.8",
     "babel-loader": "^8.1.0",
     "css-loader": "^5.2.7",

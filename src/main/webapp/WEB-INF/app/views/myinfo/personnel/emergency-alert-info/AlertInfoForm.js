@@ -1,14 +1,13 @@
 import React from "react"
-import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { fetchApiJson } from "app/utils/fetchJson";
 import PhoneInputs from "app/views/myinfo/personnel/emergency-alert-info/PhoneInputs";
 import EmailInputs from "app/views/myinfo/personnel/emergency-alert-info/EmailInputs";
 import { Button } from "app/components/Button";
+import { useMutateAlertInfo } from "app/api/alertInfoApi";
 
 
 export default function AlertInfoForm({ alertInfo }) {
-  const navigate = useNavigate();
+  const mutateAlertInfo = useMutateAlertInfo()
   const useFormDefaultProps = {
     mode: "onBlur",
     defaultValues: {
@@ -59,9 +58,7 @@ export default function AlertInfoForm({ alertInfo }) {
       return
     }
 
-    fetchApiJson(`/alert-info`, { method: "POST", payload: data })
-      .then((res) => navigate(0))
-      .catch((err) => setErrorMsg(err.data.message))
+    mutateAlertInfo.mutate(data)
   }
 
   return (

@@ -12,6 +12,8 @@ import SupplyRouter from "app/views/supply/SupplyRouter";
 import Logout from "app/views/logout/Logout";
 import EssIndex from "app/views/EssIndex";
 import NotFound from "app/views/NotFound";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 
 function App() {
@@ -39,9 +41,13 @@ function App() {
   )
 }
 
+const queryClient = new QueryClient()
 const root = createRoot(document.getElementById('app'))
 root.render(
   <StrictMode>
-    <App/>
+    <QueryClientProvider client={queryClient}>
+      <App/>
+      <ReactQueryDevtools initialIsOpen={false}/>
+    </QueryClientProvider>
   </StrictMode>
 )
