@@ -5,7 +5,7 @@ import { Button } from "../../../components/Button";
 import { fetchApiJson } from "app/utils/fetchJson";
 import useAuth from "app/contexts/Auth/useAuth";
 
-const SelectDestination = ({ tempDestination, handleTempDestinationChange, handleConfirmClick }) => {
+const SelectDestination = ({ locations, tempDestination, handleTempDestinationChange, handleConfirmClick }) => {
   return (
     <div className={styles.destinationContainer}>
       <div className={styles.destinationMessage}>
@@ -16,17 +16,18 @@ const SelectDestination = ({ tempDestination, handleTempDestinationChange, handl
           onChange={handleTempDestinationChange}
         >
           <option value="">Select Destination</option>
-          <option value="A42FB">A42FB (2ND FLOOR, AG4)</option>
-          <option value="B21C">B21C (3RD FLOOR, BG2)</option>
-          <option value="C34D">C34D (1ST FLOOR, CD3)</option>
+          {locations.map((location) => (
+            <option key={location.locId} value={location.locId}>
+              {location.code} ({location.locationDescription})
+            </option>
+          ))}
         </select>
         <Button onClick={handleConfirmClick}>Confirm</Button>
       </div>
     </div>
   );
 };
-
-const DestinationDetails = ({ destination, handleChangeClick }) => {
+const DestinationDetails = ({ destination, handleChangeClick, items }) => {
   return (
     <div className={styles.destinationDetails}>
       <div className={styles.detailsRow}>
@@ -51,24 +52,74 @@ const DestinationDetails = ({ destination, handleChangeClick }) => {
     </div>
   );
 };
+const ItemsTemplate = () => {
+  return (
+    <div>
+      <img
+        src="/assets/supply_photos/SEALSENATEG.jpg"
+        width="160"
+        height="120"
+        alt="New York State Senate Capital Building"
+      />
+    </div>
+  );
+}
+const Items = ({ items }) => {
+  const handleImageError = (e) => {
+    e.target.src = "/assets/supply_photos/default.jpg"; // Set a default image
+  };
 
-const getEmpDetails = async empId => {
+  return (
+    <div>
+      {items.map((item) => (
+        <div key={item.id} value={item.id}>
+          {item.id} ({item.description})
+          <img
+            src={`/assets/supply_photos/${item.commodityCode}.jpg`}
+            width="160"
+            height="120"
+            alt={`${item.description}`}
+            onError={handleImageError}
+          />
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const getLocations = async empId => {
   return await fetchApiJson(`/supply/destinations/${empId}`)
     .then((body) => body);
-}
+};
+const getItems = async locId => {
+  return await fetchApiJson(`/supply/items/orderable/${locId}`)
+    .then((body) => body.result);
+};
 
 export default function RequisitionFormIndex() {
   const auth = useAuth();
-
   const [destination, setDestination] = useState(
     () => JSON.parse(localStorage.getItem('destination')) || ''
   );
   const [tempDestination, setTempDestination] = useState(destination);
+  const [locations, setLocations] = useState([]);
+  const [items, setItems] = useState([]);
 
   useEffect(() => {
-    getEmpDetails(auth.empId()).then(r => console.log(r.result[0].code))
     localStorage.setItem('destination', JSON.stringify(destination));
+    if (destination) {
+      fetchItems(destination);
+    }
   }, [destination]);
+
+  useEffect(() => {
+    getLocations(auth.empId()).then(r => setLocations(r.result));
+  }, [auth]);
+
+  const fetchItems = async (destination) => {
+    const items = await getItems(destination);
+    setItems(items);
+  };
 
   const handleTempDestinationChange = (e) => {
     setTempDestination(e.target.value);
@@ -81,20 +132,28 @@ export default function RequisitionFormIndex() {
   const handleChangeClick = () => {
     setTempDestination('');
     setDestination('');
+    setItems([]);
   };
 
   return (
     <div>
       <Hero>Requisition Form</Hero>
       {destination ? (
-        <DestinationDetails destination={destination} handleChangeClick={handleChangeClick} />
+        <div>
+          <DestinationDetails destination={destination} handleChangeClick={handleChangeClick} items={items} />
+          {/*<Items items={items} />*/}
+          <ItemsTemplate />
+        </div>
       ) : (
          <SelectDestination
+           locations={locations}
            tempDestination={tempDestination}
            handleTempDestinationChange={handleTempDestinationChange}
            handleConfirmClick={handleConfirmClick}
          />
        )}
+
+
     </div>
   );
 }
