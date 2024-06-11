@@ -41,6 +41,22 @@ public enum PersonnelTaskAssignmentQuery implements BasicSqlQuery {
             "  AND (:taskIdsPresent OR ta.task_id IN (:taskIds))"
     ),
 
+    SELECT_NOT_IN_TASKS_QUERY("" +
+            "SELECT t.task_id, t.task_type, t.title, t.effective_date_time, t.active, ta.completed,\n" +
+            "       ta.emp_id, ta.assignment_date, ta.due_date, ta.update_user_id, ta.timestamp, ta.manual_override\n" +
+            "FROM ${essSchema}.personnel_task_assignment ta\n" +
+            "JOIN ${essSchema}.personnel_task t USING (task_id)\n" +
+            "WHERE (:active::boolean IS NULL OR t.active = :active::boolean)\n" +
+            "  AND (:empId::int IS NULL OR emp_id = :empId)\n" +
+            "  AND (:taskType::ess.personnel_task_type IS NULL OR t.task_type = :taskType::ess.personnel_task_type)"
+    ),
+
+    SELECT_ACTIVE_TASKS(""+
+            "SELECT task_id FROM ${essSchema}.personnel_task\n" +
+            "WHERE active = :active"
+
+    ),
+
     INSERT_TASK("" +
             "INSERT INTO ${essSchema}.personnel_task_assignment\n" +
             "        (emp_id, task_id, timestamp, update_user_id, completed, active, manual_override, assignment_date, due_date)\n" +

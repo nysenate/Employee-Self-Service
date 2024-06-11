@@ -14,14 +14,13 @@ import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.core.util.SortOrder;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -67,6 +66,34 @@ public class EssEmpTaskSearchService implements EmpTaskSearchService {
 
         List<EmployeeTaskSearchResult> limitedResultList = LimitOffset.limitList(resultList, limitOffset);
 
+        return new PaginatedList<>(resultList.size(), limitOffset, limitedResultList);
+    }
+
+    @Override
+    public PaginatedList<EmployeeTaskSearchResult> searchForNotEmpTasks(EmpPTAQuery query, LimitOffset limitOffset) {
+
+        List<PersonnelTaskAssignment> tasks = patDao.getAssignTasks(query.getPatQuery());
+        List<Integer> activeTasks = patDao.getActiveTasks(true);
+        ImmutableListMultimap<Integer, PersonnelTaskAssignment> empTaskMap =
+                Multimaps.index(tasks, PersonnelTaskAssignment::getEmpId);
+
+        EmployeeSearchBuilder esb = query.getEmpQuery();
+
+        List<EmployeeTaskSearchResult> resultList = empTaskMap.asMap().entrySet().stream()
+                .map(e -> new EmployeeTaskSearchResult(
+                        employeeInfoService.getEmployee(e.getKey()),
+                        e.getValue()
+                ))
+                .collect(Collectors.toList());
+
+        Comparator<EmployeeTaskSearchResult> comparator = getComparator(query.getSortDirectives());
+
+        resultList = resultList.stream()
+                .filter(etsr -> resultMatchesQuery(etsr, query))
+                .sorted(comparator)
+                .collect(Collectors.toList());
+        resultList = updateNewResultList(resultList, query.getPatQuery().getTaskIds(), activeTasks, query.getEmpQuery().getIsSenator());
+        List<EmployeeTaskSearchResult> limitedResultList = LimitOffset.limitList(resultList, limitOffset);
         return new PaginatedList<>(resultList.size(), limitOffset, limitedResultList);
     }
 
@@ -173,4 +200,65 @@ public class EssEmpTaskSearchService implements EmpTaskSearchService {
         return overallComparator;
     }
 
+    private List<EmployeeTaskSearchResult> updateNewResultList(List<EmployeeTaskSearchResult> resultList,
+                                                               Set<Integer> taskIds,
+                                                               List<Integer> activeTasks, Boolean isSenator) {
+        List<Integer> selected = new ArrayList<>();
+        if (taskIds != null) {
+            selected = taskIds.stream().collect(Collectors.toList());
+        }
+        List<EmployeeTaskSearchResult> newResultList = new ArrayList<>();
+        for (EmployeeTaskSearchResult result : resultList) {
+
+            List<Integer> toBeAssigned = getToBeAssigned(activeTasks, result, selected);
+            if (!toBeAssigned.isEmpty()) {
+                List<PersonnelTaskAssignment> personalList = new ArrayList<>();
+                for (Integer taskId : toBeAssigned){
+                    PersonnelTaskAssignment taskAssignment = new PersonnelTaskAssignment(taskId,
+                            0, null, null, false, false, null, null);
+                    personalList.add(taskAssignment);
+                }
+                if (!isSenator) {
+                    if (!personalList.isEmpty()) {
+                        EmployeeTaskSearchResult employeeTaskSearchResult = new EmployeeTaskSearchResult(
+                                result.getEmployee(),
+                                personalList
+                        );
+                        newResultList.add(employeeTaskSearchResult);
+                    }
+                }
+                else{
+                    if (!result.getEmployee().isSenator() && !personalList.isEmpty()) {
+                        EmployeeTaskSearchResult employeeTaskSearchResult = new EmployeeTaskSearchResult(
+                                result.getEmployee(),
+                                personalList
+                        );
+                        newResultList.add(employeeTaskSearchResult);
+                    }
+                }
+            }
+        }
+        return newResultList;
+    }
+
+    private static @NotNull List<Integer> getToBeAssigned(List<Integer> activeTasks, EmployeeTaskSearchResult result, List<Integer> selected) {
+        List<Integer> toBeAssigned = new ArrayList<>();
+        List<Integer> assignedTasks = new ArrayList<>();
+        for (PersonnelTaskAssignment task : result.getTasks()) {
+            assignedTasks.add(task.getTaskId());
+        }
+        for (Integer taskId : activeTasks) {
+            if (!selected.isEmpty()) {
+                if (selected.contains(taskId) && !assignedTasks.contains(taskId)) {
+                    toBeAssigned.add(taskId);
+                }
+            }
+            else{
+                if (!assignedTasks.contains(taskId)) {
+                    toBeAssigned.add(taskId);
+                }
+            }
+        }
+        return toBeAssigned;
+    }
 }

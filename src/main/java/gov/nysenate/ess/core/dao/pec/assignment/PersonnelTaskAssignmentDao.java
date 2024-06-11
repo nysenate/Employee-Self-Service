@@ -43,6 +43,16 @@ public interface PersonnelTaskAssignmentDao {
     List<PersonnelTaskAssignment> getTasks(PTAQueryBuilder query);
 
     /**
+     * Get a list of tasks matching the given query
+     *
+     * @param query {@link PTAQueryBuilder}
+     * @return {@link List<PersonnelTaskAssignment>}
+     */
+    List<PersonnelTaskAssignment> getAssignTasks(PTAQueryBuilder query);
+
+    List<Integer> getActiveTasks(boolean active);
+
+    /**
      * Add or update the given {@link PersonnelTaskAssignment} to the db.
      *
      * @param task {@link PersonnelTaskAssignment}

@@ -149,6 +149,14 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
         logger.info("Completed Date Assignment Processing");
     }
 
+    @Override
+    public void insertAssignedTask(int empID, int updateEmpID, int taskID) {
+        personnelTaskDao.insertPersonnelAssignedTask(empID, updateEmpID, taskID);
+
+        logger.info("Task assignment " + taskID + " was updated for Employee " + empID +
+                " by employee " + updateEmpID);
+    }
+
     private PersonnelTaskType getPersonnelTaskType(PersonnelTaskAssignment assignment, List<PersonnelTask> personnelTasks) {
         PersonnelTaskType type = null;
         for (PersonnelTask task: personnelTasks) {
