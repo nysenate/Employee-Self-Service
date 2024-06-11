@@ -26,7 +26,7 @@ public class MileageRateParser {
 
         // Parse mileage rate.
         Document document = Jsoup.parse(content);
-        Element bodyContentEl = document.getElementById("block-gsa-content");
+        Element bodyContentEl = document.getElementById("asto-content");
         Element tableBodyEl = bodyContentEl.getElementsByTag("tbody").first();
         Element autoRowEl = tableBodyEl.getElementsByTag("tr").get(1);
         Element autoRateEl = autoRowEl.getElementsByTag("td").last();
