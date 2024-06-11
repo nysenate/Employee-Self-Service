@@ -38,10 +38,6 @@ WHERE ethics_live_course.ethics_code_id = ethics_code.ethics_code_id;
 alter table ess.ethics_code drop constraint ethics_code_ethics_code_id_fkey;
 alter table ess.ethics_code drop column ethics_code_id;
 
-<<<<<<< Updated upstream
-alter table ess.acknowledgment drop constraint acknowledgement_ack_doc_id_fkey;
-alter table ess.acknowledgment add column task_id integer;
-=======
 alter table ess.acknowledgment add column task_id integer;
 
 UPDATE ess.acknowledgment
@@ -49,7 +45,6 @@ SET task_id = ack_doc.task_id FROM ess.ack_doc
 WHERE ack_doc.ack_doc_id = acknowledgment.ack_doc_id;
 
 alter table ess.acknowledgment drop constraint acknowledgement_ack_doc_id_fkey;
->>>>>>> Stashed changes
 alter table ess.acknowledgment drop constraint acknowledgement_pkey;
 alter table ess.acknowledgment add PRIMARY KEY (emp_id, task_id);
 alter table ess.acknowledgment drop column ack_doc_id;
