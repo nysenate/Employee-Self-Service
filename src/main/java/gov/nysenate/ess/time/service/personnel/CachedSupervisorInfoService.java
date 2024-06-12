@@ -56,6 +56,7 @@ public class CachedSupervisorInfoService extends EmployeeEhCache<PrimarySupEmpGr
         this.supervisorDao = supervisorDao;
         this.employeeIdService = employeeIdService;
         this.eventBus = eventBus;
+        this.eventBus.register(this);
         this.lastSupOvrUpdate = supervisorDao.getLastSupUpdateDate();
     }
 

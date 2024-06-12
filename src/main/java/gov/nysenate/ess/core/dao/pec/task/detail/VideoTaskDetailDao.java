@@ -45,7 +45,6 @@ public class VideoTaskDetailDao extends SqlBaseDao implements PersonnelTaskDetai
 
         private final PersonnelTask task;
         private Integer videoId = null;
-        private String filename = null;
         private List<VideoTaskCode> codes = new ArrayList<>();
 
         private SingleVideoRowHandler(PersonnelTask task) {
@@ -54,10 +53,9 @@ public class VideoTaskDetailDao extends SqlBaseDao implements PersonnelTaskDetai
 
         @Override
         public void processRow(ResultSet rs) throws SQLException {
-            int videoId = rs.getInt("pec_video_id");
+            int videoId = rs.getInt("task_id");
             if (this.videoId == null) {
                 this.videoId = videoId;
-                this.filename = rs.getString("filename");
             } else if (this.videoId != videoId) {
                 throw new IncorrectResultSizeDataAccessException(
                         "Multiple pec video ids returned in one query: " + this.videoId + " and " + videoId,
@@ -72,13 +70,13 @@ public class VideoTaskDetailDao extends SqlBaseDao implements PersonnelTaskDetai
             if (videoId == null) {
                 throw new EmptyResultDataAccessException("No video task found for id " + task.getTaskId(), 1);
             }
-            return new VideoTask(task, filename, codes);
+            return new VideoTask(task, codes);
         }
     }
 
     private static final RowMapper<VideoTaskCode> codeRowMapper = (rs, rowNum) ->
             new VideoTaskCode(
-                    rs.getInt("pec_video_id"),
+                    rs.getInt("task_id"),
                     rs.getInt("sequence_no"),
                     rs.getString("label"),
                     rs.getString("code")
@@ -87,8 +85,8 @@ public class VideoTaskDetailDao extends SqlBaseDao implements PersonnelTaskDetai
     private enum Query implements BasicSqlQuery {
         SELECT_VIDEO_TASK("" +
                 "SELECT *\n" +
-                "FROM ${essSchema}.pec_video v\n" +
-                "LEFT JOIN ${essSchema}.pec_video_code c USING (pec_video_id)\n" +
+                "FROM ${essSchema}.pec_video_code v\n" +
+                "LEFT JOIN ${essSchema}.personnel_task c USING (task_id)\n" +
                 "WHERE task_id = :taskId"
         ),
         ;

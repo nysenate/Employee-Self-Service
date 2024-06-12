@@ -7,14 +7,11 @@ import java.util.Objects;
 
 public class EthicsCourseTaskView extends PersonnelTaskView {
 
-    private String url;
-
     public EthicsCourseTaskView(EthicsCourseTask task) {
         super(task);
-        this.url = Objects.toString(task.getCourseUrl());
     }
 
     public String getUrl() {
-        return url;
+        return super.getUrl();
     }
 }

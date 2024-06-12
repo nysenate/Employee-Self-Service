@@ -28,49 +28,6 @@ public class AckDocTaskDetailDao extends SqlBaseDao implements PersonnelTaskDeta
 
     @Override
     public AckDoc getTaskDetails(PersonnelTask task) {
-        List<AckDoc> ackDocList =  localNamedJdbc.query(
-                Query.SELECT_ACK_DOC.getSql(schemaMap()),
-                new MapSqlParameterSource("taskId", task.getTaskId()),
-                new AckDocRowMapper(task)
-        );
-        if (ackDocList.isEmpty()) {
-            throw new IncorrectResultSizeDataAccessException(0);
-        }
-        else {
-            return ackDocList.get(0);
-        }
-    }
-
-    private static class AckDocRowMapper implements RowMapper<AckDoc> {
-        private final PersonnelTask personnelTask;
-
-        private AckDocRowMapper(PersonnelTask personnelTask) {
-            this.personnelTask = personnelTask;
-        }
-
-        @Override
-        public AckDoc mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return new AckDoc(personnelTask, rs.getString("filename"));
-        }
-    }
-
-    private enum Query implements BasicSqlQuery {
-        SELECT_ACK_DOC("SELECT * FROM ${essSchema}.ack_doc WHERE task_id = :taskId");
-
-        private final String sql;
-
-        Query(String sql) {
-            this.sql = sql;
-        }
-
-        @Override
-        public String getSql() {
-            return sql;
-        }
-
-        @Override
-        public DbVendor getVendor() {
-            return DbVendor.POSTGRES;
-        }
+        return new AckDoc(task);
     }
 }

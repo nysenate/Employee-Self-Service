@@ -21,13 +21,13 @@ public class EthicsLiveCourseTask extends PersonnelTask {
     //Reusing Video codes because nothing would be changed other than naming for this kind of task
     private final ImmutableList<VideoTaskCode> codes;
 
-    public EthicsLiveCourseTask(PersonnelTask task, String urlString, Collection<VideoTaskCode>codes) {
+    public EthicsLiveCourseTask(PersonnelTask task, Collection<VideoTaskCode>codes) {
         super(task);
 
         try {
-            this.courseUrl = new URL(urlString);
+            this.courseUrl = new URL(task.getUrl());
         } catch (MalformedURLException e) {
-            throw new IllegalArgumentException("Invalid ethics course url string: \"" + urlString + "\"", e);
+            throw new IllegalArgumentException("Invalid ethics course url string: \"" + task.getUrl() + "\"", e);
         }
         this.codes = Optional.ofNullable(codes)
                 .orElse(Collections.emptyList())

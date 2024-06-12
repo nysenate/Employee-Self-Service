@@ -39,9 +39,7 @@ public class EthicsLiveCourseTaskDetailDao extends SqlBaseDao implements Personn
 
     private static class EthicsLiveCourseRowHandler implements RowCallbackHandler {
         private final PersonnelTask task;
-        private Integer ethicsCodeId = null;
-
-        private String url = "";
+        private Integer taskID = null;
         private List<VideoTaskCode> codes = new ArrayList<>();
 
         private EthicsLiveCourseRowHandler(PersonnelTask personnelTask) {
@@ -50,13 +48,12 @@ public class EthicsLiveCourseTaskDetailDao extends SqlBaseDao implements Personn
 
         @Override
         public void processRow(ResultSet rs) throws SQLException {
-            int ethicsCodeId = rs.getInt("ethics_code_id");
-            if (this.ethicsCodeId == null) {
-                this.ethicsCodeId = ethicsCodeId;
-                this.url = rs.getString("url");
-            } else if (this.ethicsCodeId != ethicsCodeId) {
+            int task_id = rs.getInt("task_id");
+            if (this.taskID == null) {
+                this.taskID = task_id;
+            } else if (this.taskID != task_id) {
                 throw new IncorrectResultSizeDataAccessException(
-                        "Multiple ethics live course ids returned in one query: " + this.ethicsCodeId + " and " + ethicsCodeId,
+                        "Multiple ethics live course ids returned in one query: " + this.taskID + " and " + task_id,
                         1, 2);
             }
             if (rs.getString("code") != null) {
@@ -66,16 +63,16 @@ public class EthicsLiveCourseTaskDetailDao extends SqlBaseDao implements Personn
         }
 
         public EthicsLiveCourseTask getResult() {
-            if (ethicsCodeId == null) {
+            if (taskID == null) {
                 throw new EmptyResultDataAccessException("No ethics live course code id found for task " + task.getTaskId(), 1);
             }
-            return new EthicsLiveCourseTask(task, url, codes);
+            return new EthicsLiveCourseTask(task, codes);
         }
     }
 
     private static final RowMapper<VideoTaskCode> codeRowMapper = (rs, rowNum) ->
             new VideoTaskCode(
-                    rs.getInt("ethics_code_id"),
+                    rs.getInt("task_id"),
                     rs.getInt("sequence_no"),
                     rs.getString("label"),
                     rs.getString("code")
@@ -85,8 +82,8 @@ public class EthicsLiveCourseTaskDetailDao extends SqlBaseDao implements Personn
 
         SELECT_ETHICS_LIVE_COURSE("" +
                 "SELECT *\n" +
-                "FROM ${essSchema}.ethics_live_course\n" +
-                "LEFT JOIN ${essSchema}.ethics_code c USING (ethics_code_id)\n" +
+                "FROM ${essSchema}.ethics_code\n" +
+                "LEFT JOIN ${essSchema}.personnel_task c USING (task_id)\n" +
                 "WHERE task_id = :taskId"
         ),
         ;

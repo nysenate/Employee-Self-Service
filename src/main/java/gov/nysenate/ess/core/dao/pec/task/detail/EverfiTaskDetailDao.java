@@ -28,50 +28,7 @@ public class EverfiTaskDetailDao extends SqlBaseDao implements PersonnelTaskDeta
 
     @Override
     public EverfiCourseTask getTaskDetails(PersonnelTask task) {
-        List<EverfiCourseTask> everfiCourseTasks = localNamedJdbc.query(
-                Query.SELECT_EVERFI_COURSE.getSql(schemaMap()),
-                new MapSqlParameterSource("taskId", task.getTaskId()),
-                new EverfiCourseRowMapper(task)
-        );
-        if (everfiCourseTasks.isEmpty()) {
-            throw new IncorrectResultSizeDataAccessException(0);
-        }
-        else {
-            return everfiCourseTasks.get(0);
-        }
+        return new EverfiCourseTask(task);
     }
 
-    private static class EverfiCourseRowMapper implements RowMapper<EverfiCourseTask> {
-        private final PersonnelTask personnelTask;
-
-        private EverfiCourseRowMapper(PersonnelTask personnelTask) {
-            this.personnelTask = personnelTask;
-        }
-
-        @Override
-        public EverfiCourseTask mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return new EverfiCourseTask(personnelTask, rs.getString("url"));
-        }
-    }
-
-    private enum Query implements BasicSqlQuery {
-        SELECT_EVERFI_COURSE("SELECT * FROM ${essSchema}.everfi_course WHERE task_id = :taskId"),
-        ;
-
-        private final String sql;
-
-        Query(String sql) {
-            this.sql = sql;
-        }
-
-        @Override
-        public String getSql() {
-            return sql;
-        }
-
-        @Override
-        public DbVendor getVendor() {
-            return DbVendor.POSTGRES;
-        }
-    }
 }
