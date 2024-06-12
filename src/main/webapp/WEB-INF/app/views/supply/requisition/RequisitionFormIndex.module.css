@@ -1,5 +1,6 @@
 /* RequisitionFormIndex.module.css */
 
+/* Common Styles */
 .destinationContainer {
     background: #ffffff;
     padding: 20px;
@@ -71,4 +72,115 @@
 .sortSelect {
     margin-left: 10px;
     padding: 5px;
+}
+
+/* Items Display */
+.itemGrid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+}
+
+.itemCard {
+    border: 1px solid #ddd;
+    padding: 16px;
+    text-align: center;
+    margin-right: 5px;
+    margin-top: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+    background-color: #fff;
+    transition: box-shadow 0.3s ease-in-out;
+    width: 200px;
+    height: 251px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between; /* Ensure space between elements */
+    box-sizing: border-box; /* Include padding and border in the width and height */
+}
+
+.itemCard:hover {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.itemImage {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 120px; /* Fixed height for the image container */
+    width: 100%;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.itemImage img {
+    max-height: 100%;
+    object-fit: contain; /* This ensures the image scales to fit while maintaining aspect ratio */
+}
+
+.itemDescription h4 {
+    margin: 10px 0 5px; /* Reduced margin for fitting within the fixed height */
+    font-size: 1.0em;
+    color: #333;
+    height: 40px; /* Ensures description does not overflow */
+    overflow: hidden; /* Hide overflowing text */
+}
+
+.itemDescription p {
+    margin: 5px 0;
+    color: #666;
+}
+
+.itemPrice p {
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #27ae60;
+}
+
+.addToCartButton {
+    padding: 5px 10px; /* Smaller padding for fitting within the fixed height */
+    border: none;
+    background-color: #27ae60;
+    color: #fff;
+    font-size: 0.9em; /* Slightly smaller font */
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.addToCartButton:hover {
+    background-color: #218c53;
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+}
+
+.pageButton {
+    padding: 10px 15px;
+    margin: 0 5px;
+    border: none;
+    background-color: #ddd;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.pageButton:hover {
+    background-color: #ccc;
+}
+
+.pageButton:disabled {
+    cursor: not-allowed;
+    background-color: #f0f0f0;
+}
+
+.activePage {
+    background-color: #27ae60;
+    color: white;
 }
