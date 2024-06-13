@@ -5,19 +5,11 @@ import { fetchApiJson } from "app/utils/fetchJson";
 import LoadingIndicator from "app/components/LoadingIndicator";
 import Card from "app/components/Card";
 import Paycheck from "app/views/myinfo/payroll/checkhistory/Paycheck";
+import { useEmployeePaychecks } from "app/api/employeePaychecksApi";
 
 export default function CheckHistoryForm({ empId, calendarYears, fiscalYears }) {
   const [ year, setYear ] = useState(Math.max(...calendarYears))
   const [ useFiscalYears, setUseFiscalYears ] = useState(false)
-  const [ paycheckSummary, setPaycheckSummary ] = useState([])
-  const [ isLoading, setIsLoading ] = useState(true)
-
-  React.useEffect(() => {
-    setIsLoading(true)
-    fetchApiJson(`/paychecks?empId=${empId}&year=${year}&fiscalYear=${useFiscalYears}`)
-      .then((body) => setPaycheckSummary(body.result))
-      .then(() => setIsLoading(false))
-  }, [ year, useFiscalYears ])
 
   // Year can end up in the future when useFiscalYear = true and the most recent fiscal year is checked.
   // Then, unchecking useFiscalYear, will lead to year being an invalid value (not in calendarYears).
@@ -51,20 +43,23 @@ export default function CheckHistoryForm({ empId, calendarYears, fiscalYears }) 
                  onChange={(e => setUseFiscalYears(e.target.checked))}/>
         </div>
       </Controls>
-      {isLoading
-       ? <LoadingIndicator/>
-       : <CheckResults paycheckSummary={paycheckSummary}
-                       year={year}
-                       useFiscalYears={useFiscalYears}/>
-      }
+      <CheckResults empId={empId}
+                    year={year}
+                    useFiscalYears={useFiscalYears}/>
     </div>
   )
 }
 
-function CheckResults({ paycheckSummary, year, useFiscalYears }) {
+function CheckResults({ empId, year, useFiscalYears }) {
+  const paycheckSummary = useEmployeePaychecks(empId, year, useFiscalYears)
+
+  if (paycheckSummary.isPending) {
+    return <LoadingIndicator/>
+  }
+
   return (
     <>
-      {paycheckSummary.paychecks.length === 0
+      {paycheckSummary.data.paychecks.length === 0
        ? <Card className="mt-3">
          <Card.Header><span className="text-lg font-semibold">No paychecks found for {year}</span>
          </Card.Header>
@@ -73,7 +68,7 @@ function CheckResults({ paycheckSummary, year, useFiscalYears }) {
          <Card.Header>
            <span className="text-lg font-semibold">{paycheckHeader(year, useFiscalYears)}</span>
          </Card.Header>
-         <Paycheck summary={paycheckSummary}/>
+         <Paycheck summary={paycheckSummary.data}/>
        </Card>
       }
     </>
