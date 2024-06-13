@@ -1,11 +1,10 @@
 import React, { useState } from "react";
 import Hero from "app/components/Hero";
 import Controls from "app/components/Controls";
-import { fetchApiJson } from "app/utils/fetchJson";
 import LoadingIndicator from "app/components/LoadingIndicator";
 import Card from "app/components/Card";
 import Paycheck from "app/views/myinfo/payroll/checkhistory/Paycheck";
-import { useEmployeePaychecks } from "app/api/employeePaychecksApi";
+import { useEmployeePaychecks } from "app/api/paychecksApi";
 
 export default function CheckHistoryForm({ empId, calendarYears, fiscalYears }) {
   const [ year, setYear ] = useState(Math.max(...calendarYears))
@@ -30,7 +29,7 @@ export default function CheckHistoryForm({ empId, calendarYears, fiscalYears }) 
                   name="year"
                   className="select"
                   value={year}
-                  onChange={e => setYear(e.target.value)}>
+                  onChange={e => setYear(parseInt(e.target.value))}>
             {yearOptions(fiscalYears, calendarYears, useFiscalYears)}
           </select>
         </div>
@@ -76,6 +75,7 @@ function CheckResults({ empId, year, useFiscalYears }) {
 }
 
 const yearOptions = (fiscalYears, calendarYears, useFiscalYears) => {
+  console.log(calendarYears)
   return useFiscalYears
          ? fiscalYears.map(year => <option value={year} key={year}>{year - 1} - {year}</option>)
          : calendarYears.map(year => <option value={year} key={year}>{year}</option>)

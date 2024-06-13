@@ -58,7 +58,7 @@ export default function AlertInfoForm({ alertInfo }) {
       return
     }
 
-    mutateAlertInfo.mutate(data)
+    mutateAlertInfo.mutate(data, { empId: data.empId })
   }
 
   return (

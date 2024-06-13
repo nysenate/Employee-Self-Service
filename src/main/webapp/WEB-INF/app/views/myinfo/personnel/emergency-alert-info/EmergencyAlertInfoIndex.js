@@ -4,10 +4,12 @@ import Card from "app/components/Card";
 import AlertInfoForm from "app/views/myinfo/personnel/emergency-alert-info/AlertInfoForm";
 import { useAlertInfo } from "app/api/alertInfoApi";
 import LoadingIndicator from "app/components/LoadingIndicator";
+import useAuth from "app/contexts/Auth/useAuth";
 
 
 export default function EmergencyAlertInfoIndex() {
-  const alertInfo = useAlertInfo()
+  const auth = useAuth()
+  const alertInfo = useAlertInfo(auth.empId())
 
   return (
     <div>
