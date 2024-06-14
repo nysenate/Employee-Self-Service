@@ -84,7 +84,7 @@ const ItemDisplay = ({ item }) => {
         />
       </div>
       <div className={styles.itemDescription}>
-        <h4>{item.description}</h4>
+        <h4 style={{fontWeight: 'medium'}}>{item.description}</h4>
         <p>{item.unit}</p>
       </div>
       <Button>Add to Cart</Button>
@@ -128,12 +128,22 @@ export default function RequisitionFormIndex() {
       const fetchItems = async () => {
         setIsLoading(true);
         const fetchedItems = await getItems(destination);
-        setItems(fetchedItems);
+        setItems(sortItems(fetchedItems, sortOption));
         setIsLoading(false);
       };
       fetchItems();
     }
-  }, [destination]);
+  }, [destination, sortOption]); // Re-fetch items on sortOption change
+
+  const sortItems = (items, sortOption) => {
+    if (sortOption === 'name') {
+      return [...items].sort((a, b) => a.description.localeCompare(b.description));
+    }
+    if (sortOption === 'category') {
+      return [...items].sort((a, b) => a.category.localeCompare(b.category));
+    }
+    return items;
+  };
 
   const handleTempDestinationChange = (e) => {
     setTempDestination(e.target.value);
