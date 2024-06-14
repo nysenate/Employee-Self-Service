@@ -32,14 +32,12 @@ const SelectDestination = ({ locations, tempDestination, handleTempDestinationCh
 };
 
 const DestinationDetails = ({ destination, handleChangeClick, items, handleSortChange, sortOption }) => {
-  const location = destination; // destination now holds the entire location object
-
   return (
     <div className={styles.destinationDetails}>
       <div className={styles.detailsRow}>
         <div className={styles.destinationInfo}>
           <span>Destination: </span>
-          <span style={{ marginLeft: '10px', color: 'black' }}>{location.code} ({location.locationDescription})</span>
+          <span style={{ marginLeft: '10px', color: 'black' }}>{destination.code} ({destination.locationDescription})</span>
           <button onClick={handleChangeClick} className={styles.changeButton}>[change]</button>
         </div>
         <div className={styles.searchBar}>
@@ -61,11 +59,11 @@ const DestinationDetails = ({ destination, handleChangeClick, items, handleSortC
 
 const ItemsGrid = ({ items, currentPage, itemsPerPage, addToCart }) => {
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentItems = items?.slice(startIndex, startIndex + itemsPerPage);
+  const currentItems = items.slice(startIndex, startIndex + itemsPerPage);
 
   return (
     <div className={styles.itemGrid}>
-      {currentItems?.map((item) => (
+      {currentItems.map((item) => (
         <ItemDisplay key={item.id} item={item} addToCart={addToCart} />
       ))}
     </div>
@@ -83,7 +81,7 @@ const ItemDisplay = ({ item, addToCart }) => {
         />
       </div>
       <div className={styles.itemDescription}>
-        <h4 style={{fontWeight: 'medium'}}>{item.description}</h4>
+        <h4>{item.description}</h4>
         <p>{item.unit}</p>
       </div>
       <Button onClick={() => addToCart(item.id)}>Add to Cart</Button>
@@ -92,33 +90,39 @@ const ItemDisplay = ({ item, addToCart }) => {
 };
 
 const getLocations = async (empId) => {
-  return await fetchApiJson(`/supply/destinations/${empId}`)
-    .then((body) => body);
+  return await fetchApiJson(`/supply/destinations/${empId}`).then((body) => body);
 };
 
 const getItems = async (locId) => {
-  return await fetchApiJson(`/supply/items/orderable/${locId}`)
-    .then((body) => body.result);
+  return await fetchApiJson(`/supply/items/orderable/${locId}`).then((body) => body.result);
 };
 
 export default function RequisitionFormIndex() {
   const auth = useAuth();
-  const [locations, setLocations] = useState([]); // Initialize as an empty array
-  const [destination, setDestination] = useState(null); // Update to hold the entire location object
-  const [tempDestination, setTempDestination] = useState(null);
+  const [locations, setLocations] = useState([]);
+  const [destination, setDestination] = useState(() => {
+    try {
+      const destinationData = localStorage.getItem('destination');
+      return destinationData && destinationData !== "undefined" ? JSON.parse(destinationData) : null;
+    } catch (e) {
+      console.error('Failed to parse destination from localStorage:', e);
+      return null;
+    }
+  });
+  const [tempDestination, setTempDestination] = useState(destination);
   const [items, setItems] = useState([]);
-  const itemsPerPage = 16; // Adjust the number of items per page as needed
+  const itemsPerPage = 16;
   const [currentPage, setCurrentPage] = useState(1);
   const [sortOption, setSortOption] = useState('name');
   const [isLoading, setIsLoading] = useState(false);
-  const [cart, setCart] = useState(JSON.parse(localStorage.getItem('cart')) || {});
+  const [cart, setCart] = useState(() => JSON.parse(localStorage.getItem('cart')) || {});
 
   useEffect(() => {
     const fetchInitialData = async () => {
-      setIsLoading(true);
+      // setIsLoading(true);
       const fetchedLocations = await getLocations(auth.empId());
       setLocations(fetchedLocations.result);
-      setIsLoading(false);
+      // setIsLoading(false);
     };
     fetchInitialData();
   }, [auth]);
@@ -126,26 +130,29 @@ export default function RequisitionFormIndex() {
   useEffect(() => {
     if (destination) {
       const fetchItems = async () => {
-        setIsLoading(true);
+        // setIsLoading(true);
         const fetchedItems = await getItems(destination.locId);
         setItems(fetchedItems);
-        setIsLoading(false);
+        // setIsLoading(false);
       };
       fetchItems();
-      localStorage.setItem('destinationLocId', JSON.stringify(destination.locId));
-      localStorage.setItem('destinationLocationDescription', JSON.stringify(destination.locationDescription));
     }
   }, [destination]);
 
-  useEffect(() => { localStorage.setItem('cart', JSON.stringify(cart)); }, [cart]);
+  useEffect(() => {
+    localStorage.setItem('cart', JSON.stringify(cart));
+  }, [cart]);
+
   const handleIncrement = (itemId) => {
     incrementItem(itemId);
     setCart(JSON.parse(localStorage.getItem('cart')));
   };
+
   const handleDecrement = (itemId) => {
     decrementItem(itemId);
     setCart(JSON.parse(localStorage.getItem('cart')));
   };
+
   const handleClearCart = () => {
     clearCart();
     setCart({});
@@ -169,16 +176,19 @@ export default function RequisitionFormIndex() {
   const handleConfirmClick = () => {
     setDestination(tempDestination);
     setCurrentPage(1);
+    localStorage.setItem('destination', JSON.stringify(tempDestination));
   };
 
   const handleChangeClick = () => {
     setTempDestination(null);
     setDestination(null);
     setItems([]);
+    localStorage.removeItem('destination');
   };
 
   const handleSortChange = (e) => {
     setSortOption(e.target.value);
+    setItems(sortItems(items, e.target.value));
   };
 
   const handlePageChange = (page) => {
@@ -187,7 +197,7 @@ export default function RequisitionFormIndex() {
     }
   };
 
-  if (isLoading || !locations.length) { // Adjust the condition to check for empty locations array
+  if (isLoading || !locations.length || (destination &&!items.length)) {
     return (
       <div>
         <Hero>Requisition Form</Hero>
@@ -214,7 +224,7 @@ export default function RequisitionFormIndex() {
             onPageChange={handlePageChange}
             top={true}
           />
-          <ItemsGrid items={items} currentPage={currentPage} itemsPerPage={itemsPerPage} addToCart={handleIncrement}/>
+          <ItemsGrid items={items} currentPage={currentPage} itemsPerPage={itemsPerPage} addToCart={handleIncrement} />
           <Pagination
             currentPage={currentPage}
             totalPages={Math.ceil(items.length / itemsPerPage)}
