@@ -21,7 +21,6 @@
 .destinationDetails {
     background: #ffffff;
     padding: 20px;
-    margin-bottom: 20px;
 }
 
 .detailsRow {
@@ -154,33 +153,53 @@
 }
 
 /* Pagination */
-.pagination {
+.paginationTop, .paginationBottom {
     display: flex;
-    justify-content: center;
     align-items: center;
-    margin: 20px 0;
+    justify-content: center;
+    padding: 10px 0;
+    background-color: #ffffff;
+    border-top: 1px solid #ddd;
+    width: 100%;
+    position: relative; /* Ensure the pagination covers full width */
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+
+.paginationTop {
+    margin-bottom: 5px;
+}
+
+.paginationBottom {
+    margin-top: 10px;
 }
 
 .pageButton {
-    padding: 10px 15px;
+    background-color: #ffffff;
+    font-weight: bold;
+    color: #a6a6b3;
+    padding: 5px 10px;
     margin: 0 5px;
-    border: none;
-    background-color: #ddd;
     cursor: pointer;
-    border-radius: 4px;
-    transition: background-color 0.3s ease-in-out;
+    transition: background-color 0.3s, border-color 0.3s;
 }
 
 .pageButton:hover {
-    background-color: #ccc;
+    background-color: #f0f0f0;
+    border-color: #007b8a;
 }
 
 .pageButton:disabled {
     cursor: not-allowed;
-    background-color: #f0f0f0;
+    color: #999;
+    border-color: #ddd;
 }
 
 .activePage {
-    background-color: #27ae60;
-    color: white;
+    color: #6370bd;
+    border-color: #007b8a;
+}
+
+.ellipsis {
+    margin: 0 5px;
+    color: #999;
 }

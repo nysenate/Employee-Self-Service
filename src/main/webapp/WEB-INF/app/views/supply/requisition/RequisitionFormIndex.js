@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Hero from "../../../components/Hero";
 import styles from './RequisitionFormIndex.module.css';
 import { Button } from "../../../components/Button";
@@ -27,6 +27,7 @@ const SelectDestination = ({ locations, tempDestination, handleTempDestinationCh
     </div>
   );
 };
+
 const DestinationDetails = ({ destination, handleChangeClick, items }) => {
   return (
     <div className={styles.destinationDetails}>
@@ -52,6 +53,7 @@ const DestinationDetails = ({ destination, handleChangeClick, items }) => {
     </div>
   );
 };
+
 const ItemsGrid = ({ items, currentPage, itemsPerPage }) => {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentItems = items.slice(startIndex, startIndex + itemsPerPage);
@@ -64,41 +66,73 @@ const ItemsGrid = ({ items, currentPage, itemsPerPage }) => {
     </div>
   );
 };
-const ItemDisplay = (item) => {
-  // const handleImageError = (e) => {
-  //   e.target.src = "/assets/supply_photos/default.jpg"; // Set a default image
-  // };
-  console.log(item);
+
+const ItemDisplay = ({ item }) => {
   return (
     <div className={styles.itemCard}>
       <div className={styles.itemImage}>
         <img
-          src={`/assets/supply_photos/${item.item.commodityCode}.jpg`}
+          src={`/assets/supply_photos/${item.commodityCode}.jpg`}
           alt={item.description}
           width="160"
           height="120"
         />
       </div>
       <div className={styles.itemDescription}>
-        <h4>{item.item.description}</h4>
-        <p>{item.item.packageSize}</p>
+        <h4>{item.description}</h4>
+        <p>{item.packageSize}</p>
       </div>
       <div className={styles.itemPrice}>
-        <p>{item.item.price}</p>
+        <p>{item.price}</p>
       </div>
       <Button>Add to Cart</Button>
     </div>
   );
 }
-const Pagination = ({ currentPage, totalPages, onPageChange }) => {
-  const pageNumbers = [];
 
-  for (let i = 1; i <= totalPages; i++) {
-    pageNumbers.push(i);
-  }
+const Pagination = ({ currentPage, totalPages, onPageChange, top }) => {
+  const calculatePageNumbers = (currentPage, totalPages) => {
+    let pageNumbers = [];
+    pageNumbers.push(1);
+
+    if (currentPage > 5 && totalPages>9) {
+      pageNumbers.push('...');
+    }
+
+    let dl = Math.abs(currentPage - 1) - 4;
+    let dr = Math.abs(currentPage - totalPages) - 4;
+    let rangeStart = currentPage - 3;
+
+    console.log("currentPage", currentPage);
+    console.log("dl", dl);
+    console.log("dr", dr);
+
+    if (dl < 0) {
+      rangeStart = currentPage -3 - dl;
+      console.log("rangeStart: ", rangeStart, " = ", currentPage, " -3 - ", dl)
+    }
+    if (dr < 0) {
+      rangeStart = currentPage -3 + dr;
+    }
+
+    for (let i = rangeStart; i <= rangeStart + 6 && i < totalPages; i++) {
+      if (i > 1 && i < totalPages) {
+        pageNumbers.push(i);
+      }
+    }
+
+    if (currentPage < totalPages - 4 && totalPages>9) {
+      pageNumbers.push('...');
+    }
+    pageNumbers.push(totalPages);
+
+    return pageNumbers;
+  };
+
+  const pageNumbers = calculatePageNumbers(currentPage, totalPages);
 
   return (
-    <div className={styles.pagination}>
+    <div className={`${styles.pagination} ${top ? styles.paginationTop : styles.paginationBottom}`}>
       <button
         className={styles.pageButton}
         onClick={() => onPageChange(1)}
@@ -113,11 +147,11 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
       >
         &lsaquo;
       </button>
-      {pageNumbers.map((number) => (
+      {pageNumbers.map((number, index) => (
         <button
-          key={number}
+          key={index}
           className={`${styles.pageButton} ${number === currentPage ? styles.activePage : ''}`}
-          onClick={() => onPageChange(number)}
+          onClick={() => (number >= 1 && number <= totalPages) ? onPageChange(number) : console.log("nah")}
         >
           {number}
         </button>
@@ -157,7 +191,7 @@ export default function RequisitionFormIndex() {
   const [locations, setLocations] = useState([]);
   const [items, setItems] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6; // Adjust the number of items per page as needed
+  const itemsPerPage = 16; // Adjust the number of items per page as needed
 
   useEffect(() => {
     localStorage.setItem('destination', JSON.stringify(destination));
@@ -185,8 +219,11 @@ export default function RequisitionFormIndex() {
     setDestination('');
     setItems([]);
   };
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= Math.ceil(items.length / itemsPerPage)) {
+      setCurrentPage(page);
+    }
   };
 
   return (
@@ -195,9 +232,9 @@ export default function RequisitionFormIndex() {
       {destination ? (
         <div>
           <DestinationDetails destination={destination} handleChangeClick={handleChangeClick} items={items} />
-          <Pagination currentPage={currentPage} totalPages={Math.ceil(items.length / itemsPerPage)} onPageChange={handlePageChange} />
+          <Pagination currentPage={currentPage} totalPages={Math.ceil(items.length / itemsPerPage)} onPageChange={handlePageChange} top={true} />
           <ItemsGrid items={items} currentPage={currentPage} itemsPerPage={itemsPerPage} />
-          <Pagination currentPage={currentPage} totalPages={Math.ceil(items.length / itemsPerPage)} onPageChange={handlePageChange} />
+          <Pagination currentPage={currentPage} totalPages={Math.ceil(items.length / itemsPerPage)} onPageChange={handlePageChange} top={false} />
         </div>
       ) : (
          <SelectDestination
@@ -207,8 +244,6 @@ export default function RequisitionFormIndex() {
            handleConfirmClick={handleConfirmClick}
          />
        )}
-
-
     </div>
   );
 }
