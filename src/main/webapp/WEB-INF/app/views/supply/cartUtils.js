@@ -7,6 +7,12 @@ export const incrementItem = (itemId) => {
   localStorage.setItem('cart', JSON.stringify(cart));
 };
 
+export const updateItemQuantity = (itemId, quantity) => {
+  const cart = JSON.parse(localStorage.getItem('cart')) || {};
+  cart[itemId] = quantity;
+  localStorage.setItem('cart', JSON.stringify(cart));
+};
+
 // Function to decrement the item quantity in the cart
 export const decrementItem = (itemId) => {
   const cart = JSON.parse(localStorage.getItem('cart')) || {};

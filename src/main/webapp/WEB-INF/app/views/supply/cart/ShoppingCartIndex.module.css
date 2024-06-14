@@ -74,3 +74,59 @@
     color: #333;
     background-color: #f9f9f9; /* Replace with desired background color */
 }
+
+/* Items Display */
+.itemGrid {
+    display: flex;
+    flex-wrap: wrap;
+    flexDirection: row;
+    justify-content: center;
+}
+
+.itemCard {
+    border: 1px solid #ddd;
+    padding: 16px;
+    text-align: center;
+    background-color: #fff;
+    width: 100%;
+    height: 251px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between; /* Ensure space between elements */
+    border-top: lightgrey;
+}
+
+.itemImage {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    height: 140px; /* Fixed height for the image container */
+    width: 220px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.itemImage img {
+    max-height: 100%;
+    object-fit: contain; /* This ensures the image scales to fit while maintaining aspect ratio */
+}
+
+.itemDescription h4 {
+    margin: 10px 0 5px; /* Reduced margin for fitting within the fixed height */
+    font-size: 1.0em;
+    color: #333;
+    height: 40px; /* Ensures description does not overflow */
+    overflow: hidden; /* Hide overflowing text */
+}
+
+.itemDescription p {
+    margin: 5px 0;
+    color: #666;
+}
+
+.itemPrice p {
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #27ae60;
+}

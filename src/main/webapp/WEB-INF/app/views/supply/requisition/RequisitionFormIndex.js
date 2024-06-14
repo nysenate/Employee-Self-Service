@@ -57,20 +57,29 @@ const DestinationDetails = ({ destination, handleChangeClick, items, handleSortC
   );
 };
 
-const ItemsGrid = ({ items, currentPage, itemsPerPage, addToCart }) => {
+//Items
+const ItemsGrid = ({ items, currentPage, itemsPerPage, cart, handleIncrement, handleDecrement }) => {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentItems = items.slice(startIndex, startIndex + itemsPerPage);
 
   return (
     <div className={styles.itemGrid}>
       {currentItems.map((item) => (
-        <ItemDisplay key={item.id} item={item} addToCart={addToCart} />
+        <ItemDisplay
+          key={item.id}
+          item={item}
+          cart={cart}
+          handleIncrement={handleIncrement}
+          handleDecrement={handleDecrement}
+        />
       ))}
     </div>
   );
 };
+const ItemDisplay = ({ item, cart, handleIncrement, handleDecrement }) => {
+  const itemInCart = cart[item.id];
+  const isMaxQuantity = itemInCart && itemInCart >= item.perOrderAllowance;
 
-const ItemDisplay = ({ item, addToCart }) => {
   return (
     <div className={styles.itemCard}>
       <div className={styles.itemImage}>
@@ -84,10 +93,24 @@ const ItemDisplay = ({ item, addToCart }) => {
         <h4>{item.description}</h4>
         <p>{item.unit}</p>
       </div>
-      <Button onClick={() => addToCart(item.id)}>Add to Cart</Button>
+      {itemInCart ? (
+        <div className={styles.cartControls}>
+          <Button onClick={() => handleDecrement(item.id)}>-</Button>
+          <span>{itemInCart}</span>
+          <Button
+            onClick={() => itemInCart===item.perOrderAllowance ? console.log('Insert Popup here') : handleIncrement(item.id)}
+            style={{ backgroundColor: isMaxQuantity ? 'red' : '' }}
+          >
+            +
+          </Button>
+        </div>
+      ) : (
+         <Button onClick={() => handleIncrement(item.id)}>Add to Cart</Button>
+       )}
     </div>
   );
 };
+//End Items
 
 const getLocations = async (empId) => {
   return await fetchApiJson(`/supply/destinations/${empId}`).then((body) => body);
@@ -114,7 +137,7 @@ export default function RequisitionFormIndex() {
   const itemsPerPage = 16;
   const [currentPage, setCurrentPage] = useState(1);
   const [sortOption, setSortOption] = useState('name');
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
   const [cart, setCart] = useState(() => JSON.parse(localStorage.getItem('cart')) || {});
 
   useEffect(() => {
@@ -130,10 +153,8 @@ export default function RequisitionFormIndex() {
   useEffect(() => {
     if (destination) {
       const fetchItems = async () => {
-        // setIsLoading(true);
         const fetchedItems = await getItems(destination.locId);
         setItems(fetchedItems);
-        // setIsLoading(false);
       };
       fetchItems();
     }
@@ -197,7 +218,7 @@ export default function RequisitionFormIndex() {
     }
   };
 
-  if (isLoading || !locations.length || (destination &&!items.length)) {
+  if (!locations.length || (destination &&!items.length)) {
     return (
       <div>
         <Hero>Requisition Form</Hero>
@@ -224,7 +245,14 @@ export default function RequisitionFormIndex() {
             onPageChange={handlePageChange}
             top={true}
           />
-          <ItemsGrid items={items} currentPage={currentPage} itemsPerPage={itemsPerPage} addToCart={handleIncrement} />
+          <ItemsGrid
+            items={items}
+            currentPage={currentPage}
+            itemsPerPage={itemsPerPage}
+            cart={cart}
+            handleIncrement={handleIncrement}
+            handleDecrement={handleDecrement}
+          />
           <Pagination
             currentPage={currentPage}
             totalPages={Math.ceil(items.length / itemsPerPage)}
