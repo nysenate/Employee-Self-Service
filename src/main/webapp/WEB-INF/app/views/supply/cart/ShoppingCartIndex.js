@@ -1,18 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './ShoppingCartIndex.module.css';
-import styled from 'styled-components';
 import { Button } from "../../../components/Button";
 import Hero from "../../../components/Hero";
+import { incrementItem, decrementItem, clearCart } from '../cartUtils';
+import { Link } from 'react-router-dom';
 
-const Destination = () => (
-  <div className="bg-white content-info" style={{ height: "70px", color: "black", borderBottom: 'none' }}>
-    <div className="padding-10" style={{ display: 'flex'}}>
-      <div style={{ display: 'inline-block'}}>
-        <span className="supply-text">Destination: </span>A42FB (2nd FLOOR, AG4)
+const Destination = () => {
+  // const locId = JSON.parse(localStorage.getItem('destinationLocId'));
+  // const locationDescription = JSON.parse(localStorage.getItem('destinationLocationDescription'));
+  return (
+    <div className="bg-white content-info" style={{ height: "70px", color: "black", borderBottom: 'none' }}>
+      <div className="padding-10" style={{ display: 'flex'}}>
+        <div style={{ display: 'inline-block'}}>
+          {/*<span className="supply-text">Destination: </span>{locId} ({locationDescription})*/}
+          <span className="supply-text">Destination: </span> AGDS (asdfasdf)
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+}
 
 const CartList = ({ cartItems }) => (
   <div>
@@ -20,14 +26,14 @@ const CartList = ({ cartItems }) => (
     <ul>
       {cartItems.map((cartItem, index) => (
         <li key={index}>
-          {cartItem.name}
+          {cartItem.id} - {cartItem.quantity}
         </li>
       ))}
     </ul>
   </div>
 );
 
-const SpecialInstructions = () => {
+const SpecialInstructions = ({ clearCart }) => {
   const [instructions, setInstructions] = useState('');
 
   return (
@@ -40,9 +46,13 @@ const SpecialInstructions = () => {
         onChange={(e) => setInstructions(e.target.value)}
       />
       <div className={styles.buttonGroup}>
-        <Button style={{ backgroundColor: "grey", margin: "5 px" }} onClick={() => setInstructions('')}>Empty Cart</Button>
-        <Button style={{ marginLeft: '5px', backgroundColor: "grey", margin: "5 px" }}>Continue Browsing</Button>
-        <Button style={{ marginLeft: '5px', margin: "5 px" }} >Checkout</Button>
+        <Button style={{ backgroundColor: "grey", margin: "5px" }} onClick={clearCart}>Empty Cart</Button>
+        <Link to="/supply/shopping/order" style={{ textDecoration: 'none' }}>
+          <Button style={{ marginLeft: '5px', backgroundColor: "grey", margin: "5px" }}>
+            Continue Browsing
+          </Button>
+        </Link>
+        <Button style={{ marginLeft: '5px', margin: "5px" }}>Checkout</Button>
       </div>
       <div className={styles.clearfix}></div>
     </div>
@@ -50,8 +60,21 @@ const SpecialInstructions = () => {
 };
 
 export default function ShoppingCart() {
-  const empty = false; // Set to true to simulate an empty cart for the example
-  const [cartItems, setCartItems] = useState(empty ? [] : [{ name: "Item1" }]);
+  const [cart, setCart] = useState(() => JSON.parse(localStorage.getItem('cart')) || {});
+  useEffect(() => { localStorage.setItem('cart', JSON.stringify(cart)); }, [cart]);
+  const handleIncrement = (itemId) => {
+    incrementItem(itemId);
+    setCart(JSON.parse(localStorage.getItem('cart')));
+  };
+  const handleDecrement = (itemId) => {
+    decrementItem(itemId);
+    setCart(JSON.parse(localStorage.getItem('cart')));
+  };
+  const handleClearCart = () => {
+    clearCart();
+    setCart({});
+  };
+  const cartItems = Object.entries(cart).map(([id, quantity]) => ({ id, quantity }));
 
   return (
     <div>
@@ -61,18 +84,20 @@ export default function ShoppingCart() {
           <div>
             <div className={styles.emptyCartMessage}>Your cart is empty.</div>
             <div className={styles.emptyCartContainer}>
-              <Button style={{ backgroundColor: "grey" }}>Continue Browsing</Button>
+              <Link to="/supply/shopping/order" style={{ textDecoration: 'none' }}>
+                <Button style={{ backgroundColor: "grey" }}>Continue Browsing</Button>
+              </Link>
             </div>
           </div>
         ) : (
-          <>
-            <Destination />
-            <CartList cartItems={cartItems} />
-            <div className={styles.cartCheckoutContainer}>
-              <SpecialInstructions />
-            </div>
-          </>
-        )}
+           <>
+             <Destination />
+             <CartList cartItems={cartItems} />
+             <div className={styles.cartCheckoutContainer}>
+               <SpecialInstructions clearCart={handleClearCart}/>
+             </div>
+           </>
+         )}
       </div>
     </div>
   );

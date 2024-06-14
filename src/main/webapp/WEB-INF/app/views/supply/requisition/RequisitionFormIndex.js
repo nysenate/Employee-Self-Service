@@ -6,6 +6,7 @@ import { fetchApiJson } from "app/utils/fetchJson";
 import useAuth from "app/contexts/Auth/useAuth";
 import LoadingIndicator from "app/components/LoadingIndicator";
 import Pagination from "./Pagination";
+import { incrementItem, decrementItem, clearCart } from '../cartUtils';
 
 const SelectDestination = ({ locations, tempDestination, handleTempDestinationChange, handleConfirmClick }) => {
   return (
@@ -14,11 +15,11 @@ const SelectDestination = ({ locations, tempDestination, handleTempDestinationCh
         Please select a destination
         <select
           className={styles.selectDestination}
-          value={tempDestination}
-          onChange={handleTempDestinationChange}
+          value={tempDestination ? tempDestination.locId : ""}
+          onChange={(e) => handleTempDestinationChange(e.target.value)}
         >
           <option value="">Select Destination</option>
-          {locations && locations.map((location) => (
+          {locations.map((location) => (
             <option key={location.locId} value={location.locId}>
               {location.code} ({location.locationDescription})
             </option>
@@ -30,10 +31,8 @@ const SelectDestination = ({ locations, tempDestination, handleTempDestinationCh
   );
 };
 
-const DestinationDetails = ({ locations, destination, handleChangeClick, items, handleSortChange, sortOption }) => {
-  const location = locations?.find(loc => loc.locId === destination);
-
-  if (!location) return <div>Location not found</div>;
+const DestinationDetails = ({ destination, handleChangeClick, items, handleSortChange, sortOption }) => {
+  const location = destination; // destination now holds the entire location object
 
   return (
     <div className={styles.destinationDetails}>
@@ -60,20 +59,20 @@ const DestinationDetails = ({ locations, destination, handleChangeClick, items, 
   );
 };
 
-const ItemsGrid = ({ items, currentPage, itemsPerPage }) => {
+const ItemsGrid = ({ items, currentPage, itemsPerPage, addToCart }) => {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentItems = items?.slice(startIndex, startIndex + itemsPerPage);
 
   return (
     <div className={styles.itemGrid}>
       {currentItems?.map((item) => (
-        <ItemDisplay key={item.id} item={item} />
+        <ItemDisplay key={item.id} item={item} addToCart={addToCart} />
       ))}
     </div>
   );
 };
 
-const ItemDisplay = ({ item }) => {
+const ItemDisplay = ({ item, addToCart }) => {
   return (
     <div className={styles.itemCard}>
       <div className={styles.itemImage}>
@@ -87,7 +86,7 @@ const ItemDisplay = ({ item }) => {
         <h4 style={{fontWeight: 'medium'}}>{item.description}</h4>
         <p>{item.unit}</p>
       </div>
-      <Button>Add to Cart</Button>
+      <Button onClick={() => addToCart(item.id)}>Add to Cart</Button>
     </div>
   );
 };
@@ -105,13 +104,14 @@ const getItems = async (locId) => {
 export default function RequisitionFormIndex() {
   const auth = useAuth();
   const [locations, setLocations] = useState([]); // Initialize as an empty array
-  const [destination, setDestination] = useState();
-  const [tempDestination, setTempDestination] = useState(destination);
+  const [destination, setDestination] = useState(null); // Update to hold the entire location object
+  const [tempDestination, setTempDestination] = useState(null);
   const [items, setItems] = useState([]);
   const itemsPerPage = 16; // Adjust the number of items per page as needed
   const [currentPage, setCurrentPage] = useState(1);
   const [sortOption, setSortOption] = useState('name');
   const [isLoading, setIsLoading] = useState(false);
+  const [cart, setCart] = useState(JSON.parse(localStorage.getItem('cart')) || {});
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -127,13 +127,29 @@ export default function RequisitionFormIndex() {
     if (destination) {
       const fetchItems = async () => {
         setIsLoading(true);
-        const fetchedItems = await getItems(destination);
-        setItems(sortItems(fetchedItems, sortOption));
+        const fetchedItems = await getItems(destination.locId);
+        setItems(fetchedItems);
         setIsLoading(false);
       };
       fetchItems();
+      localStorage.setItem('destinationLocId', JSON.stringify(destination.locId));
+      localStorage.setItem('destinationLocationDescription', JSON.stringify(destination.locationDescription));
     }
-  }, [destination, sortOption]); // Re-fetch items on sortOption change
+  }, [destination]);
+
+  useEffect(() => { localStorage.setItem('cart', JSON.stringify(cart)); }, [cart]);
+  const handleIncrement = (itemId) => {
+    incrementItem(itemId);
+    setCart(JSON.parse(localStorage.getItem('cart')));
+  };
+  const handleDecrement = (itemId) => {
+    decrementItem(itemId);
+    setCart(JSON.parse(localStorage.getItem('cart')));
+  };
+  const handleClearCart = () => {
+    clearCart();
+    setCart({});
+  };
 
   const sortItems = (items, sortOption) => {
     if (sortOption === 'name') {
@@ -145,8 +161,9 @@ export default function RequisitionFormIndex() {
     return items;
   };
 
-  const handleTempDestinationChange = (e) => {
-    setTempDestination(e.target.value);
+  const handleTempDestinationChange = (locId) => {
+    const selectedLocation = locations.find((loc) => loc.locId === locId);
+    setTempDestination(selectedLocation);
   };
 
   const handleConfirmClick = () => {
@@ -155,8 +172,8 @@ export default function RequisitionFormIndex() {
   };
 
   const handleChangeClick = () => {
-    setTempDestination('');
-    setDestination('');
+    setTempDestination(null);
+    setDestination(null);
     setItems([]);
   };
 
@@ -185,7 +202,6 @@ export default function RequisitionFormIndex() {
       {destination ? (
         <div>
           <DestinationDetails
-            locations={locations}
             destination={destination}
             handleChangeClick={handleChangeClick}
             items={items}
@@ -198,7 +214,7 @@ export default function RequisitionFormIndex() {
             onPageChange={handlePageChange}
             top={true}
           />
-          <ItemsGrid items={items} currentPage={currentPage} itemsPerPage={itemsPerPage} />
+          <ItemsGrid items={items} currentPage={currentPage} itemsPerPage={itemsPerPage} addToCart={handleIncrement}/>
           <Pagination
             currentPage={currentPage}
             totalPages={Math.ceil(items.length / itemsPerPage)}
