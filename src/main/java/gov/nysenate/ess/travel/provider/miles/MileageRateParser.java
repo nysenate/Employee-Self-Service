@@ -4,23 +4,22 @@ import gov.nysenate.ess.core.util.DateUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-@Component
-public class MileageRateParser {
+public final class MileageRateParser {
+    private MileageRateParser() {}
+
     /**
      * Parses the gsa irs reimbursement rates website to extract the current {@link MileageRate}.
-     * https://www.gsa.gov/travel/plan-book/transportation-airfare-rates-pov-rates-etc/privately-owned-vehicle-pov-mileage-reimbursement-rates
-     *
+     * <a href="https://www.gsa.gov/travel/plan-book/transportation-airfare-rates-pov-rates-etc/privately-owned-vehicle-pov-mileage-reimbursement-rates">...</a>
      * @param content The HTML content of the website.
      * @return
      */
-    public MileageRate parseMileageRate(String content) {
+    public static MileageRate parseMileageRate(String content) {
         checkArgument(content != null, "content cannot be null.");
         checkArgument(!content.isEmpty(), "content cannot be an empty string.");
 
