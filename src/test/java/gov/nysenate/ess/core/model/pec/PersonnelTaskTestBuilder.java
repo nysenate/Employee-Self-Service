@@ -26,6 +26,10 @@ public class PersonnelTaskTestBuilder {
 
     private boolean notifiable;
 
+    private String url;
+
+    private String resource;
+
     public PersonnelTaskTestBuilder(int taskId,
                                     PersonnelTaskType taskType,
                                     PersonnelTaskAssignmentGroup assignmentGroup,
@@ -33,7 +37,9 @@ public class PersonnelTaskTestBuilder {
                                     LocalDateTime effectiveDateTime,
                                     LocalDateTime endDateTime,
                                     boolean active,
-                                    boolean notifiable) {
+                                    boolean notifiable,
+                                    String url,
+                                    String resource) {
         this.taskId = taskId;
         this.taskType = taskType;
         this.assignmentGroup = assignmentGroup;
@@ -42,6 +48,8 @@ public class PersonnelTaskTestBuilder {
         this.endDateTime = endDateTime;
         this.active = active;
         this.notifiable = notifiable;
+        this.url = url;
+        this.resource = resource;
     }
 
     public PersonnelTaskTestBuilder() {
@@ -53,7 +61,9 @@ public class PersonnelTaskTestBuilder {
                 DateUtils.LONG_AGO.atStartOfDay(),
                 null,
                 true,
-                false
+                false,
+                "https://www.example.com",
+                "test"
         );
         this.title = "This is a test task # " + this.testTaskNumber + ", please report to helpline if seen";
     }
@@ -67,7 +77,9 @@ public class PersonnelTaskTestBuilder {
                 task.getEffectiveDateTime(),
                 task.getEndDateTime(),
                 task.isActive(),
-                task.isNotifiable()
+                task.isNotifiable(),
+                task.getUrl(),
+                task.getResource()
         );
     }
 
@@ -80,7 +92,9 @@ public class PersonnelTaskTestBuilder {
                 effectiveDateTime,
                 endDateTime,
                 active,
-                notifiable
+                notifiable,
+                url,
+                resource
         );
     }
 
@@ -150,5 +164,17 @@ public class PersonnelTaskTestBuilder {
 
     public boolean isActive() {
         return active;
+    }
+
+    public boolean isNotifiable() {
+        return notifiable;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public String getResource() {
+        return resource;
     }
 }

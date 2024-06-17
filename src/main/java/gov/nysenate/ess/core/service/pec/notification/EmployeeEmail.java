@@ -14,19 +14,23 @@ import java.util.Optional;
  */
 public class EmployeeEmail {
     private static final String multiTaskHtml =
-            "<b>%s, our records indicate you have outstanding trainings to complete which is mandatory by law.</b><br>" +
+            "<b>%s, our records indicate you have mandatory outstanding training assignments.</b><br>" +
                     "You can find instructions to complete them by logging into ESS, " +
                     "then clicking the My Info tab and clicking on the To Do List. " +
                     "Or, go to this link <a href=\"%s\">HERE</a><br><br>" +
                     "<b>You must complete the following trainings: </b><br>",
 
             singleTaskHtml =
-            "<b>%s, our records indicate you have an outstanding training to complete which is mandatory by law.</b><br>" +
+            "<b>%s, our records indicate you have a mandatory outstanding training assignment.</b><br>" +
                     "You can find instructions to complete it by logging into ESS, " +
                     "then clicking the My Info tab and clicking on the To Do List. " +
                     "Or, go to this link <a href=\"%s\">HERE</a><br><br>" +
                     "<b>You must complete the following training: </b><br>",
             completionHtml = "Our records have been updated to indicate you have completed %s.",
+
+            ethicsLiveLegalLanguage = "New employees have 90 days from their hiring date to complete this assignment.<br>" +
+                    "All employees are required to complete the training by DECEMBER, 31 2024.",
+
             assignLengthStr = "You have %d days from your hiring date to complete this assignment. It is due by %s.<br>",
 
             pastDueAssignLengthStr = "You had %d days from your hiring date to complete this assignment. It was due by %s.<br>";
@@ -93,12 +97,12 @@ public class EmployeeEmail {
         if (type == PersonnelTaskType.ETHICS_LIVE_COURSE) {
             if (pastDue) {
                 ethicsLiveStr = pastDueAssignLengthStr.formatted(90, unambiguousDate);
-                return Optional.of(ethicsLiveStr + " These live sessions are run monthly.<br>");
             }
             else {
                 ethicsLiveStr = assignLengthStr.formatted(90, unambiguousDate);
-                return Optional.of(ethicsLiveStr + " These live sessions are run monthly.<br>");
             }
+            ethicsLiveStr = ethicsLiveStr + ethicsLiveLegalLanguage;
+            return Optional.of(ethicsLiveStr + " These live sessions are run a limited number of times a month.<br>");
         }
         return Optional.empty();
     }

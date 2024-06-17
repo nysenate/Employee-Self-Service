@@ -12,13 +12,13 @@ public class MoodleCourseTask extends PersonnelTask {
 
     private final URL courseUrl;
 
-    public MoodleCourseTask(PersonnelTask task, String urlString) {
+    public MoodleCourseTask(PersonnelTask task) {
         super(task);
 
         try {
-            this.courseUrl = new URL(urlString);
+            this.courseUrl = new URL(task.getUrl());
         } catch (MalformedURLException e) {
-            throw new IllegalArgumentException("Invalid moodle course url string: \"" + urlString + "\"", e);
+            throw new IllegalArgumentException("Invalid moodle course url string: \"" + task.getUrl() + "\"", e);
         }
     }
 

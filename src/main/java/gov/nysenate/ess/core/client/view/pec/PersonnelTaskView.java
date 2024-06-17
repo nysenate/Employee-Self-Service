@@ -17,6 +17,10 @@ public class PersonnelTaskView implements ViewObject {
     private final boolean active;
     private final boolean notifiable;
 
+    private final String url;
+
+    private final String resource;
+
     public PersonnelTaskView(PersonnelTask task) {
         this.taskId = task.getTaskId();
         this.taskType = task.getTaskType();
@@ -25,6 +29,8 @@ public class PersonnelTaskView implements ViewObject {
         this.endDateTime = task.getEndDateTime();
         this.active = task.isActive();
         this.notifiable = task.isNotifiable();
+        this.url = task.getUrl();
+        this.resource = task.getResource();
     }
 
     @Override
@@ -61,5 +67,13 @@ public class PersonnelTaskView implements ViewObject {
 
     public boolean isNotifiable() {
         return notifiable;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public String getResource() {
+        return resource;
     }
 }

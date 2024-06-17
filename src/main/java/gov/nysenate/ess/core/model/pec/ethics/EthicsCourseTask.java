@@ -9,13 +9,13 @@ public class EthicsCourseTask extends PersonnelTask {
 
     private final URL courseUrl;
 
-    public EthicsCourseTask(PersonnelTask task, String urlString) {
+    public EthicsCourseTask(PersonnelTask task) {
         super(task);
 
         try {
-            this.courseUrl = new URL(urlString);
+            this.courseUrl = new URL(task.getUrl());
         } catch (MalformedURLException e) {
-            throw new IllegalArgumentException("Invalid ethics course url string: \"" + urlString + "\"", e);
+            throw new IllegalArgumentException("Invalid ethics course url string: \"" + task.getUrl() + "\"", e);
         }
     }
 

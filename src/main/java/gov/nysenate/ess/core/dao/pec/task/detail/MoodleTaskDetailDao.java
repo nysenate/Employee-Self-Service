@@ -28,50 +28,6 @@ public class MoodleTaskDetailDao extends SqlBaseDao implements PersonnelTaskDeta
 
     @Override
     public MoodleCourseTask getTaskDetails(PersonnelTask task) {
-        List<MoodleCourseTask> moodleCourseTasks = localNamedJdbc.query(
-                Query.SELECT_MOODLE_COURSE.getSql(schemaMap()),
-                new MapSqlParameterSource("taskId", task.getTaskId()),
-                new MoodleCourseRowMapper(task)
-        );
-        if (moodleCourseTasks.isEmpty() || moodleCourseTasks == null) {
-            throw new IncorrectResultSizeDataAccessException(0);
-        }
-        else {
-            return moodleCourseTasks.get(0);
-        }
-    }
-
-    private static class MoodleCourseRowMapper implements RowMapper<MoodleCourseTask> {
-        private final PersonnelTask personnelTask;
-
-        private MoodleCourseRowMapper(PersonnelTask personnelTask) {
-            this.personnelTask = personnelTask;
-        }
-
-        @Override
-        public MoodleCourseTask mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return new MoodleCourseTask(personnelTask, rs.getString("url"));
-        }
-    }
-
-    private enum Query implements BasicSqlQuery {
-        SELECT_MOODLE_COURSE("SELECT * FROM ${essSchema}.moodle_course WHERE task_id = :taskId"),
-        ;
-
-        private final String sql;
-
-        Query(String sql) {
-            this.sql = sql;
-        }
-
-        @Override
-        public String getSql() {
-            return sql;
-        }
-
-        @Override
-        public DbVendor getVendor() {
-            return DbVendor.POSTGRES;
-        }
+        return new MoodleCourseTask(task);
     }
 }

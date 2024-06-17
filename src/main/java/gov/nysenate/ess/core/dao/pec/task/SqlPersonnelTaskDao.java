@@ -100,27 +100,10 @@ public class SqlPersonnelTaskDao extends SqlBaseDao implements PersonnelTaskDao 
     }
 
     @Override
-    public int getEthicsCodeId(int taskId) {
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("taskId",taskId);
-        return localNamedJdbc.queryForObject(SELECT_ETHICS_LIVE_COURSE_CODE_INFO.getSql(schemaMap()), params, Integer.class);
-    }
-
-
-    @Override
-    public void updateEthicsCode(String code, int ethicsCodeId, int sequenceNo ) {
+    public void updateEthicsCode(String code, int taskId, int sequenceNo, String startDate, String endDate){
         MapSqlParameterSource updateParams = new MapSqlParameterSource();
         updateParams.addValue("code",code);
-        updateParams.addValue("codeId",ethicsCodeId);
-        updateParams.addValue("sequence_no",sequenceNo);
-        localNamedJdbc.update(UPDATE_ETHICS_CODE.getSql(schemaMap()), updateParams );
-    }
-
-    @Override
-    public void updateEthicsCode(String code, int ethicsCodeId, int sequenceNo, String startDate, String endDate){
-        MapSqlParameterSource updateParams = new MapSqlParameterSource();
-        updateParams.addValue("code",code);
-        updateParams.addValue("codeId",ethicsCodeId);
+        updateParams.addValue("taskId",taskId);
         updateParams.addValue("sequence_no",sequenceNo);
         updateParams.addValue("start_date",startDate);
         updateParams.addValue("end_date",endDate);
@@ -129,9 +112,9 @@ public class SqlPersonnelTaskDao extends SqlBaseDao implements PersonnelTaskDao 
     }
 
     @Override
-    public void insertEthicsCode(int ethicsCodeId, int sequenceNo, String Label, String code, LocalDateTime StartDate, LocalDateTime EndDate){
+    public void insertEthicsCode(int taskId, int sequenceNo, String Label, String code, LocalDateTime StartDate, LocalDateTime EndDate){
         MapSqlParameterSource updateParams = new MapSqlParameterSource();
-        updateParams.addValue("codeId",ethicsCodeId);
+        updateParams.addValue("taskId",taskId);
         updateParams.addValue("sequence_no",sequenceNo);
         updateParams.addValue("label",Label);
         updateParams.addValue("code",code);
@@ -153,13 +136,15 @@ public class SqlPersonnelTaskDao extends SqlBaseDao implements PersonnelTaskDao 
                     getLocalDateTime(rs, "effective_date_time"),
                     getLocalDateTime(rs, "end_date_time"),
                     rs.getBoolean("active"),
-                    rs.getBoolean("notifiable")
+                    rs.getBoolean("notifiable"),
+                    rs.getString("url"),
+                    rs.getString("resource")
             );
 
     private static final RowMapper<DateRangedEthicsCode> ethicsCodeRowMapper = (rs, rowNum) ->
             new DateRangedEthicsCode(
                     rs.getInt("id"),
-                    rs.getInt("ethics_code_id"),
+                    rs.getInt("task_id"),
                     rs.getInt("sequence_no"),
                     rs.getString("label"),
                     rs.getString("code"),

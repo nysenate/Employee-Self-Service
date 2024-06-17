@@ -1,5 +1,6 @@
 package gov.nysenate.ess.core.client.view.pec;
 
+import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.moodle.MoodleCourseTask;
 
 import java.util.Objects;
@@ -8,12 +9,11 @@ public class MoodleTaskView extends PersonnelTaskView {
 
     private String url;
 
-    public MoodleTaskView(MoodleCourseTask task) {
+    public MoodleTaskView(PersonnelTask task) {
         super(task);
-        this.url = Objects.toString(task.getCourseUrl());
     }
 
     public String getUrl() {
-        return url;
+        return super.getUrl();
     }
 }

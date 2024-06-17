@@ -8,17 +8,17 @@ public class DateRangedEthicsCode implements Comparable<DateRangedEthicsCode> {
 
     //Fields in this class are a 1 to 1 mapping of the ethics code table. It's ok for some fields to be unused
     private final int id;
-    private final int ethics_code_id;
+    private final int task_id;
     private final int sequence_no;
     private final String label;
     private final String code;
     private final LocalDateTime start_date;
     private final LocalDateTime end_date;
 
-    public DateRangedEthicsCode(int id, int ethics_code_id, int sequence_no, String label,
+    public DateRangedEthicsCode(int id, int task_id, int sequence_no, String label,
                                 String code, LocalDateTime start_date, LocalDateTime end_date) {
         this.id = id;
-        this.ethics_code_id = ethics_code_id;
+        this.task_id = task_id;
         this.sequence_no = sequence_no;
         this.label = label;
         this.code = code;
@@ -42,8 +42,8 @@ public class DateRangedEthicsCode implements Comparable<DateRangedEthicsCode> {
         return id;
     }
 
-    public int getEthicsCodeId() {
-        return ethics_code_id;
+    public int getTaskId() {
+        return task_id;
     }
 
     @Override

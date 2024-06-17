@@ -369,9 +369,9 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
     private PersonnelTaskView getPersonnelTaskView(PersonnelTask detailedTask) {
         return switch (detailedTask.getTaskType()) {
             case DOCUMENT_ACKNOWLEDGMENT ->
-                    new AckDocView((AckDoc) detailedTask, assets + ackDocPath);
+                    new AckDocView(detailedTask, assets + ackDocPath);
             case MOODLE_COURSE ->
-                    new MoodleTaskView((MoodleCourseTask) detailedTask);
+                    new MoodleTaskView(detailedTask);
             case VIDEO_CODE_ENTRY ->
                     new PECVideoView((VideoTask) detailedTask, assets + pecVidPath);
             case EVERFI_COURSE ->
