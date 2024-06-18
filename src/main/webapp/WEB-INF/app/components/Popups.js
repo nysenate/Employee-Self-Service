@@ -21,10 +21,14 @@ export function OverOrderPopup({ isModalOpen, closeModal, onAction }) {
       onClose={closeModal}
       title="Ordering over recommended quantity"
     >
-      <p>You are trying to order over the recommended quantity. This requires management approval.</p>
-      <p>Would you like to continue?</p>
-      <Button onClick={handleCancel}>Cancel</Button>
-      <Button onClick={handleYes}>Yes</Button>
+      <div style={{margin: '20px', textAlign: 'center'}}>
+        <p>You are trying to order over the recommended quantity. This requires management approval.</p>
+        <p>Would you like to continue?</p>
+      </div>
+      <div style={{display: 'flex', justifyContent: 'center', gap: '5px'}}>
+        <Button style={{backgroundColor: '#8d8d8d'}} onClick={handleCancel}>Cancel</Button>
+        <Button onClick={handleYes}>Yes</Button>
+      </div>
     </Popup>
   );
 }
@@ -47,10 +51,17 @@ export function CheckOutPopup({ isModalOpen, closeModal, onAction }) {
       onClose={closeModal}
       title="Choose delivery method"
     >
-      <p>Would you like to pick up this order or have it delivered to you?</p>
-      <p>Note: Orders can be picked up from L212.</p>
-      <Button onClick={handlePickup}>I'll pick it up</Button>
-      <Button onClick={handleDelivery}>Please deliver to me</Button>
+
+      <div>
+        <h4 className="p-2 font-semibold text-center" style={{margin: '10px'}} >Would you like to pick up this order <br /> or have it delivered to you?</h4>
+        <p style={{marginBottom: '10px'}} >Note: Orders can be picked up from L212.</p>
+        <div style={{display: 'flex', justifyContent: 'center', gap: '5px'}}>
+          <Button onClick={handlePickup}>I'll pick it up</Button>
+          &nbsp;&nbsp;
+          <Button style={{backgroundColor: '#8d8d8d'}} onClick={handleDelivery}>Please deliver to me</Button>
+        </div>
+      </div>
+
     </Popup>
   );
 }
@@ -73,9 +84,11 @@ export function EmptyCartPopup({ isModalOpen, closeModal, onAction }) {
       onClose={closeModal}
       title="Confirm Empty Cart"
     >
-      <p>Are you sure you want to empty your cart?</p>
-      <Button onClick={handleCancel}>Cancel</Button>
-      <Button onClick={handleYes}>Yes</Button>
+      <p style={{margin: '10px', marginBottom: '20px', marginTop: '20px'}}>Are you sure you want to empty your cart?</p>
+      <div style={{display: 'flex', justifyContent: 'center', gap: '5px'}}>
+        <Button style={{backgroundColor: '#8d8d8d'}} onClick={handleCancel}>Cancel</Button>
+        <Button onClick={handleYes}>Yes</Button>
+      </div>
     </Popup>
   );
 }

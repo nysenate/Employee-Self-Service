@@ -7,7 +7,7 @@ import { fetchApiJson } from "app/utils/fetchJson";
 import useAuth from "app/contexts/Auth/useAuth";
 import LoadingIndicator from "app/components/LoadingIndicator";
 import Pagination from "./Pagination";
-import { incrementItem, decrementItem, clearCart } from '../cartUtils';
+import { incrementItem, decrementItem, clearCart, updateItemQuantity } from '../cartUtils';
 
 const SelectDestination = ({ locations, tempDestination, handleTempDestinationChange, handleConfirmClick }) => {
   return (
@@ -59,7 +59,7 @@ const DestinationDetails = ({ destination, handleChangeClick, items, handleSortC
 };
 
 //Items
-const ItemsGrid = ({ items, currentPage, itemsPerPage, cart, handleIncrement, handleDecrement, handleOverOrderAttempt }) => {
+const ItemsGrid = ({ items, currentPage, itemsPerPage, cart, handleQuantityChange, handleOverOrderAttempt }) => {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentItems = items.slice(startIndex, startIndex + itemsPerPage);
 
@@ -70,17 +70,29 @@ const ItemsGrid = ({ items, currentPage, itemsPerPage, cart, handleIncrement, ha
           key={item.id}
           item={item}
           cart={cart}
-          handleIncrement={handleIncrement}
-          handleDecrement={handleDecrement}
+          handleQuantityChange={handleQuantityChange}
           handleOverOrderAttempt={handleOverOrderAttempt}
         />
       ))}
     </div>
   );
 };
-const ItemDisplay = ({ item, cart, handleIncrement, handleDecrement, handleOverOrderAttempt }) => {
+const ItemDisplay = ({ item, cart, handleQuantityChange, handleOverOrderAttempt }) => {
   const itemInCart = cart[item.id];
   const isMaxQuantity = itemInCart && itemInCart >= item.perOrderAllowance;
+  const [localValue, setLocalValue] = useState(cart[item.id] || 0);
+
+  // Synchronize localValue and itemInCart
+  useEffect(() => {
+    setLocalValue(itemInCart || 0);
+  }, [itemInCart]);
+
+  const handleTempInputChange = (e) => {
+    const { value } = e.target;
+    if (/^\d*$/.test(value)) { // Only allow numbers
+      setLocalValue(value);
+    }
+  };
 
   return (
     <div className={styles.itemCard}>
@@ -96,18 +108,54 @@ const ItemDisplay = ({ item, cart, handleIncrement, handleDecrement, handleOverO
         <p>{item.unit}</p>
       </div>
       {itemInCart ? (
-        <div className={styles.cartControls}>
-          <Button onClick={() => handleDecrement(item.id)}>-</Button>
-          <span>{itemInCart}</span>
-          <Button
-            onClick={() => itemInCart===item.perOrderAllowance ? handleOverOrderAttempt(item.id) : handleIncrement(item.id)}
-            style={{ backgroundColor: isMaxQuantity ? 'red' : '' }}
+        <div className={styles.itemQuantities}>
+          <p>{item.unit}</p>
+          <div className={styles.itemInputs}>
+            {/* Decrement Button */}
+            <button
+              className={styles.qtyAdjustButton}
+              onClick={() => handleQuantityChange(item.id, Math.max(0, parseInt(localValue, 10) - 1))}
+            >
+                -
+            </button>
+
+            {/* Quantity Input */}
+            <input
+              className={styles.qtyInput}
+              style={{ color: parseInt(localValue, 10) > item.perOrderAllowance ? 'red' : '' }}
+              type="text"
+              value={localValue}
+              onChange={handleTempInputChange}
+              onBlur={() => {
+                const numericLocalValue = parseInt(localValue, 10); // Ensure it's a number
+                if (numericLocalValue > item.perOrderAllowance && itemInCart <= item.perOrderAllowance) {
+                  handleOverOrderAttempt(item.id, numericLocalValue);
+                  setLocalValue(cart[item.id]);
+                } else {
+                  handleQuantityChange(item.id, numericLocalValue);
+                }
+              }}
+            />
+
+            {/* Increment Button */}
+            <button
+              className={styles.qtyAdjustButton}
+              onClick={() => {
+                const numericLocalValue = parseInt(localValue, 10); // Ensure it's a number
+                if (numericLocalValue === item.perOrderAllowance) {
+                  handleOverOrderAttempt(item.id, numericLocalValue + 1);
+                } else {
+                  handleQuantityChange(item.id, numericLocalValue + 1);
+                }
+              }}
+              style={{ backgroundColor: isMaxQuantity ? 'red' : '' }}
           >
-            +
-          </Button>
+              +
+            </button>
+          </div>
         </div>
       ) : (
-         <Button onClick={() => handleIncrement(item.id)}>Add to Cart</Button>
+         <Button onClick={() => handleQuantityChange(item.id, localValue+1)}>Add to Cart</Button>
        )}
     </div>
   );
@@ -144,6 +192,7 @@ export default function RequisitionFormIndex() {
 
   useEffect(() => {
     localStorage.removeItem('pending'); //Clean up pending if refresh occured before popup conclusion
+    localStorage.removeItem('pendingQuantity'); //Clean up pending if refresh occured before popup conclusion
   }, []);
 
   useEffect(() => {
@@ -170,32 +219,14 @@ export default function RequisitionFormIndex() {
     localStorage.setItem('cart', JSON.stringify(cart));
   }, [cart]);
 
-  const handleIncrement = (itemId) => {
-    incrementItem(itemId);
-    setCart(JSON.parse(localStorage.getItem('cart')));
-  };
-  const handleOverOrderAttempt = (itemId) => {
-    console.log("handleOverOrderAttempt()::::");
-    console.log("Attempting to over order item.id: ", itemId);
-    console.log("Setting item.id: ", itemId, " as pending item")
-    //setPendingItemId
+  const handleOverOrderAttempt = (itemId, newQuantity) => {
     localStorage.setItem('pending', JSON.stringify(itemId));
-    let pending = JSON.parse(localStorage.getItem('pending'));
-    if(pending){
-      console.log("item.id: ", itemId, " set as pending item: ", pending);
-    }else{
-      console.err("Could not set item.id: ", itemId, " as pending item: ", pending);
-    }
-    console.log("opening over order popup...");
+    localStorage.setItem('pendingQuantity', JSON.stringify(newQuantity));
     openOverOrderPopup();
   }
-  const handleDecrement = (itemId) => {
-    decrementItem(itemId);
+  const handleQuantityChange = (itemId, quantity) => {
+    updateItemQuantity(itemId, quantity);
     setCart(JSON.parse(localStorage.getItem('cart')));
-  };
-  const handleClearCart = () => {
-    clearCart();
-    setCart({});
   };
 
   const sortItems = (items, sortOption) => {
@@ -212,25 +243,21 @@ export default function RequisitionFormIndex() {
     const selectedLocation = locations.find((loc) => loc.locId === locId);
     setTempDestination(selectedLocation);
   };
-
   const handleConfirmClick = () => {
     setDestination(tempDestination);
     setCurrentPage(1);
     localStorage.setItem('destination', JSON.stringify(tempDestination));
   };
-
   const handleChangeClick = () => {
     setTempDestination(null);
     setDestination(null);
     setItems([]);
     localStorage.removeItem('destination');
   };
-
   const handleSortChange = (e) => {
     setSortOption(e.target.value);
     setItems(sortItems(items, e.target.value));
   };
-
   const handlePageChange = (page) => {
     if (page >= 1 && page <= Math.ceil(items.length / itemsPerPage)) {
       setCurrentPage(page);
@@ -247,21 +274,14 @@ export default function RequisitionFormIndex() {
     setIsOverOrderPopupOpen(false);
   };
   const handleOverOrderAction = (decision) => {
-    console.log("handleOverOrderAction()::::");
-    console.log("Over Order decision: ", decision);
-    let pending ='unretrieved';
     if(decision) {
       //retrieve pending:
-      pending = JSON.parse(localStorage.getItem('pending'));
-      console.log("Retrieved pending item id: ", pending);
-      console.log("Attempting to over order pending item: ", pending);
-      handleIncrement(pending);
+      let pending = JSON.parse(localStorage.getItem('pending'));
+      let pendingQuantity = JSON.parse(localStorage.getItem('pendingQuantity'));
+      handleQuantityChange(pending, pendingQuantity);
     }
-    console.log("deleting pending item id: ", pending)
-    //deletePendingItemId:
     localStorage.removeItem('pending');
-    pending = JSON.parse(localStorage.getItem('pending'));
-    console.log("Success?? -> Remaining pending item id: ", pending);
+    localStorage.removeItem('pendingQuantity');
   }
 
   if (!locations.length || (destination &&!items.length)) {
@@ -296,8 +316,7 @@ export default function RequisitionFormIndex() {
             currentPage={currentPage}
             itemsPerPage={itemsPerPage}
             cart={cart}
-            handleIncrement={handleIncrement}
-            handleDecrement={handleDecrement}
+            handleQuantityChange={handleQuantityChange}
             handleOverOrderAttempt={handleOverOrderAttempt}
           />
           <Pagination

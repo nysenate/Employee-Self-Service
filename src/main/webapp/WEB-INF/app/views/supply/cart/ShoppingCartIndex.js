@@ -3,7 +3,7 @@ import styles from './ShoppingCartIndex.module.css';
 import { Button } from "../../../components/Button";
 import Hero from "../../../components/Hero";
 import { OverOrderPopup, CheckOutPopup, EmptyCartPopup } from "../../../components/Popups";
-import { incrementItem, decrementItem, clearCart } from '../cartUtils';
+import { updateItemQuantity, clearCart } from '../cartUtils';
 import { Link } from 'react-router-dom';
 import { fetchApiJson } from "app/utils/fetchJson";
 
@@ -22,7 +22,7 @@ const Destination = () => {
 }
 
 //Items
-const ItemsGrid = ({ items, cart, handleIncrement, handleDecrement, handleOverOrderAttempt }) => {
+const ItemsGrid = ({ items, cart, handleQuantityChange, handleOverOrderAttempt }) => {
   return (
     <div className={styles.itemGrid}>
       {items.map((item) => (
@@ -30,8 +30,7 @@ const ItemsGrid = ({ items, cart, handleIncrement, handleDecrement, handleOverOr
           key={item.id}
           item={item}
           cart={cart}
-          handleIncrement={handleIncrement}
-          handleDecrement={handleDecrement}
+          handleQuantityChange={handleQuantityChange}
           handleOverOrderAttempt={handleOverOrderAttempt}
         />
       ))}
@@ -40,11 +39,24 @@ const ItemsGrid = ({ items, cart, handleIncrement, handleDecrement, handleOverOr
 };
 
 // Item display component for each cart item
-const ItemDisplay = ({ item, cart, handleIncrement, handleDecrement, handleOverOrderAttempt }) => {
+const ItemDisplay = ({ item, cart, handleQuantityChange, handleOverOrderAttempt }) => {
   const itemInCart = cart[item.id];
   const isMaxQuantity = itemInCart && itemInCart >= item.perOrderAllowance;
+  const [localValue, setLocalValue] = useState(cart[item.id] || 0);
 
-  if(!itemInCart) return;
+  // Synchronize localValue and itemInCart
+  useEffect(() => {
+    setLocalValue(itemInCart || 0);
+  }, [itemInCart]);
+
+  const handleTempInputChange = (e) => {
+    const { value } = e.target;
+    if (/^\d*$/.test(value)) { // Only allow numbers
+      setLocalValue(value);
+    }
+  };
+
+  if (!itemInCart) return null;
 
   return (
     <div className={styles.itemCard}>
@@ -57,20 +69,53 @@ const ItemDisplay = ({ item, cart, handleIncrement, handleDecrement, handleOverO
       </div>
       <div className={styles.itemDescription}>
         <h4>{item.description}</h4>
-        <p>{item.unit}</p>
       </div>
-      {
-        <div className={styles.cartControls}>
-          <Button onClick={() => handleDecrement(item.id)}>-</Button>
-          <span>{itemInCart}</span>
-          <Button
-            onClick={() => itemInCart===item.perOrderAllowance ? handleOverOrderAttempt(item.id) : handleIncrement(item.id)}
+      <div className={styles.itemQuantities}>
+        <p>{item.unit}</p>
+        <div className={styles.itemInputs}>
+          {/* Decrement Button */}
+          <button
+            className={styles.qtyAdjustButton}
+            onClick={() => handleQuantityChange(item.id, Math.max(0, parseInt(localValue, 10) - 1))}
+          >
+            -
+          </button>
+
+          {/* Quantity Input */}
+          <input
+            className={styles.qtyInput}
+            style={{ color: parseInt(localValue, 10) > item.perOrderAllowance ? 'red' : '' }}
+            type="text"
+            value={localValue}
+            onChange={handleTempInputChange}
+            onBlur={() => {
+              const numericLocalValue = parseInt(localValue, 10); // Ensure it's a number
+              if (numericLocalValue > item.perOrderAllowance && itemInCart <= item.perOrderAllowance) {
+                handleOverOrderAttempt(item.id, numericLocalValue);
+                setLocalValue(cart[item.id]);
+              } else {
+                handleQuantityChange(item.id, numericLocalValue);
+              }
+            }}
+          />
+
+          {/* Increment Button */}
+          <button
+            className={styles.qtyAdjustButton}
+            onClick={() => {
+              const numericLocalValue = parseInt(localValue, 10); // Ensure it's a number
+              if (numericLocalValue === item.perOrderAllowance) {
+                handleOverOrderAttempt(item.id, numericLocalValue + 1);
+              } else {
+                handleQuantityChange(item.id, numericLocalValue + 1);
+              }
+            }}
             style={{ backgroundColor: isMaxQuantity ? 'red' : '' }}
           >
             +
-          </Button>
+          </button>
         </div>
-      }
+      </div>
     </div>
   );
 };
@@ -89,9 +134,9 @@ const SpecialInstructions = ({ openEmptyCartPopup, openCheckOutPopupOpen }) => {
         onChange={(e) => setInstructions(e.target.value)}
       />
       <div className={styles.buttonGroup}>
-        <Button style={{ backgroundColor: "grey", margin: "5px" }} onClick={openEmptyCartPopup}>Empty Cart</Button>
+        <Button style={{ backgroundColor: "#8d8d8d", margin: "5px" }} onClick={openEmptyCartPopup}>Empty Cart</Button>
         <Link to="/supply/shopping/order" style={{ textDecoration: 'none' }}>
-          <Button style={{ marginLeft: '5px', backgroundColor: "grey", margin: "5px" }}>
+          <Button style={{ marginLeft: '5px', backgroundColor: "#8d8d8d", margin: "5px" }}>
             Continue Browsing
           </Button>
         </Link>
@@ -105,12 +150,22 @@ const SpecialInstructions = ({ openEmptyCartPopup, openCheckOutPopupOpen }) => {
 const getItems = async (locId) => {
   return await fetchApiJson(`/supply/items/orderable/${locId}`).then((body) => body.result);
 };
+const restrictNumericInput = (e) => {
+  const charCode = e.charCode;
+  // Allow only numeric characters (0-9)
+  if (charCode < 48 || charCode > 57) {
+    e.preventDefault();
+  }
+};
 
 export default function ShoppingCart() {
   const [cart, setCart] = useState(() => JSON.parse(localStorage.getItem('cart')) || {});
   const [items, setItems] = useState([]);
   useEffect(() => {
-    localStorage.removeItem('pending'); //Clean up pending if refresh occured before popup conclusion
+    //Clean up pending if refresh occured before popup conclusion
+    localStorage.removeItem('pending');
+    localStorage.removeItem('pendingQuantity');
+    //Get Destination
     let destination = JSON.parse(localStorage.getItem('destination')).locId;
     if (destination) {
       const fetchItems = async () => {
@@ -120,31 +175,13 @@ export default function ShoppingCart() {
       fetchItems();
     }
   }, []);
-  const handleIncrement = (itemId) => {
-    incrementItem(itemId);
-    setCart(JSON.parse(localStorage.getItem('cart')));
-  };
-  const handleOverOrderAttempt = (itemId) => {
-    console.log("handleOverOrderAttempt()::::");
-    console.log("Attempting to over order item.id: ", itemId);
-    console.log("Setting item.id: ", itemId, " as pending item")
-    //setPendingItemId
+  const handleOverOrderAttempt = (itemId, newQuantity) => {
     localStorage.setItem('pending', JSON.stringify(itemId));
-    let pending = JSON.parse(localStorage.getItem('pending'));
-    if(pending){
-      console.log("item.id: ", itemId, " set as pending item: ", pending);
-    }else{
-      console.err("Could not set item.id: ", itemId, " as pending item: ", pending);
-    }
-    console.log("opening over order popup...");
+    localStorage.setItem('pendingQuantity', JSON.stringify(newQuantity));
     openOverOrderPopup();
   }
   const handleQuantityChange = (itemId, quantity) => {
     updateItemQuantity(itemId, quantity);
-    setCart(JSON.parse(localStorage.getItem('cart')));
-  };
-  const handleDecrement = (itemId) => {
-    decrementItem(itemId);
     setCart(JSON.parse(localStorage.getItem('cart')));
   };
   const handleClearCart = () => {
@@ -165,21 +202,14 @@ export default function ShoppingCart() {
     setIsOverOrderPopupOpen(false);
   };
   const handleOverOrderAction = (decision) => {
-    console.log("handleOverOrderAction()::::");
-    console.log("Over Order decision: ", decision);
-    let pending ='unretrieved';
     if(decision) {
       //retrieve pending:
-      pending = JSON.parse(localStorage.getItem('pending'));
-      console.log("Retrieved pending item id: ", pending);
-      console.log("Attempting to over order pending item: ", pending);
-      handleIncrement(pending);
+      let pending = JSON.parse(localStorage.getItem('pending'));
+      let pendingQuantity = JSON.parse(localStorage.getItem('pendingQuantity'));
+      handleQuantityChange(pending, pendingQuantity);
     }
-    console.log("deleting pending item id: ", pending)
-    //deletePendingItemId:
     localStorage.removeItem('pending');
-    pending = JSON.parse(localStorage.getItem('pending'));
-    console.log("Success?? -> Remaining pending item id: ", pending);
+    localStorage.removeItem('pendingQuantity');
   }
   const openCheckOutPopupOpen = () => {
     setIsCheckOutPopupOpen(true);
@@ -227,8 +257,7 @@ export default function ShoppingCart() {
              <ItemsGrid
                items={items}
                cart={cart}
-               handleIncrement={handleIncrement}
-               handleDecrement={handleDecrement}
+               handleQuantityChange={handleQuantityChange}
                handleOverOrderAttempt={handleOverOrderAttempt}
              />
              <div className={styles.cartCheckoutContainer}>

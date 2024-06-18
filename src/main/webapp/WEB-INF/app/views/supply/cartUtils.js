@@ -10,6 +10,7 @@ export const incrementItem = (itemId) => {
 export const updateItemQuantity = (itemId, quantity) => {
   const cart = JSON.parse(localStorage.getItem('cart')) || {};
   cart[itemId] = quantity;
+  if(quantity===0) delete cart[itemId];
   localStorage.setItem('cart', JSON.stringify(cart));
 };
 

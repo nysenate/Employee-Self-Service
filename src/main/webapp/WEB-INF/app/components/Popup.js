@@ -33,7 +33,7 @@ export default function Popup({ isLocked, isOpen, onClose, title, children }) {
           onClick={(e) => e.stopPropagation()} // Prevent clicks inside the modal from propagating
         >
           {title && (
-            <Dialog.Title className="p-2 font-semibold text-center border-b-1 border-teal-200">
+            <Dialog.Title style={{marginBottom: '15px', fontSize: '16px'}} className="p-2 font-semibold text-center border-b-1 border-teal-200">
               {title}
             </Dialog.Title>
           )}

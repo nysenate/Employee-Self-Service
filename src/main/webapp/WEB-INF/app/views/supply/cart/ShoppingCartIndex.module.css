@@ -130,3 +130,43 @@
     font-weight: bold;
     color: #27ae60;
 }
+
+.itemQuantities {
+    text-align: center !important;
+    display: block;
+}
+
+.itemQuantities p {
+    color: #4d4d4d;
+}
+
+.itemInputs {
+    display: flex;
+    justifyContent: center;
+    gap: 5px;
+}
+
+.qtyInput {
+    margin-top: 5px;
+    width: 50px;
+    height: 28px;
+    text-align: center;
+    font-size: 120%;
+    border: 1px solid #ccc;
+    outline: 0;
+    background: #fafafa;
+    padding: .3em;
+}
+
+.qtyAdjustButton {
+    margin: 5px 10px 10px 10px;
+    font-size: 1.25em;
+    width: 34px;
+    height: 28px;
+    padding: 0;
+    background: #799933;
+    color: #fefefe;
+    font-weight: 600;
+    border: none;
+    border-radius: 2px;
+}
