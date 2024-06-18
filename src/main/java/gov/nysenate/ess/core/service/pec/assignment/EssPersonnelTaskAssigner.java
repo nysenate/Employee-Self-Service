@@ -5,25 +5,35 @@ import com.google.common.collect.Range;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
+import gov.nysenate.ess.core.dao.pec.everfi.EverfiUserDao;
 import gov.nysenate.ess.core.dao.pec.task.PersonnelTaskDao;
+import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignmentGroup;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
+import gov.nysenate.ess.core.model.pec.everfi.EverfiUserIDs;
+import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.transaction.TransactionCode;
 import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.model.transaction.TransactionHistoryUpdateEvent;
 import gov.nysenate.ess.core.model.transaction.TransactionRecord;
+import gov.nysenate.ess.core.service.mail.SendMailService;
+import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUser;
+import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUserService;
 import gov.nysenate.ess.core.service.pec.notification.AssignmentWithTask;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
-import org.checkerframework.checker.units.qual.A;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.mail.internet.MimeMessage;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -41,23 +51,33 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
 
     private final EmployeeInfoService empInfoService;
     private final EmpTransactionService transactionService;
+    private final EverfiUserService everfiUserService;
+    private final SendMailService sendMailService;
     private final PersonnelTaskDao personnelTaskDao;
+    private final EverfiUserDao everfiUserDao;
+    private final EmployeeDao employeeDao;
     private final PersonnelTaskAssignmentDao assignmentDao;
+    private final List<String> everfiReportEmails;
 
     /** Classes which handle assignment for different {@link PersonnelTaskAssignmentGroup} */
     private final List<GroupTaskAssigner> groupTaskAssigners;
 
     public EssPersonnelTaskAssigner(EmployeeInfoService empInfoService,
-                                    EmpTransactionService transactionService,
+                                    EmpTransactionService transactionService, SendMailService sendMailService, EverfiUserDao everfiUserDao,
                                     List<GroupTaskAssigner> groupTaskAssigners,
                                     PersonnelTaskDao personnelTaskDao,
                                     PersonnelTaskAssignmentDao assignmentDao,
-                                    EventBus eventBus) {
+                                    EventBus eventBus, EverfiUserService everfiUserService, EmployeeDao employeeDao, @Value("${everfi.report.email}") String everfiReportEmailList) {
         this.empInfoService = empInfoService;
         this.transactionService = transactionService;
+        this.sendMailService = sendMailService;
+        this.everfiUserDao = everfiUserDao;
         this.groupTaskAssigners = groupTaskAssigners;
         this.personnelTaskDao = personnelTaskDao;
         this.assignmentDao = assignmentDao;
+        this.everfiUserService = everfiUserService;
+        this.employeeDao = employeeDao;
+        this.everfiReportEmails = Arrays.asList(everfiReportEmailList.replaceAll(" ","").split(","));
         eventBus.register(this);
     }
 
@@ -151,10 +171,65 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
 
     @Override
     public void insertAssignedTask(int empID, int updateEmpID, int taskID) {
+
+        checkEverfiRecords(taskID, empID);
         personnelTaskDao.insertPersonnelAssignedTask(empID, updateEmpID, taskID);
 
         logger.info("Task assignment " + taskID + " was updated for Employee " + empID +
                 " by employee " + updateEmpID);
+    }
+
+    private void checkEverfiRecords(int taskID, int empID) {
+        PersonnelTask task = personnelTaskDao.getPersonnelTask(taskID);
+        List<Employee> emps = new ArrayList<>();
+        emps.add(employeeDao.getEmployeeById(empID));
+        if (task.getTaskType() == PersonnelTaskType.EVERFI_COURSE) {
+            EverfiUserIDs everfiUserIDs = everfiUserDao.getEverfiUserIDsWithEmpID(empID);
+            if (everfiUserIDs == null && employeeDao.getEmployeeById(empID).getEmail() == null) {
+                sendEmailToEverfiReportEmails("Check this employee: ",
+                        generateEmployeeListString(emps) + "is not registered in Everfi and didn't have the email.");
+            }
+            else if (everfiUserIDs == null) {
+                everfiUserService.addEmployeesToEverfi(emps);
+                sendEmailToEverfiReportEmails("Task Assigned for this employee:  ",
+                        generateEmployeeListString(emps) + "This is registered in Everfi.");
+            }
+            else {
+                sendEmailToEverfiReportEmails("Check this employee: ",
+                        generateEmployeeListString(emps) + "is registered in Everfi but the task is not assigned.");
+            }
+        }
+    }
+
+    private void sendEmailToEverfiReportEmails(String subject, String html) {
+        for (String email : this.everfiReportEmails) {
+            System.out.println(email);
+            sendEmail(email, subject, html);
+        }
+    }
+
+    private void sendEmail(String to, String subject, String html) {
+        try {
+            sendMailService.sendMessage(StringUtils.trim(to), subject, html);
+//            sendMailService.send(message);
+        }
+        catch (Exception e) {
+            logger.error("There was an error trying to send the Everfi report email ", e);
+        }
+    }
+
+    private String generateEmployeeListString(List<Employee> emps) {
+        StringBuilder employeeListDetails = new StringBuilder();
+        for (Employee employee: emps) {
+            employeeListDetails.append(" NAME: ").append(employee.getFullName())
+                    .append(" EMAIL: ").append(employee.getEmail()).append(" EMPID: ")
+                    .append(employee.getEmployeeId()).append("<br>\n");
+        }
+
+        if (employeeListDetails.isEmpty()) {
+            employeeListDetails = new StringBuilder("There are no employees to perform this operation on");
+        }
+        return employeeListDetails.toString();
     }
 
     private PersonnelTaskType getPersonnelTaskType(PersonnelTaskAssignment assignment, List<PersonnelTask> personnelTasks) {

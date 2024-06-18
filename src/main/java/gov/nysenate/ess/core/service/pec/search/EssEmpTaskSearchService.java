@@ -76,10 +76,19 @@ public class EssEmpTaskSearchService implements EmpTaskSearchService {
         List<Integer> activeTasks = patDao.getActiveTasks(true);
         ImmutableListMultimap<Integer, PersonnelTaskAssignment> empTaskMap =
                 Multimaps.index(tasks, PersonnelTaskAssignment::getEmpId);
+        Set<Integer> keys = empTaskMap.keySet();
+        Set<Employee> allActiveEmployees = employeeInfoService.getAllEmployees(true);
+        ImmutableListMultimap.Builder<Integer, PersonnelTaskAssignment> builder = ImmutableListMultimap.builder();
+        builder.putAll(empTaskMap);
 
-        EmployeeSearchBuilder esb = query.getEmpQuery();
+        for(Employee emp : allActiveEmployees){
+            if (!keys.contains(emp.getEmployeeId())) {
+                builder.put(emp.getEmployeeId(), new PersonnelTaskAssignment(-1, emp.getEmployeeId(), null, null, false, false, null, null));
+            }
+        }
+        ImmutableListMultimap<Integer, PersonnelTaskAssignment> finalEmpTaskMap = builder.build();
 
-        List<EmployeeTaskSearchResult> resultList = empTaskMap.asMap().entrySet().stream()
+        List<EmployeeTaskSearchResult> resultList = finalEmpTaskMap.asMap().entrySet().stream()
                 .map(e -> new EmployeeTaskSearchResult(
                         employeeInfoService.getEmployee(e.getKey()),
                         e.getValue()
