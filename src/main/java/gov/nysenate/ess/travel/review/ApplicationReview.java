@@ -4,6 +4,8 @@ import com.google.common.base.Preconditions;
 import gov.nysenate.ess.travel.request.app.TravelApplication;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
 import gov.nysenate.ess.travel.review.strategy.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -12,7 +14,7 @@ import java.util.stream.Collectors;
  * The entire review process for a single {@link TravelApplication}.
  */
 public class ApplicationReview {
-
+    private static final Logger logger = LoggerFactory.getLogger(ApplicationReview.class);
     private final static Comparator<Action> actionComparator = Comparator.comparing(Action::dateTime);
 
     private int appReviewId;
@@ -38,7 +40,17 @@ public class ApplicationReview {
     }
 
     public void addAction(Action action) {
-        Preconditions.checkArgument(action.role().equals(nextReviewerRole()));
+        try {
+            Preconditions.checkArgument(action.role().equals(nextReviewerRole()));
+        } catch (IllegalArgumentException ex) {
+            logger.error("""
+                         Add Action precondition failed for AppReviewId = {}.
+                         Action role = {},
+                         Next reviewer role = {}
+                         {}
+                         """,
+                    appReviewId, action.role(), nextReviewerRole(), ex);
+        }
         actions.add(action);
     }
 

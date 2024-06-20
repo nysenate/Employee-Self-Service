@@ -5,7 +5,8 @@
     </div>
 
     <div class="content-container travel-content-controls">
-      <h4 class="travel-content-info travel-text-bold" style="margin-bottom: 0px;">Search reviewed applications by date.</h4>
+      <h4 class="travel-content-info travel-text-bold" style="margin-bottom: 0px;">Search reviewed applications by
+        date.</h4>
       <div class="text-align-center">
         <div class="padding-10 inline-block">
           <label class="bold">From:</label>
@@ -28,7 +29,7 @@
     </div>
 
     <div ng-if="vm.data.isLoading === false">
-      <div ng-if="vm.data.apps.filtered.length === 0">
+      <div ng-if="vm.data.reviews.filtered.length === 0">
         <div class="content-container">
           <div class="content-info">
             <h2 class="dark-gray">No Review History.</h2>

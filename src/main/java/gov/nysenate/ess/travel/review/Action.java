@@ -93,4 +93,16 @@ public class Action {
     public int hashCode() {
         return Objects.hash(actionId, user, role, type, notes, dateTime);
     }
+
+    @Override
+    public String toString() {
+        return "Action{" +
+                "actionId=" + actionId +
+                ", user=" + user +
+                ", role=" + role +
+                ", type=" + type +
+                ", notes='" + notes + '\'' +
+                ", dateTime=" + dateTime +
+                '}';
+    }
 }

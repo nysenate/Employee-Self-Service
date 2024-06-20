@@ -48,7 +48,10 @@ function reviewHistory($scope, locationService, modals, appReviewApi, roleServic
     // Called by the app-review-view-modal.
     vm.onEdit = function (review) {
         modals.reject();
-        locationService.go("/travel/application/edit", true, {appId: review.travelApplication.id, role: 'TRAVEL_ADMIN'});
+        locationService.go("/travel/application/edit", true, {
+            appId: review.travelApplication.id,
+            role: 'TRAVEL_ADMIN'
+        });
     };
 
     vm.applyFilters = function () {
@@ -57,7 +60,7 @@ function reviewHistory($scope, locationService, modals, appReviewApi, roleServic
             return moment(r.travelApplication.activeAmendment.startDate, ISO_FORMAT) >= moment(vm.date.from, DATEPICKER_FORMAT) &&
                 moment(r.travelApplication.activeAmendment.startDate, ISO_FORMAT) <= moment(vm.date.to, DATEPICKER_FORMAT);
         });
-        vm.data.reviews.filtered.sort(function(a, b) {
+        vm.data.reviews.filtered.sort(function (a, b) {
             return moment(a.travelApplication.activeAmendment.startDate, ISO_FORMAT).format('x')
                 - moment(b.travelApplication.activeAmendment.startDate, ISO_FORMAT).format('x');
         })
