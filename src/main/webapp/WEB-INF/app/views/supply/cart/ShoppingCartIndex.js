@@ -10,15 +10,16 @@ import { fetchApiJson } from "app/utils/fetchJson";
 const Destination = () => {
   const locId = JSON.parse(localStorage.getItem('destination')).locId;
   const locationDescription = JSON.parse(localStorage.getItem('destination')).locationDescription;
+
   return (
-    <div className="bg-white content-info" style={{ height: "70px", color: "black", borderBottom: 'none', marginBottom: '20px'}}>
-      <div className="padding-10" style={{ display: 'flex'}}>
-        <div style={{ display: 'inline-block'}}>
-          <span className="supply-text">Destination: </span>{locId} ({locationDescription})
+    <div className={styles.subHeroContainer}>
+      <div className={styles.subHeroContext}>
+        <div className={styles.destinationContainer}>
+          <span style={{fontWeight: '700', color: '#374282'}}>Destination: </span>{locId} ({locationDescription})
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 //Items
@@ -60,60 +61,69 @@ const ItemDisplay = ({ item, cart, handleQuantityChange, handleOverOrderAttempt 
 
   return (
     <div className={styles.itemCard}>
-      <div className={styles.itemImage}>
-        <img
-          src={`/assets/supply_photos/${item.commodityCode}.jpg`}
-          alt={item.description}
-          height="120"
-        />
-      </div>
-      <div className={styles.itemDescription}>
-        <h4>{item.description}</h4>
-      </div>
-      <div className={styles.itemQuantities}>
-        <p>{item.unit}</p>
-        <div className={styles.itemInputs}>
-          {/* Decrement Button */}
-          <button
-            className={styles.qtyAdjustButton}
-            onClick={() => handleQuantityChange(item.id, Math.max(0, parseInt(localValue, 10) - 1))}
-          >
-            -
-          </button>
-
-          {/* Quantity Input */}
-          <input
-            className={styles.qtyInput}
-            style={{ color: parseInt(localValue, 10) > item.perOrderAllowance ? 'red' : '' }}
-            type="text"
-            value={localValue}
-            onChange={handleTempInputChange}
-            onBlur={() => {
-              const numericLocalValue = parseInt(localValue, 10); // Ensure it's a number
-              if (numericLocalValue > item.perOrderAllowance && itemInCart <= item.perOrderAllowance) {
-                handleOverOrderAttempt(item.id, numericLocalValue);
-                setLocalValue(cart[item.id]);
-              } else {
-                handleQuantityChange(item.id, numericLocalValue);
-              }
-            }}
+      <div className={styles.itemImageContainer}>
+        <div className={styles.itemImageContent}>
+          <img
+            className={styles.supplyItemImage}
+            src={`/assets/supply_photos/${item.commodityCode}.jpg`}
+            alt={item.description}
+            height="120"
           />
+        </div>
+      </div>
+      <div className={styles.titleContainer}>
+        <div className={styles.titleContent}>
+          <h3>{item.description}</h3>
+        </div>
+      </div>
+      <div className={styles.qtyContainer}>
+        <div className={styles.qtySelectorContainer}>
+          <div className="text-align-center" style={{textAlign: 'center', width: '200px'}}>
+            <p style={{color: 'dark-grey', margin: '0', height: '18px'}}>{item.unit}</p>
+            <div  className={styles.qtySelector}>
+              {/* Decrement Button */}
+              <button
+                className={styles.qtyAdjustButton}
+                onClick={() => handleQuantityChange(item.id, Math.max(0, parseInt(localValue, 10) - 1))}
+              >
+                -
+              </button>
 
-          {/* Increment Button */}
-          <button
-            className={styles.qtyAdjustButton}
-            onClick={() => {
-              const numericLocalValue = parseInt(localValue, 10); // Ensure it's a number
-              if (numericLocalValue === item.perOrderAllowance) {
-                handleOverOrderAttempt(item.id, numericLocalValue + 1);
-              } else {
-                handleQuantityChange(item.id, numericLocalValue + 1);
-              }
-            }}
-            style={{ backgroundColor: isMaxQuantity ? 'red' : '' }}
-          >
-            +
-          </button>
+              {/* Quantity Input */}
+              <input
+                className={styles.qtyInput}
+                style={{ color: parseInt(localValue, 10) > item.perOrderAllowance ? 'red' : '' }}
+                type="text"
+                value={localValue}
+                onChange={handleTempInputChange}
+                onBlur={() => {
+                  const numericLocalValue = parseInt(localValue, 10); // Ensure it's a number
+                  if (numericLocalValue > item.perOrderAllowance && itemInCart <= item.perOrderAllowance) {
+                    handleOverOrderAttempt(item.id, numericLocalValue);
+                    setLocalValue(cart[item.id]);
+                  } else {
+                    handleQuantityChange(item.id, numericLocalValue);
+                  }
+                }}
+              />
+
+              {/* Increment Button */}
+              <button
+                className={styles.qtyAdjustButton}
+                onClick={() => {
+                  const numericLocalValue = parseInt(localValue, 10); // Ensure it's a number
+                  if (numericLocalValue === item.perOrderAllowance) {
+                    handleOverOrderAttempt(item.id, numericLocalValue + 1);
+                  } else {
+                    handleQuantityChange(item.id, numericLocalValue + 1);
+                  }
+                }}
+                style={{ backgroundColor: isMaxQuantity ? 'red' : '' }}
+              >
+                +
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -166,10 +176,10 @@ export default function ShoppingCart() {
     localStorage.removeItem('pending');
     localStorage.removeItem('pendingQuantity');
     //Get Destination
-    let destination = JSON.parse(localStorage.getItem('destination')).locId;
+    let destination = JSON.parse(localStorage.getItem('destination'));
     if (destination) {
       const fetchItems = async () => {
-        const fetchedItems = await getItems(destination);
+        const fetchedItems = await getItems(destination.locId);
         setItems(fetchedItems);
       };
       fetchItems();

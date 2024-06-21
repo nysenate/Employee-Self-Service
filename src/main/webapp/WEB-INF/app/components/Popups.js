@@ -92,3 +92,35 @@ export function EmptyCartPopup({ isModalOpen, closeModal, onAction }) {
     </Popup>
   );
 }
+
+export function ChangeDestinationPopup({ isModalOpen, closeModal, onAction }) {
+  const handleCancel = () => {
+    onAction(false);
+    closeModal();
+  };
+
+  const handleYes = () => {
+    onAction(true);
+    closeModal();
+  };
+
+  return (
+    <Popup
+      isLocked={true}
+      isOpen={isModalOpen}
+      onClose={closeModal}
+      title="Change Destination"
+    >
+      <p style={{margin: '10px', marginBottom: '10px', marginTop: '20px', padding: '10px'}}>
+        You are about to change your destination.
+        <br /><br />
+        Please note that your shopping cart will be emptied as a result of this operation.
+        <br /><br />
+        Would you like to continue?</p>
+      <div style={{display: 'flex', justifyContent: 'center', gap: '5px'}}>
+        <Button style={{backgroundColor: '#8d8d8d'}} onClick={handleCancel}>Cancel</Button>
+        <Button onClick={handleYes}>Yes</Button>
+      </div>
+    </Popup>
+  );
+}

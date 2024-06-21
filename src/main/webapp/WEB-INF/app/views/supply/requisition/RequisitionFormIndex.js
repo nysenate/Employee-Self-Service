@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import Hero from "../../../components/Hero";
-import { OverOrderPopup } from "../../../components/Popups";
+import { OverOrderPopup, ChangeDestinationPopup } from "../../../components/Popups";
 import styles from './RequisitionFormIndex.module.css';
 import { Button } from "../../../components/Button";
 import { fetchApiJson } from "app/utils/fetchJson";
 import useAuth from "app/contexts/Auth/useAuth";
 import LoadingIndicator from "app/components/LoadingIndicator";
 import Pagination from "./Pagination";
-import { incrementItem, decrementItem, clearCart, updateItemQuantity } from '../cartUtils';
+import { clearCart, updateItemQuantity } from '../cartUtils';
 
 const SelectDestination = ({ locations, tempDestination, handleTempDestinationChange, handleConfirmClick }) => {
   return (
@@ -109,7 +109,6 @@ const ItemDisplay = ({ item, cart, handleQuantityChange, handleOverOrderAttempt 
       </div>
       {itemInCart ? (
         <div className={styles.itemQuantities}>
-          <p>{item.unit}</p>
           <div className={styles.itemInputs}>
             {/* Decrement Button */}
             <button
@@ -249,10 +248,14 @@ export default function RequisitionFormIndex() {
     localStorage.setItem('destination', JSON.stringify(tempDestination));
   };
   const handleChangeClick = () => {
-    setTempDestination(null);
-    setDestination(null);
-    setItems([]);
-    localStorage.removeItem('destination');
+    if(cart) {
+      openChangeDestinationPopup();
+    }else{
+      setTempDestination(null);
+      setDestination(null);
+      setItems([]);
+      localStorage.removeItem('destination');
+    }
   };
   const handleSortChange = (e) => {
     setSortOption(e.target.value);
@@ -266,12 +269,19 @@ export default function RequisitionFormIndex() {
 
   //POPUPS START:
   const [isOverOrderPopupOpen, setIsOverOrderPopupOpen] = useState(false);
+  const [isChangeDestinationPopupOpen, setIsChangeDestinationPopupOpen] = useState(false);
 
   const openOverOrderPopup = () => {
     setIsOverOrderPopupOpen(true);
   };
   const closeOverOrderPopup = () => {
     setIsOverOrderPopupOpen(false);
+  };
+  const openChangeDestinationPopup = () => {
+    setIsChangeDestinationPopupOpen(true);
+  };
+  const closeChangeDestinationPopup = () => {
+    setIsChangeDestinationPopupOpen(false);
   };
   const handleOverOrderAction = (decision) => {
     if(decision) {
@@ -282,6 +292,15 @@ export default function RequisitionFormIndex() {
     }
     localStorage.removeItem('pending');
     localStorage.removeItem('pendingQuantity');
+  }
+  const handleChangeDestinationAction = (decision) => {
+    if(decision) {
+      clearCart();
+      setTempDestination(null);
+      setDestination(null);
+      setItems([]);
+      localStorage.removeItem('destination');
+    }
   }
 
   if (!locations.length || (destination &&!items.length)) {
@@ -338,6 +357,11 @@ export default function RequisitionFormIndex() {
         isModalOpen={isOverOrderPopupOpen}
         closeModal={closeOverOrderPopup}
         onAction={handleOverOrderAction}
+      />
+      <ChangeDestinationPopup
+        isModalOpen={isChangeDestinationPopupOpen}
+        closeModal={closeChangeDestinationPopup}
+        onAction={handleChangeDestinationAction}
       />
     </div>
   );
