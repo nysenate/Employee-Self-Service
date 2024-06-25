@@ -1,27 +1,20 @@
 /* Pagination.module.css */
-.paginationTop, .paginationBottom {
+.pagination {
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 10px 0;
     background-color: #ffffff;
-    border-top: 1px solid #ddd;
+    border: 1px solid #f1f1f1;
     width: 100%;
     position: relative; /* Ensure the pagination covers full width */
     box-sizing: border-box; /* Include padding and border in the element's total width and height */
 }
 
-.paginationTop {
-    margin-bottom: 5px;
-}
-
-.paginationBottom {
-    margin-top: 10px;
-}
-
 .pageButton {
     background-color: #ffffff;
-    font-weight: bold;
+    font-size: 13px;
+    font-weight: 400;
     color: #a6a6b3;
     padding: 5px 10px;
     margin: 0 5px;

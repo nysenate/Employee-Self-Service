@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import styles from './ShoppingCartIndex.module.css';
 import { Button } from "../../../components/Button";
 import Hero from "../../../components/Hero";
-import { OverOrderPopup, CheckOutPopup, EmptyCartPopup } from "../../../components/Popups";
+import { OverOrderPopup, CheckOutPopup, PostCheckOutPopup, EmptyCartPopup } from "../../../components/Popups";
 import { updateItemQuantity, clearCart } from '../cartUtils';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { fetchApiJson } from "app/utils/fetchJson";
 
 const Destination = () => {
@@ -131,7 +131,7 @@ const ItemDisplay = ({ item, cart, handleQuantityChange, handleOverOrderAttempt 
 };
 //End Items
 
-const SpecialInstructions = ({ openEmptyCartPopup, openCheckOutPopupOpen }) => {
+const SpecialInstructions = ({ openEmptyCartPopup, openCheckOutPopup }) => {
   const [instructions, setInstructions] = useState('');
 
   return (
@@ -150,7 +150,7 @@ const SpecialInstructions = ({ openEmptyCartPopup, openCheckOutPopupOpen }) => {
             Continue Browsing
           </Button>
         </Link>
-        <Button style={{ marginLeft: '5px', margin: "5px" }} onClick={openCheckOutPopupOpen}>Checkout</Button>
+        <Button style={{ marginLeft: '5px', margin: "5px" }} onClick={openCheckOutPopup}>Checkout</Button>
       </div>
       <div className={styles.clearfix}></div>
     </div>
@@ -169,6 +169,7 @@ const restrictNumericInput = (e) => {
 };
 
 export default function ShoppingCart() {
+  const navigate = useNavigate()
   const [cart, setCart] = useState(() => JSON.parse(localStorage.getItem('cart')) || {});
   const [items, setItems] = useState([]);
   useEffect(() => {
@@ -199,10 +200,10 @@ export default function ShoppingCart() {
     setCart({});
   };
 
-
   //POPUPS START:
   const [isOverOrderPopupOpen, setIsOverOrderPopupOpen] = useState(false);
   const [isCheckOutPopupOpen, setIsCheckOutPopupOpen] = useState(false);
+  const [isPostCheckOutPopupOpen, setIsPostCheckOutPopupOpen] = useState(false);
   const [isEmptyCartPopupOpen, setEmptyCartPopupOpen] = useState(false);
 
   const openOverOrderPopup = () => {
@@ -221,19 +222,37 @@ export default function ShoppingCart() {
     localStorage.removeItem('pending');
     localStorage.removeItem('pendingQuantity');
   }
-  const openCheckOutPopupOpen = () => {
+  const openCheckOutPopup = () => {
     setIsCheckOutPopupOpen(true);
   };
-  const closeCheckOutPopupOpen = () => {
+  const closeCheckOutPopup = () => {
     setIsCheckOutPopupOpen(false);
   };
+  // NEEDS IMPLEMENTING WITH PAYLOAD
+  // Payload: customerId, deliveryMethod (decision), destinationId (-W), lineItems ([{},{},...]), specialInstructions ("")
+  //see photo for lineItems specifics
   const handleCheckOutAction = (decision) => {
-    if(decision === 'pickup'){
-      console.log("implement handleCheckOutAction('pickup')");
-    }else if(decision === 'delivery'){
-      console.log("implement handleCheckOutAction('delivery')");
+    if(decision === 'PICKUP' || decision === 'DELIVERY'){
+      console.log("implement handleCheckOutAction('",decision,"')");
+      console.log("implement handleCheckOutAction('DELIVERY')");
+      openPostCheckOutPopup();
     }else{
-      console.error("Unexpected return: ", decision, ", should be either pickup or delivery.")
+      console.error("Unexpected return: ", decision, ", should be either PICKUP or DELIVERY.")
+    }
+  }
+  const openPostCheckOutPopup = () => {
+    setIsPostCheckOutPopupOpen(true);
+  };
+  const closePostCheckOutPopup = () => {
+    setIsPostCheckOutPopupOpen(false);
+  };
+  const handlePostCheckOutAction = (decision) => {
+    if(decision === 'logout'){
+      navigate("/logout");
+    }else if(decision === 'return'){
+      navigate("/supply/shopping/order");
+    }else{
+      console.error("Unexpected return: ", decision, ", should be either logout or return.")
     }
   }
   const openEmptyCartPopup = () => {
@@ -245,8 +264,6 @@ export default function ShoppingCart() {
   const handleEmptyCartAction = (decision) => {
     if(decision) { handleClearCart(); }
   }
-
-
 
   return (
     <div>
@@ -271,7 +288,7 @@ export default function ShoppingCart() {
                handleOverOrderAttempt={handleOverOrderAttempt}
              />
              <div className={styles.cartCheckoutContainer}>
-               <SpecialInstructions openEmptyCartPopup={openEmptyCartPopup} openCheckOutPopupOpen={openCheckOutPopupOpen}/>
+               <SpecialInstructions openEmptyCartPopup={openEmptyCartPopup} openCheckOutPopup={openCheckOutPopup}/>
              </div>
            </>
          )}
@@ -283,8 +300,13 @@ export default function ShoppingCart() {
       />
       <CheckOutPopup
         isModalOpen={isCheckOutPopupOpen}
-        closeModal={closeCheckOutPopupOpen}
+        closeModal={closeCheckOutPopup}
         onAction={handleCheckOutAction}
+      />
+      <PostCheckOutPopup
+          isModalOpen={isPostCheckOutPopupOpen}
+          closeModal={closePostCheckOutPopup}
+          onAction={handlePostCheckOutAction}
       />
       <EmptyCartPopup
         isModalOpen={isEmptyCartPopupOpen}

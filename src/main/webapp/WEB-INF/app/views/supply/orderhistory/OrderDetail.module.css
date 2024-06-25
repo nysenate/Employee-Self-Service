@@ -1,0 +1,123 @@
+/* OrderDetail.module.css */
+.contentContainer {
+    font-size: 13px;
+    font-weight: 400;
+    background: #fefefe;
+    position: relative;
+    -webkit-box-shadow: 0 1px 2px #aaa;
+    -moz-box-shadow: 0 1px 2px #aaa;
+    box-shadow: 0 1px 2px #aaa;
+    margin-top: 20px;
+    box-sizing: border-box;
+}
+.contentInfo {
+    margin-top: 0;
+    padding: 11px;
+    color: #222;
+    text-align: center;
+    border-bottom: 1px solid rgba(0, 107, 128, .25);
+}
+.paddingX {
+    padding: 10px;
+}
+
+/* Selected Version */
+label {
+    color: #111;
+    font-weight: 300;
+}
+
+.a1 {
+    color: teal;
+}
+.a1:active, a1:hover {
+    outline: 0;
+}
+.a1:hover {
+    cursor: pointer;
+    color: #004d4d;
+}
+.a1:active, a1:focus, a1:hover {
+    outline: 0 !important;
+    border: none;
+}
+
+/* Order Info */
+.grid {
+    width: 100%;
+    max-width: 1140px;
+    min-width: 755px;
+    margin: 0 auto;
+    overflow: hidden;
+}
+.col412 {
+    width: 33.33%;
+    float: left;
+    padding-right: 20px;
+}
+b, strong {
+    font-weight: 700;
+}
+
+/* Item Table */
+table.essTable {
+    width: 100%;
+}
+.supplyListingTable {
+    padding-top: 0;
+}
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+thead {
+    display: table-header-group;
+    vertical-align: middle;
+    unicode-bidi: isolate;
+    border-color: inherit;
+}
+table.essTable thead {
+    background: #fff;
+}
+tr {
+    display: table-row;
+    vertical-align: inherit;
+    unicode-bidi: isolate;
+    border-color: inherit;
+}
+table.essTable thead tr {
+    color: #333;
+    font-size: .9em;
+    border-bottom: 1px solid #155c69;
+}
+th {
+    display: table-cell;
+    vertical-align: inherit;
+    font-weight: bold;
+    text-align: -internal-center;
+    unicode-bidi: isolate;
+}
+table.ess-table thead tr th {
+    padding: 10px 5px;
+}
+
+table.essTable tbody tr {
+    border-top: 1px solid transparent;
+    border-bottom: 1px solid #bbb;
+}
+.supplyListingTable tbody tr {
+    border-bottom: 0 solid #eee !important;
+    cursor: pointer;
+}
+table.essTable tbody tr td {
+    text-align: left;
+}
+.supplyListingTable tbody tr td {
+    padding: .5em;
+    border: 0;
+    text-align: center !important;
+}
+.supplyListingTable tbody tr:nth-child(even) {
+    background: rgba(51, 51, 51, .05);
+}

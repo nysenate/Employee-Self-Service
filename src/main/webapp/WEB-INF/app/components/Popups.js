@@ -35,12 +35,12 @@ export function OverOrderPopup({ isModalOpen, closeModal, onAction }) {
 
 export function CheckOutPopup({ isModalOpen, closeModal, onAction }) {
   const handlePickup = () => {
-    onAction('pickup');
+    onAction('PICKUP');
     closeModal();
   };
 
   const handleDelivery = () => {
-    onAction('delivery');
+    onAction('DELIVERY');
     closeModal();
   };
 
@@ -63,6 +63,39 @@ export function CheckOutPopup({ isModalOpen, closeModal, onAction }) {
       </div>
 
     </Popup>
+  );
+}
+
+export function PostCheckOutPopup({ isModalOpen, closeModal, onAction }) {
+  const handleLogOut = () => {
+    onAction('logout');
+    closeModal();
+  };
+
+  const handleReturn = () => {
+    onAction('return');
+    closeModal();
+  };
+
+  return (
+      <Popup
+          isLocked={true}
+          isOpen={isModalOpen}
+          onClose={closeModal}
+          title="Your Requisition Request has been submitted!"
+      >
+
+        <div>
+          <p style={{marginBottom: '10px'}} >Your requisition id number is: [implement me]</p>
+          <p style={{marginBottom: '10px'}} >What would you like to do next?</p>
+          <div style={{display: 'flex', justifyContent: 'center', gap: '5px'}}>
+            <Button style={{backgroundColor: 'red'}} onClick={handleLogOut}>Log out of ESS</Button>
+            &nbsp;&nbsp;
+            <Button onClick={handleReturn}>Back to ESS</Button>
+          </div>
+        </div>
+
+      </Popup>
   );
 }
 

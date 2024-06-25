@@ -6,7 +6,7 @@ import { Button } from "../../../components/Button";
 import { fetchApiJson } from "app/utils/fetchJson";
 import useAuth from "app/contexts/Auth/useAuth";
 import LoadingIndicator from "app/components/LoadingIndicator";
-import Pagination from "./Pagination";
+import Pagination from "../../../components/Pagination";
 import { clearCart, updateItemQuantity } from '../cartUtils';
 
 const SelectDestination = ({ locations, tempDestination, handleTempDestinationChange, handleConfirmClick }) => {
@@ -328,7 +328,6 @@ export default function RequisitionFormIndex() {
             currentPage={currentPage}
             totalPages={Math.ceil(items.length / itemsPerPage)}
             onPageChange={handlePageChange}
-            top={true}
           />
           <ItemsGrid
             items={items}
@@ -342,7 +341,6 @@ export default function RequisitionFormIndex() {
             currentPage={currentPage}
             totalPages={Math.ceil(items.length / itemsPerPage)}
             onPageChange={handlePageChange}
-            top={false}
           />
         </div>
       ) : (

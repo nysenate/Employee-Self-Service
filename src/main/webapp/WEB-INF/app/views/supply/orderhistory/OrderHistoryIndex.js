@@ -1,96 +1,121 @@
 import React, { useState, useEffect } from "react";
 import Hero from "../../../components/Hero";
+import SubHero from "./SubHero";
+import Results from "./Results";
 import styles from './OrderHistoryIndex.module.css';
+import useAuth from "app/contexts/Auth/useAuth";
+import { fetchApiJson } from "app/utils/fetchJson";  // Import the custom fetch function
+import Pagination from "../../../components/Pagination";
 
-const SubHero = () => {
-  const getCurrentDate = () => {
-    const today = new Date();
-    const dd = String(today.getDate()).padStart(2, '0');
-    const mm = String(today.getMonth() + 1).padStart(2, '0'); // January is 0!
-    const yyyy = today.getFullYear();
-    return `${yyyy}-${mm}-${dd}`;
-  };
-
-  const getOneMonthBeforeDate = () => {
-    const today = new Date();
-    today.setMonth(today.getMonth() - 1);
-    const dd = String(today.getDate()).padStart(2, '0');
-    const mm = String(today.getMonth() + 1).padStart(2, '0'); // January is 0!
-    const yyyy = today.getFullYear();
-    return `${yyyy}-${mm}-${dd}`;
-  };
-
-  const [fromDate, setFromDate] = useState(getOneMonthBeforeDate());
-  const [toDate, setToDate] = useState(getCurrentDate());
-
-  return (
-    <div className={styles.subHeroContainer}>
-      {/* Message */}
-      <div className={styles.subHeroMessage}>Search order history by date or status.</div>
-      {/* Search Abilities */}
-      <div className={styles.searchContainer}>
-        <div className={styles.searchItem}>
-          <label htmlFor="from-date">From: </label>
-          <input
-            type="date"
-            id="from-date"
-            name="from-date"
-            value={fromDate}
-            onChange={(e) => setFromDate(e.target.value)}
-          />
-        </div>
-        <div className={styles.searchItem}>
-          <label htmlFor="to-date">To: </label>
-          <input
-            type="date"
-            id="to-date"
-            name="to-date"
-            value={toDate}
-            onChange={(e) => setToDate(e.target.value)}
-          />
-        </div>
-        <div className={styles.searchItem}>
-          <label htmlFor="status">Status:</label>
-          <select id="status" name="status">
-            <option value="all">ALL</option>
-            <option value="pending">PENDING</option>
-            <option value="processing">PROCESSING</option>
-            <option value="completed">COMPLETED</option>
-            <option value="approved">APPROVED</option>
-            <option value="rejected">REJECTED</option>
-          </select>
-        </div>
-      </div>
-    </div>
-  );
+const formatDateForInput = (date) => {
+  return date.toISOString().split('T')[0];
 };
 
-function Results() {
-  const empty = true;
+const getCurrentDate = () => {
+  const today = new Date();
+  return today.toISOString().split('.')[0] + '-04:00'; // Adjust for your timezone offset if needed
+};
 
-  return (
-    <div className={styles.resultsContainer}>
-      {empty ?
-       (
-         <div className={styles.noResults}>
-           No results were found.
-         </div>
-       ) : (
-         <div>
-           Results were found!
-         </div>
-       )
-      }
-    </div>
-  )
-}
+const getOneMonthBeforeDate = () => {
+  const today = new Date();
+  today.setMonth(today.getMonth() - 1);
+  return today.toISOString().split('.')[0] + '-04:00'; // Adjust for your timezone offset if needed
+};
+
+const getOrderHistory = async (customerId, from, limit, location, offset, status, to) => {
+  const basePath = '/supply/requisitions/orderHistory';
+  const queryParams = new URLSearchParams({
+    customerId,
+    from,
+    to,
+    limit,
+    location,
+    offset,
+  });
+
+  if (status === 'ALL') {
+    const statuses = ['PENDING', 'PROCESSING', 'COMPLETED', 'APPROVED', 'REJECTED'];
+    statuses.forEach(status => queryParams.append('status', status));
+  } else {
+    queryParams.append('status', status);
+  }
+
+  const path = `${basePath}?${queryParams.toString()}`;
+
+  try {
+    const response = await fetchApiJson(path);
+    return response;
+  } catch (error) {
+    console.error('Fetch error:', error);
+    throw error;
+  }
+};
 
 export default function OrderHistoryIndex() {
+  const auth = useAuth();
+  const [customerId, setCustomerId] = useState();
+  const [orderHistory, setOrderHistory] = useState([]);
+  const [from, setFrom] = useState(getOneMonthBeforeDate());
+  const [to, setTo] = useState(getCurrentDate());
+  const [status, setStatus] = useState('ALL');
+  const statusOptions = ['ALL', 'PENDING', 'PROCESSING', 'COMPLETED', 'APPROVED', 'REJECTED'];
+  const ordersPerPage = 12;
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalOrders, setTotalOrders] = useState(0);
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= Math.ceil(totalOrders / ordersPerPage)) {
+      setCurrentPage(page);
+    }
+  };
+
+  useEffect(() => {
+    const fetchCustomerIdAndOrderHistory = async () => {
+      try {
+        const customerId = auth.empId();
+        setCustomerId(customerId);
+        const response = await getOrderHistory(customerId, from, ordersPerPage, 'A42FB-W', 1+(currentPage-1)*ordersPerPage, status, to);
+        setTotalOrders(response.total);
+        setOrderHistory(response.result);
+      } catch (error) {
+        console.error('Error fetching order history:', error);
+      }
+    };
+
+    if (auth) {
+      fetchCustomerIdAndOrderHistory();
+    }
+  }, [auth, from, to, status, currentPage]);
+
   return (
     <div>
       <Hero>Order History</Hero>
-      <SubHero />
-      <Results />
+      <SubHero
+        fromDate={formatDateForInput(new Date(from))}
+        setFromDate={setFrom}
+        toDate={formatDateForInput(new Date(to))}
+        setToDate={setTo}
+        status={status}
+        setStatus={setStatus}
+        statusOptions={statusOptions}
+      />
+      <div className={styles.contentContainer}>
+        {totalOrders > ordersPerPage ? (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={Math.ceil(totalOrders / ordersPerPage)}
+            onPageChange={handlePageChange}
+          />) : (<div></div>)
+        }
+        <Results orderHistory={orderHistory} />
+        {totalOrders > ordersPerPage ? (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={Math.ceil(totalOrders / ordersPerPage)}
+            onPageChange={handlePageChange}
+          />) : (<div></div>)
+        }
+      </div>
     </div>
-  )
+  );
 }
