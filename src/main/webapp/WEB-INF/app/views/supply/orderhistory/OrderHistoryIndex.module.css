@@ -198,3 +198,28 @@ table.essTable tbody tr td {
 .supplyListingTable tbody tr:nth-child(even) {
     background: rgba(51, 51, 51, .05);
 }
+
+/* Custom Rows */
+.cellPENDING {
+    background: #d19525; /* orange */
+    color: #FFFFFF; /* white */
+    font-weight: bold; /* replaced .bold mixin */
+}
+
+.cellPROCESSING {
+    background: rgba(0, 128, 128, 0.75); /* teal with 75% opacity */
+    color: #FFFFFF; /* white */
+    font-weight: bold; /* replaced .bold mixin */
+}
+
+.cellCOMPLETED {
+    background: #008000; /* green */
+    color: #FFFFFF; /* white */
+    font-weight: bold; /* replaced .bold mixin */
+}
+
+.cellREJECTED {
+    background: #FF4500; /* redorange */
+    color: #FFFFFF; /* white */
+    font-weight: bold; /* replaced .bold mixin */
+}

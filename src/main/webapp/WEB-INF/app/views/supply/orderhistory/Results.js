@@ -29,7 +29,7 @@ const OrderTable = ({ orders }) => {
             <td>{order.customer.lastName}</td>
             <td>{order.destination.locId}</td>
             <td>{new Date(order.orderedDateTime).toLocaleString()}</td>
-            <td>{order.status}</td>
+            <td className={styles[`cell${order.status}`]}>{order.status}</td>
           </tr>
         ))}
         </tbody>
