@@ -182,21 +182,28 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
     private void checkEverfiRecords(int taskID, int empID) {
         PersonnelTask task = personnelTaskDao.getPersonnelTask(taskID);
         List<Employee> emps = new ArrayList<>();
-        emps.add(employeeDao.getEmployeeById(empID));
+        Employee employee = employeeDao.getEmployeeById(empID);
+        emps.add(employee);
         if (task.getTaskType() == PersonnelTaskType.EVERFI_COURSE) {
             EverfiUserIDs everfiUserIDs = everfiUserDao.getEverfiUserIDsWithEmpID(empID);
-            if (everfiUserIDs == null && employeeDao.getEmployeeById(empID).getEmail() == null) {
-                sendEmailToEverfiReportEmails("Check this employee: ",
-                        generateEmployeeListString(emps) + "is not registered in Everfi and didn't have the email.");
+            if (everfiUserIDs == null && employee.getEmail() == null) {
+                logger.info("Either EverfiUserIDs or Employee Email: " + employee.getEmail() +
+                        " are null");
+                //                TODO: Enable once ready
+//                sendEmailToEverfiReportEmails("Check this employee: ",
+//                        generateEmployeeListString(emps) + "is not registered in Everfi and didn't have the email.");
             }
             else if (everfiUserIDs == null) {
+                logger.info("Only EverfiUserIDs are null");
                 everfiUserService.addEmployeesToEverfi(emps);
-                sendEmailToEverfiReportEmails("Task Assigned for this employee:  ",
-                        generateEmployeeListString(emps) + "This is registered in Everfi.");
+                //                TODO: Enable once ready
+//                sendEmailToEverfiReportEmails("Task Assigned for this employee:  ",
+//                        generateEmployeeListString(emps) + "This is registered in Everfi.");
             }
             else {
-                sendEmailToEverfiReportEmails("Check this employee: ",
-                        generateEmployeeListString(emps) + "is registered in Everfi but the task is not assigned.");
+                logger.info("Employee is registered in Everfi but the task is not assigned.");
+//                TODO: Enable once ready
+//                sendEmailToEverfiReportEmails("Check this employee: ", generateEmployeeListString(emps) + "is registered in Everfi but the task is not assigned.");
             }
         }
     }
@@ -211,10 +218,9 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
     private void sendEmail(String to, String subject, String html) {
         try {
             sendMailService.sendMessage(StringUtils.trim(to), subject, html);
-//            sendMailService.send(message);
         }
         catch (Exception e) {
-            logger.error("There was an error trying to send the Everfi report email ", e);
+            logger.error("There was an error trying to send the Everfi report email ", e.getMessage());
         }
     }
 

@@ -6,8 +6,10 @@ import com.google.common.collect.Range;
 import gov.nysenate.ess.core.dao.pec.assignment.PTAQueryBuilder;
 import gov.nysenate.ess.core.dao.pec.assignment.PTAQueryCompletionStatus;
 import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
+import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
 import gov.nysenate.ess.core.model.personnel.Employee;
+import gov.nysenate.ess.core.service.personnel.ActiveEmployeeIdService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.personnel.EmployeeSearchBuilder;
 import gov.nysenate.ess.core.util.DateUtils;
@@ -17,6 +19,7 @@ import gov.nysenate.ess.core.util.SortOrder;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -35,10 +38,13 @@ public class EssEmpTaskSearchService implements EmpTaskSearchService {
 
     private final EmployeeInfoService employeeInfoService;
     private final PersonnelTaskAssignmentDao patDao;
+    private final ActiveEmployeeIdService activeEmployeeIdService;
 
-    public EssEmpTaskSearchService(EmployeeInfoService employeeInfoService, PersonnelTaskAssignmentDao patDao) {
+    public EssEmpTaskSearchService(EmployeeInfoService employeeInfoService, PersonnelTaskAssignmentDao patDao,
+                                   ActiveEmployeeIdService activeEmployeeIdService) {
         this.employeeInfoService = employeeInfoService;
         this.patDao = patDao;
+        this.activeEmployeeIdService = activeEmployeeIdService;
     }
 
     @Override
@@ -76,24 +82,8 @@ public class EssEmpTaskSearchService implements EmpTaskSearchService {
         List<Integer> activeTasks = patDao.getActiveTasks(true);
         ImmutableListMultimap<Integer, PersonnelTaskAssignment> empTaskMap =
                 Multimaps.index(tasks, PersonnelTaskAssignment::getEmpId);
-        Set<Integer> keys = empTaskMap.keySet();
-        Set<Employee> allActiveEmployees = employeeInfoService.getAllEmployees(true);
-        ImmutableListMultimap.Builder<Integer, PersonnelTaskAssignment> builder = ImmutableListMultimap.builder();
-        builder.putAll(empTaskMap);
 
-        for(Employee emp : allActiveEmployees){
-            if (!keys.contains(emp.getEmployeeId())) {
-                builder.put(emp.getEmployeeId(), new PersonnelTaskAssignment(-1, emp.getEmployeeId(), null, null, false, false, null, null));
-            }
-        }
-        ImmutableListMultimap<Integer, PersonnelTaskAssignment> finalEmpTaskMap = builder.build();
-
-        List<EmployeeTaskSearchResult> resultList = finalEmpTaskMap.asMap().entrySet().stream()
-                .map(e -> new EmployeeTaskSearchResult(
-                        employeeInfoService.getEmployee(e.getKey()),
-                        e.getValue()
-                ))
-                .collect(Collectors.toList());
+        List<EmployeeTaskSearchResult> resultList = buildResultList(empTaskMap);
 
         Comparator<EmployeeTaskSearchResult> comparator = getComparator(query.getSortDirectives());
 
@@ -269,5 +259,33 @@ public class EssEmpTaskSearchService implements EmpTaskSearchService {
             }
         }
         return toBeAssigned;
+    }
+
+    private List<EmployeeTaskSearchResult> buildResultList(ImmutableListMultimap<Integer, PersonnelTaskAssignment> empTaskMap){
+
+        List<EmployeeTaskSearchResult> resultList = new ArrayList<>();
+
+        Set<Integer> keys = empTaskMap.keySet();
+        Set<Employee> allActiveEmployees = employeeInfoService.getAllEmployees(true);
+
+        ImmutableListMultimap.Builder<Integer, PersonnelTaskAssignment> builder = ImmutableListMultimap.builder();
+        builder.putAll(empTaskMap);
+
+        for(Employee emp : allActiveEmployees){
+            if (!keys.contains(emp.getEmployeeId())) {
+                builder.put(emp.getEmployeeId(), new PersonnelTaskAssignment(-1, emp.getEmployeeId(), null, null, false, false, null, null));
+            }
+        }
+
+        ImmutableListMultimap<Integer, PersonnelTaskAssignment> finalEmpTaskMap = builder.build();
+
+        Set<Integer> empIds = finalEmpTaskMap.keySet().stream().
+                filter(id -> activeEmployeeIdService.getActiveEmployeeIds().contains(id)).collect(Collectors.toSet());
+        Map<Integer, Employee> empMap = employeeInfoService.getEmployees(empIds);
+
+        for(Integer empId: empIds){
+            resultList.add(new EmployeeTaskSearchResult(empMap.get(empId), finalEmpTaskMap.get(empId)));
+        }
+        return resultList;
     }
 }
