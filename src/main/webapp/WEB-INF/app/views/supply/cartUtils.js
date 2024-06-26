@@ -47,6 +47,24 @@ export const clearCart = () => {
   console.log('Cart has been cleared.');
 };
 
+/*
+* Returns number of total items in cart / sum of all quantities
+* */
+export function getCartTotalQuantity() {
+  // Retrieve the cart from localStorage
+  const cart = JSON.parse(localStorage.getItem('cart')) || {};
+
+  // Sum all quantities in the cart
+  let totalQuantity = 0;
+  for (const itemId in cart) {
+    if (cart.hasOwnProperty(itemId)) {
+      totalQuantity += cart[itemId];
+    }
+  }
+
+  return totalQuantity;
+}
+
 //Example use in pages::
 // import { incrementItem, decrementItem, clearCart } from '../cartUtils'; // Adjust the path as necessary
 //

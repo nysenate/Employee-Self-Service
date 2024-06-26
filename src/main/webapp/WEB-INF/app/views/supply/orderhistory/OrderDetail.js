@@ -2,6 +2,7 @@ import React from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import styles from './OrderDetail.module.css';
 import Hero from "../../../components/Hero";
+// import CustomerPopover from './CustomPopover';  // Import the CustomerPopover component
 
 function print() {
   console.log("implement print plz!");
@@ -10,15 +11,15 @@ function print() {
 //"selected Version" choose box("Original") blue "Print Page" button (no box)
 const SelectVersion = () => {
   return (
-    <div className={styles.contentContainer}>
-      <div className={styles.contentInfo}>
-        <label>Selected Version:</label>
-        {/*Insert Button for Original*/}
-        <div className={styles.a1} style={{float: 'right', padding: '5px 20px 0px 0px'}} onClick={print}>
-          Print Page
+      <div className={styles.contentContainer}>
+        <div className={styles.contentInfo}>
+          <label>Selected Version:</label>
+          {/*Insert Button for Original*/}
+          <div className={styles.a1} style={{float: 'right', padding: '5px 20px 0px 0px'}} onClick={print}>
+            Print Page
+          </div>
         </div>
       </div>
-    </div>
   );
 }
 
@@ -33,45 +34,46 @@ Hoever Details include (Requested By                                    Requeste
 Also ^ bold field and regular font respond
 */
 const OrderInfo = ({ order }) => {
-  const orderId = "fake od";
   return (
-    <div className={styles.contentContainer}>
-      <div className={styles.contentInfo}>
-        <div className={`${styles.grid} ${styles.paddingX}`}>
-          <div className={styles.col412}>
-            <b>Requested By:</b> {order.customer.fullName}
+      <div className={styles.contentContainer}>
+        <div className={styles.contentInfo}>
+          <div className={`${styles.grid} ${styles.paddingX}`}>
+            <div className={styles.col412}>
+              {/*  Implement popover*/}
+              <b>Requested By:</b> {order.customer.fullName}
+            </div>
+            <div className={styles.col412}>
+                {/*  Implement popover*/}
+              <b>Requested Office:</b> {order.destination.locId}
+            </div>
+            <div className={styles.col412}>
+              <b>Requested Date:</b> {new Date(order.orderedDateTime).toLocaleString()}
+            </div>
           </div>
-          <div className={styles.col412}>
-            <b>Requested Office:</b> {order.destination.locId}
-          </div>
-          <div className={styles.col412}>
-            <b>Requested Date:</b> {new Date(order.orderedDateTime).toLocaleString()}
-          </div>
-        </div>
-        <div className={`${styles.grid} ${styles.paddingX}`}>
-          <div className={styles.col412}>
-            <b>Status:</b> {order.status}
-          </div>
-          <div className={styles.col412}>
-            <b>Issuer:</b> {order.issuer}
-          </div>
-          <div className={styles.col412}>
-            <b>Issued Date:</b> unknown field?
-          {/*  need to find what this is???
+          <div className={`${styles.grid} ${styles.paddingX}`}>
+            <div className={styles.col412}>
+              <b>Status:</b> {order.status}
+            </div>
+            <div className={styles.col412}>
+              <b>Issuer:</b> {order.issuer}
+            </div>
+            <div className={styles.col412}>
+              <b>Issued Date:</b> unknown field?
+              {/*  need to find what this is???
              Something about displayIssuedDate(selectedVersion)
           */}
+            </div>
+          </div>
+          <div className={`${styles.grid} ${styles.paddingX}`}>
+            <div className={styles.col412}>
+              <b>Modified By:</b> {order.modifiedBy.lastName}
+            </div>
+            <div className={styles.col412}>
+              <b>Delivery Method:</b> {order.deliveryMethod}
+            </div>
           </div>
         </div>
-        <div className={`${styles.grid} ${styles.paddingX}`}>
-          <div className={styles.col412}>
-            <b>Modified By:</b> {order.modifiedBy.lastName}
-          </div>
-          <div className={styles.col412}>
-            <b>Delivery Method:</b> {order.deliveryMethod}
-          </div>
-        </div>
-        </div>
-    </div>
+      </div>
   );
 }
 
@@ -79,11 +81,11 @@ const OrderInfo = ({ order }) => {
 * */
 const SpecialInstructions = () => {
   return (
-    <div className={styles.contentContainer}>
-      <div className={styles.contentInfo}>
+      <div className={styles.contentContainer}>
+        <div className={styles.contentInfo}>
 
+        </div>
       </div>
-    </div>
   );
 }
 
@@ -92,28 +94,28 @@ const SpecialInstructions = () => {
 * */
 const ItemTable = ({items}) => {
   return (
-    <div className={styles.contentContainer}>
-      <div className={styles.paddingX}>
-        <table className={`${styles.essTable} ${styles.supplyListingTable}`}>
-          <thead>
+      <div className={styles.contentContainer}>
+        <div className={styles.paddingX}>
+          <table className={`${styles.essTable} ${styles.supplyListingTable}`}>
+            <thead>
             <tr>
               <th>Commodity Code</th>
               <th>Item</th>
               <th>Quantity</th>
             </tr>
-          </thead>
-          <tbody>
-          {items.map(item => (
-            <tr key={item.item.id}>
-              <td>{item.item.commodityCode}</td>
-              <td>{item.item.description}</td>
-              <td>{item.quantity}</td>
-            </tr>
-          ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+            {items.map(item => (
+                <tr key={item.item.id}>
+                  <td>{item.item.commodityCode}</td>
+                  <td>{item.item.description}</td>
+                  <td>{item.quantity}</td>
+                </tr>
+            ))}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
   );
 }
 export default function OrderDetail () {
@@ -122,14 +124,12 @@ export default function OrderDetail () {
   const { order } = location.state;
 
   return (
-    <div>
-      <Hero>Requisition Order: {orderId}</Hero>
-      <SelectVersion/>
-      <OrderInfo order={order} />
-      <SpecialInstructions/>
-      <ItemTable items={order.lineItems}/>
-    </div>
+      <div>
+        <Hero>Requisition Order: {orderId}</Hero>
+        <SelectVersion/>
+        <OrderInfo order={order} />
+        {order.specialInstructions ? (<SpecialInstructions/>) : (<div></div>)}
+        <ItemTable items={order.lineItems}/>
+      </div>
   );
 };
-
- OrderDetail;

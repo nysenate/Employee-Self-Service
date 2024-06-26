@@ -80,6 +80,8 @@ export default function OrderHistoryIndex() {
                 setCustomerId(customerId);
                 const response = await getOrderHistory(customerId, formatDateForApi(new Date(from)), ordersPerPage, 'A42FB-W', 1+(currentPage-1)*ordersPerPage, status, formatDateForApi(new Date(to)));
                 setTotalOrders(response.total);
+                // Below fixes a bug persistent in dev. When one a page and change filter s.t. the page is no longer in bounds, no results will appear until refresh
+                if(Math.ceil(response.total / ordersPerPage) < currentPage) setCurrentPage(Math.ceil(response.total / ordersPerPage));
                 setOrderHistory(response.result);
             } catch (error) {
                 console.error('Error fetching order history:', error);

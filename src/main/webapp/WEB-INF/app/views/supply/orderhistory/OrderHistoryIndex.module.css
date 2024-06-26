@@ -207,13 +207,13 @@ table.essTable tbody tr td {
 }
 
 .cellPROCESSING {
-    background: rgba(0, 128, 128, 0.75); /* teal with 75% opacity */
+    background: #4196a7; /* teal with 75% opacity */
     color: #FFFFFF; /* white */
     font-weight: bold; /* replaced .bold mixin */
 }
 
 .cellCOMPLETED {
-    background: #008000; /* green */
+    background: #799933; /* green */
     color: #FFFFFF; /* white */
     font-weight: bold; /* replaced .bold mixin */
 }

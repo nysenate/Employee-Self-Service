@@ -1,4 +1,9 @@
 /* RequisitionFormIndex.module.css */
+/*Hero Cart Icon*/
+.cartWidget {
+    display: inline-block;
+    float: right;
+}
 
 /* Common Styles */
 .destinationContainer {
