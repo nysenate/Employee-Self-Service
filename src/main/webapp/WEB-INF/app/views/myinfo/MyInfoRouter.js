@@ -6,6 +6,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import SummaryIndex, { summaryLoader } from "app/views/myinfo/personnel/summary/SummaryIndex";
 import CheckHistoryIndex from "app/views/myinfo/payroll/checkhistory/CheckHistoryIndex";
 import EmergencyAlertInfoIndex from "app/views/myinfo/personnel/emergency-alert-info/EmergencyAlertInfoIndex";
+import ToDoReporting from "app/views/myinfo/personnel/to-do-reporting/ToDoReporing";
 
 
 export default function MyInfoRouter() {
@@ -16,6 +17,7 @@ export default function MyInfoRouter() {
           <Route path="personnel/summary" element={<SummaryIndex/>}/>
           <Route path="personnel/emergency-alert-info" element={<EmergencyAlertInfoIndex/>}/>
           <Route path="personnel/todo" element={<h1>Personnel To-Do List</h1>}/>
+          <Route path="personnel/todo-report" element={<ToDoReporting/>}/>
           <Route path="payroll/checkhistory" element={<CheckHistoryIndex/>}/>
           <Route path="" element={<Navigate to="personnel/summary" replace/>}/>
         </Route>
@@ -40,6 +42,9 @@ function MyInfoLayout() {
           </Navigation.Link>
           <Navigation.Link to="/myinfo/personnel/todo">
             To-Do List
+          </Navigation.Link>
+          <Navigation.Link to="/myinfo/personnel/todo-report">
+            To-Do Reporting
           </Navigation.Link>
         </Navigation.Section>
         <Navigation.Section name="Payroll">
