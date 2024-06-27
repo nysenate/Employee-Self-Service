@@ -2,7 +2,7 @@ import React from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import styles from './OrderDetail.module.css';
 import Hero from "../../../components/Hero";
-// import CustomerPopover from './CustomPopover';  // Import the CustomerPopover component
+import CustomerPopover from './CustomPopover';  // Import the CustomerPopover component
 
 function print() {
   console.log("implement print plz!");
@@ -34,16 +34,16 @@ Hoever Details include (Requested By                                    Requeste
 Also ^ bold field and regular font respond
 */
 const OrderInfo = ({ order }) => {
+  const orderId = "fake od";
+  console.log(order.issuer);
   return (
       <div className={styles.contentContainer}>
         <div className={styles.contentInfo}>
           <div className={`${styles.grid} ${styles.paddingX}`}>
             <div className={styles.col412}>
-              {/*  Implement popover*/}
               <b>Requested By:</b> {order.customer.fullName}
             </div>
             <div className={styles.col412}>
-                {/*  Implement popover*/}
               <b>Requested Office:</b> {order.destination.locId}
             </div>
             <div className={styles.col412}>
@@ -55,13 +55,12 @@ const OrderInfo = ({ order }) => {
               <b>Status:</b> {order.status}
             </div>
             <div className={styles.col412}>
-              <b>Issuer:</b> {order.issuer}
+              <b>{order.status === 'PENDING' || order.status === 'PROCESSING' ? 'Issuer: ' : 'Issued By: '}</b>
+              {order.issuer ? (order.issuer.lastName) : (order.issuer)}
             </div>
             <div className={styles.col412}>
-              <b>Issued Date:</b> unknown field?
-              {/*  need to find what this is???
-             Something about displayIssuedDate(selectedVersion)
-          */}
+              <b>Issued Date:</b>
+                {order.status === 'COMPLETED' || order.status === 'APPROVED' ? formatDate(order.completedDateTime) : ('')}
             </div>
           </div>
           <div className={`${styles.grid} ${styles.paddingX}`}>
@@ -76,23 +75,52 @@ const OrderInfo = ({ order }) => {
       </div>
   );
 }
-
-/* Yet unseen
-* */
-const SpecialInstructions = () => {
-  return (
-      <div className={styles.contentContainer}>
-        <div className={styles.contentInfo}>
-
-        </div>
-      </div>
-  );
+function formatDate(dateString) {
+    const options = {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+    };
+    return new Date(dateString).toLocaleString('en-US', options);
 }
+
+// Notes
+const SpecialInstructions = ({order}) => {
+    return (
+        <>
+            {order.note || order.specialInstructions ? (
+                <div className={styles.contentContainer}>
+                    <div className={styles.contentInfo}>
+                        {order.note && (
+                            <div className={`${styles.grid} ${styles.paddingX}`}>
+                                <div className={styles.col412} style={{ fontWeight: '700' }}>Supply Note:</div>
+                                <div className={styles.col812}>{order.note}</div>
+                            </div>
+                        )}
+                        {order.note && order.specialInstructions && (
+                            <div style={{ borderBottom: 'black 1px solid' }}></div>
+                        )}
+                        {order.specialInstructions && (
+                            <div className={`${styles.grid} ${styles.paddingX}`}>
+                                <div className={styles.col412} style={{ fontWeight: '700' }}>Special Instructions:</div>
+                                <div className={styles.col812} style={{ textAlign: 'left' }}>{order.specialInstructions}</div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            ) : null}
+        </>
+    );
+};
 
 /* Commodity Code     Item        Quantity
 *   {order.lineItems[0].item.commodityCode} {.item.description} {order.lineItems[0].quantity}
 * */
 const ItemTable = ({items}) => {
+  const sortedLineItems = items ? alphabetizeLineItems(items) : [];
   return (
       <div className={styles.contentContainer}>
         <div className={styles.paddingX}>
@@ -105,11 +133,11 @@ const ItemTable = ({items}) => {
             </tr>
             </thead>
             <tbody>
-            {items.map(item => (
+            {sortedLineItems.map(item => (
                 <tr key={item.item.id}>
-                  <td>{item.item.commodityCode}</td>
-                  <td>{item.item.description}</td>
-                  <td>{item.quantity}</td>
+                    <td>{item.item.commodityCode}</td>
+                    <td>{item.item.description}</td>
+                    <td>{item.quantity}</td>
                 </tr>
             ))}
             </tbody>
@@ -118,6 +146,12 @@ const ItemTable = ({items}) => {
       </div>
   );
 }
+function alphabetizeLineItems(lineItems) {
+    return lineItems.sort((a, b) => {
+        return a.item.description < b.item.description ? -1 : a.item.description > b.item.description ? 1 : 0;
+    });
+};
+
 export default function OrderDetail () {
   const { orderId } = useParams();
   const location = useLocation();
@@ -128,7 +162,7 @@ export default function OrderDetail () {
         <Hero>Requisition Order: {orderId}</Hero>
         <SelectVersion/>
         <OrderInfo order={order} />
-        {order.specialInstructions ? (<SpecialInstructions/>) : (<div></div>)}
+        <SpecialInstructions order={order}/>
         <ItemTable items={order.lineItems}/>
       </div>
   );

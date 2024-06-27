@@ -50,10 +50,13 @@ label {
     margin: 0 auto;
     overflow: hidden;
 }
-.col412 {
+.col412, .col812 {
     width: 33.33%;
     float: left;
     padding-right: 20px;
+}
+.col812 {
+    width: 66.66%;
 }
 b, strong {
     font-weight: 700;
