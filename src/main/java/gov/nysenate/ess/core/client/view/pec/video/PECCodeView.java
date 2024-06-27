@@ -5,15 +5,16 @@ import gov.nysenate.ess.core.model.pec.video.VideoTaskCode;
 
 /**
  * View representation of {@link VideoTaskCode}
+ * Also used for Ethics live course codes
  *
  * The code value is not provided to thwart cheaters.
  */
-public class PECVideoCodeView implements ViewObject {
+public class PECCodeView implements ViewObject {
     private final int videoId;
     private final int sequenceNo;
     private final String label;
 
-    public PECVideoCodeView(VideoTaskCode code) {
+    public PECCodeView(VideoTaskCode code) {
         this.videoId = code.getVideoId();
         this.sequenceNo = code.getSequenceNo();
         this.label = code.getLabel();

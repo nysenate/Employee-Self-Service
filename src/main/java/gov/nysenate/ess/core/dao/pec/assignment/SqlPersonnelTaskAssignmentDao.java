@@ -152,7 +152,9 @@ public class SqlPersonnelTaskAssignmentDao extends SqlBaseDao implements Personn
                     getLocalDateTime(rs, "effective_date_time"),
                     getLocalDateTime(rs, "end_date_time"),
                     rs.getBoolean("active"),
-                    rs.getBoolean("notifiable")
+                    rs.getBoolean("notifiable"),
+                    rs.getString("url"),
+                    rs.getString("resource")
             );
 
     private static final RowMapper<AssignmentWithTask> assignTaskMapper = (rs, rowNum) ->

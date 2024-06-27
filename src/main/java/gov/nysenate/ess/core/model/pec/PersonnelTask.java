@@ -21,6 +21,10 @@ public class PersonnelTask implements Comparable<PersonnelTask> {
     private final boolean active;
     private final boolean notifiable;
 
+    private final String url;
+
+    private final String resource;
+
     public PersonnelTask(int taskId,
                          PersonnelTaskType taskType,
                          PersonnelTaskAssignmentGroup assignmentGroup,
@@ -28,7 +32,9 @@ public class PersonnelTask implements Comparable<PersonnelTask> {
                          LocalDateTime effectiveDateTime,
                          LocalDateTime endDateTime,
                          boolean active,
-                         boolean notifiable) {
+                         boolean notifiable,
+                         String url,
+                         String resource) {
         this.taskId = taskId;
         this.taskType = requireNonNull(taskType);
         this.assignmentGroup = assignmentGroup;
@@ -37,6 +43,8 @@ public class PersonnelTask implements Comparable<PersonnelTask> {
         this.endDateTime = endDateTime;
         this.active = active;
         this.notifiable = notifiable;
+        this.url = url;
+        this.resource = resource;
     }
 
     public PersonnelTask(PersonnelTask other) {
@@ -48,7 +56,9 @@ public class PersonnelTask implements Comparable<PersonnelTask> {
                 other.effectiveDateTime,
                 other.endDateTime,
                 other.active,
-                other.notifiable
+                other.notifiable,
+                other.url,
+                other.resource
         );
     }
 
@@ -65,12 +75,14 @@ public class PersonnelTask implements Comparable<PersonnelTask> {
                 Objects.equal(title, that.title) &&
                 Objects.equal(effectiveDateTime, that.effectiveDateTime) &&
                 Objects.equal(endDateTime, that.endDateTime) &&
-                Objects.equal(notifiable, that.notifiable);
+                Objects.equal(notifiable, that.notifiable) &&
+                Objects.equal(url, that.url) &&
+                Objects.equal(resource, that.resource);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(taskId, taskType, assignmentGroup, title, effectiveDateTime, endDateTime, active, notifiable);
+        return Objects.hashCode(taskId, taskType, assignmentGroup, title, effectiveDateTime, endDateTime, active, notifiable, url, resource);
     }
 
     @Override
@@ -92,6 +104,8 @@ public class PersonnelTask implements Comparable<PersonnelTask> {
                 .add("endDateTime=" + endDateTime)
                 .add("active=" + active)
                 .add("notfiable=" + notifiable)
+                .add("url=" + url)
+                .add("resource=" + resource)
                 .toString();
     }
 
@@ -127,5 +141,13 @@ public class PersonnelTask implements Comparable<PersonnelTask> {
 
     public boolean isNotifiable() {
         return notifiable;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public String getResource() {
+        return resource;
     }
 }

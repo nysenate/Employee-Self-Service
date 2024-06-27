@@ -17,13 +17,10 @@ import static java.util.stream.Collectors.toList;
  */
 public class VideoTask extends PersonnelTask {
 
-    private final String filename;
-
     private final ImmutableList<VideoTaskCode> codes;
 
-    public VideoTask(PersonnelTask task, String filename, Collection<VideoTaskCode> codes) {
+    public VideoTask(PersonnelTask task, Collection<VideoTaskCode> codes) {
         super(task);
-        this.filename = filename;
         this.codes = Optional.ofNullable(codes)
                 .orElse(Collections.emptyList())
                 .stream()
@@ -52,7 +49,7 @@ public class VideoTask extends PersonnelTask {
     /* --- Getters --- */
 
     public String getFilename() {
-        return filename;
+        return super.getResource();
     }
 
     public ImmutableList<VideoTaskCode> getCodes() {

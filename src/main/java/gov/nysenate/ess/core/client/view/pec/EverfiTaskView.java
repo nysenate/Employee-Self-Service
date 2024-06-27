@@ -6,14 +6,11 @@ import java.util.Objects;
 
 public class EverfiTaskView extends PersonnelTaskView {
 
-    private String url;
-
     public EverfiTaskView(EverfiCourseTask task) {
         super(task);
-        this.url = Objects.toString(task.getCourseUrl());
     }
 
     public String getUrl() {
-        return url;
+        return super.getUrl();
     }
 }
