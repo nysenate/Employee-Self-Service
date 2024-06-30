@@ -12,12 +12,14 @@
   margin-top: 15px;
 }
 .labelCheck{
-  white-space: nowrap;
   display: block;
   color: #111;
   font-weight: 300;
   padding-left: 15px;
   text-indent: -15px;
+  width: 300px;
+  hyphens: manual;
+  word-wrap: break-word;
 }
 .atag{
   background: 0;
@@ -38,4 +40,14 @@ hr{
   margin-inline-end: auto;
   unicode-bidi: isolate;
   overflow: hidden;
+}
+.labelCheck1{
+  display: block;
+  color: #111;
+  font-weight: 300;
+  padding-left: 15px;
+  text-indent: -15px;
+  width: 300px;
+  hyphens: manual;
+  top: 10px;
 }

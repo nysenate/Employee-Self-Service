@@ -1,0 +1,10 @@
+.select{
+    display: block;
+    text-transform: none;
+    font-family: inherit;
+    font-size: 100%;
+    margin: 0;
+    padding: .3em .2em;
+    background: #fff;
+    border: 1px solid #999;
+}
