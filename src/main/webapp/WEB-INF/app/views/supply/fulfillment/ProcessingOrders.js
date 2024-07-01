@@ -3,7 +3,7 @@ import React from "react";
 import LoadingIndicator from "../../../components/LoadingIndicator";
 import CompletedOrders from "./CompletedOrders";
 
-const ProcessingOrders = ({ data, calculateHighlighting, setRequisitionSearchParam, distinctItemQuantity }) => {
+const ProcessingOrders = ({ data, calculateHighlighting, onRowClick, distinctItemQuantity }) => {
     const requisitions = data.reqs.processing;
     if(!data.reqRequest.response.$resolved){
         return (
@@ -39,7 +39,7 @@ const ProcessingOrders = ({ data, calculateHighlighting, setRequisitionSearchPar
                             <tr
                                 key={requisition.requisitionId}
                                 className={calculateHighlighting(requisition)}
-                                onClick={() => setRequisitionSearchParam(requisition.requisitionId)}
+                                onClick={() => onRowClick(requisition)}
                             >
                                 <td
                                     className={requisition.deliveryMethod === 'PICKUP' ? 'supply-pickup-icon' : ''}

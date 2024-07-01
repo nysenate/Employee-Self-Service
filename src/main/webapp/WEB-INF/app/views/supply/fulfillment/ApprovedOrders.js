@@ -3,7 +3,7 @@ import React from "react";
 import LoadingIndicator from "../../../components/LoadingIndicator";
 import CompletedOrders from "./CompletedOrders";
 
-const ApprovedOrders = ({ data, setRequisitionSearchParam, distinctItemQuantity }) => {
+const ApprovedOrders = ({ data, onRowClick, distinctItemQuantity }) => {
     const requisitions = data.reqs.approved;
     if(!data.reqRequest.response.$resolved){
         return (
@@ -39,7 +39,7 @@ const ApprovedOrders = ({ data, setRequisitionSearchParam, distinctItemQuantity 
                         {requisitions.sort((a, b) => b.requisitionId - a.requisitionId).map((requisition) => (
                             <tr
                                 key={requisition.requisitionId}
-                                onClick={() => setRequisitionSearchParam(requisition.requisitionId)}
+                                onClick={() => onRowClick(requisition)}
                             >
                                 <td
                                     className={requisition.deliveryMethod === 'PICKUP' ? 'supply-pickup-icon' : ''}

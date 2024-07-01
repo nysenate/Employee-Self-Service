@@ -50,13 +50,19 @@ h1, h2 {
     margin: 0 auto;
     overflow: hidden;
 }
-.col412, .col812 {
+.col412, .col812, .col112, .col1112 {
     width: 33.33%;
     float: left;
     padding-right: 20px;
 }
 .col812 {
     width: 66.66%;
+}
+.col112 {
+    width: 8.33%;
+}
+.col1112 {
+    width: 91.66%;
 }
 b, strong {
     font-weight: 700;
@@ -135,4 +141,35 @@ table.essTable tbody tr td {
     content: "\2717";
     color: crimson;
     font-weight: bold;
+}
+
+/*Buttons*/
+.linkButton {
+    background: none!important;
+    border: none;
+    padding: 0!important;
+    /*optional*/
+    font-family: arial, sans-serif;
+    /*input has OS specific font-family*/
+    color: #069;
+    cursor: pointer;
+}
+
+/*Modals?*/
+.requisitionModalRightMargin h4 .contentInfo {
+    /* Add any necessary styles for .content-info here if it's a placeholder in your preprocessor */
+}
+
+.requisitionModalRightMargin input {
+    margin-bottom: 10px;
+}
+
+.requisitionModalRightMargin div {
+    margin-bottom: 10px;
+}
+
+.requisitionModalRightMargin .fulfillmentModalSpecialInstructions {
+    font-weight: 600;
+    color: #6270BDFF; /* Replace with your actual color value */
+    margin-bottom: 10px;
 }

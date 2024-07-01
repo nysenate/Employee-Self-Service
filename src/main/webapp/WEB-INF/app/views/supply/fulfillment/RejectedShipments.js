@@ -2,7 +2,7 @@ import styles from "../universalStyles.module.css";
 import React from "react";
 import CompletedOrders from "./CompletedOrders";
 
-const RejectedShipments = ({ data, setRequisitionSearchParam, distinctItemQuantity }) => {
+const RejectedShipments = ({ data, onRowClick, distinctItemQuantity }) => {
     const requisitions = data.reqs.rejected;
     if(!data.reqRequest.response.$resolved || requisitions.length === 0) return;
     return (
@@ -23,7 +23,7 @@ const RejectedShipments = ({ data, setRequisitionSearchParam, distinctItemQuanti
                     {requisitions.sort((a, b) => b.requisitionId - a.requisitionId).map((requisition) => (
                         <tr
                             key={requisition.requisitionId}
-                            onClick={() => setRequisitionSearchParam(requisition.requisitionId)}
+                            onClick={() => onRowClick(requisition)}
                         >
                             <td>{requisition.requisitionId}</td>
                             <td>{requisition.destination.locId}</td>

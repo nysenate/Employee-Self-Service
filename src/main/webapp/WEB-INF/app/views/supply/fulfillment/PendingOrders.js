@@ -2,7 +2,7 @@ import React from "react";
 import styles from "../universalStyles.module.css";
 import LoadingIndicator from "../../../components/LoadingIndicator";
 
-const PendingOrders = ({ data, calculateHighlighting, setRequisitionSearchParam, distinctItemQuantity }) => {
+const PendingOrders = ({ data, calculateHighlighting, onRowClick, distinctItemQuantity }) => {
     const requisitions = data.reqs.pending;
     if (!data.reqRequest.response.$resolved) {
         return (
@@ -38,7 +38,7 @@ const PendingOrders = ({ data, calculateHighlighting, setRequisitionSearchParam,
                             <tr
                                 key={requisition.requisitionId}
                                 className={calculateHighlighting(requisition)}
-                                onClick={() => setRequisitionSearchParam(requisition.requisitionId)}
+                                onClick={() => onRowClick(requisition)}
                             >
                                 <td
                                     className={requisition.deliveryMethod === 'PICKUP' ? 'supply-pickup-icon' : ''}

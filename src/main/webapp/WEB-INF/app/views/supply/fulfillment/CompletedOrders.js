@@ -2,7 +2,7 @@ import styles from "../universalStyles.module.css";
 import React from "react";
 import LoadingIndicator from "../../../components/LoadingIndicator";
 
-const CompletedOrders = ({ data, setRequisitionSearchParam, distinctItemQuantity }) => {
+const CompletedOrders = ({ data, onRowClick, distinctItemQuantity }) => {
     const requisitions = data.reqs.completed;
     if(!data.reqRequest.response.$resolved){
         return (
@@ -38,7 +38,7 @@ const CompletedOrders = ({ data, setRequisitionSearchParam, distinctItemQuantity
                         {requisitions.sort((a, b) => b.requisitionId - a.requisitionId).map((requisition) => (
                             <tr
                                 key={requisition.requisitionId}
-                                onClick={() => setRequisitionSearchParam(requisition.requisitionId)}
+                                onClick={() => onRowClick(requisition)}
                             >
                                 <td
                                     className={requisition.deliveryMethod === 'PICKUP' ? 'supply-pickup-icon' : ''}
