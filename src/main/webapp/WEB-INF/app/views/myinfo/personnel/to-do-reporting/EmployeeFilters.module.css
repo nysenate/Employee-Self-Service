@@ -24,6 +24,7 @@
 }
 
 .labelCheck1{
+    margin-top: 10px;
     display: block;
     color: #111;
     font-weight: 300;
@@ -45,4 +46,5 @@
     padding: .3em .2em;
     background: #fff;
     border: 1px solid #999;
+
 }
