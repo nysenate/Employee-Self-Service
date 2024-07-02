@@ -32,7 +32,7 @@ export const initMostReqs = async () => {
 export const initRejectedReqs = async () => {
     const params = {
         status: "REJECTED",
-        from: '2024-07-01T00:00:00-04:00',
+        from: '1969-12-31T19:00:01-05:00',
         dateField: "rejected_date_time",
         limit: 'ALL',
         offset: 0
