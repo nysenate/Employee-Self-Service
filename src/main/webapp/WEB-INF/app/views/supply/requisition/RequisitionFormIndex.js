@@ -8,6 +8,7 @@ import useAuth from "app/contexts/Auth/useAuth";
 import LoadingIndicator from "app/components/LoadingIndicator";
 import Pagination from "../../../components/Pagination";
 import { clearCart, updateItemQuantity, getCartTotalQuantity } from '../cartUtils';
+import { getItems, getLocations} from "../helpers";
 
 const SelectDestination = ({ locations, tempDestination, handleTempDestinationChange, handleConfirmClick }) => {
   return (
@@ -161,13 +162,6 @@ const ItemDisplay = ({ item, cart, handleQuantityChange, handleOverOrderAttempt 
 };
 //End Items
 
-const getLocations = async (empId) => {
-  return await fetchApiJson(`/supply/destinations/${empId}`).then((body) => body);
-};
-
-const getItems = async (locId) => {
-  return await fetchApiJson(`/supply/items/orderable/${locId}`).then((body) => body.result);
-};
 
 
 export default function RequisitionFormIndex() {

@@ -2,7 +2,8 @@ import React from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import styles from './OrderDetail.module.css';
 import Hero from "../../../components/Hero";
-import CustomerPopover from './CustomPopover';  // Import the CustomerPopover component
+import CustomerPopover from './CustomPopover';
+import { alphabetizeLineItems, formatDate} from "../helpers";
 
 function print() {
   console.log("implement print plz!");
@@ -75,17 +76,6 @@ const OrderInfo = ({ order }) => {
       </div>
   );
 }
-function formatDate(dateString) {
-    const options = {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true
-    };
-    return new Date(dateString).toLocaleString('en-US', options);
-}
 
 // Notes
 const SpecialInstructions = ({order}) => {
@@ -146,11 +136,6 @@ const ItemTable = ({items}) => {
       </div>
   );
 }
-function alphabetizeLineItems(lineItems) {
-    return lineItems.sort((a, b) => {
-        return a.item.description < b.item.description ? -1 : a.item.description > b.item.description ? 1 : 0;
-    });
-};
 
 export default function OrderDetail () {
   const { orderId } = useParams();

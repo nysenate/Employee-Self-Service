@@ -5,7 +5,7 @@ import Hero from "../../../components/Hero";
 import { OverOrderPopup, CheckOutPopup, PostCheckOutPopup, EmptyCartPopup } from "../../../components/Popups";
 import { updateItemQuantity, clearCart } from '../cartUtils';
 import { Link, useNavigate } from 'react-router-dom';
-import { fetchApiJson } from "app/utils/fetchJson";
+import { getItems } from "../helpers";
 
 const Destination = () => {
   const locId = JSON.parse(localStorage.getItem('destination')).locId;
@@ -157,16 +157,6 @@ const SpecialInstructions = ({ openEmptyCartPopup, openCheckOutPopup }) => {
   );
 };
 
-const getItems = async (locId) => {
-  return await fetchApiJson(`/supply/items/orderable/${locId}`).then((body) => body.result);
-};
-const restrictNumericInput = (e) => {
-  const charCode = e.charCode;
-  // Allow only numeric characters (0-9)
-  if (charCode < 48 || charCode > 57) {
-    e.preventDefault();
-  }
-};
 
 export default function ShoppingCart() {
   const navigate = useNavigate()

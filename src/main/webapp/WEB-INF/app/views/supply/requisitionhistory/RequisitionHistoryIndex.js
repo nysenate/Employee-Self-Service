@@ -5,51 +5,14 @@ import Pagination from "../../../components/Pagination";
 import LoadingIndicator from "../../../components/LoadingIndicator";
 import { fetchApiJson } from "../../../utils/fetchJson";
 import { distinctItemQuantity } from "../fulfillment/supply-fulfillment-ctrl"
-
-const formatDateForInput = (date) => {
-    return date.toISOString().split('T')[0];
-};
-
-const formatDateForApi = (date) => {
-    return date.toISOString().split('.')[0] + '-04:00'; // Adjust for your timezone offset if needed
-};
-
-const getCurrentDate = () => {
-    const today = new Date();
-    return formatDateForApi(today);
-};
-
-const getOneMonthBeforeDate = () => {
-    const today = new Date();
-    today.setMonth(today.getMonth() - 1);
-    return formatDateForApi(today);
-};
-
-const fetchRequisitions = async (params) => {
-    const queryString = new URLSearchParams();
-    Object.keys(params).forEach(key => {
-        if (Array.isArray(params[key])) {
-            params[key].forEach(value => queryString.append(key, value));
-        } else {
-            queryString.append(key, params[key]);
-        }
-    });
-    const path = `/supply/requisitions?${queryString.toString()}`;
-    return fetchApiJson(path, { method: 'GET' });
-};
-
-const getShipments = async (to, from) => {
-    const params = {
-        from: from,
-        to: to,
-        limit: 12,
-        offset: 1,
-        location: 'All',
-        status: ['APPROVED', 'REJECTED']
-    };
-    const data = await fetchRequisitions(params);
-    return data.result;
-};
+import {
+    getShipments,
+    formatDateForInput,
+    formatDateForApi,
+    getCurrentDate,
+    getOneMonthBeforeDate,
+    formatDate
+} from "../helpers";
 
 export default function RequisitionHistoryIndex() {
     const [shipments, setShipments] = useState([]);
@@ -198,22 +161,8 @@ const Results = ({ shipments }) => {
                                     <td>{shipment.destination.locId}</td>
                                     <td>{shipment.customer.lastName}</td>
                                     <td>{distinctItemQuantity(shipment)}</td>
-                                    <td>{new Date(shipment.orderedDateTime).toLocaleString('en-US', {
-                                        year: 'numeric',
-                                        month: '2-digit',
-                                        day: '2-digit',
-                                        hour: '2-digit',
-                                        minute: '2-digit',
-                                        hour12: true
-                                    })}</td>
-                                    <td>{shipment.completedDateTime ? new Date(shipment.completedDateTime).toLocaleString('en-US', {
-                                        year: 'numeric',
-                                        month: '2-digit',
-                                        day: '2-digit',
-                                        hour: '2-digit',
-                                        minute: '2-digit',
-                                        hour12: true
-                                    }): ''}</td>
+                                    <td>{formatDate(shipment.orderedDateTime)}</td>
+                                    <td>{shipment.completedDateTime ? formatDate(shipment.completedDateTime) : ''}</td>
                                     <td>{shipment.issuer ? shipment.issuer.lastName : ''}</td>
                                 </tr>
                             ))}

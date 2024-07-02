@@ -7,54 +7,15 @@ import useAuth from "app/contexts/Auth/useAuth";
 import { fetchApiJson } from "app/utils/fetchJson";  // Import the custom fetch function
 import Pagination from "../../../components/Pagination";
 import LoadingIndicator from "app/components/LoadingIndicator";
+import {
+    formatDateForApi,
+    formatDateForInput,
+    getCurrentDate,
+    getOneMonthBeforeDate,
+    getOrderHistory
+} from "../helpers";
 
-const formatDateForInput = (date) => {
-    return date.toISOString().split('T')[0];
-};
 
-const formatDateForApi = (date) => {
-    return date.toISOString();
-};
-
-const getCurrentDate = () => {
-    const today = new Date();
-    return today.toISOString().split('.')[0] + '-04:00'; // Adjust for your timezone offset if needed
-};
-
-const getOneMonthBeforeDate = () => {
-    const today = new Date();
-    today.setMonth(today.getMonth() - 1);
-    return today.toISOString().split('.')[0] + '-04:00'; // Adjust for your timezone offset if needed
-};
-
-const getOrderHistory = async (customerId, from, limit, location, offset, status, to) => {
-    const basePath = '/supply/requisitions/orderHistory';
-    const queryParams = new URLSearchParams({
-        customerId,
-        from,
-        to,
-        limit,
-        location,
-        offset,
-    });
-
-    if (status === 'ALL') {
-        const statuses = ['PENDING', 'PROCESSING', 'COMPLETED', 'APPROVED', 'REJECTED'];
-        statuses.forEach(status => queryParams.append('status', status));
-    } else {
-        queryParams.append('status', status);
-    }
-
-    const path = `${basePath}?${queryParams.toString()}`;
-
-    try {
-        const response = await fetchApiJson(path);
-        return response;
-    } catch (error) {
-        console.error('Fetch error:', error);
-        throw error;
-    }
-};
 
 export default function OrderHistoryIndex() {
     const auth = useAuth();

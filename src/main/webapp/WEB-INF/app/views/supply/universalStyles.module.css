@@ -194,3 +194,102 @@ table.essTable tbody tr td {
     color: #6270BDFF; /* Replace with your actual color value */
     margin-bottom: 10px;
 }
+
+/* Fulfillment Popup */
+.select2Container {
+    margin: 0;
+    position: relative;
+    display: inline-block;
+    zoom: 1;
+    vertical-align: middle;
+    box-sizing: border-box;
+}
+.select2Container .select2Choice>.select2Chosen {
+    margin-right: 26px;
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+/* Filter Select */
+.searchContentContainer {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+/*.searchContentContainer label {*/
+/*    !*width: 48%;*!*/
+/*    margin: 2%;*/
+/*}*/
+.searchContentContainer span {
+    width: 98%;
+    margin: 2%;
+}
+.searchBar {
+    width: 100%;
+}
+
+.searchOptions__option {
+    width: 100%;
+    min-height: 26px;
+}
+
+.commodityCode {
+    font-size: 13px;
+}
+
+.description {
+    font-size: 70%;
+}
+
+
+
+
+
+/* Internal Error Popup styles*/
+/*error-modal {*/
+/*    padding: 20px;*/
+/*    text-align: center;*/
+/*    z-index: 9001;*/
+/*}*/
+/*.error-modal h1 {*/
+/*    margin: .67em 0;*/
+/*    margin-top: 0;*/
+/*    color: #e64727;*/
+/*    font-size: 2em;*/
+/*    font-weight: 400;*/
+/*    text-align: center;*/
+/*}*/
+/*error-modal .error-description {*/
+/*    width: 45em;*/
+/*}*/
+/*error-modal pre.error-details {*/
+/*    text-align: initial;*/
+/*    max-height: 45vh;*/
+/*    max-width: 45em;*/
+/*    overflow: auto;*/
+/*}*/
+/*h3 {*/
+/*    display: block;*/
+/*    font-size: 1.17em;*/
+/*    margin-block-start: 1em;*/
+/*    margin-block-end: 1em;*/
+/*    margin-inline-start: 0px;*/
+/*    margin-inline-end: 0px;*/
+/*    font-weight: bold;*/
+/*    unicode-bidi: isolate;*/
+/*}*/
+/*.button-container {*/
+/*    display: flex;*/
+/*    justify-content: space-around;*/
+/*}*/
+/*.confirm-modal.error .input-container input[type=button].time-neutral-button, input[type=button].reject-button, input[type=submit].reject-button {*/
+/*    padding: 5px 10px;*/
+/*    background: #e64727;*/
+/*    color: #fff;*/
+/*    font-weight: 600;*/
+/*    border: 2px none #c33417;*/
+/*    border-bottom-style: solid;*/
+/*}*/
