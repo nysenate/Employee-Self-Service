@@ -5,6 +5,18 @@ const fetchRequisitions = async (params) => {
     return fetchApiJson('/supply/requisitions', { method: 'GET', payload: params });
 };
 
+export const fetchSupplyEmployees = async () => {
+    return fetchApiJson('/supply/employees', { method: 'GET' });
+};
+
+export const fetchSupplyItems = async () => {
+    return fetchApiJson('/supply/items', { method: 'GET' });
+};
+
+export const fetchSupplyDestinations = async (empId) => {
+    return fetchApiJson(`/supply/destinations/${empId}`);
+};
+
 export const initMostReqs = async () => {
     const params = {
         status: ['PENDING', 'PROCESSING', 'COMPLETED', 'APPROVED'],

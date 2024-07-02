@@ -7,7 +7,7 @@ import CompletedOrders from "./CompletedOrders";
 import ApprovedOrders from "./ApprovedOrders";
 import RejectedShipments from "./RejectedShipments";
 
-import {initMostReqs, initRejectedReqs, calculateHighlighting, setRequisitionSearchParam, distinctItemQuantity} from "./supply-fulfillment-ctrl";
+import { initMostReqs, initRejectedReqs, calculateHighlighting, setRequisitionSearchParam, distinctItemQuantity } from "./supply-fulfillment-ctrl";
 import { FulfillmentEditing } from "./FulfillmentPopups";
 
 export default function FulfillmentIndex() {
@@ -28,6 +28,8 @@ export default function FulfillmentIndex() {
         supplyEmployees: []
     });
     const [error, setError] = useState(false);
+    const [selectedRequisition, setSelectedRequisition] = useState(null); // State to manage the selected requisition
+    const [isModalOpen, setIsModalOpen] = useState(false); // State to manage modal visibility
 
     useEffect(() => {
         const fetchData = async () => {
@@ -69,19 +71,16 @@ export default function FulfillmentIndex() {
         fetchData();
     }, []);
 
-    const [selectedRequisition, setSelectedRequisition] = useState(null); // State to manage the selected requisition
-    const [isModalOpen, setIsModalOpen] = useState(false); // State to manage modal visibility
-
     const handleRowClick = (requisition) => {
         setSelectedRequisition(requisition); // Set the selected requisition
         setRequisitionSearchParam(requisition.requisitionId)
-        while(!requisition) console.log("waiting requisition");
         setIsModalOpen(true); // Open the modal
     };
+
     const closeModal = () => {
         setIsModalOpen(false);
         setSelectedRequisition(null);
-    }
+    };
 
     if (error) {
         return <div>Error loading requisitions. Please reload the page and try again.</div>;
@@ -117,13 +116,14 @@ export default function FulfillmentIndex() {
                 onRowClick={handleRowClick}
                 distinctItemQuantity={distinctItemQuantity}
             />
-            <FulfillmentEditing
-                requstition={selectedRequisition}
-                isModalOpen={isModalOpen}
-                closeModal={closeModal}
-                onAction={(action)=>{console.log(action)}}
-            />
+            {selectedRequisition && (
+                <FulfillmentEditing
+                    requisition={selectedRequisition}
+                    isModalOpen={isModalOpen}
+                    closeModal={closeModal}
+                    onAction={(action) => { console.log(action); }}
+                />
+            )}
         </div>
     );
 }
-
