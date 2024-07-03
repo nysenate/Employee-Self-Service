@@ -9,6 +9,8 @@ import {
     fetchSupplyItems,
 } from "./supply-fulfillment-ctrl";
 import useAuth from "../../../contexts/Auth/useAuth";
+import FilterSelect from "../../../components/FilterSelect";
+import { alphabetizeLineItems, formatDateYY } from "../helpers";
 
 
 export function FulfillmentEditing({ requisition, isModalOpen, closeModal, onAction }) {
@@ -21,7 +23,6 @@ export function FulfillmentEditing({ requisition, isModalOpen, closeModal, onAct
 
     useEffect(() => {
         setDirty(JSON.stringify(originalRequisition) !== JSON.stringify(editableRequisition));
-        console.log("editableRequisition: ", editableRequisition);
     }, [editableRequisition]);
 
     const handleUndo = () => {
@@ -108,7 +109,7 @@ const OrderContent = ({
     const deliveryMethods = ['PICKUP', 'DELIVERY'];
     const [destinations, setDestinations] = useState({
         allowed: [],
-        selected: undefined
+        selected: editableRequisition.destination
     });
     const [supplyEmployees, setSupplyEmployees] = useState([]);
     const [items, setItems] = useState({
@@ -126,7 +127,6 @@ const OrderContent = ({
                 result.forEach(r => {
                     supplyEmployees.push(r);
                 })
-                console.log("supplyEmployees", supplyEmployees);
                 setSupplyEmployees(supplyEmployees);
 
             } catch (error) {
@@ -137,7 +137,6 @@ const OrderContent = ({
             try {
                 const response = await fetchSupplyItems();
                 const result = response.result;
-                console.log("items", result);
                 setItems(prevItems => ({
                     ...prevItems,
                     all: result
@@ -151,7 +150,6 @@ const OrderContent = ({
                 //Get Destinations
                 const response = await fetchSupplyDestinations(auth.empId());
                 const result = response.result;
-                console.log("destinations", result);
                 setDestinations(prevDestinations => ({
                     ...prevDestinations,
                     allowed: result
@@ -166,6 +164,7 @@ const OrderContent = ({
     }, [auth]);
 
     const handleItemChange = (selectedOption) => {
+        setWarning(false);
         setItems(prev => ({ ...prev, selected: selectedOption }));
     };
     const handleDestinationChange = (selectedOption) => {
@@ -186,8 +185,9 @@ const OrderContent = ({
 
     const handleAddItem = () => {
         if (!items.selected) return;
-        if (editableRequisition.lineItems.find(item => item.id === items.selected.id)) {
+        if (editableRequisition.lineItems.find(obj => obj.item.id === items.selected.id)) {
             setWarning(true);
+            return;
         } else {
             setWarning(false);
             setEditableRequisition(prev => ({
@@ -201,33 +201,28 @@ const OrderContent = ({
         <div className={`${styles.grid} ${styles.contentInfo}`}>
             <div className={styles.col812}>
                 <div style={{ overflowY: 'auto', maxHeight: '300px' }}>
-                    <div>Insert editable-order-listing</div>
+                    <EditableOrderListing
+                      editableRequisition={editableRequisition}
+                      setEditableRequisition={setEditableRequisition}
+                    />
                 </div>
 
                 {/* Add Item */}
-                <div className={styles.paddingX}>
-                    <label> Add Commodity Code:
-                        <span style={{ textAlign: 'left' }}>
-                            <Select
-                                value={items.selected}
-                                onChange={handleItemChange}
-                                options={items.all}
-                                getOptionLabel={option => option.commodityCode}
-                                getOptionValue={option => option.id}
-                                formatOptionLabel={option => (
-                                    <>
-                                        <div>{option.commodityCode}</div>
-                                        <small>{option.description}</small>
-                                    </>
-                                )}
-                                styles={{ minWidth: '200px' }}
-                                onInputChange={() => {}} // Add dummy function
-                                onMenuOpen={() => {}} // Add dummy function
+                <div className={styles.paddingX} style={{display: 'block'}}>
+                    <label style={{ display: 'inline-block'}}> Add Commodity Code:
+                        <span style={{textAlign: 'left', flex: '1', minWidth: '200px'}}>
+                            <FilterSelect
+                              data={items.all}
+                              initialItem={items.selected}
+                              valueField="commodityCode"
+                              labelField="description"
+                              handleSelect={handleItemChange}
+                              minWidth={200}
                             />
                         </span>
                     </label>
-                    <Button onClick={handleAddItem} className="neutral-button">Add Item</Button>
-                    {warning && <p style={{color: "#e64727"}}>Item already exists in this order. Please adjust the quantity if it's not correct.</p>}
+                    <button className={styles.neutralButton} type="button" style={{display: 'inline-block !important'}} onClick={handleAddItem}>Add Item</button>
+                    {warning && (<p style={{color: "#e64727"}}>Item already exists in this order. Please adjust the quantity if it's not correct.</p>)}
                 </div>
 
                 {/* Add Note */}
@@ -244,24 +239,19 @@ const OrderContent = ({
             </div>
 
             {/* Right Margin */}
-            <div className={`${styles.col412} ${styles.requisitionModalRightMargin}`}>
+            <div className={`${styles.col412} ${styles.requisitionModalRightMargin}`} style={{marginBottom: '0px'}}>
                 {/* Change Location */}
                 <h4>Location</h4>
-                <Select
-                    value={destinations.selected}
-                    onChange={handleDestinationChange}
-                    options={destinations.allowed}
-                    getOptionLabel={option => (
-                        <>
-                            <div>{option.code}</div>
-                            <small>{option.locationDescription}</small>
-                        </>
-                    )}
-                    getOptionValue={option => option.code}
-                    styles={{ minWidth: '175px' }}
-                    onInputChange={() => {}} // Add dummy function
-                    onMenuOpen={() => {}} // Add dummy function
-                />
+                <span style={{textAlign: 'left'}}>
+                    <FilterSelect
+                      data={destinations.allowed}
+                      initialItem={destinations.selected}
+                      valueField="code"
+                      labelField="address.addr1"
+                      handleSelect={handleDestinationChange}
+                      minWidth={175}
+                    />
+                </span>
 
                 <h4>Delivery Method</h4>
                 <select value={editableRequisition.deliveryMethod || ''} onChange={handleDeliveryMethodChange}>
@@ -276,20 +266,13 @@ const OrderContent = ({
                 {!editableRequisition.specialInstructions ? (
                     <div>No instructions provided for this requisition.</div>
                 ) : (
-                    <div className="fulfillment-modal-special-instructions">
+                    <div className={styles.fulfillmentModalSpecialInstructions}>
                         {editableRequisition.specialInstructions}
                     </div>
                 )}
 
                 <h4>Ordered Date Time</h4>
-                <div>{new Date(editableRequisition.orderedDateTime).toLocaleString('en-US', {
-                    year: '2-digit',
-                    month: '2-digit',
-                    day: '2-digit',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: true
-                })}</div>
+                <div>{formatDateYY(editableRequisition.orderedDateTime)}</div>
 
                 <h4>Actions</h4>
                 <div style={{ textAlign: 'center' }}>
@@ -309,6 +292,7 @@ const OrderContent = ({
                 <div style={{ textAlign: 'center', paddingBottom: '20px' }}>
                     <label>Assign to: </label>
                     <select value={editableRequisition.issuer?.employeeId || ''} onChange={handleIssuerChange}>
+                        <option value="" disabled></option>
                         {supplyEmployees.map(emp => (
                             <option key={emp.employeeId} value={emp.employeeId}>
                                 {emp.fullName}
@@ -320,6 +304,71 @@ const OrderContent = ({
         </div>
     );
 }
+
+const EditableOrderListing = ({ editableRequisition, setEditableRequisition }) => {
+    const [quantities, setQuantities] = useState({});
+
+    useEffect(() => {
+        const newQuantities = editableRequisition.lineItems.reduce((acc, obj) => {
+            acc[obj.item.id] = obj.quantity !== undefined ? String(obj.quantity) : '';
+            return acc;
+        }, {});
+        setQuantities(newQuantities);
+    }, [editableRequisition.lineItems]);
+
+    const handleQuantityChange = (id, newQuantity) => {
+        const numericQuantity = parseInt(newQuantity, 10); // Convert input to number
+
+        setQuantities(prevQuantities => ({
+            ...prevQuantities,
+            [id]: isNaN(numericQuantity) ? '' : String(numericQuantity)
+        }));
+
+        const updatedLineItems = editableRequisition.lineItems.map(obj =>
+          obj.item.id === id ? { ...obj, quantity: isNaN(numericQuantity) ? '' : numericQuantity } : obj
+        );
+
+        setEditableRequisition(prev => ({
+            ...prev,
+            lineItems: updatedLineItems
+        }));
+    };
+
+    const sortedLineItems = editableRequisition.lineItems ? alphabetizeLineItems(editableRequisition.lineItems, 'commodityCode') : [];
+
+    return (
+      <div className={styles.contentContainer}>
+          <table className={`${styles.essTable} ${styles.supplyListingTable}`}>
+              <thead>
+              <tr>
+                  <th>Commodity Code</th>
+                  <th>Item</th>
+                  <th>Quantity</th>
+              </tr>
+              </thead>
+              <tbody>
+              {sortedLineItems.map(item => (
+                <tr key={item.item.id}>
+                    <td>{item.item.commodityCode}</td>
+                    <td>{item.item.description}</td>
+                    <td>
+                        <input
+                          type="number"
+                          value={quantities[item.item.id] || ''}
+                          onChange={e => handleQuantityChange(item.item.id, e.target.value)}
+                          min="0"
+                          step="1"
+                          maxLength="4"
+                          style={{ width: '50px' }}
+                        />
+                    </td>
+                </tr>
+              ))}
+              </tbody>
+          </table>
+      </div>
+    );
+};
 
 const ActionButtons = ({
                            originalRequisition,
@@ -356,7 +405,7 @@ const ActionButtons = ({
 
             {/* Process Button */}
             {originalRequisition.status === 'PENDING' && (
-                <Button style={{ width: '15%' }} onClick={handleProcess}>
+                <Button style={{ width: '15%', backgroundColor: '#4196a7' }} onClick={handleProcess}>
                     Process
                 </Button>
             )}
@@ -389,3 +438,103 @@ const ActionButtons = ({
         </div>
     );
 };
+
+export function FulfillmentImmutable({ requisition, isModalOpen, closeModal }) {
+    const acceptShipment = () => {
+        console.log("Implement whatever acceptShipment(requisition) does from fulfillment-immutable-module.jsp");
+    }
+
+    const Title = (requisition) => {
+        if(!isModalOpen || !requisition) return "Err";
+        if(requisition.status === 'REJECTED')
+            return `Rejected Requisition ${requisition.requisitionId} Requested By ${requisition.customer?.fullName}`;
+        if(requisition.status === 'APPROVED' && requisition.savedInSfms == false && requisition.lastSfmsSyncDateTime != null)
+            return `Sync Failed Requisition ${requisition.requisitionId} Requested By ${requisition.customer?.fullName}`;
+        if(requisition.status === 'APPROVED'  && (requisition.savedInSfms == true || (requisition.savedInSfms == false && requisition.lastSfmsSyncDateTime == null) ))
+            return `Approved Requisition ${requisition.requisitionId} Requested By ${requisition.customer?.fullName}`;
+        return "Unrecognized Status";
+    }
+
+    return (
+      <Popup
+        isLocked={true}
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        title={Title(requisition)}
+      >
+          <div className={`${styles.grid} ${styles.contentInfo}`}>
+              <div className={styles.col812}>
+                  <div className={styles.contentContainer} style={{ overflowY: 'auto', maxHeight: '300px' }}>
+                      <table className={`${styles.essTable} ${styles.supplyListingTable}`}>
+                          <thead>
+                          <tr>
+                              <th>Commodity Code</th>
+                              <th>Item</th>
+                              <th>Quantity</th>
+                          </tr>
+                          </thead>
+                          <tbody>
+                          {requisition.lineItems.map(item => (
+                            <tr key={item.item.id}>
+                                <td>{item.item.commodityCode}</td>
+                                <td>{item.item.description}</td>
+                                <td>{item.quantity}</td>
+                            </tr>
+                          ))}
+                          </tbody>
+                      </table>
+                  </div>
+
+                  {/* Note */}
+                  {requisition.note && (
+                      <div style={{ paddingTop: '10px' }}>
+                          <div className={`${styles.col212} ${styles.bold}`}>Note:</div>
+                          <div className={styles.col1012}>{requisition.note}</div>
+                      </div>
+                  )}
+              </div>
+
+              {/* Right Margin */}
+              <div className={`${styles.col412} ${styles.requisitionModalRightMargin}`} style={{marginBottom: '0px'}}>
+                  <h4>Location</h4>
+                  <div>{requisition.destination.locId}</div>
+
+                  <h4>Delivery Method</h4>
+                  <div>{requisition.deliveryMethod}</div>
+
+                  <h4>Special Instructions</h4>
+                  {(!requisition.specialInstructions || requisition.specialInstructions.length === 0) && (
+                    <div>No instructions provided for this requisition.</div>)}
+
+                  <h4 className={styles.contentInfo}>Issued By</h4>
+                  <div>{requisition.issuer.lastName}</div>
+
+                  <h4>Ordered Date Time</h4>
+                  <div>{formatDateYY(requisition.orderedDateTime)}</div>
+
+                  {requisition.status !== 'CANCELED' && (
+                    <>
+                        <h4>Approved Date Time</h4>
+                        <div>{formatDateYY(requisition.approvedDateTime)}</div>
+                    </>
+                  )}
+
+                  <h4>Actions</h4>
+                  <div style={{ textAlign: 'center' }}>
+                      <a target="_blank" href={`/supply/requisition/requisition-view?requisition=${editableRequisition.requisitionId}&print=true`}>
+                          Print Requisition
+                      </a>
+                  </div>
+                  {requisition.status === 'CANCELED' && (
+                    <div style={{ textAlign: 'center' }}>
+                        <Button onClick={acceptShipment}>Accept</Button>
+                    </div>
+                  )}
+              </div>
+              <div style={{ paddingTop: '10px', textAlign: 'center'}}>
+                  <Button onClick={closeModal} style={{ width: '15%'}}>Exit</Button>
+              </div>
+          </div>
+      </Popup>
+    );
+}

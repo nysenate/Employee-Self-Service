@@ -4,7 +4,7 @@ import FilterSelect from "../../../components/FilterSelect";
 export default function ReconciliationIndex () {
     return (
         <div>
-            <Hero>Reconciliation</Hero>
+            <Hero>Reconciliation/Testing Filter</Hero>
           <div style={{ width: '200px' }}>
             <FilterSelect
               data={itemsData}

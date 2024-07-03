@@ -59,6 +59,10 @@
 h1, h2 {
     font-weight: 400;
 }
+a {
+    color: teal;
+    text-decoration: none;
+}
 
 /* Order Info */
 .grid {
@@ -68,10 +72,16 @@ h1, h2 {
     margin: 0 auto;
     overflow: hidden;
 }
-.col412, .col812, .col112, .col1112, .col12, .col612 {
+.col412, .col812, .col112, .col1112, .col12, .col612, .col212, .col1012 {
     width: 33.33%;
     float: left;
     padding-right: 20px;
+}
+.col1012 {
+    width: 83.333%;
+}
+.col212 {
+    width: 16.667%;
 }
 .col812 {
     width: 66.66%;
@@ -180,6 +190,13 @@ table.essTable tbody tr td {
 .requisitionModalRightMargin h4 .contentInfo {
     /* Add any necessary styles for .content-info here if it's a placeholder in your preprocessor */
 }
+.requisitionModalRightMargin h4 {
+    margin-top: 0;
+    padding: 11px;
+    color: #222;
+    text-align: center;
+    border-bottom: 1px solid rgba(0, 107, 128, .25);
+}
 
 .requisitionModalRightMargin input {
     margin-bottom: 10px;
@@ -195,45 +212,29 @@ table.essTable tbody tr td {
     margin-bottom: 10px;
 }
 
-/* Fulfillment Popup */
-.select2Container {
+.requisitionModalRightMargin select {
+    padding: .3em .5em;
+    background: #fff;
+    border: 1px solid #999;
+}
+
+/* Filter Select */
+.searchContentContainer {
     margin: 0;
     position: relative;
     display: inline-block;
     zoom: 1;
     vertical-align: middle;
-    box-sizing: border-box;
-}
-.select2Container .select2Choice>.select2Chosen {
-    margin-right: 26px;
-    display: block;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
 }
 
-/* Filter Select */
-.searchContentContainer {
-    display: flex;
-    align-items: center;
-    width: 100%;
-}
 
-/*.searchContentContainer label {*/
-/*    !*width: 48%;*!*/
-/*    margin: 2%;*/
-/*}*/
-.searchContentContainer span {
-    width: 98%;
-    margin: 2%;
-}
 .searchBar {
     width: 100%;
 }
 
 .searchOptions__option {
     width: 100%;
-    min-height: 26px;
+    /*min-height: 26px;*/
 }
 
 .commodityCode {
@@ -244,7 +245,9 @@ table.essTable tbody tr td {
     font-size: 70%;
 }
 
-
+.bold {
+    font-weight: 700;
+}
 
 
 
@@ -285,11 +288,24 @@ table.essTable tbody tr td {
 /*    display: flex;*/
 /*    justify-content: space-around;*/
 /*}*/
-/*.confirm-modal.error .input-container input[type=button].time-neutral-button, input[type=button].reject-button, input[type=submit].reject-button {*/
-/*    padding: 5px 10px;*/
-/*    background: #e64727;*/
-/*    color: #fff;*/
-/*    font-weight: 600;*/
-/*    border: 2px none #c33417;*/
-/*    border-bottom-style: solid;*/
-/*}*/
+input[type=button].neutralButton,
+input[type=submit].neutralButton,
+button.neutralButton {
+    padding: 5px 10px;
+    background: #8d8d8d;
+    color: #fff;
+    font-weight: 600;
+    border: 2px none #737373;
+    border-bottom-style: solid;
+}
+
+button, input, select, textarea {
+    font-family: inherit;
+    font-size: 100%;
+    margin: 0;
+}
+
+button, input {
+    line-height: normal;
+}
+

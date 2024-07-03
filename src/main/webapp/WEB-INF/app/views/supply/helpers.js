@@ -80,13 +80,31 @@ export function formatDate(dateString) {
     return new Date(dateString).toLocaleString('en-US', options);
 }
 
+export function formatDateYY(dateString) {
+    const options = {
+        year: '2-digit',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+    };
+    return new Date(dateString).toLocaleString('en-US', options);
+}
+
 /**
  * Alphabetize line items based on their description.
  *
  * @param {Array} lineItems The line items to alphabetize.
+ * @param {String} props.valueField The field name sorting on.
  * @returns {Array} The alphabetized line items.
  */
-export function alphabetizeLineItems(lineItems) {
+export function alphabetizeLineItems(lineItems, valueField) {
+    if(valueField) {
+        return lineItems.sort((a, b) => {
+            return a.item[valueField] < b.item[valueField] ? -1 : a.item[valueField] > b.item[valueField] ? 1 : 0;
+        });
+    }
     return lineItems.sort((a, b) => {
         return a.item.description < b.item.description ? -1 : a.item.description > b.item.description ? 1 : 0;
     });
