@@ -46,5 +46,18 @@
     padding: .3em .2em;
     background: #fff;
     border: 1px solid #999;
+}
+
+.select{
+    display: block;
+    text-transform: none;
+    font-family: inherit;
+    font-size: 100%;
+    height: 25px;
+    width: 150px;
+    margin-top: 5px;
+    padding: .3em .2em;
+    background: #fff;
+    border: 1px solid #999;
 
 }
