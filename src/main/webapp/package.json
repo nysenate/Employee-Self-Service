@@ -26,12 +26,14 @@
     "grunt-contrib-uglify": "^2.0.0",
     "grunt-contrib-watch": "^1.1.0",
     "grunt-file-exists": "^0.1.4",
+    "multiselect-react-dropdown": "^2.0.25",
     "react": "^18.2.0",
     "react-bootstrap": "^2.10.3",
     "react-datepicker": "^7.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.51.5",
     "react-router-dom": "^6.23.1",
+    "react-select": "^5.8.0",
     "regenerator-runtime": "^0.13.9"
   },
   "scripts": {
