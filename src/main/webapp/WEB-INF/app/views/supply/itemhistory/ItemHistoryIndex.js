@@ -9,25 +9,27 @@ import Results from "./Results";
 import { setRequisitionSearchParam } from "../fulfillment/supply-fulfillment-ctrl";
 import RequisitionPopup from "../requisitionhistory/RequisitionPopup";
 
-const computeMapping = (result) => {
+const computeMapping = (result, filters) => {
     const newMapping = {};
     result.forEach(requisition => {
         const locId = requisition.destination.locId;
 
         requisition.lineItems.forEach(lineItem => {
-            const commodityCode = lineItem.item.commodityCode;
-            const quantity = lineItem.quantity;
-            const key = `${commodityCode}:${locId}`;
-            if (!newMapping[key]) {
-                newMapping[key] = {
-                    commodityCode: commodityCode,
-                    locId: locId,
-                    quantity: 0,
-                    requisitions: []
-                };
+            if(filters.item == lineItem.item.id || filters.item == 'All') {
+                const commodityCode = lineItem.item.commodityCode;
+                const quantity = lineItem.quantity;
+                const key = `${commodityCode}:${locId}`;
+                if (!newMapping[key]) {
+                    newMapping[key] = {
+                        commodityCode: commodityCode,
+                        locId: locId,
+                        quantity: 0,
+                        requisitions: []
+                    };
+                }
+                newMapping[key].quantity += quantity;
+                newMapping[key].requisitions.push(requisition);
             }
-            newMapping[key].quantity += quantity;
-            newMapping[key].requisitions.push(requisition);
         });
     });
     const mappingArray = Object.values(newMapping);
@@ -63,7 +65,7 @@ export default function ItemHistoryIndex () {
                     1+(currentPage-1)*ordersPerPage,
                     formatDateForApi(new Date(filters.to))
                 );
-                let tempMapping = computeMapping(response.result);
+                let tempMapping = computeMapping(response.result, filters);
                 const mappingSize = Object.keys(tempMapping).length;
                 setTotalOrders(mappingSize);
                 if (Math.ceil(mappingSize / ordersPerPage) < currentPage) {
