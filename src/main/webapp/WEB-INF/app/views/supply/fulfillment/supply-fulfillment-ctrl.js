@@ -45,17 +45,6 @@ export const distinctItemQuantity = (requisition) => {
     return requisition.lineItems.length;
 };
 
-
-const getItemQuantity = (requisition, commodityCode) => {
-    let qty = 0;
-    requisition.lineItems.forEach(li => {
-        if (li.item.commodityCode === commodityCode) {
-            qty = li.quantity;
-        }
-    });
-    return qty;
-};
-
 export const calculateHighlighting = (requisition) => {
     return {
         warn: containsItemOverOrderMax(requisition) || isOverPerMonthMax(requisition) || containsSpecialItem(requisition),

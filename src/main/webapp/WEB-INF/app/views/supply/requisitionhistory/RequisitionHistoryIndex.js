@@ -46,7 +46,6 @@ export default function RequisitionHistoryIndex() {
                   filters.commodity
                 );
                 setTotalOrders(response.total);
-                // Fixed for bug where the page is out of bounds after changing filters
                 if (Math.ceil(response.total / ordersPerPage) < currentPage) {
                     setCurrentPage(Math.ceil(response.total / ordersPerPage));
                 }

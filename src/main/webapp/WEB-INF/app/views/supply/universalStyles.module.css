@@ -140,9 +140,13 @@ b, strong {
 }
 
 .supplyDivTableHeader {
-    display: grid;
+    width: 100%;
+    max-width: 1140px;
+    min-width: 755px;
+    margin: 0 auto;
+    overflow: hidden;
     text-align: center;
-    border-bottom: 1px solid black;
+    border-bottom: 1px #000 solid;
 }
 
 .supplyDivTableHeader div {
@@ -161,7 +165,7 @@ b, strong {
 }
 
 .supplyDivTableBody .supplyDivTableRow:hover {
-    background: #e9eeff;
+    background: #e9eeff !important; /* Lighter blue (15% lighter) */
     cursor: pointer;
 }
 
@@ -170,11 +174,11 @@ b, strong {
 }
 
 .supplyDivTableBody .supplyHighlightRow {
-    background: lighten(blue, 30%) !important;
+    background: #ced2ea !important; /* Lighter blue (30% lighter) */
 }
 
 .supplyDivTableBody .supplyHighlightRow:hover {
-    background: lighten(blue, 15%) !important;
+    background: #98a1d4 !important; /* Lighter blue (15% lighter) */
 }
 
 .supplyDivTableBody .darkBackground {
@@ -182,17 +186,21 @@ b, strong {
 }
 
 .supplyDivTableBody .supplySubTable {
-    background: lighten(blue, 38%);
+    background: #eaecf6; /* Lighter blue (38% lighter) */
     padding: 10px 10px 25px 50px;
 }
 
 .supplyDivTableBody .supplySubTable table tr {
-    background: lighten(blue, 38%);
+    background: #eaecf6; /* Lighter blue (38% lighter) */
 }
 
 .supplyDivTableBody .supplySubTable table tr:hover {
-    background: lighten(blue, 15%);
+    background: #98a1d4 !important; /* Lighter blue (15% lighter) */
 }
+
+/*.supplyListingTable tbody tr:nth-child(even):hover {*/
+/*    background: #e9eeff !important;*/
+/*}*/
 
 
 /* Item Table */

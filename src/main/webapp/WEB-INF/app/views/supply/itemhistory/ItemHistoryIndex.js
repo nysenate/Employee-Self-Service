@@ -9,8 +9,33 @@ import Results from "./Results";
 import { setRequisitionSearchParam } from "../fulfillment/supply-fulfillment-ctrl";
 import RequisitionPopup from "../requisitionhistory/RequisitionPopup";
 
+const computeMapping = (result) => {
+    const newMapping = {};
+    result.forEach(requisition => {
+        const locId = requisition.destination.locId;
+
+        requisition.lineItems.forEach(lineItem => {
+            const commodityCode = lineItem.item.commodityCode;
+            const quantity = lineItem.quantity;
+            const key = `${commodityCode}:${locId}`;
+            if (!newMapping[key]) {
+                newMapping[key] = {
+                    commodityCode: commodityCode,
+                    locId: locId,
+                    quantity: 0,
+                    requisitions: []
+                };
+            }
+            newMapping[key].quantity += quantity;
+            newMapping[key].requisitions.push(requisition);
+        });
+    });
+    const mappingArray = Object.values(newMapping);
+    return mappingArray;
+}
+
 export default function ItemHistoryIndex () {
-    const [shipments, setShipments] = useState([]);
+    const [mapping, setMapping] = useState();
     const [filters, setFilters] = useState({
         location: 'All',
         item: 'All',
@@ -18,7 +43,7 @@ export default function ItemHistoryIndex () {
         to: getCurrentDate(),
     });
 
-    const ordersPerPage = 12;
+    const ordersPerPage = 15;
     const [currentPage, setCurrentPage] = useState(1);
     const [totalOrders, setTotalOrders] = useState(0);
     const [loading, setLoading] = useState(true);
@@ -27,7 +52,7 @@ export default function ItemHistoryIndex () {
     const [selectedRequisition, setSelectedRequisition] = useState(null); // State to manage the selected requisition
 
     useEffect(() => {
-        const fetchAndSetShipments = async () => {
+        const fetchAndComputeMapping = async () => {
             try {
                 setLoading(true); // Set loading to true before the fetch
                 const response = await getItemHistory(
@@ -38,19 +63,20 @@ export default function ItemHistoryIndex () {
                     1+(currentPage-1)*ordersPerPage,
                     formatDateForApi(new Date(filters.to))
                 );
-                setTotalOrders(response.total);
-                // Fixed for bug where the page is out of bounds after changing filters
-                if (Math.ceil(response.total / ordersPerPage) < currentPage) {
-                    setCurrentPage(Math.ceil(response.total / ordersPerPage));
+                let tempMapping = computeMapping(response.result);
+                const mappingSize = Object.keys(tempMapping).length;
+                setTotalOrders(mappingSize);
+                if (Math.ceil(mappingSize / ordersPerPage) < currentPage) {
+                    setCurrentPage(Math.ceil(mappingSize / ordersPerPage));
                 }
-                setShipments(response.result);
+                setMapping(tempMapping);
             } catch (error) {
                 console.error('Error fetching order history:', error);
             } finally {
                 setLoading(false); // Set loading to false after the fetch completes
             }
         };
-        fetchAndSetShipments();
+        fetchAndComputeMapping();
     }, [filters, currentPage]);
 
     const handlePageChange = (page) => {
@@ -95,14 +121,7 @@ export default function ItemHistoryIndex () {
                                 onPageChange={handlePageChange}
                             />
                         )}
-                        <Results shipments={shipments} openRequisitionHistoryPopup={openRequisitionHistoryPopup}/>
-                        {totalOrders > ordersPerPage && (
-                            <Pagination
-                                currentPage={currentPage}
-                                totalPages={Math.ceil(totalOrders / ordersPerPage)}
-                                onPageChange={handlePageChange}
-                            />
-                        )}
+                        <Results mapping={mapping} openRequisitionHistoryPopup={openRequisitionHistoryPopup}/>
                     </>
                 )}
             </div>
@@ -116,15 +135,3 @@ export default function ItemHistoryIndex () {
         </div>
     );
 };
-
-
-
-//supply/requisitions?
-// dateField=completed_date_time
-// from=2024-06-08T00:00:00-04:00
-// itemId=All
-// limit=ALL
-// location=All
-// offset=0
-// status=APPROVED
-// to=2024-07-08T23:59:59-04:00
