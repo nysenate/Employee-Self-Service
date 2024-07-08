@@ -13,7 +13,6 @@ const computeMapping = (result, filters) => {
     const newMapping = {};
     result.forEach(requisition => {
         const locId = requisition.destination.locId;
-
         requisition.lineItems.forEach(lineItem => {
             if(filters.item == lineItem.item.id || filters.item == 'All') {
                 const commodityCode = lineItem.item.commodityCode;
@@ -37,7 +36,8 @@ const computeMapping = (result, filters) => {
 }
 
 export default function ItemHistoryIndex () {
-    const [mapping, setMapping] = useState();
+    const [mapping, setMapping] = useState([]);
+    const [paginatedMapping, setPaginatedMapping] = useState([]);
     const [filters, setFilters] = useState({
         location: 'All',
         item: 'All',
@@ -60,13 +60,11 @@ export default function ItemHistoryIndex () {
                 const response = await getItemHistory(
                     formatDateForApi(new Date(filters.from)),
                     filters.item,
-                    ordersPerPage,
                     filters.location,
-                    1+(currentPage-1)*ordersPerPage,
                     formatDateForApi(new Date(filters.to))
                 );
                 let tempMapping = computeMapping(response.result, filters);
-                const mappingSize = Object.keys(tempMapping).length;
+                const mappingSize = tempMapping.length;
                 setTotalOrders(mappingSize);
                 if (Math.ceil(mappingSize / ordersPerPage) < currentPage) {
                     setCurrentPage(Math.ceil(mappingSize / ordersPerPage));
@@ -79,7 +77,16 @@ export default function ItemHistoryIndex () {
             }
         };
         fetchAndComputeMapping();
-    }, [filters, currentPage]);
+    }, [filters]);
+
+    useEffect(() => {
+        const paginate = (data, pageSize, pageNumber) => {
+            return data.slice((pageNumber - 1) * pageSize, pageNumber * pageSize);
+        }
+        const paginatedData = paginate(mapping, ordersPerPage, currentPage);
+        setPaginatedMapping(paginatedData);
+    }, [mapping, currentPage]);
+
 
     const handlePageChange = (page) => {
         if (page >= 1 && page <= Math.ceil(totalOrders / ordersPerPage)) {
@@ -123,7 +130,7 @@ export default function ItemHistoryIndex () {
                                 onPageChange={handlePageChange}
                             />
                         )}
-                        <Results mapping={mapping} openRequisitionHistoryPopup={openRequisitionHistoryPopup}/>
+                        <Results mapping={paginatedMapping} openRequisitionHistoryPopup={openRequisitionHistoryPopup}/>
                     </>
                 )}
             </div>

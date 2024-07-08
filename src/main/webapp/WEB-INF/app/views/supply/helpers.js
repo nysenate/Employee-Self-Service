@@ -223,15 +223,15 @@ export const getSupplyRequisitions = async (from, limit, location, offset, to, i
  * @param {String} [itemId] The item ID to filter supply requisitions.
  * @returns {Promise<Object>} The result of the fetch call.
  */
-export const getItemHistory = async (from, itemId, limit, location, offset, to) => {
+export const getItemHistory = async (from, itemId, location, to) => {
     const basePath = '/supply/requisitions';
     const queryParams = new URLSearchParams({
         dateField: 'completed_date_time',
         from,
         itemId,
-        limit,
+        limit: 'ALL',
         location,
-        offset,
+        offset: 0,
         status: 'APPROVED',
         to,
     });
