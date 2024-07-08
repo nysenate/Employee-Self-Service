@@ -2,6 +2,7 @@ import styles from "../universalStyles.module.css";
 import React from "react";
 import LoadingIndicator from "../../../components/LoadingIndicator";
 import CompletedOrders from "./CompletedOrders";
+import { formatDate } from "../helpers";
 
 const ProcessingOrders = ({ data, calculateHighlighting, onRowClick, distinctItemQuantity }) => {
     const requisitions = data.reqs.processing;
@@ -49,14 +50,7 @@ const ProcessingOrders = ({ data, calculateHighlighting, onRowClick, distinctIte
                                 <td>{requisition.destination.locId}</td>
                                 <td>{requisition.customer.lastName}</td>
                                 <td>{distinctItemQuantity(requisition)}</td>
-                                <td>{new Date(requisition.orderedDateTime).toLocaleString('en-US', {
-                                    year: 'numeric',
-                                    month: '2-digit',
-                                    day: '2-digit',
-                                    hour: '2-digit',
-                                    minute: '2-digit',
-                                    hour12: true
-                                })}</td>
+                                <td>{formatDate(requisition.orderedDateTime)}</td>
                                 <td>{requisition.issuer.lastName}</td>
                             </tr>
                         ))}

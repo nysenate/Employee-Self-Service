@@ -1,6 +1,7 @@
 import styles from "../universalStyles.module.css";
 import React from "react";
 import LoadingIndicator from "../../../components/LoadingIndicator";
+import { formatDate } from "../helpers";
 
 const CompletedOrders = ({ data, onRowClick, distinctItemQuantity }) => {
     const requisitions = data.reqs.completed;
@@ -48,22 +49,8 @@ const CompletedOrders = ({ data, onRowClick, distinctItemQuantity }) => {
                                 <td>{requisition.destination.locId}</td>
                                 <td>{requisition.customer.lastName}</td>
                                 <td>{distinctItemQuantity(requisition)}</td>
-                                <td>{new Date(requisition.orderedDateTime).toLocaleString('en-US', {
-                                    year: 'numeric',
-                                    month: '2-digit',
-                                    day: '2-digit',
-                                    hour: '2-digit',
-                                    minute: '2-digit',
-                                    hour12: true
-                                })}</td>
-                                <td>{new Date(requisition.completedDateTime).toLocaleString('en-US', {
-                                    year: 'numeric',
-                                    month: '2-digit',
-                                    day: '2-digit',
-                                    hour: '2-digit',
-                                    minute: '2-digit',
-                                    hour12: true
-                                })}</td>
+                                <td>{formatDate(requisition.orderedDateTime)}</td>
+                                <td>{formatDate(requisition.completedDateTime)}</td>
                                 <td>{requisition.issuer.lastName}</td>
                             </tr>
                         ))}

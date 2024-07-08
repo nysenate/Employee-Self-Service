@@ -1,6 +1,7 @@
 import React from "react";
 import styles from "../universalStyles.module.css";
 import LoadingIndicator from "../../../components/LoadingIndicator";
+import { formatDate } from "../helpers";
 
 const PendingOrders = ({ data, calculateHighlighting, onRowClick, distinctItemQuantity }) => {
     const requisitions = data.reqs.pending;
@@ -48,14 +49,7 @@ const PendingOrders = ({ data, calculateHighlighting, onRowClick, distinctItemQu
                                 <td>{requisition.destination?.locId || '-'}</td>
                                 <td>{requisition.customer?.lastName || '-'}</td>
                                 <td>{distinctItemQuantity(requisition)}</td>
-                                <td>{new Date(requisition.orderedDateTime).toLocaleString('en-US', {
-                                    year: 'numeric',
-                                    month: '2-digit',
-                                    day: '2-digit',
-                                    hour: '2-digit',
-                                    minute: '2-digit',
-                                    hour12: true
-                                })}</td>
+                                <td>{formatDate(requisition.orderedDateTime)}</td>
                                 <td>{requisition.issuer?.lastName || '-'}</td>
                             </tr>
                         ))}
