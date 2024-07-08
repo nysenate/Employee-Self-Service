@@ -212,6 +212,44 @@ export const getSupplyRequisitions = async (from, limit, location, offset, to, i
 };
 
 /**
+ * Fetch item history based on the provided parameters.
+ *
+ * @param {String} from The start date for fetching supply requisitions.
+ * @param {Number} limit The number of results to limit.
+ * @param {String} location The location to fetch supply requisitions for.
+ * @param {Number} offset The offset for pagination.
+ * @param {String} to The end date for fetching supply requisitions.
+ * @param {String} [issuerId] The issuer ID to filter supply requisitions.
+ * @param {String} [itemId] The item ID to filter supply requisitions.
+ * @returns {Promise<Object>} The result of the fetch call.
+ */
+export const getItemHistory = async (from, itemId, limit, location, offset, to) => {
+    const basePath = '/supply/requisitions';
+    const queryParams = new URLSearchParams({
+        dateField: 'completed_date_time',
+        from,
+        itemId,
+        limit,
+        location,
+        offset,
+        status: 'APPROVED',
+        to,
+    });
+
+    // ['APPROVED'].forEach(status => queryParams.append('status', status));
+
+    const path = `${basePath}?${queryParams.toString()}`;
+
+    try {
+        const response = await fetchApiJson(path);
+        return response;
+    } catch (error) {
+        console.error('Fetch error:', error);
+        throw error;
+    }
+};
+
+/**
  * Fetch locations for a given employee ID.
  *
  * @param {String} empId The employee ID to fetch locations for.

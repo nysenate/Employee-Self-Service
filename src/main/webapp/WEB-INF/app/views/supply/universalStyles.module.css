@@ -49,6 +49,26 @@
     font-weight: 700;
 }
 
+.resultsContainer {
+    background: #fff;
+    margin-top: 20px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5em;
+    color: darkslategrey;
+}
+
+.noResults {
+    margin-top: 10px;
+    width: 100%;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 /* Other */
 .paddingX {
     padding: 10px;
@@ -56,9 +76,23 @@
 .darkGray {
     color: #4d4d4d;
 }
+
+h2 {
+    display: block;
+    font-size: 1.5em;
+    margin-block-start: 0.83em;
+    margin-block-end: 0.83em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    font-weight: bold;
+    unicode-bidi: isolate;
+}
+
 h1, h2 {
     font-weight: 400;
 }
+
+
 a {
     color: teal;
     text-decoration: none;
@@ -98,6 +132,68 @@ a {
 b, strong {
     font-weight: 700;
 }
+
+/* Supply Div Table */
+.supplyDivTable {
+    padding: 10px;
+    page-break-inside: auto;
+}
+
+.supplyDivTableHeader {
+    display: grid;
+    text-align: center;
+    border-bottom: 1px solid black;
+}
+
+.supplyDivTableHeader div {
+    font-weight: bold;
+}
+
+.supplyDivTableBody {
+    /* Nested selectors for the table rows */
+}
+
+.supplyDivTableBody .supplyDivTableRow {
+    height: 31px;
+    line-height: 31px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.supplyDivTableBody .supplyDivTableRow:hover {
+    background: #e9eeff;
+    cursor: pointer;
+}
+
+.supplyDivTableBody .supplyDivTableRow {
+    page-break-inside: avoid;
+}
+
+.supplyDivTableBody .supplyHighlightRow {
+    background: lighten(blue, 30%) !important;
+}
+
+.supplyDivTableBody .supplyHighlightRow:hover {
+    background: lighten(blue, 15%) !important;
+}
+
+.supplyDivTableBody .darkBackground {
+    background: rgba(51, 51, 51, 0.05);
+}
+
+.supplyDivTableBody .supplySubTable {
+    background: lighten(blue, 38%);
+    padding: 10px 10px 25px 50px;
+}
+
+.supplyDivTableBody .supplySubTable table tr {
+    background: lighten(blue, 38%);
+}
+
+.supplyDivTableBody .supplySubTable table tr:hover {
+    background: lighten(blue, 15%);
+}
+
 
 /* Item Table */
 table.essTable {

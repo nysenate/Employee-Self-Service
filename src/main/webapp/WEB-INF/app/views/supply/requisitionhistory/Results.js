@@ -3,7 +3,7 @@ import { distinctItemQuantity } from "../fulfillment/supply-fulfillment-ctrl";
 import { formatDate } from "../helpers";
 import React from "react";
 
-const Results = ({ shipments, openRequisitonHistoryPopup }) => {
+const Results = ({ shipments, openRequisitionHistoryPopup }) => {
     return (
         <div>
             {!shipments || shipments.length === 0 ? (
@@ -27,7 +27,7 @@ const Results = ({ shipments, openRequisitonHistoryPopup }) => {
                             </thead>
                             <tbody>
                             {shipments.map((shipment) => (
-                                <tr key={shipment.requisitionId} onClick={() => openRequisitonHistoryPopup(shipment)}>
+                                <tr key={shipment.requisitionId} onClick={() => openRequisitionHistoryPopup(shipment)}>
                                     <td>{shipment.requisitionId}</td>
                                     <td>{shipment.destination.locId}</td>
                                     <td>{shipment.customer.lastName}</td>

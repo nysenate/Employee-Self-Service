@@ -6,12 +6,12 @@ import Pagination from "../../../components/Pagination";
 import Results from "./Results";
 import RequisitionPopup from "./RequisitionPopup";
 import LoadingIndicator from "../../../components/LoadingIndicator";
-import { distinctItemQuantity, setRequisitionSearchParam } from "../fulfillment/supply-fulfillment-ctrl"
+import { setRequisitionSearchParam } from "../fulfillment/supply-fulfillment-ctrl"
 import {
     formatDateForApi,
     getCurrentDate,
     getOneMonthBeforeDate,
-    formatDate, getSupplyRequisitions
+    getSupplyRequisitions
 } from "../helpers";
 
 export default function RequisitionHistoryIndex() {
@@ -73,7 +73,7 @@ export default function RequisitionHistoryIndex() {
         });
     };
 
-    const openRequisitonHistoryPopup = (requisition) => {
+    const openRequisitionHistoryPopup = (requisition) => {
         setSelectedRequisition(requisition); // Set the selected requisition
         setRequisitionSearchParam(requisition.requisitionId)
         setIsModalOpen(true); // Open the modal
@@ -102,7 +102,7 @@ export default function RequisitionHistoryIndex() {
                         onPageChange={handlePageChange}
                       />
                     )}
-                    <Results shipments={shipments} openRequisitonHistoryPopup={openRequisitonHistoryPopup}/>
+                    <Results shipments={shipments} openRequisitionHistoryPopup={openRequisitionHistoryPopup}/>
                     {totalOrders > ordersPerPage && (
                       <Pagination
                         currentPage={currentPage}

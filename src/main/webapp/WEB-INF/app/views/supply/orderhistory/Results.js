@@ -45,9 +45,9 @@ function Results({ orderHistory }) {
   return (
     <div>
       {empty ? (
-        <div className={styles.resultsContainer}>
-          <div className={styles.noResults}>No results were found.</div>
-        </div>
+          <div className={styles.contentInfo}>
+            <h2 className={styles.darkGray}>No results were found.</h2>
+          </div>
       ) : (
          <OrderTable orders={orderHistory} />
        )}
