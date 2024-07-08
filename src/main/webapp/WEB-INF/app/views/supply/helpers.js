@@ -42,25 +42,6 @@ const fetchRequisitions = async (params) => {
     return fetchApiJson(path, { method: 'GET' });
 };
 
-/**
- * Fetch shipments within a specified date range.
- *
- * @param {String} to The end date for fetching shipments.
- * @param {String} from The start date for fetching shipments.
- * @returns {Promise<Object>} The result of the fetch call.
- */
-export const getShipments = async (to, from) => {
-    const params = {
-        from: from,
-        to: to,
-        limit: 12,
-        offset: 1,
-        location: 'All',
-        status: ['APPROVED', 'REJECTED']
-    };
-    const data = await fetchRequisitions(params);
-    return data.result;
-};
 
 /**
  * Format a date string to a readable format.
@@ -180,6 +161,44 @@ export const getOrderHistory = async (customerId, from, limit, location, offset,
     } else {
         queryParams.append('status', status);
     }
+
+    const path = `${basePath}?${queryParams.toString()}`;
+
+    try {
+        const response = await fetchApiJson(path);
+        return response;
+    } catch (error) {
+        console.error('Fetch error:', error);
+        throw error;
+    }
+};
+
+/**
+ * Fetch supply requisitions based on the provided parameters.
+ *
+ * @param {String} from The start date for fetching supply requisitions.
+ * @param {Number} limit The number of results to limit.
+ * @param {String} location The location to fetch supply requisitions for.
+ * @param {Number} offset The offset for pagination.
+ * @param {String} to The end date for fetching supply requisitions.
+ * @param {String} [issuerId] The issuer ID to filter supply requisitions.
+ * @param {String} [itemId] The item ID to filter supply requisitions.
+ * @returns {Promise<Object>} The result of the fetch call.
+ */
+export const getSupplyRequisitions = async (from, limit, location, offset, to, issuerId, itemId) => {
+    const basePath = '/supply/requisitions';
+    const queryParams = new URLSearchParams({
+        from,
+        to,
+        limit,
+        location,
+        offset,
+    });
+
+    if (issuerId && issuerId !== 'All') queryParams.append('issuerId', issuerId);
+    if (itemId && itemId !== 'All') queryParams.append('itemId', itemId);
+
+    ['APPROVED', 'REJECTED'].forEach(status => queryParams.append('status', status));
 
     const path = `${basePath}?${queryParams.toString()}`;
 
