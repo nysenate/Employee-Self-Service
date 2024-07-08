@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Multiselect } from "multiselect-react-dropdown";
+import { Dropdown } from "react-bootstrap";
 import styles from "./EmployeeFilters.module.css";
 
 export default function RespectiveHead(){
@@ -38,29 +39,12 @@ export default function RespectiveHead(){
 
   return (
     <div>
-      <select
-        multiple
-        value={selection}
-        onChange={(e) => handleSelectChange(Array.from(e.target.selectedOptions, option => option.value))}
-      >
-        {offices.map(rch => (
-          <option key={rch.code} value={rch.code}>
-            {rch.name}({rch.shortName})
-          </option>
-        ))}
-      </select>
-      <input
-        type="text"
-        placeholder="Search..."
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
       <Multiselect
         options={offices}
         displayValue="name"
         style={{
           chips: {
-            background: 'white',
+            background: '#F5F5F5',
             borderRadius: '0px',
             color: '#000',
           },
@@ -74,6 +58,7 @@ export default function RespectiveHead(){
           },
           optionContainer: {
             maxHeight: '200px',
+            overflow: 'scroll',
           },
           option: {
             fontFamily: 'inherit',
@@ -86,4 +71,5 @@ export default function RespectiveHead(){
     </div>
   );
 }
+
 
