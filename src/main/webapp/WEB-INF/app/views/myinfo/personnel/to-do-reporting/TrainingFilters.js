@@ -6,13 +6,11 @@ import EmployeeFilters from "app/views/myinfo/personnel/to-do-reporting/Employee
 
 export default function TrainingFilters(){
   return (
-    <Card className={styles.card}>
       <div className={styles.trainingFilters}>
         <span className="text-lg font-semibold">Training Filters</span>
         <InputFilters/>
         <span className="text-lg font-semibold">Employee Filters</span>
         <EmployeeFilters/>
       </div>
-    </Card>
   )
 }
