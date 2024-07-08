@@ -35,8 +35,6 @@ Hoever Details include (Requested By                                    Requeste
 Also ^ bold field and regular font respond
 */
 const OrderInfo = ({ order }) => {
-  const orderId = "fake od";
-  console.log(order.issuer);
   return (
       <div className={styles.contentContainer}>
         <div className={styles.contentInfo}>
@@ -140,7 +138,11 @@ const ItemTable = ({items}) => {
 export default function OrderDetail () {
   const { orderId } = useParams();
   const location = useLocation();
-  const { order } = location.state;
+  const { order } = location.state || {};
+
+  if (!order) {
+    return <div>No requisition data available.</div>;
+  }
 
   return (
       <div>
