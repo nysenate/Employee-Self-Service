@@ -1,6 +1,6 @@
 import styles from "./RequisitionFormIndex.module.css";
 import { Button } from "../../../components/Button";
-import React, { useState } from "react";
+import React from "react";
 
 
 const DestinationDetails = ({ destination, handleChangeClick, sortOption, handleSortChange }) => {

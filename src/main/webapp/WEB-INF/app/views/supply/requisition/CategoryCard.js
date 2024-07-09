@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
+import styles from "../universalStyles.module.css";
 
 const CategoryCard = ({ categories }) => {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -20,21 +21,30 @@ const CategoryCard = ({ categories }) => {
         setSearchParams(newParams);
     };
 
+    const clearSections = () => {
+        const newParams = new URLSearchParams();
+        setSearchParams(newParams);
+    }
+
     return (
-        <div>
-            <h2>Categories</h2>
-            <ul>
-                {categories.map(category => (
-                    <li key={category} onClick={() => handleCategoryClick(category)}>
-                        <input
-                            type="checkbox"
-                            checked={selectedCategories.includes(category)}
-                            readOnly
-                        />
-                        {category}
-                    </li>
-                ))}
-            </ul>
+        <div style={{display:'flex', flexDirection: 'column', marginBottom: '100px', height: '60vh', backgroundColor: 'white'}}>
+            <div className={`${styles.flexHeader} ${styles.paddingX}`}>
+                <a style={{ paddingLeft: '10px' }} onClick={clearSections}>Clear All</a>
+            </div>
+            <div className={styles.flexContent} style={{ overflowY: 'auto', maxHeight: '900px' }}>
+                <ul>
+                    {categories.map(category => (
+                        <li key={category} onClick={() => handleCategoryClick(category)}>
+                            <input
+                                type="checkbox"
+                                checked={selectedCategories.includes(category)}
+                                readOnly
+                            />
+                            <label>{category}</label>
+                        </li>
+                    ))}
+                </ul>
+            </div>
         </div>
     );
 };

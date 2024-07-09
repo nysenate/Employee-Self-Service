@@ -13,6 +13,7 @@ import AppLayout from "app/components/AppLayout";
 import Navigation from "app/components/Navigation";
 import Card from "app/components/Card";
 import CategoryCard from "./requisition/CategoryCard";
+import styles from "./universalStyles.module.css";
 
 export default function SupplyRouter() {
   const [categories, setCategories] = useState([]);
@@ -73,17 +74,17 @@ function SupplyLayout({ categories }) {
               </Navigation.Link>
             </Navigation.Section>
           </Card>
-          {location.pathname === "/supply/requisition-form" && categories && (
-              <div style={{ padding: '20px 0px 100px 0px' }}>
-                <Card className="pb-5">
+          {location.pathname === "/supply/requisition-form" && categories.length !== 0 && (
+              // Big boy
+              <div className={`${styles.marginTop20}`} style={{ marginBottom: '100px', minHeight: '0px', minWidth: '0px'}}>
                   <Navigation.Title>
                     Categories
                   </Navigation.Title>
                   <CategoryCard categories={categories}/>
-                </Card>
               </div>
           )}
         </Navigation>
       </AppLayout>
   );
 }
+

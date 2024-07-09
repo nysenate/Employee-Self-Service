@@ -23,6 +23,8 @@ export default function TimeRouter() {
           <Route path="accrual/history" element={<AccrualHistory/>}/>
           <Route path="accrual/projections" element={<AccrualProjections/>}/>
           <Route path="donation" element={<SickLeaveDonation/>}/>
+          <Route path="" element={<Navigate to="attendance/entry" replace/>}/>
+          <Route path="*" element={<div>404</div>}/>
         </Route>
       </Routes>
     </ThemeContext.Provider>
