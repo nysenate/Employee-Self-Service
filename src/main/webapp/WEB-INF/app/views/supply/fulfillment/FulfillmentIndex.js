@@ -9,6 +9,7 @@ import RejectedShipments from "./RejectedShipments";
 
 import { initMostReqs, initRejectedReqs, calculateHighlighting, setRequisitionSearchParam, distinctItemQuantity } from "./supply-fulfillment-ctrl";
 import { FulfillmentEditing, FulfillmentImmutable } from "./FulfillmentPopups";
+import { formatDateForApi, getCurrentDate } from "../helpers";
 
 export default function FulfillmentIndex() {
     const [data, setData] = useState({
@@ -36,7 +37,7 @@ export default function FulfillmentIndex() {
         const fetchData = async () => {
             try {
                 const mostReqs = await initMostReqs();
-                const rejectedReqs = await initRejectedReqs();
+                const rejectedReqs = await initRejectedReqs(formatDateForApi(new Date(getCurrentDate())));
 
                 const allReqs = [...mostReqs, ...rejectedReqs];
 

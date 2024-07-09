@@ -29,7 +29,7 @@ const CategoryCard = ({ categories }) => {
     return (
         <div style={{display:'flex', flexDirection: 'column', marginBottom: '100px', height: '60vh', backgroundColor: 'white'}}>
             <div className={`${styles.flexHeader} ${styles.paddingX}`}>
-                <a style={{ paddingLeft: '10px' }} onClick={clearSections}>Clear All</a>
+                <a style={{ cursor: 'pointer', paddingLeft: '10px' }} onClick={clearSections}>Clear All</a>
             </div>
             <div className={styles.flexContent} style={{ overflowY: 'auto', maxHeight: '900px' }}>
                 <ul>

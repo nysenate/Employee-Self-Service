@@ -2,7 +2,25 @@
 import { fetchApiJson } from "app/utils/fetchJson";
 
 const fetchRequisitions = async (params) => {
-    return fetchApiJson('/supply/requisitions', { method: 'GET', payload: params });
+    const queryParams = new URLSearchParams();
+
+    Object.keys(params).forEach(key => {
+        if (Array.isArray(params[key])) {
+            params[key].forEach(value => queryParams.append(key, value));
+        } else {
+            queryParams.append(key, params[key]);
+        }
+    });
+
+    const path = `/supply/requisitions?${queryParams.toString()}`;
+
+    try {
+        const response = await fetchApiJson(path, { method: 'GET' });
+        return response;
+    } catch (error) {
+        console.error('Fetch error:', error);
+        throw error;
+    }
 };
 
 export const fetchSupplyEmployees = async () => {
@@ -30,15 +48,25 @@ export const initMostReqs = async () => {
 };
 
 export const initRejectedReqs = async () => {
+    const today = getCurrentDateTime();
     const params = {
-        status: "REJECTED",
-        from: '1969-12-31T19:00:01-05:00',
+        status: 'REJECTED',
+        from: today,
         dateField: "rejected_date_time",
         limit: 'ALL',
         offset: 0
     };
     const data = await fetchRequisitions(params);
     return data.result;
+};
+
+const getCurrentDateTime = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+    const day = String(now.getDate()).padStart(2, '0');
+    const formattedDate = `${year}-${month}-${day}T00:00:00-04:00`;
+    return formattedDate;
 };
 
 export const distinctItemQuantity = (requisition) => {
