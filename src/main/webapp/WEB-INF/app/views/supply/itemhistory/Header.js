@@ -32,9 +32,14 @@ const Header = ({ filters, handleFilterChange }) => {
 
     return (
         <div className={`${styles.contentContainer} ${styles.contentControls}`}>
-            <h4 className={`${styles.contentInfo} ${styles.supplyText}`} style={{ marginBottom: '0px' }}>
-                Search item order counts.
-            </h4>
+            <div className={styles.contentInfo} style={{ position: 'relative' }}>
+                <h4 className={`${styles.supplyText}`} style={{ margin: '0px', textAlign: 'center' }}>
+                    Search item order counts.
+                </h4>
+                <a href="/supply/item-history-print" style={{ position: 'absolute', top: '11px', right: '10px' }}>
+                    Print Report
+                </a>
+            </div>
             <div className={styles.grid} style={{ textAlign: 'center' }}>
                 <div className={styles.col612} style={{ padding: '0 10px 10px 10px' }}>
                     <label className={styles.supplyText}>Item:</label>

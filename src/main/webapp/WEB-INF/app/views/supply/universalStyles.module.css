@@ -92,6 +92,16 @@ h1, h2 {
     font-weight: 400;
 }
 
+.specialUlContainer ul {
+    display: block;
+    list-style-type: disc;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    padding-inline-start: 40px;
+    unicode-bidi: isolate;
+}
 
 a {
     color: teal;
@@ -106,7 +116,7 @@ a {
     margin: 0 auto;
     overflow: hidden;
 }
-.col412, .col812, .col112, .col1112, .col12, .col612, .col212, .col1012 {
+.col412, .col812, .col112, .col1112, .col12, .col612, .col712, .col212, .col1012 {
     width: 33.33%;
     float: left;
     padding-right: 20px;
@@ -129,6 +139,10 @@ a {
 .col12, .col612 {
     width: 50%;
 }
+.col712 {
+    width: 58.33%;
+}
+
 b, strong {
     font-weight: 700;
 }
@@ -353,6 +367,14 @@ table.essTable tbody tr td {
     font-weight: 700;
 }
 
+/*p {*/
+/*    display: block;*/
+/*    margin-block-start: 1em;*/
+/*    margin-block-end: 1em;*/
+/*    margin-inline-start: 0px;*/
+/*    margin-inline-end: 0px;*/
+/*    unicode-bidi: isolate;*/
+/*}*/
 
 
 /* Internal Error Popup styles*/
@@ -413,3 +435,139 @@ button, input {
     line-height: normal;
 }
 
+/* Print */
+/* Margins to use when printing */
+@media print {
+    .largePrintFontSize {
+        font-size: 11pt;
+    }
+
+    .noPrint {
+        display: none;
+    }
+
+    .printOnly {
+        display: none;
+        visibility: hidden;
+    }
+
+    .printGrayBottomBorder {
+        border-bottom: 1px darkgray solid;
+    }
+
+    /* Print overrides of standard styles */
+    html, body {
+        background: white !important;
+        height: 98%;
+    }
+
+    .contentWrapper {
+        width: auto !important;
+    }
+
+    .viewAnimateContainer {
+        width: auto !important;
+    }
+
+    .contentContainer {
+        box-shadow: none !important;
+    }
+}
+
+/* Example CSS definition for warn-important */
+.warnImportant {
+    border: 2px solid red; /* Example styling */
+    background-color: #fdd; /* Example background color */
+}
+
+/* Reconciliation Tab Links */
+.reconciliationTabLinks {
+    content: '';
+    display: block;
+    clear: both;
+}
+
+.reconciliationTabLinks li {
+    margin: 0 5px;
+    float: left;
+    list-style: none;
+}
+
+.reconciliationTabLinks li a {
+    padding: 9px 30px;
+    display: inline-block;
+    border-radius: 3px 3px 0 0;
+    background: #b3b3b3; /* This should be the lightened gray color */
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
+    transition: all linear 0.15s;
+}
+
+.reconciliationTabLinks li a:hover {
+    background: #374282; /* This should be the darkened blue-purple color */
+    text-decoration: none;
+}
+
+@media print {
+    .reconciliationTabLinks li a {
+        display: none;
+    }
+}
+
+.reconciliationTabLinks li.activeReconciliationTab a {
+    background: #6270bd; /* This should be the blue-purple color */
+    text-decoration: none;
+}
+
+.reconciliationTabLinks li.activeReconciliationTab a:hover {
+    background: #374282; /* This should be the darkened blue-purple color */
+    text-decoration: none;
+}
+
+@media print {
+    .reconciliationTabLinks li.activeReconciliationTab a {
+        display: inline-block;
+        color: black;
+    }
+}
+
+/**/
+.essNotification {
+    padding: .3em;
+    font-weight: 700;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+.essNotification {
+    background: #e64727;
+}
+essNotification h1, .essNotification h2, .essNotification h3, .essNotification h4, .essNotification li, .essNotification p, .essNotification span {
+    color: #fff;
+}
+
+
+/* Modal For reconcil*/
+.confirmModal .confirmationMessage {
+    padding: 20px;
+    text-align: left;
+}
+.confirmModal .confirmationMessage h4, .confirmModal .confirmationMessage p {
+    text-align: center;
+    margin-top: 0;
+}
+.confirmModal .inputContainer {
+    text-align: center;
+}
+.confirmModal .inputContainer input:first-child {
+    margin-left: 0;
+}
+
+input[type=button].approveButton {
+    padding: 5px 10px;
+    background: #6270bd;
+    color: #fff;
+    font-weight: 600;
+    border: 2px none #4655a6;
+    border-bottom-style: solid;
+}
