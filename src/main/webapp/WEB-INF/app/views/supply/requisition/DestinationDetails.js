@@ -4,9 +4,6 @@ import React, { useState } from "react";
 
 
 const DestinationDetails = ({ destination, handleChangeClick, sortOption, handleSortChange }) => {
-
-
-
     return (
         <div className={styles.destinationDetails}>
             <div className={styles.detailsRow}>
@@ -32,15 +29,6 @@ const DestinationDetails = ({ destination, handleChangeClick, sortOption, handle
     );
 };
 
-const sortItems = (items, sortOption) => {
-    if (sortOption === 'name') {
-        return [...items].sort((a, b) => a.description.localeCompare(b.description));
-    }
-    if (sortOption === 'category') {
-        return [...items].sort((a, b) => a.category.localeCompare(b.category));
-    }
-    return items;
-};
 
 
 export default DestinationDetails;

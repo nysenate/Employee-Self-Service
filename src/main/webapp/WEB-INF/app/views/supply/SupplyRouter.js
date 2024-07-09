@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { ThemeContext, themes } from "app/contexts/ThemeContext";
 import RequisitionFormIndex from "app/views/supply/requisition/RequisitionFormIndex";
@@ -15,11 +15,13 @@ import Card from "app/components/Card";
 import CategoryCard from "./requisition/CategoryCard";
 
 export default function SupplyRouter() {
+  const [categories, setCategories] = useState([]);
+
   return (
       <ThemeContext.Provider value={themes.supply}>
         <Routes>
-          <Route path="" element={<SupplyLayout/>}>
-            <Route path="requisition-form" element={<RequisitionFormIndex/>}/>
+          <Route path="" element={<SupplyLayout categories={categories}/>}>
+            <Route path="requisition-form" element={<RequisitionFormIndex setCategories={setCategories}/>}/>
             <Route path="cart" element={<ShoppingCartIndex/>}/>
             <Route path="order-history/order/:orderId" element={<OrderDetail/>}/>
             <Route path="order-history" element={<OrderHistoryIndex/>}/>
@@ -35,7 +37,7 @@ export default function SupplyRouter() {
   );
 }
 
-function SupplyLayout() {
+function SupplyLayout({ categories }) {
   const location = useLocation();
 
   return (
@@ -71,13 +73,13 @@ function SupplyLayout() {
               </Navigation.Link>
             </Navigation.Section>
           </Card>
-          {location.pathname === "/supply/requisition-form" && (
+          {location.pathname === "/supply/requisition-form" && categories && (
               <div style={{ padding: '20px 0px 100px 0px' }}>
                 <Card className="pb-5">
                   <Navigation.Title>
                     Categories
                   </Navigation.Title>
-                  <CategoryCard/>
+                  <CategoryCard categories={categories}/>
                 </Card>
               </div>
           )}

@@ -1,14 +1,13 @@
-import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 
-const useQuery = () => {
-    return new URLSearchParams(useLocation().search);
-};
+const CategoryCard = ({ categories }) => {
+    const [searchParams, setSearchParams] = useSearchParams();
+    const [selectedCategories, setSelectedCategories] = useState(() => searchParams.getAll('category'));
 
-const CategoryCard = () => {
-    const navigate = useNavigate();
-    const query = useQuery();
-    const [selectedCategories, setSelectedCategories] = useState(query.getAll('category') || []);
+    useEffect(() => {
+        setSelectedCategories(searchParams.getAll('category'));
+    }, [searchParams]);
 
     const handleCategoryClick = (category) => {
         const newSelectedCategories = selectedCategories.includes(category)
@@ -16,14 +15,16 @@ const CategoryCard = () => {
             : [...selectedCategories, category];
 
         setSelectedCategories(newSelectedCategories);
-        navigate(`/requisition-form?${new URLSearchParams({ category: newSelectedCategories }).toString()}`);
+        const newParams = new URLSearchParams();
+        newSelectedCategories.forEach(cat => newParams.append('category', cat));
+        setSearchParams(newParams);
     };
 
     return (
         <div>
             <h2>Categories</h2>
             <ul>
-                {['Category 1', 'Category 2', 'Category 3'].map(category => (
+                {categories.map(category => (
                     <li key={category} onClick={() => handleCategoryClick(category)}>
                         <input
                             type="checkbox"

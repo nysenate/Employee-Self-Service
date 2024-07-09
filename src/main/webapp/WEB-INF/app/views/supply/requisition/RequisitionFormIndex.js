@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useSearchParams } from 'react-router-dom';
 import Hero from "../../../components/Hero";
 import { OverOrderPopup, ChangeDestinationPopup } from "../../../components/Popups";
-import styles from './RequisitionFormIndex.module.css';
+import styles from '../universalStyles.module.css';
 import { Button } from "../../../components/Button";
 import useAuth from "app/contexts/Auth/useAuth";
 import LoadingIndicator from "app/components/LoadingIndicator";
@@ -16,7 +16,7 @@ import ItemsGrid from "./ItemsGrid";
 
 
 
-export default function RequisitionFormIndex() {
+export default function RequisitionFormIndex({ setCategories }) {
   const auth = useAuth();
   const [locations, setLocations] = useState([]);
   const [destination, setDestination] = useState(() => {
@@ -33,9 +33,9 @@ export default function RequisitionFormIndex() {
   const [currentPage, setCurrentPage] = useState(1);
   const [cart, setCart] = useState(() => JSON.parse(localStorage.getItem('cart')) || {});
   const [sortOption, setSortOption] = useState('name');
-  // const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [filteredItems, setFilteredItems] = useState([]);
-  // const selectedCategories = searchParams.getAll('category');
+  const selectedCategories = searchParams.getAll('category');
 
   useEffect(() => {
     localStorage.removeItem('pending'); // Clean up pending if refresh occurred before popup conclusion
@@ -55,6 +55,8 @@ export default function RequisitionFormIndex() {
       const fetchItems = async () => {
         const fetchedItems = await getItems(destination.locId);
         setItems(fetchedItems);
+        const categories = extractCategoriesFromItems(fetchedItems);
+        setCategories(categories);
       };
       fetchItems();
     }
@@ -64,19 +66,17 @@ export default function RequisitionFormIndex() {
     localStorage.setItem('cart', JSON.stringify(cart));
   }, [cart]);
 
-  function extractCategoriesFromItems(items) {
-    const uniqueCategories = new Set();
-    items.forEach(item => {
-      uniqueCategories.add(item.category);
-    });
-    const categoriesArray = Array.from(uniqueCategories);
-    console.log(categoriesArray);
-    return categoriesArray;
-  }
-  function updateFilteredItems(selectedCategories, items) {
+  useEffect(() => {
+    if(selectedCategories.length === 0) {
+      setFilteredItems(items);
+      return;
+    }
     const updatedFilteredItems = items.filter(item => selectedCategories.includes(item.category));
-    setFilteredItems(updatedFilteredItems);
-  }
+    if (!arraysAreEqual(filteredItems, updatedFilteredItems)) {
+      setFilteredItems(updatedFilteredItems);
+    }
+  }, [selectedCategories, items]);
+
 
   const handleOverOrderAttempt = (itemId, newQuantity) => {
     localStorage.setItem('pending', JSON.stringify(itemId));
@@ -105,10 +105,22 @@ export default function RequisitionFormIndex() {
     if (!isCartEmpty) {
       setIsChangeDestinationPopupOpen(true);
     } else {
-      setDestination(null);
-      setItems([]);
-      localStorage.removeItem('destination');
+      fullWipe();
     }
+  };
+
+  const fullWipe = () => {
+    clearCart();
+    setCart({});
+    setDestination(null);
+    setItems([]);
+    setFilteredItems([]);
+    setCategories([]);
+    localStorage.removeItem('destination');
+    localStorage.removeItem('pending');
+    localStorage.removeItem('pendingQuantity');
+    const newParams = new URLSearchParams();
+    setSearchParams(newParams);
   };
 
   const handlePageChange = (page) => {
@@ -134,16 +146,9 @@ export default function RequisitionFormIndex() {
     localStorage.removeItem('pending');
     localStorage.removeItem('pendingQuantity');
   };
-  const handleChangeDestinationAction = (decision) => {
-    if (decision) {
-      clearCart();
-      setDestination(null);
-      setItems([]);
-      localStorage.removeItem('destination');
-    }
-  };
+  const handleChangeDestinationAction = (decision) => { if (decision) fullWipe(); };
 
-  if (!locations.length || (destination && !items.length)) {
+  if (!locations.length || (destination && !filteredItems.length)) {
     return (
         <div>
           <Hero>Requisition Form</Hero>
@@ -165,24 +170,30 @@ export default function RequisitionFormIndex() {
                   sortOption={sortOption}
                   handleSortChange={handleSortChange}
               />
-              <Pagination
+              {filteredItems.length > itemsPerPage && (
+                <Pagination
                   currentPage={currentPage}
-                  totalPages={Math.ceil(items.length / itemsPerPage)}
+                  totalPages={Math.ceil(filteredItems.length / itemsPerPage)}
                   onPageChange={handlePageChange}
-              />
+                />
+              )}
               <ItemsGrid
-                  items={items}
+                  items={filteredItems}
                   currentPage={currentPage}
                   itemsPerPage={itemsPerPage}
                   cart={cart}
                   handleQuantityChange={handleQuantityChange}
                   handleOverOrderAttempt={handleOverOrderAttempt}
               />
-              <Pagination
-                  currentPage={currentPage}
-                  totalPages={Math.ceil(items.length / itemsPerPage)}
-                  onPageChange={handlePageChange}
-              />
+              {filteredItems.length > itemsPerPage && (
+                <div className={styles.contentContainer}>
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={Math.ceil(filteredItems.length / itemsPerPage)}
+                    onPageChange={handlePageChange}
+                  />
+                </div>
+              )}
             </div>
         ) : (
             <SelectDestination
@@ -204,3 +215,31 @@ export default function RequisitionFormIndex() {
       </div>
   );
 }
+
+function extractCategoriesFromItems(items) {
+  const uniqueCategories = new Set();
+  items.forEach(item => {
+    uniqueCategories.add(item.category);
+  });
+  const categoriesArray = Array.from(uniqueCategories);
+  return categoriesArray;
+}
+
+const arraysAreEqual = (arr1, arr2) => {
+  if (arr1.length !== arr2.length) return false;
+  for (let i = 0; i < arr1.length; i++) {
+    if (arr1[i] !== arr2[i]) return false;
+  }
+  return true;
+};
+
+
+const sortItems = (items, sortOption) => {
+  if (sortOption === 'name') {
+    return [...items].sort((a, b) => a.description.localeCompare(b.description));
+  }
+  if (sortOption === 'category') {
+    return [...items].sort((a, b) => a.category.localeCompare(b.category));
+  }
+  return items;
+};
