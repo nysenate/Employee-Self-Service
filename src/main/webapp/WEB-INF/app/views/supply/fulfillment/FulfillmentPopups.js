@@ -527,7 +527,7 @@ export function FulfillmentImmutable({ requisition, isModalOpen, closeModal }) {
                   {requisition.status !== 'CANCELED' && (
                     <>
                         <h4>Approved Date Time</h4>
-                        <div>{formatDateYY(requisition.approvedDateTime)}</div>
+                        <div>{requisition.approvedDateTime ? formatDateYY(requisition.approvedDateTime) : ''}</div>
                     </>
                   )}
 

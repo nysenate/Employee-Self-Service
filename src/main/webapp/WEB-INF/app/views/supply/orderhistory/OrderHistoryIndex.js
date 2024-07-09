@@ -4,10 +4,10 @@ import SubHero from "./SubHero";
 import Results from "./Results";
 import styles from './OrderHistoryIndex.module.css';
 import useAuth from "app/contexts/Auth/useAuth";
-import { fetchApiJson } from "app/utils/fetchJson";  // Import the custom fetch function
 import Pagination from "../../../components/Pagination";
 import LoadingIndicator from "app/components/LoadingIndicator";
 import {
+    fetchEmployeeInformation,
     formatDateForApi,
     formatDateForInput,
     getCurrentDate,
@@ -40,7 +40,8 @@ export default function OrderHistoryIndex() {
             try {
                 setLoading(true); // Set loading to true before the fetch
                 const customerId = auth.empId();
-                const response = await getOrderHistory(customerId, formatDateForApi(new Date(from)), ordersPerPage, 'A42FB-W', 1+(currentPage-1)*ordersPerPage, status, formatDateForApi(new Date(to)));
+                const employeeResponse = await fetchEmployeeInformation(customerId);
+                const response = await getOrderHistory(customerId, formatDateForApi(new Date(from)), ordersPerPage, employeeResponse.employee.empWorkLocation.locId, 1+(currentPage-1)*ordersPerPage, status, formatDateForApi(new Date(to)));
                 setTotalOrders(response.total);
                 // Below fixes a bug persistent in dev. When one a page and change filter s.t. the page is no longer in bounds, no results will appear until refresh
                 if(Math.ceil(response.total / ordersPerPage) < currentPage) setCurrentPage(Math.ceil(response.total / ordersPerPage));
