@@ -2,7 +2,6 @@ import Popup from "../../../components/Popup";
 import { Button } from "../../../components/Button";
 import React, { useEffect, useState } from "react";
 import styles from "../universalStyles.module.css";
-import Select from "react-select/base";
 import {
     fetchSupplyDestinations,
     fetchSupplyEmployees,
@@ -11,10 +10,11 @@ import {
 import useAuth from "../../../contexts/Auth/useAuth";
 import FilterSelect from "../../../components/FilterSelect";
 import { alphabetizeLineItems, formatDateYY } from "../helpers";
+import { useNavigate } from "react-router-dom";
 
 
 export function FulfillmentEditing({ requisition, isModalOpen, closeModal, onAction }) {
-    const [originalRequisition, setOriginalRequisition] = useState(requisition);
+    const originalRequisition = requisition;
     const [editableRequisition, setEditableRequisition] = useState({ ...requisition });
     const [dirty, setDirty] = useState(false);
 
@@ -80,6 +80,7 @@ export function FulfillmentEditing({ requisition, isModalOpen, closeModal, onAct
                     editableRequisition={editableRequisition}
                     displayRejectInstructions={displayRejectInstructions}
                     setEditableRequisition={setEditableRequisition}
+                    originalRequisition={originalRequisition}
                 />
                 <ActionButtons
                     originalRequisition={originalRequisition}
@@ -102,10 +103,12 @@ const OrderContent = ({
                           warning, setWarning,
                           editableRequisition,
                           displayRejectInstructions,
-                          setEditableRequisition
+                          setEditableRequisition,
+                          originalRequisition
                       }) => {
 
     const auth = useAuth();
+    const navigate = useNavigate();
     const deliveryMethods = ['PICKUP', 'DELIVERY'];
     const [destinations, setDestinations] = useState({
         allowed: [],
@@ -182,7 +185,6 @@ const OrderContent = ({
         setEditableRequisition(prev => ({ ...prev, note: event.target.value }));
     };
 
-
     const handleAddItem = () => {
         if (!items.selected) return;
         if (editableRequisition.lineItems.find(obj => obj.item.id === items.selected.id)) {
@@ -195,6 +197,10 @@ const OrderContent = ({
                 lineItems: [...prev.lineItems, { item: items.selected, quantity: 1 }]
             }));
         }
+    };
+
+    const redirectToFullHistory = () => {
+        navigate(`/supply/order-history/order/${originalRequisition.requisitionId}`, { state: { order: originalRequisition } });
     };
 
     return (
@@ -282,8 +288,14 @@ const OrderContent = ({
                 </div>
                 {editableRequisition.status === 'COMPLETED' && (
                     <div style={{ textAlign: 'center' }}>
-                        <a target="_blank" href={`/supply/requisition/requisition-view?requisition=${editableRequisition.requisitionId}`}>
-                            View History
+                        <a
+                            href="#"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                redirectToFullHistory();
+                            }}
+                        >
+                            View full history
                         </a>
                     </div>
                 )}
@@ -420,7 +432,7 @@ const ActionButtons = ({
             {/* Approve Button */}
             {hasPermission("SUPPLY_REQUISITION_APPROVE") && originalRequisition.status === 'COMPLETED' && (
                 <Button
-                    style={{ width: '15%' }}
+                    style={{ width: '15%', backgroundColor: '#6270bd' }}
                     onClick={handleApprove}
                     onMouseEnter={() => {
                         // Show popover logic
@@ -507,7 +519,7 @@ export function FulfillmentImmutable({ requisition, isModalOpen, closeModal }) {
                     <div>No instructions provided for this requisition.</div>)}
 
                   <h4 className={styles.contentInfo}>Issued By</h4>
-                  <div>{requisition.issuer.lastName}</div>
+                  <div>{requisition.issuer?.lastName}</div>
 
                   <h4>Ordered Date Time</h4>
                   <div>{formatDateYY(requisition.orderedDateTime)}</div>
@@ -521,7 +533,7 @@ export function FulfillmentImmutable({ requisition, isModalOpen, closeModal }) {
 
                   <h4>Actions</h4>
                   <div style={{ textAlign: 'center' }}>
-                      <a target="_blank" href={`/supply/requisition/requisition-view?requisition=${editableRequisition.requisitionId}&print=true`}>
+                      <a target="_blank" href={`/supply/requisition/requisition-view?requisition=${requisition.requisitionId}&print=true`}>
                           Print Requisition
                       </a>
                   </div>
@@ -532,7 +544,7 @@ export function FulfillmentImmutable({ requisition, isModalOpen, closeModal }) {
                   )}
               </div>
               <div style={{ paddingTop: '10px', textAlign: 'center'}}>
-                  <Button onClick={closeModal} style={{ width: '15%'}}>Exit</Button>
+                  <Button onClick={closeModal} style={{ width: '15%', backgroundColor: 'grey'}}>Exit</Button>
               </div>
           </div>
       </Popup>

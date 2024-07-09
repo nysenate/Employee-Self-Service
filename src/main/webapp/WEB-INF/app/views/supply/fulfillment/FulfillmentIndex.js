@@ -8,7 +8,7 @@ import ApprovedOrders from "./ApprovedOrders";
 import RejectedShipments from "./RejectedShipments";
 
 import { initMostReqs, initRejectedReqs, calculateHighlighting, setRequisitionSearchParam, distinctItemQuantity } from "./supply-fulfillment-ctrl";
-import { FulfillmentEditing } from "./FulfillmentPopups";
+import { FulfillmentEditing, FulfillmentImmutable } from "./FulfillmentPopups";
 
 export default function FulfillmentIndex() {
     const [data, setData] = useState({
@@ -30,6 +30,7 @@ export default function FulfillmentIndex() {
     const [error, setError] = useState(false);
     const [selectedRequisition, setSelectedRequisition] = useState(null); // State to manage the selected requisition
     const [isModalOpen, setIsModalOpen] = useState(false); // State to manage modal visibility
+    const [isImmutableOpen, setIsImmutableOpen] = useState(false); // State to manage modal visibility
 
     useEffect(() => {
         const fetchData = async () => {
@@ -74,11 +75,12 @@ export default function FulfillmentIndex() {
     const handleRowClick = (requisition) => {
         setSelectedRequisition(requisition); // Set the selected requisition
         setRequisitionSearchParam(requisition.requisitionId)
-        setIsModalOpen(true); // Open the modal
+        requisition.status == 'APPROVED' || requisition.status == 'REJECTED' ? setIsImmutableOpen(true) : setIsModalOpen(true); // Open the modal
     };
 
     const closeModal = () => {
         setIsModalOpen(false);
+        setIsImmutableOpen(false);
         setSelectedRequisition(null);
     };
 
@@ -120,6 +122,14 @@ export default function FulfillmentIndex() {
                 <FulfillmentEditing
                     requisition={selectedRequisition}
                     isModalOpen={isModalOpen}
+                    closeModal={closeModal}
+                    onAction={(action) => { console.log(action); }}
+                />
+            )}
+            {selectedRequisition && (
+                <FulfillmentImmutable
+                    requisition={selectedRequisition}
+                    isModalOpen={isImmutableOpen}
                     closeModal={closeModal}
                     onAction={(action) => { console.log(action); }}
                 />
