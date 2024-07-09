@@ -13,6 +13,9 @@ import DestinationDetails from "./DestinationDetails";
 import SelectDestination from "./SelectDestination";
 import ItemsGrid from "./ItemsGrid";
 
+
+
+
 export default function RequisitionFormIndex() {
   const auth = useAuth();
   const [locations, setLocations] = useState([]);
@@ -29,6 +32,7 @@ export default function RequisitionFormIndex() {
   const itemsPerPage = 16;
   const [currentPage, setCurrentPage] = useState(1);
   const [cart, setCart] = useState(() => JSON.parse(localStorage.getItem('cart')) || {});
+  const [sortOption, setSortOption] = useState('name');
   // const [searchParams] = useSearchParams();
   const [filteredItems, setFilteredItems] = useState([]);
   // const selectedCategories = searchParams.getAll('category');
@@ -57,23 +61,22 @@ export default function RequisitionFormIndex() {
   }, [destination]);
 
   useEffect(() => {
-    setFilteredItems(items);
+    localStorage.setItem('cart', JSON.stringify(cart));
+  }, [cart]);
+
+  function extractCategoriesFromItems(items) {
     const uniqueCategories = new Set();
     items.forEach(item => {
       uniqueCategories.add(item.category);
     });
     const categoriesArray = Array.from(uniqueCategories);
     console.log(categoriesArray);
-  }, [items]);
-
-  // useEffect(() => {
-  //   const updatedFilteredItems = items.filter(item => selectedCategories.includes(item.category));
-  //   setFilteredItems(updatedFilteredItems);
-  // }, [selectedCategories, items]);
-
-  useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(cart));
-  }, [cart]);
+    return categoriesArray;
+  }
+  function updateFilteredItems(selectedCategories, items) {
+    const updatedFilteredItems = items.filter(item => selectedCategories.includes(item.category));
+    setFilteredItems(updatedFilteredItems);
+  }
 
   const handleOverOrderAttempt = (itemId, newQuantity) => {
     localStorage.setItem('pending', JSON.stringify(itemId));
@@ -86,6 +89,11 @@ export default function RequisitionFormIndex() {
     setCart(JSON.parse(localStorage.getItem('cart')));
   };
 
+  const handleSortChange = (e) => {
+    setSortOption(e.target.value);
+    setItems(sortItems(items, e.target.value));
+  };
+
   const handleConfirmClick = (tempDestination) => {
     setDestination(tempDestination);
     setCurrentPage(1);
@@ -93,7 +101,8 @@ export default function RequisitionFormIndex() {
   };
 
   const handleChangeClick = () => {
-    if (cart) {
+    const isCartEmpty = cart && Object.keys(cart).length === 0;
+    if (!isCartEmpty) {
       setIsChangeDestinationPopupOpen(true);
     } else {
       setDestination(null);
@@ -153,7 +162,8 @@ export default function RequisitionFormIndex() {
               <DestinationDetails
                   destination={destination}
                   handleChangeClick={handleChangeClick}
-                  setItems={setItems}
+                  sortOption={sortOption}
+                  handleSortChange={handleSortChange}
               />
               <Pagination
                   currentPage={currentPage}

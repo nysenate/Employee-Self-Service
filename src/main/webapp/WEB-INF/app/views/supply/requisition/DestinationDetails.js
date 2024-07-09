@@ -3,13 +3,9 @@ import { Button } from "../../../components/Button";
 import React, { useState } from "react";
 
 
-const DestinationDetails = ({ destination, handleChangeClick, setItems }) => {
-    const [sortOption, setSortOption] = useState('name');
+const DestinationDetails = ({ destination, handleChangeClick, sortOption, handleSortChange }) => {
 
-    const handleSortChange = (e) => {
-        setSortOption(e.target.value);
-        setItems(sortItems(items, e.target.value));
-    };
+
 
     return (
         <div className={styles.destinationDetails}>
