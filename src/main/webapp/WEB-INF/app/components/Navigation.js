@@ -4,12 +4,14 @@ import { NavLink } from "react-router-dom";
 import Card from "app/components/Card";
 
 
-const Navigation = ({ children }) => {
+const Navigation = ({ children, notWrapInCard }) => {
   return (
     <nav className="w-[250px] flex-none" aria-label="Secondary">
-      <Card className="pb-5">
+      {!notWrapInCard ? (<Card className="pb-5">
         {children}
-      </Card>
+      </Card>) : (
+          <>{children}</>
+      )}
     </nav>
   )
 }
@@ -90,3 +92,4 @@ Navigation.Section = Section
 Navigation.Link = Link
 
 export default Navigation
+

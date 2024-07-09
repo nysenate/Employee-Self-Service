@@ -218,6 +218,12 @@ table.essTable tbody tr td {
     font-weight: bold; /* replaced .bold mixin */
 }
 
+.cellAPPROVED {
+    background: #6270BD; /* blue */
+    color: #FFFFFF; /* white */
+    font-weight: bold; /* replaced .bold mixin */
+}
+
 .cellREJECTED {
     background: #FF4500; /* redorange */
     color: #FFFFFF; /* white */
