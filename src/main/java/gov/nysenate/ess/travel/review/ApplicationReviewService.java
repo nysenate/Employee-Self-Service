@@ -67,10 +67,11 @@ public class ApplicationReviewService {
         Action disapproveAction = new Action(0, disapprover, disapproverRole, ActionType.DISAPPROVE,
                 reason, LocalDateTime.now());
         applicationReview.addAction(disapproveAction);
+        applicationReview.application().setStatus(new TravelApplicationStatus(AppStatus.DISAPPROVED, reason));
 
         travelApplicationService.updateApplicationStatus(
                 applicationReview.application().getAppId(),
-                new TravelApplicationStatus(AppStatus.DISAPPROVED, reason)
+                applicationReview.application().getStatus()
         );
         eventBus.post(new TravelDisapprovalEmailEvent(applicationReview));
         saveApplicationReview(applicationReview);
