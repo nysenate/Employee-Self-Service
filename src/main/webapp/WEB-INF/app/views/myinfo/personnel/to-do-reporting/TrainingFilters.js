@@ -1,16 +1,23 @@
-import React from "react";
+import React, { useState } from "react";
 import styles from "./TrainingFilters.module.css"
 import Card from "app/components/Card";
 import InputFilters from "app/views/myinfo/personnel/to-do-reporting/InputFilters";
 import EmployeeFilters from "app/views/myinfo/personnel/to-do-reporting/EmployeeFilters";
 
-export default function TrainingFilters(){
+export default function TrainingFilters({params, onChildDataChange}){
+  const [receivedData, setReceivedData] = useState(params);
+
+  const handleChildDataChange = (data) => {
+    setReceivedData(data);
+    onChildDataChange(receivedData)
+  };
+
   return (
       <div className={styles.trainingFilters}>
         <span className="text-lg font-semibold">Training Filters</span>
-        <InputFilters/>
+        <InputFilters params= {receivedData} onChildDataChange={handleChildDataChange}/>
         <span className="text-lg font-semibold">Employee Filters</span>
-        <EmployeeFilters/>
+        <EmployeeFilters params= {receivedData} onChildDataChange={handleChildDataChange}/>
       </div>
   )
 }

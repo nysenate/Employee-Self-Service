@@ -6,7 +6,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import SummaryIndex, { summaryLoader } from "app/views/myinfo/personnel/summary/SummaryIndex";
 import CheckHistoryIndex from "app/views/myinfo/payroll/checkhistory/CheckHistoryIndex";
 import EmergencyAlertInfoIndex from "app/views/myinfo/personnel/emergency-alert-info/EmergencyAlertInfoIndex";
-import ToDoReporting from "app/views/myinfo/personnel/to-do-reporting/ToDoReporing";
+import ToDoReporting from "app/views/myinfo/personnel/to-do-reporting/ToDoReporting";
 
 
 export default function MyInfoRouter() {

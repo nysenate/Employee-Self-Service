@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
 
-export default function EmployeeCount() {
-  const count = 10;
+export default function EmployeeCount({finalData}) {
+
+  const count = finalData.total || 0;
 
   const apiUrl = '/api/v1/personnel/task/emp/search/report';
   const queryParams = {

@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import styles from './EmployeeSearch.module.css';
 
-const EmployeeSearch = () => {
+const EmployeeSearch = ({params, onChildDataChange}) => {
   const [searchTerm, setSearchTerm] = useState('');
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
+    params.name = event.target.value;
+    onChildDataChange(params);
   };
 
   return (
