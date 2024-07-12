@@ -10,7 +10,7 @@ function Dropdown ({ options, selectedValue, onSelectedValueChange }) {
       onChange={(e) => onSelectedValueChange(e.target.value)}
     >
       {keys.map((key) => (
-        <option key={key} value={options[key]}>
+        <option key={key} value={key}>
           {options[key]}
         </option>
       ))}

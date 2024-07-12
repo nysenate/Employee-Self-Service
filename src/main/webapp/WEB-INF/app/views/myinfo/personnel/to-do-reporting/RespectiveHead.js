@@ -28,7 +28,7 @@ export default function RespectiveHead(){
           throw new Error('Failed to fetch data');
         }
         const data = await response.json();
-        console.log(data.result);
+        // console.log(data.result);
         setOffices(data.result);
       } catch (error) {
         console.error('Error fetching task details:', error);
