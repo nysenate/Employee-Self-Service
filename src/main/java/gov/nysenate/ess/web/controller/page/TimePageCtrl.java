@@ -20,8 +20,7 @@ public class TimePageCtrl extends BaseEssPageCtrl
 
     @RequestMapping(method = {RequestMethod.GET, RequestMethod.HEAD})
     public String mainPage(ModelMap modelMap, HttpServletRequest request) {
-//        addCommonModelMapData(modelMap);
-//		return "time";
-        return null;
+        addCommonModelMapData(modelMap);
+		return "time";
 	}
 }
