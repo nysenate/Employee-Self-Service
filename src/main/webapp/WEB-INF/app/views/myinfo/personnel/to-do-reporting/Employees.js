@@ -42,7 +42,6 @@ export default function Employees({ finalData, allTasks, params, onChildDataChan
       newPersonnel.push(newEmployeeData);
     });
     setPersonnel(newPersonnel);
-    console.log(newPersonnel);
   }
 
   function getAssignedDetails(allTasks, empId) {

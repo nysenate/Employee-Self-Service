@@ -22,7 +22,7 @@ export default function ToDoReporting() {
     taskActive: true,
     completed: null,
     totalCompletion: null,
-    respCtrHead: null,
+    respCtrHead: [],
     limit: 10,
     offset: 1,
     sort: [ "NAME:ASC", "OFFICE:ASC" ]
@@ -36,21 +36,17 @@ export default function ToDoReporting() {
       try {
         const keyValuePairs = [];
         for (const key in params) {
-          if ((key !== 'sort') && (params[key] !== '' && params[key] !== null) && !(Array.isArray(params[key]) && params[key].length === 0)) {
-            keyValuePairs.push(encodeURIComponent(key) + '=' + encodeURIComponent(params[key]));
+          if (params[key] !== '' && params[key] !== null) {
+            if (Array.isArray(params[key]) && params[key].length > 0) {
+              params[key].forEach(value => {
+                keyValuePairs.push(key + '=' + value);
+              });
+            } else if (!Array.isArray(params[key])) {
+              keyValuePairs.push(key + '=' + params[key]);
+            }
           }
         }
-        let string = keyValuePairs.join('&');
-        const key = "sort";
-        let sortParams = '';
-        if (key === "sort" && !(Array.isArray(params[key]) && params[key].length === 0)) {
-          const sortCriteria = params[key];
-          sortParams = sortCriteria.map(criteria => `sort=${criteria}`).join('&');
-        }
-        if (sortParams !== "") {
-          string = (string + "&" + sortParams);
-        }
-
+        let queryString = keyValuePairs.join('&');
         const init = {
           method: "GET",
           headers: {
@@ -60,7 +56,7 @@ export default function ToDoReporting() {
           cache: 'no-store',
         };
 
-        const response = await fetch(`/api/v1/personnel/task/emp/search?${string}`, init);
+        const response = await fetch(`/api/v1/personnel/task/emp/search?${queryString}`, init);
         if (!response.ok) {
           throw new Error('Failed to fetch data');
         }
@@ -88,6 +84,7 @@ export default function ToDoReporting() {
     setAllTasks(tasks.tasks);
   }
 
+
   return (
     <div>
       <Hero>Personnel To-Do Reporting</Hero>
@@ -98,7 +95,7 @@ export default function ToDoReporting() {
         position: "relative",
         boxShadow: "0 1px 2px #aaa",
         marginTop: "20px",
-        overflow: "auto",
+        overflow: "auto"
       }}>
         <TrainingFilters
           params={params}
