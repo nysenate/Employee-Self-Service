@@ -1,4 +1,5 @@
 import { fetchApiJson } from "../../utils/fetchJson";
+import { clearCart } from "./cartUtils";
 
 /**
  * Fetch orderable items for a given location ID.
@@ -121,6 +122,19 @@ export const getCurrentDate = () => {
     return today.toISOString().split('.')[0] + '-04:00'; // Adjust for your timezone offset if needed
 };
 
+export const getExactCurrentDate = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+    const milliseconds = String(now.getMilliseconds()).padStart(3, '0');
+
+    return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}`;
+};
+
 /**
  * Get the date one month before the current date in ISO format adjusted for the timezone offset.
  *
@@ -131,6 +145,8 @@ export const getOneMonthBeforeDate = () => {
     today.setMonth(today.getMonth() - 1);
     return today.toISOString().split('.')[0] + '-04:00'; // Adjust for your timezone offset if needed
 };
+
+// GETS:::: //
 
 /**
  * Fetch order history based on the provided parameters.
@@ -268,3 +284,44 @@ export const getLocations = async (empId) => {
 export const fetchEmployeeInformation = async (empId) => {
     return fetchApiJson(`/employees?detail=true&empId=${empId}`);
 };
+
+
+// POSTS:::: //
+
+export const saveRequisitionPost = async (editedRequisition) => {
+    const payload = editedRequisition;
+    try {
+        const response = await fetchApiJson(`/supply/requisitions/${editedRequisition.requisitionId}`, { method: 'POST', payload: payload });
+    } catch (error) {
+        console.error('Post error:', error);
+    }
+}
+
+export const processRequisitionPost = async (editedRequisition) => {
+    const payload = editedRequisition;
+    try {
+        const response = await fetchApiJson(`/supply/requisitions/${editedRequisition.requisitionId}/process`, { method: 'POST', payload: payload });
+        console.log('Post response:', response);
+    } catch (error) {
+        console.error('Post error:', error);
+    }
+}
+
+
+export const rejectRequisitionPost = async (editedRequisition) => {
+    const payload = editedRequisition;
+    try {
+        const response = await fetchApiJson(`/supply/requisitions/${editedRequisition.requisitionId}/reject`, { method: 'POST', payload: payload });
+    } catch (error) {
+        console.error('Post error:', error);
+    }
+}
+
+export const undoRequisitionPost = async (editedRequisition) => {
+    const payload = editedRequisition;
+    try {
+        const response = await fetchApiJson(`/supply/requisitions/${editedRequisition.requisitionId}/undo`, { method: 'POST', payload: payload });
+    } catch (error) {
+        console.error('Post error:', error);
+    }
+}

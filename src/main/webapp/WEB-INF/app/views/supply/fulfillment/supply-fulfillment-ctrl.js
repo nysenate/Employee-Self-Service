@@ -108,6 +108,14 @@ export const setRequisitionSearchParam = (requisitionId) => {
     window.history.replaceState(null, '', '?' + searchParams.toString());
 };
 
+export const removeRequisitionSearchParam = () => {
+    const searchParams = new URLSearchParams(window.location.search);
+    searchParams.delete("requisitionId");
+    const newSearch = searchParams.toString();
+    const newUrl = window.location.pathname + (newSearch ? '?' + newSearch : '');
+    window.history.replaceState(null, '', newUrl);
+};
+
 function displayRequisitionWithId(data, requisitionId) {
     if (requisitionId != null) {
         var requisition = findRequisitionById(data, requisitionId);

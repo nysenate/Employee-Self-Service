@@ -67,12 +67,8 @@ export default function ShoppingCart() {
     setIsCheckOutPopupOpen(false);
   };
 
-  // NEEDS IMPLEMENTING WITH PAYLOAD
-  // Payload: customerId, deliveryMethod (decision), destinationId (-W), lineItems ([{},{},...]), specialInstructions ("")
-  //see photo for lineItems specifics
   const handleCheckOutAction = (decision) => {
     if(decision === 'PICKUP' || decision === 'DELIVERY'){
-      console.log("implement handleCheckOutAction('",decision,"')");
       checkoutPost(decision);
       setIsPostCheckOutPopupOpen(true);
     }else{

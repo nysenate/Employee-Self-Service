@@ -9,11 +9,16 @@ import {
 } from "./supply-fulfillment-ctrl";
 import useAuth from "../../../contexts/Auth/useAuth";
 import FilterSelect from "../../../components/FilterSelect";
-import { alphabetizeLineItems, formatDateYY } from "../helpers";
+import {
+    alphabetizeLineItems,
+    formatDateYY,
+    processRequisitionPost, rejectRequisitionPost,
+    saveRequisitionPost, undoRequisitionPost
+} from "../helpers";
 import { useNavigate } from "react-router-dom";
 
 
-export function FulfillmentEditing({ requisition, isModalOpen, closeModal, onAction }) {
+export function FulfillmentEditing({ requisition, isModalOpen, closeModal, refreshData }) {
     const originalRequisition = requisition;
     const [editableRequisition, setEditableRequisition] = useState({ ...requisition });
     const [dirty, setDirty] = useState(false);
@@ -25,33 +30,35 @@ export function FulfillmentEditing({ requisition, isModalOpen, closeModal, onAct
         setDirty(JSON.stringify(originalRequisition) !== JSON.stringify(editableRequisition));
     }, [editableRequisition]);
 
-    const handleUndo = () => {
-        setEditableRequisition({ ...originalRequisition });
+    const handleUndo = async () => {
+        // setEditableRequisition({ ...originalRequisition });      // this logically should be how it works
+        // await undoRequisitionPost({ ...originalRequisition });   // but 8080 undoes processing while saving the changes
+        await undoRequisitionPost(editableRequisition);
         setDirty(false);
+        refreshData();
+        closeModal();
     };
     const handleCancel = () => {
         closeModal();
     };
-    const handleSave = () => {
-        // Save logic
-        onAction(editableRequisition);
+    const handleSave = async () => {
+        await saveRequisitionPost(editableRequisition);
+        refreshData();
         closeModal();
     };
-    const handleProcess = () => {
-        // Process logic
-    };
-    const handleComplete = () => {
-        // Complete logic
-    };
-    const handleApprove = () => {
-        // Approve Logic
+    const handleProcess = async () => {
+        await processRequisitionPost(editableRequisition);
+        refreshData();
+        closeModal();
     };
 
-    const handleReject = () => {
+    const handleReject = async () => {
         if (!editableRequisition.note) {
             setDisplayRejectInstructions(true);
         } else {
-            // Reject logic
+            await rejectRequisitionPost(editableRequisition);
+            refreshData();
+            closeModal();
         }
     };
 
@@ -88,8 +95,6 @@ export function FulfillmentEditing({ requisition, isModalOpen, closeModal, onAct
                     handleCancel={handleCancel}
                     handleSave={handleSave}
                     handleProcess={handleProcess}
-                    handleComplete={handleComplete}
-                    handleApprove={handleApprove}
                     handleReject={handleReject}
                     dirty={dirty}
                     hasPermission={() => true} // Replace with actual permission checking logic
@@ -388,8 +393,6 @@ const ActionButtons = ({
                            handleCancel,
                            handleSave,
                            handleProcess,
-                           handleComplete,
-                           handleApprove,
                            handleReject,
                            dirty,
                            hasPermission
@@ -424,7 +427,7 @@ const ActionButtons = ({
 
             {/* Complete Button */}
             {originalRequisition.status === 'PROCESSING' && (
-                <Button style={{ width: '15%' }} onClick={handleComplete}>
+                <Button style={{ width: '15%' }} onClick={handleProcess}>
                     Complete
                 </Button>
             )}
@@ -433,7 +436,7 @@ const ActionButtons = ({
             {hasPermission("SUPPLY_REQUISITION_APPROVE") && originalRequisition.status === 'COMPLETED' && (
                 <Button
                     style={{ width: '15%', backgroundColor: '#6270bd' }}
-                    onClick={handleApprove}
+                    onClick={handleProcess}
                     onMouseEnter={() => {
                         // Show popover logic
                     }}
