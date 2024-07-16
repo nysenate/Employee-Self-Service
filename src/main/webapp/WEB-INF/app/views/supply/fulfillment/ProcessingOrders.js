@@ -39,7 +39,7 @@ const ProcessingOrders = ({ data, calculateHighlighting, onRowClick, distinctIte
                         {requisitions.sort((a, b) => b.requisitionId - a.requisitionId).map((requisition) => (
                             <tr
                                 key={requisition.requisitionId}
-                                className={calculateHighlighting(requisition)}
+                                className={calculateHighlighting(requisition, data.locationStatistics)}
                                 onClick={() => onRowClick(requisition)}
                             >
                                 <td className={`${requisition.deliveryMethod === 'PICKUP' && styles.supplyPickupIcon}`}></td>

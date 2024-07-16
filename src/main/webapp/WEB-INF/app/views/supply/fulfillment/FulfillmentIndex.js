@@ -13,7 +13,7 @@ import {
     calculateHighlighting,
     setRequisitionSearchParam,
     distinctItemQuantity,
-    removeRequisitionSearchParam
+    removeRequisitionSearchParam, fetchLocationStatistics
 } from "./supply-fulfillment-ctrl";
 import { FulfillmentEditing, FulfillmentImmutable } from "./FulfillmentPopups";
 import { formatDateForApi, getCurrentDate } from "../helpers";
@@ -64,10 +64,13 @@ export default function FulfillmentIndex() {
                     reqs[req.status.toLowerCase()].push(req);
                 });
 
+                const newLocationStats = await fetchLocationStatistics();
+
                 setData(prevData => ({
                     ...prevData,
                     reqs: { ...reqs, map },
-                    reqRequest: { response: { $resolved: true }, error: false }
+                    reqRequest: { response: { $resolved: true }, error: false },
+                    locationStatistics: newLocationStats
                 }));
             } catch (error) {
                 console.error('Error fetching requisitions:', error);

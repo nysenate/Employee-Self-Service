@@ -1,5 +1,6 @@
 // supply-fulfillment-ctrl.js
 import { fetchApiJson } from "app/utils/fetchJson";
+import styles from "../universalStyles.module.css";
 
 /**
  * Fetch requisitions based on provided parameters.
@@ -92,6 +93,21 @@ export const initRejectedReqs = async () => {
     return data.result;
 };
 
+export const fetchLocationStatistics = async () => {
+    const moment = new Date();
+    const year = moment.getFullYear();
+    const month = moment.getMonth() + 1;
+    console.log("year: ", year, " month: ", month);
+    try {
+        const response = await fetchApiJson(`/supply/statistics/locations?month=${month}&year=${year}`);
+        console.log("calculateLocationStatistics response:", response);
+        console.log("Returning response.result.items: ", response.result.items);
+        return response.result.items;
+    } catch (err) {
+        console.error("calculateLocationStatistics Error: ", err);
+    }
+}
+
 /**
  * Get the current date and time in the specified format.
  *
@@ -122,11 +138,16 @@ export const distinctItemQuantity = (requisition) => {
  * @param {Object} requisition The requisition object.
  * @returns {Object} The highlighting information.
  */
-export const calculateHighlighting = (requisition) => {
-    return {
-        warn: containsItemOverOrderMax(requisition) || isOverPerMonthMax(requisition) || containsSpecialItem(requisition),
-        bold: isOverPerMonthMax(requisition),
+export const calculateHighlighting = (requisition, locationStatistics) => {
+    const { warn, bold } = {
+        warn: containsItemOverOrderMax(requisition) || isOverPerMonthMax(requisition, locationStatistics) || containsSpecialItem(requisition),
+        bold: isOverPerMonthMax(requisition, locationStatistics),
     };
+    let className = '';
+    if (warn) className += `${styles.warn} `;
+    if (bold) className += `${styles.bold} `;
+
+    return className.trim();
 };
 
 /**
@@ -136,7 +157,7 @@ export const calculateHighlighting = (requisition) => {
  * @returns {Boolean} Whether the requisition contains an item over the order max.
  */
 const containsItemOverOrderMax = (requisition) => {
-    // Define the logic here
+    return requisition.lineItems.some(obj => obj.quantity > obj.item.perOrderAllowance);
 };
 
 /**
@@ -152,13 +173,20 @@ const isOverPerMonthMax = (requisition, locationStatistics) => {
     }
     let isOver = false;
     requisition.lineItems.forEach(lineItem => {
-        const monthToDateQty = locationStatistics.getQuantityForLocationAndItem(requisition.destination.locId, lineItem.item.commodityCode);
+        const monthToDateQty = getQuantityForLocationAndItem(requisition.destination.locId, lineItem.item.commodityCode, locationStatistics);
         if (monthToDateQty > lineItem.item.perMonthAllowance) {
             isOver = true;
         }
     });
     return isOver;
 };
+
+
+export const getQuantityForLocationAndItem = (location, item, locationStatistics) => {
+    if (locationStatistics[location]) {
+        return locationStatistics[location].itemQuantities[item];
+    }
+}
 
 /**
  * Check if the requisition contains any special item.
@@ -167,7 +195,7 @@ const isOverPerMonthMax = (requisition, locationStatistics) => {
  * @returns {Boolean} Whether the requisition contains a special item.
  */
 const containsSpecialItem = (requisition) => {
-    // Define the logic here
+    return requisition.lineItems.some(obj => obj.item.specialRequest);
 };
 
 /**

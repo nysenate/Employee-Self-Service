@@ -249,6 +249,30 @@ b, strong {
     padding-right: 0 !important;
 }
 
+.supplySpecialItem {
+    background-color: #f9cfc7;
+}
+.corner-ribbon {
+    left: -27px;
+    top: 15px;
+    width: 100px;
+    background: #e43;
+    position: absolute;
+    text-align: center;
+    letter-spacing: 1px;
+    color: #f0f0f0;
+    -webkit-transform: rotate(-45deg);
+    -moz-transform: rotate(-45deg);
+    -ms-transform: rotate(-45deg);
+    -o-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+    -webkit-box-shadow: 0 0 10px #888;
+    -moz-box-shadow: 0 0 10px #888;
+    box-shadow: 0 0 10px #888;
+    overflow: visible;
+    white-space: nowrap;
+}
+
 
 /*.supplyListingTable tbody tr:nth-child(even):hover {*/
 /*    background: #e9eeff !important;*/
@@ -305,6 +329,10 @@ table.essTable tbody tr {
 .supplyListingTable tbody tr {
     border-bottom: 0 solid #eee !important;
     cursor: pointer;
+}
+.supplyListingTable tbody tr.warn {
+    background: #ffbcbc;
+    border-bottom: 0 solid #ffbcbc !important;
 }
 table.essTable tbody tr td {
     text-align: left;
