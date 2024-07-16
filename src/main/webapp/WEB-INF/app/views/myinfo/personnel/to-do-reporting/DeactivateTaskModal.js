@@ -37,11 +37,13 @@ const DeactivateTaskModal = ({ isOpen, closeModal, empName, taskTitle, empId, ta
           </p>
         </div>
         <div className="border-t flex justify-center items-center border-gray-300 py-1 mb-1">
-          <button onClick={() => onSubmit(true, empId, taskId)} className={'border shadow-lg w-16 h-6 bg-green-600 px-1 text-white'} type="button">
+          <button onClick={() => onSubmit(true, empId, taskId)}
+                  className={'border shadow-lg w-16 h-6 bg-green-600 px-1 text-white'} type="button">
             Proceed
           </button>
-          <button onClick={closeModal} className={'border shadow-lg bg-red-600 w-16 h-6 ml-2 px-1 text-white'} type="button">
-          Cancel
+          <button onClick={closeModal} className={'border shadow-lg bg-red-600 w-16 h-6 ml-2 px-1 text-white'}
+                  type="button">
+            Cancel
           </button>
         </div>
       </Box>

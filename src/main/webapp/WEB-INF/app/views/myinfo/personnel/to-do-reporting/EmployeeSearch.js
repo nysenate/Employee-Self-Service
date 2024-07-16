@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import styles from './EmployeeSearch.module.css';
 
-const EmployeeSearch = ({params, onChildDataChange}) => {
-  const [searchTerm, setSearchTerm] = useState('');
+export default function EmployeeSearch({ params, onChildDataChange }) {
+  const [ searchTerm, setSearchTerm ] = useState('');
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
@@ -23,4 +23,4 @@ const EmployeeSearch = ({params, onChildDataChange}) => {
   );
 };
 
-export default EmployeeSearch;
+

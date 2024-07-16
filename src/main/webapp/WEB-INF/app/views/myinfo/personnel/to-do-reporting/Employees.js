@@ -63,7 +63,7 @@ export default function Employees({ finalData, allTasks, params, onChildDataChan
     e.preventDefault();
     let value = e.target.dataset.columnKey;
     let { keysArray, sortOrder } = params.sort.reduce((acc, item) => {
-      const [key, order] = item.split(':');
+      const [ key, order ] = item.split(':');
       acc.keysArray.push(key);
       if (!acc.sortOrder) {
         acc.sortOrder = order;
@@ -71,13 +71,13 @@ export default function Employees({ finalData, allTasks, params, onChildDataChan
       return acc;
     }, { keysArray: [], sortOrder: null });
     const key = getKeyFromValue(orderByMap, keysArray);
-    if (key === value){
+    if (key === value) {
       sortOrder = sortOrder === 'ASC' ? 'DESC' : 'ASC';
     }
     const orderBys = orderByMap[value];
     const sortOrders = [];
     for (let i in orderBys) {
-      sortOrders.push(orderBys[i]+':'+sortOrder);
+      sortOrders.push(orderBys[i] + ':' + sortOrder);
     }
     params.sort = sortOrders;
     onChildDataChange(params);

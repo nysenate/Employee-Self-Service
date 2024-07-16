@@ -19,7 +19,7 @@ const PaginationComponent = ({ currentPage, totalPages, onPageChange }) => {
    * @returns {Array<number|string>} - Array of page numbers and ellipsis to be displayed.
    */
   const calculatePageNumbers = (currentPage, totalPages) => {
-    let pageNumbers = [1];
+    let pageNumbers = [ 1 ];
 
     // Add ellipsis if current page is greater than 5 and total pages are greater than 9
     if (currentPage > 5 && totalPages > 9) {

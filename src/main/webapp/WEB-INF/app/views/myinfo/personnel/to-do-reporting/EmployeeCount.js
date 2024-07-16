@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
-export default function EmployeeCount({finalData}) {
+export default function EmployeeCount({ finalData }) {
 
   const count = finalData.total || 0;
 
@@ -11,10 +11,10 @@ export default function EmployeeCount({finalData}) {
     taskActive: true
   };
 
-  // Function to build the full URL with query parameters
   const buildDownloadUrl = () => {
-    const queryString = Object.keys(queryParams)
-      .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(queryParams[key])}`)
+    const queryString = Object.keys(queryParams).map(key =>
+      `${encodeURIComponent(key)}=${encodeURIComponent(queryParams[key])}`
+    )
       .join('&');
 
     return `${apiUrl}?${queryString}`;
@@ -22,7 +22,13 @@ export default function EmployeeCount({finalData}) {
 
   return (
     <div style={{
-      display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", fontFamily: "inherit", boxSizing: "border-box", marginTop: "1em"
+      display: "flex",
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      fontFamily: "inherit",
+      boxSizing: "border-box",
+      marginTop: "1em"
     }}>
     <span className={"text-base font-semibold flex-1 padding-10 text-align-center"}>
     {count} Matching Employees</span>

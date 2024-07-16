@@ -3,7 +3,6 @@ import EmployeeSearch from "app/views/myinfo/personnel/to-do-reporting/EmployeeS
 import styles from './EmployeeSearch.module.css';
 import EmployeeCount from "app/views/myinfo/personnel/to-do-reporting/EmployeeCount";
 import Employees from "app/views/myinfo/personnel/to-do-reporting/Employees";
-import { CircularProgress } from "@mui/material";
 import PaginationComponent from "app/views/myinfo/personnel/to-do-reporting/PaginationComponent";
 import LoadingIndicator from "app/components/LoadingIndicator";
 
@@ -22,29 +21,46 @@ export default function EmployeeDetails({ params, onChildDataChange, finalData, 
     onChildDataChange(data);
   };
 
-  return <div className={styles.card}>
-    <EmployeeSearch params={params} onChildDataChange={handleChildDataChange}/>
-    {loading ? (<div className="flex items-center justify-center">
-        {/*<CircularProgress color="success"/>*/}
-        <LoadingIndicator/>
-      </div>) : finalData ? (<>
-        <EmployeeCount finalData={finalData}/>
-        <br/>
-      {pageCount > 1 && (
-        <PaginationComponent
-          currentPage={currentPage}
-          totalPages={pageCount}
-          onPageChange={handlePageChange}
-        />
-      )}
-        <Employees finalData={finalData} allTasks={allTasks} params={params} onChildDataChange={handleChildDataChange}/>
-      {pageCount > 1 && (
-        <PaginationComponent
-          currentPage={currentPage}
-          totalPages={pageCount}
-          onPageChange={handlePageChange}
-        />
-      )}
-      </>) : (<p> OKOK</p>)}
-  </div>
+  return (
+    <div className={styles.card}>
+
+      <EmployeeSearch
+        params={params}
+        onChildDataChange={handleChildDataChange}/>
+
+      {loading ? (
+        <div className="flex items-center justify-center">
+          <LoadingIndicator/>
+        </div>
+      ) : finalData ? (
+        <>
+          <EmployeeCount finalData={finalData}/>
+          <br/>
+          {pageCount > 1 && (
+            <PaginationComponent
+              currentPage={currentPage}
+              totalPages={pageCount}
+              onPageChange={handlePageChange}
+            />
+          )}
+          <Employees
+            finalData={finalData}
+            allTasks={allTasks}
+            params={params}
+            onChildDataChange={handleChildDataChange}/>
+
+          {pageCount > 1 && (
+            <PaginationComponent
+              currentPage={currentPage}
+              totalPages={pageCount}
+              onPageChange={handlePageChange}
+            />
+          )}
+        </>
+      ) : (
+            <p className={"text-red-600 font-extrabold text-2xl"}>
+              Error Loading the Page
+            </p>
+          )}
+    </div>);
 }

@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import styles from "./EmployeeFilters.module.css";
-import Dropdown from "./Dropdown";
 import RespectiveHead from "app/views/myinfo/personnel/to-do-reporting/RespectiveHead";
 import moment from "moment";
 
-export default function EmployeeFilters({params, onChildDataChange}) {
+export default function EmployeeFilters({ params, onChildDataChange }) {
 
   const [ active, setActive ] = useState(true);
   const [ selectedValue, setSelectedValue ] = useState('');
@@ -19,37 +18,35 @@ export default function EmployeeFilters({params, onChildDataChange}) {
     },
     custom: {
       label: 'Custom Date',
-      getValue: () => params.contSrvFrom // We'll handle custom date separately
+      getValue: () => params.contSrvFrom
     }
   };
 
   const contSrvDateOpts = Object.keys(contSrvDateValues);
 
   const handleSelect = (option) => {
-    setSelectedValue(option); // Update selectedValue state
+    setSelectedValue(option);
     console.log(option);
     if (option === 'custom') {
-      // If 'custom' is selected, show the custom date input
       setSelectedValue('custom');
     } else {
-      // For other options, update params with the selected value and call onChildDataChange
       const value = contSrvDateValues[option].getValue();
-      params.contSrvFrom= value;
+      params.contSrvFrom = value;
       onChildDataChange(params);
     }
   };
 
   const handleCustomDateChange = (value) => {
-    params.contServFrom= value;
+    params.contSrvFrom = value;
     onChildDataChange(params);
   };
 
 
-  const handleActive =()=>{
+  const handleActive = () => {
     console.log(active);
-    if(active){
+    if (active) {
       params.empActive = null;
-    } else{
+    } else {
       params.empActive = !active;
     }
     setActive(!active);
