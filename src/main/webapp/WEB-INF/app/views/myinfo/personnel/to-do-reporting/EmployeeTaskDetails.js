@@ -111,34 +111,22 @@ export default function EmployeeTaskDetails({ person, taskMap }) {
     setDeactivateTaskModalOpen(false);
   };
 
-  const handleDownloadPdf = async (empId, taskId) => {
-    try {
-      const url = `/api/v1/personnel/task/acknowledgment/download?taskId=${taskId}&empId=${empId}`;
+  const buildDownloadUrl = (taskId, empId) => {
+    const apiUrl = '/api/v1/personnel/task/acknowledgment/download';
+    const queryParams = {
+      empId: empId,
+      taskId: taskId,
+    };
+    console.log(queryParams)
+    const queryString = Object.keys(queryParams).map(key =>
+      `${encodeURIComponent(key)}=${encodeURIComponent(queryParams[key])}`
+    )
+      .join('&');
 
-      const init = {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json",
-        },
-        cache: 'no-store',
-      };
-
-      const response = await fetch(url, init);
-      if (!response.ok) {
-        throw new Error('Failed to fetch data');
-      } else {
-        // Reload the page after API call is successful
-        window.location.reload();
-      }
-      const data = await response;
-      console.log(data);// Set received data after successful fetch
-    } catch (error) {
-      console.error('Error fetching task details:', error);
-    } finally {
-      console.log("Done")
-    }
-  }
+    const data = `${apiUrl}?${queryString}`;
+    console.log(data);
+    return data;
+  };
 
   return (
     <div>
@@ -151,12 +139,14 @@ export default function EmployeeTaskDetails({ person, taskMap }) {
             {person.inCompleteTasks.map((task) => (
               <React.Fragment key={task.taskId}>
                 <li className={'mb-1.5 mt-1.5'}>{taskMap.get(task.taskId).title}</li>
-                <button className={'border border-black shadow rounded-sm bg-yellow-500 px-1 text-black-900'}
-                        onClick={() => openManualOverrideModal(person.name, person.empId, taskMap.get(task.taskId).title, task.taskId)}>Manual
+                <button
+                  className={'border border-black shadow text-orange-700 rounded-sm bg-gray-75 px-1 text-black-900'}
+                  onClick={() => openManualOverrideModal(person.name, person.empId, taskMap.get(task.taskId).title, task.taskId)}>Manual
                   Override
                 </button>
-                <button className={'border border-black rounded-sm shadow bg-red-300 ml-2 px-1 mb-1 text-black-900'}
-                        onClick={() => openDeactivateTaskModal(person.name, person.empId, taskMap.get(task.taskId).title, task.taskId)}>Deactivate
+                <button
+                  className={'border border-black rounded-sm shadow ml-2 text-red-600 bg-gray-75 px-1 mb-1 text-black-900'}
+                  onClick={() => openDeactivateTaskModal(person.name, person.empId, taskMap.get(task.taskId).title, task.taskId)}>Deactivate
                   Task
                 </button>
               </React.Fragment>
@@ -171,11 +161,17 @@ export default function EmployeeTaskDetails({ person, taskMap }) {
             {person.completedTasks.map((task) => (
               <React.Fragment key={task.taskId}>
                 <li className={'mb-1.5 mt-1.5'}>{taskMap.get(task.taskId).title}</li>
-                <button className={'border border-black rounded-sm shadow bg-green-500 px-1 text-black-900'}
-                        onClick={() => handleDownloadPdf(person.empId, task.taskId)}>Download Signed pdf
+                <button
+                  className={'border border-black rounded-sm shadow bg-gray-100 text-teal-600 px-1 text-black-900'}>
+                  <a href={buildDownloadUrl(task.taskId, person.empId)}
+                     target="_blank"
+                     rel="noopener noreferrer"
+                  >
+                    Download Signed pdf
+                  </a>
                 </button>
                 <span
-                  className={"text-gray-400 ml-3"}>completed on {task.timestamp !== null ? convertTimestampToLocalDateString(task.timestamp) : task.contSrvDate}</span>
+                  className={"text-gray-400 ml-3"}>completed on {convertTimestampToLocalDateString(task.timestamp)}</span>
               </React.Fragment>
             ))}
           </ul>

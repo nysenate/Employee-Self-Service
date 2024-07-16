@@ -2,11 +2,19 @@ import React, { useEffect, useState } from "react";
 import Hero from "app/components/Hero";
 import TrainingFilters from "app/views/myinfo/personnel/to-do-reporting/TrainingFilters";
 import EmployeeDetails from "app/views/myinfo/personnel/to-do-reporting/EmployeeDetails";
-import { load } from "../../../../../../bower_components/sockjs-client/dist/sockjs";
 
+/**
+ * This is the first component where TO-DO-Reporting starts
+ * @returns {Element}
+ * @constructor
+ */
 export default function ToDoReporting() {
-  const [allTasks, setAllTasks] = useState([]);
-  const [params, setParams] = useState({
+  const [ allTasks, setAllTasks ] = useState([]);
+
+  /**
+   * This is params, which is a state variable, used to interact with Personal Task Assignment Table.
+   */
+  const [ params, setParams ] = useState({
     name: "",
     empActive: true,
     taskId: [],
@@ -15,12 +23,12 @@ export default function ToDoReporting() {
     completed: null,
     totalCompletion: null,
     respCtrHead: null,
-    limit:10,
-    offset:1,
-    sort: ["NAME:ASC", "OFFICE:ASC"]
+    limit: 10,
+    offset: 1,
+    sort: [ "NAME:ASC", "OFFICE:ASC" ]
   });
-  const [receivedData, setReceivedData] = useState(null); // Initialize with null
-  const [loading, setLoading] = useState(false);
+  const [ receivedData, setReceivedData ] = useState(null);
+  const [ loading, setLoading ] = useState(false);
 
   useEffect(() => {
     const fetchEmployeeResults = async () => {
@@ -40,7 +48,7 @@ export default function ToDoReporting() {
           sortParams = sortCriteria.map(criteria => `sort=${criteria}`).join('&');
         }
         if (sortParams !== "") {
-          string = (string+"&"+sortParams);
+          string = (string + "&" + sortParams);
         }
 
         const init = {
@@ -66,12 +74,12 @@ export default function ToDoReporting() {
     };
 
     fetchEmployeeResults();
-  }, [params]); // Run useEffect whenever params change
+  }, [ params ]);
 
   const handleDataChange = (data) => {
     setParams((prev) => ({
       ...prev,
-      ...data // Update params with new data
+      ...data
     }));
     console.log("Received Data", data);
   };
@@ -92,8 +100,17 @@ export default function ToDoReporting() {
         marginTop: "20px",
         overflow: "auto",
       }}>
-        <TrainingFilters params={params} onChildDataChange={handleDataChange} handleAllTasks = {handleAllTasks}/>
-        <EmployeeDetails params={params} onChildDataChange={handleDataChange} finalData = {receivedData} loading={loading} allTasks = {allTasks}/>
+        <TrainingFilters
+          params={params}
+          onChildDataChange={handleDataChange}
+          handleAllTasks={handleAllTasks}/>
+
+        <EmployeeDetails
+          params={params}
+          onChildDataChange={handleDataChange}
+          finalData={receivedData}
+          loading={loading}
+          allTasks={allTasks}/>
       </div>
     </div>
   );

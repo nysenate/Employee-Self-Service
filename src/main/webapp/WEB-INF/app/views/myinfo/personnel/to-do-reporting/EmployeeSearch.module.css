@@ -1,4 +1,4 @@
-.inputCheck{
+.inputCheck {
     box-sizing: border-box;
     margin-right: .2rem;
     line-height: normal;
@@ -12,11 +12,13 @@
     background: #fafafa;
     padding: .3em;
 }
-.card{
+
+.card {
     flex: 0 0 60%;
     margin-top: 15px;
 }
-.labelCheck{
+
+.labelCheck {
     display: block;
     color: #111;
     font-weight: 300;

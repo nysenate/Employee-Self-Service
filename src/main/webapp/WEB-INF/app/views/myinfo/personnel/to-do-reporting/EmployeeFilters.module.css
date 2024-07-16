@@ -1,4 +1,4 @@
-.inputCheck{
+.inputCheck {
     box-sizing: border-box;
     padding: 0;
     margin-right: .2rem;
@@ -8,7 +8,8 @@
     position: relative;
     top: -4px;
 }
-.labelCheck{
+
+.labelCheck {
     display: block;
     color: #111;
     font-weight: 300;
@@ -19,11 +20,11 @@
     word-wrap: break-word;
 }
 
-.filterBlock{
+.filterBlock {
     margin-top: 10px;
 }
 
-.labelCheck1{
+.labelCheck1 {
     margin-top: 10px;
     display: block;
     color: #111;
@@ -35,7 +36,7 @@
     top: 10px;
 }
 
-.date{
+.date {
     display: block;
     text-transform: none;
     font-family: inherit;
@@ -48,7 +49,7 @@
     border: 1px solid #999;
 }
 
-.select{
+.select {
     display: block;
     text-transform: none;
     font-family: inherit;

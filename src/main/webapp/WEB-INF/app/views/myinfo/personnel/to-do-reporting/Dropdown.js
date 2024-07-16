@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './Dropdown.module.css';
 
-function Dropdown ({ options, selectedValue, onSelectedValueChange }) {
+function Dropdown({ options, selectedValue, onSelectedValueChange }) {
   const keys = Object.keys(options);
   return (
     <select
@@ -16,6 +16,6 @@ function Dropdown ({ options, selectedValue, onSelectedValueChange }) {
       ))}
     </select>
   );
-};
+}
 
 export default Dropdown;
