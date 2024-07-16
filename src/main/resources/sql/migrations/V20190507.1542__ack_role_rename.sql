@@ -2,6 +2,7 @@
 --- Add compliance manager role, change ack manager to compliance manager.
 
 ALTER TYPE ess.ess_role ADD VALUE 'PERSONNEL_COMPLIANCE_MANAGER';
+COMMIT;
 
 UPDATE ess.user_roles
 SET role = 'PERSONNEL_COMPLIANCE_MANAGER'::ess.ess_role
