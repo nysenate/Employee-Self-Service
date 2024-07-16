@@ -62,6 +62,12 @@ export function formatDate(dateString) {
     return new Date(dateString).toLocaleString('en-US', options);
 }
 
+/**
+ * Format a date string to a readable format with a two-digit year.
+ *
+ * @param {String} dateString The date string to format.
+ * @returns {String} The formatted date string.
+ */
 export function formatDateYY(dateString) {
     const options = {
         year: '2-digit',
@@ -285,9 +291,14 @@ export const fetchEmployeeInformation = async (empId) => {
     return fetchApiJson(`/employees?detail=true&empId=${empId}`);
 };
 
-
 // POSTS:::: //
 
+/**
+ * Save Requisition Post.
+ *
+ * @param {Object} editedRequisition The edited requisition object.
+ * @returns {Promise<void>} A promise that resolves when the POST call is complete.
+ */
 export const saveRequisitionPost = async (editedRequisition) => {
     const payload = editedRequisition;
     try {
@@ -297,6 +308,12 @@ export const saveRequisitionPost = async (editedRequisition) => {
     }
 }
 
+/**
+ * Process Requisition Post.
+ *
+ * @param {Object} editedRequisition The edited requisition object.
+ * @returns {Promise<void>} A promise that resolves when the POST call is complete.
+ */
 export const processRequisitionPost = async (editedRequisition) => {
     const payload = editedRequisition;
     try {
@@ -307,7 +324,12 @@ export const processRequisitionPost = async (editedRequisition) => {
     }
 }
 
-
+/**
+ * Reject Requisition Post.
+ *
+ * @param {Object} editedRequisition The edited requisition object.
+ * @returns {Promise<void>} A promise that resolves when the POST call is complete.
+ */
 export const rejectRequisitionPost = async (editedRequisition) => {
     const payload = editedRequisition;
     try {
@@ -317,6 +339,12 @@ export const rejectRequisitionPost = async (editedRequisition) => {
     }
 }
 
+/**
+ * Undo Requisition Post.
+ *
+ * @param {Object} editedRequisition The edited requisition object.
+ * @returns {Promise<void>} A promise that resolves when the POST call is complete.
+ */
 export const undoRequisitionPost = async (editedRequisition) => {
     const payload = editedRequisition;
     try {

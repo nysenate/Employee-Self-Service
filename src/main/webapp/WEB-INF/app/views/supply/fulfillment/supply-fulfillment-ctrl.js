@@ -1,6 +1,12 @@
 // supply-fulfillment-ctrl.js
 import { fetchApiJson } from "app/utils/fetchJson";
 
+/**
+ * Fetch requisitions based on provided parameters.
+ *
+ * @param {Object} params The parameters for the fetch call.
+ * @returns {Promise<Object>} The result of the fetch call.
+ */
 const fetchRequisitions = async (params) => {
     const queryParams = new URLSearchParams();
 
@@ -23,18 +29,39 @@ const fetchRequisitions = async (params) => {
     }
 };
 
+/**
+ * Fetch supply employees.
+ *
+ * @returns {Promise<Object>} The result of the fetch call.
+ */
 export const fetchSupplyEmployees = async () => {
     return fetchApiJson('/supply/employees', { method: 'GET' });
 };
 
+/**
+ * Fetch supply items.
+ *
+ * @returns {Promise<Object>} The result of the fetch call.
+ */
 export const fetchSupplyItems = async () => {
     return fetchApiJson('/supply/items', { method: 'GET' });
 };
 
+/**
+ * Fetch supply destinations for a given employee ID.
+ *
+ * @param {String} empId The employee ID.
+ * @returns {Promise<Object>} The result of the fetch call.
+ */
 export const fetchSupplyDestinations = async (empId) => {
     return fetchApiJson(`/supply/destinations/${empId}`);
 };
 
+/**
+ * Initialize most requisitions.
+ *
+ * @returns {Promise<Array>} The result of the fetch call.
+ */
 export const initMostReqs = async () => {
     const params = {
         status: ['PENDING', 'PROCESSING', 'COMPLETED', 'APPROVED'],
@@ -47,6 +74,11 @@ export const initMostReqs = async () => {
     return data.result;
 };
 
+/**
+ * Initialize rejected requisitions.
+ *
+ * @returns {Promise<Array>} The result of the fetch call.
+ */
 export const initRejectedReqs = async () => {
     const today = getCurrentDateTime();
     const params = {
@@ -60,6 +92,11 @@ export const initRejectedReqs = async () => {
     return data.result;
 };
 
+/**
+ * Get the current date and time in the specified format.
+ *
+ * @returns {String} The current date and time.
+ */
 const getCurrentDateTime = () => {
     const now = new Date();
     const year = now.getFullYear();
@@ -69,10 +106,22 @@ const getCurrentDateTime = () => {
     return formattedDate;
 };
 
+/**
+ * Get the distinct item quantity in a requisition.
+ *
+ * @param {Object} requisition The requisition object.
+ * @returns {Number} The count of distinct items.
+ */
 export const distinctItemQuantity = (requisition) => {
     return requisition.lineItems.length;
 };
 
+/**
+ * Calculate highlighting for a requisition.
+ *
+ * @param {Object} requisition The requisition object.
+ * @returns {Object} The highlighting information.
+ */
 export const calculateHighlighting = (requisition) => {
     return {
         warn: containsItemOverOrderMax(requisition) || isOverPerMonthMax(requisition) || containsSpecialItem(requisition),
@@ -80,10 +129,23 @@ export const calculateHighlighting = (requisition) => {
     };
 };
 
+/**
+ * Check if the requisition contains any item over the order max.
+ *
+ * @param {Object} requisition The requisition object.
+ * @returns {Boolean} Whether the requisition contains an item over the order max.
+ */
 const containsItemOverOrderMax = (requisition) => {
     // Define the logic here
 };
 
+/**
+ * Check if the requisition is over the monthly max.
+ *
+ * @param {Object} requisition The requisition object.
+ * @param {Object} locationStatistics The location statistics object.
+ * @returns {Boolean} Whether the requisition is over the monthly max.
+ */
 const isOverPerMonthMax = (requisition, locationStatistics) => {
     if (!locationStatistics) {
         return false;
@@ -98,16 +160,30 @@ const isOverPerMonthMax = (requisition, locationStatistics) => {
     return isOver;
 };
 
+/**
+ * Check if the requisition contains any special item.
+ *
+ * @param {Object} requisition The requisition object.
+ * @returns {Boolean} Whether the requisition contains a special item.
+ */
 const containsSpecialItem = (requisition) => {
     // Define the logic here
 };
 
+/**
+ * Set the requisition search parameter in the URL.
+ *
+ * @param {String} requisitionId The requisition ID.
+ */
 export const setRequisitionSearchParam = (requisitionId) => {
     const searchParams = new URLSearchParams(window.location.search);
     searchParams.set("requisitionId", requisitionId);
     window.history.replaceState(null, '', '?' + searchParams.toString());
 };
 
+/**
+ * Remove the requisition search parameter from the URL.
+ */
 export const removeRequisitionSearchParam = () => {
     const searchParams = new URLSearchParams(window.location.search);
     searchParams.delete("requisitionId");
@@ -116,6 +192,12 @@ export const removeRequisitionSearchParam = () => {
     window.history.replaceState(null, '', newUrl);
 };
 
+/**
+ * Display the requisition with the given ID.
+ *
+ * @param {Object} data The data object containing requisitions.
+ * @param {String} requisitionId The requisition ID.
+ */
 function displayRequisitionWithId(data, requisitionId) {
     if (requisitionId != null) {
         var requisition = findRequisitionById(data, requisitionId);
@@ -123,6 +205,13 @@ function displayRequisitionWithId(data, requisitionId) {
     }
 };
 
+/**
+ * Find a requisition by its ID.
+ *
+ * @param {Object} data The data object containing requisitions.
+ * @param {String} requisitionId The requisition ID.
+ * @returns {Object} The found requisition object.
+ */
 function findRequisitionById(data, requisitionId) {
     return data.reqs.map[requisitionId];
 };
