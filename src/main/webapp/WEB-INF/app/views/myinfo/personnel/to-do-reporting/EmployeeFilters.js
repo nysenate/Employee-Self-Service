@@ -19,7 +19,7 @@ export default function EmployeeFilters({params, onChildDataChange}) {
     },
     custom: {
       label: 'Custom Date',
-      getValue: () => params.contServFrom // We'll handle custom date separately
+      getValue: () => params.contSrvFrom // We'll handle custom date separately
     }
   };
 
@@ -34,7 +34,7 @@ export default function EmployeeFilters({params, onChildDataChange}) {
     } else {
       // For other options, update params with the selected value and call onChildDataChange
       const value = contSrvDateValues[option].getValue();
-      params.contServFrom= value;
+      params.contSrvFrom= value;
       onChildDataChange(params);
     }
   };
@@ -46,6 +46,7 @@ export default function EmployeeFilters({params, onChildDataChange}) {
 
 
   const handleActive =()=>{
+    console.log(active);
     if(active){
       params.empActive = null;
     } else{
@@ -55,11 +56,22 @@ export default function EmployeeFilters({params, onChildDataChange}) {
     onChildDataChange(params);
   }
 
+  const handleRemoveAllChecks = (e) => {
+    e.preventDefault();
+    console.log("Clear Selected Offices");
+    params.taskId.length = 0;
+    onChildDataChange(params);
+  };
+
   return (
     <div className={styles.filterBlock}>
       <label className={styles.labelCheck}>
         <input className={styles.inputCheck} type="checkbox" onChange={handleActive}/>
         Include Inactive Employees
+      </label>
+      <br/>
+      <label className={styles.labelCheck}>
+        Continuous Service Start Date
       </label>
       <select className={styles.select} onChange={(e) => handleSelect(e.target.value)}>
         {contSrvDateOpts.map((option) => (
@@ -72,16 +84,15 @@ export default function EmployeeFilters({params, onChildDataChange}) {
         <div>
           <input className={styles.date}
                  type="date"
-                 onChange={(e)=>handleCustomDateChange(e.target.value)}/>
+                 onChange={(e) => handleCustomDateChange(e.target.value)}/>
         </div>
-        )}
-        <label className={styles.labelCheck1}>Offices</label>
-  {/*<a className={styles.atag} href="#" onClick={handleRemoveAllChecks}>*/
-  }
-  <a> Clear Selected Offices
-  </a>
-  <RespectiveHead/>
-</div>
-)
-  ;
+      )}
+      <label className={styles.labelCheck1}>Offices</label>
+      <a className={"text-teal-600 font-normal"} href="#" onClick={handleRemoveAllChecks}>
+        Clear selected offices
+      </a>
+      <RespectiveHead/>
+    </div>
+  )
+    ;
 }
