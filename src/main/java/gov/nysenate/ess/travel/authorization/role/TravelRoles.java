@@ -11,8 +11,8 @@ import java.util.List;
  */
 public class TravelRoles {
 
-    private ImmutableList<TravelRole> roles;
-    private ImmutableList<TravelRole> delegatedRoles;
+    private final ImmutableList<TravelRole> roles;
+    private final ImmutableList<TravelRole> delegatedRoles;
 
     public TravelRoles(List<TravelRole> roles, List<TravelRole> delegateRoles) {
         this.roles = ImmutableList.copyOf(roles);
@@ -21,6 +21,10 @@ public class TravelRoles {
 
     /**
      * All TravelRole's assigned to an employee
+     *
+     * Note: may return duplicate TravelRole,
+     * i.e. if emp has a primary role of DEPARTMENT_HEAD and is also delegated a DEPARTMENT_HEAD role,
+     * this will return 2 instances of DEPARTMENT_HEAD.
      * @return
      */
     public ImmutableList<TravelRole> all() {
@@ -44,11 +48,11 @@ public class TravelRoles {
      */
     public TravelRole apex() {
         TravelRole apex = TravelRole.NONE;
-        if (all().contains(TravelRole.SUPERVISOR)) {
-            apex = TravelRole.SUPERVISOR;
+        if (all().contains(TravelRole.DEPARTMENT_HEAD)) {
+            apex = TravelRole.DEPARTMENT_HEAD;
         }
-        if (all().contains(TravelRole.DEPUTY_EXECUTIVE_ASSISTANT)) {
-            apex = TravelRole.DEPUTY_EXECUTIVE_ASSISTANT;
+        if (all().contains(TravelRole.TRAVEL_ADMIN)) {
+            apex = TravelRole.TRAVEL_ADMIN;
         }
         if (all().contains(TravelRole.SECRETARY_OF_THE_SENATE)) {
             apex = TravelRole.SECRETARY_OF_THE_SENATE;

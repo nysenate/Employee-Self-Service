@@ -22,13 +22,13 @@ public class SosReviewerStrategyTest {
     @Test
     public void givenNullLastReviewer_returnDea() {
         TravelRole actual = strategy.after(null);
-        TravelRole expected = TravelRole.DEPUTY_EXECUTIVE_ASSISTANT;
+        TravelRole expected = TravelRole.TRAVEL_ADMIN;
         assertEquals(expected, actual);
     }
 
     @Test
     public void givenDeaLastReviewer_returnMaj() {
-        TravelRole actual = strategy.after(TravelRole.DEPUTY_EXECUTIVE_ASSISTANT);
+        TravelRole actual = strategy.after(TravelRole.TRAVEL_ADMIN);
         TravelRole expected = TravelRole.MAJORITY_LEADER;
         assertEquals(expected, actual);
     }
@@ -49,7 +49,7 @@ public class SosReviewerStrategyTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void givenSupLastReviewer_throwException() {
-        strategy.after(TravelRole.SUPERVISOR);
+        strategy.after(TravelRole.DEPARTMENT_HEAD);
     }
 
     @Test(expected = IllegalArgumentException.class)

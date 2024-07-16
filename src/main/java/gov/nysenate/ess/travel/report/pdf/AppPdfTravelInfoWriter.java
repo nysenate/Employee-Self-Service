@@ -1,9 +1,9 @@
 package gov.nysenate.ess.travel.report.pdf;
 
 import com.google.common.base.Preconditions;
-import gov.nysenate.ess.travel.application.TravelApplication;
-import gov.nysenate.ess.travel.application.route.destination.Destination;
-import org.apache.commons.text.WordUtils;
+import gov.nysenate.ess.travel.request.app.TravelApplication;
+import gov.nysenate.ess.travel.request.route.destination.Destination;
+import org.apache.commons.lang3.text.WordUtils;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 
 import java.io.IOException;
@@ -33,37 +33,37 @@ public class AppPdfTravelInfoWriter implements AppPdfWriter {
 
         // Departure
         drawText(column1LabelX, currentY, config.fontBold, config.fontSize, "Departure:");
-        drawText(column1DataX, currentY, config.font, config.fontSize, app.activeAmendment().route().origin().getFormattedAddressWithCounty());
+        drawText(column1DataX, currentY, config.font, config.fontSize, app.getRoute().origin().getFormattedAddressWithCounty());
 
         // Destinations
         currentY -= leading;
         drawText(column1LabelX, currentY, config.fontBold, config.fontSize, "Destination:");
         // Each destination goes on its own line
-        for (Destination destination : app.activeAmendment().route().destinations()) {
+        for (Destination destination : app.getRoute().destinations()) {
             drawText(column1DataX, currentY, config.font, config.fontSize, destination.getAddress().getFormattedAddressWithCounty());
             currentY -= leading;
         }
 
         // Dates of Travel
-        boolean singleDay = app.activeAmendment().startDate().equals(app.activeAmendment().endDate());
+        boolean singleDay = app.startDate().equals(app.endDate());
         drawText(column1LabelX, currentY, config.fontBold, config.fontSize, "Dates of Travel:");
         // If a single day just write that day, if multiple write a range. i.e. "11/4/19 - 11/6/19"
         if (singleDay) {
-            drawText(column1DataX, currentY, config.font, config.fontSize, app.activeAmendment().startDate().format(config.dateFormat));
+            drawText(column1DataX, currentY, config.font, config.fontSize, app.startDate().format(config.dateFormat));
         } else {
-            drawText(column1DataX, currentY, config.font, config.fontSize, app.activeAmendment().startDate().format(config.dateFormat) + " - " + app.activeAmendment().endDate().format(config.dateFormat));
+            drawText(column1DataX, currentY, config.font, config.fontSize, app.startDate().format(config.dateFormat) + " - " + app.endDate().format(config.dateFormat));
         }
 
         // Purpose
         currentY -= leading;
-        String purposeText = app.activeAmendment().purposeOfTravel().eventType().displayName()
-                + ": " + app.activeAmendment().purposeOfTravel().eventName();
+        String purposeText = app.getPurposeOfTravel().eventType().displayName()
+                + ": " + app.getPurposeOfTravel().eventName();
         drawText(column1LabelX, currentY, config.fontBold, config.fontSize, "Purpose:");
         drawText(column1DataX, currentY, config.font, config.fontSize, purposeText);
 
         // Additional purpose
-        if (!app.activeAmendment().purposeOfTravel().additionalPurpose().isEmpty()) {
-            String text = app.activeAmendment().purposeOfTravel().additionalPurpose();
+        if (!app.getPurposeOfTravel().additionalPurpose().isEmpty()) {
+            String text = app.getPurposeOfTravel().additionalPurpose();
             for (String line : WordUtils.wrap(text, 80).split("\\n")) {
                 currentY -= leading;
                 drawText(column1DataX, currentY, config.font, config.fontSize, line);

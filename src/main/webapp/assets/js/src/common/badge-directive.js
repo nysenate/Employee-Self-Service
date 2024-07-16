@@ -8,7 +8,7 @@ essApp.directive('badge', ['$rootScope', 'badgeService', function ($rootScope, b
         restrict: 'AE',
         scope: {
             badgeId: '@',
-            hideEmpty: '@',
+            hideEmpty: '=',
             color: '@'
         },
         template: '<div class="badge" ng-class="colorClass()" ng-if="!hideEmpty || badgeValue">{{badgeValue}}</div>',

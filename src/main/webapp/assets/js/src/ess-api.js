@@ -308,17 +308,41 @@ essApi.factory('SupplyLocationStatisticsApi', ['$resource', 'appProps', function
 
 /** --- Travel API --- */
 
-essApi.factory('TravelApplicationInitApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/travel/application/uncompleted/init')
-}]);
-
 essApi.factory('TravelApplicationApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/travel/application')
 }]);
 
-essApi.factory('UnsubmittedAppApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/travel/unsubmitted', {}, {'update': {method: 'PATCH'}})
+essApi.factory('TravelDraftsApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/travel/drafts', {}, {'create': {method: 'PUT'}, 'update': {method: 'PATCH'}})
 }]);
+
+essApi.factory('TravelDraftsSubmitApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/travel/drafts/submit')
+}]);
+
+essApi.factory('TravelDraftByIdApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/travel/drafts/:id', {id: '@id'}, {'delete': {method: 'DELETE'}})
+}]);
+
+essApi.factory('TravelEventTypesApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/travel/event-types')
+}]);
+
+essApi.factory('AllowedTravelersApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/travel/allowed-travelers')
+}]);
+
+essApi.factory('TravelAppEditApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/travel/application/edit/:id', {id: '@id'}, {'update': {method: 'PATCH'}})
+}])
+
+essApi.factory('TravelAppCancelApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/travel/application/edit/:id/cancel', {id: '@id'})
+}])
+
+essApi.factory('TravelAppEditResubmitApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/travel/application/edit/resubmit/:id', {id: '@id'}, {'update': {method: 'PATCH'}})
+}])
 
 essApi.factory('TravelApplicationByIdApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/travel/application/:id', {id: '@id'})
@@ -326,15 +350,6 @@ essApi.factory('TravelApplicationByIdApi', ['$resource', 'appProps', function ($
 
 essApi.factory('TravelApplicationsForTravelerApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/travel/applications')
-}]);
-
-essApi.factory('TravelRouteCalcApi', ['$resource', 'appProps', function($resource, appProps) {
-    return $resource(appProps.apiPath + '/travel/route')
-}]);
-
-essApi.factory('TravelAttachmentDelete', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/travel/application/uncompleted/:id/attachment/:attachmentId',
-        {id: '@id', attachmentId: '@attachmentId'})
 }]);
 
 essApi.factory('TravelUserConfigApi', ['$resource', 'appProps', function ($resource, appProps) {

@@ -16,6 +16,10 @@ public class AllowedTravelersService {
     @Autowired private SqlUserOrderableRchDao userOrderableRchDao;
     @Autowired private EmployeeInfoService employeeInfoService;
 
+    public Set<Employee> forEmpId(int empId) {
+        return forEmp(employeeInfoService.getEmployee(empId));
+    }
+
     /**
      * Returns all employees the given emp is allowed to place travel applications for.
      *

@@ -3,9 +3,10 @@ var essTravel = angular.module('essTravel');
 /**
  * This controller contains function shared by app edit form directives such as purpose-edit-form-directive.js
  */
-essTravel.controller('AppEditCtrl', ['$scope', '$timeout', '$q', 'modals', 'AddressCountyService', 'TravelModeOfTransportationApi', appEditCtrl]);
+essTravel.controller('AppEditCtrl', ['$scope', '$timeout', '$q', 'modals', 'AddressCountyService',
+                                     'TravelModeOfTransportationApi', 'TravelDraftsApi', appEditCtrl]);
 
-function appEditCtrl($scope, $timeout, $q, modals, countyService, motApi) {
+function appEditCtrl($scope, $timeout, $q, modals, countyService, motApi, draftsApi) {
 
     this.$onInit = function () {
         motApi.get({}, function (response) {
@@ -15,6 +16,20 @@ function appEditCtrl($scope, $timeout, $q, modals, countyService, motApi) {
             });
         }, $scope.handleErrorResponse);
     };
+
+    $scope.saveDraft = function (draft) {
+        var deferred = $q.defer();
+        draftsApi.save({}, draft).$promise
+            .then(function (res) {
+                modals.open("draft-save-success")
+                deferred.resolve(res.result)
+            })
+            .catch(function (error) {
+                modals.open("draft-save-error")
+                deferred.reject(error)
+            })
+        return deferred.promise;
+    }
 
     $scope.openLoadingModal = function () {
         modals.open('loading');
@@ -106,6 +121,16 @@ function appEditCtrl($scope, $timeout, $q, modals, countyService, motApi) {
         });
 
     };
+
+    $scope.handleDataProviderError = function () {
+        modals.open("external-api-error")
+            .then(function () {
+                reload();
+            })
+            .catch(function () {
+                locationService.go("/logout", true);
+            });
+    }
 }
 
 function Leg () {
@@ -119,15 +144,13 @@ function Destination () {
 }
 
 function Address () {
-    this.addr1 = "";
-    this.addr2 = "";
-    this.city = "";
-    this.county = "";
-    this.state = "";
-    this.zip4 = "";
-    this.zip5 = "";
-    this.country = "";
     this.placeId = "";
     this.name = "";
+    this.addr1 = "";
+    this.city = "";
+    this.zip5 = "";
+    this.county = "";
+    this.state = "";
+    this.country = "";
     this.formattedAddress = "";
 }

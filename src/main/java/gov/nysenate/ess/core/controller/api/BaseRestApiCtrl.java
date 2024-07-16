@@ -9,7 +9,7 @@ import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.personnel.EmployeeNotFoundEx;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.util.LimitOffset;
-import gov.nysenate.ess.travel.application.TravelApplication;
+import gov.nysenate.ess.travel.request.app.TravelApplication;
 import gov.nysenate.ess.travel.authorization.permission.TravelPermissionBuilder;
 import gov.nysenate.ess.travel.authorization.permission.TravelPermissionObject;
 import org.apache.commons.lang3.BooleanUtils;
@@ -97,7 +97,7 @@ public class BaseRestApiCtrl
     protected void checkTravelAppPermission(TravelApplication app, RequestMethod method) {
         TravelPermissionBuilder submitterPerm = new TravelPermissionBuilder()
                 .forObject(TravelPermissionObject.TRAVEL_APPLICATION)
-                .forEmpId(app.getSubmittedBy().getEmployeeId())
+                .forEmpId(app.getCreatedBy().getEmployeeId())
                 .forAction(method);
 
         TravelPermissionBuilder travelerPerm = new TravelPermissionBuilder()

@@ -1,5 +1,8 @@
 package gov.nysenate.ess.core.model.auth;
 
+/**
+ * Roles managed in the ess.user_roles table.
+ */
 public enum EssRole {
     /* General */
     ADMIN,
@@ -16,4 +19,7 @@ public enum EssRole {
     TIME_MANAGER,
     /* Travel */
     MAJORITY_LEADER,
+    TRAVEL_ADMIN,
+    SECRETARY_OF_SENATE,
+    ;
 }

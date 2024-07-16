@@ -22,13 +22,13 @@ public class SenatorReviewerStrategyTest {
     @Test
     public void givenNullLastReviewer_returnDea() {
         TravelRole actual = strategy.after(null);
-        TravelRole expected = TravelRole.DEPUTY_EXECUTIVE_ASSISTANT;
+        TravelRole expected = TravelRole.TRAVEL_ADMIN;
         assertEquals(expected, actual);
     }
 
     @Test
     public void givenDeaLastReviewer_returnSos() {
-        TravelRole actual = strategy.after(TravelRole.DEPUTY_EXECUTIVE_ASSISTANT);
+        TravelRole actual = strategy.after(TravelRole.TRAVEL_ADMIN);
         TravelRole expected = TravelRole.SECRETARY_OF_THE_SENATE;
         assertEquals(expected, actual);
     }
@@ -56,7 +56,7 @@ public class SenatorReviewerStrategyTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void givenSupLastReviewer_throwException() {
-        strategy.after(TravelRole.SUPERVISOR);
+        strategy.after(TravelRole.DEPARTMENT_HEAD);
     }
 
 }

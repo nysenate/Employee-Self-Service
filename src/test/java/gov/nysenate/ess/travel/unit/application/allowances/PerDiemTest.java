@@ -1,7 +1,7 @@
 package gov.nysenate.ess.travel.unit.application.allowances;
 
 import gov.nysenate.ess.core.annotation.UnitTest;
-import gov.nysenate.ess.travel.application.allowances.PerDiem;
+import gov.nysenate.ess.travel.request.allowances.PerDiem;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 

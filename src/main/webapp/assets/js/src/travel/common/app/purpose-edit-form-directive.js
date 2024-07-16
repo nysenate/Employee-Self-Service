@@ -1,72 +1,110 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.directive('essPurposeEditForm', ['appProps', 'TravelAttachmentDelete', purposeEditLink]);
+essTravel.directive('essPurposeEditForm', ['$http', 'appProps', 'TravelEventTypesApi',
+                                           'AllowedTravelersApi', 'modals', purposeEditLink]);
 
-function purposeEditLink(appProps, attachmentDeleteApi) {
+function purposeEditLink($http, appProps, eventTypesApi, allowedTravelersApi, modals) {
     return {
         restrict: 'E',
         scope: {
-            app: '<',               // The application being edited.
-            title: '@',             // The title
-            positiveCallback: '&',  // Callback function called when continuing. Takes a travel app param named 'app'.
-            negativeCallback: '&',  // Callback function called when canceling. Takes a travel app param named 'app'.
-            negativeLabel: '@'      // Text to label the negative button. Defaults to 'Cancel'
+            data: '<',               // The TravelAppEditDto being edited.
+            positiveCallback: '&',  // Callback function called when continuing. Takes a draft param named 'draft'.
+            negativeCallback: '&',  // Callback function called when canceling. Takes a draft param named 'draft'.
+            negativeLabel: '@',     // Text to label the negative button. Defaults to 'Cancel'
         },
         controller: 'AppEditCtrl',
         templateUrl: appProps.ctxPath + '/template/travel/common/app/purpose-edit-form-directive',
         link: function (scope, elem, attrs) {
 
-            scope.dirtyApp = angular.copy(scope.app);
+            scope.mode = scope.data.mode;
+            scope.isLoading = true;
+            scope.dirtyDraft = angular.copy(scope.data.draft);
+            scope.eventTypes = [];
+            scope.allowedTravelers = [];
+
+            (function () {
+                // Init event types and allowed travelers.
+                var eventTypesPromise = eventTypesApi.get().$promise.then(function (res) {
+                    scope.eventTypes = res.result;
+                });
+                var allowedTravelersPromise = allowedTravelersApi.get().$promise.then(function (res) {
+                    scope.allowedTravelers = res.result;
+                });
+
+                Promise.all([eventTypesPromise, allowedTravelersPromise]).then(function () {
+                    scope.isLoading = false;
+                    scope.$apply();
+                });
+            })();
 
             scope.next = function () {
                 scope.setInvalidFormElementsTouched(scope.purpose.form);
                 if (scope.purpose.form.$valid) {
-                    scope.positiveCallback({app: scope.dirtyApp});
+                    scope.positiveCallback({draft: scope.dirtyDraft});
                 }
             };
 
+            scope.save = function () {
+                scope.setInvalidFormElementsTouched(scope.purpose.form);
+                if (scope.purpose.form.$valid) {
+                    scope.saveDraft(scope.dirtyDraft)
+                        .then(function(draft) {
+                            scope.dirtyDraft = draft;
+                        })
+                } else {
+                    scope.purpose.form.$submitted = true;
+                }
+            }
+
             scope.cancel = function () {
-                scope.negativeCallback({app: scope.dirtyApp});
+                scope.negativeCallback({draft: scope.dirtyDraft});
             };
 
             /**
-             * Attachment Code
-             * TODO This is not currently used and probably needs fixes.
-             **/
-
-            // var attachmentInput = angular.element("#addAttachment");
-            // attachmentInput.on('change', uploadAttachment);
-
-            /**
-             * This is the one place were a page directive directly updates the application.
-             * This is because we need to upload the attachments while staying on the purpose page.
+             * Attachment code
              */
-            // function uploadAttachment(event) {
-            //     $scope.openLoadingModal();
-            //
-            //     var files = attachmentInput[0].files;
-            //     var formData = new FormData();
-            //     for (var i = 0; i < files.length; i++) {
-            //         formData.append("file", files[i]);
-            //     }
-            //
-            //     // Use $http instead of $resource because it can handle formData.
-            //     $http.post(appProps.apiPath + '/travel/application/uncompleted/' + $scope.dirtyApp.id + '/attachment', formData, {
-            //         // Allow $http to choose the correct 'content-type'.
-            //         headers: {'Content-Type': undefined},
-            //         transformRequest: angular.identity
-            //     }).then(function (response) {
-            //         // Note, This creates a new local scope app, does not overwrite parent $scope.app.
-            //         $scope.app = response.data.result;
-            //     }).finally($scope.closeLoadingModal)
-            // }
-            //
-            // $scope.deleteAttachment = function (attachment) {
-            //     deleteAttachmentApi.delete({id: $scope.app.id, attachmentId: attachment.id}, function (response) {
-            //         console.log(response);
-            //         $scope.app = response.result;
-            //     })
-            // };
+            var attachmentInput = angular.element("#addAttachment");
+            attachmentInput.on('change', uploadAttachment);
+
+            function uploadAttachment(event) {
+                scope.openLoadingModal();
+
+                var files = attachmentInput[0].files;
+                var formData = new FormData();
+                for (var i = 0; i < files.length; i++) {
+                    formData.append("file", files[i]);
+                }
+
+                // Use $http because $resource can't handle formData.
+                $http.post(appProps.apiPath + '/travel/drafts/attachment', formData, {
+                    // Allow $http to choose the correct 'content-type'.
+                    headers: {'Content-Type': undefined},
+                    transformRequest: angular.identity
+                }).then(function (response) {
+                    console.log(response);
+                    // Update dirtyApp attachments
+                    scope.dirtyDraft.amendment.attachments = scope.dirtyDraft.amendment.attachments.concat(response.data.result);
+                    // scope.dirtyAmendment.attachments = response.data.result.amendment.attachments;
+                }).catch(function (res) {
+                    modals.open("document-upload-error")
+                        .then(scope.closeLoadingModal);
+                }).finally(scope.closeLoadingModal)
+            }
+
+            scope.deleteAttachment = function (attachment) {
+                var attachments = scope.dirtyDraft.amendment.attachments
+                for (var i = 0; i < attachments.length; i++) {
+                    var attch = attachments[i];
+                    if (attch.filename === attachment.filename) {
+                        attachments.splice(i, 1);
+                    }
+                }
+            };
+
+            scope.showDepartmentHead = function () {
+                return !scope.dirtyDraft.traveler.isDepartmentHead
+                    && scope.dirtyDraft.traveler.department.head != null;
+            }
         }
     }
 }

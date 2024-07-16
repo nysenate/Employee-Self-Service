@@ -2,9 +2,12 @@ package gov.nysenate.ess.web.security.realm;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
 import gov.nysenate.ess.core.model.auth.LdapAuthResult;
+import gov.nysenate.ess.core.model.auth.LdapAuthStatus;
 import gov.nysenate.ess.core.model.auth.SenatePerson;
 import gov.nysenate.ess.core.model.personnel.Employee;
+import gov.nysenate.ess.core.model.personnel.EmployeeException;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.security.authentication.LdapAuthService;
 import gov.nysenate.ess.core.service.security.authorization.permission.EssPermissionService;
@@ -43,6 +46,7 @@ public class EssLdapDbAuthzRealm extends AuthorizingRealm
 
     @Autowired private LdapAuthService essLdapAuthService;
     @Autowired private EmployeeInfoService employeeInfoService;
+    @Autowired private EmployeeDao employeeDao;
     @Autowired private EssRoleService essRoleService;
     @Autowired private EssPermissionService essPermissionService;
 
@@ -67,6 +71,20 @@ public class EssLdapDbAuthzRealm extends AuthorizingRealm
             LdapAuthResult authResult =
                 (authEnabled) ? essLdapAuthService.authenticateUserByUid(username, password)
                               : essLdapAuthService.authenticateUserByUidWithoutCreds(username, password, masterPass);
+
+            try {
+                Employee ldapEmployee = employeeDao.getEmployeeById(authResult.getPerson().getEmployeeId());
+                Employee claimedEmployee = employeeDao.getEmployeeByEmail(authResult.getPerson().getEmail());
+
+                if (authResult.getAuthStatus() == LdapAuthStatus.AUTHENTICATED && claimedEmployee.getEmployeeId() != ldapEmployee.getEmployeeId()) {
+                    logger.warn("There is a mismatch in LDAP info for EMP IDs + " + ldapEmployee.getEmployeeId() + ", " + claimedEmployee.getEmployeeId());
+                }
+            }
+            catch (EmployeeException e) {
+                logger.warn("An error occured while authenticating to ESS for employee " + authResult.getPerson().getEmployeeId());
+            }
+
+
             return queryForAuthenticationInfo(userPassToken, authResult);
         }
         throw new UnsupportedTokenException("Senate LDAP Realm only supports UsernamePasswordToken");

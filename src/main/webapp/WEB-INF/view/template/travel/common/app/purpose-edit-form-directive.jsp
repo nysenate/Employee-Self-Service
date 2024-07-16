@@ -1,78 +1,127 @@
-<div class="content-container">
-  <p class="travel-content-info travel-text-bold" ng-bind="::title"></p>
+<div>
+  <div ng-show="purpose.form.$submitted && !purpose.form.$valid" class="margin: 10px 0px;">
+    <ess-notification level="error">
+      <ul>
+        <li ng-if="purpose.form.$error.travelerRequired">
+          A traveler is required.
+        </li>
+        <li ng-if="purpose.form.$error.departmentHeadRequired">
+          A department head is required.
+        </li>
+        <li ng-if="purpose.form.$error.eventTypeRequired">
+          A purpose of travel is required.
+        </li>
+        <li ng-if="purpose.form.$error.eventNameRequired">
+          Name of the {{dirtyDraft.amendment.purposeOfTravel.eventType.displayName}} is required.
+        </li>
+        <li ng-if="purpose.form.$error.additionalPurposeRequired">
+          A description of your purpose of travel is required.
+        </li>
+      </ul>
+    </ess-notification>
+  </div>
 
-  <form ng-cloak name="purpose.form" id="purposeForm" novalidate>
-
-    <div ng-show="purpose.form.$submitted && !purpose.form.$valid" class="margin-10">
-      <ess-notification level="error" title="Purpose of Travel has errors">
-        <ul>
-          <li ng-if="purpose.form.$error.eventTypeRequired">A purpose of travel is required</li>
-          <li ng-if="purpose.form.$error.eventNameRequired">Name of the {{dirtyApp.purposeOfTravel.eventType.displayName}} is required.</li>
-          <li ng-if="purpose.form.$error.additionalPurposeRequired">A description of your purpose of travel is required.</li>
-        </ul>
-      </ess-notification>
-    </div>
-
-    <ess-travel-inner-container title="Purpose of Travel">
-      <div class="">
-        <div class="purpose-row">
-          <label for="eventTypeSelect">Select your purpose of travel:</label>
-          <select id="eventTypeSelect"
-                  event-type-validator
-                  ng-options="eventType as eventType.displayName for eventType in dirtyApp.purposeOfTravel.validEventTypes track by eventType.name"
-                  ng-model="dirtyApp.purposeOfTravel.eventType"/>
-        </div>
-        <div ng-if="dirtyApp.purposeOfTravel.eventType.requiresName" class="purpose-row">
-          <label for="eventNameInput">Name of the {{dirtyApp.purposeOfTravel.eventType.displayName}}:</label>
-          <input id="eventNameInput" type="text"
-                 event-name-validator
-                 ng-model="dirtyApp.purposeOfTravel.eventName"/>
-        </div>
-        <div ng-if="dirtyApp.purposeOfTravel.eventType !== null" class="purpose-row">
-          <div ng-if="dirtyApp.purposeOfTravel.eventType.requiresAdditionalPurpose">
-            <label for="purposeAdditionalTextRequired">
-              Enter your purpose of travel:
-            </label>
-            <textarea id="purposeAdditionalTextRequired" ng-model="dirtyApp.purposeOfTravel.additionalPurpose"
-                      additional-purpose-validator
-                      cols="120" rows="3"></textarea>
+  <div loader-indicator class="loader" ng-show="isLoading"></div>
+  <div class="travel-card" ng-show="!isLoading">
+    <form ng-cloak name="purpose.form" id="purposeForm" novalidate>
+      <div class="travel-card-item">
+        <h1>Traveler Info</h1>
+        <div class="padding-10">
+          <div class="purpose-row">
+            <label>Travel application on behalf of:</label>
+            <ui-select ng-model="dirtyDraft.traveler" style="min-width: 200px;" class="travel-ui-select-input" traveler-validator>
+              <ui-select-match>
+                <span ng-bind="$select.selected.fullName"></span>
+              </ui-select-match>
+              <ui-select-choices repeat="emp in allowedTravelers | filter: $select.search track by emp.employeeId">
+                <div ng-bind-html="emp.fullName"></div>
+              </ui-select-choices>
+            </ui-select>
           </div>
-          <div ng-if="!dirtyApp.purposeOfTravel.eventType.requiresAdditionalPurpose">
-            <label for="purposeAdditionalTextOptional">
-              Provide additional information (Optional):
-            </label>
-            <textarea id="purposeAdditionalTextOptional" ng-model="dirtyApp.purposeOfTravel.additionalPurpose"
-                      cols="120" rows="3"></textarea>
+          <div class="purpose-row" ng-if="showDepartmentHead()">
+            <label>Traveler Department Head:</label>
+            <span class="padding-left-10">{{dirtyDraft.traveler.department.head.fullName}}</span>
           </div>
         </div>
       </div>
-    </ess-travel-inner-container>
-
-    <ess-travel-inner-container ng-if="false" title="Supporting Documentation">
-      <div class="text-align-center">
-        <div ng-repeat="attachment in app.attachments" class="travel-attachment-container">
-          <div class="travel-attachment-filename">{{attachment.originalName}}
-            <span ng-click="deleteAttachment(attachment)" class="icon-cross" style="cursor: pointer;"></span>
+      <div class="travel-card-item">
+        <h1 class="">Purpose of Travel</h1>
+        <div class="padding-10">
+          <div class="purpose-row">
+            <label for="eventTypeSelect">Select your purpose of travel:</label>
+            <select id="eventTypeSelect"
+                    class="travel-input"
+                    event-type-validator
+                    ng-options="eventType as eventType.displayName for eventType in eventTypes track by eventType.name"
+                    ng-model="dirtyDraft.amendment.purposeOfTravel.eventType"/>
+          </div>
+          <div ng-if="dirtyDraft.amendment.purposeOfTravel.eventType.requiresName" class="purpose-row">
+            <label for="eventNameInput">Name of the {{dirtyDraft.amendment.purposeOfTravel.eventType.displayName}}:</label>
+            <input id="eventNameInput" type="text" class="travel-input"
+                   event-name-validator
+                   ng-model="dirtyDraft.amendment.purposeOfTravel.eventName"/>
+          </div>
+          <div ng-if="dirtyDraft.amendment.purposeOfTravel.eventType !== null" class="purpose-row">
+            <div ng-if="dirtyDraft.amendment.purposeOfTravel.eventType.requiresAdditionalPurpose">
+              <label for="purposeAdditionalTextRequired">
+                Enter your purpose of travel:
+              </label>
+              <textarea id="purposeAdditionalTextRequired" ng-model="dirtyDraft.amendment.purposeOfTravel.additionalPurpose"
+                        class="travel-input"
+                        additional-purpose-validator
+                        cols="120" rows="3"></textarea>
+            </div>
+            <div ng-if="!dirtyDraft.amendment.purposeOfTravel.eventType.requiresAdditionalPurpose">
+              <label for="purposeAdditionalTextOptional">
+                Provide additional information (<em>Optional</em>):
+              </label>
+              <textarea id="purposeAdditionalTextOptional" ng-model="dirtyDraft.amendment.purposeOfTravel.additionalPurpose"
+                        class="travel-input"
+                        style="resize:vertical;"
+                        cols="120" rows="3"></textarea>
+            </div>
           </div>
         </div>
-        <%--Cant have an inner form, do more testing to see if this form was necessary--%>
-        <%--<form method="POST" enctype="multipart/form-data">--%>
-        <%--Hack to change the button text of file input--%>
-        <input class="neutral-button" type="button" id="addAttachmentDisplay" value="Add Attachment"
-               onclick="document.getElementById('addAttachment').click();"/>
-        <input type="file" id="addAttachment" name="file" multiple style="display:none;">
-        <%--<input type="submit" ng-click="save()">--%>
-        <%--</form>--%>
       </div>
-    </ess-travel-inner-container>
 
-    <div class="travel-button-container">
-      <input type="button" class="reject-button" ng-value="::negativeLabel || 'Cancel'"
-             ng-click="cancel()">
-      <input type="submit" class="submit-button"
-             title="Continue to next step" value="Next"
-             ng-click="next()">
-    </div>
+      <div class="travel-card-item">
+        <h1 class="">Supporting Documentation <em class="optional">(Optional)</em></h1>
+        <div class="text-align-center padding-10">
+          <span class="">You may attach any relevant supporting documentation.</span>
+          <div ng-repeat="attachment in dirtyDraft.amendment.attachments" class="travel-attachment-container">
+            <div class="travel-attachment-filename">
+              {{attachment.originalName}}
+              <span ng-click="deleteAttachment(attachment)" class="icon-cross" style="cursor: pointer;"></span>
+            </div>
+          </div>
+          <div class="margin-20">
+            <label for="addAttachment" class="travel-primary-btn">
+              <i class="icon-upload margin-right-10"></i>Attach Document
+            </label>
+            <input type="file" value='fileInput' id="addAttachment" name="file" multiple style="display:none;">
+          </div>
+        </div>
+      </div>
 
-  </form>
+      <div class="travel-button-container">
+        <button class="travel-neutral-btn"
+                ng-if="mode === 'EDIT' || mode === 'RESUBMIT'"
+                type="button"
+                ng-value="::negativeLabel || 'Cancel'"
+                ng-click="cancel()">
+          {{::negativeLabel || 'Cancel'}}
+        </button>
+        <button class="travel-teal-btn"
+                ng-if="mode === 'NEW'"
+                type="button"
+                ng-click="save()">
+          Save
+        </button>
+        <button type="submit" class="travel-submit-btn"
+                ng-click="next()">
+          Next
+        </button>
+      </div>
+    </form>
+  </div>
 </div>

@@ -9,12 +9,9 @@ travel.directive('essAppFormBody', ['appProps', 'TravelModeOfTransportationApi',
         templateUrl: appProps.ctxPath + '/template/travel/common/form/app-form-body-directive',
         link: function ($scope, $elem, $attrs) {
 
-            console.log($scope.app);
-
-
             $scope.containsMot = function (mot) {
                 var appModesOfTransportation = [];
-                $scope.app.route.outboundLegs.forEach(function (leg) {
+                $scope.app.activeAmendment.route.outboundLegs.forEach(function (leg) {
                     appModesOfTransportation.push(leg.methodOfTravelDisplayName);
                 });
 

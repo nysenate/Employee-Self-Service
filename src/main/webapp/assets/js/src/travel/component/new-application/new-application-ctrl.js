@@ -9,109 +9,73 @@ var essTravel = angular.module('essTravel');
  * that are defined in this Parent controller.
  */
 essTravel.controller('NewApplicationCtrl',
-                     ['$scope', '$window', 'appProps', 'modals', 'LocationService', 'AppEditStateService', 'UnsubmittedAppApi', 'TravelApplicationByIdApi', travelAppController]);
+                     ['$scope', '$window', 'appProps', 'modals', 'LocationService', 'AppEditStateService',
+                      'TravelApplicationByIdApi', 'TravelDraftsApi', 'TravelDraftsSubmitApi', '$routeParams',
+                      'TravelDraftByIdApi', travelAppController]);
 
-function travelAppController($scope, $window, appProps, modals, locationService, stateService, unsubmittedAppApi, appIdApi) {
+function travelAppController($scope, $window, appProps, modals, locationService, stateService,
+                             appIdApi, draftsApi, draftSubmitApi, $routeParams, draftByIdApi) {
 
     $scope.stateService = stateService;
     // Common data shared between all child controllers.
     $scope.data = {
-        app: undefined,
-        allowedTravelers: []
+        draft: {},
+        dirtyRoute: {}, // Save partial route updates here. The route is saved to the draft after it is fully entered.
+        mode: 'NEW'
     };
+    $scope.isLoading = true;
 
     this.$onInit = function () {
         $scope.stateService = stateService;
         $scope.stateService.setPurposeState();
         initApplication();
 
-        /**
-         * Checks to see if the logged in employee has an uncompleted travel application in progress.
-         * If so, return that application so they can continue to work on it.
-         * If not, initialize a new application.
-         *
-         * If continuing a previous application, display modal asking user if they
-         * would like to continue working on it or start over.
-         */
         function initApplication() {
-            unsubmittedAppApi.get({userId: appProps.user.employeeId}, {}, function (response) {
-                $scope.data.app = response.result.app;
-                $scope.data.allowedTravelers = response.result.allowedTravelers;
-                if (hasUncompleteApplication()) {
-                    modals.open('ess-continue-saved-app-modal')
-                        .catch(function () { // Restart application on modal rejection.
-                            cancelApplication($scope.data.app) // TODO replace this functionality
-                        });
-                }
-            }, $scope.handleErrorResponse);
+            if ($routeParams.draftId) {
+                draftByIdApi.get({id: $routeParams.draftId}).$promise
+                    .then(handleDraftResult)
+            } else {
+                draftsApi.create().$promise
+                    .then(handleDraftResult);
+            }
 
-            function hasUncompleteApplication() {
-                return $scope.data.app.purposeOfTravel.eventType !== null;
+            function handleDraftResult(res) {
+                $scope.data.draft = res.result;
+                $scope.data.dirtyRoute = angular.copy($scope.data.draft.amendment.route);
+                $scope.isLoading = false;
             }
         }
     };
 
-    $scope.savePurpose = function (app) {
-        console.log(app);
-        unsubmittedAppApi.update({userId: appProps.user.employeeId},
-                                 {purposeOfTravel: JSON.stringify(app.purposeOfTravel), traveler: $scope.data.app.traveler.employeeId},
-                                 function (response) {
-            $scope.data.app = response.result;
-            stateService.setOutboundState();
-        }, $scope.handleErrorResponse)
+    $scope.savePurpose = function (draft) {
+        $scope.data.draft = draft;
+        stateService.setOutboundState();
     };
 
-    $scope.saveOutbound = function (app) {
-        unsubmittedAppApi.update({userId: appProps.user.employeeId},
-                                 {outbound: JSON.stringify(app.route), traveler: $scope.data.app.traveler.employeeId},
-                                 function (response) {
-            $scope.data.app = response.result;
-            stateService.setReturnState();
-        }, $scope.handleErrorResponse);
+    $scope.saveOutbound = function (route) {
+        $scope.data.dirtyRoute = route;
+        stateService.setReturnState();
     };
 
-    $scope.saveRoute = function (app) {
-        $scope.openLoadingModal();
-        unsubmittedAppApi.update({userId: appProps.user.employeeId},
-                                 {route: JSON.stringify(app.route), traveler: $scope.data.app.traveler.employeeId},
-                                 function (response) {
-            $scope.data.app = response.result;
-            stateService.setAllowancesState();
-            $scope.closeLoadingModal();
-        }, function (error) {
-            $scope.closeLoadingModal();
-            if (error.status === 502) {
-                $scope.handleDataProviderError();
-            } else if (error.status === 400) {
-                $scope.handleTravelDateError();
-            } else {
-                $scope.handleErrorResponse(error);
-            }
-        });
+    $scope.saveRoute = function (draft) {
+        $scope.data.draft = draft;
+        $scope.data.dirtyRoute = angular.copy(draft.amendment.route);
+        stateService.setAllowancesState();
     };
 
-    $scope.saveAllowances = function (app) {
-        var patches = {
-            allowances: JSON.stringify(app.allowances),
-            mealPerDiems: JSON.stringify(app.mealPerDiems),
-            lodgingPerDiems: JSON.stringify(app.lodgingPerDiems),
-            mileagePerDiems: JSON.stringify(app.route.mileagePerDiems),
-            traveler: $scope.data.app.traveler.employeeId
-        };
-        unsubmittedAppApi.update({userId: appProps.user.employeeId}, patches, function (response) {
-            $scope.data.app = response.result;
-            stateService.setReviewState();
-        }, $scope.handleErrorResponse)
+    $scope.saveAllowances = function (draft) {
+        $scope.data.draft = draft
+        stateService.setReviewState();
     };
 
-    $scope.submitApplication = function (app) {
-        // No need to confirm submit for initial launch as apps are not being sent to anyone.
-        // modals.open('submit-confirm')
-        //     .then(function () {
+    $scope.submitApplication = function () {
+        modals.open('submit-confirm')
+            .then(function () {
                 modals.open("submit-progress");
-                unsubmittedAppApi.save({userId: appProps.user.employeeId}, {}).$promise
+                draftSubmitApi.save($scope.data.draft).$promise
                     .then(function (response) {
-                        $scope.data.app = response.result;
+                        $scope.data.traveler = response.result.traveler;
+                        $scope.data.amendment = response.result.amendment;
                         modals.resolve({});
                     })
                     .then(function () {
@@ -122,39 +86,31 @@ function travelAppController($scope, $window, appProps, modals, locationService,
                         });
                     })
                     .catch($scope.handleErrorResponse);
-            // })
+            })
     };
 
-    $scope.cancel = function (app) {
+    $scope.cancel = function (draft) {
         modals.open("cancel-application").then(function () {
             modals.resolve({});
-            $scope.openLoadingModal();
-            cancelApplication(app);
+            reload();
         });
     };
 
-    $scope.toPurposeState = function (app) {
+    $scope.toPurposeState = function () {
         $scope.stateService.setPurposeState();
     };
 
-    $scope.toOutboundState = function (app) {
+    $scope.toOutboundState = function () {
         $scope.stateService.setOutboundState();
     };
 
-    $scope.toReturnState = function (app) {
+    $scope.toReturnState = function () {
         $scope.stateService.setReturnState();
     };
 
-    $scope.toAllowancesState = function (app) {
+    $scope.toAllowancesState = function () {
         $scope.stateService.setAllowancesState();
     };
-
-    function cancelApplication(app) {
-        unsubmittedAppApi.remove({userId: appProps.user.employeeId})
-            .$promise
-            .then(reload)
-            .catch($scope.handleErrorResponse)
-    }
 
     function reload() {
         locationService.go("/travel/application/new", true);
