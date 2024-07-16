@@ -41,10 +41,7 @@ const PendingOrders = ({ data, calculateHighlighting, onRowClick, distinctItemQu
                                 className={calculateHighlighting(requisition)}
                                 onClick={() => onRowClick(requisition)}
                             >
-                                <td
-                                    className={requisition.deliveryMethod === 'PICKUP' ? 'supply-pickup-icon' : ''}
-                                    title={requisition.deliveryMethod}
-                                ></td>
+                                <td className={`${requisition.deliveryMethod === 'PICKUP' && styles.supplyPickupIcon}`}></td>
                                 <td>{requisition.requisitionId}</td>
                                 <td>{requisition.destination?.locId || '-'}</td>
                                 <td>{requisition.customer?.lastName || '-'}</td>

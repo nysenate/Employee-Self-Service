@@ -31,7 +31,8 @@
     "react-select": "^5.8.0",
     "react-tippy": "^1.4.0",
     "regenerator-runtime": "^0.13.9",
-    "styled-components": "^6.1.11"
+    "styled-components": "^6.1.11",
+    "url-loader": "^4.1.1"
   },
   "scripts": {
     "build": "NODE_ENV='production' webpack",
@@ -53,6 +54,7 @@
     "css-loader": "^5.2.7",
     "dotenv-webpack": "^8.0.1",
     "eslint-plugin-react-hooks": "^4.3.0",
+    "file-loader": "^6.2.0",
     "html-webpack-plugin": "^5.5.0",
     "postcss": "^8.4.6",
     "postcss-loader": "^6.2.1",

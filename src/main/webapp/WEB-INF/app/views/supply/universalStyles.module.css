@@ -239,6 +239,17 @@ b, strong {
     background: #98a1d4 !important; /* Lighter blue (15% lighter) */
 }
 
+.supplyPickupIcon {
+    background: url("../../../../assets/img/supply_nodelivery_50.png") center center;
+    height: 20px;
+    width: 20px;
+    background-size: 20px;
+    background-repeat: no-repeat;
+    padding-left: 50px !important;
+    padding-right: 0 !important;
+}
+
+
 /*.supplyListingTable tbody tr:nth-child(even):hover {*/
 /*    background: #e9eeff !important;*/
 /*}*/

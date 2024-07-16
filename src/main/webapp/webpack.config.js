@@ -1,5 +1,5 @@
-const path = require('path')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const Dotenv = require('dotenv-webpack');
 
 module.exports = {
@@ -16,15 +16,27 @@ module.exports = {
   },
   module: {
     rules: [
-      // load css files, including tailwindcss
+      // Load CSS files, including TailwindCSS
       {
         test: /\.css$/i,
-        use: [ "style-loader", "css-loader", "postcss-loader" ],
+        use: ["style-loader", "css-loader", "postcss-loader"],
       },
-      // Transpile js
+      // Transpile JS
       {
         test: /\.(js)$/,
         use: 'babel-loader'
+      },
+      // Load image files
+      {
+        test: /\.(png|jpe?g|gif|svg)$/i,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: '[path][name].[ext]',
+            },
+          },
+        ],
       },
     ]
   },
@@ -41,17 +53,17 @@ module.exports = {
   mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
   devServer: {
     port: 3000,
-    // Send api requests for these paths to the target base url while in dev mode.
+    // Send API requests for these paths to the target base URL while in dev mode.
     proxy: [
       {
-        context: [ '/api', '/assets' ],
+        context: ['/api', '/assets'],
         target: 'http://localhost:8080',
         secure: false,
         changeOrigin: true,
       },
       // For the /login page, only proxy POST requests.
       {
-        context: [ '/login' ],
+        context: ['/login'],
         target: 'http://localhost:8080',
         secure: false,
         changeOrigin: true,
@@ -61,7 +73,7 @@ module.exports = {
     historyApiFallback: {
       disableDotRule: true,
     },
-    static: [ '../assets' ]
+    static: ['../assets']
   },
   devtool: process.env.NODE_ENV === 'production' ? false : 'eval-source-map'
-}
+};
