@@ -1,4 +1,4 @@
-import styles from "./RequisitionFormIndex.module.css";
+import styles from "../universalStyles.module.css";
 import React, { useEffect, useState } from "react";
 import { Button } from "../../../components/Button";
 
@@ -7,7 +7,7 @@ const ItemsGrid = ({ items, currentPage, itemsPerPage, cart, handleQuantityChang
     const currentItems = items.slice(startIndex, startIndex + itemsPerPage);
 
     return (
-        <div className={styles.itemGrid}>
+        <div className={styles.grid}>
             {currentItems.map((item) => (
                 <ItemDisplay
                     key={item.id}
@@ -38,68 +38,75 @@ const ItemDisplay = ({ item, cart, handleQuantityChange, handleOverOrderAttempt 
     };
 
     return (
-        <div className={styles.itemCard}>
-            <div className={styles.itemImage}>
-                <img
+      <div className={`${styles.col312} ${styles.textAlignCenter}`}>
+          <div className={`${styles.contentContainer} ${item.specialRequest ? styles.supplySpecialItem : ''}`}>
+              <div style={{ paddingTop: '5px', overflow: 'hidden', position: 'relative' }}>
+                  {item.specialRequest && (<div className={styles.cornerRibbon}>
+                      <span>Special</span>
+                  </div>)}
+                  <img
+                    className={styles.supplyItemImage}
                     src={`/assets/supply_photos/${item.commodityCode}.jpg`}
                     alt={item.description}
-                    height="120"
-                />
-            </div>
-            <div className={styles.itemDescription}>
-                <h4>{item.description}</h4>
-                <p>{item.unit}</p>
-            </div>
-            {itemInCart ? (
-                <div className={styles.itemQuantities}>
-                    <div className={styles.itemInputs}>
-                        {/* Decrement Button */}
-                        <button
-                            className={styles.qtyAdjustButton}
-                            onClick={() => handleQuantityChange(item.id, Math.max(0, parseInt(localValue, 10) - 1))}
-                        >
-                            -
-                        </button>
-
-                        {/* Quantity Input */}
-                        <input
-                            className={styles.qtyInput}
-                            style={{ color: parseInt(localValue, 10) > item.perOrderAllowance ? 'red' : '' }}
-                            type="text"
-                            value={localValue}
-                            onChange={handleTempInputChange}
-                            onBlur={() => {
-                                const numericLocalValue = parseInt(localValue, 10); // Ensure it's a number
-                                if (numericLocalValue > item.perOrderAllowance && itemInCart <= item.perOrderAllowance) {
-                                    handleOverOrderAttempt(item.id, numericLocalValue);
-                                    setLocalValue(cart[item.id]);
-                                } else {
-                                    handleQuantityChange(item.id, numericLocalValue);
-                                }
-                            }}
-                        />
-
-                        {/* Increment Button */}
-                        <button
-                            className={styles.qtyAdjustButton}
-                            onClick={() => {
-                                const numericLocalValue = parseInt(localValue, 10); // Ensure it's a number
-                                if (numericLocalValue === item.perOrderAllowance) {
-                                    handleOverOrderAttempt(item.id, numericLocalValue + 1);
-                                } else {
-                                    handleQuantityChange(item.id, numericLocalValue + 1);
-                                }
-                            }}
-                            style={{ backgroundColor: isMaxQuantity ? 'red' : '' }}
-                        >
-                            +
-                        </button>
-                    </div>
-                </div>
-            ) : (
-                <Button onClick={() => handleQuantityChange(item.id, localValue+1)}>Add to Cart</Button>
-            )}
-        </div>
+                    // height="120"
+                  />
+                  <p className={`${styles.darkGray} ${styles.marginV} ${styles.bold}`} style={{ height: '40px', overflow: 'hidden' }}>
+                      {item.description}
+                  </p>
+                  <div>
+                      <div className={styles.textAlignCenter}>
+                          <p className={styles.darkGray} style={{ margin: '0px' }}>{item.unit}</p>
+                          {!itemInCart ? (
+                            <input
+                              className={styles.addToCartBtn}
+                              onClick={() => handleQuantityChange(item.id, localValue + 1)}
+                              type="button"
+                              value="Add to Cart"
+                            />
+                          ) : (
+                             <>
+                                 <input
+                                   className={styles.qtyAdjustButton}
+                                   onClick={() => handleQuantityChange(item.id, Math.max(0, parseInt(localValue, 10) - 1))}
+                                   type="button"
+                                   value="-"
+                                 />
+                                 <input
+                                   className={styles.qtyInput}
+                                   style={{ color: parseInt(localValue, 10) > item.perOrderAllowance ? 'red' : '' }}
+                                   type="text"
+                                   value={localValue}
+                                   onChange={handleTempInputChange}
+                                   onBlur={() => {
+                                       const numericLocalValue = parseInt(localValue, 10); // Ensure it's a number
+                                       if (numericLocalValue > item.perOrderAllowance && itemInCart <= item.perOrderAllowance) {
+                                           handleOverOrderAttempt(item.id, numericLocalValue);
+                                           setLocalValue(cart[item.id]);
+                                       } else {
+                                           handleQuantityChange(item.id, numericLocalValue);
+                                       }
+                                   }}
+                                 />
+                                 <input
+                                   className={`${styles.qtyAdjustButton} ${isMaxQuantity ? styles.darkWarn : ''}`}
+                                   onClick={() => {
+                                       const numericLocalValue = parseInt(localValue, 10); // Ensure it's a number
+                                       if (numericLocalValue === item.perOrderAllowance) {
+                                           handleOverOrderAttempt(item.id, numericLocalValue + 1);
+                                       } else {
+                                           handleQuantityChange(item.id, numericLocalValue + 1);
+                                       }
+                                   }}
+                                   type="button"
+                                   value="+"
+                                 />
+                             </>
+                           )}
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
     );
 };
 

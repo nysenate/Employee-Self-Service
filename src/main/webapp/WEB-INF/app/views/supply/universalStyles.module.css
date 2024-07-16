@@ -70,6 +70,9 @@
 }
 
 /* Other */
+.textAlignCenter {
+    text-align: center !important;
+}
 .paddingX {
     padding: 10px;
 }
@@ -101,6 +104,9 @@
 }
 .marginTop20 {
     margin-top: 20px !important;
+}
+.marginV {
+    margin: 5px;
 }
 
 
@@ -143,10 +149,15 @@ a {
     margin: 0 auto;
     overflow: hidden;
 }
-.col412, .col812, .col112, .col1112, .col12, .col612, .col712, .col212, .col1012 {
-    width: 33.33%;
+/* Apply common properties to all column classes */
+.col412, .col812, .col112, .col1112, .col12, .col612, .col712, .col212, .col1012, .col14, .col312 {
     float: left;
     padding-right: 20px;
+}
+
+/* Set specific widths */
+.col412, .col812, .col112, .col1112, .col12, .col612, .col712, .col212, .col1012 {
+    width: 33.33%;
 }
 .col1012 {
     width: 83.333%;
@@ -168,6 +179,9 @@ a {
 }
 .col712 {
     width: 58.33%;
+}
+.col14, .col312 {
+    width: 25%;
 }
 
 b, strong {
@@ -248,11 +262,16 @@ b, strong {
     padding-left: 50px !important;
     padding-right: 0 !important;
 }
+.supplyItemImage {
+    display: block;
+    margin: 10px auto;
+    height: 120px;
+}
 
 .supplySpecialItem {
     background-color: #f9cfc7;
 }
-.corner-ribbon {
+.cornerRibbon {
     left: -27px;
     top: 15px;
     width: 100px;
@@ -372,6 +391,41 @@ table.essTable tbody tr td {
     /*input has OS specific font-family*/
     color: #069;
     cursor: pointer;
+}
+.addToCartBtn {
+    width: 90%;
+    margin: 5px 10px 10px 10px;
+    height: 28px;
+
+    background: #799933FF;
+    color: #FEFEFEFF;
+    font-weight: bold;
+    border: none;
+    border-radius: 2px;
+}
+.qtyAdjustButton {
+    margin: 5px 10px 10px 10px;
+    font-size: 1.25em;
+    width: 34px;
+    height: 28px;
+
+    padding: 0;
+    background: #799933FF;
+    color: #FEFEFEFF;
+    font-weight: bold;
+    border: none;
+    border-radius: 2px;
+}
+.qtyInput {
+    margin: 0;
+    width: 50px;
+    padding: 0;
+    height: 28px;
+    text-align: center;
+    font-size: 120%;
+}
+.darkWarn{
+    background-color:#e64727;
 }
 
 /*Modals?*/
@@ -493,6 +547,14 @@ button.neutralButton {
     font-weight: 600;
     border: 2px none #737373;
     border-bottom-style: solid;
+}
+input[type=button].neutralButton:hover, input[type=submit].neutral-button:hover {
+    background: #a47676;
+}
+
+button, html input[type=button], input[type=reset], input[type=submit] {
+    -webkit-appearance: button;
+    cursor: pointer;
 }
 
 button, input, select, textarea {
@@ -640,4 +702,11 @@ input[type=button].approveButton {
     font-weight: 600;
     border: 2px none #4655a6;
     border-bottom-style: solid;
+}
+
+input[type=email], input[type=number], input[type=password], input[type=search], input[type=tel], input[type=text] {
+    border: 1px solid #ccc;
+    outline: 0;
+    background: #fafafa;
+    padding: .3em;
 }
