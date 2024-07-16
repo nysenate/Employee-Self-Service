@@ -141,6 +141,7 @@ export default function FulfillmentIndex() {
                     isModalOpen={isModalOpen}
                     closeModal={closeModal}
                     refreshData={refreshData}
+                    data={data}
                 />
             )}
             {selectedRequisition && (

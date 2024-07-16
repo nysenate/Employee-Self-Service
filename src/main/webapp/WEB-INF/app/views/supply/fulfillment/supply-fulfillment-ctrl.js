@@ -149,6 +149,25 @@ export const calculateHighlighting = (requisition, locationStatistics) => {
 
     return className.trim();
 };
+/**
+ * Calculate highlighting for an item.
+ *
+ * @param {Object} item The item object.
+ * @param {Object} locationStatistics The location statistics object.
+ * @param {String} locId The location ID.
+ * @returns {Object} The highlighting information.
+ */
+export const calculateItemHighlighting = (item, locationStatistics, locId) => {
+    const warn = isItemOverOrderMax(item) || isItemOverPerMonthMax(item, locationStatistics, locId) || isSpecialItem(item);
+    const bold = isItemOverPerMonthMax(item, locationStatistics, locId);
+
+    let className = '';
+    if (warn) className += `${styles.warn} `;
+    if (bold) className += `${styles.bold} `;
+
+    return className.trim();
+};
+
 
 /**
  * Check if the requisition contains any item over the order max.
@@ -158,6 +177,9 @@ export const calculateHighlighting = (requisition, locationStatistics) => {
  */
 const containsItemOverOrderMax = (requisition) => {
     return requisition.lineItems.some(obj => obj.quantity > obj.item.perOrderAllowance);
+};
+const isItemOverOrderMax = (item) => {
+    return item.quantity > item.item.perOrderAllowance;
 };
 
 /**
@@ -180,11 +202,18 @@ const isOverPerMonthMax = (requisition, locationStatistics) => {
     });
     return isOver;
 };
+const isItemOverPerMonthMax = (item, locationStatistics, locId) => {
+    if (!locationStatistics) {
+        return false;
+    }
 
+    const monthToDateQty = getQuantityForLocationAndItem(locId, item.item.commodityCode, locationStatistics);
+    return monthToDateQty > item.item.perMonthAllowance;
+};
 
-export const getQuantityForLocationAndItem = (location, item, locationStatistics) => {
-    if (locationStatistics[location]) {
-        return locationStatistics[location].itemQuantities[item];
+export const getQuantityForLocationAndItem = (locId, item, locationStatistics) => {
+    if (locationStatistics[locId]) {
+        return locationStatistics[locId].itemQuantities[item];
     }
 }
 
@@ -197,6 +226,10 @@ export const getQuantityForLocationAndItem = (location, item, locationStatistics
 const containsSpecialItem = (requisition) => {
     return requisition.lineItems.some(obj => obj.item.specialRequest);
 };
+const isSpecialItem = (item) => {
+    return item.item.specialRequest;
+};
+
 
 /**
  * Set the requisition search parameter in the URL.

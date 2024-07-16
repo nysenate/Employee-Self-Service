@@ -334,6 +334,10 @@ table.essTable tbody tr {
     background: #ffbcbc;
     border-bottom: 0 solid #ffbcbc !important;
 }
+.supplyListingTable tbody tr.warn:nth-child(even) {
+    background: rgba(255, 188, 188, .6);
+    border-bottom: 0 solid rgba(255, 188, 188, .6) !important;
+}
 table.essTable tbody tr td {
     text-align: left;
 }

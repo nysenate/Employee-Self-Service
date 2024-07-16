@@ -3,6 +3,7 @@ import { Button } from "../../../components/Button";
 import React, { useEffect, useState } from "react";
 import styles from "../universalStyles.module.css";
 import {
+    calculateItemHighlighting,
     fetchSupplyDestinations,
     fetchSupplyEmployees,
     fetchSupplyItems,
@@ -18,7 +19,7 @@ import {
 import { useNavigate } from "react-router-dom";
 
 
-export function FulfillmentEditing({ requisition, isModalOpen, closeModal, refreshData }) {
+export function FulfillmentEditing({ requisition, isModalOpen, closeModal, refreshData, data }) {
     const originalRequisition = requisition;
     const [editableRequisition, setEditableRequisition] = useState({ ...requisition });
     const [dirty, setDirty] = useState(false);
@@ -88,6 +89,7 @@ export function FulfillmentEditing({ requisition, isModalOpen, closeModal, refre
                     displayRejectInstructions={displayRejectInstructions}
                     setEditableRequisition={setEditableRequisition}
                     originalRequisition={originalRequisition}
+                    data={data}
                 />
                 <ActionButtons
                     originalRequisition={originalRequisition}
@@ -109,7 +111,7 @@ const OrderContent = ({
                           editableRequisition,
                           displayRejectInstructions,
                           setEditableRequisition,
-                          originalRequisition
+                          originalRequisition, data
                       }) => {
 
     const auth = useAuth();
@@ -215,6 +217,7 @@ const OrderContent = ({
                     <EditableOrderListing
                       editableRequisition={editableRequisition}
                       setEditableRequisition={setEditableRequisition}
+                      data={data}
                     />
                 </div>
 
@@ -322,7 +325,7 @@ const OrderContent = ({
     );
 }
 
-const EditableOrderListing = ({ editableRequisition, setEditableRequisition }) => {
+const EditableOrderListing = ({ editableRequisition, setEditableRequisition, data }) => {
     const [quantities, setQuantities] = useState({});
 
     useEffect(() => {
@@ -365,7 +368,10 @@ const EditableOrderListing = ({ editableRequisition, setEditableRequisition }) =
               </thead>
               <tbody>
               {sortedLineItems.map(item => (
-                <tr key={item.item.id}>
+                <tr
+                  key={item.item.id}
+                  className={calculateItemHighlighting(item, data.locationStatistics, editableRequisition.destination.locId)}
+                >
                     <td>{item.item.commodityCode}</td>
                     <td>{item.item.description}</td>
                     <td>
