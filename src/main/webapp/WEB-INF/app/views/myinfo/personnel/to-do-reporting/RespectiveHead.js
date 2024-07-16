@@ -46,7 +46,7 @@ export default function RespectiveHead(){
           chips: {
             background: '#F5F5F5',
             borderRadius: '0px',
-            color: '#000',
+            color: 'black',
           },
           searchBox: {
             border: '1px solid #999',

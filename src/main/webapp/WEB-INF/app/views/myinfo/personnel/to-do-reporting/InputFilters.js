@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import styles from "./InputFilters.module.css";
 import Dropdown from "./Dropdown";
 
-export default function InputFilters({params, onChildDataChange}) {
-  const [activeTasks, setActiveTasks] = useState([]);
-  const [inActiveTasks, setInActiveTasks] = useState([]);
-  const [selectedValue, setSelectedValue] = useState('');
-  const [active, setActive] = useState(false);
+export default function InputFilters({ params, onChildDataChange, handleAllTasks }) {
+  const [ activeTasks, setActiveTasks ] = useState([]);
+  const [ inActiveTasks, setInActiveTasks ] = useState([]);
+  const [ selectedValue, setSelectedValue ] = useState('');
+  const [ active, setActive ] = useState(false);
   const options = {
     "ANY": "Any",
     "ALL_INCOMPLETE": "All Incomplete",
@@ -31,6 +31,7 @@ export default function InputFilters({params, onChildDataChange}) {
           throw new Error('Failed to fetch data');
         }
         const data = await response.json();
+        handleAllTasks(data);
         // Filter and set active tasks
         const updatedActiveTasks = data.tasks.filter(task => task.active).map(task => ({
           ...task,
@@ -72,9 +73,9 @@ export default function InputFilters({params, onChildDataChange}) {
 
   // Toggle active state
   const toggleActive = () => {
-    if(!active){
+    if (!active) {
       params.taskActive = null;
-    } else{
+    } else {
       params.taskActive = active;
     }
     setActive(!active);
@@ -87,9 +88,9 @@ export default function InputFilters({params, onChildDataChange}) {
     const updatedActiveTasks = activeTasks.map(task => {
       if (task.taskId === taskId) {
         task.checked = !task.checked;
-        if (task.checked){
+        if (task.checked) {
           params.taskId.push(task.taskId);
-        } else{
+        } else {
           params.taskId = params.taskId.filter(item => item !== taskId)
         }
       }
@@ -97,12 +98,12 @@ export default function InputFilters({params, onChildDataChange}) {
     });
     setActiveTasks(updatedActiveTasks);
     // Update inactive tasks if active is false
-    const updatedInActiveTasks = inActiveTasks.map(task =>{
+    const updatedInActiveTasks = inActiveTasks.map(task => {
       if (task.taskId === taskId) {
         task.checked = !task.checked;
-        if (task.checked){
+        if (task.checked) {
           params.taskId.push(task.taskId);
-        }else{
+        } else {
           params.taskId = params.taskId.filter(item => item !== taskId)
         }
       }
@@ -116,7 +117,7 @@ export default function InputFilters({params, onChildDataChange}) {
   const handleSelectedValueChange = (value) => {
     setSelectedValue(value);
     params.totalCompletion = value;
-    if(value === "ANY"){
+    if (value === "ANY") {
       params.totalCompletion = null;
     }
     onChildDataChange(params);
@@ -136,7 +137,7 @@ export default function InputFilters({params, onChildDataChange}) {
       <a className={styles.atag} href="#" onClick={handleRemoveAllChecks}>
         Clear selected trainings
       </a>
-      <hr />
+      <hr/>
       {activeTasks.map(item => (
         <div key={item.taskId}>
           <label className={styles.labelCheck} htmlFor={item.title}>
@@ -152,20 +153,23 @@ export default function InputFilters({params, onChildDataChange}) {
         </div>
       ))}
       {active && (
-        inActiveTasks.map(item => (
-          <div key={item.taskId}>
-            <label className={styles.labelCheck} htmlFor={item.title}>
-              <input
-                className={styles.inputCheck}
-                type="checkbox"
-                id={item.taskId}
-                checked={item.checked}
-                onChange={() => handleCheckboxChange(item.taskId)}
-              />
-              {item.title}
-            </label>
-          </div>
-        ))
+        <>
+          <hr/>
+          {inActiveTasks.map((item) => (
+            <div key={item.taskId}>
+              <label className={styles.labelCheck} htmlFor={item.title}>
+                <input
+                  className={styles.inputCheck}
+                  type="checkbox"
+                  id={item.taskId}
+                  checked={item.checked}
+                  onChange={() => handleCheckboxChange(item.taskId)}
+                />
+                {item.title}
+              </label>
+            </div>
+          ))}
+        </>
       )}
       &nbsp;
       <div>
@@ -176,7 +180,8 @@ export default function InputFilters({params, onChildDataChange}) {
           onSelectedValueChange={handleSelectedValueChange}
         />
       </div>
-      <hr />
+      <hr/>
     </div>
+
   );
 }
