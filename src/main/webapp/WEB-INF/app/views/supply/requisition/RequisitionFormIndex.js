@@ -12,6 +12,7 @@ import { getItems, getLocations } from "../helpers";
 import DestinationDetails from "./DestinationDetails";
 import SelectDestination from "./SelectDestination";
 import ItemsGrid from "./ItemsGrid";
+import CartSummary from "app/views/supply/requisition/CartSummary";
 
 
 
@@ -159,9 +160,12 @@ export default function RequisitionFormIndex({ setCategories }) {
 
   return (
       <div>
-        <Hero>
-          Requisition Form
-        </Hero>
+        <div className={styles.supplyOrderHero} style={{ display: "inline-block", width: '100%' }}>
+          <h2 className={styles.requisitionTitle}>Requisition Form</h2>
+          <a href={"/supply/cart"}>
+            <CartSummary cart={cart}/>
+          </a>
+        </div>
         {destination ? (
             <div>
               <DestinationDetails

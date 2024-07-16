@@ -48,6 +48,24 @@
     color: #374282 !important;
     font-weight: 700;
 }
+.supplyOrderHero {
+    padding: .3em;
+    font-weight: 700;
+    background: #6270bd;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+.supplyOrderHero h1, .supplyOrderHero h2, .supplyOrderHero h3, .supplyOrderHero h4, .supplyOrderHero p, .supplyOrderHero span {
+    color: #fff;
+}
+.requisitionTitle {
+    display: inline-block;
+    padding-left: 100px;
+}
+.cartWidget{
+    display: inline-block;
+    float: right;
+}
 
 .resultsContainer {
     background: #fff;
