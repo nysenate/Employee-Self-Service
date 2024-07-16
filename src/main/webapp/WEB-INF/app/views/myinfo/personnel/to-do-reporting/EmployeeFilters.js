@@ -26,7 +26,6 @@ export default function EmployeeFilters({ params, onChildDataChange }) {
 
   const handleSelect = (option) => {
     setSelectedValue(option);
-    console.log(option);
     if (option === 'custom') {
       setSelectedValue('custom');
     } else {
@@ -53,13 +52,6 @@ export default function EmployeeFilters({ params, onChildDataChange }) {
     onChildDataChange(params);
   }
 
-  const handleRemoveAllChecks = (e) => {
-    e.preventDefault();
-    console.log("Clear Selected Offices");
-    params.taskId.length = 0;
-    onChildDataChange(params);
-  };
-
   return (
     <div className={styles.filterBlock}>
       <label className={styles.labelCheck}>
@@ -85,10 +77,7 @@ export default function EmployeeFilters({ params, onChildDataChange }) {
         </div>
       )}
       <label className={styles.labelCheck1}>Offices</label>
-      <a className={"text-teal-600 font-normal"} href="#" onClick={handleRemoveAllChecks}>
-        Clear selected offices
-      </a>
-      <RespectiveHead/>
+      <RespectiveHead params={params} onChildDataChange={onChildDataChange}/>
     </div>
   )
     ;
