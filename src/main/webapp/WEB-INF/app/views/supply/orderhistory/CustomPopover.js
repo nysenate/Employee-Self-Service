@@ -5,7 +5,7 @@ import styles from './OrderDetail.module.css';
 
 const CustomPopover = ({ order }) => {
     const popoverContent = (
-        <div className={styles.popoverContent} style={{alignContent: 'center', position: 'absolute', display: 'none', top: '269.906px', left: '324px'}}>
+        <div className={styles.popoverContent} style={{alignContent: 'center'}}>
             <div className={styles.triangle}></div>
             <div className={styles.popoverTooltip}>
                 <ul>
@@ -25,7 +25,7 @@ const CustomPopover = ({ order }) => {
             theme="light"
             duration={200}
         >
-            <div className={`${styles.col412} ${styles.ngScope} ${styles.ngBinding}`}>
+            <div className={`${styles.col412}`}>
                 <b>Requested By:</b> {order.customer.fullName}
             </div>
         </Tooltip>

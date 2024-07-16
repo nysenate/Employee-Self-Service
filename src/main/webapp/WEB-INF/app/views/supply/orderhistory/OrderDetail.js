@@ -39,9 +39,10 @@ const OrderInfo = ({ order }) => {
       <div className={styles.contentContainer}>
         <div className={styles.contentInfo}>
           <div className={`${styles.grid} ${styles.paddingX}`}>
-            <div className={styles.col412}>
-              <b>Requested By:</b> {order.customer.fullName}
-            </div>
+            {/*<div className={styles.col412}>*/}
+            {/*  <b>Requested By:</b> {order.customer.fullName}*/}
+            {/*</div>*/}
+            <CustomerPopover order={order} />
             <div className={styles.col412}>
               <b>Requested Office:</b> {order.destination.locId}
             </div>
