@@ -3,7 +3,7 @@ import { formatDateForInput } from "../helpers";
 import { fetchApiJson } from "../../../utils/fetchJson";
 import styles from "../universalStyles.module.css";
 
-const Header = ({ filters, handleFilterChange }) => {
+const Header = ({ filters, handleFilterChange, handlePrint }) => {
     const [filterOptions, setFilterOptions] = useState({
         locationOptions: [],
         itemOptions: [],
@@ -36,7 +36,7 @@ const Header = ({ filters, handleFilterChange }) => {
                 <h4 className={`${styles.supplyText}`} style={{ margin: '0px', textAlign: 'center' }}>
                     Search item order counts.
                 </h4>
-                <a href="/supply/item-history-print" style={{ position: 'absolute', top: '11px', right: '10px' }}>
+                <a href="#" onClick={handlePrint} style={{ position: 'absolute', top: '11px', right: '10px' }}>
                     Print Report
                 </a>
             </div>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Hero from "../../../components/Hero";
 import Header from "./Header";
 import { formatDateForApi, getCurrentDate, getOneMonthBeforeDate, getItemHistory } from "../helpers";
@@ -8,6 +8,8 @@ import Pagination from "../../../components/Pagination";
 import Results from "./Results";
 import { setRequisitionSearchParam } from "../fulfillment/supply-fulfillment-ctrl";
 import RequisitionPopup from "../requisitionhistory/RequisitionPopup";
+import ItemHistoryPrint from "app/views/supply/itemhistory/ItemHistoryPrint";
+import { useReactToPrint } from "react-to-print";
 
 const computeMapping = (result, filters) => {
     const newMapping = {};
@@ -36,6 +38,7 @@ const computeMapping = (result, filters) => {
 }
 
 export default function ItemHistoryIndex () {
+    const printRef = useRef();
     const [mapping, setMapping] = useState([]);
     const [paginatedMapping, setPaginatedMapping] = useState([]);
     const [filters, setFilters] = useState({
@@ -111,12 +114,17 @@ export default function ItemHistoryIndex () {
         setSelectedRequisition(null);
     };
 
+    const handlePrint = useReactToPrint({
+        content: () => printRef.current,
+    });
+
     return (
         <div>
             <Hero>Item History</Hero>
             <Header
                 filters={filters}
                 handleFilterChange={handleFilterChange}
+                handlePrint={handlePrint}
             />
             <div className={styles.contentContainer}>
                 {loading ? (
@@ -141,6 +149,14 @@ export default function ItemHistoryIndex () {
                     closeModal={closeModal}
                 />
             )}
+            <div style={{ display: 'none' }}>
+                <div ref={printRef}>
+                    <ItemHistoryPrint
+                      params={filters}
+                      itemHistories={mapping}
+                    />
+                </div>
+            </div>
         </div>
     );
 };

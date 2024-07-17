@@ -798,3 +798,62 @@ input[type=email], input[type=number], input[type=password], input[type=search],
     background: #fafafa;
     padding: .3em;
 }
+
+
+.supplyItemPrintHeaderRow {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+    font-weight: bold;
+    border-bottom: black solid 2px;
+    margin-bottom: 10px;
+}
+.supplyItemPrintRow {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+    margin-top: 10px;
+    padding-bottom: 10px;
+    border-bottom: grey solid 1px;
+}
+.supplyItemPrintInnerRow {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+.supplyItemPrintTotalRow {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+    margin-top: 20px;
+}
+.supplyItemPrintContainer {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+.supplyItemPrintItem {
+    flex: 0 1 auto;
+    margin-top: 3px;
+    margin-bottom: 3px;
+}
+.supplySimpleContainer {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+.supplySimpleItem {
+    flex: 0 0 auto;
+}
