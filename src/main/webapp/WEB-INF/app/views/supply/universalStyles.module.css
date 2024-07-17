@@ -94,6 +94,9 @@
 .paddingX {
     padding: 10px;
 }
+.paddingV {
+    padding: 5px;
+}
 .darkGray {
     color: #4d4d4d;
 }
@@ -125,6 +128,10 @@
 }
 .marginV {
     margin: 5px;
+}
+.closeTo {
+    line-height: 10px;
+    padding: 0;
 }
 
 
@@ -387,6 +394,44 @@ table.essTable tbody tr td {
     background: rgba(51, 51, 51, .05);
 }
 
+.supplyListingTablePrintOnly {
+    padding-top: 0;
+}
+.supplyListingTablePrintOnly tbody tr {
+    cursor: pointer;
+}
+.supplyListingTablePrintOnly tbody tr:hover {
+    background: #e9eeff;
+}
+.supplyListingTablePrintOnly tbody tr:nth-child(even) {
+    background: rgba(51, 51, 51, 0.05);
+}
+.supplyListingTablePrintOnly tbody tr:nth-child(even):hover {
+    background: #e9eeff;
+}
+.supplyListingTablePrintOnly tbody tr.warn {
+    background: #ffbcbc;
+    border-bottom: 0px solid #ffbcbc !important;
+}
+.supplyListingTablePrintOnly tbody tr.warn:hover {
+    background: #ff8989;
+}
+.supplyListingTablePrintOnly tbody tr.warn:nth-child(even) {
+    background: rgba(255, 188, 188, 0.6);
+    border-bottom: 0px solid rgba(255, 188, 188, 0.6) !important;
+}
+.supplyListingTablePrintOnly tbody tr.warn:nth-child(even):hover {
+    background: #ff8989;
+}
+.supplyListingTablePrintOnly tbody tr td {
+    padding: .5em;
+    border: 0;
+    text-align: center !important;
+}
+.supplyListingTablePrintOnly tbody tr td .actionLink {
+    font-size: .9em;
+}
+
 /* tick and cross for Approved Requisition Requests */
 .tick:before {
     content: "\2713";
@@ -603,42 +648,36 @@ option {
 
 /* Print */
 /* Margins to use when printing */
-@media print {
-    .largePrintFontSize {
-        font-size: 11pt;
-    }
-
-    .noPrint {
-        display: none;
-    }
-
-    .printOnly {
-        display: none;
-        visibility: hidden;
-    }
-
-    .printGrayBottomBorder {
-        border-bottom: 1px darkgray solid;
-    }
-
-    /* Print overrides of standard styles */
-    html, body {
-        background: white !important;
-        height: 98%;
-    }
-
-    .contentWrapper {
-        width: auto !important;
-    }
-
-    .viewAnimateContainer {
-        width: auto !important;
-    }
-
-    .contentContainer {
-        box-shadow: none !important;
-    }
+/* General styles */
+.largePrintFontSize {
+    font-size: 11pt;
 }
+
+.noPrint {
+    display: none;
+}
+
+.printOnly {
+    display: none; /* Initially hidden */
+    visibility: hidden;
+}
+
+.printGrayBottomBorder {
+    border-bottom: 1px darkgray solid;
+}
+
+.contentWrapper {
+    width: auto !important;
+}
+
+.viewAnimateContainer {
+    width: auto !important;
+}
+
+.contentContainer {
+    box-shadow: none !important;
+}
+
 
 /* Example CSS definition for warn-important */
 .warnImportant {

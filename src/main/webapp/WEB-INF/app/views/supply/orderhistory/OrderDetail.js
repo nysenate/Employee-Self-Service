@@ -1,17 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import styles from './OrderDetail.module.css';
 import Hero from "../../../components/Hero";
 import CustomerPopover from './CustomPopover';
 import { alphabetizeLineItems, formatDate} from "../helpers";
 import { fetchApiJson } from "app/utils/fetchJson";
-
-function print() {
-  console.log("implement print plz!");
-}
+import OrderDetailPrint from "app/views/supply/orderhistory/OrderDetailPrint";
 
 //"selected Version" choose box("Original") blue "Print Page" button (no box)
-const SelectVersion = ({ orders, setCurrentOrder }) => {
+const SelectVersion = ({ orders, setCurrentOrder, handlePrint }) => {
   const [selectedIndex, setSelectedIndex] = useState(orders.result.length - 1); // Default to "Current"
 
   useEffect(() => {
@@ -42,7 +39,7 @@ const SelectVersion = ({ orders, setCurrentOrder }) => {
           })}
           <option value="0">Original</option>
         </select>
-        <a style={{ float: 'right', padding: '5px 20px 0px 0px' }} onClick={print}>
+        <a style={{ float: 'right', padding: '5px 20px 0px 0px' }} onClick={handlePrint}>
           Print Page
         </a>
       </div>
@@ -163,6 +160,7 @@ const ItemTable = ({items}) => {
 }
 
 export default function OrderDetail () {
+  const printRef = useRef();
   const location = useLocation();
   const { order } = location.state || {};
   const [currentOrder, setCurrentOrder] = useState(null);
@@ -181,6 +179,16 @@ export default function OrderDetail () {
     fetchRequisitionHistory();
   }, []);
 
+  const handlePrint = () => {
+    const printContent = printRef.current.innerHTML;
+    const originalContent = document.body.innerHTML;
+
+    document.body.innerHTML = printContent;
+    window.print();
+    document.body.innerHTML = originalContent;
+    window.location.reload();  // Ensure the page is reloaded to re-mount the original content
+  };
+
   if (!currentOrder) {
     return <div>No requisition data available.</div>;
   }
@@ -188,10 +196,15 @@ export default function OrderDetail () {
   return (
       <div>
         <Hero>Requisition Order: {order.requisitionId}</Hero>
-        <SelectVersion orders={orders} setCurrentOrder={setCurrentOrder}/>
+        <SelectVersion orders={orders} setCurrentOrder={setCurrentOrder} handlePrint={handlePrint}/>
         <OrderInfo order={currentOrder} />
         <SpecialInstructions order={currentOrder}/>
         <ItemTable items={currentOrder.lineItems}/>
+
+        {/*Print*/}
+        <div ref={printRef} style={{ display: 'none' }}>
+          <OrderDetailPrint selectedVersion={currentOrder} />
+        </div>
       </div>
   );
 };

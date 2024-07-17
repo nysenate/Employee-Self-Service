@@ -447,6 +447,9 @@ const ActionButtons = ({
                     onMouseEnter={() => {
                         // Show popover logic
                     }}
+                    onMouseLeave={() => {
+                        // Show popover logic
+                    }}
                 >Approve</Button>
             )}
 

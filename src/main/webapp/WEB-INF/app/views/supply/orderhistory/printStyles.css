@@ -1,0 +1,37 @@
+/* Print-specific styles */
+@media print {
+    .printOnly {
+        display: block !important; /* Ensure it is set to block for printing */
+        visibility: visible !important;
+    }
+
+    .noPrint {
+        display: none !important;
+    }
+
+    .largePrintFontSize {
+        font-size: 11pt !important;
+    }
+
+    .printGrayBottomBorder {
+        border-bottom: 1px darkgray solid !important;
+    }
+
+    /* Print overrides of standard styles */
+    html, body {
+        background: white !important;
+        height: 98%;
+    }
+
+    .contentWrapper {
+        width: auto !important;
+    }
+
+    .viewAnimateContainer {
+        width: auto !important;
+    }
+
+    .contentContainer {
+        box-shadow: none !important;
+    }
+}
