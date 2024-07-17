@@ -553,6 +553,11 @@ table.essTable tbody tr td {
 .bold {
     font-weight: 700;
 }
+.boldText {
+    padding: 10px;
+    margin: 0;
+    font-weight: 600;
+}
 
 /*p {*/
 /*    display: block;*/
@@ -658,16 +663,18 @@ option {
     .printOnly {
         display: block !important;
     }
+    .noPrint {
+        display: none;
+    }
 }
 
 @media screen {
     .printOnly {
         display: none;
     }
-}
-
-.noPrint {
-    display: none;
+    .noPrint {
+        display: block !important;
+    }
 }
 
 .printGrayBottomBorder {
