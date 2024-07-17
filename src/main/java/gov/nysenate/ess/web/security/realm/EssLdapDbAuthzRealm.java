@@ -55,12 +55,13 @@ public class EssLdapDbAuthzRealm extends AuthorizingRealm
     @Autowired
     public EssLdapDbAuthzRealm(LdapAuthService essLdapAuthService, EmployeeInfoService employeeInfoService,
                                EssRoleService essRoleService, EssPermissionService essPermissionService,
-                               SlackChatService slackChatService) {
+                               SlackChatService slackChatService, EmployeeDao employeeDao) {
         this.essLdapAuthService = essLdapAuthService;
         this.employeeInfoService = employeeInfoService;
         this.essRoleService = essRoleService;
         this.essPermissionService = essPermissionService;
         this.slackChatService = slackChatService;
+        this.employeeDao = employeeDao;
     }
 
     @Override
@@ -97,7 +98,7 @@ public class EssLdapDbAuthzRealm extends AuthorizingRealm
                             authResult.getName(), authResult.getPerson());
                 }
             }
-            catch (EmployeeException e) {
+            catch (Exception e) {
                 String warning = "THIS IS NOT NECESSARILY A PROBLEM: An error occurred while verifying the following LDAP info in SFMS: "
                         + authResult.getPerson().getEmployeeId() + "," + authResult.getPerson().getEmail();
                 logger.warn(warning);
@@ -137,6 +138,8 @@ public class EssLdapDbAuthzRealm extends AuthorizingRealm
                 throw new IncorrectCredentialsException("The username or password is invalid.");
             case CONNECTION_ERROR:
                 throw new AuthenticationException("Failed to connect to the authentication server.");
+            case LDAP_MISMATCH_EXCEPTION:
+                throw new AuthenticationException("There was a mismatch between LDAP & SFMS");
             default:
                 throw new AuthenticationException("An unknown exception occurred while authenticating against LDAP.");
         }
