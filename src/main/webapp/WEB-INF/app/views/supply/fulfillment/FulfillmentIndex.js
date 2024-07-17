@@ -88,7 +88,6 @@ export default function FulfillmentIndex() {
     };
 
     const handleRowClick = (requisition) => {
-        console.log(requisition);
         setSelectedRequisition(requisition); // Set the selected requisition
         setRequisitionSearchParam(requisition.requisitionId);
         requisition.status == 'APPROVED' || requisition.status == 'REJECTED' ? setIsImmutableOpen(true) : setIsModalOpen(true); // Open the modal

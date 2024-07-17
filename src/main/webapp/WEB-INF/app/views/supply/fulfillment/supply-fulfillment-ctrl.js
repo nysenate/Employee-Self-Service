@@ -97,11 +97,8 @@ export const fetchLocationStatistics = async () => {
     const moment = new Date();
     const year = moment.getFullYear();
     const month = moment.getMonth() + 1;
-    console.log("year: ", year, " month: ", month);
     try {
         const response = await fetchApiJson(`/supply/statistics/locations?month=${month}&year=${year}`);
-        console.log("calculateLocationStatistics response:", response);
-        console.log("Returning response.result.items: ", response.result.items);
         return response.result.items;
     } catch (err) {
         console.error("calculateLocationStatistics Error: ", err);

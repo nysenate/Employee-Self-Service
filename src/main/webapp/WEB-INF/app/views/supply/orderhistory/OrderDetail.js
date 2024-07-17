@@ -154,7 +154,7 @@ const ItemTable = ({items}) => {
 export default function OrderDetail() {
   const printRef = useRef();
   const location = useLocation();
-  const { order } = location.state || {};
+  const { order, print } = location.state || {};
   const [currentOrder, setCurrentOrder] = useState(null);
   const [orders, setOrders] = useState(null);
 
@@ -170,6 +170,12 @@ export default function OrderDetail() {
     };
     fetchRequisitionHistory();
   }, [order]);
+
+  useEffect(() => {
+    if (print && currentOrder) {
+      handlePrint();
+    }
+  }, [print, currentOrder]);
 
   const handlePrint = useReactToPrint({
     content: () => printRef.current,

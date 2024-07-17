@@ -210,6 +210,10 @@ const OrderContent = ({
         navigate(`/supply/order-history/order/${originalRequisition.requisitionId}`, { state: { order: originalRequisition } });
     };
 
+    const handlePrintClick = () => {
+        navigate(`/supply/order-history/order/${originalRequisition.requisitionId}`, { state: { order: originalRequisition, print: true } });
+    };
+
     return (
         <div className={`${styles.grid} ${styles.contentInfo}`}>
             <div className={styles.col812}>
@@ -290,7 +294,13 @@ const OrderContent = ({
 
                 <h4>Actions</h4>
                 <div style={{ textAlign: 'center' }}>
-                    <a target="_blank" href={`/supply/requisition/requisition-view?requisition=${editableRequisition.requisitionId}&print=true`}>
+                    <a
+                      href="#"
+                      onClick={(e) => {
+                          e.preventDefault();
+                          handlePrintClick();
+                      }}
+                    >
                         Print Requisition
                     </a>
                 </div>
@@ -303,7 +313,7 @@ const OrderContent = ({
                                 redirectToFullHistory();
                             }}
                         >
-                            View full history
+                            View History
                         </a>
                     </div>
                 )}
@@ -465,9 +475,15 @@ const ActionButtons = ({
 };
 
 export function FulfillmentImmutable({ requisition, isModalOpen, closeModal }) {
+    const navigate = useNavigate();
+
     const acceptShipment = () => {
         console.log("Implement whatever acceptShipment(requisition) does from fulfillment-immutable-module.jsp");
     }
+
+    const handlePrintClick = () => {
+        navigate(`/supply/order-history/order/${requisition.requisitionId}`, { state: { order: requisition, print: true } });
+    };
 
     const Title = (requisition) => {
         if(!isModalOpen || !requisition) return "Err";
@@ -546,7 +562,13 @@ export function FulfillmentImmutable({ requisition, isModalOpen, closeModal }) {
 
                   <h4>Actions</h4>
                   <div style={{ textAlign: 'center' }}>
-                      <a target="_blank" href={`/supply/requisition/requisition-view?requisition=${requisition.requisitionId}&print=true`}>
+                      <a
+                        href="#"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            handlePrintClick();
+                        }}
+                      >
                           Print Requisition
                       </a>
                   </div>
