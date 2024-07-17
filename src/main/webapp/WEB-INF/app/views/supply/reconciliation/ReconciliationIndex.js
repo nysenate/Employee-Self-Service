@@ -11,7 +11,8 @@ import Popup from "../../../components/Popup";
 export default function ReconciliationIndex() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
 
   const [selectedItem, setSelectedItem] = useState(null);
   const [viewItems, setViewItems] = useState([]);
@@ -125,23 +126,24 @@ export default function ReconciliationIndex() {
   const reconcile = async () => {
     setReconciliationStatus({
       attempted: true,
+      // resetResults:
       result: {},
       resultErrorMap: new Map()
     });
-
     if (!inventory.isComplete()) {
       return;
     }
 
+    // reconcileApi.save($scope.inventory).$promise:
     try {
-      // THIS NEEDS TO BE DONE
-      const response = await saveReconciliation(inventory); //This is the POST
+      const response = await saveSupplyReconciliation(inventory); //This is the POST
 
       // saveResults(response)
       setReconciliationStatus(prevStatus => ({
         ...prevStatus,
         result: response.result
       }));
+      // catch($scope.handleErrorResponse)
       response.result.errors.forEach(error => {
         setReconciliationStatus(prevStatus => ({
           ...prevStatus,
@@ -152,9 +154,9 @@ export default function ReconciliationIndex() {
       // displayReconciliationResults
       console.log(response.result);
       if (response.result.success) {
-        setIsModalOpen(true);  //This is supposed to be success popop
+        setIsSuccessModalOpen(true);  //This is supposed to be success popop
       } else {
-        setIsModalOpen(true);  //This is supposed to be error popop
+        setIsErrorModalOpen(true);  //This is supposed to be error popop
       }
     } catch (error) {
       console.error('Error during reconciliation:', error);
@@ -162,7 +164,8 @@ export default function ReconciliationIndex() {
   };
 
   const closeModal = () => {
-    setIsModalOpen(false);
+    setIsSuccessModalOpen(false);
+    setIsErrorModalOpen(false);
   };
 
   if (loading) {
@@ -288,13 +291,18 @@ export default function ReconciliationIndex() {
             </div>
           </div>
         </div>
-        <ReconciliationErrorPopup isModalOpen={isModalOpen} closeModal={closeModal} />
+        <ReconciliationSuccessPopup isModalOpen={isSuccessModalOpen} closeModal={closeModal} />
+        <ReconciliationErrorPopup isModalOpen={isErrorModalOpen} closeModal={closeModal} />
       </div>
   );
 }
 
 export const fetchSupplyReconciliation = async () => {
   return fetchApiJson('/supply/reconciliation', { method: 'GET' });
+};
+
+export const saveSupplyReconciliation = async (inventory) => {
+  return fetchApiJson('/supply/reconciliation', { method: 'POST', payload: inventory });
 };
 
 const alphabetizeItemsByCommodityCode = (items) => {
@@ -306,9 +314,32 @@ const alphabetizeItemsByCommodityCode = (items) => {
   return items;
 };
 
+const ReconciliationSuccessPopup = ({ isModalOpen, closeModal }) => {
+  const navigate = useNavigate();
+  const resolve = () => {
+    navigate("/supply/reconciliation");
+    closeModal();
+  };
+  return (
+    <Popup
+      isLocked={true}
+      isOpen={isModalOpen}
+      onClose={closeModal}
+      title={"Successful reconciliation"}
+    >
+      <div className={styles.confirmModal}>
+        <div style={{ textAlign: 'left', padding: '12px'}}>
+          <div className={styles.inputContainer}>
+            <input type={"button"} onClick={resolve} className={styles.approveButton} value={"Ok"} title={"Ok"} tabIndex={"1"}/>
+          </div>
+        </div>
+      </div>
+    </Popup>
+  );
+}
+
 const ReconciliationErrorPopup = ({ isModalOpen, closeModal }) => {
   const handleReviewErrors = () => {
-    console.log("Implement");
     closeModal();
   };
   return (
