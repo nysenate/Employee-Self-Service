@@ -443,6 +443,7 @@ const ActionButtons = ({
                 <Button
                     style={{ width: '15%', backgroundColor: '#6270bd' }}
                     onClick={handleProcess}
+                    disabled={originalRequisition.customer.employeeId == JSON.parse(localStorage.getItem('ess.auth.empId'))}
                     onMouseEnter={() => {
                         // Show popover logic
                     }}
