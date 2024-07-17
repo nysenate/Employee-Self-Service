@@ -1,26 +1,52 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import styles from './OrderDetail.module.css';
 import Hero from "../../../components/Hero";
 import CustomerPopover from './CustomPopover';
 import { alphabetizeLineItems, formatDate} from "../helpers";
+import { fetchApiJson } from "app/utils/fetchJson";
 
 function print() {
   console.log("implement print plz!");
 }
 
 //"selected Version" choose box("Original") blue "Print Page" button (no box)
-const SelectVersion = () => {
+const SelectVersion = ({ orders, setCurrentOrder }) => {
+  const [selectedIndex, setSelectedIndex] = useState(orders.result.length - 1); // Default to "Current"
+
+  useEffect(() => {
+    setCurrentOrder(orders.result[selectedIndex]);
+  }, [selectedIndex, setCurrentOrder, orders.result]);
+
+  const handleVersionSelect = (e) => {
+    const index = parseInt(e.target.value, 10);
+    setSelectedIndex(index);
+    setCurrentOrder(orders.result[index]);
+  };
+
   return (
-      <div className={styles.contentContainer}>
-        <div className={styles.contentInfo}>
-          <label>Selected Version:</label>
-          {/*Insert Button for Original*/}
-          <div className={styles.a1} style={{float: 'right', padding: '5px 20px 0px 0px'}} onClick={print}>
-            Print Page
-          </div>
-        </div>
+    <div className={styles.contentContainer}>
+      <div className={styles.contentInfo}>
+        <label>Selected Version: </label>
+        <select onChange={handleVersionSelect} value={selectedIndex}>
+          {orders.result.length > 1 && (
+            <option value={orders.result.length - 1}>Current</option>
+          )}
+          {orders.result.slice().reverse().map((order, reversedIndex) => {
+            const index = orders.result.length - 1 - reversedIndex;
+            return (
+              index > 0 && index < orders.result.length - 1 && (
+                <option value={index} key={index}>{index + 1}</option>
+              )
+            );
+          })}
+          <option value="0">Original</option>
+        </select>
+        <a style={{ float: 'right', padding: '5px 20px 0px 0px' }} onClick={print}>
+          Print Page
+        </a>
       </div>
+    </div>
   );
 }
 
@@ -137,21 +163,35 @@ const ItemTable = ({items}) => {
 }
 
 export default function OrderDetail () {
-  const { orderId } = useParams();
   const location = useLocation();
   const { order } = location.state || {};
+  const [currentOrder, setCurrentOrder] = useState(null);
+  const [orders, setOrders] = useState(null);
 
-  if (!order) {
+  useEffect(() => {
+    const fetchRequisitionHistory = async () => {
+      try {
+        const response = await fetchApiJson(`/supply/requisitions/history/${order.requisitionId}`);
+        setCurrentOrder(order);
+        setOrders(response);
+      } catch (err) {
+        console.error("Issue fetching order history: ", err);
+      }
+    }
+    fetchRequisitionHistory();
+  }, []);
+
+  if (!currentOrder) {
     return <div>No requisition data available.</div>;
   }
 
   return (
       <div>
-        <Hero>Requisition Order: {orderId}</Hero>
-        <SelectVersion/>
-        <OrderInfo order={order} />
-        <SpecialInstructions order={order}/>
-        <ItemTable items={order.lineItems}/>
+        <Hero>Requisition Order: {order.requisitionId}</Hero>
+        <SelectVersion orders={orders} setCurrentOrder={setCurrentOrder}/>
+        <OrderInfo order={currentOrder} />
+        <SpecialInstructions order={currentOrder}/>
+        <ItemTable items={currentOrder.lineItems}/>
       </div>
   );
 };

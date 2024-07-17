@@ -584,6 +584,22 @@ button, input, select, textarea {
 button, input {
     line-height: normal;
 }
+button, select {
+    text-transform: none;
+}
+select {
+    padding: .3em .5em;
+    background: #fff;
+    border: 1px solid #999;
+}
+option {
+    font-weight: normal;
+    display: block;
+    min-height: 1.2em;
+    padding: 0px 2px 1px;
+    white-space: nowrap;
+}
+
 
 /* Print */
 /* Margins to use when printing */
