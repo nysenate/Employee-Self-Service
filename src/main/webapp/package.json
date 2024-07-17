@@ -30,6 +30,7 @@
     "react-router-dom": "^6.23.1",
     "react-select": "^5.8.0",
     "react-tippy": "^1.4.0",
+    "react-to-print": "^2.15.1",
     "regenerator-runtime": "^0.13.9",
     "styled-components": "^6.1.11",
     "url-loader": "^4.1.1"

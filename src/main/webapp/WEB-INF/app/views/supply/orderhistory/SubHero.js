@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './OrderHistoryIndex.module.css';
+import styles from '../universalStyles.module.css';
 
 const SubHero = ({ fromDate, setFromDate, toDate, setToDate, status, setStatus, statusOptions }) => {
   const handleStatusChange = (event) => {

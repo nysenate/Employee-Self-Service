@@ -653,13 +653,21 @@ option {
     font-size: 11pt;
 }
 
-.noPrint {
-    display: none;
+/* printStyles.module.css */
+@media print {
+    .printOnly {
+        display: block !important;
+    }
 }
 
-.printOnly {
-    display: none; /* Initially hidden */
-    visibility: hidden;
+@media screen {
+    .printOnly {
+        display: none;
+    }
+}
+
+.noPrint {
+    display: none;
 }
 
 .printGrayBottomBorder {

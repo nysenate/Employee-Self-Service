@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "react-tippy": "^1.4.0"
+    "react-tippy": "^1.4.0",
+    "react-to-print": "^2.15.1"
   }
 }

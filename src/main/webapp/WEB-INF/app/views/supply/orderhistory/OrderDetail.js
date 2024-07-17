@@ -1,13 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useParams, useLocation } from 'react-router-dom';
-import styles from './OrderDetail.module.css';
+import { useLocation } from 'react-router-dom';
+import { useReactToPrint } from 'react-to-print';
+import styles from '../universalStyles.module.css';
 import Hero from "../../../components/Hero";
 import CustomerPopover from './CustomPopover';
-import { alphabetizeLineItems, formatDate} from "../helpers";
+import { alphabetizeLineItems, formatDate } from "../helpers";
 import { fetchApiJson } from "app/utils/fetchJson";
 import OrderDetailPrint from "app/views/supply/orderhistory/OrderDetailPrint";
 
-//"selected Version" choose box("Original") blue "Print Page" button (no box)
+
 const SelectVersion = ({ orders, setCurrentOrder, handlePrint }) => {
   const [selectedIndex, setSelectedIndex] = useState(orders.result.length - 1); // Default to "Current"
 
@@ -47,16 +48,6 @@ const SelectVersion = ({ orders, setCurrentOrder, handlePrint }) => {
   );
 }
 
-/* Right Left Down: (bold all fields, regular answers font)
-Requested By: {order.customer.fullName}   Requested Office: {order.destination.locId} Requested Date: {new Date(order.orderedDateTime).toLocaleString()}
-Status: {order.status}                    Issuer: {order.issuer}                      Issued Date: {?}
-Modified By: {order.modifiedBy.lastName}  Delivery Method: {order.deliveryMethod}
-
-Hoever Details include (Requested By                                    Requested Office)
-                        ^Phone Number: order.customer.workPhone         ^Office Name: order.destination.respCenterHead.name
-                        ^Email: order.customer.email                    ^Address: order.destination.address.formattedAddressWithCounty (clip the part after zip " (Albany County)")
-Also ^ bold field and regular font respond
-*/
 const OrderInfo = ({ order }) => {
   return (
       <div className={styles.contentContainer}>
@@ -159,7 +150,8 @@ const ItemTable = ({items}) => {
   );
 }
 
-export default function OrderDetail () {
+
+export default function OrderDetail() {
   const printRef = useRef();
   const location = useLocation();
   const { order } = location.state || {};
@@ -175,36 +167,30 @@ export default function OrderDetail () {
       } catch (err) {
         console.error("Issue fetching order history: ", err);
       }
-    }
+    };
     fetchRequisitionHistory();
-  }, []);
+  }, [order]);
 
-  const handlePrint = () => {
-    const printContent = printRef.current.innerHTML;
-    const originalContent = document.body.innerHTML;
-
-    document.body.innerHTML = printContent;
-    window.print();
-    document.body.innerHTML = originalContent;
-    window.location.reload();  // Ensure the page is reloaded to re-mount the original content
-  };
+  const handlePrint = useReactToPrint({
+    content: () => printRef.current,
+  });
 
   if (!currentOrder) {
     return <div>No requisition data available.</div>;
   }
 
   return (
-      <div>
-        <Hero>Requisition Order: {order.requisitionId}</Hero>
-        <SelectVersion orders={orders} setCurrentOrder={setCurrentOrder} handlePrint={handlePrint}/>
-        <OrderInfo order={currentOrder} />
-        <SpecialInstructions order={currentOrder}/>
-        <ItemTable items={currentOrder.lineItems}/>
+    <div>
+      <Hero>Requisition Order: {order.requisitionId}</Hero>
+      <SelectVersion orders={orders} setCurrentOrder={setCurrentOrder} handlePrint={handlePrint} />
+      <OrderInfo order={currentOrder} />
+      <SpecialInstructions order={currentOrder} />
+      <ItemTable items={currentOrder.lineItems} />
 
-        {/*Print*/}
-        <div ref={printRef} style={{ display: 'none' }}>
-          <OrderDetailPrint selectedVersion={currentOrder} />
-        </div>
+      {/* Print */}
+      <div ref={printRef} className={styles.printOnly}>
+        <OrderDetailPrint selectedVersion={currentOrder} />
       </div>
+    </div>
   );
-};
+}

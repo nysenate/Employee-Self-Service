@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Hero from "../../../components/Hero";
 import SubHero from "./SubHero";
 import Results from "./Results";
-import styles from './OrderHistoryIndex.module.css';
+import styles from '../universalStyles.module.css';
 import useAuth from "app/contexts/Auth/useAuth";
 import Pagination from "../../../components/Pagination";
 import LoadingIndicator from "app/components/LoadingIndicator";
