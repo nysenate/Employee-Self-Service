@@ -84,7 +84,6 @@ public class TravelAppUpdateService {
 //        }
 //        return amd;
 //    }
-
     public void updateRoute(Draft draft) {
         Route fullRoute = routeService.createRoute(draft.getTravelApplication().getRoute());
         MileagePerDiems mileagePerDiems = createMileagePerDiems(fullRoute);
@@ -186,7 +185,7 @@ public class TravelAppUpdateService {
      * Persists the edits in {@code amd} to the application.
      *
      * @param appId The id of the TravelApplication to modify.
-     * @param app The edited travel application.
+     * @param app   The edited travel application.
      * @param user  The logged in user who is making these changes.
      * @return
      */
@@ -208,6 +207,7 @@ public class TravelAppUpdateService {
         app.setStatus(new TravelApplicationStatus(getApprovalStatus(app.getTraveler())));
         travelApplicationService.saveApplication(app);
         ApplicationReview applicationReview = appReviewService.getApplicationReviewByAppId(app.getAppId());
+        appReviewService.saveApplicationReview(applicationReview);
         eventBus.post(new TravelPendingReviewEmailEvent(applicationReview));
         return app;
     }

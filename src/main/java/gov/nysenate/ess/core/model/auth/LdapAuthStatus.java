@@ -8,6 +8,7 @@ public enum LdapAuthStatus
     AUTHENTICATED(true, "The LDAP user has been authenticated successfully."),
     INCORRECT_CREDENTIALS(false, "The LDAP user could not be authenticated due to incorrect credentials."),
     MULTIPLE_MATCH_EXCEPTION(false, "There were multiple matches for the given LDAP user."),
+    LDAP_MISMATCH_EXCEPTION(false, "The LDAP info matches to multiple SFMS entries"),
     NAME_NOT_FOUND_EXCEPTION(false, "There were no matches for the given LDAP user."),
     EMPTY_USERNAME(false, "The uid was empty."),
     EMPTY_CREDENTIALS(false, "The credentials were empty."),

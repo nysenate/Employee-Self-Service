@@ -46,8 +46,8 @@ public enum SqlEmployeeQuery implements BasicSqlQuery
     GET_EMP_BY_ID_SQL(
             GET_ALL_EMPS_SQL.getSql() +  "WHERE per.NUXREFEM = :empId"
     ),
-    GET_EMP_BY_EMAIL_SQL(
-            GET_ALL_EMPS_SQL.getSql() + "WHERE per.NAEMAIL = :email"
+    GET_ACTIVE_EMP_BY_EMAIL_SQL(
+            GET_ALL_EMPS_SQL.getSql() + "WHERE per.NAEMAIL = :email and per.CDEMPSTATUS = 'A'"
     ),
     GET_ACTIVE_EMPS_SQL(
             GET_ALL_EMPS_SQL.getSql() + "WHERE per.CDEMPSTATUS = 'A'"

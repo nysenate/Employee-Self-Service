@@ -8,6 +8,7 @@ import gov.nysenate.ess.core.model.auth.LdapAuthStatus;
 import gov.nysenate.ess.core.model.auth.SenatePerson;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.personnel.EmployeeException;
+import gov.nysenate.ess.core.service.notification.slack.service.SlackChatService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.security.authentication.LdapAuthService;
 import gov.nysenate.ess.core.service.security.authorization.permission.EssPermissionService;
@@ -44,11 +45,24 @@ public class EssLdapDbAuthzRealm extends AuthorizingRealm
     @Value("${auth.enabled:true}") private boolean authEnabled;
     @Value("${auth.master.pass}") private String masterPass;
 
-    @Autowired private LdapAuthService essLdapAuthService;
-    @Autowired private EmployeeInfoService employeeInfoService;
-    @Autowired private EmployeeDao employeeDao;
-    @Autowired private EssRoleService essRoleService;
-    @Autowired private EssPermissionService essPermissionService;
+    private LdapAuthService essLdapAuthService;
+    private EmployeeInfoService employeeInfoService;
+    private EmployeeDao employeeDao;
+    private EssRoleService essRoleService;
+    private EssPermissionService essPermissionService;
+    private SlackChatService slackChatService;
+
+    @Autowired
+    public EssLdapDbAuthzRealm(LdapAuthService essLdapAuthService, EmployeeInfoService employeeInfoService,
+                               EssRoleService essRoleService, EssPermissionService essPermissionService,
+                               SlackChatService slackChatService, EmployeeDao employeeDao) {
+        this.essLdapAuthService = essLdapAuthService;
+        this.employeeInfoService = employeeInfoService;
+        this.essRoleService = essRoleService;
+        this.essPermissionService = essPermissionService;
+        this.slackChatService = slackChatService;
+        this.employeeDao = employeeDao;
+    }
 
     @Override
     public Class getAuthenticationTokenClass() {
@@ -77,11 +91,18 @@ public class EssLdapDbAuthzRealm extends AuthorizingRealm
                 Employee claimedEmployee = employeeDao.getEmployeeByEmail(authResult.getPerson().getEmail());
 
                 if (authResult.getAuthStatus() == LdapAuthStatus.AUTHENTICATED && claimedEmployee.getEmployeeId() != ldapEmployee.getEmployeeId()) {
-                    logger.warn("There is a mismatch in LDAP info for EMP IDs + " + ldapEmployee.getEmployeeId() + ", " + claimedEmployee.getEmployeeId());
+                    String error = "There is a mismatch in LDAP info for EMP IDs + " + ldapEmployee.getEmployeeId() + ", " + claimedEmployee.getEmployeeId();
+                    logger.error(error);
+                    slackChatService.sendMessage(error);
+                    authResult = new LdapAuthResult(LdapAuthStatus.LDAP_MISMATCH_EXCEPTION, authResult.getUid(),
+                            authResult.getName(), authResult.getPerson());
                 }
             }
-            catch (EmployeeException e) {
-                logger.warn("An error occured while authenticating to ESS for employee " + authResult.getPerson().getEmployeeId());
+            catch (Exception e) {
+                String warning = "THIS IS NOT NECESSARILY A PROBLEM: An error occurred while verifying the following LDAP info in SFMS: "
+                        + authResult.getPerson().getEmployeeId() + "," + authResult.getPerson().getEmail();
+                logger.warn(warning);
+                slackChatService.sendMessage(warning);
             }
 
 
@@ -117,6 +138,8 @@ public class EssLdapDbAuthzRealm extends AuthorizingRealm
                 throw new IncorrectCredentialsException("The username or password is invalid.");
             case CONNECTION_ERROR:
                 throw new AuthenticationException("Failed to connect to the authentication server.");
+            case LDAP_MISMATCH_EXCEPTION:
+                throw new AuthenticationException("There was a mismatch between LDAP & SFMS");
             default:
                 throw new AuthenticationException("An unknown exception occurred while authenticating against LDAP.");
         }
