@@ -77,7 +77,6 @@ export default function ToDoReporting() {
       ...prev,
       ...data
     }));
-    console.log("Received Data", data);
   };
 
   const handleAllTasks = (tasks) => {

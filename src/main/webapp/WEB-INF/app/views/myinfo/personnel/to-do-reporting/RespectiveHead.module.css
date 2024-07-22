@@ -60,7 +60,7 @@
     background-color: #e0e0e0;
 }
 
-.close {
+.chip .close {
     margin-left: 5px;
     float: right;
     color: #888;

@@ -68,7 +68,6 @@ export default function EmployeeTaskDetails({ person, taskMap }) {
         window.location.reload();
       }
       const data = await response;
-      console.log(data);// Set received data after successful fetch
     } catch (error) {
       console.error('Error fetching task details:', error);
     } finally {
@@ -102,7 +101,6 @@ export default function EmployeeTaskDetails({ person, taskMap }) {
         window.location.reload();
       }
       const data = await response;
-      console.log(data);// Set received data after successful fetch
     } catch (error) {
       console.error('Error fetching task details:', error);
     } finally {
@@ -117,15 +115,12 @@ export default function EmployeeTaskDetails({ person, taskMap }) {
       empId: empId,
       taskId: taskId,
     };
-    console.log(queryParams)
     const queryString = Object.keys(queryParams).map(key =>
       `${encodeURIComponent(key)}=${encodeURIComponent(queryParams[key])}`
     )
       .join('&');
 
-    const data = `${apiUrl}?${queryString}`;
-    console.log(data);
-    return data;
+    return `${apiUrl}?${queryString}`;
   };
 
   return (

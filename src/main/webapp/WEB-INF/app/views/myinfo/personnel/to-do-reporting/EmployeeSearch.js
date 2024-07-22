@@ -7,6 +7,7 @@ export default function EmployeeSearch({ params, onChildDataChange }) {
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
     params.name = event.target.value;
+    params.offset = 1;
     onChildDataChange(params);
   };
 
