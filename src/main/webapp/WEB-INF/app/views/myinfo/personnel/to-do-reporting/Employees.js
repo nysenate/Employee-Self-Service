@@ -30,6 +30,9 @@ export default function Employees({ finalData, allTasks, params, onChildDataChan
       contSrvDate.setDate(contSrvDate.getDate() + 1);
       const newEmployeeData = {
         name: employee.fullName ?? '',
+        firstName: employee.firstName ?? '',
+        lastName: employee.lastName ?? '',
+        initial: employee.initial ?? '',
         office: employee.respCtr?.respCenterHead?.name ?? '',
         empId: employee.employeeId ?? -1,
         email: employee.email ?? '',
@@ -139,7 +142,9 @@ export default function Employees({ finalData, allTasks, params, onChildDataChan
                   <span> {person.completedCnt}/{person.assignedCnt}</span>
                 </div>
               </td>
-              <td>{person.name}</td>
+              <td>
+                { person.lastName }, { person.firstName }{ person.initial ? ',' : '' } { person.initial }
+              </td>
               <td>{person.office}</td>
             </tr>
             {selectedEmployee === person.empId && (

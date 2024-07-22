@@ -8,7 +8,7 @@ export default function AppLayout({ children }) {
   return (
     <div className="flex flex-row justify-between">
       {children}
-      <main className="w-[880px] h-[600px] flex-none">
+      <main className="w-[880px] h-[800px] flex-none">
         <Outlet/>
       </main>
     </div>

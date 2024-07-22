@@ -42,7 +42,6 @@ export default function EmployeeFilters({ params, onChildDataChange }) {
 
 
   const handleActive = () => {
-    console.log(active);
     if (active) {
       params.empActive = null;
     } else {

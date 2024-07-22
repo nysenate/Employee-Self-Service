@@ -50,7 +50,7 @@ export default function RespectiveHead({ params, onChildDataChange }) {
     onChildDataChange(params);
   };
 
-  const handleChipRemove = (option) => {
+  const handleChipRemove = (option, isRemove) => {
     setSelectedOptions(selectedOptions.filter(item => item.code !== option.code));
 
     let insertIndex = options.findIndex(item => item.code > option.code);
@@ -64,8 +64,10 @@ export default function RespectiveHead({ params, onChildDataChange }) {
       ...prevOptions.slice(insertIndex)
     ]);
 
-    params.respCtrHead = params.respCtrHead.filter(code => code !== option.code);
-    onChildDataChange(params);
+    if (isRemove) {
+      params.respCtrHead = params.respCtrHead.filter(code => code !== option.code);
+      onChildDataChange(params);
+    }
   };
 
   // Function to filter options based on search term
@@ -81,7 +83,7 @@ export default function RespectiveHead({ params, onChildDataChange }) {
 
   const handleRemoveAllChecks = (e) => {
     e.preventDefault();
-    console.log("Clear Selected Offices");
+    selectedOptions.map(option => handleChipRemove(option, false));
     setSelectedOptions([]);
     params.respCtrHead.length = 0;
     onChildDataChange(params);
@@ -96,7 +98,7 @@ export default function RespectiveHead({ params, onChildDataChange }) {
         <div className={styles.searchContainer}>
           <div className={styles.chipsContainer}>
             {selectedOptions.map(option => (
-              <div key={option.code} className={styles.chip} onClick={() => handleChipRemove(option)}>
+              <div key={option.code} className={styles.chip} onClick={() => handleChipRemove(option, true)}>
                 <span>{option.name}</span><span className={styles.close}>×</span>
               </div>
             ))}

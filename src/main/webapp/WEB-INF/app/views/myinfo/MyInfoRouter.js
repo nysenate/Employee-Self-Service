@@ -7,6 +7,7 @@ import SummaryIndex, { summaryLoader } from "app/views/myinfo/personnel/summary/
 import CheckHistoryIndex from "app/views/myinfo/payroll/checkhistory/CheckHistoryIndex";
 import EmergencyAlertInfoIndex from "app/views/myinfo/personnel/emergency-alert-info/EmergencyAlertInfoIndex";
 import ToDoReporting from "app/views/myinfo/personnel/to-do-reporting/ToDoReporting";
+import TodoList from "app/views/myinfo/personnel/todo-list/TodoList";
 
 
 export default function MyInfoRouter() {
@@ -16,7 +17,7 @@ export default function MyInfoRouter() {
         <Route path="" element={<MyInfoLayout/>}>
           <Route path="personnel/summary" element={<SummaryIndex/>}/>
           <Route path="personnel/emergency-alert-info" element={<EmergencyAlertInfoIndex/>}/>
-          <Route path="personnel/todo" element={<h1>Personnel To-Do List</h1>}/>
+          <Route path="personnel/todo" element={<TodoList/>}/>
           <Route path="personnel/todo-report" element={<ToDoReporting/>}/>
           <Route path="payroll/checkhistory" element={<CheckHistoryIndex/>}/>
           <Route path="" element={<Navigate to="personnel/summary" replace/>}/>
