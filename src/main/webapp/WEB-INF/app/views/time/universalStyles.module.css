@@ -1,0 +1,1422 @@
+/* universalStyles.css */
+.contentContainer {
+    font-size: 13px;
+    font-weight: 400;
+    background: #fefefe;
+    position: relative;
+    -webkit-box-shadow: 0 1px 2px #aaa;
+    -moz-box-shadow: 0 1px 2px #aaa;
+    box-shadow: 0 1px 2px #aaa;
+    margin-top: 20px;
+    box-sizing: border-box;
+}
+.contentContainer h1 {
+    font-size: 1.1em;
+    margin: 0;
+    text-align: center;
+    padding: 4px 10px;
+    border-width: 1px;
+    border-style: none none solid none;
+    color: black;
+    border-color: rgba(0, 107, 128, 0.25);
+    line-height: 40px;
+    font-weight: 600;
+}
+
+.contentControls {
+    margin-top: 0;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+    text-align: center;
+}
+.contentControls label, .contentControls p {
+    font-weight: 600;
+    color: #006b80;
+}
+.contentControls>.contentInfo {
+    border-bottom: none;
+}
+.contentInfo {
+    margin-top: 0;
+    padding: 11px;
+    color: #222;
+    text-align: center;
+    border-bottom: 1px solid rgba(0, 107, 128, .25);
+}
+/* Other */
+hr {
+    -moz-box-sizing: content-box;
+    box-sizing: content-box;
+    height: 0;
+}
+hr {
+    outline: 0;
+    border-width: 1px;
+    border-color: #ccc;
+    border-style: solid none none none;
+}
+.textAlignCenter {
+    text-align: center !important;
+}
+.paddingX {
+    padding: 10px;
+}
+.paddingV {
+    padding: 5px;
+}
+.darkGray {
+    color: #4d4d4d;
+}
+.flexHeader {
+    flex: 0 1 auto;
+}
+.flexContent {
+    flex: 1 1 auto;
+}
+.flexContent ul {
+    padding: 0;
+    margin: 0;
+}
+.flexContent li {
+    padding: 5px 5px 5px 20px;
+}
+
+.leftNavContent {
+    padding-bottom: 20px;
+    background: #fafafa;
+}
+.flexColumnBox {
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+}
+.marginTop20 {
+    margin-top: 20px !important;
+}
+.marginV {
+    margin: 5px;
+}
+.closeTo {
+    line-height: 10px;
+    padding: 0;
+}
+
+
+h2 {
+    display: block;
+    font-size: 1.5em;
+    margin-block-start: 0.83em;
+    margin-block-end: 0.83em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    font-weight: bold;
+    unicode-bidi: isolate;
+}
+
+h1, h2 {
+    font-weight: 400;
+}
+
+.specialUlContainer ul {
+    display: block;
+    list-style-type: disc;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    padding-inline-start: 40px;
+    unicode-bidi: isolate;
+}
+
+a {
+    color: teal;
+    text-decoration: none;
+}
+
+/* Order Info */
+.grid {
+    width: 100%;
+    max-width: 1140px;
+    min-width: 755px;
+    margin: 0 auto;
+    overflow: hidden;
+}
+/* Apply common properties to all column classes */
+.col412, .col812, .col112, .col1112, .col12, .col612, .col712, .col212, .col1012, .col14, .col312 {
+    float: left;
+    padding-right: 20px;
+}
+
+/* Set specific widths */
+.col412, .col812, .col112, .col1112, .col12, .col612, .col712, .col212, .col1012 {
+    width: 33.33%;
+}
+.col1012 {
+    width: 83.333%;
+}
+.col212 {
+    width: 16.667%;
+}
+.col812 {
+    width: 66.66%;
+}
+.col112 {
+    width: 8.33%;
+}
+.col1112 {
+    width: 91.66%;
+}
+.col12, .col612 {
+    width: 50%;
+}
+.col712 {
+    width: 58.33%;
+}
+.col14, .col312 {
+    width: 25%;
+}
+
+b, strong {
+    font-weight: 700;
+}
+
+/* Supply Div Table */
+.cornerRibbon {
+    left: -27px;
+    top: 15px;
+    width: 100px;
+    background: #e43;
+    position: absolute;
+    text-align: center;
+    letter-spacing: 1px;
+    color: #f0f0f0;
+    -webkit-transform: rotate(-45deg);
+    -moz-transform: rotate(-45deg);
+    -ms-transform: rotate(-45deg);
+    -o-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+    -webkit-box-shadow: 0 0 10px #888;
+    -moz-box-shadow: 0 0 10px #888;
+    box-shadow: 0 0 10px #888;
+    overflow: visible;
+    white-space: nowrap;
+}
+
+
+/* Item Table */
+table.essTable {
+    width: 100%;
+}
+.supplyListingTable {
+    padding-top: 0;
+}
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+thead {
+    display: table-header-group;
+    vertical-align: middle;
+    unicode-bidi: isolate;
+    border-color: inherit;
+}
+table.essTable thead {
+    background: #fff;
+}
+tr {
+    display: table-row;
+    vertical-align: inherit;
+    unicode-bidi: isolate;
+    border-color: inherit;
+}
+table.essTable thead tr {
+    color: #333;
+    font-size: .9em;
+    border-bottom: 1px solid #155c69;
+}
+th {
+    display: table-cell;
+    vertical-align: inherit;
+    font-weight: bold;
+    text-align: -internal-center;
+    unicode-bidi: isolate;
+}
+table.essTable thead tr th {
+    padding: 10px 5px;
+}
+
+table.essTable tbody tr {
+    border-top: 1px solid transparent;
+    border-bottom: 1px solid #bbb;
+}
+table.essTable tbody tr td {
+    text-align: left;
+}
+
+/* tick and cross for Approved Requisition Requests */
+.tick:before {
+    content: "\2713";
+    color: green;
+    font-weight: bold;
+}
+.cross:before {
+    content: "\2717";
+    color: crimson;
+    font-weight: bold;
+}
+
+/*Buttons*/
+.linkButton {
+    background: none!important;
+    border: none;
+    padding: 0!important;
+    /*optional*/
+    font-family: arial, sans-serif;
+    /*input has OS specific font-family*/
+    color: #069;
+    cursor: pointer;
+}
+.addToCartBtn {
+    width: 90%;
+    margin: 5px 10px 10px 10px;
+    height: 28px;
+
+    background: #799933FF;
+    color: #FEFEFEFF;
+    font-weight: bold;
+    border: none;
+    border-radius: 2px;
+}
+.qtyAdjustButton {
+    margin: 5px 10px 10px 10px;
+    font-size: 1.25em;
+    width: 34px;
+    height: 28px;
+
+    padding: 0;
+    background: #799933FF;
+    color: #FEFEFEFF;
+    font-weight: bold;
+    border: none;
+    border-radius: 2px;
+}
+.qtyInput {
+    margin: 0;
+    width: 50px;
+    padding: 0;
+    height: 28px;
+    text-align: center;
+    font-size: 120%;
+}
+.darkWarn{
+    background-color:#e64727;
+}
+
+/* Filter Select */
+.searchContentContainer {
+    margin: 0;
+    position: relative;
+    display: inline-block;
+    zoom: 1;
+    vertical-align: middle;
+}
+
+
+.searchBar {
+    width: 100%;
+}
+
+.searchOptions__option {
+    width: 100%;
+    /*min-height: 26px;*/
+}
+
+.commodityCode {
+    font-size: 13px;
+}
+
+.description {
+    font-size: 70%;
+}
+
+.bold {
+    font-weight: 700;
+}
+.boldText {
+    padding: 10px;
+    margin: 0;
+    font-weight: 600;
+}
+
+input[type=button].neutralButton,
+input[type=submit].neutralButton,
+button.neutralButton {
+    padding: 5px 10px;
+    background: #8d8d8d;
+    color: #fff;
+    font-weight: 600;
+    border: 2px none #737373;
+    border-bottom-style: solid;
+}
+input[type=button].neutralButton:hover, input[type=submit].neutral-button:hover {
+    background: #a47676;
+}
+
+button, html input[type=button], input[type=reset], input[type=submit] {
+    -webkit-appearance: button;
+    cursor: pointer;
+}
+
+button, input, select, textarea {
+    font-family: inherit;
+    font-size: 100%;
+    margin: 0;
+}
+
+button, input {
+    line-height: normal;
+}
+button, select {
+    text-transform: none;
+}
+select {
+    padding: .3em .5em;
+    background: #fff;
+    border: 1px solid #999;
+}
+option {
+    font-weight: normal;
+    display: block;
+    min-height: 1.2em;
+    padding: 0px 2px 1px;
+    white-space: nowrap;
+}
+
+
+/* Print */
+/* Margins to use when printing */
+/* General styles */
+.largePrintFontSize {
+    font-size: 11pt;
+}
+
+/* printStyles.module.css */
+@media print {
+    .printOnly {
+        display: block !important;
+    }
+    .noPrint {
+        display: none;
+    }
+}
+
+@media screen {
+    .printOnly {
+        display: none;
+    }
+    .noPrint {
+        display: block !important;
+    }
+}
+
+.printGrayBottomBorder {
+    border-bottom: 1px darkgray solid;
+}
+
+.contentWrapper {
+    width: auto !important;
+}
+
+.viewAnimateContainer {
+    width: auto !important;
+}
+
+.contentContainer {
+    box-shadow: none !important;
+}
+
+
+/* Example CSS definition for warn-important */
+.warnImportant {
+    border: 2px solid red; /* Example styling */
+    background-color: #fdd; /* Example background color */
+}
+
+/**/
+.essNotification {
+    padding: .3em;
+    font-weight: 700;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+.essNotification {
+    background: #e64727;
+}
+essNotification h1, .essNotification h2, .essNotification h3, .essNotification h4, .essNotification li, .essNotification p, .essNotification span {
+    color: #fff;
+}
+
+
+/* Modal For reconcil*/
+.confirmModal .confirmationMessage {
+    padding: 20px;
+    text-align: left;
+}
+.confirmModal .confirmationMessage h4, .confirmModal .confirmationMessage p {
+    text-align: center;
+    margin-top: 0;
+}
+.confirmModal .inputContainer {
+    text-align: center;
+}
+.confirmModal .inputContainer input:first-child {
+    margin-left: 0;
+}
+
+input[type=button].approveButton {
+    padding: 5px 10px;
+    background: #6270bd;
+    color: #fff;
+    font-weight: 600;
+    border: 2px none #4655a6;
+    border-bottom-style: solid;
+}
+
+input[type=email], input[type=number], input[type=password], input[type=search], input[type=tel], input[type=text] {
+    border: 1px solid #ccc;
+    outline: 0;
+    background: #fafafa;
+    padding: .3em;
+}
+/**
+* Styles for ESS Time
+*/
+/** --- Time Record Entry Page --- */
+.timeAttendanceHero {
+    padding: .3em;
+    font-weight: bold;
+    background: #006B80;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+.timeAttendanceHero h1 {
+    font-size: 2.5em;
+}
+.timeAttendanceHero h1,
+.timeAttendanceHero h2,
+.timeAttendanceHero h3,
+.timeAttendanceHero h4,
+.timeAttendanceHero p,
+.timeAttendanceHero span {
+    color: white;
+}
+@media print {
+    .timeAttendanceHero h1,
+    .timeAttendanceHero h2,
+    .timeAttendanceHero h3,
+    .timeAttendanceHero h4,
+    .timeAttendanceHero p,
+    .timeAttendanceHero span {
+        color: black;
+    }
+}
+@media print {
+    .timeAttendanceHero {
+        background: white;
+        border-bottom: 1px solid black;
+    }
+}
+.nextRecordForm {
+    text-align: center;
+}
+table.timeRecordEntryTable thead {
+    background: white;
+}
+table.timeRecordEntryTable thead tr th {
+    width: 65px;
+}
+table.timeRecordEntryTable tbody tr {
+    height: 32px;
+}
+table.timeRecordEntryTable tbody tr.timeRecordRow td:nth-child(1) {
+    width: 150px;
+    border-right: 1px solid #ccc;
+}
+table.timeRecordEntryTable tbody tr.timeRecordRow:hover {
+    background: #f3f6ff;
+}
+table.timeRecordEntryTable tbody tr.timeTotalsRow {
+    border-top: 2px solid teal;
+}
+table.timeRecordEntryTable tbody tr.timeTotalsRow td {
+    font-size: 1.1em;
+    text-align: center;
+}
+table.timeRecordEntryTable tbody tr.timeTotalsRow td:first-child {
+    font-weight: 600;
+    font-size: 1em;
+    text-align: right;
+    padding-right: 20px;
+}
+table.timeRecordEntryTable tbody tr.timeTotalsRow td:last-child {
+    font-size: 1.1em;
+    font-weight: 600;
+}
+table.timeRecordEntryTable tbody tr.active.highlightFirst td:nth-child(1) {
+    border-color: #006B80;
+    background: #006B80;
+    color: white;
+}
+table.timeRecordEntryTable tbody tr.weekend {
+    background: #eee;
+}
+table.timeRecordEntryTable tbody tr td {
+    text-align: center;
+    border-right: 1px solid #dedede;
+    /** Credit css-tricks */
+}
+table.timeRecordEntryTable tbody tr td input[type="text"],
+table.timeRecordEntryTable tbody tr td input[type="number"] {
+    width: 100%;
+    height: 35px;
+    font-size: 1.1em;
+    text-align: center;
+    border: 0;
+    background: none;
+}
+/*table.timeRecordEntryTable tbody tr td input:disabled {*/
+/*    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==) repeat;*/
+/*    cursor: not-allowed;*/
+/*}*/
+table.timeRecordEntryTable tbody tr td.dateColumn {
+    width: 180px;
+    text-align: right;
+    padding-right: 20px;
+}
+table.timeRecordEntryTable tbody tr td.entryCommentCol {
+    width: 75%;
+}
+table.timeRecordEntryTable tbody tr td > textarea.entryComment {
+    height: 2em;
+    width: 100%;
+    padding-left: 5px;
+    border: none;
+    background: transparent;
+    text-align: left;
+    resize: none;
+    overflow: hidden;
+    word-wrap: break-word;
+    transition: 0.05s;
+    -moz-transition: 0.05s;
+    -webkit-transition: 0.05s;
+    -o-transition: 0.05s;
+}
+table.timeRecordEntryTable tbody tr td.today {
+    border-left: 3px solid #799933;
+}
+.recordSelectionContainer {
+    text-align: center;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(0, 107, 128, 0.55);
+    overflow: auto;
+}
+.recordSelectionContainer table {
+    text-align: center;
+    width: 90%;
+    margin: auto;
+}
+.recordSelectionContainer table th {
+    border-bottom: 1px solid #ccc;
+}
+.recordSelectionContainer table th,
+.recordSelectionContainer table td {
+    padding: 5px;
+}
+.recordSelectionContainer table tbody tr {
+    cursor: pointer;
+}
+.recordSelectionContainer table tbody tr.active {
+    background: #e7e9f6;
+}
+.recordSelectionContainer table tbody tr:hover {
+    background: #E4EBFF;
+}
+.recordSelectionContainer .recordSelectionMenu {
+    width: 185px;
+    margin: 5px 10px 5px 5px;
+}
+.recordSelectionContainer .recordSelectionMenuDetails {
+    float: left;
+    margin: 5px 5px 5px 25px;
+    line-height: 29px;
+}
+.contentContainer h1.timeEntryTableTitle {
+    text-align: center;
+    margin-top: 10px;
+}
+ul.unsubmittedTeRecList {
+    padding: 0;
+    max-height: 20em;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-flow: column wrap;
+}
+ul.unsubmittedTeRecList li {
+    margin: 5px;
+    flex-grow: 1;
+}
+/** --- Accruals --- */
+.sick,
+.personal,
+.vacation,
+.misc {
+    color: white;
+}
+.sick {
+    background: #d19525;
+    border-color: #d19525;
+}
+.personal {
+    background: #4196A7;
+    border-color: #4196A7;
+}
+.vacation {
+    background: #799933;
+    border-color: #799933;
+}
+.sickText {
+    color: #d19525;
+}
+.personalText {
+    color: #4196A7;
+}
+.vacationText {
+    color: #799933;
+}
+.misc {
+    background: #e64727;
+    border-color: #e64727;
+}
+.captionedHourSquare {
+    margin: 5px auto;
+    padding: 0 3px;
+}
+.captionedHourSquare .hoursCaption {
+    font-size: 1em;
+    line-height: 20px;
+    padding: 0.2em;
+    font-weight: 600;
+}
+.captionedHourSquare .hoursDisplay {
+    line-height: 30px;
+    font-weight: 600;
+    background: white;
+    color: #0e4e5a;
+    border: 1px solid #ddd;
+    border-top-style: none;
+    -webkit-border-radius: 0 0 2px 2px;
+    -webkit-background-clip: padding-box;
+    -moz-border-radius: 0 0 2px 2px;
+    -moz-background-clip: padding;
+    border-radius: 0 0 2px 2px;
+    background-clip: padding-box;
+}
+.captionedHourSquare .ytdHours {
+    border-right: 1px solid #ddd;
+    min-width: 110px;
+    display: inline-block;
+}
+.captionedHourSquare .ytdHours:last-child {
+    border-right: none;
+}
+.accrualLoader .loadingText {
+    text-align: center;
+    margin: 10px 0;
+}
+.accrualLoader .smLoader {
+    font-size: 15px;
+    margin: 15.5px auto;
+}
+.accrualHoursContainer {
+    margin: auto;
+    text-align: center;
+    padding: 10px 20px 0;
+}
+.accrualComponent {
+    display: block;
+    float: left;
+    text-align: center;
+}
+.accrualComponent .captionedHourSquare {
+    width: 150px;
+}
+.accrualComponent .captionedHourSquare .hoursDisplay {
+    font-size: 1.2em;
+    font-weight: 600;
+}
+.accrualComponent .captionedHourSquare .hoursDisplay.sick {
+    border-color: #d19525;
+}
+.accrualComponent .captionedHourSquare .hoursDisplay.personal {
+    border-color: #006B80;
+}
+.accrualComponent .captionedHourSquare .hoursDisplay.vacation {
+    border-color: #799933;
+}
+.accrualComponent .hourLabel {
+    color: #333;
+    padding: 0px;
+    margin: 10px auto;
+    font-size: 1em;
+    font-weight: 400;
+}
+.allowanceContainer {
+    margin: auto;
+    display: flex;
+    justify-content: space-around;
+    padding: 0 20px;
+}
+.allowanceComponent {
+    text-align: center;
+    flex-grow: 1;
+}
+.allowanceComponent .hoursCaption {
+    background: #5c7474;
+    color: white;
+}
+.allowanceComponent .captionedHourSquare .hoursDisplay {
+    display: flex;
+    font-size: 1em;
+}
+.allowanceComponent .captionedHourSquare .hoursDisplay .ytdHours {
+    flex-grow: 1;
+}
+.allowanceComponent .captionedHourSquare .hoursDisplay .ytdHours .hoursCaption {
+    background: white;
+    color: #0e4e5a;
+}
+.recordRemarksContainer {
+    float: left;
+}
+.recordRemarksContainer label {
+    font-weight: 600;
+    margin: 0 10px 0 10px;
+    line-height: 55px;
+}
+.recordRemarksContainer .recordRemarksTextArea {
+    margin: 5px 0;
+    height: 45px;
+    width: 450px;
+    border: 1px solid #ccc;
+    resize: vertical;
+}
+.saveRecordContainer {
+    padding: 10px;
+    background: #f9f9f9;
+}
+.saveRecordContainer input[type="button"] {
+    margin-top: 10px;
+    width: 8.5em;
+}
+/* --- Attendance History Page --- */
+.attendanceListingTable tbody tr {
+    border-bottom: 1px solid #eee !important;
+}
+.attendanceListingTable tbody tr.eTimesheet {
+    cursor: pointer;
+}
+.attendanceListingTable tbody tr.eTimesheet:hover {
+    background: #e9eeff;
+}
+.attendanceListingTable tbody tr:nth-child(even) {
+    background: rgba(51, 51, 51, 0.05);
+}
+.attendanceListingTable tbody tr:nth-child(even).eTimesheet:hover {
+    background: #e9eeff;
+}
+.attendanceListingTable tbody tr td {
+    padding: .5em;
+    border: 0;
+}
+.attendanceListingTable tbody tr td .actionLink {
+    font-size: .9em;
+}
+recordDetailModal,
+[recordDetailModal] {
+    width: 891px;
+    padding: 5px;
+}
+.recordDetailsSection {
+    padding: 0.3em;
+    text-align: center;
+}
+.recordDetailsSection.accrualDisplay {
+    height: 6.5em;
+}
+.recordDetailsSection.accrualDisplay [loaderIndicator] {
+    margin: 1em auto;
+}
+.recordDetailsSection.accrualDisplay table {
+    margin-left: 1em;
+}
+.recordDetailsSection.accrualDisplay table tr td {
+    padding: 0.1em;
+}
+h1.attendanceEntrySubTableTitle {
+    color: white;
+    background: #006B80;
+}
+table.attendanceEntrySubTable {
+    width: 100%;
+    font-size: 1em;
+    border-left: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+}
+table.attendanceEntrySubTable thead tr th.dayCol {
+    width: 3.4em;
+}
+table.attendanceEntrySubTable thead tr th.dateCol {
+    width: 6em;
+}
+table.attendanceEntrySubTable thead tr th.hourCol {
+    width: 5em;
+}
+table.attendanceEntrySubTable tbody tr {
+    border-bottom: none !important;
+}
+table.attendanceEntrySubTable tbody tr:nth-child(odd) {
+    background: rgba(51, 51, 51, 0.05);
+}
+table.attendanceEntrySubTable tbody tr td {
+    padding: .4em !important;
+    border-right: 1px solid #ddd;
+}
+table.attendanceEntrySubTable tbody tr.timeTotalsRow {
+    border-top: 2px solid teal;
+}
+table.attendanceEntrySubTable.smallText tbody tr td {
+    font-size: 0.9em !important;
+}
+/* --- Request Time Off Page --- */
+.timeoffRequestAccrualContainer {
+    width: 600px;
+    text-align: center;
+    margin: auto;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+}
+.timeoffRequestAccrualContainer .accrualSectionTitle {
+    color: #333;
+}
+.timeoffRequestAccrualContainer .accrualSection {
+    margin-top: 10px;
+}
+.timeoffRequestAccrualContainer .accrualSection .accrualComponent {
+    width: 100px;
+}
+.timeoffRequestFormContainer {
+    width: 400px;
+    display: inline-block;
+    vertical-align: top;
+}
+.timeoffRequestFormContainer .labelContainer,
+.timeoffRequestFormContainer .inputContainer {
+    display: inline-block;
+    margin-bottom: 10px;
+}
+.timeoffRequestFormContainer .labelContainer {
+    width: 90px;
+    padding-right: 20px;
+    text-align: right;
+}
+.timeoffRequestFormContainer .inputContainer {
+    width: 300px;
+}
+/*.timeoffRequestFormContainer .inputContainer .dateInput {*/
+/*    width: 220px;*/
+/*    background: url(../../img/20px-999999/calendar.png);*/
+/*    background-repeat: no-repeat;*/
+/*    background-position: 195px 2px;*/
+/*    background-size: 18px;*/
+/*}*/
+.timeoffRequestFormContainer #numberHoursRequested {
+    width: 40px;
+}
+.timeoffRequestFormContainer #reasonTextarea {
+    resize: none;
+    width: 290px;
+    padding: 5px;
+    height: 67px;
+}
+/** --- View Pay Period Calendar Page --- */
+.payPeriodCalHoliday,
+.payPeriodCalContainer .payPeriodCal .payPeriodMonth .uiDatepicker .holidayDate span {
+    background: #d4ff60;
+}
+.payPeriodCalPartialHoliday,
+.payPeriodCalContainer .payPeriodCal .payPeriodMonth .uiDatepicker .holidayDate.partialHolidayDate span {
+    background: #d4ff60;
+    background: repeating-linear-gradient(45deg, #d4ff60, #d4ff60 3px, #fafafa 3px, #fafafa 6px);
+}
+.payPeriodCalPayPeriodEnd,
+.payPeriodCalContainer .payPeriodCal .payPeriodMonth .uiDatepicker .payPeriodEndDate span {
+    background: #B8E3EB;
+}
+.payPeriodCalContainer .legendContainer {
+    color: #777;
+}
+.payPeriodCalContainer .legendContainer .legendBlock {
+    margin-left: 20px;
+    display: inline-block;
+    width: 25px;
+    height: 20px;
+    margin-right: 10px;
+}
+.payPeriodCalContainer .payPeriodCal {
+    width: 730px;
+    margin: auto;
+}
+.payPeriodCalContainer .payPeriodCal .payPeriodMonth {
+    display: inline-block;
+    margin: 10px;
+}
+.payPeriodCalContainer .payPeriodCal .payPeriodMonth .uiDatepicker {
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+    /** Highlighted dates */
+}
+.payPeriodCalContainer .payPeriodCal .payPeriodMonth .uiDatepicker .uiDatepickerMonth {
+    font-weight: bold;
+}
+.payPeriodCalContainer .payPeriodCal .payPeriodMonth .uiDatepicker .uiDatepickerCurrentDay {
+    background: none;
+}
+.payPeriodCalContainer .payPeriodCal .payPeriodMonth .uiDatepicker .currentDate span {
+    font-weight: 600;
+    border: 2px solid #e64727;
+}
+.payPeriodCalContainer .payPeriodCal .payPeriodMonth .uiDatepicker .weekendDate span {
+    color: #aaa;
+}
+.payPeriodCalContainer .payPeriodCal .payPeriodMonth .uiDatepicker .holidayDate.payPeriodEndDate span {
+    background: #d4ff60;
+    /* Old browsers */
+    background: linear-gradient(45deg, #d4ff60 49%, #B8E3EB 52%);
+    /* W3C */
+}
+.payPeriodCalContainer .payPeriodCal .payPeriodMonth .uiDatepicker .holidayDate.partialHolidayDate.payPeriodEndDate span {
+    background: #d4ff60;
+    background: linear-gradient(45deg, transparent, transparent 50%, #B8E3EB 50%), repeating-linear-gradient(45deg, #d4ff60, #d4ff60 3px, #fafafa 3px, #fafafa 6px);
+}
+/* --- Hours Table --- */
+/* A template for accrual and allowance tables */
+.hoursTable {
+    margin: 10px;
+    width: 860px;
+}
+.hoursTable thead {
+    background: white;
+}
+.hoursTable thead tr {
+    border: 0;
+}
+.hoursTable thead tr th {
+    border: 0;
+    padding: 8px;
+}
+.hoursTable thead tr:last-of-type {
+    border-bottom: 1px solid #006B80;
+}
+.hoursTable tbody tr:nth-child(even) {
+    background: rgba(51, 51, 51, 0.05);
+}
+.hoursTable tbody tr.highlighted {
+    border: 1px solid #006B80;
+    border-left-width: 3px;
+}
+.hoursTable tbody tr:not(.invalid):hover {
+    background: rgba(51, 51, 51, 0.1);
+    cursor: pointer;
+}
+.hoursTable tbody tr td {
+    border: 0;
+    border-right: 1px solid #eee;
+    text-align: center;
+    padding: 8px;
+}
+.hoursTable tbody tr td input {
+    width: 50px;
+}
+.hoursTable tbody tr td input.invalid {
+    background: #FFBCBC;
+}
+/** --- Accrual Table --- */
+.accrualTable {
+    margin: 10px;
+    width: 860px;
+}
+.accrualTable thead {
+    background: white;
+}
+.accrualTable thead tr {
+    border: 0;
+}
+.accrualTable thead tr th {
+    border: 0;
+    padding: 8px;
+}
+.accrualTable thead tr:last-of-type {
+    border-bottom: 1px solid #006B80;
+}
+.accrualTable tbody tr:nth-child(even) {
+    background: rgba(51, 51, 51, 0.05);
+}
+.accrualTable tbody tr.highlighted {
+    border: 1px solid #006B80;
+    border-left-width: 3px;
+}
+.accrualTable tbody tr:not(.invalid):hover {
+    background: rgba(51, 51, 51, 0.1);
+    cursor: pointer;
+}
+.accrualTable tbody tr td {
+    border: 0;
+    border-right: 1px solid #eee;
+    text-align: center;
+    padding: 8px;
+}
+.accrualTable tbody tr td input {
+    width: 50px;
+}
+.accrualTable tbody tr td input.invalid {
+    background: #FFBCBC;
+}
+.accrualTable td.accrualHours {
+    border: 0;
+    color: #333;
+}
+.accrualTable td.accrualHours.personal {
+    background: rgba(65, 150, 167, 0.1);
+}
+.accrualTable td.accrualHours.sick {
+    background: rgba(209, 149, 37, 0.1);
+}
+.accrualTable td.accrualHours.vacation {
+    background: rgba(121, 153, 51, 0.1);
+}
+.accrualTable td.availableHours {
+    font-weight: bold;
+}
+.accrualTable td.availableHours.personal {
+    background: rgba(65, 150, 167, 0.2);
+}
+.accrualTable td.availableHours.personal.changed {
+    color: #4196A7;
+}
+.accrualTable td.availableHours.sick {
+    background: rgba(209, 149, 37, 0.2);
+}
+.accrualTable td.availableHours.sick.changed {
+    color: #d19525;
+}
+.accrualTable td.availableHours.vacation {
+    background: rgba(121, 153, 51, 0.2);
+}
+.accrualTable td.availableHours.vacation.changed {
+    color: #799933;
+}
+.accrualTable td.availableHours:not(.changed) {
+    transition: color 0.25s ease-out;
+}
+/** --- Accrual Detail Modal --- */
+table.accrualDetailTable {
+    text-align: right;
+    width: 20em;
+}
+table.accrualDetailTable td {
+    width: 7em;
+}
+table.accrualDetailTable td:first-child {
+    width: 13em;
+}
+table.accrualDetailTable tr.totalRow {
+    border-top: 1px solid #006B80;
+}
+table.accrualDetailTable tr.totalRow td {
+    font-weight: bold;
+}
+div.accrualDetailContent {
+    margin: 0 20px 20px;
+    width: 100%;
+}
+div.accrualDetailTableContainer {
+    padding-right: 0;
+}
+div.accrualDetailTableContainer h4.contentInfo:not(:first-of-type) {
+    margin-top: 15px;
+}
+.accrualDetailInfo table td {
+    text-align: right;
+}
+.accrualDetailInfo .accrualReportLink {
+    text-align: center;
+}
+/* --- Allowance Table --- */
+.allowanceTable {
+    margin: 10px;
+    width: 860px;
+    width: auto;
+    margin: auto;
+}
+.allowanceTable thead {
+    background: white;
+}
+.allowanceTable thead tr {
+    border: 0;
+}
+.allowanceTable thead tr th {
+    border: 0;
+    padding: 8px;
+}
+.allowanceTable thead tr:last-of-type {
+    border-bottom: 1px solid #006B80;
+}
+.allowanceTable tbody tr:nth-child(even) {
+    background: rgba(51, 51, 51, 0.05);
+}
+.allowanceTable tbody tr.highlighted {
+    border: 1px solid #006B80;
+    border-left-width: 3px;
+}
+.allowanceTable tbody tr:not(.invalid):hover {
+    background: rgba(51, 51, 51, 0.1);
+    cursor: pointer;
+}
+.allowanceTable tbody tr td {
+    border: 0;
+    border-right: 1px solid #eee;
+    text-align: center;
+    padding: 8px;
+}
+.allowanceTable tbody tr td input {
+    width: 50px;
+}
+.allowanceTable tbody tr td input.invalid {
+    background: #FFBCBC;
+}
+.printAllowanceUsage {
+    text-align: center;
+}
+.printAllowanceUsage input {
+    margin-bottom: 5px;
+}
+/** --- Manage Employee Records Page --- */
+.recordManageControls {
+    display: flex;
+    justify-content: space-between;
+}
+.recordManageControls ul {
+    padding: 0;
+    margin: 10px;
+}
+.recordManageControls ul li {
+    margin-right: 10px;
+}
+.recordManageControls .selectActions {
+    padding: .5em;
+    text-align: right;
+}
+table.approveAttendanceRecTable {
+    padding: 10px;
+}
+table.approveAttendanceRecTable tbody tr.nameRow {
+    border-top: 2px solid #4196A7;
+}
+table.approveAttendanceRecTable tbody tr.active:hover td {
+    background: #EEF4F9;
+}
+table.approveAttendanceRecTable tbody tr.active td:nth-child(1) {
+    background: white;
+}
+table.approveAttendanceRecTable tbody tr:hover td {
+    background: white;
+}
+table.approveAttendanceRecTable tbody tr:not([disabled]) {
+    cursor: pointer;
+}
+table.approveAttendanceRecTable tbody td {
+    padding: .5em;
+}
+table.approveAttendanceRecTable tbody td:nth-child(1) {
+    border-right: 1px solid #ddd;
+}
+recordReviewModal,
+[recordReviewModal] {
+    padding: 0.4em;
+}
+#recordReviewContent {
+    width: 1163px;
+}
+#recordReviewContent #recordSelectionPane {
+    max-height: calc(100vh - 50px);
+    float: left;
+    display: inline-block;
+    width: 280px;
+    margin: 0;
+    vertical-align: top;
+    background: #f5f5f5;
+    overflow-x: hidden;
+}
+#recordReviewContent #recordSelectionPane #recordSelectionTable {
+    background: white;
+}
+#recordReviewContent #recordSelectionPane #recordSelectionTable tbody tr:hover {
+    background: #e9eeff;
+    cursor: pointer;
+}
+#recordReviewContent #recordSelectionPane #recordSelectionTable tbody tr.active {
+    background: #E4EBFF;
+}
+#recordReviewContent #recordSelectionPane #recordSelectionTable tbody tr.approved {
+    background: #cffc9e;
+}
+#recordReviewContent #recordSelectionPane #recordSelectionTable tbody tr.disapproved {
+    background: #e64727;
+}
+#recordReviewContent #recordSelectionPane #recordSelectionTable tbody tr td {
+    text-align: center;
+}
+#recordReviewContent #recordSelectionPane #recordSelectionTable tbody tr td.nameColumn {
+    text-align: left;
+}
+#recordReviewContent #recordDetailsView {
+    display: inline-block;
+    width: 882px;
+    margin: 0;
+    border-left: 1px solid #ccc;
+}
+#recordReviewContent #recordDetailsView #remarksContainer {
+    padding: .3em;
+    text-align: center;
+}
+#recordReviewContent #recordDetailsView #actionContainer {
+    text-align: center;
+    margin: 0.4em 0;
+    background: #f1f1f1;
+    padding: .5em;
+    display: flex;
+    justify-content: flex-end;
+}
+#recordReviewContent #recordDetailsView #actionContainer .recordApprovalButtons {
+    flex-grow: 1;
+}
+#recordReviewContent .paneTitle {
+    text-align: center;
+    margin: 0;
+    padding: .4em;
+    font-weight: 600;
+    background: white;
+}
+.rejectModalTextarea {
+    resize: none;
+    margin: 10px 10px 20px;
+    width: 375px;
+    height: 100px;
+}
+.rejectModalError {
+    margin: 0;
+    text-align: center;
+    color: #B90504;
+}
+.approveSubmitModalDetails {
+    text-align: center;
+}
+.approveSubmitModalDetails ul {
+    padding: 0;
+    margin: 0;
+}
+.approveSubmitModalDetails .reviewListing {
+    padding: 10px;
+}
+.approveSubmitModalDetails div.reviewListing:last-child {
+    margin-bottom: 20px;
+}
+.approveSubmitModalDetails div.approveInputContainer {
+    margin-bottom: 10px;
+}
+.approveSubmitModalDetails div.approveInputContainer input:first-child {
+    margin-right: 20px;
+}
+.approveSubmitModalDetails .acknowledgedMessage {
+    text-align: left;
+    margin: 10px 20px;
+}
+#recordReminderPrompt .inputContainer,
+#recordReminderPosted .inputContainer {
+    margin-bottom: 10px;
+}
+#recordReminderPrompt .inputContainer input:first-child,
+#recordReminderPosted .inputContainer input:first-child {
+    margin-right: 20px;
+}
+#recordReminderPrompt table.reminderRecords tr.firstEmpRec:not(:first-child),
+#recordReminderPosted table.reminderRecords tr.firstEmpRec:not(:first-child) {
+    border-top: 1px solid #bbb;
+}
+#recordReminderPrompt table.reminderRecords tr.firstEmpRec td,
+#recordReminderPosted table.reminderRecords tr.firstEmpRec td {
+    padding-top: 5px;
+}
+#recordReminderPrompt table.reminderRecords tr.lastEmpRec td,
+#recordReminderPosted table.reminderRecords tr.lastEmpRec td {
+    padding-bottom: 5px;
+}
+#recordReminderPrompt table.reminderRecords tr td:first-child,
+#recordReminderPosted table.reminderRecords tr td:first-child {
+    padding-right: 5px;
+}
+ul.inactiveEmployeeEmailList {
+    text-align: center;
+    padding: 0;
+}
+/* --- Employee Select Directive --- */
+.employeeSelect .contentInfo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+}
+.employeeSelect .contentInfo:not(:first-child) {
+    padding-top: 0;
+}
+.employeeSelect .contentInfo > span {
+    flex-grow: 1;
+    flex-basis: 0;
+}
+.employeeSelect .contentInfo > span:first-child {
+    text-align: right;
+}
+.employeeSelect .contentInfo > span:last-child {
+    text-align: left;
+}
+/** --- Supervisor Grant Page --- */
+.successBoldLabel {
+    color: #799933;
+    font-weight: bold;
+}
+.errorBoldLabel {
+    color: #B90504;
+    font-weight: bold;
+}
+/** --- Employee Search Page --- */
+.employeeSearchPageNotification .essNotification {
+    margin-top: 20px;
+}
+#employeeSearchPage allowanceBar > * {
+    margin-top: 20px;
+}
