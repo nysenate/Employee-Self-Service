@@ -26,8 +26,8 @@ export default function TimeRouter() {
           {/*<Route path="accrual/donation" element={<SickLeaveDonation/>}/>*/}
           {/*<Route path="record/manage" element={<SickLeaveDonation/>}/>*/}
           {/*<Route path="record/emphistory" element={<SickLeaveDonation/>}/>*/}
-          {/*<Route path="accrual/emphistory" element={<SickLeaveDonation/>}/>*/}
-          <Route path="accrual/emp-projections" element={<AccrualEmpHistoryIndex/>}/>
+          <Route path="accrual/emphistory" element={<AccrualEmpHistoryIndex/>}/>
+          {/*<Route path="accrual/emp-projections" element={<AccrualEmpProjectionsIndex/>}/>*/}
           {/*<Route path="record/grant" element={<SickLeaveDonation/>}/>*/}
           {/*<Route path="" element={<Navigate to="attendance/entry" replace/>}/>*/}
           <Route path="*" element={<div>404</div>}/>

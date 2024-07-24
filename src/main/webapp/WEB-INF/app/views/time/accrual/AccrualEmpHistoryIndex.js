@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import styles from "../universalStyles.module.css"
 import Hero from "app/components/Hero";
 import HistoryDirective from "app/views/time/accrual/HistoryDirective";
 import { AccrualDetailsPopup } from "app/views/time/accrual/AccrualDetailsPopup";
-import AccrualHistoryIndex from "app/views/time/accrual/AccrualHistoryIndex";
+import EmpolyeeSelect from "./EmployeeSelect";
 
 const AccrualEmpHistoryIndex = () => {
   const [ selectedEmp, setSelectedEmp ] = useState(null);
@@ -23,13 +23,11 @@ const AccrualEmpHistoryIndex = () => {
   return (
     <div>
       <Hero>Employee Accrual History</Hero>
-      <select></select>
-      {selectedEmp.empId && <HistoryDirective
-        empSupInfo={selectedEmp}
-        activeYears={activeYears}
-        accSummaries={accSummaries}
+      <EmpolyeeSelect selectedEmp={selectedEmp}/>
+      <HistoryDirective
         viewDetails={viewDetails}
-      />}
+        empSupInfo={selectedEmp}
+      />
       {selectedAccrual && (
         <AccrualDetailsPopup
           accruals={selectedAccrual}

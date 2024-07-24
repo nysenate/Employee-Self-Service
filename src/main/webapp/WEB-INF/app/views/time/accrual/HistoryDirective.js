@@ -7,23 +7,125 @@
 *  and handles year filter if user is not the displayed employee <= for manager use in AccrualEmpHistory
 * */
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "../universalStyles.module.css"
 import LoadingIndicator from "app/components/LoadingIndicator";
+import useAuth from "app/contexts/Auth/useAuth";
+import {
+  fetchAccrualActiveYears,
+  fetchAccrualSummaries,
+  fetchEmployeeInfo
+} from "app/views/time/accrual/time-accrual-ctrl";
 
 const HistoryDirective = ({
-                            activeYears,
-                            selectedYear,
-                            setSelectedYear,
-                            accSummaries,
                             viewDetails,
-                            isUser,
-                            isLoading,
-                            isEmpLoading,
                             empSupInfo
                           }) => {
 
   const hideTitle = false;
+
+  // Scope Variables
+  const auth = useAuth();
+  const userId = auth.empId();
+  const [accSummaries, setAccSummaries] = useState({});
+  const [activeYears, setActiveYears] = useState([]);
+  const [selectedYear, setSelectedYear] = useState(null);
+  const [empInfo, setEmpInfo] = useState({});
+  const [isTe, setIsTe] = useState(false);
+  const [loading, setLoading] = useState({
+    empInfo: false,
+    empActiveYears: false,
+    accSummaries: false,
+  });
+  const [error, setError] = useState(null);
+  const empId = empSupInfo?.empId || userId;
+  // Scope Fetch
+  useEffect(() => {
+    if (empId) {
+      getEmpInfo();
+      getEmpActiveYears();
+    }
+  }, [empId]);
+
+  useEffect(() => {
+    if (selectedYear) {
+      getAccSummaries(selectedYear);
+    }
+  }, [selectedYear]);
+
+  useEffect(()=> {
+  }, [accSummaries]);
+  const getEmpInfo = async () => {
+    setLoading((prev) => ({ ...prev, empInfo: true }));
+    try {
+      const response = await fetchEmployeeInfo({ empId, detail: true });
+
+      const empInfo = response.employee;
+      setEmpInfo(empInfo);
+      setIsTe(empInfo.payType === 'TE');
+    } catch (error) {
+      handleErrorResponse(error);
+    } finally {
+      setLoading((prev) => ({ ...prev, empInfo: false }));
+    }
+  };
+  const getEmpActiveYears = async () => {
+    setLoading((prev) => ({ ...prev, empActiveYears: true }));
+    try {
+      const response = await fetchAccrualActiveYears({ empId });
+      const years = response.years.reverse();
+      setActiveYears(years);
+      setSelectedYear(years.length > 0 ? years[0] : null);
+    } catch (error) {
+      handleErrorResponse(error);
+    } finally {
+      setLoading((prev) => ({ ...prev, empActiveYears: false }));
+    }
+  };
+  const getAccSummaries = async (year) => {
+    if (accSummaries[year]) return;
+    setLoading((prev) => ({ ...prev, accSummaries: true }));
+    try {
+      const fromDate = new Date(Date.UTC(year, 0, 1)).toISOString().split('T')[0];
+      const toDate = new Date(Date.UTC(year + 1, 0, 1)).toISOString().split('T')[0];
+      const response = await fetchAccrualSummaries({ empId, fromDate, toDate });
+      const sortedSummaries = response.result
+        .filter(shouldDisplayRecord)
+        .sort((a, b) => new Date(b.payPeriod.endDate) - new Date(a.payPeriod.endDate));
+
+      setAccSummaries((prev) => ({
+        ...prev,
+        [year]: sortedSummaries,
+      }));
+    } catch (error) {
+      handleErrorResponse(error);
+    } finally {
+      setLoading((prev) => ({ ...prev, accSummaries: false }));
+    }
+  };
+  const handleErrorResponse = (error) => {
+    setError({
+      title: "Could not retrieve accrual information.",
+      message: "If you are eligible for accruals please try again later.",
+    });
+    console.error(error);
+  };
+  const shouldDisplayRecord = (record) => {
+    return (!record.computed || record.submitted) && record.empState?.payType !== 'TE';
+  };
+  // Scope Functions
+  const isUser = () => {
+    return empInfo.empId = userId;
+  }
+  const isLoading = () => {
+    return Object.values(loading).some((status) => status);
+  }
+  const isEmpLoading = () => {
+    return (loading.empInfo || loading.empActiveYears);
+  }
+  const clearAccSummaries = () => {
+    setAccSummaries({});
+  }
 
   return (
     <>
