@@ -1,20 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import styles from "app/views/time/universalStyles.module.css";
-import { useSupEmpGroupService } from './supEmpGroupService';
+import { useSupEmpGroupService } from '../accrual/supEmpGroupService';
 
 const EmployeeSelect = ({ selectedSup, selectedEmp, setSelectedSup, setSelectedEmp, activeOnly = false, showSenators = false, payType, selectSubject = 'info' }) => {
   const [iSelEmpGroup, setISelEmpGroup] = useState(-1);
   const [iSelEmp, setISelEmp] = useState(-1);
-  const [allEmps, setAllEmps] = useState([]);
   const { loading, getEmpInfos, getSupEmpGroupList } = useSupEmpGroupService();
   const supEmpGroups = getSupEmpGroupList();
+  const [allEmps, setAllEmps] = useState([]);
   const validSupEmpGroupCount = supEmpGroups.length;
 
   useEffect(() => {
     if (iSelEmpGroup >= 0) {
       const emps = getEmpInfos(iSelEmpGroup, !showSenators);
-      const filteredEmps = emps.filter(emp => employeeFilter(emp));
-      setAllEmps(filteredEmps);
+      console.log("emps", emps);
+      // const filteredEmps = emps.filter(emp => employeeFilter(emp));
+      setAllEmps(emps);
       setSelectedSup(supEmpGroups[iSelEmpGroup]);
       if (iSelEmp === 0) {
         setSelectedEmp(filteredEmps[0]);
@@ -30,13 +31,19 @@ const EmployeeSelect = ({ selectedSup, selectedEmp, setSelectedSup, setSelectedE
     }
   }, [iSelEmp]);
 
+  useEffect(() => {
+    console.log("allEmps:", allEmps);
+  }, [allEmps]);
+
   const employeeFilter = (emp) => {
     return activeFilter(emp) && senatorFilter(emp) && payTypeFilter(emp);
   };
 
   const activeFilter = (emp) => {
     if (!activeOnly) return true;
-    return !moment().isAfter(emp.effectiveEndDate || emp.supEndDate, 'day');
+    const today = new Date();
+    const endDate = emp.effectiveEndDate ? new Date(emp.effectiveEndDate) : new Date(emp.supEndDate);
+    return endDate >= today;
   };
 
   const senatorFilter = (emp) => {

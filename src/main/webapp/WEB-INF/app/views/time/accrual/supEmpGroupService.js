@@ -8,7 +8,6 @@ let supEmpGroupList = [];
 let nameMap = {};
 let supIdMap = {};
 
-// Helper functions
 const compareStrings = (a, b) => {
   const personA = a.empLastName.toUpperCase();
   const personB = b.empLastName.toUpperCase();
@@ -63,6 +62,8 @@ const setEmpMaps = (userId, user) => {
     lastName: user.lastName,
     fullName: `${user.firstName} ${user.lastName}`
   };
+
+  console.log("nameMap", nameMap);
 };
 
 const setSupEmpGroups = () => {
@@ -88,9 +89,9 @@ const setSupEmpGroups = () => {
   });
 
   supEmpGroupList = [extendedSupEmpGroup].concat(empSupEmpGroups);
+  console.log("empSupEmpGroups", empSupEmpGroups);
 };
 
-// Custom hook
 export const useSupEmpGroupService = () => {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState(null);

@@ -7,6 +7,8 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import AccrualHistoryIndex from "./accrual/AccrualHistoryIndex.js";
 import CalendarIndex from "./period/CalendarIndex";
 import AccrualEmpHistoryIndex from "./accrual/AccrualEmpHistoryIndex.js";
+import RecordHistoryIndex from "./record/RecordHistoryIndex.js";
+import RecordEmpHistoryIndex from "./record/RecordEmpHistoryIndex.js";
 // import AccrualProjections from "./accruals/AccrualProjections.js";
 // import SickLeaveDonation from "./accruals/SickLeaveDonation.js";
 //
@@ -20,13 +22,13 @@ export default function TimeRouter() {
       <Routes>
         <Route path="" element={<TimeLayout/>}>
           {/*<Route path="record/entry" element={<AttendanceEntry/>}/>*/}
-          {/*<Route path="record/history" element={<AttendanceHistory/>}/>*/}
+          <Route path="record/history" element={<RecordHistoryIndex/>}/>
           <Route path="period/calendar" element={<CalendarIndex/>}/>
           <Route path="accrual/history" element={<AccrualHistoryIndex/>}/>
           {/*<Route path="accrual/projections" element={<AccrualProjections/>}/>*/}
           {/*<Route path="accrual/donation" element={<SickLeaveDonation/>}/>*/}
           {/*<Route path="record/manage" element={<SickLeaveDonation/>}/>*/}
-          {/*<Route path="record/emphistory" element={<SickLeaveDonation/>}/>*/}
+          <Route path="record/emphistory" element={<RecordEmpHistoryIndex/>}/>
           <Route path="accrual/emphistory" element={<AccrualEmpHistoryIndex/>}/>
           {/*<Route path="accrual/emp-projections" element={<AccrualEmpProjectionsIndex/>}/>*/}
           {/*<Route path="record/grant" element={<SickLeaveDonation/>}/>*/}
