@@ -49,8 +49,13 @@
               </div>
             </div>
             <div class="travel-note">
-              <p ng-if="dirtyDraft.amendment.mealPerDiems.isAllowedMeals">Meals, lodging, and mileage expenses will be calculated automatically.</p>
-              <p ng-if="!dirtyDraft.amendment.mealPerDiems.isAllowedMeals">Lodging and mileage expenses will be calculated automatically.</p>
+              <p ng-if="dirtyDraft.amendment.mealPerDiems.isAllowedMeals">Meals, lodging, and mileage expenses will be
+                calculated automatically.</p>
+              <p ng-if="!dirtyDraft.amendment.mealPerDiems.isAllowedMeals">Lodging and mileage expenses will be
+                calculated automatically.</p>
+              <br/>
+              <p>NYS Thruway toll calculator here: <a target="_blank" href="https://tollcalculator.thruway.ny.gov">https://tollcalculator.thruway.ny.gov</a>
+              </p>
             </div>
           </div>
         </div>
@@ -113,16 +118,16 @@
                 <tbody>
                 <tr ng-repeat="perDiem in dirtyDraft.amendment.lodgingPerDiems.allLodgingPerDiems">
                   <td>
-                  <input ess-address-autocomplete
-                         class="travel-input"
-                         name="lodgingAddress_{{$index}}"
-                         ng-model="perDiem.address.formattedAddressWithCounty"
-                         pass-through="perDiem"
-                         callback="setLodgingPerDiemAddress(perDiem, address)"
-                         placeholder=""
-                         hotel-address-validator
-                         type="text"
-                         size="50" required>
+                    <input ess-address-autocomplete
+                           class="travel-input"
+                           name="lodgingAddress_{{$index}}"
+                           ng-model="perDiem.address.formattedAddressWithCounty"
+                           pass-through="perDiem"
+                           callback="setLodgingPerDiemAddress(perDiem, address)"
+                           placeholder=""
+                           hotel-address-validator
+                           type="text"
+                           size="50" required>
                   </td>
                   <td>{{perDiem.date | date: 'shortDate'}} - {{nextDay(perDiem.date) | date: 'shortDate'}}</td>
                   <td><label>Request Lodging: </label><input type="checkbox"
