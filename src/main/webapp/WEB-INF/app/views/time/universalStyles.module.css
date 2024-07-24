@@ -953,6 +953,45 @@ table.attendanceEntrySubTable.smallText tbody tr td {
     height: 67px;
 }
 /** --- View Pay Period Calendar Page --- */
+.uiDatepicker {
+    width: 17em;
+    padding: .2em .2em 0;
+    display: none;
+    background: #fff;
+    opacity: .95;
+    -webkit-box-shadow: 0 0 10px #ccc;
+    -moz-box-shadow: 0 0 10px #ccc;
+    box-shadow: 0 0 10px #ccc;
+}
+.uiDatepicker .uiDatepickerHeader {
+    position: relative;
+    padding: .2em 0;
+}
+.uiDatepicker table {
+    width: 100%;
+    font-size: .9em;
+    border-collapse: collapse;
+    margin: 0 0 .4em;
+}
+.uiDatepicker .uiDatepickerTitle {
+    margin: 0 2.3em;
+    line-height: 1.8em;
+    text-align: center;
+}
+.uiDatepicker th {
+    padding: .7em .3em;
+    text-align: center;
+    font-weight: 700;
+    border: 0;
+}
+.uiDatepicker td {
+    border: 0;
+    padding: 1px;
+    text-align: center;
+}
+.payPeriodCalContainer .payPeriodCal .payPeriodMonth .uiDatepicker .uiDatepickerMonth {
+    font-weight: 700;
+}
 .payPeriodCalHoliday,
 .payPeriodCalContainer .payPeriodCal .payPeriodMonth .uiDatepicker .holidayDate span {
     background: #d4ff60;

@@ -5,6 +5,7 @@ import AppLayout from "app/components/AppLayout";
 import { Navigate, Route, Routes } from "react-router-dom";
 
 import AccrualHistoryIndex from "./accrual/AccrualHistoryIndex.js";
+import CalendarIndex from "./period/CalendarIndex";
 import AccrualEmpHistoryIndex from "./accrual/AccrualEmpHistoryIndex.js";
 // import AccrualProjections from "./accruals/AccrualProjections.js";
 // import SickLeaveDonation from "./accruals/SickLeaveDonation.js";
@@ -20,7 +21,7 @@ export default function TimeRouter() {
         <Route path="" element={<TimeLayout/>}>
           {/*<Route path="record/entry" element={<AttendanceEntry/>}/>*/}
           {/*<Route path="record/history" element={<AttendanceHistory/>}/>*/}
-          {/*<Route path="calendar" element={<PayrollCalendar/>}/>*/}
+          <Route path="period/calendar" element={<CalendarIndex/>}/>
           <Route path="accrual/history" element={<AccrualHistoryIndex/>}/>
           {/*<Route path="accrual/projections" element={<AccrualProjections/>}/>*/}
           {/*<Route path="accrual/donation" element={<SickLeaveDonation/>}/>*/}
