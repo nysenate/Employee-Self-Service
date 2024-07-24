@@ -88,23 +88,38 @@ public class EssLdapDbAuthzRealm extends AuthorizingRealm
 
             try {
                 Employee ldapEmployee = employeeDao.getEmployeeById(authResult.getPerson().getEmployeeId());
-                Employee claimedEmployee = employeeDao.getEmployeeByEmail(authResult.getPerson().getEmail());
 
-                if (authResult.getAuthStatus() == LdapAuthStatus.AUTHENTICATED && claimedEmployee.getEmployeeId() != ldapEmployee.getEmployeeId()) {
-                    String error = "There is a mismatch in LDAP info for EMP IDs + " + ldapEmployee.getEmployeeId() + ", " + claimedEmployee.getEmployeeId();
+                if (ldapEmployee.getEmail() == null || ldapEmployee.getEmail().isEmpty()) {
+                    // DO NOTHING TO REJECT LOGIN. THIS MEANS THEIR EMAIL HAS NOT YET BEEN SYNCED IN SFMS. ALLOW LOGIN
+                    String warning = "THE FOLLOWING EMPLOYEE DOES NOT HAVE THEIR EMAIL IN SFMS: "
+                            + authResult.getPerson().getEmployeeId() + "," + authResult.getPerson().getEmail();
+                    logger.warn(warning);
+                    slackChatService.sendMessage(warning);
+                }
+                else if (!ldapEmployee.getEmail().equals(authResult.getPerson().getEmail())) { //EMAIL MISMATCH, SO REJECT LOGIN
+                    String error = "THERE IS A MISMATCH IN CREDENTIAL INFO FOR SFMS EMP ID: " +
+                            ldapEmployee.getEmployeeId() + ", AND LDAP INFO: " + authResult.getPerson().getEmployeeId() + ", " + authResult.getPerson().getEmail();
                     logger.error(error);
                     slackChatService.sendMessage(error);
                     authResult = new LdapAuthResult(LdapAuthStatus.LDAP_MISMATCH_EXCEPTION, authResult.getUid(),
                             authResult.getName(), authResult.getPerson());
                 }
             }
-            catch (Exception e) {
-                String warning = "THIS IS NOT NECESSARILY A PROBLEM: An error occurred while verifying the following LDAP info in SFMS: "
-                        + authResult.getPerson().getEmployeeId() + "," + authResult.getPerson().getEmail();
-                logger.warn(warning);
-                slackChatService.sendMessage(warning);
+            catch (EmployeeException e) { // WE COULDNT MATCH THE EMPLOYEE ID FROM LDAP. REJECT THE LOGIN
+                String error = "THIS LDAP EMPLOYEE ID COULD NOT BE MATCHED IN SFMS: " + authResult.getPerson().getEmployeeId() + ", " + authResult.getPerson().getEmail();
+                logger.error(error);
+                slackChatService.sendMessage(error);
+                authResult = new LdapAuthResult(LdapAuthStatus.NAME_NOT_FOUND_EXCEPTION, authResult.getUid(),
+                        authResult.getName(), authResult.getPerson());
             }
-
+            catch (Exception e) {
+                String error = "AN ERROR OCCURRED WHILE VERIFYING THE FOLLOWING LDAP INFO IN SFMS: "
+                        + authResult.getPerson().getEmployeeId() + "," + authResult.getPerson().getEmail();
+                logger.error(error);
+                slackChatService.sendMessage(error);
+                authResult = new LdapAuthResult(LdapAuthStatus.UNKNOWN_EXCEPTION, authResult.getUid(),
+                        authResult.getName(), authResult.getPerson());
+            }
 
             return queryForAuthenticationInfo(userPassToken, authResult);
         }
