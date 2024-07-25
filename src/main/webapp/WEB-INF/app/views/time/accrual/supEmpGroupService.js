@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { fetchSupEmployeeApi, fetchSupOverrideApi } from './time-accrual-ctrl';
 import useAuth from "app/contexts/Auth/useAuth";
-import { fetchEmployeeInformation } from "app/views/supply/helpers";
 
 let extendedSupEmpGroup = null;
 let supEmpGroupList = [];
@@ -62,8 +61,6 @@ const setEmpMaps = (userId, user) => {
     lastName: user.lastName,
     fullName: `${user.firstName} ${user.lastName}`
   };
-
-  console.log("nameMap", nameMap);
 };
 
 const setSupEmpGroups = () => {
@@ -94,9 +91,10 @@ const setSupEmpGroups = () => {
 
 export const useSupEmpGroupService = () => {
   const [loading, setLoading] = useState(false);
-  const [user, setUser] = useState(null);
-  const auth = useAuth();
-  const userId = auth.empId();
+  const { userData, empId } = useAuth();
+  const userId = empId();
+
+  console.log("SUP TEST: ", userData(), empId());
 
   const init = useCallback(async () => {
     if (extendedSupEmpGroup) {
@@ -104,9 +102,7 @@ export const useSupEmpGroupService = () => {
     }
     setLoading(true);
     try {
-      const userResponse = await fetchEmployeeInformation(userId);
-      setUser(userResponse.employee);
-      await Promise.all([loadSupEmpGroup(userResponse.employee), loadSupOverrides(userResponse.employee)]);
+      await Promise.all([loadSupEmpGroup(), loadSupOverrides()]);
     } catch (error) {
       console.error('Initialization error:', error);
     } finally {
@@ -114,7 +110,7 @@ export const useSupEmpGroupService = () => {
     }
   }, [userId]);
 
-  const loadSupEmpGroup = useCallback(async (user) => {
+  const loadSupEmpGroup = useCallback(async () => {
     const fromDate = new Date();
     fromDate.setFullYear(fromDate.getFullYear() - 2);
     const fromDateString = fromDate.toISOString().split('T')[0];
@@ -126,18 +122,15 @@ export const useSupEmpGroupService = () => {
     };
 
     const response = await fetchSupEmployeeApi(params);
-    console.log("fetchSupEmployeeApi", response);
+    // console.log("fetchSupEmployeeApi", response);
     extendedSupEmpGroup = response.result;
-    setEmpMaps(userId, user);
+    setEmpMaps(userId, userData().employee);
     setSupEmpGroups();
   }, [userId]);
 
-  const loadSupOverrides = useCallback(async (user) => {
+  const loadSupOverrides = useCallback(async () => {
     const params = { supId: userId };
-
     const response = await fetchSupOverrideApi(params);
-
-    console.log("fetchSupOverrideApi: ", response);
 
     response.overrides.forEach(override => {
       const ovrEmpId = override.overrideSupervisorId;
@@ -170,12 +163,12 @@ export const useSupEmpGroupService = () => {
 
     if (isUser) {
       selEmpGroup.empOverrideEmployees.forEach(emp => {
-        emp.empOverride = true;
+        emp.empOverride = true; //FIX::: this attribute needs to be inserted (does not exist prior)
         empList.push(emp);
       });
       Object.values(selEmpGroup.supOverrideEmployees.items).forEach(supGroup => {
         supGroup.forEach(emp => {
-          emp.supOverride = true;
+          emp.supOverride = true; //FIX::: this attribute needs to be inserted (does not exist prior)
           empList.push(emp);
         });
       });

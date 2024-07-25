@@ -21,7 +21,7 @@ export const fetchAttendanceRecordApi = async (params) => {
 
   try {
     const response = await fetchApiJson(path, { method: 'GET' });
-    console.log("fetchAttendanceRecordApi with params: ", params, " response: ", response);
+    // console.log("fetchAttendanceRecordApi with params: ", params, " response: ", response);
     return response;
   } catch (error) {
     console.error('Fetch error:', error);
@@ -50,7 +50,7 @@ export const fetchTimeRecordApi = async (params) => {
 
   try {
     const response = await fetchApiJson(path, { method: 'GET' });
-    console.log("fetchTimeRecordApi with params: ", params, " response: ", response);
+    // console.log("fetchTimeRecordApi with params: ", params, " response: ", response);
     return response;
   } catch (error) {
     console.error('Fetch error:', error);
@@ -79,7 +79,7 @@ export const fetchActiveYearsTimeRecordsApi = async (params) => {
 
   try {
     const response = await fetchApiJson(path, { method: 'GET' });
-    console.log("fetchActiveYearsTimeRecordsApi with params: ", params, " response: ", response);
+    // console.log("fetchActiveYearsTimeRecordsApi with params: ", params, " response: ", response);
     return response;
   } catch (error) {
     console.error('Fetch error:', error);

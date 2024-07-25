@@ -281,16 +281,6 @@ export const getLocations = async (empId) => {
     return await fetchApiJson(`/supply/destinations/${empId}`).then((body) => body);
 };
 
-/**
- * Fetch Employee Information for a given employee ID.
- *
- * @param {String} empId The employee ID.
- * @returns {Promise<Object>} The result of the fetch call.
- */
-export const fetchEmployeeInformation = async (empId) => {
-    return fetchApiJson(`/employees?detail=true&empId=${empId}`);
-};
-
 // POSTS:::: //
 
 /**

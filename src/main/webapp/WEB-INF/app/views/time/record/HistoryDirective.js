@@ -17,6 +17,7 @@ import SubmittedAttendanceRecords from 'app/views/time/record/SubmittedAttendanc
 //         timesheetMap does not get set fast enough in initTimesheetRecords() before combineRecords()
 //         Status not properly displayed in Active and Submitted Attendance Records
 //         Need the "No Employee Records For 2019" content
+//         AnnualTotals wrong numbers = only adding top row numbers and keeping a running total accross all records previously selected
 const HistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage, scopeHideTitle }) => {
   const [state, setState] = useState({
     supId: user.employeeId,
@@ -39,7 +40,7 @@ const HistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage, scop
     annualTotals: {},
   });
 
-  const hideTitle = scopeHideTitle || true;
+  const hideTitle = scopeHideTitle || false;
 
   useEffect(() => {
     setEmpId();
@@ -49,6 +50,7 @@ const HistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage, scop
     if (state.selectedEmp.empId) {
       getTimeRecordYears();
     }
+    console.log("state.selectedEmp: ", state.selectedEmp)
   }, [state.selectedEmp]);
 
   useEffect(() => {
@@ -267,6 +269,8 @@ const HistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage, scop
   };
 
   const isUser = () => {
+    console.log("isUser()", state.selectedEmp.empId === user.employeeId);
+    console.log(state.selectedEmp.empId, user.employeeId);
     return state.selectedEmp.empId === user.employeeId;
   };
 
@@ -280,9 +284,12 @@ const HistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage, scop
     <div>
       {isLoading() && <div className={styles.loader}></div>}
 
-      {!isLoading() && state.recordYears.length > 0 && (
-        <div className={hideTitle || isUser() ? styles.contentControls : styles.contentContainer}>
-          {!hideTitle && !isUser() && (
+      {!isLoading() && state.recordYears.length > 0 && (<div className={styles.contentContainer}>
+        {/*FIX THIS*/}
+        {/*<div className={hideTitle || isUser() ? styles.contentControls : ''}>*/}
+        <div className={false ? styles.contentControls : ''}>
+          {/*{!(hideTitle || isUser()) && (*/}
+          {!(false) && (
             <h1 className={styles.contentInfo}>
               {state.selectedEmp.empFirstName} {state.selectedEmp.empLastName}'s Attendance Records
             </h1>
@@ -302,7 +309,7 @@ const HistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage, scop
             </select>
           </p>
         </div>
-      )}
+      </div>)}
 
       {!isLoading() && state.records.employee.length === 0 && state.records.submitted.length === 0 && (
         <div className={styles.contentContainer}>
