@@ -10,6 +10,7 @@ import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.travel.api.application.*;
+import gov.nysenate.ess.travel.department.DepartmentNotFoundEx;
 import gov.nysenate.ess.travel.employee.TravelEmployee;
 import gov.nysenate.ess.travel.employee.TravelEmployeeService;
 import gov.nysenate.ess.travel.request.app.*;
@@ -51,9 +52,9 @@ public class DraftCtrl extends BaseRestApiCtrl {
      * </p>
      */
     @RequestMapping(value = "", method = RequestMethod.PUT)
-    public BaseResponse createDraft() {
+    public BaseResponse createDraft() throws DepartmentNotFoundEx {
         Employee user = employeeInfoService.getEmployee(getSubjectEmployeeId());
-        TravelEmployee defaultTraveler = travelEmployeeService.getTravelEmployee(user);
+        TravelEmployee defaultTraveler = travelEmployeeService.loadTravelEmployee(user);
         Draft draft = new Draft(getSubjectEmployeeId(), defaultTraveler);
         DraftView draftView = new DraftView(draft);
         return new ViewObjectResponse<>(draftView);
@@ -68,7 +69,7 @@ public class DraftCtrl extends BaseRestApiCtrl {
      * </p>
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public BaseResponse getUsersDrafts() {
+    public BaseResponse getUsersDrafts() throws DepartmentNotFoundEx {
         List<Draft> drafts = draftService.getUserDrafts(getSubjectEmployeeId());
         List<DraftView> draftViews = drafts.stream()
                 .map(DraftView::new)
@@ -85,7 +86,7 @@ public class DraftCtrl extends BaseRestApiCtrl {
      * <p>
      */
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public BaseResponse getDraft(@PathVariable int id) {
+    public BaseResponse getDraft(@PathVariable int id) throws DepartmentNotFoundEx {
         Draft draft = draftService.getDraft(id, getSubjectEmployeeId());
         return new ViewObjectResponse<>(new DraftView(draft));
     }
@@ -168,7 +169,7 @@ public class DraftCtrl extends BaseRestApiCtrl {
      * <p>
      */
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public BaseResponse saveDraft(@RequestBody DraftView draftView) {
+    public BaseResponse saveDraft(@RequestBody DraftView draftView) throws DepartmentNotFoundEx {
         Draft draft = draftView.toDraft();
         draft = draftService.saveDraft(draft);
         return new ViewObjectResponse<>(new DraftView(draft));
@@ -181,6 +182,7 @@ public class DraftCtrl extends BaseRestApiCtrl {
      * <p>
      * Usage:   (POST) /api/v1/travel/drafts/attachment
      * <p>
+     *
      * @param files
      * @return
      * @throws IOException

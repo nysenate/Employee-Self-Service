@@ -7,6 +7,7 @@ import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.security.authorization.role.RoleFactory;
 import gov.nysenate.ess.travel.delegate.Delegation;
 import gov.nysenate.ess.travel.delegate.DelegationDao;
+import gov.nysenate.ess.travel.department.DepartmentNotFoundEx;
 import gov.nysenate.ess.travel.employee.TravelEmployee;
 import gov.nysenate.ess.travel.employee.TravelEmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -63,7 +63,11 @@ public class TravelRoleFactory implements RoleFactory {
         // TRAVEL_ADMIN, SECRETARY_OF_SENATE, and MAJORITY_LEADER roles are stored here.
         Set<EssRole> empRoles = essRoleDao.getRoles(employee);
 
-        TravelEmployee travelEmployee = travelEmployeeService.getTravelEmployee(employee);
+        TravelEmployee travelEmployee = null;
+        try {
+            travelEmployee = travelEmployeeService.loadTravelEmployee(employee);
+        } catch (DepartmentNotFoundEx ignored) {
+        }
 
         if (empRoles.contains(EssRole.TRAVEL_ADMIN)) {
             roles.add(TravelRole.TRAVEL_ADMIN);
@@ -74,8 +78,8 @@ public class TravelRoleFactory implements RoleFactory {
         if (empRoles.contains(EssRole.MAJORITY_LEADER)) {
             roles.add(TravelRole.MAJORITY_LEADER);
         }
-        // The DEPARTMENT_HEAD role is calculated separately.
-        if (travelEmployee.isDepartmentHead()) {
+        // The DEPARTMENT_HEAD role is not found in the ess_roles table like other roles.
+        if (travelEmployee != null && travelEmployee.isDepartmentHead()) {
             roles.add(TravelRole.DEPARTMENT_HEAD);
         }
         return roles;

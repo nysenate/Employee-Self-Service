@@ -24,7 +24,7 @@ public class TravelDepartmentService {
         this.departmentHeadOverridesDao = departmentHeadOverridesDao;
     }
 
-    public Department departmentForEmployee(Employee employee) {
+    public Department departmentForEmployee(Employee employee) throws DepartmentNotFoundEx {
         TravelDepartmentAssigner departmentAssigner = new TravelDepartmentAssigner(
                 employeeInfoService.getAllEmployees(true),
                 allDepartmentHeadIds(),

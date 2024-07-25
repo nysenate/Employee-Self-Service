@@ -4,6 +4,7 @@ import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.travel.department.Department;
+import gov.nysenate.ess.travel.department.DepartmentNotFoundEx;
 import gov.nysenate.ess.travel.department.TravelDepartmentService;
 import gov.nysenate.ess.web.SillyTest;
 import org.apache.commons.csv.CSVFormat;
@@ -31,7 +32,7 @@ public class TravelDepartmentServiceIT extends BaseTest {
      * mappings and validates each one using the department head algorithm. Any inconsistencies are printed out.
      */
     @Test
-    public void validateDeptHdAssignmentFile() throws IOException {
+    public void validateDeptHdAssignmentFile() throws IOException, DepartmentNotFoundEx {
         boolean failure = false;
         List<String> failureNotices = new ArrayList<>();
         try (Reader in = new FileReader(deptHdAssignmentFilePath)) {
@@ -72,7 +73,7 @@ public class TravelDepartmentServiceIT extends BaseTest {
      * Can optionally ignore employees who work under senators.
      */
     @Test
-    public void dumpDeptHdAssignmentsToCsv() throws IOException {
+    public void dumpDeptHdAssignmentsToCsv() throws IOException, DepartmentNotFoundEx {
         String FILENAME = ""; // path and filename of where to save the csv.
         boolean INCLUDE_SENATOR_DEPARTMENTS = false;
 
@@ -103,7 +104,7 @@ public class TravelDepartmentServiceIT extends BaseTest {
         }
     }
 
-    private TreeSet<Department> getAllDepartments() {
+    private TreeSet<Department> getAllDepartments() throws DepartmentNotFoundEx {
         TreeSet<Department> departments = new TreeSet<>(Comparator.comparing(o -> o.getHead().getLastName()));
         Set<Employee> allEmployees = employeeInfoService.getAllEmployees(true);
         for (Employee emp : allEmployees) {
