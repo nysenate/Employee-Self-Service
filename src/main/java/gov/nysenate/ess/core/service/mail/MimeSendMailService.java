@@ -3,6 +3,7 @@ package gov.nysenate.ess.core.service.mail;
 import com.google.common.collect.ImmutableList;
 import gov.nysenate.ess.core.config.RuntimeLevel;
 import org.apache.commons.validator.routines.EmailValidator;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +25,11 @@ import static javax.mail.Message.RecipientType.*;
 
 /**
  * {@inheritDoc}
- *
+ * <p>
  * Wires the mail service into spring and provides some additional convenience methods
  */
 @Service
-public class MimeSendMailService extends JavaMailSenderImpl implements SendMailService
-{
+public class MimeSendMailService extends JavaMailSenderImpl implements SendMailService {
 
     private static final Logger logger = LoggerFactory.getLogger(MimeSendMailService.class);
 
@@ -79,13 +79,17 @@ public class MimeSendMailService extends JavaMailSenderImpl implements SendMailS
         send(message);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void sendMessage(String to, String subject, String text) {
         sendMessage(to, null, subject, text);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public MimeMessage newHtmlMessage(String to, String subject, String html) {
         MimeMessage message = createMimeMessage();
@@ -99,13 +103,18 @@ public class MimeSendMailService extends JavaMailSenderImpl implements SendMailS
         return message;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void sendSimpleMessages(Collection<SimpleMailMessage> messages) {
         send(messages.toArray(new SimpleMailMessage[messages.size()]));
     }
 
-    /** {@inheritDoc} */
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void sendMessages(Collection<MimeMessage> messages) {
         send(messages.toArray(new MimeMessage[messages.size()]));
@@ -117,52 +126,101 @@ public class MimeSendMailService extends JavaMailSenderImpl implements SendMailS
      * Overrides {@link JavaMailSenderImpl#doSend(MimeMessage[], Object[])}
      * to intercept all outgoing messages.
      * If the runtime level is not prod, or test mode is enabled, perform some modifications to messages
-     *
+     * <p>
      * {@inheritDoc}
      */
     @Override
-    protected void doSend(MimeMessage[] mimeMessages, Object[] originalMessages) throws MailException {
-        if (testModeEnabled || !isProd()) {
-            for (MimeMessage message : mimeMessages) {
-                try {
-                    debugModify(message);
-                } catch (MessagingException ex) {
-                    throw new EssMessagingException(ex);
-                }
-            }
+    protected void doSend(@NotNull MimeMessage[] mimeMessages, Object[] originalMessages) throws MailException {
+        logEmails(mimeMessages);
+        if (testModeEnabled) {
+            prependRecipientsToSubjects(mimeMessages);
+            overrideRecipients(mimeMessages);
+        }
+        if (!isProd()) {
+            prependEnvironmentToSubjects(mimeMessages);
         }
         super.doSend(mimeMessages, originalMessages);
     }
 
-    /**
-     * Perform modifications to the given {@link MimeMessage} according to any set debug options.
-     *
-     * @param message {@link MimeMessage}
-     * @throws MessagingException
-     */
-    private void debugModify(MimeMessage message) throws MessagingException {
-        StringBuilder debugSubject = new StringBuilder();
-        if (!isProd()) {
-            debugSubject.append("*").append(runtimeLevel).append("* ");
-        }
-        if (testModeEnabled) {
-            for (Message.RecipientType type : recipientTypes) {
-                // Append addresses to the subject
-                Address[] recipients = message.getRecipients(type);
-                if (recipients == null) {
-                    continue;
+    private void logEmails(MimeMessage[] mimeMessages) {
+        try {
+            for (MimeMessage message : mimeMessages) {
+                for (Message.RecipientType type : recipientTypes) {
+                    Address[] recipients = message.getRecipients(type);
+                    if (recipients == null) {
+                        continue;
+                    }
+                    for (Address address : recipients) {
+                        logger.info("Email event triggered for Environment: {}, with testModeEnable = {}, address: {}:{}, subject: {}",
+                                runtimeLevel, testModeEnabled, type, address, message.getSubject());
+                    }
                 }
-                for (Address addr : recipients) {
-                    debugSubject.append(type).append(":").append(addr).append(" ");
-                }
-                // Remove addresses from message
-                message.setRecipients(type, (String) null);
+
             }
-            // Set the test address as the recipient
-            message.addRecipient(TO, testModeAddress);
+        } catch (MessagingException ex) {
+            throw new EssMessagingException(ex);
         }
-        debugSubject.append(message.getSubject());
-        message.setSubject(debugSubject.toString());
+    }
+
+    /**
+     * Prepends the current environment name to the subject for each message.
+     */
+    private void prependEnvironmentToSubjects(MimeMessage[] mimeMessages) {
+        for (MimeMessage message : mimeMessages) {
+            try {
+                message.setSubject(String.format("*%s* %s", runtimeLevel, message.getSubject()));
+            } catch (MessagingException ex) {
+                throw new EssMessagingException(ex);
+            }
+        }
+    }
+
+    /**
+     * Prepends the recipients to the subject.
+     * Used to know the intended destination of a message while testModeEnable=true.
+     */
+    private void prependRecipientsToSubjects(MimeMessage[] mimeMessages) {
+        for (MimeMessage message : mimeMessages) {
+            try {
+                StringBuilder newSubject = new StringBuilder();
+                for (Message.RecipientType type : recipientTypes) {
+                    // Append addresses to the subject
+                    Address[] recipients = message.getRecipients(type);
+                    if (recipients == null) {
+                        continue;
+                    }
+                    for (Address addr : recipients) {
+                        newSubject.append(type).append(":").append(addr).append(" ");
+                    }
+                }
+                newSubject.append(message.getSubject());
+                message.setSubject(newSubject.toString());
+            } catch (MessagingException ex) {
+                throw new EssMessagingException(ex);
+            }
+        }
+    }
+
+    /**
+     * Overrides the recipients on the given mimeMessages.
+     * Removes all recipients and adds the testModeAddress as the only recipient.
+     * This prevents real users from getting emails from our test environments.
+     *
+     * @param mimeMessages
+     */
+    private void overrideRecipients(MimeMessage[] mimeMessages) {
+        for (MimeMessage message : mimeMessages) {
+            try {
+                // Clear all recipients.
+                for (Message.RecipientType type : recipientTypes) {
+                    message.setRecipients(type, (String) null);
+                }
+                // Add test address as the only recipient.
+                message.addRecipient(TO, testModeAddress);
+            } catch (MessagingException ex) {
+                throw new EssMessagingException(ex);
+            }
+        }
     }
 
     /**
