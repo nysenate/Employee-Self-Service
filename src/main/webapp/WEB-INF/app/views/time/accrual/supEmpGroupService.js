@@ -94,8 +94,6 @@ export const useSupEmpGroupService = () => {
   const { userData, empId } = useAuth();
   const userId = empId();
 
-  console.log("SUP TEST: ", userData(), empId());
-
   const init = useCallback(async () => {
     if (extendedSupEmpGroup) {
       return;

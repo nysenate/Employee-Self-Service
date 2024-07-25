@@ -44,7 +44,7 @@ const HistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage, scop
 
   useEffect(() => {
     setEmpId();
-  }, [empSupInfo, user]);
+  }, [empSupInfo]);
 
   useEffect(() => {
     if (state.selectedEmp.empId) {
@@ -72,8 +72,6 @@ const HistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage, scop
           empId: user.employeeId,
         },
       }));
-      console.log(user);
-      console.log("No empId provided. Using user's empId:", user.employeeId);
     }
   };
 
@@ -129,7 +127,6 @@ const HistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage, scop
     if (!year || year < 0) {
       return;
     }
-
 
     const isUserSup = emp.supId === state.supId;
     const supStartDate = isUserSup ? emp.supStartDate : emp.effectiveStartDate;
@@ -237,6 +234,7 @@ const HistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage, scop
       }
     });
 
+    // This is only adding the submitted records (records.submitted array)
     records.submitted.forEach(addToAnnualTotals);
 
     setState((prevState) => ({
@@ -268,11 +266,7 @@ const HistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage, scop
     return Object.values(state.request).some((req) => req === true);
   };
 
-  const isUser = () => {
-    console.log("isUser()", state.selectedEmp.empId === user.employeeId);
-    console.log(state.selectedEmp.empId, user.employeeId);
-    return state.selectedEmp.empId === user.employeeId;
-  };
+  const isUser = () => { return state.selectedEmp.empId === user.employeeId; };
 
   const showDetails = (record) => {
     if (record.paperTimesheet) return;

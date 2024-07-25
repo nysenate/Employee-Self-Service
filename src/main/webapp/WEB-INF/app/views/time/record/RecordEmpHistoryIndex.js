@@ -9,7 +9,6 @@ const RecordEmpHistoryIndex = () => {
   // Connected Components' State Variables + setter/renderer functions
   const { userData } = useAuth();
   const [selectedEmpSupInfo, setSelectedEmpSupInfo] = useState(userData().employee);
-  const [selectedSup, setSelectedSup] = useState({});
   const [ isModalOpen, setIsModalOpen ] = useState(false);
   const [ selectedRecord, setSelectedRecord ] = useState(null);
   const viewDetails = (selectedRecord) => {
@@ -26,9 +25,6 @@ const RecordEmpHistoryIndex = () => {
     <div>
       <Hero>Employee Attendance History</Hero>
       <EmployeeSelect
-        selectedSup={selectedSup}
-        setSelectedSup={setSelectedSup}
-        selectedEmp={selectedEmpSupInfo}
         setSelectedEmp={setSelectedEmpSupInfo}
         selectSubject={"Attendance Records"}
       />

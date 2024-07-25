@@ -3,7 +3,7 @@ import styles from "app/views/time/universalStyles.module.css";
 import { useSupEmpGroupService } from '../accrual/supEmpGroupService';
 import useAuth from "app/contexts/Auth/useAuth";
 
-const EmployeeSelect = ({ selectedSup, selectedEmp, setSelectedSup, setSelectedEmp, activeOnly = false, showSenators = false, payType, selectSubject = 'info' }) => {
+const EmployeeSelect = ({ setSelectedEmp, activeOnly = false, showSenators = false, payType, selectSubject = 'info' }) => {
   const { userData } = useAuth();
   const [iSelEmpGroup, setISelEmpGroup] = useState(-1);
   const [iSelEmp, setISelEmp] = useState(-1);
@@ -23,7 +23,6 @@ const EmployeeSelect = ({ selectedSup, selectedEmp, setSelectedSup, setSelectedE
       // const filteredEmps = emps.filter(emp => employeeFilter(emp));
       setAllEmps(emps);
       console.log("EmployeeSelect>useEffect>supEmpGroups: ", supEmpGroups);
-      setSelectedSup(supEmpGroups[iSelEmpGroup]);
       if (iSelEmp === 0) {
         // setSelectedEmp(filteredEmps[0]);
         setSelectedEmp(emps[0]);
@@ -31,7 +30,7 @@ const EmployeeSelect = ({ selectedSup, selectedEmp, setSelectedSup, setSelectedE
         setISelEmp(0);
       }
     }
-  }, [iSelEmpGroup]);
+  }, [iSelEmpGroup]); // This doesnt auto set the setSelectedEmp
 
   useEffect(() => {
     if (iSelEmp >= 0) {
@@ -45,6 +44,7 @@ const EmployeeSelect = ({ selectedSup, selectedEmp, setSelectedSup, setSelectedE
   }, [supEmpGroups]);
   useEffect(() => {
     console.log("updatedSupEmpGroups: ", updatedSupEmpGroups);
+    if(validSupEmpGroupCount > 0) setISelEmpGroup(0);
   }, [updatedSupEmpGroups]);
 
   useEffect(() => {
