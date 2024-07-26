@@ -25,7 +25,7 @@ public class AllowedTravelersCtrl extends BaseRestApiCtrl {
     @RequestMapping("")
     public BaseResponse fetchAllowedTravelers() {
         Set<Employee> allowedEmps = allowedTravelersService.forEmpId(getSubjectEmployeeId());
-        Set<TravelEmployee> allowedTravelers = travelEmployeeService.getTravelEmployees(allowedEmps);
+        Set<TravelEmployee> allowedTravelers = travelEmployeeService.loadTravelEmployeesSafe(allowedEmps);
         return ListViewResponse.of(
                 allowedTravelers.stream()
                         .map(TravelEmployeeView::new)
