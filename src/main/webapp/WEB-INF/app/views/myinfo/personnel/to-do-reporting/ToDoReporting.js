@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Hero from "app/components/Hero";
-import TrainingFilters from "app/views/myinfo/personnel/to-do-reporting/TrainingFilters";
-import EmployeeDetails from "app/views/myinfo/personnel/to-do-reporting/EmployeeDetails";
+import TrainingFilters from "./TrainingFilters";
+import EmployeeDetails from "./EmployeeDetails";
 
 /**
  * This is the first component where TO-DO-Reporting starts
@@ -82,7 +82,6 @@ export default function ToDoReporting() {
   const handleAllTasks = (tasks) => {
     setAllTasks(tasks.tasks);
   }
-
 
   return (
     <div>
