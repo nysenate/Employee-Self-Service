@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
-import ManualOverrideModal from "app/views/myinfo/personnel/to-do-reporting/ManualOverrideModal";
-import DeactivateTaskModal from "app/views/myinfo/personnel/to-do-reporting/DeactivateTaskModal";
+import ManualOverrideModal from "./ManualOverrideModal";
+import DeactivateTaskModal from "./DeactivateTaskModal";
 import { loadAuth } from "app/contexts/Auth/authStorage";
+
+export function convertTimestampToLocalDateString(timestamp) {
+  const date = new Date(timestamp);
+  const options = { year: 'numeric', month: 'short', day: 'numeric' }
+  return date.toLocaleString('en-US', options);
+}
 
 export default function EmployeeTaskDetails({ person, taskMap }) {
 
@@ -12,11 +18,7 @@ export default function EmployeeTaskDetails({ person, taskMap }) {
   const [ taskId, setTaskId ] = useState('');
   const [ empId, setEmpId ] = useState('');
 
-  const convertTimestampToLocalDateString = (timestamp) => {
-    const date = new Date(timestamp);
-    const options = { year: 'numeric', month: 'short', day: 'numeric' }
-    return date.toLocaleString('en-US', options);
-  };
+
 
   const openManualOverrideModal = (name, empId, title, taskId) => {
     setEmpName(name);

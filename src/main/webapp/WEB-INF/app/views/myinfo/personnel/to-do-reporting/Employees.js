@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import EmployeeTaskDetails from "app/views/myinfo/personnel/to-do-reporting/EmployeeTaskDetails";
+import EmployeeTaskDetails from "./EmployeeTaskDetails";
+import { CheckIcon, MinusIcon, XMarkIcon } from "@heroicons/react/16/solid";
 
 export default function Employees({ finalData, allTasks, params, onChildDataChange }) {
   const [ selectedEmployee, setSelectedEmployee ] = useState(false);
@@ -116,28 +117,13 @@ export default function Employees({ finalData, allTasks, params, onChildDataChan
                 <div
                   className={`flex items-center space-x-2 rounded-full`}>
                   {person.completedCnt === person.assignedCnt && (
-                    <svg className="h-4 w-4 text-green-900 font-bold" width="12" height="12" viewBox="0 0 24 24"
-                         strokeWidth="2"
-                         stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                      <path stroke="none" d="M0 0h24v24H0z"/>
-                      <path d="M5 12l5 5l10 -10"/>
-                    </svg>
+                    <CheckIcon className="h-4 w-4 text-green-900 cursor-pointer"/>
                   )}
                   {person.completedCnt === 0 && (
-                    <svg className="h-4 w-4 text-red-600 font-bold" width="12" height="12" viewBox="0 0 24 24"
-                         strokeWidth="2"
-                         stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                      <path stroke="none" d="M0 0h24v24H0z"/>
-                      <line x1="18" y1="6" x2="6" y2="18"/>
-                      <line x1="6" y1="6" x2="18" y2="18"/>
-                    </svg>
+                    <XMarkIcon className="h-4 w-4 text-red-600 cursor-pointer"/>
                   )}
                   {person.completedCnt > 0 && person.completedCnt < person.assignedCnt && (
-                    <svg className="h-5 w-4 text-yellow-600" width="12" height="12" viewBox="0 0 24 24" strokeWidth="2"
-                         stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                      <path stroke="none" d="M0 0h24v24H0z"/>
-                      <line x1="5" y1="12" x2="19" y2="12"/>
-                    </svg>
+                    <MinusIcon className="h-4 w-4 text-yellow-600 cursor-pointer"/>
                   )}
                   <span> {person.completedCnt}/{person.assignedCnt}</span>
                 </div>

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import EmployeeSearch from "app/views/myinfo/personnel/to-do-reporting/EmployeeSearch";
+import EmployeeSearch from "./EmployeeSearch";
 import styles from './EmployeeSearch.module.css';
-import EmployeeCount from "app/views/myinfo/personnel/to-do-reporting/EmployeeCount";
-import Employees from "app/views/myinfo/personnel/to-do-reporting/Employees";
-import PaginationComponent from "app/views/myinfo/personnel/to-do-reporting/PaginationComponent";
+import EmployeeCount from "./EmployeeCount";
+import Employees from "./Employees";
+import PaginationComponent from "./PaginationComponent";
 import LoadingIndicator from "app/components/LoadingIndicator";
 
 export default function EmployeeDetails({ params, onChildDataChange, finalData, loading, allTasks }) {

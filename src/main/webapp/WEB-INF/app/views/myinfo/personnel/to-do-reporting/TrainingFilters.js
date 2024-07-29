@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import InputFilters from "app/views/myinfo/personnel/to-do-reporting/InputFilters";
-import EmployeeFilters from "app/views/myinfo/personnel/to-do-reporting/EmployeeFilters";
+import InputFilters from "./InputFilters";
+import EmployeeFilters from "./EmployeeFilters";
 
 /**
  * This component is used for Training Filters

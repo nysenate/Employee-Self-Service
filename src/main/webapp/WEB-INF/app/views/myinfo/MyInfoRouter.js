@@ -3,12 +3,16 @@ import { ThemeContext, themes } from "app/contexts/ThemeContext";
 import Navigation from "app/components/Navigation";
 import AppLayout from "app/components/AppLayout";
 import { Navigate, Route, Routes } from "react-router-dom";
-import SummaryIndex, { summaryLoader } from "app/views/myinfo/personnel/summary/SummaryIndex";
+import SummaryIndex from "app/views/myinfo/personnel/summary/SummaryIndex";
 import CheckHistoryIndex from "app/views/myinfo/payroll/checkhistory/CheckHistoryIndex";
 import EmergencyAlertInfoIndex from "app/views/myinfo/personnel/emergency-alert-info/EmergencyAlertInfoIndex";
 import ToDoReporting from "app/views/myinfo/personnel/to-do-reporting/ToDoReporting";
 import TodoList from "app/views/myinfo/personnel/todo-list/TodoList";
-
+import AcknowledgmentAssignment from "app/views/myinfo/personnel/todo-list/AcknowledgmentAssignment";
+import VideoCourse from "app/views/myinfo/personnel/todo-list/VideoCourse";
+import MoodleCourse from "app/views/myinfo/personnel/todo-list/MoodleCourse";
+import EthicsCourse from "app/views/myinfo/personnel/todo-list/EthicsCourse";
+import EthicsLiveCourse from "app/views/myinfo/personnel/todo-list/EthicsLiveCourse";
 
 export default function MyInfoRouter() {
   return (
@@ -16,6 +20,11 @@ export default function MyInfoRouter() {
       <Routes>
         <Route path="" element={<MyInfoLayout/>}>
           <Route path="personnel/summary" element={<SummaryIndex/>}/>
+          <Route path="personnel/todo/acknowledgment/:taskId" element={<AcknowledgmentAssignment/>}/>
+          <Route path="personnel/todo/video/:taskId" element={<VideoCourse/>}/>
+          <Route path="personnel/todo/legethics/:taskId" element={<MoodleCourse/>}/>
+          <Route path="personnel/todo/ethicscourse/:taskId" element={<EthicsCourse/>}/>
+          <Route path="personnel/todo/ethicslivecourse/:taskId" element={<EthicsLiveCourse/>}/>
           <Route path="personnel/emergency-alert-info" element={<EmergencyAlertInfoIndex/>}/>
           <Route path="personnel/todo" element={<TodoList/>}/>
           <Route path="personnel/todo-report" element={<ToDoReporting/>}/>

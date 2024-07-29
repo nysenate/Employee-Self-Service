@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styles from "./EmployeeFilters.module.css";
-import RespectiveHead from "app/views/myinfo/personnel/to-do-reporting/RespectiveHead";
+import RespectiveHead from "./RespectiveHead";
 import moment from "moment";
 
 export default function EmployeeFilters({ params, onChildDataChange }) {
