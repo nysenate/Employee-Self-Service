@@ -3,13 +3,15 @@ import Hero from "app/components/Hero";
 import HistoryDirective from "app/views/time/accrual/HistoryDirective";
 import { AccrualDetailsPopup } from "app/views/time/accrual/AccrualDetailsPopup";
 import EmployeeSelect from "./EmployeeSelect";
+import useAuth from "app/contexts/Auth/useAuth";
 
 const AccrualEmpHistoryIndex = () => {
-  const [ selectedEmp, setSelectedEmp ] = useState(null);
+  const { userData } = useAuth();
+  const [ selectedEmpSupInfo, setSelectedEmpSupInfo ] = useState(userData().employee);
   const [ isModalOpen, setIsModalOpen ] = useState(false);
   const [ selectedAccrual, setSelectedAccrual ] = useState(null);
 
-  const viewDetails = ({ record }) => {
+  const viewDetails = ( record ) => {
     setSelectedAccrual(record);
     setIsModalOpen(true);
   }
@@ -23,13 +25,14 @@ const AccrualEmpHistoryIndex = () => {
     <div>
       <Hero>Employee Accrual History</Hero>
       <EmployeeSelect
-        setSelectedEmp={setSelectedEmp}
+        setSelectedEmp={setSelectedEmpSupInfo}
         selectSubject={"Accrual History"}
       />
-      <HistoryDirective
+      {selectedEmpSupInfo && (<HistoryDirective
         viewDetails={viewDetails}
-        empSupInfo={selectedEmp}
-      />
+        user={userData().employee}
+        empSupInfo={selectedEmpSupInfo}
+      />)}
       {selectedAccrual && (
         <AccrualDetailsPopup
           accruals={selectedAccrual}

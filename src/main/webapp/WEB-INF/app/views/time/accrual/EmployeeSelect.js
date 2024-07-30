@@ -63,11 +63,11 @@ const EmployeeSelect = ({ setSelectedEmp, activeOnly = false, showSenators = fal
   }, [updatedSupEmpGroups]);
 
   useEffect(() => {
-    console.log("allEmps: ", allEmps);
+    // console.log("allEmps: ", allEmps);
     setUpdatedAllEmps(setEmpLabels);
   }, [allEmps]);
   useEffect(() => {
-    console.log("updatedAllEmps: ", updatedAllEmps);
+    // console.log("updatedAllEmps: ", updatedAllEmps);
     const tempGroupedEmps = updatedAllEmps.reduce((groups, emp) => {
       const group = emp.group || 'Ungrouped'; // Handle employees without a group
       if (!groups[group]) {

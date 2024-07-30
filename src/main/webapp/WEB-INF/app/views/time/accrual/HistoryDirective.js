@@ -10,56 +10,61 @@
 import React, { useEffect, useState } from "react";
 import styles from "../universalStyles.module.css"
 import LoadingIndicator from "app/components/LoadingIndicator";
-import useAuth from "app/contexts/Auth/useAuth";
 import {
   fetchAccrualActiveYears,
   fetchAccrualSummaries,
   fetchEmployeeInfo
 } from "app/views/time/accrual/time-accrual-ctrl";
+import { formatDateYYYYMMDD } from "app/views/time/helpers";
 
 const HistoryDirective = ({
                             viewDetails,
-                            empSupInfo
+                            user,
+                            empSupInfo,
+                            scopeHideTitle,
                           }) => {
 
-  const hideTitle = false;
-
   // Scope Variables
-  const auth = useAuth();
-  const userId = auth.empId();
+  const [empId, actualSetEmpId] = useState(null);
   const [accSummaries, setAccSummaries] = useState({});
   const [activeYears, setActiveYears] = useState([]);
+  const [timeRecords, setTimeRecords] = useState([]);
   const [selectedYear, setSelectedYear] = useState(null);
   const [empInfo, setEmpInfo] = useState({});
   const [isTe, setIsTe] = useState(false);
+  const [error, setError] = useState(null);
   const [loading, setLoading] = useState({
     empInfo: false,
     empActiveYears: false,
     accSummaries: false,
   });
-  const [error, setError] = useState(null);
-  const empId = empSupInfo?.empId || userId;
-  // Scope Fetch
+  // const [floatTheadOpts, setFloatTheadOpts] = useState({
+  //   scrollingTop: 47,
+  //   useAbsolutePositioning: false,
+  // });
+  // const [floatTheadEnabled, setFloatTheadEnabled] = useState(true);
+  const hideTitle = scopeHideTitle || false;
+
+  // Watchers
   useEffect(() => {
-    if (empId) {
-      getEmpInfo();
-      getEmpActiveYears();
-    }
+    setEmpId();
+    clearAccSummaries();
+  }, [empSupInfo]);
+  useEffect(() => {
+    getEmpInfo();
+    getEmpActiveYears();
   }, [empId]);
 
+  // Scope Fetch
   useEffect(() => {
-    if (selectedYear) {
-      getAccSummaries(selectedYear);
-    }
+      getAccSummaries();
   }, [selectedYear]);
-
-  useEffect(()=> {
-  }, [accSummaries]);
   const getEmpInfo = async () => {
+    if(!(empId && isUser())) return;
+
     setLoading((prev) => ({ ...prev, empInfo: true }));
     try {
-      const response = await fetchEmployeeInfo({ empId, detail: true });
-
+      const response = await fetchEmployeeInfo({ empId: empId, detail: true });
       const empInfo = response.employee;
       setEmpInfo(empInfo);
       setIsTe(empInfo.payType === 'TE');
@@ -70,35 +75,75 @@ const HistoryDirective = ({
     }
   };
   const getEmpActiveYears = async () => {
+    if(!empId) return;
+
+    setSelectedYear(null);
     setLoading((prev) => ({ ...prev, empActiveYears: true }));
     try {
-      const response = await fetchAccrualActiveYears({ empId });
-      const years = response.years.reverse();
-      setActiveYears(years);
-      setSelectedYear(years.length > 0 ? years[0] : null);
+      const resp = await fetchAccrualActiveYears({ empId: empId });
+      handleActiveYearsResponse(resp);
     } catch (error) {
       handleErrorResponse(error);
     } finally {
       setLoading((prev) => ({ ...prev, empActiveYears: false }));
     }
   };
-  const getAccSummaries = async (year) => {
-    if (accSummaries[year]) return;
+  const handleActiveYearsResponse = (resp) => {
+    const emp = empSupInfo;
+    // const isUserSup = emp && (emp?.supId || emp?.supervisorId);
+    const startDate = emp.effectiveStartDate;
+    const endDate = emp.effectiveEndDate;
+    const supStartYear = new Date(startDate || 0).getFullYear();
+    const supEndYear = new Date(endDate || Date.now()).getFullYear();
+    const recordYrs = resp.years.filter((year) => year >= supStartYear && year <= supEndYear).reverse();
+
+    setActiveYears(recordYrs);
+    setSelectedYear(recordYrs.length > 0 ? `${recordYrs[0]}` : -1);
+  };
+
+
+  const getAccSummaries = async () => {
+    const emp = empSupInfo;
+    if (!selectedYear || accSummaries[selectedYear]) return;
+
+    const year = parseInt(selectedYear, 10);
+    if (!year || year < 0) {
+      return;
+    }
+
+    const supStartDate = emp.effectiveStartDate;
+    const supEndDate = emp.effectiveEndDate;
+
+    const yearStart = new Date(year, 0, 1);
+    const nextYearStart = new Date(year + 1, 0, 1);
+
+    const supStartMoment = new Date(supStartDate || 0);
+    const supEndMoment = new Date(supEndDate || '3000-01-01');
+
+    const fromMoment = new Date(Math.max(yearStart, supStartMoment));
+    const toMoment = new Date(Math.min(nextYearStart, supEndMoment));
+
+    if (fromMoment > toMoment) return;
+
     setLoading((prev) => ({ ...prev, accSummaries: true }));
+
     try {
-      const fromDate = new Date(Date.UTC(year, 0, 1)).toISOString().split('T')[0];
-      const toDate = new Date(Date.UTC(year + 1, 0, 1)).toISOString().split('T')[0];
-      const response = await fetchAccrualSummaries({ empId, fromDate, toDate });
+      const response = await fetchAccrualSummaries({ empId: empId, fromDate: formatDateYYYYMMDD(fromMoment), toDate: formatDateYYYYMMDD(toMoment) });
+      setError(null);
       const sortedSummaries = response.result
         .filter(shouldDisplayRecord)
         .sort((a, b) => new Date(b.payPeriod.endDate) - new Date(a.payPeriod.endDate));
 
       setAccSummaries((prev) => ({
         ...prev,
-        [year]: sortedSummaries,
+        [selectedYear]: sortedSummaries,
       }));
     } catch (error) {
       handleErrorResponse(error);
+      setError({
+        title: "Could not retrieve accrual information.",
+        message: "If you are eligible for accruals please try again later."
+      });
     } finally {
       setLoading((prev) => ({ ...prev, accSummaries: false }));
     }
@@ -110,25 +155,47 @@ const HistoryDirective = ({
     });
     console.error(error);
   };
-  const shouldDisplayRecord = (record) => {
-    return (!record.computed || record.submitted) && record.empState?.payType !== 'TE';
-  };
-  // Scope Functions
-  // Something here breaks the page (below)
+  // Display Methods
   const isUser = () => {
-    // console.log(empInfo.employeeId, userId, empInfo.employeeId == userId);
-    // return empInfo.employeeId == userId;
-    return true;
-  }
+    return empSupInfo?.employeeId === user.employeeId || empSupInfo?.empId === user.employeeId;
+  };
+
   const isLoading = () => {
     return Object.values(loading).some((status) => status);
   }
   const isEmpLoading = () => {
     return (loading.empInfo || loading.empActiveYears);
   }
+
+  // Internal Methods
+  const setEmpId = () => {
+    let thisEmpId = null;
+    if(empSupInfo && (empSupInfo?.empId || empSupInfo?.employeeId)) {
+      thisEmpId = empSupInfo?.empId || empSupInfo?.employeeId;
+    } else {
+      thisEmpId = user.employeeId;
+    }
+    actualSetEmpId(thisEmpId);
+  }
   const clearAccSummaries = () => {
     setAccSummaries({});
   }
+
+  const shouldDisplayRecord = (accrualRecord) => {
+    let displayRecord = true;
+    // Record must be non-computed or be covered by submitted timesheets
+    displayRecord = displayRecord && (!accrualRecord.computed || accrualRecord.submitted);
+    if (accrualRecord.empState) {
+      // Employee must not be temporary
+      displayRecord = displayRecord && accrualRecord.empState.payType !== 'TE';
+    }
+    return displayRecord;
+  }
+
+  // function reflowTable (count) {
+  // const enableFloatThead = () => { setFloatTheadEnabled(true); }
+  // const disableFloatThead = () => { setFloatTheadEnabled(false); }
+
 
   return (
     <>
@@ -148,8 +215,7 @@ const HistoryDirective = ({
         {selectedYear ? (<div>
           {!isUser() && (<div className={`${styles.contentContainer} ${styles.contentControls}`}>
             {!(hideTitle || isUser()) && (<h1>
-              {empSupInfo.empFirstName}
-              {empSupInfo.empLastName}'s
+              {empSupInfo.empFirstName} {empSupInfo.empLastName}'s
               Accrual History
             </h1>)}
             <p className={styles.contentInfo} style={{ marginBottom: '0px' }}>
@@ -197,11 +263,13 @@ const HistoryDirective = ({
                        <th className={styles.personal}>Used</th>
                        <th className={styles.personal}>Used Ytd</th>
                        <th className={styles.personal}>Avail</th>
+
                        <th className={styles.vacation}>Rate</th>
                        <th className={styles.vacation}>Accrued</th>
                        <th className={styles.vacation}>Used</th>
                        <th className={styles.vacation}>Used Ytd</th>
                        <th className={styles.vacation}>Avail</th>
+
                        <th className={styles.sick}>Rate</th>
                        <th className={styles.sick}>Accrued</th>
                        <th className={styles.sick}>Used</th>
@@ -223,11 +291,13 @@ const HistoryDirective = ({
                          <td className={`${styles.accrualHours} ${styles.personal}`}>{record.biweekPersonalUsed}</td>
                          <td className={`${styles.accrualHours} ${styles.personal}`}>{record.personalUsed}</td>
                          <td className={`${styles.accrualHours} ${styles.availableHours} ${styles.personal}`}>{record.personalAvailable}</td>
+
                          <td className={`${styles.accrualHours} ${styles.vacation}`}>{record.vacationRate}</td>
                          <td className={`${styles.accrualHours} ${styles.vacation}`}>{record.vacationAccruedYtd + record.vacationBanked}</td>
                          <td className={`${styles.accrualHours} ${styles.vacation}`}>{record.biweekVacationUsed}</td>
                          <td className={`${styles.accrualHours} ${styles.vacation}`}>{record.vacationUsed}</td>
                          <td className={`${styles.accrualHours} ${styles.availableHours} ${styles.vacation}`}>{record.vacationAvailable}</td>
+
                          <td className={`${styles.accrualHours} ${styles.sick}`}>{record.sickRate}</td>
                          <td className={`${styles.accrualHours} ${styles.sick}`}>{record.sickAccruedYtd}</td>
                          <td className={`${styles.accrualHours} ${styles.sick}`}>{record.biweekSickEmpUsed + record.biweekSickFamUsed + record.biweekSickDonated}</td>
@@ -245,7 +315,7 @@ const HistoryDirective = ({
         ) : (<div>
             <p>
               {isUser() ? (<span>You have</span>) :
-                (<span>{empSupInfo.empFirstName} {empSupInfo.empLastName} has</span>)}
+                (<span>{empSupInfo.empFirstName} {empSupInfo.empLastName} has </span>)}
               no accrual records.
             </p>
             {empSupInfo?.senator && (<p>
