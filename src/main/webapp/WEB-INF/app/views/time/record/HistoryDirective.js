@@ -170,7 +170,7 @@ const HistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage, scop
         },
       }));
     }
-    console.log("state", state);
+    // console.log("state", state);
   };
 
   const initTimesheetRecords = (records) => {

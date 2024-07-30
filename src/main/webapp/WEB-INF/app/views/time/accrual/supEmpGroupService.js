@@ -86,7 +86,6 @@ const setSupEmpGroups = () => {
   });
 
   supEmpGroupList = [extendedSupEmpGroup].concat(empSupEmpGroups);
-  console.log("empSupEmpGroups", empSupEmpGroups);
 };
 
 export const useSupEmpGroupService = () => {

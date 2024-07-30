@@ -16,15 +16,19 @@ const EmployeeSelect = ({ setSelectedEmp, activeOnly = false, showSenators = fal
 
   const [updatedSupEmpGroups, setUpdatedSupEmpGroups] = useState([]);
   const [updatedAllEmps, setUpdatedAllEmps] = useState([]);
+  const [groupedEmps, setGroupedEmps] = useState({});
+  const [groupedSupEmps, setGroupedSupEmps] = useState({});
+  let runningIndexSup = 0;
+  let runningIndexEmp = 0;
 
   useEffect(() => {
-    console.log(validSupEmpGroupCount);
+    // console.log(validSupEmpGroupCount);
     if (iSelEmpGroup >= 0) {
       const emps = getEmpInfos(iSelEmpGroup, !showSenators);
-      console.log("EmployeeSelect>useEffect>emps: ", emps);
+      // console.log("EmployeeSelect>useEffect>emps: ", emps);
       // const filteredEmps = emps.filter(emp => employeeFilter(emp));
       setAllEmps(emps);
-      console.log("EmployeeSelect>useEffect>supEmpGroups: ", supEmpGroups);
+      // console.log("EmployeeSelect>useEffect>supEmpGroups: ", supEmpGroups);
       if (iSelEmp === 0) {
         // setSelectedEmp(filteredEmps[0]);
         setSelectedEmp(emps[0]);
@@ -41,20 +45,38 @@ const EmployeeSelect = ({ setSelectedEmp, activeOnly = false, showSenators = fal
   }, [iSelEmp]);
 
   useEffect(() => {
-    console.log("supEmpGroups: ", supEmpGroups);
+    // console.log("supEmpGroups: ", supEmpGroups);
     setUpdatedSupEmpGroups(setSupGroupLabels)
   }, [supEmpGroups]);
   useEffect(() => {
-    console.log("updatedSupEmpGroups: ", updatedSupEmpGroups);
+    // console.log("updatedSupEmpGroups: ", updatedSupEmpGroups);
+    const tempGroupedSupEmps = updatedSupEmpGroups.reduce((groups, emp) => {
+      const group = emp.group || 'Ungrouped'; // Handle employees without a supGroup
+      if (!groups[group]) {
+        groups[group] = [];
+      }
+      groups[group].push(emp);
+      return groups;
+    }, {});
+    setGroupedSupEmps(tempGroupedSupEmps);
     if(validSupEmpGroupCount > 0) setISelEmpGroup(0);
   }, [updatedSupEmpGroups]);
 
   useEffect(() => {
     console.log("allEmps: ", allEmps);
-    setUpdatedAllEmps(setEmpLabels)
+    setUpdatedAllEmps(setEmpLabels);
   }, [allEmps]);
   useEffect(() => {
     console.log("updatedAllEmps: ", updatedAllEmps);
+    const tempGroupedEmps = updatedAllEmps.reduce((groups, emp) => {
+      const group = emp.group || 'Ungrouped'; // Handle employees without a group
+      if (!groups[group]) {
+        groups[group] = [];
+      }
+      groups[group].push(emp);
+      return groups;
+    }, {});
+    setGroupedEmps(tempGroupedEmps);
   }, [updatedAllEmps]);
 
   // const employeeFilter = (emp) => {
@@ -143,10 +165,22 @@ const EmployeeSelect = ({ setSelectedEmp, activeOnly = false, showSenators = fal
               onChange={(e) => setISelEmpGroup(Number(e.target.value))}
               style={{ color: 'black', fontWeight: '400'}}
             >
-              {updatedSupEmpGroups.map((group, index) => (
-                <option key={group.supId} value={index}>
-                  {group.dropDownLabel || `${group.empLastName} ${group.empFirstName}`}
-                </option>
+              {Object.keys(groupedSupEmps).map((group, index) => (
+                group === 'Ungrouped' ? (
+                  groupedSupEmps[group].map((emp) => (
+                    <option key={runningIndexSup.supId} value={runningIndexSup++}>
+                      {emp.dropDownLabel || `${emp.empLastName} ${emp.empFirstName}`}
+                    </option>
+                  ))
+                ) : (
+                  <optgroup key={index} label={group}>
+                    {groupedSupEmps[group].map((emp) => (
+                      <option key={runningIndexSup} value={runningIndexSup++}>
+                        {emp.dropDownLabel || `${emp.empLastName} ${emp.empFirstName}`}
+                      </option>
+                    ))}
+                  </optgroup>
+                )
               ))}
             </select>
           </span>
@@ -162,10 +196,14 @@ const EmployeeSelect = ({ setSelectedEmp, activeOnly = false, showSenators = fal
             onChange={(e) => setISelEmp(Number(e.target.value))}
             style={{ color: 'black', fontWeight: '400'}}
           >
-            {updatedAllEmps.map((emp, index) => (
-              <option key={emp.empId} value={index}>
-                {emp.dropDownLabel || `${emp.empLastName} ${emp.empFirstName}`}
-              </option>
+            {Object.keys(groupedEmps).map((group, index) => (
+              <optgroup key={index} label={group}>
+                {groupedEmps[group].map((emp) => (
+                  <option key={runningIndexEmp} value={runningIndexEmp++}>
+                    {emp.dropDownLabel || `${emp.empLastName} ${emp.empFirstName}`}
+                  </option>
+                ))}
+              </optgroup>
             ))}
           </select>
         </span>
