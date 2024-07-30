@@ -109,7 +109,7 @@ const EmployeeSelect = ({ setSelectedEmp, activeOnly = false, showSenators = fal
     const endDate = new Date(override ? emp.effectiveEndDate : emp.supEndDate || '2999-12-31');
 
     // const name = emp.empLastName + ' ' + emp.empFirstName[0] + '.';
-    const name = emp.empLastName + ' ' + emp.empFirstName + '.'; //Change to initial
+    const name = emp.empLastName + ' ' + emp.empFirstName.charAt(0) + '.'; //Change to initial
 
     const formatDate = (date) => {
       const options = { year: 'numeric', month: 'short' };
