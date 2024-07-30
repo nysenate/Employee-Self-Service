@@ -15,8 +15,6 @@ import EssNotification from "app/components/EssNotification";
 
 // Issues:
 //         timesheetMap does not get set fast enough in initTimesheetRecords() before combineRecords()
-//         Need the "No Employee Records For 2019" content
-//         AnnualTotals wrong numbers = only adding top row numbers and keeping a running total across all records previously selected
 const HistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage, scopeHideTitle }) => {
   const [state, setState] = useState({
     supId: user.employeeId,
@@ -252,7 +250,10 @@ const HistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage, scop
     }
 
     // This is only adding the submitted records (records.submitted array)
-    records.submitted.forEach(addToAnnualTotals);
+    let annualTotals = {};
+    records.submitted.forEach((record) => {
+      addToAnnualTotals(record, annualTotals);
+    });
 
     setState((prevState) => ({
       ...prevState,
@@ -260,23 +261,18 @@ const HistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage, scop
         employee: records.employee.sort(compareRecords).reverse(),
         submitted: records.submitted.sort(compareRecords).reverse(),
       },
+      annualTotals,
       paperTimesheetsDisplayed,
     }));
   };
 
-  const addToAnnualTotals = (record) => {
-    const annualTotals = { ...state.annualTotals };
+  const addToAnnualTotals = (record, annualTotals) => {
     Object.keys(record.totals).forEach((field) => {
       if (!annualTotals[field]) {
         annualTotals[field] = 0;
       }
       annualTotals[field] += record.totals[field];
     });
-
-    setState((prevState) => ({
-      ...prevState,
-      annualTotals,
-    }));
   };
 
   const isLoading = () => {
@@ -341,18 +337,16 @@ const HistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage, scop
       )}
 
       {!isLoading() && state.recordYears.length === 0 && (
-        <div className={styles.contentContainer}>
-          <ess-notification level="info" title="No Time Record History">
+        <EssNotification level="info" title="No Time Record History">
+          <p>
+            {isUser() ? 'You have' : `${empSupInfo?.fullName} has`} no time records.
+          </p>
+          {empSupInfo?.senator && (
             <p>
-              {isUser() ? 'You have' : `${empSupInfo?.fullName} has`} no time records.
+              {empSupInfo.fullName} is a Senator and does not currently enter time.
             </p>
-            {empSupInfo?.senator && (
-              <p>
-                {empSupInfo.fullName} is a Senator and does not currently enter time.
-              </p>
-            )}
-          </ess-notification>
-        </div>
+          )}
+        </EssNotification>
       )}
     </div>
   );
