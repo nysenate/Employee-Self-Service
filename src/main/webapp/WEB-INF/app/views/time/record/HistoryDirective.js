@@ -15,9 +15,8 @@ import SubmittedAttendanceRecords from 'app/views/time/record/SubmittedAttendanc
 
 // Issues:
 //         timesheetMap does not get set fast enough in initTimesheetRecords() before combineRecords()
-//         Status not properly displayed in Active and Submitted Attendance Records
 //         Need the "No Employee Records For 2019" content
-//         AnnualTotals wrong numbers = only adding top row numbers and keeping a running total accross all records previously selected
+//         AnnualTotals wrong numbers = only adding top row numbers and keeping a running total across all records previously selected
 const HistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage, scopeHideTitle }) => {
   const [state, setState] = useState({
     supId: user.employeeId,
@@ -47,6 +46,14 @@ const HistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage, scop
   }, [empSupInfo]);
 
   useEffect(() => {
+    // setState((prevState) => ({
+    //   ...prevState,
+    //     timesheetRecords: [],
+    //     timesheetMap: {},
+    //     records: {},
+    //     attendRecords: [],
+    //     annualTotals: {},
+    // }));
     if (state.selectedEmp.empId) {
       getTimeRecordYears();
     }
@@ -162,7 +169,8 @@ const HistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage, scop
         timesheetRecords: timesheetRecordsResp.result.items[emp.empId] || [],
         attendRecords: attendRecordsResp.records,
       }));
-
+      console.log("timesheetRecordsResp.result.items: ", timesheetRecordsResp.result.items);
+      console.log("timesheetRecordsResp.result.items[emp.empId]: ", timesheetRecordsResp.result.items[emp.empId], " at emp.empId: ", emp.empId);
       initTimesheetRecords(timesheetRecordsResp.result.items[emp.empId]);
       initAttendRecords(attendRecordsResp.records);
       combineRecords(timesheetRecordsResp.result.items[emp.empId], attendRecordsResp.records);
@@ -177,15 +185,18 @@ const HistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage, scop
         },
       }));
     }
+    console.log("state", state);
   };
 
   const initTimesheetRecords = (records) => {
     const timesheetMap = {};
-    records.forEach((record) => {
-      calculateDailyTotals(record);
-      record.totals = getRecordTotals(record);
-      timesheetMap[record.timeRecordId] = record;
-    });
+    if(records) {
+      records.forEach((record) => {
+        calculateDailyTotals(record);
+        record.totals = getRecordTotals(record);
+        timesheetMap[record.timeRecordId] = record;
+      });
+    }
 
     setState((prevState) => ({
       ...prevState,
@@ -194,7 +205,9 @@ const HistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage, scop
   };
 
   const initAttendRecords = (records) => {
-    records.forEach(formatAttendRecord);
+    if(records.length !== 0) {
+      records.forEach(formatAttendRecord);
+    }
   };
 
   const combineRecords = (timesheetRecords, attendRecords) => {
@@ -205,34 +218,38 @@ const HistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage, scop
     let paperTimesheetsDisplayed = false;
     let attendEnd = new Date('1970-01-01T00:00:00');
 
-    attendRecords.forEach((attendRecord) => {
-      if (new Date(attendRecord.endDate) > attendEnd) {
-        attendEnd = new Date(attendRecord.endDate);
-      }
-      if (attendRecord.timesheetIds.length === 0) {
-        paperTimesheetsDisplayed = true;
-        records.submitted.push(attendRecord);
-        return;
-      }
-      attendRecord.timesheetIds.forEach((tsId) => {
-        const record = timesheetRecords.find((r) => r.timeRecordId === tsId);
-        if (!record) {
-          console.error('Could not find timesheet with id:', tsId);
+    if(attendRecords.length !== 0) {
+      attendRecords.forEach((attendRecord) => {
+        if (new Date(attendRecord.endDate) > attendEnd) {
+          attendEnd = new Date(attendRecord.endDate);
+        }
+        if (attendRecord.timesheetIds.length === 0) {
+          paperTimesheetsDisplayed = true;
+          records.submitted.push(attendRecord);
           return;
         }
-        records.submitted.push(record);
+        attendRecord.timesheetIds.forEach((tsId) => {
+          const record = timesheetRecords.find((r) => r.timeRecordId === tsId);
+          if (!record) {
+            console.error('Could not find timesheet with id:', tsId);
+            return;
+          }
+          records.submitted.push(record);
+        });
       });
-    });
+    }
 
-    timesheetRecords.forEach((timesheet) => {
-      if (new Date(timesheet.endDate) > attendEnd) {
-        if (timesheet.scope === 'E') {
-          records.employee.push(timesheet);
-        } else {
-          records.submitted.push(timesheet);
+    if(timesheetRecords) {
+      timesheetRecords.forEach((timesheet) => {
+        if (new Date(timesheet.endDate) > attendEnd) {
+          if (timesheet.scope === 'E') {
+            records.employee.push(timesheet);
+          } else {
+            records.submitted.push(timesheet);
+          }
         }
-      }
-    });
+      });
+    }
 
     // This is only adding the submitted records (records.submitted array)
     records.submitted.forEach(addToAnnualTotals);

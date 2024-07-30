@@ -114,8 +114,11 @@ const HistoryDirective = ({
     return (!record.computed || record.submitted) && record.empState?.payType !== 'TE';
   };
   // Scope Functions
+  // Something here breaks the page (below)
   const isUser = () => {
-    return empInfo.empId = userId;
+    // console.log(empInfo.employeeId, userId, empInfo.employeeId == userId);
+    // return empInfo.employeeId == userId;
+    return true;
   }
   const isLoading = () => {
     return Object.values(loading).some((status) => status);

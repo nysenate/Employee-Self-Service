@@ -23,7 +23,7 @@ const AccrualEmpHistoryIndex = () => {
     <div>
       <Hero>Employee Accrual History</Hero>
       <EmployeeSelect
-        selectedEmp={selectedEmp}
+        setSelectedEmp={setSelectedEmp}
         selectSubject={"Accrual History"}
       />
       <HistoryDirective

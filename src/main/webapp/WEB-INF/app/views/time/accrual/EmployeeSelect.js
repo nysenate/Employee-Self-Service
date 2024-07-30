@@ -3,6 +3,8 @@ import styles from "app/views/time/universalStyles.module.css";
 import { useSupEmpGroupService } from '../accrual/supEmpGroupService';
 import useAuth from "app/contexts/Auth/useAuth";
 
+// Issues:
+//         Additional Employees for a supervisor with only one employee which is weird
 const EmployeeSelect = ({ setSelectedEmp, activeOnly = false, showSenators = false, payType, selectSubject = 'info' }) => {
   const { userData } = useAuth();
   const [iSelEmpGroup, setISelEmpGroup] = useState(-1);
