@@ -147,8 +147,8 @@ const HistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage, scop
 
     try {
       const [timesheetRecordsResp, attendRecordsResp] = await Promise.all([
-        fetchTimeRecordApi({ empId: emp.empId, from: formatDateYYYYMMDD(yearStart), to: formatDateYYYYMMDD(nextYearStart) }),
-        fetchAttendanceRecordApi({ empId: emp.empId, from: formatDateYYYYMMDD(yearStart), to: formatDateYYYYMMDD(nextYearStart) }),
+        fetchTimeRecordApi({ empId: emp.empId, from: formatDateYYYYMMDD(fromMoment), to: formatDateYYYYMMDD(toMoment) }),
+        fetchAttendanceRecordApi({ empId: emp.empId, from: formatDateYYYYMMDD(fromMoment), to: formatDateYYYYMMDD(toMoment) }),
       ]);
 
       setState((prevState) => ({
