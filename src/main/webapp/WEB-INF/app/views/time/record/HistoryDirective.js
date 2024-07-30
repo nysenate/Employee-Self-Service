@@ -10,7 +10,7 @@ import {
 } from 'app/views/time/record/recordUtils';
 import ActiveAttendanceRecords from 'app/views/time/record/ActiveAttendanceRecords';
 import SubmittedAttendanceRecords from 'app/views/time/record/SubmittedAttendanceRecords';
-
+import EssNotification from "app/components/EssNotification";
 
 
 // Issues:
@@ -323,15 +323,13 @@ const HistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage, scop
       </div>)}
 
       {!isLoading() && state.records.employee.length === 0 && state.records.submitted.length === 0 && (
-        <div className={styles.contentContainer}>
-          <ess-notification level="warn" title={`No Employee Records For ${state.selectedRecYear}`}>
-            <p>
-              It appears as if the employee has no records for the selected year.
-              <br />
-              Please contact Senate Personnel at (518) 455-3376 if you require any assistance.
-            </p>
-          </ess-notification>
-        </div>
+        <EssNotification level="warn" title={`No Employee Records For ${state.selectedRecYear}`}>
+          <p>
+            It appears as if the employee has no records for the selected year.
+            <br />
+            Please contact Senate Personnel at (518) 455-3376 if you require any assistance.
+          </p>
+        </EssNotification>
       )}
 
       {!isLoading() && state.records.employee.length > 0 && (
