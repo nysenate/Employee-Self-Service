@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import Hero from "app/components/Hero";
 import HistoryDirective from "app/views/time/accrual/HistoryDirective";
 import { AccrualDetailsPopup } from "app/views/time/accrual/AccrualDetailsPopup";
+import useAuth from "app/contexts/Auth/useAuth";
 
 const AccrualHistoryIndex = () => {
+  const { userData } = useAuth();
   // Connected Components' State Variables + setter/renderer functions
   const [ isModalOpen, setIsModalOpen ] = useState(false);
   const [ selectedAccrual, setSelectedAccrual ] = useState(null);
@@ -20,10 +22,11 @@ const AccrualHistoryIndex = () => {
   return (
     <div>
       <Hero>Accrual History</Hero>
-      <HistoryDirective
+      {userData().employee && (<HistoryDirective
         viewDetails={viewDetails}
-        empSupInfo={null}
-      />
+        user={userData().employee}
+        empSupInfo={userData().employee}
+      />)}
       {selectedAccrual && (
         <AccrualDetailsPopup
           accruals={selectedAccrual}
