@@ -34,15 +34,25 @@ function travelAppController($scope, $window, appProps, modals, locationService,
             if ($routeParams.draftId) {
                 draftByIdApi.get({id: $routeParams.draftId}).$promise
                     .then(handleDraftResult)
+                    .catch(handleError)
             } else {
                 draftsApi.create().$promise
-                    .then(handleDraftResult);
+                    .then(handleDraftResult)
+                    .catch(handleError)
             }
 
             function handleDraftResult(res) {
                 $scope.data.draft = res.result;
                 $scope.data.dirtyRoute = angular.copy($scope.data.draft.amendment.route);
                 $scope.isLoading = false;
+            }
+
+            function handleError(error) {
+                console.log(error);
+                if (error.data.errorCode === "MISSING_DEPARTMENT") {
+                    console.error("MISSING DEPARTMENT ERROR:", error.data);
+                    modals.open("missing-department-error", error.data)
+                }
             }
         }
     };
