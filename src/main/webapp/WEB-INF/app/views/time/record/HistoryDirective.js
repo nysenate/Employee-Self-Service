@@ -13,8 +13,6 @@ import SubmittedAttendanceRecords from 'app/views/time/record/SubmittedAttendanc
 import EssNotification from "app/components/EssNotification";
 
 
-// Issues:
-//         timesheetMap does not get set fast enough in initTimesheetRecords() before combineRecords()
 const HistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage, scopeHideTitle }) => {
   const [state, setState] = useState({
     supId: user.employeeId,
@@ -44,18 +42,9 @@ const HistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage, scop
   }, [empSupInfo]);
 
   useEffect(() => {
-    // setState((prevState) => ({
-    //   ...prevState,
-    //     timesheetRecords: [],
-    //     timesheetMap: {},
-    //     records: {},
-    //     attendRecords: [],
-    //     annualTotals: {},
-    // }));
     if (state.selectedEmp.empId) {
       getTimeRecordYears();
     }
-    console.log("state.selectedEmp: ", state.selectedEmp)
   }, [state.selectedEmp]);
 
   useEffect(() => {
@@ -167,8 +156,6 @@ const HistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage, scop
         timesheetRecords: timesheetRecordsResp.result.items[emp.empId] || [],
         attendRecords: attendRecordsResp.records,
       }));
-      console.log("timesheetRecordsResp.result.items: ", timesheetRecordsResp.result.items);
-      console.log("timesheetRecordsResp.result.items[emp.empId]: ", timesheetRecordsResp.result.items[emp.empId], " at emp.empId: ", emp.empId);
       initTimesheetRecords(timesheetRecordsResp.result.items[emp.empId]);
       initAttendRecords(attendRecordsResp.records);
       combineRecords(timesheetRecordsResp.result.items[emp.empId], attendRecordsResp.records);
@@ -227,7 +214,7 @@ const HistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage, scop
           return;
         }
         attendRecord.timesheetIds.forEach((tsId) => {
-          const record = timesheetRecords.find((r) => r.timeRecordId === tsId);
+          const record = timesheetRecords?.find((r) => r.timeRecordId === tsId) || null;
           if (!record) {
             console.error('Could not find timesheet with id:', tsId);
             return;
@@ -291,34 +278,30 @@ const HistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage, scop
     <div>
       {isLoading() && <div className={styles.loader}></div>}
 
-      {!isLoading() && state.recordYears.length > 0 && (<div className={styles.contentContainer}>
-        {/*FIX THIS*/}
-        {/*<div className={hideTitle || isUser() ? styles.contentControls : ''}>*/}
-        <div className={false ? styles.contentControls : ''}>
-          {/*{!(hideTitle || isUser()) && (*/}
-          {!(false) && (
-            <h1 className={styles.contentInfo}>
-              {state.selectedEmp.empFirstName} {state.selectedEmp.empLastName}'s Attendance Records
-            </h1>
-          )}
-          <p className={styles.contentInfo} style={{ marginBottom: 0, backgroundColor: 'white' }}>
-            View attendance records for year &nbsp;
-            <select
-              style={{ color: 'black', fontWeight: '400' }}
-              value={state.selectedRecYear}
-              onChange={(e) => setState({ ...state, selectedRecYear: e.target.value })}
-            >
-              {state.recordYears.map((year) => (
-                <option key={year} value={year}>
-                  {year}
-                </option>
-              ))}
-            </select>
-          </p>
-        </div>
+      {!isLoading() && state.recordYears.length > 0 && (<div className={`${styles.contentContainer} 
+      ${hideTitle || isUser() ? styles.contentControls : ''}`}>
+        {!(hideTitle || isUser()) && (
+        // {!(false) && (
+          <h1 className={styles.contentInfo}>
+            {state.selectedEmp.empFirstName} {state.selectedEmp.empLastName}'s Attendance Records
+          </h1>
+        )}
+        <p className={styles.contentInfo} style={{ marginBottom: 0, backgroundColor: 'white' }}>
+          View attendance records for year &nbsp;
+          <select
+            style={{ color: 'black', fontWeight: '400' }}
+            value={state.selectedRecYear}
+            onChange={(e) => setState({ ...state, selectedRecYear: e.target.value })}
+          >
+            {state.recordYears.map((year) => (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            ))}
+          </select>
+        </p>
       </div>)}
-
-      {!isLoading() && state.records.employee.length === 0 && state.records.submitted.length === 0 && (
+      {!(state.records.employee.length > 0 || state.records.submitted.length > 0 || isLoading()) && (
         <EssNotification level="warn" title={`No Employee Records For ${state.selectedRecYear}`}>
           <p>
             It appears as if the employee has no records for the selected year.

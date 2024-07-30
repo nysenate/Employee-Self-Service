@@ -25,9 +25,8 @@ const RecordHistoryIndex = () => {
       {userData().employee && (<HistoryDirective
         viewDetails={viewDetails}
         user={userData().employee}
-        empSupInfo={null}
+        empSupInfo={userData().employee}
         linkToEntryPage={true}
-        scopeHideTitle={true}
       />)}
       {/*{selectedRecord && (<RecordDetailsPopup*/}
       {/*  record={selectedRecord}*/}

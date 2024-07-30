@@ -33,7 +33,6 @@ const RecordEmpHistoryIndex = () => {
         user={userData().employee}
         empSupInfo={selectedEmpSupInfo}
         linkToEntryPage={true}
-        scopeHideTitle={true}
       />)}
       {/*{selectedRecord && (<RecordDetailsPopup*/}
       {/*  record={selectedRecord}*/}
