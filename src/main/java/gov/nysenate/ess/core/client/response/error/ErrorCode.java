@@ -1,7 +1,6 @@
 package gov.nysenate.ess.core.client.response.error;
 
-public enum ErrorCode
-{
+public enum ErrorCode {
     /** Core Errors */
     APPLICATION_ERROR(1, "An error occurred while processing your request"),
     INVALID_ARGUMENTS(2, "The necessary arguments were not provided in the correct format."),
@@ -33,7 +32,8 @@ public enum ErrorCode
 
     /** Travel Errors */
     DATA_PROVIDER_ERROR(301, "An error occurred while communicating with 3rd party data providers."),
-    INVALID_TRAVEL_DATES(302, "One or more of your travel dates are invalid.");
+    INVALID_TRAVEL_DATES(302, "One or more of your travel dates are invalid."),
+    MISSING_DEPARTMENT(303, "Department lookup failed.");
 
     /** Unique ID for error code */
     private final int code;
