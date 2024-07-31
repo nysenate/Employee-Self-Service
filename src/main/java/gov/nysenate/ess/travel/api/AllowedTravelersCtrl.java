@@ -22,10 +22,14 @@ public class AllowedTravelersCtrl extends BaseRestApiCtrl {
     @Autowired private AllowedTravelersService allowedTravelersService;
     @Autowired private TravelEmployeeService travelEmployeeService;
 
+    /**
+     * @deprecated as of Aug 1 2024, due to a change in business rules. All users now have to submit their own travel requests.
+     */
+    @Deprecated
     @RequestMapping("")
     public BaseResponse fetchAllowedTravelers() {
         Set<Employee> allowedEmps = allowedTravelersService.forEmpId(getSubjectEmployeeId());
-        Set<TravelEmployee> allowedTravelers = travelEmployeeService.getTravelEmployees(allowedEmps);
+        Set<TravelEmployee> allowedTravelers = travelEmployeeService.loadTravelEmployeesSafe(allowedEmps);
         return ListViewResponse.of(
                 allowedTravelers.stream()
                         .map(TravelEmployeeView::new)

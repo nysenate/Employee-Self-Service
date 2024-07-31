@@ -20,18 +20,14 @@ function purposeEditLink($http, appProps, eventTypesApi, allowedTravelersApi, mo
             scope.isLoading = true;
             scope.dirtyDraft = angular.copy(scope.data.draft);
             scope.eventTypes = [];
-            scope.allowedTravelers = [];
 
             (function () {
                 // Init event types and allowed travelers.
                 var eventTypesPromise = eventTypesApi.get().$promise.then(function (res) {
                     scope.eventTypes = res.result;
                 });
-                var allowedTravelersPromise = allowedTravelersApi.get().$promise.then(function (res) {
-                    scope.allowedTravelers = res.result;
-                });
 
-                Promise.all([eventTypesPromise, allowedTravelersPromise]).then(function () {
+                Promise.all([eventTypesPromise]).then(function () {
                     scope.isLoading = false;
                     scope.$apply();
                 });
@@ -48,7 +44,7 @@ function purposeEditLink($http, appProps, eventTypesApi, allowedTravelersApi, mo
                 scope.setInvalidFormElementsTouched(scope.purpose.form);
                 if (scope.purpose.form.$valid) {
                     scope.saveDraft(scope.dirtyDraft)
-                        .then(function(draft) {
+                        .then(function (draft) {
                             scope.dirtyDraft = draft;
                         })
                 } else {

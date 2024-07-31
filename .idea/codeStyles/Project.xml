@@ -26,6 +26,7 @@
     </DBN-SQL>
     <JavaCodeStyleSettings>
       <option name="ALIGN_MULTILINE_TEXT_BLOCKS" value="true" />
+      <option name="JD_DO_NOT_WRAP_ONE_LINE_COMMENTS" value="true" />
     </JavaCodeStyleSettings>
     <codeStyleSettings language="HTML">
       <indentOptions>

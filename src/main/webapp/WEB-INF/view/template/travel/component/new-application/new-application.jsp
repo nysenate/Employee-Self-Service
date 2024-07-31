@@ -134,6 +134,17 @@
       </div>
     </modal>
 
+    <modal modal-id="missing-department-error">
+      <div error-modal
+           title="Missing Department"
+           buttonValue="Ok"
+           buttonClass="reject-button">
+        <p>
+          {{params.message}}
+        </p>
+      </div>
+    </modal>
+
     <modal modal-id="document-upload-error">
       <div error-modal
            title="Unable to Upload Documents">
@@ -145,22 +156,22 @@
       </div>
     </modal>
 
-      <modal modal-id="draft-save-success">
-        <div confirm-modal rejectable="true"
-             title="Your travel application has been saved as a draft."
-             confirm-message="What would you like to do next?"
-             resolve-button="Go back to ESS"
-             reject-button="Log out of ESS">
-        </div>
-      </modal>
-      <modal modal-id="draft-save-error">
-        <div confirm-modal rejectable="true"
-             title="Unable to save your travel application."
-             confirm-message="What would you like to do next?"
-             resolve-button="Go back to ESS"
-             reject-button="Log out of ESS">
-        </div>
-      </modal>
+    <modal modal-id="draft-save-success">
+      <div confirm-modal rejectable="true"
+           title="Your travel application has been saved as a draft."
+           confirm-message="What would you like to do next?"
+           resolve-button="Go back to ESS"
+           reject-button="Log out of ESS">
+      </div>
+    </modal>
+    <modal modal-id="draft-save-error">
+      <div confirm-modal rejectable="true"
+           title="Unable to save your travel application."
+           confirm-message="What would you like to do next?"
+           resolve-button="Go back to ESS"
+           reject-button="Log out of ESS">
+      </div>
+    </modal>
 
   </div>
 

@@ -1,6 +1,8 @@
 package gov.nysenate.ess.travel.department;
 
 import gov.nysenate.ess.core.model.personnel.Employee;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -12,6 +14,7 @@ import java.util.stream.Stream;
 
 public class TravelDepartmentAssigner {
 
+    private static final Logger logger = LoggerFactory.getLogger(TravelDepartmentAssigner.class);
     private final Set<Employee> activeEmployees;
     private final Set<Integer> departmentHeadIds;
     private final Map<Integer, Integer> deptHdOverrides; // map of employee id to department head emp id.
@@ -27,12 +30,14 @@ public class TravelDepartmentAssigner {
      * Find and construct the Department that the given employee belongs to or is the head of.
      *
      * @param employee
-     * @return A Department or null if the department could not be determined.
+     * @return The department the given employee belongs to.
+     * @throws DepartmentNotFoundEx if a department cannot be found for employee.
      */
-    public Department getDepartment(Employee employee) {
+    public Department getDepartment(Employee employee) throws DepartmentNotFoundEx {
         Employee departmentHead = getDepartmentHead(employee);
         if (departmentHead == null) {
-            return null;
+            logger.warn("Department head not found for employee: \"{}\" empId: {}", employee.getFullName(), employee.getEmployeeId());
+            throw new DepartmentNotFoundEx(employee.getEmployeeId());
         }
         Set<Employee> subordinates = getSubordinates(departmentHead);
         return new Department(departmentHead, subordinates);

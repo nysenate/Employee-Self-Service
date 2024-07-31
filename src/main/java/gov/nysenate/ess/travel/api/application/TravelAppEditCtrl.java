@@ -6,6 +6,7 @@ import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
+import gov.nysenate.ess.travel.department.DepartmentNotFoundEx;
 import gov.nysenate.ess.travel.employee.TravelEmployeeService;
 import gov.nysenate.ess.travel.request.app.*;
 import gov.nysenate.ess.travel.request.draft.Draft;
@@ -32,12 +33,12 @@ public class TravelAppEditCtrl extends BaseRestApiCtrl {
      * </p>
      */
     @RequestMapping(value = "/edit/{appId}", method = RequestMethod.GET)
-    public BaseResponse editApplication(@PathVariable int appId) {
+    public BaseResponse editApplication(@PathVariable int appId) throws DepartmentNotFoundEx {
         TravelApplication app = appService.getTravelApplication(appId);
         // Check the logged in user is allowed to modify this app.
         checkTravelAppPermission(app, RequestMethod.POST);
 
-        Draft draft = new Draft(getSubjectEmployeeId(), travelEmployeeService.getTravelEmployee(app.getTraveler()));
+        Draft draft = new Draft(getSubjectEmployeeId(), travelEmployeeService.loadTravelEmployee(app.getTraveler()));
         draft.setTravelApplication(app);
         return new ViewObjectResponse<>(new DraftView(draft));
     }
@@ -73,7 +74,7 @@ public class TravelAppEditCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping(value = "/edit/resubmit/{appId}", method = RequestMethod.POST)
     public BaseResponse saveAndResubmitEditedApplication(@PathVariable int appId,
-                                              @RequestBody DraftView draftView) {
+                                                         @RequestBody DraftView draftView) {
         // Check the logged in user is allowed to modify this app
         TravelApplication originalApp = appService.getTravelApplication(appId);
         checkTravelAppPermission(originalApp, RequestMethod.POST);
