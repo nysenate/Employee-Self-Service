@@ -2,9 +2,6 @@
   <div ng-show="purpose.form.$submitted && !purpose.form.$valid" class="margin: 10px 0px;">
     <ess-notification level="error">
       <ul>
-        <li ng-if="purpose.form.$error.travelerRequired">
-          A traveler is required.
-        </li>
         <li ng-if="purpose.form.$error.departmentHeadRequired">
           A department head is required.
         </li>
@@ -29,14 +26,7 @@
         <div class="padding-10">
           <div class="purpose-row">
             <label>Travel application on behalf of:</label>
-            <ui-select ng-model="dirtyDraft.traveler" style="min-width: 200px;" class="travel-ui-select-input" traveler-validator>
-              <ui-select-match>
-                <span ng-bind="$select.selected.fullName"></span>
-              </ui-select-match>
-              <ui-select-choices repeat="emp in allowedTravelers | filter: $select.search track by emp.employeeId">
-                <div ng-bind-html="emp.fullName"></div>
-              </ui-select-choices>
-            </ui-select>
+            <span style="min-width: 200px;" class="padding-left-10">{{dirtyDraft.traveler.fullName}}</span>
           </div>
           <div class="purpose-row" ng-if="showDepartmentHead()">
             <label>Traveler Department Head:</label>
@@ -56,7 +46,8 @@
                     ng-model="dirtyDraft.amendment.purposeOfTravel.eventType"/>
           </div>
           <div ng-if="dirtyDraft.amendment.purposeOfTravel.eventType.requiresName" class="purpose-row">
-            <label for="eventNameInput">Name of the {{dirtyDraft.amendment.purposeOfTravel.eventType.displayName}}:</label>
+            <label for="eventNameInput">Name of the
+              {{dirtyDraft.amendment.purposeOfTravel.eventType.displayName}}:</label>
             <input id="eventNameInput" type="text" class="travel-input"
                    event-name-validator
                    ng-model="dirtyDraft.amendment.purposeOfTravel.eventName"/>
@@ -66,7 +57,8 @@
               <label for="purposeAdditionalTextRequired">
                 Enter your purpose of travel:
               </label>
-              <textarea id="purposeAdditionalTextRequired" ng-model="dirtyDraft.amendment.purposeOfTravel.additionalPurpose"
+              <textarea id="purposeAdditionalTextRequired"
+                        ng-model="dirtyDraft.amendment.purposeOfTravel.additionalPurpose"
                         class="travel-input"
                         additional-purpose-validator
                         cols="120" rows="3"></textarea>
@@ -75,7 +67,8 @@
               <label for="purposeAdditionalTextOptional">
                 Provide additional information (<em>Optional</em>):
               </label>
-              <textarea id="purposeAdditionalTextOptional" ng-model="dirtyDraft.amendment.purposeOfTravel.additionalPurpose"
+              <textarea id="purposeAdditionalTextOptional"
+                        ng-model="dirtyDraft.amendment.purposeOfTravel.additionalPurpose"
                         class="travel-input"
                         style="resize:vertical;"
                         cols="120" rows="3"></textarea>
