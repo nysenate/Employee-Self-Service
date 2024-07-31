@@ -7,6 +7,7 @@ import { AccrualDetailsPopup } from "app/views/time/accrual/AccrualDetailsPopup"
 import TogglePanel from "app/components/TogglePanel";
 import RecordHistoryDirective from "app/views/time/record/RecordHistoryDirective";
 import useAuth from "app/contexts/Auth/useAuth";
+import AccrualBar from "app/views/time/accrual/AccrualBar";
 
 
 export default function PersonnelSearchIndex() {
@@ -15,6 +16,8 @@ export default function PersonnelSearchIndex() {
 
   const viewRecordDetails = (input) => {console.log("viewRecordDetails input: ", input);}
   const viewAccrualDetails = (input) => {console.log("viewAccrualDetails input: ", input);}
+
+  console.log("Selected at Personnel: ", selectedEmp);
 
   return (
     <div>
@@ -30,6 +33,8 @@ export default function PersonnelSearchIndex() {
       {/*    scopeHideTitle={true}*/}
       {/*  />*/}
       {/*</TogglePanel>)}*/}
+
+      {/*{selectedEmp && selectedEmp.active && (<AccrualBar empId={selectedEmp.empId}/>)}*/}
     </div>
   );
 };
