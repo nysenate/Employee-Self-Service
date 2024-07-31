@@ -4,11 +4,12 @@ import Navigation from "app/components/Navigation";
 import AppLayout from "app/components/AppLayout";
 import { Navigate, Route, Routes } from "react-router-dom";
 
-import AccrualHistoryIndex from "./accrual/AccrualHistoryIndex.js";
-import CalendarIndex from "./period/CalendarIndex";
-import AccrualEmpHistoryIndex from "./accrual/AccrualEmpHistoryIndex.js";
 import RecordHistoryIndex from "./record/RecordHistoryIndex.js";
+import CalendarIndex from "./period/CalendarIndex";
+import AccrualHistoryIndex from "./accrual/AccrualHistoryIndex.js";
 import RecordEmpHistoryIndex from "./record/RecordEmpHistoryIndex.js";
+import AccrualEmpHistoryIndex from "./accrual/AccrualEmpHistoryIndex.js";
+import PersonnelSearchIndex from "app/views/time/personnel/PersonnelSearchIndex";
 // import AccrualProjections from "./accruals/AccrualProjections.js";
 // import SickLeaveDonation from "./accruals/SickLeaveDonation.js";
 //
@@ -32,6 +33,7 @@ export default function TimeRouter() {
           <Route path="accrual/emphistory" element={<AccrualEmpHistoryIndex/>}/>
           {/*<Route path="accrual/emp-projections" element={<AccrualEmpProjectionsIndex/>}/>*/}
           {/*<Route path="record/grant" element={<SickLeaveDonation/>}/>*/}
+          <Route path="personnel/search" element={<PersonnelSearchIndex/>}/>
           {/*<Route path="" element={<Navigate to="attendance/entry" replace/>}/>*/}
           <Route path="*" element={<div>404</div>}/>
         </Route>
@@ -77,6 +79,9 @@ function TimeLayout() {
           <Navigation.Link to="/time/record/emphistory">
             Employee Attendance History
           </Navigation.Link>
+          <Navigation.Link to="/time/allowance/emp-status">
+            Employee Allowed Hours
+          </Navigation.Link>
           <Navigation.Link to="/time/accrual/emphistory">
             Employee Accrual History
           </Navigation.Link>
@@ -85,6 +90,11 @@ function TimeLayout() {
           </Navigation.Link>
           <Navigation.Link to="/time/record/grant">
             Grant Supervisor Access
+          </Navigation.Link>
+        </Navigation.Section>
+        <Navigation.Section name="Personnel">
+          <Navigation.Link to="/time/personnel/search">
+            Employee Search
           </Navigation.Link>
         </Navigation.Section>
       </Navigation>

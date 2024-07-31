@@ -1469,3 +1469,79 @@ ul.inactiveEmployeeEmailList {
 #employeeSearchPage allowanceBar > * {
     margin-top: 20px;
 }
+
+.employeeSearchBar {
+    width: 20em;
+    font-size: 16px;
+}
+
+.employeeSearchBar::-webkit-search-cancel-button {
+    -webkit-appearance: searchfield-cancel-button;
+}
+
+.employeeSearchCheckbox {
+    display: block;
+    margin-top: 10px;
+}
+
+.employeeSearchLoader {
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
+
+.employeeSearchResults {
+    max-height: 30em;
+    width: 23em;
+    overflow: auto;
+    margin: 10px auto;
+    font-size: 14px;
+    border: 1px solid rgba(0, 128, 128, 0.25); /* Replace @teal with rgba(0, 128, 128, 0.25) */
+    border-left: 0;
+    border-right: 0;
+}
+
+.employeeSearchResults ul {
+    padding: 0;
+}
+
+.searchResult {
+    margin: 2.5px;
+}
+
+.searchResult:hover {
+    background: teal;
+    color: #fafafa;
+    cursor: pointer;
+}
+
+.selectedEmployee {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.selectedEmployee th {
+    padding-right: 5px;
+}
+
+.selectedEmployee td {
+    text-align: left;
+}
+
+.selectAnother {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.personnelStatus {
+    text-transform: capitalize;
+}
+
+.personnelStatus.special {
+    color: orange; /* Replace @orange with orange */
+}
+
+.personnelStatus.inactive {
+    color: red; /* Replace @redorange with red */
+}

@@ -161,14 +161,3 @@ export function RecordDetailsPopup({ record, isModalOpen, closeModal }) {
     </Popup>
   );
 }
-
-
-// essTime.filter("miscLeave", [ "appProps", function(appProps) {
-//     var miscLeaveMap = {};
-//     return angular.forEach(appProps.miscLeaves, function(miscLeave) {
-//         miscLeaveMap[miscLeave.type] = miscLeave;
-//     }), function(miscLeave, defaultLabel) {
-//         return miscLeaveMap.hasOwnProperty(miscLeave) ? miscLeaveMap[miscLeave].shortName : miscLeave ? miscLeave + "?!" : defaultLabel || "--";
-//     };
-// } ]),
-// angular.module("essTime").filter("entryHours", [ entryHoursFilter ]).directive("timeRecordInput", [ timeRecordInputDirective ]).directive("recordDetails", [ "appProps", "modals", "AccrualPeriodApi", "AllowanceApi", "AllowanceUtils", recordDetailsDirective ]).directive("recordDetailModal", [ "modals", recordDetailModalDirective ]),
