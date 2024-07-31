@@ -13,7 +13,7 @@ import SubmittedAttendanceRecords from 'app/views/time/record/SubmittedAttendanc
 import EssNotification from "app/components/EssNotification";
 
 
-const HistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage, scopeHideTitle }) => {
+const RecordHistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage, scopeHideTitle }) => {
   const [state, setState] = useState({
     supId: user.employeeId,
     searching: false,
@@ -34,6 +34,8 @@ const HistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage, scop
     attendRecords: [],
     annualTotals: {},
   });
+
+  console.log("myconsole: ", empSupInfo);
 
   const hideTitle = scopeHideTitle || false;
 
@@ -335,4 +337,4 @@ const HistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage, scop
   );
 };
 
-export default HistoryDirective;
+export default RecordHistoryDirective;

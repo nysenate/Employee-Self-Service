@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Hero from "app/components/Hero";
-import HistoryDirective from "app/views/time/accrual/HistoryDirective";
+import AccrualHistoryDirective from "app/views/time/accrual/AccrualHistoryDirective";
 import { AccrualDetailsPopup } from "app/views/time/accrual/AccrualDetailsPopup";
 import EmployeeSelect from "./EmployeeSelect";
 import useAuth from "app/contexts/Auth/useAuth";
@@ -28,7 +28,7 @@ const AccrualEmpHistoryIndex = () => {
         setSelectedEmp={setSelectedEmpSupInfo}
         selectSubject={"Accrual History"}
       />
-      {selectedEmpSupInfo && (<HistoryDirective
+      {selectedEmpSupInfo && (<AccrualHistoryDirective
         viewDetails={viewDetails}
         user={userData().employee}
         empSupInfo={selectedEmpSupInfo}

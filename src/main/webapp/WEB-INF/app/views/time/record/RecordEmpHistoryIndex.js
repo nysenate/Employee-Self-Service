@@ -1,4 +1,4 @@
-import HistoryDirective from "app/views/time/record/HistoryDirective";
+import RecordHistoryDirective from "app/views/time/record/RecordHistoryDirective";
 import React, { useState } from "react";
 import Hero from "app/components/Hero";
 import useAuth from "app/contexts/Auth/useAuth";
@@ -29,7 +29,7 @@ const RecordEmpHistoryIndex = () => {
         setSelectedEmp={setSelectedEmpSupInfo}
         selectSubject={"Attendance Records"}
       />
-      {selectedEmpSupInfo && (<HistoryDirective
+      {selectedEmpSupInfo && (<RecordHistoryDirective
         viewDetails={viewDetails}
         user={userData().employee}
         empSupInfo={selectedEmpSupInfo}

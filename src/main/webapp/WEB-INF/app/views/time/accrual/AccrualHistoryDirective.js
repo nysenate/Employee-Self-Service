@@ -1,5 +1,5 @@
 /*
-* HistoryDirective.js
+* AccrualHistoryDirective.js
 * replicated history-directive.jsp
 * called <accrual-history> in angular section
 * This component is called by AccrualHistoryIndex and AccrualEmpHistoryIndex
@@ -17,7 +17,7 @@ import {
 } from "app/views/time/accrual/time-accrual-ctrl";
 import { formatDateYYYYMMDD } from "app/views/time/helpers";
 
-const HistoryDirective = ({
+const AccrualHistoryDirective = ({
                             viewDetails,
                             user,
                             empSupInfo,
@@ -344,4 +344,4 @@ const YearSelect = ({ years, selectedYear, setYear }) => {
   );
 };
 
-export default HistoryDirective;
+export default AccrualHistoryDirective;

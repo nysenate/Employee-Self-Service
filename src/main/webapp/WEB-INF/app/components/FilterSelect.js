@@ -4,7 +4,7 @@ import Highlighter from 'react-highlight-words';
 import styles from '../views/supply/universalStyles.module.css';
 
 /**
- * Displays a dropdown input search bar to select items.
+ * Displays a custom dropdown input search bar to select items. and display multiple lines in one option
  *
  * @param {Object} props The props for the component.
  * @param {Array} props.data The data array to be displayed.

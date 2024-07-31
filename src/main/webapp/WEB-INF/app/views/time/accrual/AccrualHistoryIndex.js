@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Hero from "app/components/Hero";
-import HistoryDirective from "app/views/time/accrual/HistoryDirective";
+import AccrualHistoryDirective from "app/views/time/accrual/AccrualHistoryDirective";
 import { AccrualDetailsPopup } from "app/views/time/accrual/AccrualDetailsPopup";
 import useAuth from "app/contexts/Auth/useAuth";
 
@@ -22,7 +22,7 @@ const AccrualHistoryIndex = () => {
   return (
     <div>
       <Hero>Accrual History</Hero>
-      {userData().employee && (<HistoryDirective
+      {userData().employee && (<AccrualHistoryDirective
         viewDetails={viewDetails}
         user={userData().employee}
         empSupInfo={userData().employee}

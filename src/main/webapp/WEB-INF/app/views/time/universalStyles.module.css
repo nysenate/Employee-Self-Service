@@ -831,6 +831,16 @@ ul.unsubmittedTeRecList li {
     margin-top: 10px;
     width: 8.5em;
 }
+
+input[type="button"].timeNeutralButton,
+input[type="submit"].timeNeutralButton {
+    padding: 5px 10px;
+    background: #006B80;
+    color: white;
+    font-weight: 600;
+    border: 2px none #00404d;
+    border-bottom-style: solid;
+}
 /* --- Attendance History Page --- */
 .attendanceListingTable tbody tr {
     border-bottom: 1px solid #eee !important;
