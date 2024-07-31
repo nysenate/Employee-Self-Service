@@ -72,6 +72,27 @@ export function hoursDiffHighlighter(accruals) {
   return <span style={{ color: color }}>{sign} {hours}</span>;
 };
 
+/**
+ * Colors a number based on whether it's positive or negative to provide a
+ * visual cue.
+ *
+ * Example,
+ * given 7 -> +7 (green)
+ * given -3 -> -3 (red)
+ * given 0 -> 0 (default color)
+ *
+ * @param Int positive The variable being subtracted from
+ * @param Int negative The variable subtracting
+ *
+ */
+export function hoursDiffHighlighterCustom(positive, negative) {
+  let color = "#0e4e5a";
+  let sign = "";
+  let hours = (positive - negative).toFixed(2);
+  hours > 0 ? (color = "#09BB05", sign = "+") : hours < 0 && (color = "#BB0505");
+  return <span style={{ color: color }}>{sign} {hours}</span>;
+};
+
 // Helper functions to determine entry types
 function isTemporaryEmployee(entry) {
   return entry.payType === 'TE';

@@ -8,6 +8,7 @@ import TogglePanel from "app/components/TogglePanel";
 import RecordHistoryDirective from "app/views/time/record/RecordHistoryDirective";
 import useAuth from "app/contexts/Auth/useAuth";
 import AccrualBar from "app/views/time/accrual/AccrualBar";
+import AllowanceBar from "app/views/time/allowance/AllowanceBar";
 
 
 export default function PersonnelSearchIndex() {
@@ -33,7 +34,7 @@ export default function PersonnelSearchIndex() {
       {/*    scopeHideTitle={true}*/}
       {/*  />*/}
       {/*</TogglePanel>)}*/}
-
+      {selectedEmp && selectedEmp?.payType === 'TE' && <AllowanceBar empId={selectedEmp.empId} />}
       {/*{selectedEmp && selectedEmp.active && (<AccrualBar empId={selectedEmp.empId}/>)}*/}
     </div>
   );
@@ -45,9 +46,7 @@ export default function PersonnelSearchIndex() {
 
 
 // Needed before Uncomment:
-//    -AccrualBar
 //    -AllowanceBar
-//    -TogglePanel
 //    -AccrualProjections
 //    -AllowanceHistory
 
