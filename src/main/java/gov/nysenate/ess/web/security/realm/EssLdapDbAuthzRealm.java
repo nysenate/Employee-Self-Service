@@ -4,15 +4,15 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
 import gov.nysenate.ess.core.model.auth.LdapAuthResult;
-import gov.nysenate.ess.core.model.auth.LdapAuthStatus;
 import gov.nysenate.ess.core.model.auth.SenatePerson;
 import gov.nysenate.ess.core.model.personnel.Employee;
-import gov.nysenate.ess.core.model.personnel.EmployeeException;
 import gov.nysenate.ess.core.service.notification.slack.service.SlackChatService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.security.authentication.LdapAuthService;
 import gov.nysenate.ess.core.service.security.authorization.permission.EssPermissionService;
 import gov.nysenate.ess.core.service.security.authorization.role.EssRoleService;
+import gov.nysenate.ess.web.security.exception.LdapMismatchException;
+import gov.nysenate.ess.web.security.exception.NameNotFoundException;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authc.pam.UnsupportedTokenException;
 import org.apache.shiro.authz.AuthorizationInfo;
@@ -83,44 +83,8 @@ public class EssLdapDbAuthzRealm extends AuthorizingRealm
                     username, authEnabled ? "" : " (Master Pass Enabled)" );
 
             LdapAuthResult authResult =
-                (authEnabled) ? essLdapAuthService.authenticateUserByUid(username, password)
-                              : essLdapAuthService.authenticateUserByUidWithoutCreds(username, password, masterPass);
-
-            try {
-                Employee ldapEmployee = employeeDao.getEmployeeById(authResult.getPerson().getEmployeeId());
-
-                if (ldapEmployee.getEmail() == null || ldapEmployee.getEmail().isEmpty()) {
-                    // DO NOTHING TO REJECT LOGIN. THIS MEANS THEIR EMAIL HAS NOT YET BEEN SYNCED IN SFMS. ALLOW LOGIN
-                    String warning = "THE FOLLOWING EMPLOYEE DOES NOT HAVE THEIR EMAIL IN SFMS: "
-                            + authResult.getPerson().getEmployeeId() + "," + authResult.getPerson().getEmail();
-                    logger.warn(warning);
-                    slackChatService.sendMessage(warning);
-                }
-                else if (!ldapEmployee.getEmail().equals(authResult.getPerson().getEmail())) { //EMAIL MISMATCH, SO REJECT LOGIN
-                    String error = "THERE IS A MISMATCH IN CREDENTIAL INFO FOR SFMS EMP ID: " +
-                            ldapEmployee.getEmployeeId() + ", AND LDAP INFO: " + authResult.getPerson().getEmployeeId() + ", " + authResult.getPerson().getEmail();
-                    logger.error(error);
-                    slackChatService.sendMessage(error);
-                    authResult = new LdapAuthResult(LdapAuthStatus.LDAP_MISMATCH_EXCEPTION, authResult.getUid(),
-                            authResult.getName(), authResult.getPerson());
-                }
-            }
-            catch (EmployeeException e) { // WE COULDNT MATCH THE EMPLOYEE ID FROM LDAP. REJECT THE LOGIN
-                String error = "THIS LDAP EMPLOYEE ID COULD NOT BE MATCHED IN SFMS: " + authResult.getPerson().getEmployeeId() + ", " + authResult.getPerson().getEmail();
-                logger.error(error);
-                slackChatService.sendMessage(error);
-                authResult = new LdapAuthResult(LdapAuthStatus.NAME_NOT_FOUND_EXCEPTION, authResult.getUid(),
-                        authResult.getName(), authResult.getPerson());
-            }
-            catch (Exception e) {
-                String error = "AN ERROR OCCURRED WHILE VERIFYING THE FOLLOWING LDAP INFO IN SFMS: "
-                        + authResult.getPerson().getEmployeeId() + "," + authResult.getPerson().getEmail();
-                logger.error(error);
-                slackChatService.sendMessage(error);
-                authResult = new LdapAuthResult(LdapAuthStatus.UNKNOWN_EXCEPTION, authResult.getUid(),
-                        authResult.getName(), authResult.getPerson());
-            }
-
+                    (authEnabled) ? essLdapAuthService.authenticateUserByUid(username, password)
+                            : essLdapAuthService.authenticateUserByUidWithoutCreds(username, password, masterPass);
             return queryForAuthenticationInfo(userPassToken, authResult);
         }
         throw new UnsupportedTokenException("Senate LDAP Realm only supports UsernamePasswordToken");
@@ -144,7 +108,7 @@ public class EssLdapDbAuthzRealm extends AuthorizingRealm
             case EMPTY_USERNAME:
                 throw new UnknownAccountException("The username supplied was empty.");
             case NAME_NOT_FOUND_EXCEPTION:
-                throw new UnknownAccountException("No account was found with the supplied username");
+                throw new NameNotFoundException("No account was found with the supplied username");
             case MULTIPLE_MATCH_EXCEPTION:
                 throw new AccountException("Multiple entries were found for the supplied username.");
             case EMPTY_CREDENTIALS:
@@ -154,7 +118,7 @@ public class EssLdapDbAuthzRealm extends AuthorizingRealm
             case CONNECTION_ERROR:
                 throw new AuthenticationException("Failed to connect to the authentication server.");
             case LDAP_MISMATCH_EXCEPTION:
-                throw new AuthenticationException("There was a mismatch between LDAP & SFMS");
+                throw new LdapMismatchException("There was a mismatch between LDAP & SFMS");
             default:
                 throw new AuthenticationException("An unknown exception occurred while authenticating against LDAP.");
         }

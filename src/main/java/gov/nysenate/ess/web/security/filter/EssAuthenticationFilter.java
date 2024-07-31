@@ -3,9 +3,12 @@ package gov.nysenate.ess.web.security.filter;
 import gov.nysenate.ess.core.client.response.auth.AuthenticationResponse;
 import gov.nysenate.ess.core.dao.stats.UserAgentDao;
 import gov.nysenate.ess.core.model.auth.AuthenticationStatus;
+import gov.nysenate.ess.core.model.auth.LdapAuthStatus;
 import gov.nysenate.ess.core.model.auth.SenateLdapPerson;
 import gov.nysenate.ess.core.model.stats.UserAgentInfo;
 import gov.nysenate.ess.core.util.HttpResponseUtils;
+import gov.nysenate.ess.web.security.exception.LdapMismatchException;
+import gov.nysenate.ess.web.security.exception.NameNotFoundException;
 import gov.nysenate.ess.web.security.realm.EssIpAuthzRealm;
 import gov.nysenate.ess.web.security.xsrf.XsrfValidator;
 import org.apache.shiro.SecurityUtils;
@@ -16,6 +19,8 @@ import org.apache.shiro.web.util.SavedRequest;
 import org.apache.shiro.web.util.WebUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletRequest;
@@ -31,6 +36,7 @@ import java.util.Set;
 /**
  *
  */
+@Service
 public class EssAuthenticationFilter extends AuthenticationFilter
 {
     private static final Logger logger = LoggerFactory.getLogger(EssAuthenticationFilter.class);
@@ -47,9 +53,12 @@ public class EssAuthenticationFilter extends AuthenticationFilter
     private XsrfValidator xsrfValidator;
 
     private final UserAgentDao userAgentDao;
+    private final EssLdapAuthenticationFilter essLdapAuthenticationFilter;
 
-    public EssAuthenticationFilter(UserAgentDao userAgentDao) {
+    @Autowired
+    public EssAuthenticationFilter(UserAgentDao userAgentDao, EssLdapAuthenticationFilter essLdapAuthenticationFilter) {
         this.userAgentDao = userAgentDao;
+        this.essLdapAuthenticationFilter = essLdapAuthenticationFilter;
     }
 
     /** --- Overrides --- */
@@ -134,12 +143,24 @@ public class EssAuthenticationFilter extends AuthenticationFilter
         AuthenticationToken authToken = createAuthToken(username, password, rememberMe, host);
         Subject subject = getSubject(request, response);
 
-        AuthenticationStatus authStatus;
+        AuthenticationStatus authStatus = AuthenticationStatus.FAILURE;
 
         try {
-            subject.login(authToken);
-            authStatus = AuthenticationStatus.AUTHENTICATED;
-            return onLoginSuccess(authToken, authStatus, subject, request, response);
+            LdapAuthStatus ldapAuthStatus = this.essLdapAuthenticationFilter.verifyUserInfo(authToken);
+            if (ldapAuthStatus == LdapAuthStatus.PROCEED) {
+                subject.login(authToken);
+                authStatus = AuthenticationStatus.AUTHENTICATED;
+                return onLoginSuccess(authToken, authStatus, subject, request, response);
+            }
+            else if (ldapAuthStatus == LdapAuthStatus.LDAP_MISMATCH_EXCEPTION) {
+                authStatus = AuthenticationStatus.LDAP_MISMATCH;
+            }
+            else if (ldapAuthStatus == LdapAuthStatus.NAME_NOT_FOUND_EXCEPTION) {
+                authStatus = AuthenticationStatus.NAME_NOT_FOUND;
+            }
+            else if (ldapAuthStatus == LdapAuthStatus.UNKNOWN_EXCEPTION) {
+                authStatus = AuthenticationStatus.UNKNOWN_ACCOUNT;
+            }
         }
         catch(ExpiredCredentialsException ex) {
             authStatus = AuthenticationStatus.EXPIRED_CREDENTIALS;
