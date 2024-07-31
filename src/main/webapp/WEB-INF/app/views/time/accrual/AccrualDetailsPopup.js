@@ -4,7 +4,7 @@ import Popup from "../../../components/Popup";
 import { Button } from "../../../components/Button";
 import styles from "../universalStyles.module.css";
 import { useNavigate } from "react-router-dom";
-import { formatDate, formatDateToMMDDYYYY } from "app/views/time/helpers";
+import { formatDateToMMDDYYYY, hoursDiffHighlighter } from "app/views/time/helpers";
 
 export function AccrualDetailsPopup({ accruals, isModalOpen, closeModal }) {
   const navigate = useNavigate();
@@ -24,13 +24,6 @@ export function AccrualDetailsPopup({ accruals, isModalOpen, closeModal }) {
     Pay Period ${accruals.payPeriod.payPeriodNum}`;
   }
 
-  const hoursDiffHighlighter = () => {
-    let color = "#0e4e5a";
-    let sign = "";
-    let hours = (accruals.serviceYtd - accruals.serviceYtdExpected).toFixed(2);
-    hours > 0 ? (color = "#09BB05", sign = "+") : hours < 0 && (color = "#BB0505");
-    return <span style={{ color: color }}>{sign} {hours}</span>;
-  };
 
   return (
     <Popup
@@ -56,7 +49,7 @@ export function AccrualDetailsPopup({ accruals, isModalOpen, closeModal }) {
                 </tr>
                 <tr className={styles.totalRow}>
                   <td>Difference</td>
-                  <td>{hoursDiffHighlighter()}</td>
+                  <td>{hoursDiffHighlighter(accruals)}</td>
                 </tr>
                 </tbody>
               </table>

@@ -269,8 +269,8 @@ const HistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage, scop
   const isUser = () => { return state.selectedEmp.empId === user.employeeId; };
 
   const showDetails = (record) => {
-    if (record.paperTimesheet) return;
-    if (record.scope === 'E' && linkToEntryPage) return;
+    // if (record.paperTimesheet) return;
+    // if (record.scope === 'E' && linkToEntryPage) return;
     viewDetails(record);
   };
 

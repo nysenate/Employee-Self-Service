@@ -1,5 +1,5 @@
 import styles from "app/views/time/universalStyles.module.css";
-import { formatDateToMMDDYYYY } from "app/views/time/helpers";
+import { formatDateToMMDDYYYY, timeRecordStatus } from "app/views/time/helpers";
 import React from "react";
 
 
@@ -45,7 +45,7 @@ const SubmittedAttendanceRecords = ({ state, showDetails }) => {
               <td>{formatDateToMMDDYYYY(record.beginDate)} - {formatDateToMMDDYYYY(record.endDate)}</td>
               <td>{record.payPeriod.payPeriodNum}</td>
               <td>
-                <span dangerouslySetInnerHTML={{ __html: record.recordStatus }}></span>
+                <span dangerouslySetInnerHTML={{ __html: timeRecordStatus(record.recordStatus, true) }}></span>
                 {record.paperTimesheet && <span>(paper)</span>}
               </td>
               <td>{record.totals.workHours}</td>

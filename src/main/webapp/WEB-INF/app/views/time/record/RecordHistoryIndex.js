@@ -1,7 +1,8 @@
 import HistoryDirective from "app/views/time/record/HistoryDirective";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Hero from "app/components/Hero";
 import useAuth from "app/contexts/Auth/useAuth";
+import { RecordDetailsPopup } from "app/views/time/record/RecordDetailsPopup";
 
 
 const RecordHistoryIndex = () => {
@@ -28,13 +29,13 @@ const RecordHistoryIndex = () => {
         empSupInfo={userData().employee}
         linkToEntryPage={true}
       />)}
-      {/*{selectedRecord && (<RecordDetailsPopup*/}
-      {/*  record={selectedRecord}*/}
-      {/*  isModalOpen={true}*/}
-      {/*  closeModal={closeModal}*/}
-      {/*/>)}*/}
+      {selectedRecord && (<RecordDetailsPopup
+        record={selectedRecord}
+        isModalOpen={isModalOpen}
+        closeModal={closeModal}
+      />)}
     </div>
   );
-}
+};
 
 export default RecordHistoryIndex;

@@ -1,5 +1,5 @@
 import styles from "app/views/time/universalStyles.module.css";
-import { formatDateToMMDDYYYY } from "app/views/time/helpers";
+import { formatDateToMMDDYYYY, timeRecordStatus } from "app/views/time/helpers";
 import React from "react";
 
 
@@ -38,7 +38,9 @@ const ActiveAttendanceRecords = ({ state, linkToEntryPage, showDetails }) => {
             >
               <td>{formatDateToMMDDYYYY(record.beginDate)} - {formatDateToMMDDYYYY(record.endDate)}</td>
               <td>{record.payPeriod.payPeriodNum}</td>
-              <td dangerouslySetInnerHTML={{ __html: record.recordStatus }}></td>
+              <td>
+                <span dangerouslySetInnerHTML={{ __html: timeRecordStatus(record.recordStatus, true) }}></span>
+              </td>
               <td>{record.totals.workHours}</td>
               <td>{record.totals.holidayHours}</td>
               <td>{record.totals.vacationHours}</td>
