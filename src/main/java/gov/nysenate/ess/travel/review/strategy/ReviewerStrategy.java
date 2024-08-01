@@ -26,18 +26,4 @@ public interface ReviewerStrategy {
 
         return order().get(order().indexOf(lastReviewerRole) + 1);
     }
-
-    public static ReviewerStrategy getStrategy(TravelRole role, boolean isSenator) {
-        if (isSenator) {
-            throw new IllegalStateException("Senators are not allowed to travel");
-            //return new SenatorReviewerStrategy();
-        }
-        return switch (role) {
-            case DEPARTMENT_HEAD -> new DepartmentHeadReviewerStrategy();
-            case TRAVEL_ADMIN -> new TravelAdminReviewerStrategy();
-            case MAJORITY_LEADER -> new MajReviewerStrategy();
-            case SECRETARY_OF_THE_SENATE -> new SosReviewerStrategy();
-            default -> new DefaultReviewerStrategy();
-        };
-    }
 }

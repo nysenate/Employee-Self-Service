@@ -17,6 +17,7 @@ import gov.nysenate.ess.travel.delegate.DelegationDao;
 import gov.nysenate.ess.travel.notifications.email.TravelEmailService;
 import gov.nysenate.ess.travel.request.app.TravelApplicationStatus;
 import gov.nysenate.ess.travel.review.dao.ApplicationReviewDao;
+import gov.nysenate.ess.travel.review.strategy.ReviewerStrategyFactory;
 import gov.nysenate.ess.travel.review.view.ActionType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,7 @@ public class ApplicationReviewService {
     @Autowired private TravelRoleFactory travelRoleFactory;
     @Autowired private TravelEmailService emailService;
     @Autowired private DelegationDao delegationDao;
+    @Autowired private ReviewerStrategyFactory reviewerStrategyFactory;
     @Autowired private EventBus eventBus;
 
     public void approveApplication(ApplicationReview applicationReview, Employee approver, String notes,
@@ -79,7 +81,7 @@ public class ApplicationReviewService {
 
     public ApplicationReview createApplicationReview(TravelApplication app) {
         TravelRoles roles = travelRoleFactory.travelRolesForEmp(app.getTraveler());
-        ApplicationReview appReview = new ApplicationReview(app, roles.apex());
+        ApplicationReview appReview = new ApplicationReview(app, roles.apex(), reviewerStrategyFactory.createStrategy(app));
         eventBus.post(new TravelPendingReviewEmailEvent(appReview));
         return appReview;
     }

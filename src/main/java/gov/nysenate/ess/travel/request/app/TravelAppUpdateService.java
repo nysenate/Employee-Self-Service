@@ -26,6 +26,7 @@ import gov.nysenate.ess.travel.notifications.email.TravelEmailService;
 import gov.nysenate.ess.travel.review.ApplicationReview;
 import gov.nysenate.ess.travel.review.ApplicationReviewService;
 import gov.nysenate.ess.travel.review.strategy.ReviewerStrategy;
+import gov.nysenate.ess.travel.review.strategy.ReviewerStrategyFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,7 @@ public class TravelAppUpdateService {
     @Autowired private TravelRoleFactory travelRoleFactory;
     @Autowired private MileageAllowanceService mileageService;
     @Autowired private GsaAllowanceService gsaAllowanceService;
+    @Autowired private ReviewerStrategyFactory reviewerStrategyFactory;
 
     /**
      * Returns a new Amendment with the provided purpose of travel added to the amendment.
@@ -204,7 +206,7 @@ public class TravelAppUpdateService {
 
     public TravelApplication resubmitApp(int appId, TravelApplication app, Employee user) {
         saveAppEdits(app, user);
-        app.setStatus(new TravelApplicationStatus(getApprovalStatus(app.getTraveler())));
+        app.setStatus(new TravelApplicationStatus(getApprovalStatus(app)));
         travelApplicationService.saveApplication(app);
         ApplicationReview applicationReview = appReviewService.getApplicationReviewByAppId(app.getAppId());
         appReviewService.saveApplicationReview(applicationReview);
@@ -221,7 +223,7 @@ public class TravelAppUpdateService {
         app.setCreatedBy(submitter);
         app.setModifiedBy(submitter);
         app.setTravelerDeptHeadEmpId(draft.getTraveler().getDeptHeadId());
-        app.setStatus(new TravelApplicationStatus(getApprovalStatus(app.getTraveler())));
+        app.setStatus(new TravelApplicationStatus(getApprovalStatus(app)));
 
         travelApplicationService.saveApplication(app);
 
@@ -230,9 +232,8 @@ public class TravelAppUpdateService {
         return app;
     }
 
-    private AppStatus getApprovalStatus(Employee traveler) {
-        TravelRoles roles = travelRoleFactory.travelRolesForEmp(traveler);
-        ReviewerStrategy reviewerStrategy = ReviewerStrategy.getStrategy(roles.apex(), traveler.isSenator());
+    private AppStatus getApprovalStatus(TravelApplication app) {
+        ReviewerStrategy reviewerStrategy = reviewerStrategyFactory.createStrategy(app);
         TravelRole roleToReview = reviewerStrategy.after(null);
         AppStatus appStatus;
         switch (roleToReview) {
