@@ -54,6 +54,7 @@ essTravel.directive('additionalPurposeValidator', function () {
     }
 });
 
+/** Deprecated */
 essTravel.directive('travelerValidator', function () {
     return {
         require: 'ngModel',
