@@ -46,7 +46,6 @@ export default function PersonnelSearchIndex() {
 
 
 // Needed before Uncomment:
-//    -AllowanceBar
 //    -AccrualProjections
 //    -AllowanceHistory
 

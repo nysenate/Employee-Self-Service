@@ -7,17 +7,19 @@ import {
   timeRecordStatus,
   checkEntryTypes,
   entryHoursFilter,
-  miscLeave
+  miscLeave, formatDayShort, formatDateStandard
 } from "app/views/time/helpers";
 
-
+// Issues:
+// Day in format: 2024-06-20, should be: Mon, Tue, Wed, Thu, Fri, Sat, Sun
+// Date in format: 2024-06-02, should be: 6/2/2024
 export function RecordDetailsPopup({ record, isModalOpen, closeModal }) {
   const { tempEntries, annualEntries } = checkEntryTypes(record.timeEntries);
 
   const Title = ({ record }) => {
     return `Attendance record for ${record.employee.fullName} 
-    from ${formatDateToMMDDYYYY(record.beginDate)} 
-    to ${formatDateToMMDDYYYY(record.endDate)}`;
+    from ${formatDateStandard(record.beginDate)} 
+    to ${formatDateStandard(record.endDate)}`;
   };
 
   return (
@@ -49,8 +51,8 @@ export function RecordDetailsPopup({ record, isModalOpen, closeModal }) {
                 <tbody>
                 {record.timeEntries.map((entry, index) => (
                   <tr key={index}>
-                    <td>{entry.date}</td>
-                    <td>{entry.date}</td>
+                    <td>{formatDayShort(entry.date)}</td>
+                    <td>{formatDateStandard(entry.date)}</td>
                     <td>{entryHoursFilter(entry.workHours)}</td>
                     <td className="entry-comment">{entry.empComment}</td>
                   </tr>
@@ -93,8 +95,8 @@ export function RecordDetailsPopup({ record, isModalOpen, closeModal }) {
                 <tbody>
                 {record.timeEntries.map((entry, index) => (
                   <tr key={index}>
-                    <td>{entry.date}</td>
-                    <td>{entry.date}</td>
+                    <td>{formatDayShort(entry.date)}</td>
+                    <td>{formatDateStandard(entry.date)}</td>
                     <td>{entryHoursFilter(entry.workHours)}</td>
                     <td>{entryHoursFilter(entry.holidayHours)}</td>
                     <td>{entryHoursFilter(entry.vacationHours)}</td>

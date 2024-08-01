@@ -36,6 +36,19 @@ export function formatDateYYYYMMDD(date) {
   return `${year}-${month}-${day}`;
 }
 
+export function formatDayShort(dateString) {
+  const date = new Date(`${dateString}T00:00:00Z`);
+  const options = { weekday: 'short', timeZone: 'UTC' };
+  return new Intl.DateTimeFormat('en-US', options).format(date);
+}
+
+export function formatDateStandard(dateString) {
+  const dateParts = dateString.split('-');
+  const date = new Date(Date.UTC(dateParts[0], dateParts[1] - 1, dateParts[2]));
+  console.log("dateString", dateString, "date", date);
+  return `${date.getUTCMonth() + 1}/${date.getUTCDate()}/${date.getUTCFullYear()}`;
+}
+
 
 
 export function timeRecordStatus(status, showColor) {
