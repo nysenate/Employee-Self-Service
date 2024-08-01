@@ -29,7 +29,8 @@ public interface ReviewerStrategy {
 
     public static ReviewerStrategy getStrategy(TravelRole role, boolean isSenator) {
         if (isSenator) {
-            return new SenatorReviewerStrategy();
+            throw new IllegalStateException("Senators are not allowed to travel");
+            //return new SenatorReviewerStrategy();
         }
         return switch (role) {
             case DEPARTMENT_HEAD -> new DepartmentHeadReviewerStrategy();

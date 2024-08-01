@@ -20,22 +20,15 @@ public class SosReviewerStrategyTest {
     }
 
     @Test
-    public void givenNullLastReviewer_returnDea() {
+    public void givenNullLastReviewer_returnTravelAdmin() {
         TravelRole actual = strategy.after(null);
         TravelRole expected = TravelRole.TRAVEL_ADMIN;
         assertEquals(expected, actual);
     }
 
     @Test
-    public void givenDeaLastReviewer_returnMaj() {
+    public void givenTravelAdminLastReviewer_returnNone() {
         TravelRole actual = strategy.after(TravelRole.TRAVEL_ADMIN);
-        TravelRole expected = TravelRole.MAJORITY_LEADER;
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void givenMajLastReviewer_returnNone() {
-        TravelRole actual = strategy.after(TravelRole.MAJORITY_LEADER);
         TravelRole expected = TravelRole.NONE;
         assertEquals(expected, actual);
     }
@@ -48,7 +41,12 @@ public class SosReviewerStrategyTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void givenSupLastReviewer_throwException() {
+    public void givenMajLastReviewer_throwException() {
+        strategy.after(TravelRole.MAJORITY_LEADER);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void givenDeptHdLastReviewer_throwException() {
         strategy.after(TravelRole.DEPARTMENT_HEAD);
     }
 
