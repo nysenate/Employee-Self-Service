@@ -208,7 +208,7 @@ const AccrualHistoryDirective = ({
 
       {/*Error message Here!!*/}
 
-      {/*Loading Indicator Here!!*/}
+      {loading.empActiveYears && (<LoadingIndicator/>)}
 
       {/*Display Grid*/}
       {!isEmpLoading() && (<div className={styles.contentContainer}>

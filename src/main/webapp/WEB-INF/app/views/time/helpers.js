@@ -29,6 +29,7 @@ export function formatDateToMMDDYYYY(dateString){
   return `${month}/${day}/${year}`;
 };
 
+// YYYY-MM-DD, this is also what the api tends to give
 export function formatDateYYYYMMDD(date) {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -36,12 +37,14 @@ export function formatDateYYYYMMDD(date) {
   return `${year}-${month}-${day}`;
 }
 
+// Mon, Tue, Wed, Thu, Fri, Sat, Sun
 export function formatDayShort(dateString) {
   const date = new Date(`${dateString}T00:00:00Z`);
   const options = { weekday: 'short', timeZone: 'UTC' };
   return new Intl.DateTimeFormat('en-US', options).format(date);
 }
 
+// MM/DD/YYYY or M/D/YYYY
 export function formatDateStandard(dateString) {
   const dateParts = dateString.split('-');
   const date = new Date(Date.UTC(dateParts[0], dateParts[1] - 1, dateParts[2]));
@@ -103,7 +106,7 @@ export function hoursDiffHighlighterCustom(positive, negative) {
   let sign = "";
   let hours = (positive - negative).toFixed(2);
   hours > 0 ? (color = "#09BB05", sign = "+") : hours < 0 && (color = "#BB0505");
-  return <span style={{ color: color }}>{sign} {hours}</span>;
+  return <span style={{ color: color }}>{sign}{hours}</span>;
 };
 
 // Helper functions to determine entry types
