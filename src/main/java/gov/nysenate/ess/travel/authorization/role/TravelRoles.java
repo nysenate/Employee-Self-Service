@@ -21,11 +21,10 @@ public class TravelRoles {
 
     /**
      * All TravelRole's assigned to an employee
-     *
+     * <p>
      * Note: may return duplicate TravelRole,
      * i.e. if emp has a primary role of DEPARTMENT_HEAD and is also delegated a DEPARTMENT_HEAD role,
      * this will return 2 instances of DEPARTMENT_HEAD.
-     * @return
      */
     public ImmutableList<TravelRole> all() {
         return new ImmutableList.Builder<TravelRole>()
@@ -36,10 +35,16 @@ public class TravelRoles {
 
     /**
      * Roles explicitly assigned to this employee. i.e not delegated roles.
-     * @return
      */
     public ImmutableList<TravelRole> primary() {
         return roles;
+    }
+
+    /**
+     * Returns true if {@code role} is contained in the primary roles.
+     */
+    public boolean hasPrimaryRole(TravelRole role) {
+        return roles.contains(role);
     }
 
     /**

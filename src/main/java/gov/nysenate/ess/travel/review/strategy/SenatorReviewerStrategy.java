@@ -5,6 +5,12 @@ import gov.nysenate.ess.travel.authorization.role.TravelRole;
 
 import java.util.List;
 
+/**
+ * The reviewer strategy for senator travelers.
+ *
+ * @deprecated as of travel v2.0, senators are not to use the digital travel workflow.
+ */
+@Deprecated
 public class SenatorReviewerStrategy implements ReviewerStrategy {
 
     private static final List<TravelRole> order = Lists.newArrayList(

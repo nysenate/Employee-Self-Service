@@ -5,6 +5,7 @@ import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.travel.request.app.dao.TravelApplicationDao;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
 import gov.nysenate.ess.travel.review.ApplicationReview;
+import gov.nysenate.ess.travel.review.strategy.ReviewerStrategyFactory;
 import gov.nysenate.ess.travel.review.view.ActionType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -22,6 +23,7 @@ public class SqlApplicationReviewDao extends SqlBaseDao implements ApplicationRe
 
     @Autowired private TravelApplicationDao travelApplicationDao;
     @Autowired private SqlActionDao actionDao;
+    @Autowired private ReviewerStrategyFactory reviewerStrategyFactory;
 
     /**
      * Save an Application Review
@@ -81,7 +83,8 @@ public class SqlApplicationReviewDao extends SqlBaseDao implements ApplicationRe
     private ApplicationReview populateRepView(AppReviewRepositoryView view) {
         var travelApplication = travelApplicationDao.selectTravelApplication(view.appId);
         var actions = actionDao.selectActionsByReviewId(view.appReviewId);
-        return new ApplicationReview(view.appReviewId, travelApplication, view.travelerRole, actions, view.isShared);
+        return new ApplicationReview(view.appReviewId, travelApplication, view.travelerRole, actions,
+                reviewerStrategyFactory.createStrategy(travelApplication), view.isShared);
     }
 
     /**

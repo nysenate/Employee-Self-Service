@@ -9,7 +9,6 @@ public class SosReviewerStrategy implements ReviewerStrategy {
 
     private static final List<TravelRole> order = Lists.newArrayList(
             TravelRole.TRAVEL_ADMIN,
-            TravelRole.MAJORITY_LEADER,
             TravelRole.NONE);
 
     @Override

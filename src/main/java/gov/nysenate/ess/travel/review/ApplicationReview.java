@@ -24,19 +24,19 @@ public class ApplicationReview {
     private ReviewerStrategy reviewerStrategy;
     private boolean isShared;
 
-    public ApplicationReview(int appReviewId, TravelApplication application,
-                             TravelRole travelerRole, List<Action> actions, boolean isShared) {
+    public ApplicationReview(int appReviewId, TravelApplication application, TravelRole travelerRole,
+                             List<Action> actions, ReviewerStrategy reviewerStrategy, boolean isShared) {
         this.appReviewId = appReviewId;
         this.application = application;
         this.travelerRole = travelerRole;
         this.actions = new TreeSet<>(actionComparator);
         this.actions.addAll(actions);
+        this.reviewerStrategy = reviewerStrategy;
         this.isShared = isShared;
-        this.reviewerStrategy = ReviewerStrategy.getStrategy(travelerRole, application.getTraveler().isSenator());
     }
 
-    public ApplicationReview(TravelApplication application, TravelRole travelerRole) {
-        this(0, application, travelerRole, new ArrayList<>(), false);
+    public ApplicationReview(TravelApplication application, TravelRole travelerRole, ReviewerStrategy reviewerStrategy) {
+        this(0, application, travelerRole, new ArrayList<>(), reviewerStrategy, false);
     }
 
     public void addAction(Action action) {
