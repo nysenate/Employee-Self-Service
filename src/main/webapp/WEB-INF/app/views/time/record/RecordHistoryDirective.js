@@ -35,8 +35,6 @@ const RecordHistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage
     annualTotals: {},
   });
 
-  console.log("myconsole: ", empSupInfo);
-
   const hideTitle = scopeHideTitle || false;
 
   useEffect(() => {
@@ -172,7 +170,6 @@ const RecordHistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage
         },
       }));
     }
-    // console.log("state", state);
   };
 
   const initTimesheetRecords = (records) => {

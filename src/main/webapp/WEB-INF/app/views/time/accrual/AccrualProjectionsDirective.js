@@ -146,10 +146,10 @@ export default function AccrualProjectionsDirective({
   const onAccUsageChange = (fieldName, type, index, e) => {
     // recalculateProjectionTotals();
     // setChangedFlags(accrualRecord, type);
-    console.log(projections[index]); //works
-    console.log(projections[index][fieldName]); //works
+    // console.log(projections[index]); //works
+    // console.log(projections[index][fieldName]); //works
     const { value } = e.target; //works
-    console.log(value);
+    // console.log(value);
 
     const numericValue = parseFloat(value); // Convert the value to a number
 

@@ -11,23 +11,13 @@ import AccrualBar from "app/views/time/accrual/AccrualBar";
 import AllowanceBar from "app/views/time/allowance/AllowanceBar";
 import AllowanceHistoryDirective from "app/views/time/allowance/AllowanceHistoryDirective";
 import AccrualProjectionsDirective from "app/views/time/accrual/AccrualProjectionsDirective";
-import { fetchActiveYearsTimeRecordsApi } from "app/views/time/record/time-record-ctrl";
 import AccrualHistoryDirective from "app/views/time/accrual/AccrualHistoryDirective";
-import { formatDateYYYYMMDD } from "app/views/time/helpers";
-import {
-  fetchAccrualActiveYears,
-  fetchAccruals,
-} from "app/views/time/accrual/time-accrual-ctrl";
-import { fetchAllowance, fetchAllowancesActiveYears } from "app/views/time/allowance/time-allowance-ctrl";
-import LoadingIndicator from "app/components/LoadingIndicator";
+import { fetchAccrualActiveYears } from "app/views/time/accrual/time-accrual-ctrl";
+import { fetchAllowancesActiveYears } from "app/views/time/allowance/time-allowance-ctrl";
 import { fetchEmployeeSearchApi, getSearchParam } from "app/views/time/personnel/personnel-Api-ctrl";
 
 // Abisha Vijayashanthar 14160 => AccBar, AttendHist, AccHist, AccProj
 // Maya L. Allen 14421 => AllowBar, (AttHist), AllowHist
-
-// Issues:
-//  -Abisha: no accBar
-//  -Maya: AllowBar no year, Total Allowed Hours: 0 Reported Hours:__ Estimated Available Hours: NaN
 export default function PersonnelSearchIndex() {
   const { userData } = useAuth();
   const [empId, setEmpId] = useState(parseInt(getSearchParam('empId') || NaN))
@@ -38,33 +28,28 @@ export default function PersonnelSearchIndex() {
   const [showAccruals, setShowAccruals] = useState(false);
 
   useEffect(() => {
-    console.log('SearchIndex got this empid: ', empId);
     if(empId) getSelectedEmp();
   }, [empId]);
 
   useEffect(() => {
-    console.log('selectedEmp',selectedEmp);
-    if(selectedEmp || empId) {
+    if(selectedEmp && empId) {
       getAccrualYears();
-      // getAccruals();
       getAllowanceYears();
-      // getAllowance();
     }
   }, [selectedEmp]);
 
+  // Fetch+Compute Component Display Logic Variables+Flags
   async function getSelectedEmp() {
     try {
       const params = {
         empId: empId,
       }
       const response = await fetchEmployeeSearchApi(params);
-      console.log('response.employees[0]', response.employees[0]);
       setSelectedEmp(response.employees[0]);
     } catch (err) {
       console.error(err);
     }
   }
-
   const getAccrualYears = async() => {
     setShowAccrualHistory(false);
     setShowAccruals(false);
@@ -76,14 +61,13 @@ export default function PersonnelSearchIndex() {
       const response = await fetchAccrualActiveYears(params);
       let showAcrlHist = response.years && response.years.length > 0;
       let showAcrls = showAcrlHist && response.years.includes(currentYear)&&
-        selectedEmp.payType !== 'TE' && selectedEmp.senator;
+        selectedEmp.payType !== 'TE' && !selectedEmp.senator;
       setShowAccrualHistory(showAcrlHist);
       setShowAccruals(showAcrls);
     } catch(err) {
       console.error(err);
     }
   }
-
   const getAllowanceYears = async() => {
     setShowAccrualHistory(false);
     if(!selectedEmp) return;
@@ -114,8 +98,6 @@ export default function PersonnelSearchIndex() {
     setIsAccrualModalOpen(true);
   }
 
-
-
   return (
     <div>
       <Hero>Employee Search</Hero>
@@ -136,8 +118,8 @@ export default function PersonnelSearchIndex() {
           )}
           {selectedEmp.active && (
             <div>
-              {showAccruals && <AccrualBar />}
-              {selectedEmp.payType === 'TE' && <AllowanceBar />}
+              {showAccruals && <AccrualBar empId={empId}/>}
+              {selectedEmp.payType === 'TE' && <AllowanceBar empId={empId}/>}
             </div>
           )}
 

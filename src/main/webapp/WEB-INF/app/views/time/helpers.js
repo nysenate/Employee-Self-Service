@@ -48,7 +48,7 @@ export function formatDayShort(dateString) {
 export function formatDateStandard(dateString) {
   const dateParts = dateString.split('-');
   const date = new Date(Date.UTC(dateParts[0], dateParts[1] - 1, dateParts[2]));
-  console.log("dateString", dateString, "date", date);
+  // console.log("dateString", dateString, "date", date);
   return `${date.getUTCMonth() + 1}/${date.getUTCDate()}/${date.getUTCFullYear()}`;
 }
 

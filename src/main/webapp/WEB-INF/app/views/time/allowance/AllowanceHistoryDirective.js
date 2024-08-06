@@ -194,7 +194,7 @@ export default function AllowanceHistoryDirective({
   const getTotalAllowedHours = (allowance) => {
     if (allowance) {
       const totalAllowedHours = allowance.yearlyAllowance/getSalaryRate(allowance);
-      console.log('Max salary Rate: ', getSalaryRate(allowance), "YrAllowance: ",allowance.yearlyAllowance,'TotalAlllow: ', Math.floor(totalAllowedHours*4)/4)
+      // console.log('Max salary Rate: ', getSalaryRate(allowance), "YrAllowance: ",allowance.yearlyAllowance,'TotalAlllow: ', Math.floor(totalAllowedHours*4)/4)
       return Math.floor(totalAllowedHours*4)/4;
     }
     return 0;
