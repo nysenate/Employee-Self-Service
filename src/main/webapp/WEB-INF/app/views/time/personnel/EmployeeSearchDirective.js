@@ -6,23 +6,25 @@ import EmployeeList from "app/views/time/personnel/EmployeeList";
 import PaginationModel from "app/views/time/personnel/PaginationModel";
 import Hero from "app/components/Hero";
 
+
 export default function EmployeeSearchDirective({ selectedEmp, setSelectedEmp}) {
   const EMP_ID_PARAM = 'empId';
   const TERM_PARAM = 'term';
-  const ACTIVE_ONLY_PARAM = 'activeOnly';
 
+  const ACTIVE_ONLY_PARAM = 'activeOnly';
   // const [selectedEmp, setSelectedEmp] = useState(null);
   const [empInfo, setEmpInfo] = useState(null);
   const [activeOnly, setActiveOnly] = useState(getSearchParam(ACTIVE_ONLY_PARAM) === 'true');
   const [searchTerm, setSearchTerm] = useState(getSearchParam(TERM_PARAM) || "");
+
   const [searchResults, setSearchResults] = useState([]);
 
   let empId = parseInt(getSearchParam(EMP_ID_PARAM) || NaN);
-
   const [pagination] = useState(new PaginationModel());
-  pagination.itemsPerPage = 50;
 
+  pagination.itemsPerPage = 50;
   const [loadingEmps, setLoadingEmps] = useState(false);
+
   const [loadingEmpInfo, setLoadingEmpInfo] = useState(false);
 
   useEffect(() => {
@@ -30,29 +32,23 @@ export default function EmployeeSearchDirective({ selectedEmp, setSelectedEmp}) 
   }, [searchTerm, activeOnly]);
 
   useEffect(() => {
-    console.log("S: ", selectedEmp);
+    if(selectedEmp) getEmpInfo(selectedEmp);
   }, [selectedEmp]);
-
-  useEffect(() => {
-    console.log("E: ", empInfo);
-  }, [empInfo]);
 
   const searchResultsExist = () => {
     return searchResults && searchResults.length > 0;
-  };
 
+  };
   const getNextSearchResults = () => {
     if (loadingEmps || pagination.onLastPage()) {
       return;
     }
     pagination.nextPage();
     return getSearchResults();
-  };
 
+  };
   const handleSelectEmp = async (emp) => {
     setSelectedEmp(emp);
-    console.log("hello?");
-    await getEmpInfo(emp);
     setSearchParam(EMP_ID_PARAM, emp.empId);
   };
 
@@ -78,7 +74,7 @@ export default function EmployeeSearchDirective({ selectedEmp, setSelectedEmp}) 
     try {
       const resp = await fetchEmployeeSearchApi(params);
 
-      console.log('Got employee search results');
+      // console.log('Got employee search results');
       let tempResults = [];
       resp.employees.forEach((emp) => {
         tempResults.push(emp);
@@ -106,7 +102,7 @@ export default function EmployeeSearchDirective({ selectedEmp, setSelectedEmp}) 
     setLoadingEmpInfo(true);
     try {
       const resp = await fetchEmployeeInfo(params);
-      console.log('Got employee info: ', resp);
+      // console.log('Got employee info: ', resp);
       setEmpInfo(resp.employee);
     } catch(err) {
       console.error(err);
