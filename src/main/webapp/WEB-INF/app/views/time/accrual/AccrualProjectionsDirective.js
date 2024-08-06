@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import LoadingIndicator from "app/components/LoadingIndicator";
 import EssNotification from "app/components/EssNotification";
 import { fetchAccrualSummaries, fetchEmployeeInfo } from "app/views/time/accrual/time-accrual-ctrl";
-import { formatDateToMMDDYYYY, formatDateYYYYMMDD } from "app/views/time/helpers";
+import ComponentA, { formatDateToMMDDYYYY, formatDateYYYYMMDD } from "app/views/time/helpers";
 
 
 
@@ -42,11 +42,9 @@ export default function AccrualProjectionsDirective({
 
   /* --- Watches --- */
   useEffect(() => {
-    console.log('1');
     setEmpId();
   }, [empSupInfo]);
   useEffect(() => {
-    console.log('2');
     getEmpInfo();
     getAccSummaries()
   }, [empId]);
@@ -143,22 +141,43 @@ export default function AccrualProjectionsDirective({
     return Object.values(loading).some((status) => status);
   }
 
-  const onAccUsageChange = (accrualRecord, type) => {
-    recalculateProjectionTotals();
-    setChangedFlags(accrualRecord, type);
+  const onAccUsageChange = (fieldName, type, index, e) => {
+    // recalculateProjectionTotals();
+    // setChangedFlags(accrualRecord, type);
+    console.log(projections[index]); //works
+    console.log(projections[index][fieldName]); //works
+    const { value } = e.target; //works
+    console.log(value);
+
+    const numericValue = parseFloat(value); // Convert the value to a number
+
+    let updatedProjections = projections.map((record, i) => {
+      if (i === index) {
+        // Create a new record with the updated value
+        return {
+          ...record,
+          [fieldName]: numericValue,
+        };
+      }
+      return record;
+    });
+
+    recalculateProjectionTotals(updatedProjections);
+    setChangedFlags(updatedProjections, index, type);
+
+    // Recalculate projections after updating the value
+    setProjections(updatedProjections);
   };
 
   /* --- Internal Methods --- */
   const setEmpId = () => {
     let thisEmpId = null;
     if(empSupInfo && (empSupInfo?.empId || empSupInfo?.employeeId)) {
-      console.log(empSupInfo, "exists");
       thisEmpId = empSupInfo?.empId || empSupInfo?.employeeId;
     }
     // else {
     //   thisEmpId = user.employeeId;
     // }
-    console.log(thisEmpId);
     actualSetEmpId(thisEmpId);
   }
 
@@ -194,17 +213,16 @@ export default function AccrualProjectionsDirective({
 
   /* When a user enters in hours in the projections table, the totals need to be re-computed for
    * the projected accrual records. */
-  const recalculateProjectionTotals = () => {
+  const recalculateProjectionTotals = (updatedProjections) => {
     let accSum = accSummaries;
-    let thisProjections = projections;
     let baseRec = accSummaries.length > 0 ? accSummaries[0] : null;
     let multiYear = false;
 
     let accState = getInitialAccState(baseRec);
 
-    thisProjections.forEach((projection, index) => {
+    updatedProjections.forEach((projection, index) => {
       let rec = projection;
-      let lastRec = index === 0 ? baseRec : thisProjections[index];
+      let lastRec = index === 0 ? baseRec : updatedProjections[index];
 
       // If multiple years are present, banked hours will be dynamic and need to be reset
       if (multiYear) {
@@ -223,7 +241,6 @@ export default function AccrualProjectionsDirective({
       calculateAvailableHours(rec);
       validateRecord(rec, accState);
     });
-    setProjections(thisProjections);
   }
 
   /* Get a new validation object where everything is valid
@@ -347,20 +364,33 @@ export default function AccrualProjectionsDirective({
     return value === null ||
       value !== undefined && available >= 0 && value % 0.5 === 0;
   }
-  const setChangedFlags = (record, type) => {
-    var thisProjections = projections;
-    var startIndex = thisProjections.indexOf(record);
-
-    for (let i = startIndex; i < projections.length; i++) {
-      projections[i].changed[type] = true;
+  const setChangedFlags = (updatedProjections, index, type) => {
+    for (let i = index; i < updatedProjections.length; i++) {
+      updatedProjections[i].changed[type] = true;
     }
-  }
-  const resetChangedFlags = () => {
-    let thisProjections = projections;
-    thisProjections.forEach((record)=>{record.changed={};});
-    setProjections(thisProjections);
-  }
 
+    // setTimeout(() => resetChangedFlags(updatedProjections), 300);
+    // Delay the reset of changed flags by 300 ms and pass updatedProjections
+    setTimeout(() => resetChangedFlags(updatedProjections), 200);
+  }
+  const resetChangedFlags = (updatedProjections) => {
+    const resetProjections = updatedProjections.map((record) => {
+      return {
+        ...record,
+        changed: {},
+      };
+    });
+    setProjections(resetProjections);
+  };
+
+  // accrual-utils
+  /* Returns true iff the given record is the first record of its year
+ * @param record
+ * @returns {boolean} */
+  const isFirstRecordOfYear = (record) => {
+    let beginDate = new Date(record.payPeriod.startDate);
+    return beginDate.getMonth() === 0 && beginDate.getDate() === 1;
+  };
 
   return (
     <>
@@ -441,8 +471,9 @@ export default function AccrualProjectionsDirective({
                          title="Project Personal Hour Usage">
                        <input type="number" min="0" max={record.maxHours} step=".5" placeholder="0"
                               value={projections[index].biweekPersonalUsed}
-                              onChange={(e) => onAccUsageChange(record, 'personal', e.target.value)}
+                              onChange={(e) => onAccUsageChange('biweekPersonalUsed', 'personal', index, e)}
                               className={!isPerValid(record) ? styles.invalid : ''} />
+                       {/*<ComponentA fieldName={'biweekPersonalUsed'} record={record} />*/}
                      </td>
                      <td className={`${styles.accrualHours} ${styles.personal} ${styles.availableHours} ${record.changed.personal ? styles.changed : ''}`}
                          style={{ fontWeight: '600' }}
@@ -456,7 +487,7 @@ export default function AccrualProjectionsDirective({
                          title="Project Vacation Hour Usage">
                        <input type="number" min="0" max={record.maxHours} step=".5" placeholder="0"
                               value={projections[index].biweekVacationUsed}
-                              onChange={(e) => onAccUsageChange(record, 'vacation', e.target.value)}
+                              onChange={(e) => onAccUsageChange('biweekVacationUsed', 'vacation', index, e)}
                               className={!isVacValid(record) ? styles.invalid : ''} />
                      </td>
                      <td className={`${styles.accrualHours} ${styles.vacation} ${styles.availableHours} ${record.changed.vacation ? styles.changed : ''}`}
@@ -471,21 +502,21 @@ export default function AccrualProjectionsDirective({
                          title="Project Employee Sick Hour Usage">
                        <input type="number" min="0" max={record.maxHours} step=".5" placeholder="0"
                               value={projections[index].biweekSickEmpUsed}
-                              onChange={(e) => onAccUsageChange(record, 'sick', e.target.value)}
+                              onChange={(e) => onAccUsageChange('biweekSickEmpUsed', 'sick', index, e)}
                               className={!isSickEmpValid(record) ? styles.invalid : ''} />
                      </td>
                      <td className={`${styles.accrualHours} ${styles.sick} ${styles.usedHours}`}
                          title="Project Family Sick Hour Usage">
                        <input type="number" min="0" max={record.maxHours} step=".5" placeholder="0"
                               value={projections[index].biweekSickFamUsed}
-                              onChange={(e) => onAccUsageChange(record, 'sick', e.target.value)}
+                              onChange={(e) => onAccUsageChange('biweekSickFamUsed', 'sick', index, e)}
                               className={!isSickFamValid(record) ? styles.invalid : ''} />
                      </td>
                      <td className={`${styles.accrualHours} ${styles.sick} ${styles.usedHours}`}
                          title="Project Sick Hour Donations">
                        <input type="number" min="0" max={record.maxHours} step=".5" placeholder={projections[index].biweekSickDonated || 0}
                               value={projections[index].biweekSickDonated}
-                              onChange={(e) => onAccUsageChange(record, 'sick', e.target.value)}
+                              onChange={(e) => onAccUsageChange('biweekSickDonated', 'sick', index, e)}
                               className={!isSickDonationValid(record) ? styles.invalid : ''} />
                      </td>
                      <td className={`${styles.accrualHours} ${styles.sick} ${styles.availableHours} ${record.changed.sick ? styles.changed : ''}`}
