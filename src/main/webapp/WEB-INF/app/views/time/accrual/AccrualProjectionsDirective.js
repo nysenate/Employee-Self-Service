@@ -444,8 +444,8 @@ export default function AccrualProjectionsDirective({
                               onChange={(e) => onAccUsageChange(record, 'personal', e.target.value)}
                               className={!isPerValid(record) ? styles.invalid : ''} />
                      </td>
-                     <td className={`${styles.accrualHours} ${styles.personal} ${styles.availableHours}`}
-                         className={record.changed.personal ? styles.changed : ''}
+                     <td className={`${styles.accrualHours} ${styles.personal} ${styles.availableHours} ${record.changed.personal ? styles.changed : ''}`}
+                         style={{ fontWeight: '600' }}
                          onClick={() => viewDetails(record)}>
                        {record.validation.per ? record.personalAvailable : '--'}
                      </td>
@@ -459,8 +459,8 @@ export default function AccrualProjectionsDirective({
                               onChange={(e) => onAccUsageChange(record, 'vacation', e.target.value)}
                               className={!isVacValid(record) ? styles.invalid : ''} />
                      </td>
-                     <td className={`${styles.accrualHours} ${styles.vacation} ${styles.availableHours}`}
-                         className={record.changed.vacation ? styles.changed : ''}
+                     <td className={`${styles.accrualHours} ${styles.vacation} ${styles.availableHours} ${record.changed.vacation ? styles.changed : ''}`}
+                         style={{ fontWeight: '600' }}
                          onClick={() => viewDetails(record)}>
                        {record.validation.vac ? record.vacationAvailable : '--'}
                      </td>
@@ -488,8 +488,9 @@ export default function AccrualProjectionsDirective({
                               onChange={(e) => onAccUsageChange(record, 'sick', e.target.value)}
                               className={!isSickDonationValid(record) ? styles.invalid : ''} />
                      </td>
-                     <td className={`${styles.accrualHours} ${styles.sick} ${styles.availableHours}`}
-                         className={record.changed.sick ? styles.changed : ''} onClick={() => viewDetails(record)}>
+                     <td className={`${styles.accrualHours} ${styles.sick} ${styles.availableHours} ${record.changed.sick ? styles.changed : ''}`}
+                         style={{ fontWeight: '600' }}
+                         onClick={() => viewDetails(record)}>
                        {record.validation.sick ? record.sickAvailable : '--'}
                      </td>
                    </tr>
