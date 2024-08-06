@@ -7,7 +7,7 @@ import useAuth from "app/contexts/Auth/useAuth";
 
 const AccrualEmpHistoryIndex = () => {
   const { userData } = useAuth();
-  const [ selectedEmpSupInfo, setSelectedEmpSupInfo ] = useState(userData().employee);
+  const [ selectedEmpSupInfo, setSelectedEmpSupInfo ] = useState(null);
   const [ isModalOpen, setIsModalOpen ] = useState(false);
   const [ selectedAccrual, setSelectedAccrual ] = useState(null);
 

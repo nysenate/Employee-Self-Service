@@ -4,18 +4,21 @@ import Navigation from "app/components/Navigation";
 import AppLayout from "app/components/AppLayout";
 import { Navigate, Route, Routes } from "react-router-dom";
 
+// RECORD ENTRY record/entry
 import RecordHistoryIndex from "./record/RecordHistoryIndex.js";
+// ALLOWED HOURS allowance/status
 import CalendarIndex from "./period/CalendarIndex";
 import AccrualHistoryIndex from "./accrual/AccrualHistoryIndex.js";
-import RecordEmpHistoryIndex from "./record/RecordEmpHistoryIndex.js";
-import AccrualEmpHistoryIndex from "./accrual/AccrualEmpHistoryIndex.js";
-import PersonnelSearchIndex from "app/views/time/personnel/PersonnelSearchIndex";
-// import AccrualProjections from "./accruals/AccrualProjections.js";
+import AccrualProjections from "./accrual/AccrualProjectionsIndex.js";
 // import SickLeaveDonation from "./accruals/SickLeaveDonation.js";
-//
-// import AttendanceEntry from "./attendance/AttendanceEntry.js";
-// import AttendanceHistory from "./attendance/AttendanceHistory.js";
-// import PayrollCalendar from "./attendance/PayrollCalendar.js";
+// review time records record/manage
+import RecordEmpHistoryIndex from "./record/RecordEmpHistoryIndex.js";
+// emp allowed hours allowance/emp-status
+import AccrualEmpHistoryIndex from "./accrual/AccrualEmpHistoryIndex.js";
+// emp accrual projections accrual/emp-projections
+import AccrualEmpProjectionsIndex from "./accrual/AccrualEmpProjectionsIndex.js";
+// Grant record/grant
+import PersonnelSearchIndex from "app/views/time/personnel/PersonnelSearchIndex";
 
 export default function TimeRouter() {
   return (
@@ -27,13 +30,13 @@ export default function TimeRouter() {
           {/*<Route path="record/history" element={<RecordHistoryIndex/>}/>*/}
           <Route path="period/calendar" element={<CalendarIndex/>}/>
           <Route path="accrual/history" element={<AccrualHistoryIndex/>}/>
-          {/*<Route path="accrual/projections" element={<AccrualProjections/>}/>*/}
+          <Route path="accrual/projections" element={<AccrualProjections/>}/>
           {/*<Route path="accrual/donation" element={<SickLeaveDonation/>}/>*/}
           {/*<Route path="record/manage" element={<SickLeaveDonation/>}/>*/}
           <Route path="record/emphistory" element={<RecordEmpHistoryIndex/>}/>
           {/*<Route path="allowance/emp-status" element={<AccrualEmpHistoryIndex/>}/>*/}
           <Route path="accrual/emphistory" element={<AccrualEmpHistoryIndex/>}/>
-          {/*<Route path="accrual/emp-projections" element={<AccrualEmpProjectionsIndex/>}/>*/}
+          <Route path="accrual/emp-projections" element={<AccrualEmpProjectionsIndex/>}/>
           {/*<Route path="record/grant" element={<SickLeaveDonation/>}/>*/}
           <Route path="personnel/search" element={<PersonnelSearchIndex/>}/>
           {/*<Route path="" element={<Navigate to="attendance/entry" replace/>}/>*/}

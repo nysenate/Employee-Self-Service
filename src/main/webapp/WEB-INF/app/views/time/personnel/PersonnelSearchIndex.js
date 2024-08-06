@@ -35,14 +35,14 @@ export default function PersonnelSearchIndex() {
       {/*    scopeHideTitle={true}*/}
       {/*  />*/}
       {/*</TogglePanel>)}*/}
-      {selectedEmp && (<TogglePanel open={false} label={"Allowance History"}>
-        <AllowanceHistoryDirective
-          user={userData().employee}
-          empSupInfo={selectedEmp}
-          scopeHideTitle={true}
-        />
-      </TogglePanel>)}
-      {selectedEmp && selectedEmp?.payType === 'TE' && <AllowanceBar empId={selectedEmp.empId} />}
+      {/*{selectedEmp && (<TogglePanel open={false} label={"Allowance History"}>*/}
+      {/*  <AllowanceHistoryDirective*/}
+      {/*    user={userData().employee}*/}
+      {/*    empSupInfo={selectedEmp}*/}
+      {/*    scopeHideTitle={true}*/}
+      {/*  />*/}
+      {/*</TogglePanel>)}*/}
+      {/*{selectedEmp && selectedEmp?.payType === 'TE' && <AllowanceBar empId={selectedEmp.empId} />}*/}
       {/*{selectedEmp && selectedEmp.active && (<AccrualBar empId={selectedEmp.empId}/>)}*/}
     </div>
   );
