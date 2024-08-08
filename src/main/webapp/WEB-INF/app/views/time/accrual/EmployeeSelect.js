@@ -2,9 +2,8 @@ import React, { useState, useEffect } from 'react';
 import styles from "app/views/time/universalStyles.module.css";
 import { useSupEmpGroupService } from '../accrual/supEmpGroupService';
 import useAuth from "app/contexts/Auth/useAuth";
+import EssNotification from "app/components/EssNotification";
 
-// Issues:
-//         Additional Employees for a supervisor with only one employee which is weird
 const EmployeeSelect = ({ setSelectedEmp, activeOnly = false, showSenators = false, payType, selectSubject = 'info' }) => {
   const { userData } = useAuth();
   const [iSelEmpGroup, setISelEmpGroup] = useState(-1);
@@ -22,21 +21,18 @@ const EmployeeSelect = ({ setSelectedEmp, activeOnly = false, showSenators = fal
   let runningIndexEmp = 0;
 
   useEffect(() => {
-    // console.log(validSupEmpGroupCount);
     if (iSelEmpGroup >= 0) {
       const emps = getEmpInfos(iSelEmpGroup, !showSenators);
-      // console.log("EmployeeSelect>useEffect>emps: ", emps);
-      // const filteredEmps = emps.filter(emp => employeeFilter(emp));
-      setAllEmps(emps);
-      // console.log("EmployeeSelect>useEffect>supEmpGroups: ", supEmpGroups);
+      const filteredEmps = emps.filter(emp => employeeFilter(emp));
+      console.log(filteredEmps);
+      setAllEmps(filteredEmps);
       if (iSelEmp === 0) {
-        // setSelectedEmp(filteredEmps[0]);
         setSelectedEmp(emps[0]);
       } else {
         setISelEmp(0);
       }
     }
-  }, [iSelEmpGroup]); // This doesnt auto set the setSelectedEmp
+  }, [iSelEmpGroup]); // This doesn't auto set the setSelectedEmp
 
   useEffect(() => {
     if (iSelEmp >= 0) {
@@ -63,11 +59,9 @@ const EmployeeSelect = ({ setSelectedEmp, activeOnly = false, showSenators = fal
   }, [updatedSupEmpGroups]);
 
   useEffect(() => {
-    // console.log("allEmps: ", allEmps);
     setUpdatedAllEmps(setEmpLabels);
   }, [allEmps]);
   useEffect(() => {
-    // console.log("updatedAllEmps: ", updatedAllEmps);
     const tempGroupedEmps = updatedAllEmps.reduce((groups, emp) => {
       const group = emp.group || 'Ungrouped'; // Handle employees without a group
       if (!groups[group]) {
@@ -79,23 +73,22 @@ const EmployeeSelect = ({ setSelectedEmp, activeOnly = false, showSenators = fal
     setGroupedEmps(tempGroupedEmps);
   }, [updatedAllEmps]);
 
-  // const employeeFilter = (emp) => {
-  //   return activeFilter(emp) && senatorFilter(emp) && payTypeFilter(emp);
-  // };
-  // const activeFilter = (emp) => {
-  //   if (!activeOnly) return true;
-  //   const today = new Date();
-  //   const endDate = emp.effectiveEndDate ? new Date(emp.effectiveEndDate) : new Date(emp.supEndDate);
-  //   return endDate >= today;
-  // };
-  // const senatorFilter = (emp) => {
-  //   return showSenators || !emp.senator;
-  // };
-  // const payTypeFilter = (emp) => {
-  //   if (!payType) return true;
-  //   const payTypeRegex = new RegExp(payType, 'i');
-  //   return payTypeRegex.test(emp.payType);
-  // };
+  const employeeFilter = (emp) => {
+    return activeFilter(emp) && senatorFilter(emp) && payTypeFilter(emp);
+  };
+  const activeFilter = (emp) => {
+    if (!activeOnly) return true;
+    const today = new Date();
+    const endDate = emp.effectiveEndDate ? new Date(emp.effectiveEndDate) : new Date(emp.supEndDate);
+    return endDate >= today;
+  };
+  const senatorFilter = (emp) => {
+    return showSenators || !emp.senator;
+  };
+  const payTypeFilter = (emp) => {
+    if (!payType) return true;
+    return emp.payType === payType;
+  };
 
   const setSupGroupLabels = () => {
     return supEmpGroups.map(empGroup => {
@@ -191,10 +184,10 @@ const EmployeeSelect = ({ setSelectedEmp, activeOnly = false, showSenators = fal
           View {selectSubject} for Employee {'\u00A0'}
         </span>
         <span>
-          <select
+          {allEmps.length > 0 && (<select
             value={iSelEmp}
             onChange={(e) => setISelEmp(Number(e.target.value))}
-            style={{ color: 'black', fontWeight: '400'}}
+            style={{ color: 'black', fontWeight: '400' }}
           >
             {Object.keys(groupedEmps).map((group, index) => (
               <optgroup key={index} label={group}>
@@ -205,19 +198,19 @@ const EmployeeSelect = ({ setSelectedEmp, activeOnly = false, showSenators = fal
                 ))}
               </optgroup>
             ))}
-          </select>
+          </select>)}
         </span>
       </p>
       {!loading && allEmps.length === 0 && (
         <div>
           {validSupEmpGroupCount > 1 ? (
-            <div className={styles.essNotification} data-level="info">
+            <EssNotification level={"info"}>
               No valid Employee {selectSubject} can be viewed for the selected supervisor.
-            </div>
+            </EssNotification>
           ) : (
-             <div className={styles.essNotification} data-level="info">
-               No valid Employee {selectSubject} are available for viewing.
-             </div>
+            <EssNotification level={"info"}>
+              No valid Employee {selectSubject} are available for viewing.
+            </EssNotification>
            )}
         </div>
       )}

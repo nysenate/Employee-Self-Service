@@ -6,14 +6,14 @@ import { Navigate, Route, Routes } from "react-router-dom";
 
 // RECORD ENTRY record/entry
 import RecordHistoryIndex from "./record/RecordHistoryIndex.js";
-// ALLOWED HOURS allowance/status
+import AllowanceStatusIndex from "app/views/time/allowance/AllowanceStatusIndex";
 import CalendarIndex from "./period/CalendarIndex";
 import AccrualHistoryIndex from "./accrual/AccrualHistoryIndex.js";
 import AccrualProjections from "./accrual/AccrualProjectionsIndex.js";
 // import SickLeaveDonation from "./accruals/SickLeaveDonation.js";
 // review time records record/manage
 import RecordEmpHistoryIndex from "./record/RecordEmpHistoryIndex.js";
-// emp allowed hours allowance/emp-status
+import AllowanceEmpStatusIndex from "app/views/time/allowance/AllowanceEmpStatusIndex";
 import AccrualEmpHistoryIndex from "./accrual/AccrualEmpHistoryIndex.js";
 // emp accrual projections accrual/emp-projections
 import AccrualEmpProjectionsIndex from "./accrual/AccrualEmpProjectionsIndex.js";
@@ -27,14 +27,14 @@ export default function TimeRouter() {
         <Route path="" element={<TimeLayout/>}>
           {/*<Route path="record/entry" element={<AttendanceEntry/>}/>*/}
           <Route path="record/history" element={<RecordHistoryIndex/>}/>
-          {/*<Route path="record/history" element={<RecordHistoryIndex/>}/>*/}
+          <Route path="allowance/status" element={<AllowanceStatusIndex/>}/>
           <Route path="period/calendar" element={<CalendarIndex/>}/>
           <Route path="accrual/history" element={<AccrualHistoryIndex/>}/>
           <Route path="accrual/projections" element={<AccrualProjections/>}/>
           {/*<Route path="accrual/donation" element={<SickLeaveDonation/>}/>*/}
           {/*<Route path="record/manage" element={<SickLeaveDonation/>}/>*/}
           <Route path="record/emphistory" element={<RecordEmpHistoryIndex/>}/>
-          {/*<Route path="allowance/emp-status" element={<AccrualEmpHistoryIndex/>}/>*/}
+          <Route path="allowance/emp-status" element={<AllowanceEmpStatusIndex/>}/>
           <Route path="accrual/emphistory" element={<AccrualEmpHistoryIndex/>}/>
           <Route path="accrual/emp-projections" element={<AccrualEmpProjectionsIndex/>}/>
           <Route path="record/grant" element={<Grant/>}/>

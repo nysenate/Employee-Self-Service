@@ -151,6 +151,15 @@ export default function AllowanceHistoryDirective({
       const allowanceUsages = response.result
         .sort((a, b) => new Date(b.payPeriod.endDate) - new Date(a.payPeriod.endDate));
 
+      // // Compute remaining allowance for each period usage
+      // allowanceUsages.forEach(function (periodUsage) {
+      //   var dateRange = {
+      //     beginDate: periodUsage.payPeriod.startDate,
+      //     endDate: periodUsage.payPeriod.endDate
+      //   };
+      //   allowanceUtils.computeRemaining(periodUsage, dateRange);
+      // });
+
       setPeriodAllowanceUsages((prev) => ({
         ...prev,
         [selectedYear]: allowanceUsages,
@@ -185,7 +194,7 @@ export default function AllowanceHistoryDirective({
       const payPeriodStartDate = new Date(payPeriod.startDate);
       const payPeriodEndDate = new Date(payPeriod.endDate);
 
-      return effectDate <= payPeriodEndDate && payPeriodEndDate <= endDate;
+      return effectDate <= payPeriodEndDate && payPeriodStartDate <= endDate;
     });
     // Return the salary rate from the found salary record
     return salaryRecord ? salaryRecord.salaryRate : null;

@@ -1,6 +1,43 @@
 import { fetchApiJson } from "app/utils/fetchJson";
 import { hoursDiffHighlighterCustom } from "app/views/time/helpers";
 
+/**
+ * Compute remaining allowance, hours, and total hours
+ * based on the highest salary present during the given date range
+ *
+ * @param allowance
+ * @param {Object} dateRange - object with params 'beginDate' and 'endDate'
+ */
+export function computeRemaining (allowance, dateRange) {
+  let highestRate = 0;
+  allowance.salaryRecs.forEach((salaryRec) => {
+    // Select only temporary salaries that are effective during the record date range
+    if (salaryRec.payType === 'TE' &&
+      new Date(salaryRec.effectDate) < new Date(dateRange.endDate) &&
+      new Date(dateRange.beginDate) < new Date(salaryRec.endDate)) {
+      if (salaryRec.salaryRate > highestRate) {
+        highestRate = salaryRec.salaryRate;
+      }
+    }
+  });
+
+  // Not exist yet: remainingAllowance, remainingHours, totalHours
+  allowance.remainingAllowance = allowance.yearlyAllowance - allowance.moneyUsed;
+  allowance.remainingHours = allowance.remainingAllowance / highestRate;
+  allowance.remainingHours = Math.floor(allowance.remainingHours*4)/4;;
+  allowance.totalHours = allowance.hoursUsed + allowance.remainingHours;
+}
+
+/**
+ * Get the number of available work hours at the selected salary rate
+ *  such that the record cost does not exceed the employee's annual allowance
+ * @returns {number}
+ */
+// export function getAvailableHours (allowance, tempWorkHours) {
+//   let remainingHours = (allowance || {}).remainingHours;
+//   return remainingHours - tempWorkHours;
+// }
+
 
 export const getMaxSalaryRate = (allowance) => {
   if (allowance.salaryRecs.length > 1) {

@@ -10,11 +10,13 @@ import { fetchAllowance } from "app/views/time/allowance/time-allowance-ctrl";
 //
 // Total Allowed Hours=yearlyAllowance/salaryRecs.salaryRate     Reported Hours=hoursUsed (idk theyre same)       Estimated Available Hours=T-R
 
+// In angular, allowance is passed in
 export default function AllowanceBar({ empId, tempWorkHours}) {
   const [allowance, setAllowance] = useState();
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    if(!empId) return;
     const fetchData = async () => {
       setLoading(true);
       try {
