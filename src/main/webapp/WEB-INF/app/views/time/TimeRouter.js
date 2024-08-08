@@ -17,7 +17,7 @@ import RecordEmpHistoryIndex from "./record/RecordEmpHistoryIndex.js";
 import AccrualEmpHistoryIndex from "./accrual/AccrualEmpHistoryIndex.js";
 // emp accrual projections accrual/emp-projections
 import AccrualEmpProjectionsIndex from "./accrual/AccrualEmpProjectionsIndex.js";
-// Grant record/grant
+import Grant from "app/views/time/record/Grant";
 import PersonnelSearchIndex from "app/views/time/personnel/PersonnelSearchIndex";
 
 export default function TimeRouter() {
@@ -37,7 +37,7 @@ export default function TimeRouter() {
           {/*<Route path="allowance/emp-status" element={<AccrualEmpHistoryIndex/>}/>*/}
           <Route path="accrual/emphistory" element={<AccrualEmpHistoryIndex/>}/>
           <Route path="accrual/emp-projections" element={<AccrualEmpProjectionsIndex/>}/>
-          {/*<Route path="record/grant" element={<SickLeaveDonation/>}/>*/}
+          <Route path="record/grant" element={<Grant/>}/>
           <Route path="personnel/search" element={<PersonnelSearchIndex/>}/>
           {/*<Route path="" element={<Navigate to="attendance/entry" replace/>}/>*/}
           <Route path="*" element={<div>404</div>}/>

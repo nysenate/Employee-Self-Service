@@ -831,14 +831,41 @@ ul.unsubmittedTeRecList li {
     margin-top: 10px;
     width: 8.5em;
 }
+input[type="button"].timeNeutralButton.inactive,
+input[type="button"].timeNeutralButton[disabled],
+input[type="submit"].timeNeutralButton.inactive,
+input[type="submit"].timeNeutralButton[disabled] {
+    color: #333;
+    border-color: transparent;
+    cursor: not-allowed;
+}
 
 input[type="button"].timeNeutralButton,
-input[type="submit"].timeNeutralButton {
+input[type=submit].timeNeutralButton {
     padding: 5px 10px;
-    background: #006B80;
-    color: white;
+    background: #006b80;
+    color: #fff;
     font-weight: 600;
     border: 2px none #00404d;
+    border-bottom-style: solid;
+}
+
+input[type="button"].submitButton.inactive,
+input[type="button"].submitButton[disabled],
+input[type="submit"].submitButton.inactive,
+input[type="submit"].submitButton[disabled] {
+    color: #333;
+    border-color: transparent;
+    cursor: not-allowed;
+}
+
+input[type="button"].submitButton,
+input[type=submit].submitButton {
+    padding: 5px 10px;
+    background: #799933;
+    color: #fff;
+    font-weight: 600;
+    border: 2px none #5b7326;
     border-bottom-style: solid;
 }
 /* --- Attendance History Page --- */
@@ -1471,6 +1498,26 @@ ul.inactiveEmployeeEmailList {
 .errorBoldLabel {
     color: #B90504;
     font-weight: bold;
+}
+
+table.simpleTable {
+    width: 100%;
+    text-align: left;
+}
+table.simpleTable thead tr {
+    border-bottom: 1px solid #ddd;
+}
+table.simpleTable thead tr th {
+    padding: 5px;
+}
+table.simpleTable tbody tr td {
+    padding: 5px;
+}
+table.simpleTable tbody tr:nth-child(odd) {
+    background: #fafafa;
+}
+.horizontalInputGroup label {
+    margin: 0 10px;
 }
 /** --- Employee Search Page --- */
 .employeeSearchPageNotification .essNotification {

@@ -21,13 +21,22 @@ export function formatDate(dateString) {
 /**
  * Format a date string to MM/DD/YYYY.
  *
- * @param {String} dateString The date string to format (in YYYY-MM-DD format).
+ * @param {String|Date} date The date string to format (in YYYY-MM-DD format).
  * @returns {String} The formatted date string.
  */
-export function formatDateToMMDDYYYY(dateString){
-  const [year, month, day] = dateString.split('-');
-  return `${month}/${day}/${year}`;
-};
+export function formatDateToMMDDYYYY(date) {
+  if (typeof date === 'string') {
+    const [year, month, day] = date.split('-');
+    return `${month}/${day}/${year}`;
+  } else if (date instanceof Date) {
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${month}/${day}/${year}`;
+  } else {
+    throw new Error('Invalid date format');
+  }
+}
 
 // YYYY-MM-DD, this is also what the api tends to give
 export function formatDateYYYYMMDD(date) {

@@ -3,6 +3,7 @@ import styles from '../universalStyles.module.css';
 import { fetchApiJson } from "app/utils/fetchJson";
 import Hero from "app/components/Hero";
 
+// 2018
 const Calendar = () => {
   const currentYear = new Date().getFullYear();
   const [state, setState] = useState({
@@ -36,6 +37,10 @@ const Calendar = () => {
     searchParams.set('year', state.year);
     window.history.replaceState(null, '', `?${searchParams.toString()}`);
   }, [state.year]);
+
+  useEffect(() => {
+    console.log(holidayMap);
+  }, [holidayMap]);
 
   const getPayPeriods = async (year, callback) => {
     const periodResp = await fetchPayPeriodApi('AF', year);
@@ -158,7 +163,6 @@ const Calendar = () => {
                       </thead>
                       <tbody>
                       <tr>
-                        s
                       </tr>
                       </tbody>
                     </table>

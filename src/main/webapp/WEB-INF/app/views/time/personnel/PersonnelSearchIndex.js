@@ -18,6 +18,8 @@ import { fetchEmployeeSearchApi, getSearchParam } from "app/views/time/personnel
 
 // Abisha Vijayashanthar 14160 => AccBar, AttendHist, AccHist, AccProj
 // Maya L. Allen 14421 => AllowBar, (AttHist), AllowHist
+// Issues:
+//    -Amir Abbady missing AccHist
 export default function PersonnelSearchIndex() {
   const { userData } = useAuth();
   const [empId, setEmpId] = useState(parseInt(getSearchParam('empId') || NaN))
