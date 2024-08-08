@@ -3,7 +3,6 @@ import styles from "../universalStyles.module.css";
 import LoadingIndicator from "app/components/LoadingIndicator";
 import AllowanceBar from "app/views/time/allowance/AllowanceBar";
 import { computeRemaining, fetchAllowance } from "app/views/time/allowance/time-allowance-ctrl";
-import { formatDateToMMDDYYYY } from "app/views/time/helpers";
 
 
 export default function AllowanceStatusDirective({
@@ -122,7 +121,7 @@ export default function AllowanceStatusDirective({
            </p>)}
 
            <div className={styles.paddingX}>
-             {payType === 'TE' || payType === null && (<AllowanceBar empId={empId}/>)}
+             {payType === 'TE' || payType === null && (<AllowanceBar allowance={allowance}/>)}
            </div>
          </div>
        )}

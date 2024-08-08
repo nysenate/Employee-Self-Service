@@ -13,7 +13,11 @@ import AllowanceHistoryDirective from "app/views/time/allowance/AllowanceHistory
 import AccrualProjectionsDirective from "app/views/time/accrual/AccrualProjectionsDirective";
 import AccrualHistoryDirective from "app/views/time/accrual/AccrualHistoryDirective";
 import { fetchAccrualActiveYears } from "app/views/time/accrual/time-accrual-ctrl";
-import { fetchAllowancesActiveYears } from "app/views/time/allowance/time-allowance-ctrl";
+import {
+  computeRemaining,
+  fetchAllowance,
+  fetchAllowancesActiveYears
+} from "app/views/time/allowance/time-allowance-ctrl";
 import { fetchEmployeeSearchApi, getSearchParam } from "app/views/time/personnel/personnel-Api-ctrl";
 
 // Abisha Vijayashanthar 14160 => AccBar, AttendHist, AccHist, AccProj
@@ -29,6 +33,9 @@ export default function PersonnelSearchIndex() {
   const [showAccrualHistory, setShowAccrualHistory] = useState(false);
   const [showAccruals, setShowAccruals] = useState(false);
 
+  const [allowance, setAllowance] = useState(null);
+  const [loadingAllowance, setLoadingAllowance] = useState(null);
+
   useEffect(() => {
     if(empId) getSelectedEmp();
   }, [empId]);
@@ -37,6 +44,7 @@ export default function PersonnelSearchIndex() {
     if(selectedEmp && empId) {
       getAccrualYears();
       getAllowanceYears();
+      getAllowance();
     }
   }, [selectedEmp]);
 
@@ -62,7 +70,7 @@ export default function PersonnelSearchIndex() {
     try {
       const response = await fetchAccrualActiveYears(params);
       let showAcrlHist = response.years && response.years.length > 0;
-      let showAcrls = showAcrlHist && response.years.includes(currentYear)&&
+      let showAcrls = showAcrlHist && response.years.includes(currentYear) &&
         selectedEmp.payType !== 'TE' && !selectedEmp.senator;
       setShowAccrualHistory(showAcrlHist);
       setShowAccruals(showAcrls);
@@ -80,6 +88,39 @@ export default function PersonnelSearchIndex() {
       setShowAllowanceHistory(response.years && response.years.length > 0)
     } catch(err) {
       console.error(err);
+    }
+  }
+
+  const getAllowance = async () => {
+    console.log('starting getAllow')
+    setAllowance(null);
+    if(!selectedEmp || selectedEmp.senator || selectedEmp.payType !== 'TE' || !selectedEmp.active) {
+      console.error('why god');
+      return;
+    }
+
+    const today = new Date();
+    const year = today.getFullYear();
+    const formattedDate = `${year}`;
+    const params = {
+      year: formattedDate,
+      empId: empId,
+    };
+
+    try {
+      setLoadingAllowance(true);
+      const response = await fetchAllowance(params);
+      let tempAllowance = response.result[0];
+      computeRemaining(tempAllowance, {
+        beginDate: new Date(),
+        endDate: new Date(),
+      });
+      console.log('PS tempAllow',tempAllowance);
+      setAllowance(tempAllowance);
+    } catch (err) {
+      console.error("Error fetching Allowance in PersonnelSearchIndex", err);
+    } finally {
+      setLoadingAllowance(false);
     }
   }
 
@@ -121,7 +162,7 @@ export default function PersonnelSearchIndex() {
           {selectedEmp.active && (
             <div>
               {showAccruals && <AccrualBar empId={empId}/>}
-              {selectedEmp.payType === 'TE' && <AllowanceBar empId={empId}/>}
+              {selectedEmp.payType === 'TE' && <AllowanceBar allowance={allowance} loading={loadingAllowance}/>}
             </div>
           )}
 

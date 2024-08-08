@@ -33,47 +33,18 @@ export function computeRemaining (allowance, dateRange) {
  *  such that the record cost does not exceed the employee's annual allowance
  * @returns {number}
  */
-// export function getAvailableHours (allowance, tempWorkHours) {
-//   let remainingHours = (allowance || {}).remainingHours;
-//   return remainingHours - tempWorkHours;
+export function getAvailableHours (allowance, tempWorkHours) {
+  let remainingHours = (allowance || {}).remainingHours;
+  console.log('remainingHours', remainingHours);
+  console.log('remainingHours - tempWorkHours',remainingHours - tempWorkHours);
+  return remainingHours - tempWorkHours;
+}
+
+
+// export const getAvailableHours = (allowance, subtractingAmount) => {
+//   return hoursDiffHighlighterCustom(getTotalAllowedHours(allowance),subtractingAmount);
 // }
 
-
-export const getMaxSalaryRate = (allowance) => {
-  if (allowance.salaryRecs.length > 1) {
-    let max = 0;
-    allowance.salaryRecs.forEach((rec) => {
-      max = Math.max(max, rec.salaryRate);
-    });
-    return max;
-  }
-  return allowance.salaryRecs[0];
-}
-
-export const getTotalAllowedHours = (allowance) => {
-  if (allowance) {
-    const totalAllowedHours = allowance.yearlyAllowance/getMaxSalaryRate(allowance);
-    console.log('Max salary Rate: ', getMaxSalaryRate(allowance), "YrAllowance: ",allowance.yearlyAllowance,'TotalAlllow: ', Math.floor(totalAllowedHours*4)/4)
-    return Math.floor(totalAllowedHours*4)/4;
-  }
-  return 0;
-};
-
-export const getAvailableHours = (allowance, subtractingAmount) => {
-  return hoursDiffHighlighterCustom(getTotalAllowedHours(allowance),subtractingAmount);
-}
-
-// Like getAvailableHours but without signs and colors provided by hoursDiffHighlighterCustom
-export const getExpectedHours = (allowance, subtractingAmount) => {
-  let expHrs = (getTotalAllowedHours(allowance) - subtractingAmount).toFixed(2);
-  return `${expHrs}`;
-}
-
-export const consoleL = (allowance, str) => {
-  console.log("Str: ", str);
-  console.log("Peruseage: ", allowance);
-  return `${str}`;
-}
 
 /**
  * Fetch Basic Allowance info with provided parameters.

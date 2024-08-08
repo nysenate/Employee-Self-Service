@@ -110,10 +110,10 @@ export function hoursDiffHighlighter(accruals) {
  * @param Int negative The variable subtracting
  *
  */
-export function hoursDiffHighlighterCustom(positive, negative) {
+export function hoursDiffHighlighterCustom(positive) {
   let color = "#0e4e5a";
   let sign = "";
-  let hours = (positive - negative).toFixed(2);
+  let hours = (positive).toFixed(2);
   hours > 0 ? (color = "#09BB05", sign = "+") : hours < 0 && (color = "#BB0505");
   return <span style={{ color: color }}>{sign}{hours}</span>;
 };
