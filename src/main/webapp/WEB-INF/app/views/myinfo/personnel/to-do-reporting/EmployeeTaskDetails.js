@@ -19,7 +19,6 @@ export default function EmployeeTaskDetails({ person, taskMap }) {
   const [ empId, setEmpId ] = useState('');
 
 
-
   const openManualOverrideModal = (name, empId, title, taskId) => {
     setEmpName(name);
     setTaskTitle(title);

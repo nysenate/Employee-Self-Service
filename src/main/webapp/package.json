@@ -13,6 +13,10 @@
     "@heroicons/react": "^2.1.5",
     "@mui/icons-material": "^5.16.0",
     "@mui/material": "^5.16.0",
+    "@react-pdf-viewer/core": "^3.12.0",
+    "@react-pdf-viewer/default-layout": "^3.12.0",
+    "@react-pdf-viewer/toolbar": "^3.12.0",
+    "@react-pdf/renderer": "^3.4.4",
     "@tanstack/react-query": "^5.40.1",
     "@tanstack/react-query-devtools": "^5.40.1",
     "bootstrap": "^5.3.3",
@@ -38,6 +42,7 @@
     "moment": "^2.30.1",
     "multiselect-react-dropdown": "^2.0.25",
     "path-browserify": "^1.0.1",
+    "pdfjs-dist": "^3.11.174",
     "prettier": "^3.3.2",
     "react": "^18.2.0",
     "react-bootstrap": "^2.10.3",
@@ -45,6 +50,7 @@
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.51.5",
     "react-modal": "^3.16.1",
+    "react-pdf": "^9.1.0",
     "react-router-dom": "^6.23.1",
     "react-select": "^5.8.0",
     "regenerator-runtime": "^0.13.9",
@@ -53,8 +59,9 @@
     "util": "^0.12.5"
   },
   "scripts": {
-    "build": "NODE_ENV='production' webpack",
-    "dev": "webpack serve",
+    "copy-assets": "cp ./node_modules/pdfjs-dist/build/pdf.worker.min.js .",
+    "build": "npm run copy-assets && NODE_ENV='production' webpack",
+    "dev": "npm run copy-assets && webpack serve",
     "postinstall": "npm run build && bower install && grunt compile"
   },
   "babel": {

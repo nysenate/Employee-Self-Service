@@ -129,7 +129,7 @@ export default function Employees({ finalData, allTasks, params, onChildDataChan
                 </div>
               </td>
               <td>
-                { person.lastName }, { person.firstName }{ person.initial ? ',' : '' } { person.initial }
+                {person.lastName}, {person.firstName}{person.initial ? ',' : ''} {person.initial}
               </td>
               <td>{person.office}</td>
             </tr>
