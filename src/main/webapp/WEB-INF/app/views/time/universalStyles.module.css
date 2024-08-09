@@ -46,6 +46,17 @@
 }
 /* Other */
 hr {
+    display: block;
+    margin-block-start: 0.5em;
+    margin-block-end: 0.5em;
+    margin-inline-start: auto;
+    margin-inline-end: auto;
+    unicode-bidi: isolate;
+    overflow: hidden;
+    border-style: inset;
+    border-width: 1px;
+}
+hr {
     -moz-box-sizing: content-box;
     box-sizing: content-box;
     height: 0;
@@ -474,15 +485,103 @@ essNotification h1, .essNotification h2, .essNotification h3, .essNotification h
     padding: 20px;
     text-align: left;
 }
+.confirmModal .lastDonationConfirmForm {
+    flex-direction: column;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+.confirmModal .lastDonationConfirmForm div {
+    height: 30px;
+}
+.confirmModal .lastDonationConfirmForm label {
+    font-weight: 700;
+    width: 45%;
+    padding-right: 10px;
+    text-align: right;
+    display: inline-block;
+}
+.confirmModal .lastDonationConfirmForm input, .confirmModal .lastDonationConfirmForm span {
+    width: 35%;
+    display: inline-block;
+}
 .confirmModal .confirmationMessage h4, .confirmModal .confirmationMessage p {
     text-align: center;
     margin-top: 0;
 }
+.confirmModal h3 {
+    margin-bottom: 0;
+    display: block;
+    font-size: 1.17em;
+    font-weight: bold;
+    unicode-bidi: isolate;
+}
 .confirmModal .inputContainer {
     text-align: center;
 }
+.confirmModal .inputContainer input {
+    margin-left: 20px;
+}
 .confirmModal .inputContainer input:first-child {
     margin-left: 0;
+}
+.confirmModal.error .inputContainer input[type="button"].timeNeutralButton,
+input[type="button"].rejectButton,
+input[type="submit"].rejectButton {
+    padding: 5px 10px;
+    background: #e64727;
+    color: #fff;
+    font-weight: 600;
+    border: 2px none #c33417;
+    border-bottom-style: solid;
+}
+
+input[type="button"].submitButton,
+input[type="submit"].submitButton {
+    padding: 5px 10px;
+    background: #799933;
+    color: #fff;
+    font-weight: 600;
+    border: 2px none #5b7326;
+    border-bottom-style: solid;
+}
+
+input[type="button"].timeNeutralButton.inactive,
+input[type="button"].timeNeutralButton[disabled],
+input[type="submit"].timeNeutralButton.inactive,
+input[type="submit"].timeNeutralButton[disabled] {
+    color: #333;
+    border-color: transparent;
+    cursor: not-allowed;
+}
+
+input[type="button"].timeNeutralButton,
+input[type=submit].timeNeutralButton {
+    padding: 5px 10px;
+    background: #006b80;
+    color: #fff;
+    font-weight: 600;
+    border: 2px none #00404d;
+    border-bottom-style: solid;
+}
+
+input[type="button"].submitButton.inactive,
+input[type="button"].submitButton[disabled],
+input[type="submit"].submitButton.inactive,
+input[type="submit"].submitButton[disabled] {
+    color: #333;
+    border-color: transparent;
+    cursor: not-allowed;
+}
+
+input[type="button"].submitButton,
+input[type=submit].submitButton {
+    padding: 5px 10px;
+    background: #799933;
+    color: #fff;
+    font-weight: 600;
+    border: 2px none #5b7326;
+    border-bottom-style: solid;
 }
 
 input[type=button].approveButton {
@@ -540,6 +639,31 @@ input[type=email], input[type=number], input[type=password], input[type=search],
 }
 .nextRecordForm {
     text-align: center;
+}
+table.donationHistoryTable {
+    width: 25%;
+    text-align: left;
+}
+table.donationHistoryTable thead tr {
+    border: 1px solid #000;
+    border-collapse: collapse;
+}
+table.donationHistoryTable thead tr th {
+    padding: 5px;
+    border: 1px solid #000;
+    border-collapse: collapse;
+}
+table.donationHistoryTable tbody tr:nth-child(odd) {
+    background: #fafafa;
+}
+table.donationHistoryTable tbody tr {
+    border: 1px solid #000;
+    border-collapse: collapse;
+}
+table.donationHistoryTable tbody tr td {
+    border: 1px solid #000;
+    border-collapse: collapse;
+    padding: 5px;
 }
 table.timeRecordEntryTable thead {
     background: white;
@@ -830,43 +954,6 @@ ul.unsubmittedTeRecList li {
 .saveRecordContainer input[type="button"] {
     margin-top: 10px;
     width: 8.5em;
-}
-input[type="button"].timeNeutralButton.inactive,
-input[type="button"].timeNeutralButton[disabled],
-input[type="submit"].timeNeutralButton.inactive,
-input[type="submit"].timeNeutralButton[disabled] {
-    color: #333;
-    border-color: transparent;
-    cursor: not-allowed;
-}
-
-input[type="button"].timeNeutralButton,
-input[type=submit].timeNeutralButton {
-    padding: 5px 10px;
-    background: #006b80;
-    color: #fff;
-    font-weight: 600;
-    border: 2px none #00404d;
-    border-bottom-style: solid;
-}
-
-input[type="button"].submitButton.inactive,
-input[type="button"].submitButton[disabled],
-input[type="submit"].submitButton.inactive,
-input[type="submit"].submitButton[disabled] {
-    color: #333;
-    border-color: transparent;
-    cursor: not-allowed;
-}
-
-input[type="button"].submitButton,
-input[type=submit].submitButton {
-    padding: 5px 10px;
-    background: #799933;
-    color: #fff;
-    font-weight: 600;
-    border: 2px none #5b7326;
-    border-bottom-style: solid;
 }
 /* --- Attendance History Page --- */
 .attendanceListingTable tbody tr {

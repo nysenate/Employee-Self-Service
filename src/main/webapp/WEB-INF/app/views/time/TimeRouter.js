@@ -10,12 +10,11 @@ import AllowanceStatusIndex from "app/views/time/allowance/AllowanceStatusIndex"
 import CalendarIndex from "./period/CalendarIndex";
 import AccrualHistoryIndex from "./accrual/AccrualHistoryIndex.js";
 import AccrualProjections from "./accrual/AccrualProjectionsIndex.js";
-// import SickLeaveDonation from "./accruals/SickLeaveDonation.js";
+import Donation from "app/views/time/accrual/Donation";
 // review time records record/manage
 import RecordEmpHistoryIndex from "./record/RecordEmpHistoryIndex.js";
 import AllowanceEmpStatusIndex from "app/views/time/allowance/AllowanceEmpStatusIndex";
 import AccrualEmpHistoryIndex from "./accrual/AccrualEmpHistoryIndex.js";
-// emp accrual projections accrual/emp-projections
 import AccrualEmpProjectionsIndex from "./accrual/AccrualEmpProjectionsIndex.js";
 import Grant from "app/views/time/record/Grant";
 import PersonnelSearchIndex from "app/views/time/personnel/PersonnelSearchIndex";
@@ -31,7 +30,7 @@ export default function TimeRouter() {
           <Route path="period/calendar" element={<CalendarIndex/>}/>
           <Route path="accrual/history" element={<AccrualHistoryIndex/>}/>
           <Route path="accrual/projections" element={<AccrualProjections/>}/>
-          {/*<Route path="accrual/donation" element={<SickLeaveDonation/>}/>*/}
+          <Route path="accrual/donation" element={<Donation/>}/>
           {/*<Route path="record/manage" element={<SickLeaveDonation/>}/>*/}
           <Route path="record/emphistory" element={<RecordEmpHistoryIndex/>}/>
           <Route path="allowance/emp-status" element={<AllowanceEmpStatusIndex/>}/>
