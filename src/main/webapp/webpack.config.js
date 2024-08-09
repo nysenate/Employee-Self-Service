@@ -14,11 +14,6 @@ module.exports = {
       app: path.resolve(__dirname, 'WEB-INF/app')
     },
     fallback: {
-      fs: false,
-      assert: false,
-      url: false,
-      os: false,
-      child_process: false,
       path: require.resolve("path-browserify"),
       stream: require.resolve("stream-browserify"),
       util: require.resolve("util/"),

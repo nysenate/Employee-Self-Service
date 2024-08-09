@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { loadAuth } from "app/contexts/Auth/authStorage";
-import { AcademicCapIcon, CheckIcon } from "@heroicons/react/16/solid";
+import { AcademicCapIcon, CheckIcon, TrophyIcon, VideoCameraIcon } from "@heroicons/react/16/solid";
 import { convertTimestampToLocalDateString } from "app/views/myinfo/personnel/to-do-reporting/EmployeeTaskDetails";
 import { Link } from "react-router-dom";
 
@@ -9,7 +9,6 @@ export default function Assignments() {
   const [ completedAssignments, setCompletedAssignments ] = useState([]);
   const [ inCompletedAssignments, setInCompletedAssignments ] = useState([]);
   const empId = loadAuth().empId;
-
   const getTaskDetails = (type) => {
     let task = {
       taskType: "",
@@ -37,7 +36,7 @@ export default function Assignments() {
         break
       case "ETHICS_LIVE_COURSE":
         task.taskType = "Completed"
-        task.link = "/myinfo/personnel/todo/ethicscourselive"
+        task.link = "/myinfo/personnel/todo/ethicslivecourse"
         break
     }
     return task;
@@ -61,7 +60,7 @@ export default function Assignments() {
           .sort((a, b) => a.taskId - b.taskId));
         setInCompletedAssignments(data.assignments
           .filter(assignment => !assignment.completed && assignment.active)
-          .sort((a, b) => a.taskId - b.taskId));
+          .sort((a, b) => b.taskId - a.taskId));
         console.log(data.assignments);
       } catch (error) {
         console.error('Error fetching task details:', error);
@@ -80,10 +79,32 @@ export default function Assignments() {
          </li> :
          inCompletedAssignments.map(assignment => (
            <li className={"p-1 flex box-border text-[13px] ml-8"} key={assignment.task.taskId}>
-             <AcademicCapIcon className={"size-4 text-teal-600"}/>
-             <a className={"ml-1 text-teal-600 font-[500]"} href="#">
-               <u>Complete: {assignment.task.title}</u>
-             </a>
+             {assignment.task.taskType === "VIDEO_CODE_ENTRY" ? (
+                                                                <VideoCameraIcon className={"size-5 text-teal-600"}/>
+                                                              ) :
+              <AcademicCapIcon className={"size-5 text-teal-600"}/>}
+             {assignment.task.taskType === "EVERFI_COURSE" ? (
+               <a className="ml-1 text-teal-600 font-semibold hover:bg-gray-50"
+                  href={assignment.task.url}
+                  target="_blank"
+                  rel="noopener noreferrer">
+                 <u>Complete: {assignment.task.title}</u>
+               </a>) : (
+                <Link
+                  to={getTaskDetails(assignment.task.taskType).link + `/${assignment.taskId}`}
+                  state={{
+                    task: assignment.task,
+                    completed: assignment.completed,
+                    timestamp: convertTimestampToLocalDateString(assignment.timestamp)
+                  }}
+                  className="ml-1 text-teal-600 font-semibold hover:bg-gray-50"
+                >
+                  {assignment.task.taskType === "VIDEO_CODE_ENTRY" ?
+                   <u>Watch: {assignment.task.title}</u> :
+                   <u>Complete: {assignment.task.title}</u>
+                  }
+                </Link>
+              )}
            </li>
          ))}
       </ul>
@@ -94,29 +115,34 @@ export default function Assignments() {
            You do not have any completed tasks.
          </li> :
          completedAssignments.map(assignment => (
-
-           <li className={"p-1 flex box-border text-[13px] ml-8"} key={assignment.task.taskId}>
-             <CheckIcon className={"size-5 text-teal-600"}/>
+           <li className={"p-1 flex box-border text-[12.5px] ml-8"} key={assignment.task.taskId}>
+             <TrophyIcon className={"size-3.5 text-teal-600"}/>
              {assignment.task.taskType === "EVERFI_COURSE" ? (
-              <a className="ml-1 text-teal-600 font-normal hover:bg-gray-50"
-                 href={assignment.task.url}
-                 target="_blank"
-                 rel="noopener noreferrer">
-                <u>{assignment.task.title}</u>
-                <span className={"text-gray-400 ml-1"}>
+               <a className="ml-1 text-teal-600 font-normal hover:bg-gray-50 transition-opacity duration-300"
+                  href={assignment.task.url}
+                  target="_blank"
+                  rel="noopener noreferrer">
+                 <u>{assignment.task.title}</u>
+                 <span className={"text-gray-400 ml-1"}>
+                - {getTaskDetails(assignment.task.taskType).taskType} on {convertTimestampToLocalDateString(assignment.timestamp)}
+                 </span>
+               </a>) : (
+                <Link
+                  to={getTaskDetails(assignment.task.taskType).link + `/${assignment.taskId}`}
+                  state={{
+                    task: assignment.task,
+                    completed: assignment.completed,
+                    timestamp: convertTimestampToLocalDateString(assignment.timestamp)
+                  }}
+                  className="ml-1 text-teal-600 font-normal hover:bg-gray-50"
+
+                >
+                  <u>{assignment.task.title}</u>
+                  <span className={"text-gray-400 ml-1"}>
                 - {getTaskDetails(assignment.task.taskType).taskType} on {convertTimestampToLocalDateString(assignment.timestamp)}
               </span>
-              </a> ):(
-              <Link
-                to={getTaskDetails(assignment.task.taskType).link + `/${assignment.taskId}`}
-                className="ml-1 text-teal-600 font-normal hover:bg-gray-50"
-              >
-                <u>{assignment.task.title}</u>
-                <span className={"text-gray-400 ml-1"}>
-                - {getTaskDetails(assignment.task.taskType).taskType} on {convertTimestampToLocalDateString(assignment.timestamp)}
-              </span>
-              </Link>
-             )}
+                </Link>
+              )}
            </li>)
          )}
       </ul>

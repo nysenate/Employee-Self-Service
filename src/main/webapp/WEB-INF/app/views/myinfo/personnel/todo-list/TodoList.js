@@ -8,7 +8,7 @@ export default function TodoList() {
     <div>
       <Hero>Personnel To-Do List</Hero>
       <Card className="mt-5">
-        <div className="py-6 mb-3 mx-[10em] text-left">
+        <div className="py-4 mx-[10em] text-left">
           Listed below are personnel tasks that require your attention. <br/>
           Click on a task link to take action on that task. <br/>
           <b>FAILURE TO RESPOND MAY RESULT IN THE HOLDING OF YOUR PAYCHECK.</b><br/>

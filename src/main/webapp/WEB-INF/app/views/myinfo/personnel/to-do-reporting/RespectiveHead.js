@@ -33,10 +33,9 @@ export default function RespectiveHead({ params, onChildDataChange }) {
 
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
-    setSearchTerm(''); // Clear search term when toggling dropdown
+    setSearchTerm('');
   };
 
-  // Function to handle when an option is selected
   const handleOptionClick = (option) => {
     setSelectedOptions([ ...selectedOptions, option ]);
     setOptions(options.filter(item => item.code !== option.code));
@@ -70,7 +69,6 @@ export default function RespectiveHead({ params, onChildDataChange }) {
     }
   };
 
-  // Function to filter options based on search term
   const filterOptions = () => {
     return options.filter(option => {
       if (option.name !== null) {
@@ -94,9 +92,9 @@ export default function RespectiveHead({ params, onChildDataChange }) {
       <a className={"text-teal-600 font-normal"} href="#" onClick={handleRemoveAllChecks}>
         Clear selected offices
       </a>
-      <div className={styles.Testing}>
-        <div className={styles.searchContainer}>
-          <div className={styles.chipsContainer}>
+      <div className={"flex border border-gray-300"}>
+        <div className={"relative w-full"}>
+          <div className={"flex flex-wrap gap-1 p-1"}>
             {selectedOptions.map(option => (
               <div key={option.code} className={styles.chip} onClick={() => handleChipRemove(option, true)}>
                 <span>{option.name}</span><span className={styles.close}>×</span>
@@ -104,7 +102,7 @@ export default function RespectiveHead({ params, onChildDataChange }) {
             ))}
             <input
               type="text"
-              className={styles.searchInput}
+              className={"w-full text-sm outline-none"}
               placeholder="Search an office"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -112,11 +110,12 @@ export default function RespectiveHead({ params, onChildDataChange }) {
             />
           </div>
           {(dropdownOpen || searchTerm.length > 0) && (
-            <div className={styles.dropdown}>
+            <div
+              className={"absolute top-full left-0 w-full max-h-48 overflow-y-auto bg-gray-75 border border-gray-300 shadow-lg rounded-b-md"}>
               {filterOptions().map(option => (
                 <div
                   key={option.code}
-                  className={styles.option}
+                  className={"p-1 border-b border-gray-300 cursor-pointer option hover:bg-gray-200 shadow-sm"}
                   onClick={() => handleOptionClick(option)}
                 >
                   <span>{option.name}</span>
