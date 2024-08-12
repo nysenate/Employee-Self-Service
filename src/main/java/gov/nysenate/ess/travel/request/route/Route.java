@@ -18,7 +18,9 @@ public class Route {
     private int id;
     private final ImmutableList<Leg> outboundLegs;
     private final ImmutableList<Leg> returnLegs;
+    // First leg qualifies if they are departing before 7am.
     private final boolean firstLegQualifiesForBreakfast;
+    // Last leg qualifies if they are arriving after 7pm.
     private final boolean lastLegQualifiesForDinner;
 
     public Route(List<Leg> outboundLegs, List<Leg> returnLegs,

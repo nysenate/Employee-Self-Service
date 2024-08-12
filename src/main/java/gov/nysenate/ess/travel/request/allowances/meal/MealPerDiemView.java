@@ -16,8 +16,10 @@ public class MealPerDiemView implements ViewObject {
     private String rate;
     private SenateMieView mie;
     private TravelAddressView address;
-    @JsonProperty("isReimbursementRequested")
-    private boolean isReimbursementRequested;
+    @JsonProperty("isBreakfastRequested")
+    private boolean isBreakfastRequested = true;
+    @JsonProperty("isDinnerRequested")
+    private boolean isDinnerRequested = true;
     @JsonProperty("qualifiesForBreakfast")
     private boolean qualifiesForBreakfast;
     @JsonProperty("qualifiesForDinner")
@@ -36,7 +38,8 @@ public class MealPerDiemView implements ViewObject {
         this.address = new TravelAddressView(mpd.address());
         this.rate = mpd.rate().toString();
         this.mie = mpd.mie() == null ? null : new SenateMieView(mpd.mie());
-        this.isReimbursementRequested = mpd.isReimbursementRequested();
+        this.isBreakfastRequested = mpd.isBreakfastRequested();
+        this.isDinnerRequested = mpd.isDinnerRequested();
         this.qualifiesForBreakfast = mpd.qualifiesForBreakfast();
         this.qualifiesForDinner = mpd.qualifiesForDinner();
 
@@ -52,7 +55,8 @@ public class MealPerDiemView implements ViewObject {
                 LocalDate.parse(date, DateTimeFormatter.ISO_DATE),
                 new Dollars(rate),
                 mie == null ? null : mie.toSenateMie(),
-                isReimbursementRequested,
+                isBreakfastRequested,
+                isDinnerRequested,
                 qualifiesForBreakfast,
                 qualifiesForDinner
         );
@@ -78,8 +82,12 @@ public class MealPerDiemView implements ViewObject {
         return address;
     }
 
-    public boolean isReimbursementRequested() {
-        return isReimbursementRequested;
+    public boolean isBreakfastRequested() {
+        return isBreakfastRequested;
+    }
+
+    public boolean isDinnerRequested() {
+        return isDinnerRequested;
     }
 
     public boolean isQualifiesForBreakfast() {

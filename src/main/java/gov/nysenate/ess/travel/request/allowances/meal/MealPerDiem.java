@@ -3,6 +3,7 @@ package gov.nysenate.ess.travel.request.allowances.meal;
 import gov.nysenate.ess.travel.request.address.TravelAddress;
 import gov.nysenate.ess.travel.provider.senate.SenateMie;
 import gov.nysenate.ess.travel.utils.Dollars;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDate;
 import java.util.Objects;
@@ -19,22 +20,26 @@ public final class MealPerDiem {
      */
     private final Dollars rate;
     private final SenateMie mie;
-    private boolean isReimbursementRequested;
+    private boolean isBreakfastRequested;
+    private boolean isDinnerRequested;
     private boolean qualifiesForBreakfast;
     private boolean qualifiesForDinner;
 
-    public MealPerDiem(TravelAddress address, LocalDate date, Dollars rate, SenateMie mie) {
-        this(0, address, date, rate, mie, true, true, true);
+    public MealPerDiem(@NotNull TravelAddress address, @NotNull LocalDate date,
+                       @NotNull Dollars rate, @NotNull SenateMie mie) {
+        this(0, address, date, rate, mie, true, true, true, true);
     }
 
-    public MealPerDiem(int id, TravelAddress address, LocalDate date, Dollars rate, SenateMie mie,
-                       boolean isReimbursementRequested, boolean qualifiesForBreakfast, boolean qualifiesForDinner) {
+    public MealPerDiem(int id, @NotNull TravelAddress address, @NotNull LocalDate date, @NotNull Dollars rate,
+                       @NotNull SenateMie mie, boolean isBreakfastRequested, boolean isDinnerRequested,
+                       boolean qualifiesForBreakfast, boolean qualifiesForDinner) {
         this.id = id;
-        this.address = address;
-        this.date = date;
-        this.rate = rate;
-        this.mie = mie;
-        this.isReimbursementRequested = isReimbursementRequested;
+        this.address = Objects.requireNonNull(address);
+        this.date = Objects.requireNonNull(date);
+        this.rate = Objects.requireNonNull(rate);
+        this.mie = Objects.requireNonNull(mie);
+        this.isBreakfastRequested = isBreakfastRequested;
+        this.isDinnerRequested = isDinnerRequested;
         this.qualifiesForBreakfast = qualifiesForBreakfast;
         this.qualifiesForDinner = qualifiesForDinner;
     }
@@ -50,20 +55,20 @@ public final class MealPerDiem {
      * The reimbursement for breakfast.
      */
     public Dollars breakfast() {
-        if (!isReimbursementRequested()) {
+        if (!isBreakfastRequested() || !qualifiesForBreakfast()) {
             return Dollars.ZERO;
         }
-        return qualifiesForBreakfast() ? mie().breakfast() : Dollars.ZERO;
+        return mie().breakfast();
     }
 
     /**
      * The reimbursement for dinner.
      */
     public Dollars dinner() {
-        if (!isReimbursementRequested()) {
+        if (!isDinnerRequested() || !qualifiesForDinner()) {
             return Dollars.ZERO;
         }
-        return qualifiesForDinner() ? mie().dinner() : Dollars.ZERO;
+        return mie().dinner();
     }
 
     int id() {
@@ -90,8 +95,12 @@ public final class MealPerDiem {
         return this.rate;
     }
 
-    public boolean isReimbursementRequested() {
-        return isReimbursementRequested;
+    public boolean isBreakfastRequested() {
+        return isBreakfastRequested;
+    }
+
+    public boolean isDinnerRequested() {
+        return isDinnerRequested;
     }
 
     public boolean qualifiesForBreakfast() {
@@ -118,7 +127,8 @@ public final class MealPerDiem {
                 ", date=" + date +
                 ", rate=" + rate +
                 ", mie=" + mie +
-                ", isReimbursementRequested=" + isReimbursementRequested +
+                ", isBreakfastRequested=" + isBreakfastRequested +
+                ", isDinnerRequested=" + isDinnerRequested +
                 ", qualifiesForBreakfast=" + qualifiesForBreakfast +
                 ", qualifiesForDinner=" + qualifiesForDinner +
                 '}';
@@ -130,7 +140,8 @@ public final class MealPerDiem {
         if (o == null || getClass() != o.getClass()) return false;
         MealPerDiem that = (MealPerDiem) o;
         return id == that.id
-                && isReimbursementRequested == that.isReimbursementRequested
+                && isBreakfastRequested == that.isBreakfastRequested
+                && isDinnerRequested == that.isDinnerRequested
                 && qualifiesForBreakfast == that.qualifiesForBreakfast
                 && qualifiesForDinner == that.qualifiesForDinner
                 && Objects.equals(address, that.address)
@@ -141,7 +152,7 @@ public final class MealPerDiem {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, address, date, rate, mie, isReimbursementRequested,
+        return Objects.hash(id, address, date, rate, mie, isBreakfastRequested, isDinnerRequested,
                 qualifiesForBreakfast, qualifiesForDinner);
     }
 }

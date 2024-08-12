@@ -5,6 +5,7 @@ import gov.nysenate.ess.travel.utils.Dollars;
 import java.util.Objects;
 
 public class MealPerDiemAdjustments {
+
     private final Dollars overrideRate;
     private final boolean isAllowedMeals;
 
