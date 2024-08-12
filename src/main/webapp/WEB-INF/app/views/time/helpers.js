@@ -1,4 +1,36 @@
 import React from "react";
+import { fetchApiJson } from "app/utils/fetchJson";
+
+/**
+ * Universal Fetch based on path and parameters.
+ * @param {string} path The path for the fetch call 'api/v1${path}?{params}
+ * @param {Object} params The parameters for the fetch call.
+ * @returns {Promise<Object>} The result of the fetch call.
+ */
+export const fetchUniversal = async (path, params) => {
+  const queryParams = new URLSearchParams();
+
+  Object.keys(params).forEach(key => {
+    if (Array.isArray(params[key])) {
+      params[key].forEach(value => queryParams.append(key, value));
+    } else {
+      queryParams.append(key, params[key]);
+    }
+  });
+
+  const finalPath = `${path}?${queryParams.toString()}`;
+
+  try {
+    const response = await fetchApiJson(finalPath, { method: 'GET' });
+    // console.log("fetchAttendanceRecordApi with params: ", params, " response: ", response);
+    return response;
+  } catch (error) {
+    console.error('Fetch error:', error);
+    throw error;
+  }
+};
+
+
 
 /**
  * Format a date string to a readable format.

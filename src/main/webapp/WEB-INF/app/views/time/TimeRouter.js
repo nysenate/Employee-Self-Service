@@ -4,7 +4,7 @@ import Navigation from "app/components/Navigation";
 import AppLayout from "app/components/AppLayout";
 import { Navigate, Route, Routes } from "react-router-dom";
 
-// RECORD ENTRY record/entry
+import RecordEntryDirective from "app/views/time/record/RecordEntryDirective";
 import RecordHistoryIndex from "./record/RecordHistoryIndex.js";
 import AllowanceStatusIndex from "app/views/time/allowance/AllowanceStatusIndex";
 import CalendarIndex from "./period/CalendarIndex";
@@ -24,7 +24,7 @@ export default function TimeRouter() {
     <ThemeContext.Provider value={themes.time}>
       <Routes>
         <Route path="" element={<TimeLayout/>}>
-          {/*<Route path="record/entry" element={<AttendanceEntry/>}/>*/}
+          <Route path="record/entry" element={<RecordEntryDirective/>}/>
           <Route path="record/history" element={<RecordHistoryIndex/>}/>
           <Route path="allowance/status" element={<AllowanceStatusIndex/>}/>
           <Route path="period/calendar" element={<CalendarIndex/>}/>
