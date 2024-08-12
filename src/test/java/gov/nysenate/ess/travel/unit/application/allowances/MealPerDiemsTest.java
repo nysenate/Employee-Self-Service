@@ -32,11 +32,23 @@ public class MealPerDiemsTest {
     }
 
     @Test
+    public void constructorHandlesNullValuesWithoutException() {
+        MealPerDiems mpds = new MealPerDiems(null, null);
+        assertEquals(Dollars.ZERO, mpds.total());
+    }
+
+    @Test
+    public void constructorHandlesEmptyMealPerDiemsCollection() {
+        MealPerDiems mpds = new MealPerDiems(Sets.newHashSet());
+        assertEquals(Dollars.ZERO, mpds.total());
+    }
+
+    @Test
     public void duplicateDaysRemoved() {
         MealPerDiem capitolMealPerDiem = new MealPerDiem(CAPITOL, TODAY, new Dollars("100"), createMieWithTotal("100"));
         MealPerDiem agencyMealPerDiem = new MealPerDiem(AGENCY, TODAY, new Dollars("100"), createMieWithTotal("100"));
         MealPerDiems mpds = new MealPerDiems(Sets.newHashSet(capitolMealPerDiem, agencyMealPerDiem));
-        assertEquals(1, mpds.allMealPerDiems().size());
+        assertEquals(1, mpds.requestedMealPerDiems().size());
     }
 
     @Test
@@ -46,7 +58,7 @@ public class MealPerDiemsTest {
         MealPerDiems mpds = new MealPerDiems(Sets.newHashSet(capitolMealPerDiem, agencyMealPerDiem));
 
         ImmutableList<MealPerDiem> expected = ImmutableList.of(agencyMealPerDiem, capitolMealPerDiem);
-        ImmutableList<MealPerDiem> actual = mpds.allMealPerDiems().asList();
+        ImmutableList<MealPerDiem> actual = mpds.requestedMealPerDiems().asList();
 
         assertEquals(expected, actual);
     }
@@ -59,6 +71,6 @@ public class MealPerDiemsTest {
                 new Dollars(total),
                 new Dollars(total).multiply(new Dollars(".33")),
                 new Dollars(total).multiply(new Dollars(".66"))
-                );
+        );
     }
 }

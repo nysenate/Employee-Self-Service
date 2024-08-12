@@ -83,14 +83,21 @@
               <tr>
                 <td>Address</td>
                 <td>Date</td>
-                <td>Request Reimbursement?</td>
+                <td>Request Breakfast</td>
+                <td>Request Dinner</td>
               </tr>
               </thead>
               <tbody>
               <tr ng-repeat="perDiem in dirtyDraft.amendment.mealPerDiems.allMealPerDiems">
                 <td>{{perDiem.address.formattedAddressWithCounty}}</td>
                 <td>{{perDiem.date | date: 'shortDate'}}</td>
-                <td><label>Request Meals: </label><input type="checkbox" ng-model="perDiem.isReimbursementRequested">
+                <td><input ng-if="perDiem.qualifiesForBreakfast" type="checkbox"
+                           ng-model="perDiem.isBreakfastRequested">
+                  <span ng-if="!perDiem.qualifiesForBreakfast">-</span>
+                </td>
+                <td><input ng-if="perDiem.qualifiesForDinner" type="checkbox"
+                           ng-model="perDiem.isDinnerRequested">
+                  <span ng-if="!perDiem.qualifiesForDinner">-</span>
                 </td>
               </tr>
               </tbody>
@@ -112,7 +119,7 @@
                 <tr>
                   <td>Hotel Address</td>
                   <td>Date</td>
-                  <td>Request Reimbursement?</td>
+                  <td>Request Lodging</td>
                 </tr>
                 </thead>
                 <tbody>
@@ -130,8 +137,7 @@
                            size="50" required>
                   </td>
                   <td>{{perDiem.date | date: 'shortDate'}} - {{nextDay(perDiem.date) | date: 'shortDate'}}</td>
-                  <td><label>Request Lodging: </label><input type="checkbox"
-                                                             ng-model="perDiem.isReimbursementRequested">
+                  <td><input type="checkbox" ng-model="perDiem.isReimbursementRequested">
                   </td>
                 </tr>
                 </tbody>
@@ -154,7 +160,7 @@
                 <tr>
                   <td>From</td>
                   <td>To</td>
-                  <td>Request Reimbursement?</td>
+                  <td>Request Mileage</td>
                 </tr>
                 </thead>
                 <tbody>
@@ -162,7 +168,7 @@
                     ng-if="pd.qualifiesForReimbursement">
                   <td>{{pd.from.formattedAddressWithCounty}}</td>
                   <td>{{pd.to.formattedAddressWithCounty}}</td>
-                  <td><label>Request Mileage: </label><input type="checkbox" ng-model="pd.isReimbursementRequested">
+                  <td><input type="checkbox" ng-model="pd.isReimbursementRequested">
                   </td>
                 </tr>
                 </tbody>

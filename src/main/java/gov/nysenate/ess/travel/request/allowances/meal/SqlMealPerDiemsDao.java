@@ -58,7 +58,8 @@ public class SqlMealPerDiemsDao extends SqlBaseDao {
                     .addValue("rate", mpd.rate().toString())
                     .addValue("qualifiesForBreakfast", mpd.qualifiesForBreakfast())
                     .addValue("qualifiesForDinner", mpd.qualifiesForDinner())
-                    .addValue("isReimbursementRequested", mpd.isReimbursementRequested());
+                    .addValue("isBreakfastRequested", mpd.isBreakfastRequested())
+                    .addValue("isDinnerRequested", mpd.isDinnerRequested());
             paramList.add(params);
         }
         String sql = SqlMealPerDiemsQuery.INSERT_MEAL_PER_DIEM.getSql(schemaMap());
@@ -94,8 +95,9 @@ public class SqlMealPerDiemsDao extends SqlBaseDao {
 
 
     private enum SqlMealPerDiemsQuery implements BasicSqlQuery {
-        SELECT_MEAL_PER_DIEMS("""
-                SELECT mpd.app_meal_per_diem_id, mpd.date, mpd.rate, mpd.is_reimbursement_requested,
+        SELECT_MEAL_PER_DIEMS(
+                """
+                SELECT mpd.app_meal_per_diem_id, mpd.date, mpd.rate, mpd.is_breakfast_requested, mpd.is_dinner_requested,
                   mpd.qualifies_for_breakfast, mpd.qualifies_for_dinner,
                   addr.address_id, addr.street_1, addr.city, addr.state, addr.zip_5, addr.county, addr.country,
                   addr.place_id, addr.name,
@@ -108,27 +110,31 @@ public class SqlMealPerDiemsDao extends SqlBaseDao {
                 WHERE mpd.app_id = :appId
                 """
         ),
-        DELETE_MEAL_PER_DIEMS("""
+        DELETE_MEAL_PER_DIEMS(
+                """
                 DELETE FROM ${travelSchema}.app_meal_per_diem
                 WHERE app_id = :appId
                 """
         ),
-        INSERT_MEAL_PER_DIEM("""
+        INSERT_MEAL_PER_DIEM(
+                """
                 INSERT INTO ${travelSchema}.app_meal_per_diem
-                  (app_id, address_id, date, rate, is_reimbursement_requested, senate_mie_id,
+                  (app_id, address_id, date, rate, is_breakfast_requested, is_dinner_requested, senate_mie_id,
                   qualifies_for_breakfast, qualifies_for_dinner)
-                VALUES (:appId, :addressId, :date, :rate, :isReimbursementRequested, :senateMieId,
+                VALUES (:appId, :addressId, :date, :rate, :isBreakfastRequested, :isDinnerRequested, :senateMieId,
                   :qualifiesForBreakfast, :qualifiesForDinner)
                 """
         ),
-        UPDATE_MEAL_ADJUSTMENTS("""
+        UPDATE_MEAL_ADJUSTMENTS(
+                """
                 UPDATE ${travelSchema}.app_meal_per_diem_adjustments
                   SET override_rate = :overrideRate,
                   is_allowed_meals = :isAllowedMeals
                 WHERE app_id = :appId
                 """
         ),
-        INSERT_MEAL_ADJUSTMENTS("""
+        INSERT_MEAL_ADJUSTMENTS(
+                """
                 INSERT INTO ${travelSchema}.app_meal_per_diem_adjustments
                   (app_id, override_rate, is_allowed_meals)
                 VALUES (:appId, :overrideRate, :isAllowedMeals)
@@ -177,10 +183,11 @@ public class SqlMealPerDiemsDao extends SqlBaseDao {
             LocalDate date = getLocalDate(rs, "date");
             Dollars rate = new Dollars(rs.getString("rate"));
             SenateMie mie = senateMieRowMapper.mapRow(rs, rs.getRow()); // TODO what if mie data is missing?
-            boolean isReimbursementRequested = rs.getBoolean("is_reimbursement_requested");
+            boolean isBreakfastRequested = rs.getBoolean("is_breakfast_requested");
+            boolean isDinnerRequested = rs.getBoolean("is_dinner_requested");
             boolean qualifiesForBreakfast = rs.getBoolean("qualifies_for_breakfast");
             boolean qualifiesForDinner = rs.getBoolean("qualifies_for_dinner");
-            MealPerDiem mpd = new MealPerDiem(mpdId, address, date, rate, mie, isReimbursementRequested,
+            MealPerDiem mpd = new MealPerDiem(mpdId, address, date, rate, mie, isBreakfastRequested, isDinnerRequested,
                     qualifiesForBreakfast, qualifiesForDinner);
             mealPerDiems.add(mpd);
         }

@@ -12,7 +12,7 @@ import java.util.*;
  * If these per diems are overridden, {@code overrideRate} will be non zero.
  */
 public class MealPerDiems {
-
+    // Sorts MealPerDiem's by date.
     private final static Comparator<MealPerDiem> dateComparator = Comparator.comparing(MealPerDiem::date);
 
     private final ImmutableSortedSet<MealPerDiem> mealPerDiems;
@@ -23,6 +23,9 @@ public class MealPerDiems {
     }
 
     public MealPerDiems(Collection<MealPerDiem> mealPerDiems, MealPerDiemAdjustments adjustments) {
+        if (mealPerDiems == null) {
+            mealPerDiems = ImmutableSortedSet.of();
+        }
         this.mealPerDiems = ImmutableSortedSet
                 .orderedBy(dateComparator)
                 .addAll(mealPerDiems)
@@ -30,6 +33,10 @@ public class MealPerDiems {
         this.adjustments = adjustments == null
                 ? new MealPerDiemAdjustments.Builder().build()
                 : adjustments;
+    }
+
+    public boolean isAllowedMeals() {
+        return this.adjustments.isAllowedMeals();
     }
 
     public Dollars total() {
@@ -44,31 +51,24 @@ public class MealPerDiems {
     }
 
     /**
-     * @return All meal per diems.
-     */
-    public ImmutableSortedSet<MealPerDiem> allMealPerDiems() {
-        return mealPerDiems;
-    }
-
-    /**
      * @return Only the requested meal per diems.
      */
     public ImmutableSortedSet<MealPerDiem> requestedMealPerDiems() {
         return mealPerDiems.stream()
-                .filter(MealPerDiem::isReimbursementRequested)
+                .filter(mpd -> mpd.isBreakfastRequested() || mpd.isDinnerRequested())
                 .collect(ImmutableSortedSet.toImmutableSortedSet(dateComparator));
     }
 
-    public boolean isOverridden() {
+    protected ImmutableSortedSet<MealPerDiem> allMealPerDiems() {
+        return mealPerDiems;
+    }
+
+    protected boolean isOverridden() {
         return this.adjustments.isOverridden();
     }
 
-    public Dollars overrideRate() {
+    protected Dollars overrideRate() {
         return this.adjustments.overrideRate();
-    }
-
-    public boolean isAllowedMeals() {
-        return this.adjustments.isAllowedMeals();
     }
 
     protected MealPerDiemAdjustments getAdjustments() {

@@ -69,14 +69,12 @@ public class AppPdfExpenseSummaryWriter implements AppPdfWriter {
         createHeaderCell(headerRow, 15, "Total");
         dataTable.addHeaderRow(headerRow);
         for (MealPerDiem mpd : app.getMealPerDiems().requestedMealPerDiems()) {
-            if (mpd.isReimbursementRequested()) {
-                Row<PDPage> row = dataTable.createRow(16f);
-                createBodyCell(row, 15, mpd.date().format(DATE_FORMAT), HorizontalAlignment.LEFT);
-                createBodyCell(row, 40, mpd.address().getFormattedAddressWithCounty(), HorizontalAlignment.LEFT);
-                createBodyCell(row, 15, "$" + mpd.breakfast(), HorizontalAlignment.RIGHT);
-                createBodyCell(row, 15, "$" + mpd.dinner(), HorizontalAlignment.RIGHT);
-                createBodyCell(row, 15, "$" + mpd.total(), HorizontalAlignment.RIGHT);
-            }
+            Row<PDPage> row = dataTable.createRow(16f);
+            createBodyCell(row, 15, mpd.date().format(DATE_FORMAT), HorizontalAlignment.LEFT);
+            createBodyCell(row, 40, mpd.address().getFormattedAddressWithCounty(), HorizontalAlignment.LEFT);
+            createBodyCell(row, 15, "$" + mpd.breakfast(), HorizontalAlignment.RIGHT);
+            createBodyCell(row, 15, "$" + mpd.dinner(), HorizontalAlignment.RIGHT);
+            createBodyCell(row, 15, "$" + mpd.total(), HorizontalAlignment.RIGHT);
         }
         // Total Row
         Row<PDPage> row = dataTable.createRow(16f);
@@ -104,7 +102,7 @@ public class AppPdfExpenseSummaryWriter implements AppPdfWriter {
         createHeaderCell(headerRow, 15, "Rate");
         dataTable.addHeaderRow(headerRow);
 
-        for(LodgingPerDiem lpd : app.getLodgingPerDiems().requestedLodgingPerDiems()) {
+        for (LodgingPerDiem lpd : app.getLodgingPerDiems().requestedLodgingPerDiems()) {
             Row<PDPage> row = dataTable.createRow(16f);
             createBodyCell(row, 15, lpd.date().format(DATE_FORMAT), HorizontalAlignment.LEFT);
             createBodyCell(row, 70, lpd.address().getFormattedAddressWithCounty(), HorizontalAlignment.LEFT);
