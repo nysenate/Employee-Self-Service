@@ -6,6 +6,8 @@ import styles from "../universalStyles.module.css";
 import { useNavigate } from "react-router-dom";
 import { formatDateToMMDDYYYY, hoursDiffHighlighter } from "app/views/time/helpers";
 
+// Needs:
+//    -handle Print
 export function AccrualDetailsPopup({ accruals, isModalOpen, closeModal }) {
   const navigate = useNavigate();
 

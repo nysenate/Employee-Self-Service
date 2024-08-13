@@ -8,8 +8,9 @@ import ComponentA, { formatDateToMMDDYYYY, formatDateYYYYMMDD } from "app/views/
 
 
 // Abisha Vijayashanthar 14160
-// issues:
-//      - an avail as '--' will make all above '--', but should only be its respective row all below
+// Issues
+//    -Popup error onClick
+//    - an avail as '--' will make all above '--', but should only be its respective row all below
 export default function AccrualProjectionsDirective({
                                                       viewDetails,
                                                       user,

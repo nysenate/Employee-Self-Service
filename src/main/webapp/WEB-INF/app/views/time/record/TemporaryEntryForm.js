@@ -1,6 +1,7 @@
 // TemporaryEntryForm.js
 import styles from "../universalStyles.module.css";
 
+// Incomplete
 export default function TemporaryEntryForm({ state, allowancesLoading }) {
 
   return(

@@ -11,8 +11,10 @@ import {
 } from "app/views/time/helpers";
 
 // Issues:
-// Day in format: 2024-06-20, should be: Mon, Tue, Wed, Thu, Fri, Sat, Sun
-// Date in format: 2024-06-02, should be: 6/2/2024
+//    -Day in format: 2024-06-20, should be: Mon, Tue, Wed, Thu, Fri, Sat, Sun
+//    -Date in format: 2024-06-02, should be: 6/2/2024
+// Needs:
+//    -handle Print
 export function RecordDetailsPopup({ record, isModalOpen, closeModal }) {
   const { tempEntries, annualEntries } = checkEntryTypes(record.timeEntries);
 
