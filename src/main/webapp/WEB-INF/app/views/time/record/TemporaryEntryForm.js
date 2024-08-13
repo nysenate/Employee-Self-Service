@@ -1,14 +1,14 @@
 // TemporaryEntryForm.js
 import styles from "../universalStyles.module.css";
 
-export default function TemporaryEntryForm() {
+export default function TemporaryEntryForm({ state, allowancesLoading }) {
 
   return(
     <>
       {state.tempEntries && (
         <div className={styles.teEntry}>
           {state.annualEntries && <h1 className={styles.timeEntryTableTitle}>Temporary Pay Entries</h1>}
-          <AllowanceBar allowance={state.allowances[state.selectedYear]} tempWorkHours={state.totals.tempWorkHours} loading={state.request.allowances} />
+          <AllowanceBar allowance={state.allowances[state.selectedYear]} tempWorkHours={state.totals.tempWorkHours} loading={allowancesLoading} />
           <hr />
           {selRecordHasTeErrors() && (
             <div className={`${styles.essNotification} ${styles.timeEntryErrorBox} ${styles.marginTop20}`} level="error" title="Time record has errors">

@@ -8,9 +8,21 @@ import {
 import { calculateDailyTotals, getRecordTotals, getTimeEntryFields } from "app/views/time/record/recordUtils";
 
 // For MiscLeave look at MiscLeaveType.java src/main/java/gov/nysenate/ess/time/model/payrolll
+// Needs:
+//    -
+// Issues:
+//    -Period end should not be 0 => fixing dueFromNowStr calculation in record-entry-ctrl.js: getRecords()
+//    -
 export const useRecordEntryCtrl = () => {
   const { userData } = useAuth()
   const [state, setState] = useState(getInitialState());
+
+  const [recordsLoading, setRecordsLoading] = useState(false);
+  const [holidaysLoading, setHolidaysLoading] = useState(false);
+  const [accrualsLoading, setAccrualsLoading] = useState(false);
+  const [allowancesLoading, setAllowancesLoading] = useState(false);
+  const [expectedHrsLoading, setExpectedHrsLoading] = useState(false);
+  const [saveLoading, setSaveLoading] = useState(false);
 
   function getInitialState() {
     function shortnameMap(miscLeaves) {
@@ -50,10 +62,19 @@ export const useRecordEntryCtrl = () => {
       // miscLeavesShortnameMap: shortnameMap(appProps.miscLeaves),
     }
   }
+  function resetLoading() {
+    setRecordsLoading(false);
+    setHolidaysLoading(false);
+    setAccrualsLoading(false);
+    setAllowancesLoading(false);
+    setExpectedHrsLoading(false);
+    setSaveLoading(false);
+  }
 
   let modifiedErrorCodes = [2, 7];
 
   async function init() {
+    resetLoading();
     let tempState = getInitialState();
     tempState = await getRecords(tempState);
     tempState = await getHolidays(tempState);
@@ -68,35 +89,36 @@ export const useRecordEntryCtrl = () => {
     const updateState = async () => {
       if (state.records && state.records[state.iSelectedRecord]) {
         let updatedState = detectPayTypes(state);
+        // console.log("updatedState after detectPayTypes ", updatedState);
 
         try {
           // Fetch accruals and pass the updated state to the next function
           updatedState = await getAccrualForSelectedRecord(updatedState);
-          console.log("updatedState after getAccrualForSelectedRecord ", updatedState);
+          // console.log("updatedState after getAccrualForSelectedRecord ", updatedState);
 
           // Fetch allowances using the updated state and pass it to the next function
           updatedState = await getAllowanceForSelRecord(updatedState);
-          console.log("updatedState after getAllowanceForSelRecord ", updatedState);
+          // console.log("updatedState after getAllowanceForSelRecord ", updatedState);
 
           // Fetch expected hours using the further updated state
           updatedState = await getExpectedHoursForSelRecord(updatedState);
-          console.log("updatedState after getExpectedHoursForSelRecord ", updatedState);
+          // console.log("updatedState after getExpectedHoursForSelRecord ", updatedState);
 
           // Call additional functions after state is updated
           updatedState = getSelectedSalaryRecs(updatedState);
-          console.log("updatedState after getSelectedSalaryRecs ", updatedState);
+          // console.log("updatedState after getSelectedSalaryRecs ", updatedState);
 
           updatedState = onRecordChange(updatedState);
-          console.log("updatedState after onRecordChange ", updatedState);
+          // console.log("updatedState after onRecordChange ", updatedState);
 
           setRecordSearchParams();
 
           updatedState = await getMiscLeaveTypeGrants(updatedState);
-          console.log("updatedState after getMiscLeaveTypeGrants ", updatedState);
+          // console.log("updatedState after getMiscLeaveTypeGrants ", updatedState);
 
 
           fullValidationCheck(updatedState);
-          console.log("updatedState after fullValidationCheck ", updatedState);
+          // console.log("updatedState after fullValidationCheck ", updatedState);
 
           // Finally, set the state once with all the updates
           setState(updatedState);
@@ -123,6 +145,7 @@ export const useRecordEntryCtrl = () => {
     //   return;
     // }
     const params = { empId: prevState.empId }
+    setRecordsLoading(true);
     try {
       const response = await fetchUniversal("/timerecords/active", params);
       if (response.result.items[prevState.empId]) {
@@ -160,7 +183,7 @@ export const useRecordEntryCtrl = () => {
         return { ...prevState, records: records, allRecords: allRecords, };
       }
     } catch(err) { console.error(err); } finally {
-    //   state.request.records = false;
+      setRecordsLoading(false);
     }
   }
 
@@ -168,7 +191,7 @@ export const useRecordEntryCtrl = () => {
    * This assumes any necessary validation has already been
    * made on this record.
    * @param submit - true if the record is to be submitted */
-  const saveRecord = async () => {}
+  const saveRecord = async () => { console.log('implement saveRecord'); }
 
   /**
    * Fetches the accruals for the currently selected time record from the server.
@@ -185,10 +208,12 @@ export const useRecordEntryCtrl = () => {
         empId: empId,
         beforeDate: formatDateYYYYMMDD(periodStartMoment),
       };
+      setAccrualsLoading(true);
       try {
         const response = await fetchUniversal('/accruals', params);
         return {...prevState, accrual: response.result};
       } catch(err) { console.error(err); } finally {
+        setAccrualsLoading(false);
       }
     }
     return prevState;
@@ -201,21 +226,21 @@ export const useRecordEntryCtrl = () => {
    * @returns updatedState
    */
   const getExpectedHoursForSelRecord = async (prevState) => {
-    if(!prevState.annualEntries) {
-      let empId = prevState.empId;
-      let record = prevState.records[prevState.iSelectedRecord]
-      const params = {
-        empId: empId,
-        beginDate: record.beginDate,
-        endDate: record.endDate,
-      };
-      try {
-        const response = await fetchUniversal('/expectedhrs', params);
-        return {...prevState, expectedHrs: response.result};
-      } catch(err) { console.error(err); } finally {
-      }
+    if(!prevState.annualEntries) return prevState;
+    let empId = prevState.empId;
+    let record = prevState.records[prevState.iSelectedRecord]
+    const params = {
+      empId: empId,
+      beginDate: record.beginDate,
+      endDate: record.endDate,
+    };
+    setExpectedHrsLoading(true);
+    try {
+      const response = await fetchUniversal('/expectedhrs', params);
+      return {...prevState, expectedHrs: response.result};
+    } catch(err) { console.error(err); } finally {
+      setExpectedHrsLoading(false);
     }
-    return prevState;
   }
 
   /**
@@ -232,6 +257,7 @@ export const useRecordEntryCtrl = () => {
         empId: prevState.empId,
         year: prevState.selectedYear
       };
+      setAllowancesLoading(true);
       try {
         const response = await fetchUniversal('/allowances', params);
         response.result.forEach((allowance) => {
@@ -239,6 +265,7 @@ export const useRecordEntryCtrl = () => {
         });
         return { ...newState, };
       } catch(err) { console.error(err); } finally {
+        setAllowancesLoading(false);
       }
     }
     return newState
@@ -284,7 +311,7 @@ export const useRecordEntryCtrl = () => {
       fromDate: fromDate,
       toDate: toDate
     };
-
+    setHolidaysLoading(true);
     try {
       const response = await fetchUniversal("/holidays", params);
       const holidays = {};
@@ -294,19 +321,27 @@ export const useRecordEntryCtrl = () => {
         }
       });
       return { ...prevState, holidays: holidays}
-    } catch(err) { console.error(err); } finally {}
+    } catch(err) { console.error(err); } finally {
+      setHolidaysLoading(false);
+    }
   }
   function createNextRecord() {
     if(!canCreateNextRecord()) return;
     let latestRecord = getLatestRecord();
     let nextRecBeginDate = new Date(latestRecord.endDate);
-    nextRecBeginDate.setDate(nexRecBeginDate.getDate() + 1);
+    nextRecBeginDate.setDate(nextRecBeginDate.getDate() + 1);
     const params = {
       empId: state.empId,
       date: formatDateYYYYMMDD(nextRecBeginDate),
     };
-
-    console.log('Save recordCreationApi = /timerecords/new');
+    setRecordsLoading(true);
+    try {
+      console.log('Save recordCreationApi = /timerecords/new');
+      init();
+    } catch(err) {
+      console.error(err);
+      setRecordsLoading(false);
+    }
   }
 
   /** --- Display Methods --- */
@@ -562,14 +597,14 @@ export const useRecordEntryCtrl = () => {
     if (state.records.length > 0) return false;
 
     // Return false if any existing record has a begin date past the current date
-    for (const record of state.allRecords) {
+    state.allRecords?.forEach(record => {
       const beginDate = new Date(record.beginDate);
       const currentDate = new Date();
 
       if (beginDate > currentDate) {
         return false;
       }
-    }
+    });
 
     const latestRecord = getLatestRecord();
     const currentDate = new Date();
@@ -679,7 +714,7 @@ export const useRecordEntryCtrl = () => {
 
   function getLatestRecord() {
     let latestRecord = null;
-    state.allRecords.forEach(record => {
+    state.allRecords?.forEach(record => {
       if (!latestRecord || new Date(record.beginDate) > new Date(latestRecord.beginDate)) {
         latestRecord = record;
       }
@@ -1176,18 +1211,19 @@ export const useRecordEntryCtrl = () => {
   return {
     state,
     setState,
+    recordsLoading,
+    accrualsLoading,
+    allowancesLoading,
+    canCreateNextRecord,
+    createNextRecord,
+    errorTypes,
+    setDirty,
+    saveRecord,
+    recordValid,
+    recordSubmittable,
+    getRecordRangeDisplay,
   };
 }
-
-
-
-
-
-
-
-
-
-
 
 
 

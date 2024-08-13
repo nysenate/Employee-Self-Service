@@ -1,14 +1,14 @@
 // AnnualEntryForm.js
 import styles from "../universalStyles.module.css";
 
-export default function AnnualEntryForm() {
+export default function AnnualEntryForm({ state, accrualsLoading }) {
 
   return(
     <>
       {state.annualEntries && (
         <div className={styles.raSaEntry}>
           {state.tempEntries && <h1 className={styles.timeEntryTableTitle}>Regular/Special Annual Pay Entries</h1>}
-          <AccrualBar accruals={state.accrual} loading={state.request.accruals} />
+          <AccrualBar accruals={state.accrual} loading={accrualsLoading} />
           <hr className={styles.marginTop10} />
           {selRecordHasRaSaErrors() && (
             <div className={`${styles.essNotification} ${styles.timeEntryErrorBox} ${styles.marginTop20}`} level="error" title="Time record has errors">

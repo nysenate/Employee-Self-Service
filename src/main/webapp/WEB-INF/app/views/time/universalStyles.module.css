@@ -361,7 +361,9 @@ table.essTable tbody tr td {
 .description {
     font-size: 70%;
 }
-
+.darkRed {
+    color: #b90504;
+}
 .bold {
     font-weight: 700;
 }
