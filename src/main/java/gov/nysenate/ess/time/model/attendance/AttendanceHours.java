@@ -19,6 +19,7 @@ public abstract class AttendanceHours {
     protected BigDecimal sickEmpHours;
     protected BigDecimal sickFamHours;
     protected BigDecimal miscHours;
+    protected BigDecimal miscHours2;
 
     public AttendanceHours() {}
 
@@ -31,6 +32,7 @@ public abstract class AttendanceHours {
         this.sickEmpHours = other.sickEmpHours;
         this.sickFamHours = other.sickFamHours;
         this.miscHours = other.miscHours;
+        this.miscHours2 = other.miscHours2;
     }
 
     /** --- Functional Getters / Setters --- */
@@ -41,6 +43,7 @@ public abstract class AttendanceHours {
                 .add(this.getTravelHours().orElse(BigDecimal.ZERO))
                 .add(this.getHolidayHours().orElse(BigDecimal.ZERO))
                 .add(this.getMiscHours().orElse(BigDecimal.ZERO))
+                .add(this.getMisc2Hours().orElse(BigDecimal.ZERO))
                 .add(this.getPersonalHours().orElse(BigDecimal.ZERO))
                 .add(this.getSickEmpHours().orElse(BigDecimal.ZERO))
                 .add(this.getSickFamHours().orElse(BigDecimal.ZERO))
@@ -79,6 +82,10 @@ public abstract class AttendanceHours {
         return Optional.ofNullable(miscHours);
     }
 
+    public Optional<BigDecimal> getMisc2Hours() {
+        return Optional.ofNullable(miscHours2);
+    }
+
     public boolean isEmpty() {
         return workHours == null &&
                 travelHours == null &&
@@ -87,7 +94,8 @@ public abstract class AttendanceHours {
                 personalHours == null &&
                 sickEmpHours == null &&
                 sickFamHours == null &&
-                miscHours == null;
+                miscHours == null &&
+                miscHours2 == null;
     }
 
     /** --- Overridden Methods --- */
@@ -103,12 +111,13 @@ public abstract class AttendanceHours {
                 Objects.equal(personalHours, that.personalHours) &&
                 Objects.equal(sickEmpHours, that.sickEmpHours) &&
                 Objects.equal(sickFamHours, that.sickFamHours) &&
-                Objects.equal(miscHours, that.miscHours);
+                Objects.equal(miscHours, that.miscHours) &&
+                Objects.equal(miscHours2, that.miscHours2);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(workHours, travelHours, holidayHours, vacationHours, personalHours, sickEmpHours, sickFamHours, miscHours);
+        return Objects.hashCode(workHours, travelHours, holidayHours, vacationHours, personalHours, sickEmpHours, sickFamHours, miscHours, miscHours2);
     }
 
     /** --- Setters --- */
@@ -143,5 +152,9 @@ public abstract class AttendanceHours {
 
     public void setMiscHours(BigDecimal miscHours) {
         this.miscHours = miscHours;
+    }
+
+    public void setMisc2Hours(BigDecimal miscHours2) {
+        this.miscHours2 = miscHours2;
     }
 }

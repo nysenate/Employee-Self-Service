@@ -39,6 +39,7 @@ public class AccrualsView implements ViewObject
     protected BigDecimal vacationUsed = BigDecimal.ZERO;
     protected BigDecimal holidayUsed = BigDecimal.ZERO;
     protected BigDecimal miscUsed = BigDecimal.ZERO;
+    protected BigDecimal misc2Used = BigDecimal.ZERO;
     protected BigDecimal prevTotalHoursYtd = BigDecimal.ZERO;
     protected BigDecimal totalHoursYtd = BigDecimal.ZERO;
 
@@ -83,6 +84,7 @@ public class AccrualsView implements ViewObject
             this.vacationUsed = pac.getVacHoursUsed();
             this.holidayUsed = pac.getHolHoursUsed();
             this.miscUsed = pac.getMiscHoursUsed();
+            this.misc2Used = pac.getMisc2HoursUsed();
             this.vacationRate = pac.getVacRate();
             this.sickRate = pac.getSickRate();
             this.prevTotalHoursYtd =  pac.getPrevTotalHoursYtd();
@@ -210,6 +212,11 @@ public class AccrualsView implements ViewObject
     @XmlElement
     public BigDecimal getMiscUsed() {
         return miscUsed;
+    }
+
+    @XmlElement
+    public BigDecimal getMisc2Used() {
+        return misc2Used;
     }
 
     @XmlElement
