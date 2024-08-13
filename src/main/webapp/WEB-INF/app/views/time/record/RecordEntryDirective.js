@@ -145,7 +145,13 @@ export default function RecordEntryDirective() {
             {state.annualEntries && (<div>AnnualEntryForm</div>)}
 
             {/* Temporary Entry Form */}
-            {/*<TemporaryEntryForm state={state} allowancesLoading={allowancesLoading}/>*/}
+            {/*<TemporaryEntryForm*/}
+            {/*  state={state}*/}
+            {/*  allowancesLoading={allowancesLoading}*/}
+            {/*  setDirty={setDirty}*/}
+            {/*  entryValidators={entryValidators}*/}
+            {/*  preValidation={preValidation}*/}
+            {/*/>*/}
             {state.tempEntries && (<div>TemporaryEntryForm</div>)}
 
             {/* Save Record Container */}

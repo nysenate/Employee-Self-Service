@@ -2,7 +2,15 @@
 import styles from "../universalStyles.module.css";
 
 // Incomplete
-export default function TemporaryEntryForm({ state, allowancesLoading }) {
+// Needs:
+//    -connect all functions and variables (easiest through live testing)
+//    -testing
+export default function TemporaryEntryForm({
+                                             state,
+                                             allowancesLoading,
+                                             setDirty,
+                                             entryValidators,
+                                             preValidation }) {
 
   return(
     <>
