@@ -676,6 +676,9 @@ table.timeRecordEntryTable thead tr th {
 table.timeRecordEntryTable tbody tr {
     height: 32px;
 }
+table.timeRecordEntryTable tbody tr.weekend {
+    background: #eee;
+}
 table.timeRecordEntryTable tbody tr.timeRecordRow td:nth-child(1) {
     width: 150px;
     border-right: 1px solid #ccc;

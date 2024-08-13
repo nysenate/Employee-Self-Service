@@ -93,6 +93,23 @@ export function formatDateStandard(dateString) {
   return `${date.getUTCMonth() + 1}/${date.getUTCDate()}/${date.getUTCFullYear()}`;
 }
 
+// 'Thu MM/DD/YYYY' or 'Mon M/D/YYYY'
+// input best 'YYYY-MM-DD'
+export function formatDateStandardWithShort(dateString) {
+  // Create a date object from the date string
+  const originalDate = new Date(`${dateString}T00:00:00Z`);
+
+  // Create a separate date object for calculating the day of the week, incremented by 1 day
+  const dayOfWeekDate = new Date(originalDate);
+  dayOfWeekDate.setUTCDate(dayOfWeekDate.getUTCDate() + 1);
+
+  const dayOfWeek = dayOfWeekDate.toLocaleDateString('en-US', { weekday: 'short' }); // e.g., 'Thu'
+  const formattedMonth = originalDate.getUTCMonth() + 1; // getUTCMonth() is zero-based, so add 1
+  const formattedDay = originalDate.getUTCDate(); // getUTCDate() is one-based
+  const yearFormatted = originalDate.getUTCFullYear(); // e.g., '2024'
+
+  return `${dayOfWeek} ${formattedMonth}/${formattedDay}/${yearFormatted}`;
+}
 
 
 export function timeRecordStatus(status, showColor) {

@@ -1,7 +1,26 @@
 // AnnualEntryForm.js
 import styles from "../universalStyles.module.css";
+import EssNotification from "app/components/EssNotification";
+import AccrualBar from "app/views/time/accrual/AccrualBar";
+import { formatDateStandardWithShort } from "app/views/time/helpers";
 
-export default function AnnualEntryForm({ state, accrualsLoading }) {
+// Needs:
+//    -connect all functions and variables (easiest through live testing)
+//    -record-validator?
+export default function AnnualEntryForm({
+                                          state,
+                                          accrualsLoading,
+                                          errorTypes,
+                                          entryValidators,
+                                          accrualTabIndex,
+                                          setDirty,
+                                          preValidation,
+                                          isWeekend,
+                                          getSelectedRecord,
+                                          selRecordHasRaSaErrors,
+                                          getMiscLeavePredicate,
+                                          getHolidayHours,
+                                          isHoliday }) {
 
   return(
     <>
@@ -9,9 +28,9 @@ export default function AnnualEntryForm({ state, accrualsLoading }) {
         <div className={styles.raSaEntry}>
           {state.tempEntries && <h1 className={styles.timeEntryTableTitle}>Regular/Special Annual Pay Entries</h1>}
           <AccrualBar accruals={state.accrual} loading={accrualsLoading} />
-          <hr className={styles.marginTop10} />
+          <hr style={{ marginTop: '10px'}}/>
           {selRecordHasRaSaErrors() && (
-            <div className={`${styles.essNotification} ${styles.timeEntryErrorBox} ${styles.marginTop20}`} level="error" title="Time record has errors">
+            <EssNotification level={"error"} title={"Time record has errors"}>
               <ul>
                 {errorTypes.raSa.workHoursInvalidRange && <li>Work hours must be between 0 and 24.</li>}
                 {errorTypes.raSa.holidayHoursInvalidRange && <li>Holiday hours must be at least 0 and may not exceed hours granted for the holiday</li>}
@@ -33,9 +52,9 @@ export default function AnnualEntryForm({ state, accrualsLoading }) {
                   </li>
                 ))}
               </ul>
-            </div>
+            </EssNotification>
           )}
-          <table className={`${styles.essTable} ${styles.timeRecordEntryTable}`} id="ra-sa-time-record-table" ng-model="state.records[state.iSelectedRecord].timeEntries">
+          <table className={`${styles.essTable} ${styles.timeRecordEntryTable}`} id="ra-sa-time-record-table">
             <thead>
             <tr>
               <th>Date</th>
@@ -51,9 +70,9 @@ export default function AnnualEntryForm({ state, accrualsLoading }) {
             </tr>
             </thead>
             <tbody record-validator validate={preValidation} record={state.records[state.iSelectedRecord]}>
-            {state.records[state.iSelectedRecord].timeEntries.filter(entry => entry.payType !== 'TE').map((entry, i) => (
-              <tr key={i} className={`${styles.timeRecordRow} ${styles.highlightFirst}`} ng-class={{ 'weekend': isWeekend(entry.date), 'dummy-entry': entry.dummyEntry }}>
-                <td className={styles.dateColumn}>{moment(entry.date).format('ddd M/D/YYYY')}</td>
+            {state.records[state.iSelectedRecord]?.timeEntries.filter(entry => entry.payType !== 'TE').map((entry, i) => (
+              <tr key={i} className={`${styles.timeRecordRow}${isWeekend(entry.date) ? 'weekend' : entry?.dummyEntry ? 'dummy-entry': ''} ${styles.highlightFirst}`}>
+                <td className={styles.dateColumn}>{formatDateStandardWithShort(entry.date)}</td>
                 <td entry-validator validate={entryValidators.raSa.workHours(entry)}>
                   <input
                     type="number"
@@ -63,7 +82,7 @@ export default function AnnualEntryForm({ state, accrualsLoading }) {
                     step="0.5"
                     min="0"
                     max="24"
-                    disabled={moment(entry.date).isAfter(moment(), 'day')}
+                    disabled={new Date(entry.date) > new Date()}
                     value={entry.workHours}
                     tabIndex={entry.total < 7 || getSelectedRecord().focused ? 1 : -1}
                     name="numWorkHours"

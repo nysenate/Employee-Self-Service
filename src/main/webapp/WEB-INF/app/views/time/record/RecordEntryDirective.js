@@ -22,17 +22,26 @@ export default function RecordEntryDirective() {
   const {
     state,
     setState,
+    errorTypes,
+    entryValidators,
+    accrualTabIndex,
     recordsLoading,
     accrualsLoading,
     allowancesLoading,
     canCreateNextRecord,
     createNextRecord,
-    errorTypes,
     setDirty,
     saveRecord,
     recordValid,
     recordSubmittable,
     getRecordRangeDisplay,
+    selRecordHasRaSaErrors,
+    isWeekend,
+    preValidation,
+    getSelectedRecord,
+    getMiscLeavePredicate,
+    getHolidayHours,
+    isHoliday,
   } = useRecordEntryCtrl();
   useEffect(() => {
     console.log(state);
@@ -118,7 +127,21 @@ export default function RecordEntryDirective() {
           )}
           <form id="timeRecordForm" method="post" action="">
             {/* Annual Entry Form */}
-            {/*<AnnualEntryForm state={state} accrualsLoading={accrualsLoading}/>*/}
+            {/*<AnnualEntryForm*/}
+            {/*  state={state}*/}
+            {/*  accrualsLoading={accrualsLoading}*/}
+            {/*  errorTypes={errorTypes}*/}
+            {/*  entryValidators={entryValidators}*/}
+            {/*  accrualTabIndex={accrualTabIndex}*/}
+            {/*  setDirty={setDirty}*/}
+            {/*  preValidation={preValidation}*/}
+            {/*  isWeekend={isWeekend}*/}
+            {/*  getSelectedRecord={getSelectedRecord}*/}
+            {/*  selRecordHasRaSaErrors={selRecordHasRaSaErrors}*/}
+            {/*  getMiscLeavePredicate={getMiscLeavePredicate}*/}
+            {/*  getHolidayHours={getHolidayHours}*/}
+            {/*  isHoliday={isHoliday}*/}
+            {/*/>*/}
             {state.annualEntries && (<div>AnnualEntryForm</div>)}
 
             {/* Temporary Entry Form */}
@@ -137,7 +160,7 @@ export default function RecordEntryDirective() {
                   onChange={() => setDirty()}
                 />
               </div>
-              <div className={styles.floatRight}>
+              <div style={{ float: 'right'}}>
                 <input
                   type="button"
                   className={styles.submitButton}

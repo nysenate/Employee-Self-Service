@@ -38,7 +38,7 @@ export default function TimeRouter() {
           <Route path="accrual/emp-projections" element={<AccrualEmpProjectionsIndex/>}/>
           <Route path="record/grant" element={<Grant/>}/>
           <Route path="personnel/search" element={<PersonnelSearchIndex/>}/>
-          {/*<Route path="" element={<Navigate to="attendance/entry" replace/>}/>*/}
+          <Route path="" element={<Navigate to="record/entry" replace/>}/>
           <Route path="*" element={<div>404</div>}/>
         </Route>
       </Routes>
