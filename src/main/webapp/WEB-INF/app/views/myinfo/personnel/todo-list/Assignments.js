@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { loadAuth } from "app/contexts/Auth/authStorage";
-import { AcademicCapIcon, CheckIcon, TrophyIcon, VideoCameraIcon } from "@heroicons/react/16/solid";
+import { AcademicCapIcon, CheckIcon, DocumentTextIcon, TrophyIcon, VideoCameraIcon } from "@heroicons/react/16/solid";
 import { convertTimestampToLocalDateString } from "app/views/myinfo/personnel/to-do-reporting/EmployeeTaskDetails";
 import { Link } from "react-router-dom";
 
@@ -13,29 +13,37 @@ export default function Assignments() {
     let task = {
       taskType: "",
       link: "",
+      text:"",
+      icon: null
     };
     switch (type) {
       case "DOCUMENT_ACKNOWLEDGMENT":
         task.taskType = "Acknowledged"
+        task.text = "Acknowledge"
         task.link = "/myinfo/personnel/todo/acknowledgment"
         break
       case "VIDEO_CODE_ENTRY":
         task.taskType = "Watched"
+        task.text = "Watch"
         task.link = "/myinfo/personnel/todo/video"
         break
       case "MOODLE_COURSE":
         task.taskType = "Completed"
+        task.text = "Complete"
         task.link = "/myinfo/personnel/todo/legethics"
         break
       case "EVERFI_COURSE":
         task.taskType = "Completed"
+        task.text = "Complete"
         break
       case "ETHICS_COURSE":
         task.taskType = "Completed"
+        task.text = "Complete"
         task.link = "/myinfo/personnel/todo/ethicscourse"
         break
       case "ETHICS_LIVE_COURSE":
         task.taskType = "Completed"
+        task.text = "Complete"
         task.link = "/myinfo/personnel/todo/ethicslivecourse"
         break
     }
@@ -79,10 +87,12 @@ export default function Assignments() {
          </li> :
          inCompletedAssignments.map(assignment => (
            <li className={"p-1 flex box-border text-[13px] ml-8"} key={assignment.task.taskId}>
-             {assignment.task.taskType === "VIDEO_CODE_ENTRY" ? (
-                                                                <VideoCameraIcon className={"size-5 text-teal-600"}/>
-                                                              ) :
-              <AcademicCapIcon className={"size-5 text-teal-600"}/>}
+             {assignment.task.taskType === "VIDEO_CODE_ENTRY" ?
+              (<VideoCameraIcon className={"size-5 text-teal-600"}/>) :
+              assignment.task.taskType === "DOCUMENT_ACKNOWLEDGMENT"?
+              (<DocumentTextIcon className={"size-5 text-teal-600"} />):
+              (<AcademicCapIcon className={"size-5 text-teal-600"}/>)
+             }
              {assignment.task.taskType === "EVERFI_COURSE" ? (
                <a className="ml-1 text-teal-600 font-semibold hover:bg-gray-50"
                   href={assignment.task.url}
@@ -99,10 +109,7 @@ export default function Assignments() {
                   }}
                   className="ml-1 text-teal-600 font-semibold hover:bg-gray-50"
                 >
-                  {assignment.task.taskType === "VIDEO_CODE_ENTRY" ?
-                   <u>Watch: {assignment.task.title}</u> :
-                   <u>Complete: {assignment.task.title}</u>
-                  }
+                  <u>{getTaskDetails(assignment.task.taskType).text}: {assignment.task.title}</u>
                 </Link>
               )}
            </li>
@@ -135,7 +142,6 @@ export default function Assignments() {
                     timestamp: convertTimestampToLocalDateString(assignment.timestamp)
                   }}
                   className="ml-1 text-teal-600 font-normal hover:bg-gray-50"
-
                 >
                   <u>{assignment.task.title}</u>
                   <span className={"text-gray-400 ml-1"}>
@@ -146,9 +152,7 @@ export default function Assignments() {
            </li>)
          )}
       </ul>
-
     </div>
-
   );
 }
 

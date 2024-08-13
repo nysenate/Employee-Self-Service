@@ -1,9 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Hero from "app/components/Hero";
 import Card from "app/components/Card";
 import { pdfjs } from 'react-pdf';
-import { PDFViewer } from "@react-pdf/renderer";
 
 
 export default function AcknowledgmentAssignment() {
@@ -37,7 +36,7 @@ export default function AcknowledgmentAssignment() {
       setTaskInfo(task);
       // var pdfjsLib = window['pdfjs-dist/build/pdf'];
       pdfjs.GlobalWorkerOptions.workerSrc = 'node_modules/pdfjs-dist/build/pdf.worker.min.js';
-      const pdf = await pdfjs.getDocument("/assets/ack_docs/2018_harassment_prevention_policy.pdf").promise;
+      const pdf = await pdfjs.getDocument("/assets/ack_docs/sample.pdf").promise;
 
       const page = await pdf.getPage(1);
       const viewport = page.getViewport({ scale: 1.5 });
@@ -135,8 +134,6 @@ export default function AcknowledgmentAssignment() {
             Open Printable view
           </a>
         </div>
-        <PDFViewer>
-        </PDFViewer>
       </Card>
     </>
   );

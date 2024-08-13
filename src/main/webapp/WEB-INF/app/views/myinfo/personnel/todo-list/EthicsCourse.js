@@ -48,11 +48,12 @@ export default function MoodleCourse() {
            </>
          ) : (
            <>
-             <div className="ml-[10em] text-center py-3">
-               <p>Records indicate you completed this Ethics training on or before {timestamp}.</p>
+             <div className="mx-[10em] text-left py-3 text-gray-800">
+               <p>Records indicate you completed the <span className={"font-semibold underline"}>{task.title} </span> on
+                 or before {timestamp}.</p>
              </div>
              <hr/>
-             <div className="mx-[10em] text-left">
+             <div className="mx-2 text-left">
                <Link to="/myinfo/personnel/todo"
                      className={"text-normal text-teal-600 py-3"}>
                  Return to Personnel To-Do List
