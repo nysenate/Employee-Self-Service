@@ -1,10 +1,13 @@
 var fs = require("fs");
-var parser = require('fast-xml-parser');
+// var parser = require('fast-xml-parser');
+const { XMLParser, XMLBuilder, XMLValidator} = require("fast-xml-parser");
+
+const parser = new XMLParser();
+
 
 var pomPath = __dirname + "/../../../pom.xml";
 var pomXml = fs.readFileSync(pomPath, 'utf8');
-
-var pomJson = parser.parse(pomXml, {}, true);
+var pomJson = parser.parse(pomXml);
 var artifactId = pomJson.project.artifactId;
 var version = pomJson.project.version;
 
