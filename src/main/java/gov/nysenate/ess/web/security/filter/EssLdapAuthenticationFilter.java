@@ -81,11 +81,23 @@ public class EssLdapAuthenticationFilter {
             }
             throw new UnsupportedTokenException("Senate LDAP Realm only supports UsernamePasswordToken");
         }
+        catch (IndexOutOfBoundsException e) {
+            String error = "THE USERNAME PROVIDED DOES NOT MATCH ANYTHING IN LDAP";
+            logger.error(error);
+            slackChatService.sendMessage(error);
+            return LdapAuthStatus.NAME_NOT_FOUND_EXCEPTION;
+        }
         catch (NamingException e) {
             String error = "COULD NOT FIND UID IN LDAP: " + username;
             logger.error(error);
             slackChatService.sendMessage(error);
             return LdapAuthStatus.NAME_NOT_FOUND_EXCEPTION;
+        }
+        catch (Exception e) {
+            String error = "UNKNOWN AN ERROR OCCURRED WHILE ATTEMPTING TO LOGIN TO ESS";
+            logger.error(error);
+            slackChatService.sendMessage(error);
+            return LdapAuthStatus.UNKNOWN_EXCEPTION;
         }
 
     }
