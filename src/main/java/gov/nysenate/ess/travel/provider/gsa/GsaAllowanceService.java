@@ -47,6 +47,7 @@ public class GsaAllowanceService {
     /**
      * Returns the lodging rate for the given date and address.
      * Returns Dollars.ZERO if there is no lodging rate.
+     *
      * @throws ProviderException
      */
     public Dollars fetchLodgingRate(LocalDate date, TravelAddress address) throws ProviderException {
@@ -54,7 +55,7 @@ public class GsaAllowanceService {
             return Dollars.ZERO;
         }
         GsaResponse res = fetchGsaResponse(date, address);
-        return new Dollars(res.getLodging(date)); // TODO use dollars in GsaResponse
+        return new Dollars(res.getLodging(date));
     }
 
     private GsaResponse fetchGsaResponse(LocalDate date, TravelAddress address) throws ProviderException {

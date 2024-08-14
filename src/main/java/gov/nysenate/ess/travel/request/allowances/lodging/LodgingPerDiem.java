@@ -14,6 +14,11 @@ public final class LodgingPerDiem {
     private PerDiem perDiem;
     private boolean isReimbursementRequested;
 
+    public LodgingPerDiem(TravelAddress address, LocalDate date, Dollars rate) {
+        this(0, address, new PerDiem(date, rate), true);
+    }
+
+    // TODO replace with calls to above constructor?
     public LodgingPerDiem(TravelAddress address, PerDiem perDiem) {
         this(0, address, perDiem, true);
     }

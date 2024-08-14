@@ -12,6 +12,7 @@ import gov.nysenate.ess.travel.provider.gsa.GsaAllowanceService;
 import gov.nysenate.ess.travel.provider.miles.MileageAllowanceService;
 import gov.nysenate.ess.travel.request.allowances.PerDiem;
 import gov.nysenate.ess.travel.request.allowances.lodging.LodgingPerDiem;
+import gov.nysenate.ess.travel.request.allowances.lodging.LodgingPerDiemService;
 import gov.nysenate.ess.travel.request.allowances.lodging.LodgingPerDiems;
 import gov.nysenate.ess.travel.request.allowances.meal.MealPerDiems;
 import gov.nysenate.ess.travel.request.allowances.meal.MealPerDiemsFactory;
@@ -33,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -51,6 +53,7 @@ public class TravelAppUpdateService {
     @Autowired private MileageAllowanceService mileageService;
     @Autowired private GsaAllowanceService gsaAllowanceService;
     @Autowired private ReviewerStrategyFactory reviewerStrategyFactory;
+    @Autowired private LodgingPerDiemService lodgingPerDiemService;
 
     /**
      * Returns a new Amendment with the provided purpose of travel added to the amendment.
@@ -116,11 +119,8 @@ public class TravelAppUpdateService {
     private LodgingPerDiems createLodgingPerDiems(Route route) {
         Set<LodgingPerDiem> lodgingPerDiemSet = new HashSet<>();
         for (Destination d : route.destinations()) {
-            for (PerDiem pd : d.lodgingPerDiems()) {
-                // Ignore Per Diem if the rate is zero - there is no lodging per diem.
-                if (!pd.isRateZero()) {
-                    lodgingPerDiemSet.add(new LodgingPerDiem(d.getAddress(), pd));
-                }
+            for (LocalDate date : d.nights()) {
+                lodgingPerDiemSet.add(lodgingPerDiemService.createLodgingPerDiem(date, d.getAddress()));
             }
         }
         return new LodgingPerDiems(lodgingPerDiemSet);
