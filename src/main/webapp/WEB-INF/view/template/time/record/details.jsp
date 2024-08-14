@@ -59,6 +59,8 @@
           <th class="hour-col">Sick Fam</th>
           <th class="hour-col">Misc</th>
           <th>Misc Type</th>
+          <th class="hour-col">Misc 2</th>
+          <th>Misc Type 2</th>
           <th class="hour-col">Total</th>
         </tr>
         </thead>
@@ -74,6 +76,8 @@
           <td>{{entry.sickFamHours | entryHours}}</td>
           <td>{{entry.miscHours | entryHours}}</td>
           <td>{{entry.miscType | miscLeave}}</td>
+          <td>{{entry.misc2Hours | entryHours}}</td>
+          <td>{{entry.miscType2| miscLeave}}</td>
           <td>{{entry.total}}</td>
         </tr>
         <tr class="time-totals-row">
@@ -86,6 +90,8 @@
           <td><strong>{{record.totals.sickEmpHours}}</strong></td>
           <td><strong>{{record.totals.sickFamHours}}</strong></td>
           <td><strong>{{record.totals.miscHours}}</strong></td>
+          <td></td>
+          <td><strong>{{record.totals.misc2Hours}}</strong></td>
           <td></td>
           <td><strong>{{record.totals.total}}</strong></td>
         </tr>
