@@ -19,7 +19,7 @@ public abstract class AttendanceHours {
     protected BigDecimal sickEmpHours;
     protected BigDecimal sickFamHours;
     protected BigDecimal miscHours;
-    protected BigDecimal miscHours2;
+    protected BigDecimal misc2Hours;
 
     public AttendanceHours() {}
 
@@ -32,7 +32,7 @@ public abstract class AttendanceHours {
         this.sickEmpHours = other.sickEmpHours;
         this.sickFamHours = other.sickFamHours;
         this.miscHours = other.miscHours;
-        this.miscHours2 = other.miscHours2;
+        this.misc2Hours = other.misc2Hours;
     }
 
     /** --- Functional Getters / Setters --- */
@@ -83,7 +83,7 @@ public abstract class AttendanceHours {
     }
 
     public Optional<BigDecimal> getMisc2Hours() {
-        return Optional.ofNullable(miscHours2);
+        return Optional.ofNullable(misc2Hours);
     }
 
     public boolean isEmpty() {
@@ -95,7 +95,7 @@ public abstract class AttendanceHours {
                 sickEmpHours == null &&
                 sickFamHours == null &&
                 miscHours == null &&
-                miscHours2 == null;
+                misc2Hours == null;
     }
 
     /** --- Overridden Methods --- */
@@ -112,12 +112,12 @@ public abstract class AttendanceHours {
                 Objects.equal(sickEmpHours, that.sickEmpHours) &&
                 Objects.equal(sickFamHours, that.sickFamHours) &&
                 Objects.equal(miscHours, that.miscHours) &&
-                Objects.equal(miscHours2, that.miscHours2);
+                Objects.equal(misc2Hours, that.misc2Hours);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(workHours, travelHours, holidayHours, vacationHours, personalHours, sickEmpHours, sickFamHours, miscHours, miscHours2);
+        return Objects.hashCode(workHours, travelHours, holidayHours, vacationHours, personalHours, sickEmpHours, sickFamHours, miscHours, misc2Hours);
     }
 
     /** --- Setters --- */
@@ -155,6 +155,6 @@ public abstract class AttendanceHours {
     }
 
     public void setMisc2Hours(BigDecimal miscHours2) {
-        this.miscHours2 = miscHours2;
+        this.misc2Hours = miscHours2;
     }
 }
