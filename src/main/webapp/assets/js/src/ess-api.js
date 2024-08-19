@@ -2,20 +2,20 @@ var essApi = angular.module('essApi');
 
 /** --- Pay Period API --- */
 
-essApi.factory('PayPeriodApi', ['$resource', 'appProps', function($resource, appProps) {
+essApi.factory('PayPeriodApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/periods/:periodType');
 }]);
 
 /** --- Holiday API --- */
 
-essApi.factory('HolidayApi', ['$resource', 'appProps', function($resource, appProps) {
+essApi.factory('HolidayApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/holidays');
 }]);
 
 /** --- Time Record API --- */
 
 essApi.factory('TimeRecordApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/timerecords');  
+    return $resource(appProps.apiPath + '/timerecords');
 }]);
 
 essApi.factory('TimeRecordReviewApi', ['$resource', 'appProps', function ($resource, appProps) {
@@ -73,35 +73,35 @@ essApi.factory('SupervisorGrantsApi', ['$resource', 'appProps', function ($resou
 
 /** --- Accrual API --- */
 
-essApi.factory('AccrualPeriodApi', ['$resource', 'appProps', function($resource, appProps) {
+essApi.factory('AccrualPeriodApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/accruals');
 }]);
 
-essApi.factory('AccrualActiveYearsApi', ['$resource', 'appProps', function($resource, appProps) {
+essApi.factory('AccrualActiveYearsApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/accruals/active-years');
 }]);
 
-essApi.factory('AccrualHistoryApi', ['$resource', 'appProps', function($resource, appProps) {
+essApi.factory('AccrualHistoryApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/accruals/history');
 }]);
 
 /** --- Donation API --- */
 
-essApi.factory('DonationInfoApi', ['$resource', 'appProps', function($resource, appProps) {
+essApi.factory('DonationInfoApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/donation/info');
 }]);
 
-essApi.factory('DonationHistoryApi', ['$resource', 'appProps', function($resource, appProps) {
+essApi.factory('DonationHistoryApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/donation/history');
 }]);
 
-essApi.factory('SubmitDonationApi', ['$resource', 'appProps', function($resource, appProps) {
+essApi.factory('SubmitDonationApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/donation/submit');
 }]);
 
 /** --- Expected Hours API --- */
 
-essApi.factory('ExpectedHoursApi', ['$resource', 'appProps', function($resource, appProps) {
+essApi.factory('ExpectedHoursApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/expectedhrs');
 }]);
 
@@ -111,11 +111,11 @@ essApi.factory('EmpInfoApi', ['$resource', 'appProps', function ($resource, appP
     return $resource(appProps.apiPath + '/employees');
 }]);
 
-essApi.factory('EmpActiveYearsApi', ['$resource', 'appProps', function($resource, appProps) {
+essApi.factory('EmpActiveYearsApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/employees/activeDates');
 }]);
 
-essApi.factory('EmpActiveYearsApi', ['$resource', 'appProps', function($resource, appProps) {
+essApi.factory('EmpActiveYearsApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/employees/activeYears');
 }]);
 
@@ -198,19 +198,19 @@ essApi.factory('PECEthicsCodeApi', ['$resource', 'appProps', function ($resource
 
 /** --- Transaction API --- */
 
-essApi.factory('EmpTransactionsApi', ['$resource', 'appProps', function($resource, appProps) {
+essApi.factory('EmpTransactionsApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/empTransactions/')
 }]);
 
-essApi.factory('EmpTransactionSnapshotApi', ['$resource', 'appProps', function($resource, appProps) {
+essApi.factory('EmpTransactionSnapshotApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/empTransactions/snapshot')
 }]);
 
-essApi.factory('EmpTransactionCurrentSnapshotApi', ['$resource', 'appProps', function($resource, appProps) {
+essApi.factory('EmpTransactionCurrentSnapshotApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/empTransactions/snapshot/current')
 }]);
 
-essApi.factory('EmpTransactionTimelineApi', ['$resource', 'appProps', function($resource, appProps) {
+essApi.factory('EmpTransactionTimelineApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/empTransactions/timeline')
 }]);
 
@@ -237,49 +237,49 @@ essApi.factory('MiscLeaveGrantApi', ['$resource', 'appProps', function ($resourc
 
 /** --- Paycheck History API --- */
 
-essApi.factory('EmpCheckHistoryApi',  ['$resource', 'appProps', function($resource, appProps) {
+essApi.factory('EmpCheckHistoryApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/paychecks')
 }]);
 
 /** --- Location API --- */
 
-essApi.factory('LocationApi', ['$resource', 'appProps', function($resource, appProps) {
+essApi.factory('LocationApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/locations')
 }]);
 
 /** --- Supply Destination Api --- */
 
-essApi.factory('SupplyDestinationApi', ['$resource', 'appProps', function($resource, appProps) {
+essApi.factory('SupplyDestinationApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/supply/destinations/:empId', {empId: '@empId'})
 }]);
 
 /** --- Supply Requisition Api --- */
 
-essApi.factory('SupplyRequisitionApi', ['$resource', 'appProps', function($resource, appProps) {
+essApi.factory('SupplyRequisitionApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/supply/requisitions')
 }]);
 
-essApi.factory('SupplyRequisitionByIdApi', ['$resource', 'appProps', function($resource, appProps) {
+essApi.factory('SupplyRequisitionByIdApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/supply/requisitions/:id', {id: '@id'})
 }]);
 
-essApi.factory('SupplyRequisitionProcessApi', ['$resource', 'appProps', function($resource, appProps) {
+essApi.factory('SupplyRequisitionProcessApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/supply/requisitions/:id/process', {id: '@id'})
 }]);
 
-essApi.factory('SupplyRequisitionUndoApi', ['$resource', 'appProps', function($resource, appProps) {
+essApi.factory('SupplyRequisitionUndoApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/supply/requisitions/:id/undo', {id: '@id'})
 }]);
 
-essApi.factory('SupplyRequisitionRejectApi', ['$resource', 'appProps', function($resource, appProps) {
+essApi.factory('SupplyRequisitionRejectApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/supply/requisitions/:id/reject', {id: '@id'})
 }]);
 
-essApi.factory('SupplyRequisitionHistoryApi', ['$resource', 'appProps', function($resource, appProps) {
+essApi.factory('SupplyRequisitionHistoryApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/supply/requisitions/history/:id', {id: '@id'})
 }]);
 
-essApi.factory('SupplyRequisitionOrderHistoryApi', ['$resource', 'appProps', function($resource, appProps) {
+essApi.factory('SupplyRequisitionOrderHistoryApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/supply/requisitions/orderHistory')
 }]);
 
@@ -296,7 +296,7 @@ essApi.factory('SupplyIssuersApi', ['$resource', 'appProps', function ($resource
 
 /** --- Supply Reconciliation API --- */
 
-essApi.factory('SupplyReconciliationApi', ['$resource', 'appProps', function($resource, appProps) {
+essApi.factory('SupplyReconciliationApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + "/supply/reconciliation")
 }]);
 
@@ -375,6 +375,10 @@ essApi.factory('TravelGeocodeApi', ['$resource', 'appProps', function ($resource
 essApi.factory('TravelDistrictAssignApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/travel/address/district')
 }]);
+
+essApi.factory('TravelLodgingPerDiemsApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/travel/lodging-per-diems')
+}])
 
 /** --- Timeout API --- */
 
