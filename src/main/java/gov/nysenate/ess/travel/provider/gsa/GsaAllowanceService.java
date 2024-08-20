@@ -1,7 +1,7 @@
 package gov.nysenate.ess.travel.provider.gsa;
 
-import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.core.service.notification.slack.service.DefaultSlackChatService;
+import gov.nysenate.ess.travel.request.address.TravelAddress;
 import gov.nysenate.ess.travel.provider.ProviderException;
 import gov.nysenate.ess.travel.provider.senate.SqlSenateMieDao;
 import gov.nysenate.ess.travel.utils.Dollars;
@@ -36,7 +36,7 @@ public class GsaAllowanceService {
      *
      * @throws ProviderException
      */
-    public Dollars fetchMealRate(LocalDate date, Address address) throws ProviderException {
+    public Dollars fetchMealRate(LocalDate date, TravelAddress address) throws ProviderException {
         if (addressIsOutsideUS(address)) {
             return Dollars.ZERO;
         }
@@ -47,17 +47,19 @@ public class GsaAllowanceService {
     /**
      * Returns the lodging rate for the given date and address.
      * Returns Dollars.ZERO if there is no lodging rate.
+     *
      * @throws ProviderException
      */
-    public Dollars fetchLodgingRate(LocalDate date, Address address) throws ProviderException {
+    public Dollars fetchLodgingRate(LocalDate date, TravelAddress address) throws ProviderException {
         if (addressIsOutsideUS(address)) {
             return Dollars.ZERO;
         }
         GsaResponse res = fetchGsaResponse(date, address);
-        return new Dollars(res.getLodging(date)); // TODO use dollars in GsaResponse
+        return new Dollars(res.getLodging(date));
     }
 
-    private GsaResponse fetchGsaResponse(LocalDate date, Address address) throws ProviderException {
+    private GsaResponse fetchGsaResponse(LocalDate date, TravelAddress address) throws ProviderException {
+        GsaResponse res = gsaApi.queryGsa(date, address.getZip5());
         // TODO Batch/bulk data will have to be refactored due to new GSA API. For now query the API every time.
 //        try {
 //            res = gsaBatchResponseDao.getGsaData(gsaResponseId);
@@ -78,7 +80,7 @@ public class GsaAllowanceService {
         return gsaApi.queryGsa(date, address.getZip5());
     }
 
-    private boolean addressIsOutsideUS(Address address) {
+    private boolean addressIsOutsideUS(TravelAddress address) {
         return !(address.getCountry().equalsIgnoreCase("United States") || address.getCountry().equalsIgnoreCase("US"));
     }
 }

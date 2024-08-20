@@ -21,6 +21,8 @@
     </div>
   </div>
 
+  <div loader-indicator class="loader" ng-show="!vm.appRequest.$resolved"></div>
+
   <div ng-if="vm.appRequest.$resolved === true">
     <div ng-if="vm.apps.filtered.length === 0">
       <div class="content-container">
@@ -33,7 +35,8 @@
     <div ng-if="vm.apps.filtered.length > 0">
       <ess-app-summary-table
           apps="vm.apps.filtered"
-          on-row-click="vm.viewApplicationForm(app)">
+          on-row-click="vm.viewApplicationForm(app)"
+          show-status>
       </ess-app-summary-table>
     </div>
   </div>
@@ -42,8 +45,16 @@
     <modal modal-id="app-form-view-modal">
       <div app-form-view-modal></div>
     </modal>
-    <modal modal-id="app-expense-summary-modal">
-      <div app-expense-summary-modal></div>
+
+    <modal modal-id="app-cancel-confirm">
+      <div confirm-modal rejectable="true"
+           title="Cancel Travel Application"
+           confirm-message="Are you sure you want to cancel this application?"
+           resolve-button="Yes"
+           resolve-class="travel-reject-btn"
+           reject-button="No"
+           reject-class="travel-neutral-btn">
+      </div>
     </modal>
   </div>
 </div>

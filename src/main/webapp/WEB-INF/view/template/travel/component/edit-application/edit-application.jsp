@@ -5,70 +5,76 @@
   <div class="content-container content-controls">
     <div class="padding-10 text-align-center">
       <span class="disapproved-text">Editing</span> Travel application for: <span class="bold"
-                                                                                  ng-bind="::vm.app.traveler.fullName"></span>
+                                                                                  ng-bind="::vm.draft.traveler.fullName"></span>
     </div>
   </div>
 
-  <ess-edit-app-breadcrumbs></ess-edit-app-breadcrumbs>
+  <ess-new-app-breadcrumbs ng-if="vm.activeRole !== 'TRAVEL_ADMIN' && vm.activeRole !== 'SECRETARY_OF_THE_SENATE'"/>
+  <ess-edit-app-breadcrumbs ng-if="vm.activeRole === 'TRAVEL_ADMIN' || vm.activeRole === 'SECRETARY_OF_THE_SENATE'"/>
 
-  <div ng-if="vm.app">
+  <div ng-if="vm.draft">
     <div ng-if="vm.stateService.isPurposeState()">
-      <ess-purpose-edit-form app="vm.app"
-                             title="Edit the purpose of travel."
-                             positive-callback="vm.savePurpose(app)"
-                             negative-callback="vm.cancelEdit(app)"
+      <ess-purpose-edit-form data="vm"
+                             positive-callback="vm.savePurpose(draft)"
+                             negative-callback="vm.cancelEdit(draft)"
                              negative-label="Cancel">
       </ess-purpose-edit-form>
     </div>
 
     <div ng-if="vm.stateService.isOutboundState()">
-      <ess-outbound-edit-form app="vm.app"
-                              title="Edit the outbound route"
-                              positive-callback="vm.saveOutbound(app)"
-                              neutral-callback="vm.toPurposeState(app)"
-                              negative-callback="vm.cancelEdit(app)"
+      <ess-outbound-edit-form data="vm"
+                              positive-callback="vm.saveOutbound(route)"
+                              neutral-callback="vm.toPurposeState(draft)"
+                              negative-callback="vm.cancelEdit(draft)"
                               negative-label="Cancel">
       </ess-outbound-edit-form>
     </div>
 
     <div ng-if="vm.stateService.isReturnState()">
-      <ess-return-edit-form app="vm.app"
-                            title="Edit the return route"
-                            positive-callback="vm.saveRoute(app)"
-                            neutral-callback="vm.toOutboundState(app)"
-                            negative-callback="vm.cancelEdit(app)"
+      <ess-return-edit-form data="vm"
+                            positive-callback="vm.saveRoute(draft)"
+                            neutral-callback="vm.toOutboundState(draft)"
+                            negative-callback="vm.cancelEdit(draft)"
                             negative-label="Cancel">
       </ess-return-edit-form>
     </div>
 
     <div ng-if="vm.stateService.isAllowancesState()">
-      <ess-allowances-edit-form app="vm.app"
-                                title="Edit the expenses"
-                                positive-callback="vm.saveAllowances(app)"
-                                neutral-callback="vm.toReturnState(app)"
-                                negative-callback="vm.cancelEdit(app)"
+      <ess-allowances-edit-form data="vm"
+                                positive-callback="vm.saveAllowances(draft)"
+                                neutral-callback="vm.toReturnState(draft)"
+                                negative-callback="vm.cancelEdit(draft)"
                                 negative-label="Cancel">
       </ess-allowances-edit-form>
     </div>
 
     <div ng-if="vm.stateService.isOverridesState()">
-      <ess-perdiem-overrides-edit-form app="vm.app"
-                                       title="Override the calculated expenses."
-                                       positive-callback="vm.saveOverrides(app)"
-                                       neutral-callback="vm.toAllowancesState(app)"
-                                       negative-callback="vm.cancelEdit(app)"
+      <ess-perdiem-overrides-edit-form data="vm"
+                                       positive-callback="vm.saveOverrides(draft)"
+                                       neutral-callback="vm.toAllowancesState(draft)"
+                                       negative-callback="vm.cancelEdit(draft)"
                                        negative-label="Cancel">
       </ess-perdiem-overrides-edit-form>
     </div>
 
     <div ng-if="vm.stateService.isReviewState()">
-      <ess-review-edit-form app="vm.app"
-                            title="Here is the full application with your changes."
-                            positive-btn-label="Save Edits"
-                            positive-callback="vm.saveEdits(app)"
-                            neutral-callback="vm.toOverridesState(app)"
-                            negative-callback="vm.cancelEdit(app)"
-                            negative-label="Cancel">
+      <ess-review-edit-form
+          ng-if="vm.activeRole === 'TRAVEL_ADMIN' || vm.activeRole === 'SECRETARY_OF_THE_SENATE'"
+          data="vm"
+          positive-btn-label="Save Edits"
+          positive-callback="vm.saveEdits(draft)"
+          neutral-callback="vm.toOverridesState(draft)"
+          negative-callback="vm.cancelEdit(draft)"
+          negative-label="Cancel">
+      </ess-review-edit-form>
+      <ess-review-edit-form
+          ng-if="vm.activeRole === 'NONE'"
+          data="vm"
+          positive-btn-label="Save and Resubmit"
+          positive-callback="vm.saveEdits(draft)"
+          neutral-callback="vm.toOverridesState(draft)"
+          negative-callback="vm.cancelEdit(draft)"
+          negative-label="Cancel">
       </ess-review-edit-form>
     </div>
   </div>
@@ -81,8 +87,10 @@
       <div confirm-modal rejectable="true"
            title="Cancel Travel Application Edit"
            confirm-message="Are you sure you want to cancel the editing of this travel application? Any changes you have made will be lost."
-           resolve-button="Cancel Edit"
-           reject-button="Continue Edit">
+           resolve-button="Do not Cancel"
+           resolve-class="travel-neutral-btn"
+           reject-class="travel-reject-btn"
+           reject-button="Cancel Edit">
       </div>
     </modal>
 
@@ -101,7 +109,9 @@
            title="Scheduled trip is longer than 7 days"
            confirm-message="Are you sure your travel dates are correct?"
            resolve-button="Yes, my dates are correct"
-           reject-button="Let me review">
+           resolve-class="travel-neutral-btn"
+           reject-button="Let me review"
+           reject-class="travel-primary-btn">
       </div>
     </modal>
 
@@ -111,41 +121,14 @@
            title="Save Travel Application?"
            confirm-message="Are you sure you want to save this travel application?"
            resolve-button="Save"
-           reject-button="Cancel">
+           resolve-class="travel-submit-btn"
+           reject-button="Cancel"
+           reject-class="travel-neutral-btn">
       </div>
     </modal>
 
     <modal modal-id="submit-progress">
       <div progress-modal title="Saving travel application..."></div>
-    </modal>
-
-    <modal modal-id="submit-results">
-      <div confirm-modal rejectable="true"
-           title="Your travel application has been saved."
-      <%--confirm-message="What would you like to do next?"--%>
-           resolve-button="Go back to ESS"
-           reject-button="Log out of ESS">
-        <div style="padding-bottom: 20px;">
-          <p>
-            You should now <a class="bold" target="_blank"
-                              ng-href="${ctxPath}/travel/application/print?id={{vm.app.id}}&print=true">print</a>,
-            sign and deliver your application to your department head.
-          </p>
-        </div>
-      </div>
-    </modal>
-
-    <%-- Review detail modals --%>
-    <modal modal-id="ess-lodging-details-modal">
-      <div ess-lodging-details-modal></div>
-    </modal>
-
-    <modal modal-id="ess-meal-details-modal">
-      <div ess-meal-details-modal></div>
-    </modal>
-
-    <modal modal-id="ess-mileage-details-modal">
-      <div ess-mileage-details-modal></div>
     </modal>
 
     <modal modal-id="external-api-error">

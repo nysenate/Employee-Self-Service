@@ -1,9 +1,15 @@
 package gov.nysenate.ess.core.service.security.authentication;
 
+import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
 import gov.nysenate.ess.core.dao.security.authentication.LdapAuthDao;
 import gov.nysenate.ess.core.model.auth.LdapAuthResult;
 import gov.nysenate.ess.core.model.auth.LdapAuthStatus;
 import gov.nysenate.ess.core.model.auth.SenateLdapPerson;
+import gov.nysenate.ess.core.model.personnel.Employee;
+import gov.nysenate.ess.core.model.personnel.EmployeeException;
+import gov.nysenate.ess.web.security.exception.LdapMismatchException;
+import gov.nysenate.ess.web.security.exception.NameNotFoundException;
+import org.apache.shiro.authc.AccountException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +30,12 @@ public class EssLdapAuthService implements LdapAuthService
 {
     private static final Logger logger = LoggerFactory.getLogger(EssLdapAuthService.class);
 
-    @Autowired private LdapAuthDao ldapAuthDao;
+    private LdapAuthDao ldapAuthDao;
+
+    @Autowired
+    public EssLdapAuthService(LdapAuthDao ldapAuthDao) {
+        this.ldapAuthDao = ldapAuthDao;
+    }
 
     /** {@inheritDoc} */
     @Override

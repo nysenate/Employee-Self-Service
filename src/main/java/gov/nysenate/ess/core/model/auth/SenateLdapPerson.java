@@ -94,12 +94,31 @@ public final class SenateLdapPerson implements Serializable, SenatePerson
         }
     }
 
-    /** --- Overrides --- */
-
     @Override
     public String toString() {
-        return uid;
+        return "SenateLdapPerson{" +
+                "dn=" + dn +
+                ", commonName='" + commonName + '\'' +
+                ", organization='" + organization + '\'' +
+                ", employeeId='" + employeeId + '\'' +
+                ", email='" + email + '\'' +
+                ", uid='" + uid + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", middleInitial='" + middleInitial + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", title='" + title + '\'' +
+                ", department='" + department + '\'' +
+                '}';
     }
+
+    /** --- Overrides --- */
+
+//    @Override
+//    public String toString() {
+//        return uid;
+//    }
+
+
 
     public Integer getEmployeeId() {
         return Integer.parseInt(employeeId);

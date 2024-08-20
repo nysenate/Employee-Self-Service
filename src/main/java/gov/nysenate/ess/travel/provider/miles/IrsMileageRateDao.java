@@ -18,9 +18,9 @@ import java.util.List;
 public class IrsMileageRateDao extends SqlBaseDao {
 
     public void insertIrsRate(MileageRate mileageRate) {
-        MapSqlParameterSource params = new MapSqlParameterSource("rate", mileageRate.getRate())
-                .addValue("startDate", toDate(mileageRate.getStartDate()))
-                .addValue("endDate", toDate(mileageRate.getEndDate()));
+        MapSqlParameterSource params = new MapSqlParameterSource("rate", mileageRate.rate())
+                .addValue("startDate", toDate(mileageRate.startDate()))
+                .addValue("endDate", toDate(mileageRate.endDate()));
         String sql = IrsMileageRateDao.SqlIrsRateQuery.INSERT_MILEAGE_RATE.getSql(schemaMap());
         localNamedJdbc.update(sql, params);
     }

@@ -9,3 +9,8 @@ src/main/resources/*.xml
 src/test/resources/*.xml
 src/main/resources/flyway.conf
 ${sys:catalina.base}
+src/main/webapp/assets/dist
+src/main/webapp/assets/css/dist
+src/main/webapp/assets/js/dist
+src/main/webapp/react-properties.env
+${catalina.base}\\logs\\webapp.log

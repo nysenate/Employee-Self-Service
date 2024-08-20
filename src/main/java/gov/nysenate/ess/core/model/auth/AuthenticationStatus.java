@@ -7,6 +7,8 @@ public enum AuthenticationStatus
 {
     AUTHENTICATED(true, "Authenticated successfully."),
     INCORRECT_CREDENTIALS(false, "The username or password is invalid."),
+    LDAP_MISMATCH(false, "LDAP information does not match SFMS"),
+    NAME_NOT_FOUND(false, "Name does not match anything in SFMS"),
     UNKNOWN_ACCOUNT(false, "The username is not registered."),
     EXCESSIVE_ATTEMPTS(false, "Too many failed login attempts have been detected."),
     EXPIRED_CREDENTIALS(false, "The account is expired."),

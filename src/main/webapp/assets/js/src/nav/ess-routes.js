@@ -213,6 +213,10 @@ essApp.config(function ($routeProvider, $locationProvider) {
         templateUrl: ctxPath + '/template/travel/component/new-application/new-application'
     });
 
+    $routeProvider.when(ctxPath + '/travel/application/new/:draftId', {
+        templateUrl: ctxPath + '/template/travel/component/new-application/new-application'
+    });
+
     $routeProvider.when(ctxPath + '/travel/application/edit', {
         templateUrl: ctxPath + '/template/travel/component/edit-application/edit-application'
     });
@@ -221,21 +225,33 @@ essApp.config(function ($routeProvider, $locationProvider) {
         templateUrl: ctxPath + '/template/travel/component/view-applications/view-applications'
     });
 
+    $routeProvider.when(ctxPath + '/travel/drafts', {
+        templateUrl: ctxPath + '/template/travel/component/drafts/application-drafts'
+    });
+
     $routeProvider.when(ctxPath + '/travel/config', {
         templateUrl: ctxPath + '/template/travel/component/user-config/user-config'
     });
 
-    $routeProvider.when(ctxPath + '/travel/review', {
-        templateUrl: ctxPath + '/template/travel/component/review/app-review',
+    $routeProvider.when(ctxPath + '/travel/manage/review', {
+        templateUrl: ctxPath + '/template/travel/component/review-travel-app/review-travel-app',
         reloadOnSearch: false
     });
 
-    $routeProvider.when(ctxPath + '/travel/review/history', {
+    $routeProvider.when(ctxPath + '/travel/manage/history', {
         templateUrl: ctxPath + '/template/travel/component/review-history/review-history'
     });
 
     $routeProvider.when(ctxPath + '/travel/delegation', {
         templateUrl: ctxPath + '/template/travel/component/delegation/delegation'
+    });
+
+    $routeProvider.when(ctxPath + '/travel/reconcile', {
+        templateUrl: ctxPath + '/template/travel/component/reconcile-travel/reconcile-travel'
+    });
+
+    $routeProvider.when(ctxPath + '/travel/application/:id', {
+        templateUrl: ctxPath + '/template/travel/component/travel-application/travel-application'
     });
 
     /** Help */

@@ -27,6 +27,7 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
 
         return {
             empId: appProps.user.employeeId,    // Employee Id
+            miscEntered: false,                 // True if misc 1 leave was entered
             miscLeaves: appProps.miscLeaves,    // Listing of misc leave types
             miscLeaveGrantInfoList: null,       // List of info about grants of a misc leave type for the currently selected record
             miscLeaveUsageErrors: [],           // Data on misc leave that too much is being used of
@@ -402,7 +403,9 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
                 if (timeEntries[i].workHours !== null || timeEntries[i].travelHours !== null
                     || timeEntries[i].holidayHours !== null || timeEntries[i].vacationHours !== null
                     || timeEntries[i].personalHours !== null || timeEntries[i].sickEmpHours !== null
-                    || timeEntries[i].sickFamHours !== null || timeEntries[i].miscHours !== null)  {
+                    || timeEntries[i].sickFamHours !== null || timeEntries[i].miscHours !== null
+                    || timeEntries[i].misc2Hours !== null)  {
+
                     nullRecordCount = nullRecordCount - 1;
                 }
             }
@@ -503,7 +506,8 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
         personal: getAccrualTabIndexFn('personalHours'),
         sickEmp: getAccrualTabIndexFn('sickEmpHours'),
         sickFam: getAccrualTabIndexFn('sickFamHours'),
-        misc: getAccrualTabIndexFn('miscHours')
+        misc: getAccrualTabIndexFn('miscHours'),
+        misc2: getAccrualTabIndexFn('misc2Hours')
     };
 
     function getAccrualTabIndexFn (propName) {
@@ -645,6 +649,9 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
         // sanitizeEntries(record);
         recordUtils.calculateDailyTotals(record);
         $scope.state.totals = recordUtils.getRecordTotals(record);
+        console.log($scope.state.miscEntered );
+        $scope.state.miscEntered = recordUtils.wasMiscEntered(record);
+        console.log($scope.state.miscEntered );
     }
 
     /**
@@ -901,8 +908,11 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
             notEnoughSickTime: false,
             noMiscTypeGiven: false,
             noMiscHoursGiven: false,
+            noMiscType2Given: false,
+            noMisc2HoursGiven: false,
             halfHourIncrements: false,
-            notEnoughMiscTime: false
+            notEnoughMiscTime: false,
+            notEnoughMisc2Time: false
         },
         // Error messages for temporary pay time entries
         te: {
@@ -988,6 +998,12 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
     function grantApplies(grant, entry) {
         var entryDate = new Date(entry.date);
         return entry.miscHours && entry.miscType === grant.miscLeaveType
+            && new Date(grant.beginDate) <= entryDate && entryDate <= new Date(grant.endDate);
+    }
+
+    function grantAppliesMisc2(grant, entry) {
+        var entryDate = new Date(entry.date);
+        return entry.misc2Hours && entry.miscType2 === grant.miscLeaveType
             && new Date(grant.beginDate) <= entryDate && entryDate <= new Date(grant.endDate);
     }
 
@@ -1168,6 +1184,67 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
                 }
                 if (miscTypePresent && !miscHoursPresent) {
                     $scope.errorTypes.raSa.noMiscHoursGiven = true;
+                    return false;
+                }
+                return true;
+            },
+
+            misc2Hours: function (entry) {
+                // console.log(entry)
+                var hrs = entry.misc2Hours;
+                var isValid = true;
+                if (hrs === 0 || hrs === null) {
+                    return true;
+                }
+                if (typeof hrs === 'undefined') {
+                    $scope.errorTypes.raSa.miscHoursInvalidRange = true;
+                    isValid = false;
+                }
+                isValid &= checkRaSaHourIncrements(hrs);
+                var entries = $scope.state.records[$scope.state.iSelectedRecord].timeEntries;
+                var grantInfoList = $scope.state.miscLeaveGrantInfoList;
+
+                for (var grantIndex = 0; grantIndex < grantInfoList.length; grantIndex++) {
+                    var grantInfo = grantInfoList[grantIndex];
+                    // Also checks that the grant time is not unlimited.
+                    if (grantInfo.hoursRemaining === null || !grantAppliesMisc2(grantInfo.grant, entry)) {
+                        continue;
+                    }
+                    var hoursUsed = 0.0;
+
+                    for (var entryIndex = 0; entryIndex <= entry.index; entryIndex++) {
+                        var currEntry = entries[entryIndex];
+                        if (grantAppliesMisc2(grantInfo.grant, currEntry)) {
+                            hoursUsed += currEntry.misc2Hours;
+                        }
+                    }
+                    if (hoursUsed > grantInfo.hoursRemaining) {
+                        $scope.errorTypes.raSa.notEnoughMisc2Time = true;
+                        var shortname = $scope.state.miscLeavesShortnameMap[entry.miscType2];
+                        var range = dateToStr(grantInfo.grant.beginDate) + " - " + dateToStr(grantInfo.grant.endDate);
+                        var data = {shortname: shortname, range: range, hoursUsed: hoursUsed, hoursRemaining: grantInfo.hoursRemaining};
+                        $scope.state.miscLeaveUsageErrors.push(data);
+                        isValid = false;
+                    }
+                }
+                return isValid;
+            },
+
+            miscType2: function (entry) {
+                
+                // if (entry.misc2Hours === 'undefined') {
+                //     entry.misc2Hours = null;
+                // }
+
+                var miscType2Present = entry.miscType2 !== null;
+                var misc2HoursPresent = entry.misc2Hours > 0;
+                var isActiveRow = entry.index === activeRow.getActiveRow();
+                if (!isActiveRow && !miscType2Present && misc2HoursPresent) {
+                    $scope.errorTypes.raSa.noMiscType2Given = true;
+                    return false;
+                }
+                if (miscType2Present && !misc2HoursPresent) {
+                    $scope.errorTypes.raSa.noMisc2HoursGiven = true;
                     return false;
                 }
                 return true;

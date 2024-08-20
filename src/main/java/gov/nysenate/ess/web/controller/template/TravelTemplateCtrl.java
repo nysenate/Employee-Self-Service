@@ -1,5 +1,7 @@
 package gov.nysenate.ess.web.controller.template;
 
+import gov.nysenate.ess.travel.authorization.permission.SimpleTravelPermission;
+import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -25,35 +27,35 @@ public class TravelTemplateCtrl extends BaseTemplateCtrl {
         return request.getRequestURI();
     }
 
-    @RequestMapping(value = "/component/review/app-review")
+    @RequestMapping(value = "/component/review-travel-app/review-travel-app")
     public String applicationReview(HttpServletRequest request) {
-//        if (SecurityUtils.getSubject().isPermitted(SimpleTravelPermission.TRAVEL_UI_REVIEW.getPermission())) {
-//            return request.getRequestURI();
-//        }
+        if (SecurityUtils.getSubject().isPermitted(SimpleTravelPermission.TRAVEL_UI_REVIEW.getPermission())) {
+            return request.getRequestURI();
+        }
         return NOT_AUTHORIZED_PAGE;
     }
 
     @RequestMapping(value = "/component/review-history/review-history")
     public String reviewHistory(HttpServletRequest request) {
-//        if (SecurityUtils.getSubject().isPermitted(SimpleTravelPermission.TRAVEL_UI_REVIEW_HISTORY.getPermission())) {
-//            return request.getRequestURI();
-//        }
-        return NOT_AUTHORIZED_PAGE;
-    }
-
-    @RequestMapping(value = "/component/edit-application/edit-application")
-    public String editApplication(HttpServletRequest request) {
-//        if (SecurityUtils.getSubject().isPermitted(SimpleTravelPermission.TRAVEL_UI_EDIT_APP.getPermission())) {
-//            return request.getRequestURI();
-//        }
+        if (SecurityUtils.getSubject().isPermitted(SimpleTravelPermission.TRAVEL_UI_REVIEW_HISTORY.getPermission())) {
+            return request.getRequestURI();
+        }
         return NOT_AUTHORIZED_PAGE;
     }
 
     @RequestMapping(value = "/component/delegation/delegation")
     public String assignDelegates(HttpServletRequest request) {
-//         if (SecurityUtils.getSubject().isPermitted(SimpleTravelPermission.TRAVEL_ASSIGN_DELEGATES.getPermission())) {
-//            return request.getRequestURI();
-//        }
+         if (SecurityUtils.getSubject().isPermitted(SimpleTravelPermission.TRAVEL_ASSIGN_DELEGATES.getPermission())) {
+            return request.getRequestURI();
+        }
+        return NOT_AUTHORIZED_PAGE;
+    }
+
+    @RequestMapping(value = "/component/reconcile-travel/reconcile-travel")
+    public String reconcileTravel(HttpServletRequest request) {
+        if (SecurityUtils.getSubject().isPermitted(SimpleTravelPermission.TRAVEL_UI_RECONCILE_TRAVEL.getPermission())) {
+            return request.getRequestURI();
+        }
         return NOT_AUTHORIZED_PAGE;
     }
 }

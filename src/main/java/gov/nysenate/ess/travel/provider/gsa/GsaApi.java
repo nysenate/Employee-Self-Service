@@ -16,28 +16,20 @@ import java.util.HashMap;
 
 /**
  * Responsible for getting GsaResponse objects from the official GSA Api.
- *
  * GSA API Docs: <a href="https://open.gsa.gov/api/perdiem/">...</a>
  */
 @Service
 public class GsaApi {
-
-    private static final Logger logger = LoggerFactory.getLogger(GsaApi.class);
-
-    private HttpUtils httpUtils;
-    private String baseUrl;
-    private String ratesPathTemplate;
-    private String miePathTemplate;
-    private GsaResponseParser gsaResponseParser;
+    private final String baseUrl;
+    private final String ratesPathTemplate;
+    private final GsaResponseParser gsaResponseParser;
 
     @Autowired
     public GsaApi(@Value("${travel.gsa.api.url_base}") String baseUrl, @Value("${travel.gsa.api.key}") String apiKey,
-                  GsaResponseParser gsaResponseParser, HttpUtils httpUtils) {
+                  GsaResponseParser gsaResponseParser) {
         this.baseUrl = baseUrl.endsWith("/") ? baseUrl : baseUrl + "/";
         this.ratesPathTemplate = "zip/%s/year/%s?api_key=" + apiKey;
-        this.miePathTemplate = "conus/mie/%s?api_key=" + apiKey;
         this.gsaResponseParser = gsaResponseParser;
-        this.httpUtils = httpUtils;
     }
 
     /**
@@ -56,7 +48,7 @@ public class GsaApi {
         // Format the URL with the zip code and fiscal year of the request.
         String url = String.format(baseUrl + ratesPathTemplate, id.getZipcode(), id.getFiscalYear());
         try {
-            String content = httpUtils.urlToString(url);
+            String content = HttpUtils.urlToString(url);
             if (dateTooFarInFuture(id, content)) {
                 id = new GsaResponseId(id.getFiscalYear() - 1, id.getZipcode());
                 return queryApi(id);

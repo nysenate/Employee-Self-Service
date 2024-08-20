@@ -44,8 +44,10 @@ UPDATE ess.acknowledgment
 SET task_id = ack_doc.task_id FROM ess.ack_doc
 WHERE ack_doc.ack_doc_id = acknowledgment.ack_doc_id;
 
-alter table ess.acknowledgment drop constraint acknowledgement_ack_doc_id_fkey;
-alter table ess.acknowledgment drop constraint acknowledgement_pkey;
+alter table ess.acknowledgment drop constraint IF EXISTS acknowledgement_ack_doc_id_fkey;
+alter table ess.acknowledgment drop constraint IF EXISTS acknowledgment_ack_doc_id_fkey;
+alter table ess.acknowledgment drop constraint IF EXISTS acknowledgement_pkey;
+alter table ess.acknowledgment drop constraint IF EXISTS acknowledgment_pkey;
 alter table ess.acknowledgment add PRIMARY KEY (emp_id, task_id);
 alter table ess.acknowledgment drop column ack_doc_id;
 

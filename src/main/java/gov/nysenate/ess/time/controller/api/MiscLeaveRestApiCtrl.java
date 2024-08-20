@@ -89,6 +89,11 @@ public class MiscLeaveRestApiCtrl extends BaseRestApiCtrl {
                         && grant.getDateRange().contains(miscEntry.getDate())) {
                     tempGrantHours = tempGrantHours.subtract(miscEntry.getMiscHours().get());
                 }
+                if (miscEntry.getMisc2Hours().isPresent()
+                        && miscEntry.getMiscType2() == grant.miscLeaveType()
+                        && grant.getDateRange().contains(miscEntry.getDate())) {
+                    tempGrantHours = tempGrantHours.subtract(miscEntry.getMisc2Hours().get());
+                }
             }
             tempGrantHoursMap.put(grant, tempGrantHours);
         }

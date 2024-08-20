@@ -1,36 +1,34 @@
 package gov.nysenate.ess.travel.authorization.role;
 
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
+/**
+ * Roles involved in the approving of Travel Applications.
+ */
 public enum TravelRole {
 
     /** Role edge cases */
 
     // The DELEGATE role is assigned to users who are a delegate.
     // This is used to disallow them from modifying delegates themselves.
-    DELEGATE("Delegate"),
+    DELEGATE("Delegate", false),
     // NONE is used in place of null.
-    NONE("None"),
+    NONE("None", false),
 
     /** Travel Roles */
-    SUPERVISOR("Supervisor"),
-    DEPUTY_EXECUTIVE_ASSISTANT("Deputy Executive Assistant"),
-    SECRETARY_OF_THE_SENATE("Secretary of the Senate"),
-    MAJORITY_LEADER("Majority Leader");
+    DEPARTMENT_HEAD("Department Head", false),
+    TRAVEL_ADMIN("Travel Admin", true),
+    SECRETARY_OF_THE_SENATE("Secretary of the Senate", true),
+    MAJORITY_LEADER("Majority Leader", false);
 
-    /**
-     * Map of display names to TravelRole's for construction from display names.
-     */
-    private static final Map<String, TravelRole> displayNameToRole = Arrays.stream(values())
-            .collect(Collectors.toMap(role -> role.displayName, Function.identity()));
+    protected String displayName;
+    // Can this role view apps that have be shared by reviewers for collaboration purposes.
+    protected boolean canViewShared;
 
-    private final String displayName;
-
-    TravelRole(String displayName) {
+    TravelRole(String displayName, boolean canViewShared) {
         this.displayName = displayName;
+        this.canViewShared = canViewShared;
     }
 
     /**
@@ -44,6 +42,17 @@ public enum TravelRole {
             role = TravelRole.valueOf(name);
         }
         return role;
+    }
+
+    /**
+     * Map of display names to TravelRole's for construction from display names.
+     */
+    private static final Map<String, TravelRole> displayNameToRole = new HashMap<>(values().length, 1);
+
+    static {
+        for (TravelRole r: values()) {
+            displayNameToRole.put(r.displayName, r);
+        }
     }
 
     public String getDisplayName() {

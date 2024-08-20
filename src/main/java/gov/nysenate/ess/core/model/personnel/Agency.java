@@ -1,5 +1,7 @@
 package gov.nysenate.ess.core.model.personnel;
 
+import java.util.Objects;
+
 /**
  * Represents a senate agency.
  */
@@ -59,5 +61,18 @@ public class Agency
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Agency agency = (Agency) o;
+        return active == agency.active && Objects.equals(code, agency.code) && Objects.equals(shortName, agency.shortName) && Objects.equals(name, agency.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(code, active, shortName, name);
     }
 }
