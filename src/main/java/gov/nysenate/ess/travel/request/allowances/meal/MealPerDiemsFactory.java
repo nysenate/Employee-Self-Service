@@ -1,5 +1,6 @@
 package gov.nysenate.ess.travel.request.allowances.meal;
 
+import gov.nysenate.ess.core.service.notification.slack.service.SlackChatService;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.travel.employee.TravelEmployee;
 import gov.nysenate.ess.travel.provider.senate.SenateMie;
@@ -23,10 +24,12 @@ public class MealPerDiemsFactory {
     private static final Logger logger = LoggerFactory.getLogger(MealPerDiemsFactory.class);
     private final static Comparator<MealPerDiem> dateComparator = Comparator.comparing(MealPerDiem::date);
     private final SqlSenateMieDao senateMieDao;
+    private final SlackChatService slackChatService;
 
     @Autowired
-    public MealPerDiemsFactory(SqlSenateMieDao senateMieDao) {
+    public MealPerDiemsFactory(SqlSenateMieDao senateMieDao, SlackChatService slackChatService) {
         this.senateMieDao = senateMieDao;
+        this.slackChatService = slackChatService;
     }
 
     public MealPerDiems create(Route route, TravelEmployee traveler) {
@@ -54,13 +57,24 @@ public class MealPerDiemsFactory {
                     try {
                         mie = senateMieDao.selectSenateMie(DateUtils.getFederalFiscalYear(pd.getDate()), new Dollars(pd.getRate()));
                     } catch (IncorrectResultSizeDataAccessException ex) {
-                        logger.warn("Unable to find Senate mie for date: " + pd.getDate().toString() + " and total: " + pd.getRate().toString());
+                        sendSenateMieMissingErrorMessages(pd);
                     }
                     mealPerDiemSet.add(new MealPerDiem(d.getAddress(), pd.getDate(), new Dollars(pd.getRate()), mie));
                 }
             }
         }
         return mealPerDiemSet;
+    }
+
+    private void sendSenateMieMissingErrorMessages(PerDiem pd) {
+        String msg = """
+                     Unable to find Senate MIE rates for date %s, and total %s.
+                     If the Senate has not published their rates yet, you may estimate them from the GSA rates available at
+                     https://api.gsa.gov/travel/perdiem/v2/rates/conus/mie/{year}?api_key=
+                     Using the typical rules: senate.breakfast = gsa.breakfast, senate.dinner = gsa.dinner + gsa.lunch + gsa.incidental
+                     """.formatted(pd.getDate(), pd.getRate().toString());
+        slackChatService.sendMessage(msg);
+        logger.warn(msg);
     }
 
     // There can only be one meal per diem per day. This keeps the highest rate meal per diem for each day.
@@ -72,8 +86,7 @@ public class MealPerDiemsFactory {
                 if (mpd.rate().compareTo(dateToPerDiems.get(mpd.date()).rate()) > 0) {
                     dateToPerDiems.put(mpd.date(), mpd);
                 }
-            }
-            else {
+            } else {
                 dateToPerDiems.put(mpd.date(), mpd);
             }
         }
