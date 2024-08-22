@@ -1,8 +1,8 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.directive('essAllowancesEditForm', ['appProps', 'TravelDraftsApi', allowancesEditForm]);
+essTravel.directive('essAllowancesEditForm', ['appProps', 'TravelDraftsApi', 'TravelLodgingPerDiemsApi', allowancesEditForm]);
 
-function allowancesEditForm(appProps, draftsApi) {
+function allowancesEditForm(appProps, draftsApi, lodgingPerDiemsApi) {
     return {
         restrict: 'E',
         scope: {
@@ -66,9 +66,25 @@ function allowancesEditForm(appProps, draftsApi) {
                 scope.negativeCallback({draft: scope.dirtyDraft});
             }
 
-            scope.setLodgingPerDiemAddress = function(lpd, address) {
-                lpd.address = address;
-                lpd.rate = '0'; // Since the address changed, rate is no longer valid. The backend will have to update it.
+            scope.setLodgingPerDiemAddress = function (lpd, address) {
+                scope.openLoadingModal();
+                lodgingPerDiemsApi.save(
+                    {
+                        "date": lpd.date,
+                        "address": address
+                    })
+                    .$promise
+                    .then(function (res) {
+                        // Update one field at a time.
+                        lpd.address = res.result.address;
+                        lpd.date = res.result.date;
+                        lpd.rate = res.result.rate;
+                        lpd.reimbursementRequested = res.result.reimbursementRequested;
+                        lpd.isReimbursementRequested = res.result.isReimbursementRequested;
+                        lpd.maximumPerDiem = res.result.maximumPerDiem;
+                        lpd.requestedPerDiem = res.result.requestedPerDiem;
+                    })
+                    .finally(scope.closeLoadingModal)
             }
         }
     }

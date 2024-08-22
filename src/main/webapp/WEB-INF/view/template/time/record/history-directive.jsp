@@ -46,6 +46,7 @@
         <th>Sick Emp</th>
         <th>Sick Fam</th>
         <th>Misc</th>
+        <th>Misc 2</th>
         <th>Total</th>
       </tr>
       </thead>
@@ -64,6 +65,7 @@
         <td>{{record.totals.sickEmpHours}}</td>
         <td>{{record.totals.sickFamHours}}</td>
         <td>{{record.totals.miscHours}}</td>
+        <td>{{record.totals.misc2Hours}}</td>
         <td>{{record.totals.total}}</td>
       </tr>
       </tbody>
@@ -97,6 +99,7 @@
         <th>Sick Emp</th>
         <th>Sick Fam</th>
         <th>Misc</th>
+        <th>Misc 2</th>
         <th>Total</th>
       </tr>
       </thead>
@@ -117,6 +120,7 @@
         <td>{{record.totals.sickEmpHours}}</td>
         <td>{{record.totals.sickFamHours}}</td>
         <td>{{record.totals.miscHours}}</td>
+        <td>{{record.totals.misc2Hours}}</td>
         <td>{{record.totals.total}}</td>
       </tr>
       <tr style="border-top:2px solid teal;">
@@ -129,6 +133,7 @@
         <td><strong>{{state.annualTotals.sickEmpHours}}</strong></td>
         <td><strong>{{state.annualTotals.sickFamHours}}</strong></td>
         <td><strong>{{state.annualTotals.miscHours}}</strong></td>
+        <td><strong>{{state.annualTotals.misc2Hours}}</strong></td>
         <td><strong>{{state.annualTotals.total}}</strong></td>
         <td></td>
       </tr>

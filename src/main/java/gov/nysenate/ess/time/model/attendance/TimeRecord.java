@@ -200,6 +200,7 @@ public class TimeRecord implements Comparable<TimeRecord>
         usage.setFamHoursUsed(getSumOfTimeEntries(TimeEntry::getSickFamHours));
         usage.setHolHoursUsed(getSumOfTimeEntries(TimeEntry::getHolidayHours));
         usage.setMiscHoursUsed(getSumOfTimeEntries(TimeEntry::getMiscHours));
+        usage.setMisc2HoursUsed(getSumOfTimeEntries(TimeEntry::getMisc2Hours));
         usage.setPerHoursUsed(getSumOfTimeEntries(TimeEntry::getPersonalHours));
         usage.setTravelHoursUsed(getSumOfTimeEntries(TimeEntry::getTravelHours));
         usage.setVacHoursUsed(getSumOfTimeEntries(TimeEntry::getVacationHours));

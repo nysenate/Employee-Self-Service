@@ -136,8 +136,16 @@
             <li ng-show="errorTypes.raSa.noMiscHoursGiven">
               Miscellaneous hours must be present when a Misc type is selected.
             </li>
+            <li ng-show="errorTypes.raSa.noMiscType2Given">A Misc type must be given when using Miscellaneous hours.</li>
+            <li ng-show="errorTypes.raSa.noMisc2HoursGiven">
+              Miscellaneous hours must be present when a Misc type is selected.
+            </li>
             <li ng-show="errorTypes.raSa.halfHourIncrements">Hours must be in increments of 0.5</li>
             <li ng-show="errorTypes.raSa.notEnoughMiscTime" ng-repeat="data in state.miscLeaveUsageErrors">
+              Your total of {{data.hoursUsed}} {{data.shortname}} hours
+              exceeds the limit of {{data.hoursRemaining}} for the period {{data.range}}
+            </li>
+            <li ng-show="errorTypes.raSa.notEnoughMisc2Time" ng-repeat="data in state.miscLeaveUsageErrors">
               Your total of {{data.hoursUsed}} {{data.shortname}} hours
               exceeds the limit of {{data.hoursRemaining}} for the period {{data.range}}
             </li>
@@ -156,6 +164,8 @@
             <th>Sick Fam</th>
             <th>Misc</th>
             <th>Misc Type</th>
+            <th ng-show="state.miscEntered">Misc 2</th>
+            <th ng-show="state.miscEntered">Misc 2 Type</th>
             <th>Total</th>
           </tr>
           </thead>
@@ -223,6 +233,21 @@
                 <option value="">No Misc Hours</option>
               </select>
             </td>
+            <td ng-show="state.miscEntered" entry-validator validate="entryValidators.raSa.misc2Hours(entry)">
+              <input id="{{entry.date + '-misc2Hours'}}"
+                     type="number" ng-change="setDirty(entry)" time-record-input class="hours-input"
+                     placeholder="--" step=".5" min="0" max="12"
+                     tabindex="{{accrualTabIndex.misc(entry)}}"
+                     ng-model="entry.misc2Hours" name="numMisc2Hours"/>
+            </td>
+            <td ng-show="state.miscEntered" entry-validator validate="entryValidators.raSa.miscType2(entry)">
+              <select id="{{entry.date + '-miscType2'}}" style="font-size:.9em;" name="miscHourType2"
+                      ng-model="entry.miscType2" ng-change="setDirty(entry)"
+                      tabindex="{{isFieldSelected(entry, 'miscType2') || entry.misc2Hours ? 1 : -1}}"
+                      ng-options="miscLeave.type as miscLeave.shortName for miscLeave in state.miscLeaves | filter:getMiscLeavePredicate(entry.date)">
+                <option value="">No Misc Hours</option>
+              </select>
+            </td>
             <td class="text-align-center" entry-validator validate="entryValidators.raSa.totalHours(entry)">
               <span>{{entry.total | number}}</span>
             </td>
@@ -237,6 +262,8 @@
             <td>{{state.totals.sickFamHours}}</td>
             <td>{{state.totals.miscHours}}</td>
             <td></td>
+            <td ng-show="state.miscEntered">{{state.totals.misc2Hours}}</td>
+            <td ng-show="state.miscEntered"></td>
             <td>{{state.totals.raSaTotal}}</td>
           </tr>
           </tbody>
