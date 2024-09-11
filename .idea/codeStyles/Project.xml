@@ -29,6 +29,10 @@
       <option name="SPACES_WITHIN_OBJECT_LITERAL_BRACES" value="true" />
       <option name="SPACES_WITHIN_IMPORTS" value="true" />
     </JSCodeStyleSettings>
+    <JavaCodeStyleSettings>
+      <option name="ALIGN_MULTILINE_TEXT_BLOCKS" value="true" />
+      <option name="JD_DO_NOT_WRAP_ONE_LINE_COMMENTS" value="true" />
+    </JavaCodeStyleSettings>
     <codeStyleSettings language="HTML">
       <indentOptions>
         <option name="INDENT_SIZE" value="2" />

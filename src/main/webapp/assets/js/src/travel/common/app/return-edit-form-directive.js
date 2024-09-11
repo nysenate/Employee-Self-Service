@@ -1,24 +1,24 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.directive('essReturnEditForm', ['$q', 'appProps', 'modals', returnEditForm]);
+essTravel.directive('essReturnEditForm', ['$q', 'appProps', 'modals', 'TravelDraftsApi', returnEditForm]);
 
-function returnEditForm($q, appProps, modals) {
+function returnEditForm($q, appProps, modals, draftsApi) {
     return {
         restrict: 'E',
         scope: {
-            app: '<',               // The application being edited.
-            title: '@',             // The title
-            positiveCallback: '&',   // Callback function called when continuing. Takes a travel app param named 'app'.
-            neutralCallback: '&',   // Callback function called when moving back. Takes a travel app param named 'app'.
-            negativeCallback: '&',  // Callback function called when canceling. Takes a travel app param named 'app'.
+            data: '<',         // The application being edited.
+            positiveCallback: '&',  // Callback function called when continuing. Takes a draft param named 'draft'.
+            neutralCallback: '&',   // Callback function called when moving back. Takes a draft param named 'draft'.
+            negativeCallback: '&',  // Callback function called when canceling. Takes a draft param named 'draft'.
             negativeLabel: '@'      // Text to label the negative button. Defaults to 'Cancel'
         },
         controller: 'AppEditCtrl',
         templateUrl: appProps.ctxPath + '/template/travel/common/app/return-edit-form-directive',
         link: function (scope, elem, attrs) {
 
-            scope.dirtyApp = angular.copy(scope.app);
-            scope.route = scope.dirtyApp.route;
+            scope.mode = scope.data.mode;
+            scope.dirtyDraft = angular.copy(scope.data.draft);
+            scope.route = scope.data.dirtyRoute;
 
             if (scope.route.returnLegs.length === 0) {
                 // Init return leg
@@ -26,15 +26,15 @@ function returnEditForm($q, appProps, modals) {
                 leg.from = angular.copy(scope.route.outboundLegs[scope.route.outboundLegs.length - 1].to);
                 leg.to = angular.copy(scope.route.outboundLegs[0].from);
                 // If only 1 outbound mode of transportation, initialize to that.
-                if (numDistinctModesOfTransportation(scope.app) === 1) {
+                if (numDistinctModesOfTransportation(scope.dirtyDraft.amendment) === 1) {
                     leg.methodOfTravelDisplayName = angular.copy(scope.route.outboundLegs[0].methodOfTravelDisplayName);
                     leg.methodOfTravelDescription = angular.copy(scope.route.outboundLegs[0].methodOfTravelDescription);
                 }
                 scope.route.returnLegs.push(leg);
             }
 
-            function numDistinctModesOfTransportation(app) {
-                var mots = (app.route.outboundLegs.concat(app.route.returnLegs)).map(function (leg) {
+            function numDistinctModesOfTransportation(amendment) {
+                var mots = (amendment.route.outboundLegs.concat(amendment.route.returnLegs)).map(function (leg) {
                     return leg.methodOfTravelDisplayName;
                 });
                 var distinct = _.uniq(mots);
@@ -81,25 +81,80 @@ function returnEditForm($q, appProps, modals) {
             };
 
             scope.next = function () {
-                scope.setInvalidFormElementsTouched(scope.return.form);
-                if (scope.return.form.$valid) {
-                    scope.normalizeTravelDates(scope.dirtyApp.route.returnLegs);
-                    promptUserIfLongTrip(scope.dirtyApp.route)
-                        .then(function () {
-                            scope.checkCounties(scope.dirtyApp.route.returnLegs)
-                        })
-                        .then(function () {
-                            scope.positiveCallback({app: scope.dirtyApp});
-                        });
-                }
+                validateData()
+                    .then(updateRoute)
+                    .then(function () {
+                        scope.positiveCallback({draft: scope.dirtyDraft})
+                    })
             };
 
+            function validateData() {
+                scope.setInvalidFormElementsTouched(scope.return.form);
+                if (scope.return.form.$valid) {
+                    scope.normalizeTravelDates(scope.route.returnLegs);
+                    return promptUserIfLongTrip(scope.route)
+                        .then(function () {
+                            scope.checkCounties(scope.route.returnLegs)
+                        })
+                } else {
+                    scope.return.form.$submitted = true;
+                }
+            }
+
+            function updateRoute() {
+                var deferred = $q.defer();
+                if (angular.toJson(scope.route) !== angular.toJson(scope.data.draft.amendment.route)) {
+                    scope.openLoadingModal();
+                    scope.dirtyDraft.amendment.route = scope.route;
+                    draftsApi.update(
+                        {
+                            options: ['ROUTE'],
+                            draft: scope.dirtyDraft
+                        })
+                        .$promise
+                        .then(function (res) {
+                            scope.dirtyDraft = res.result;
+                            scope.closeLoadingModal();
+                            deferred.resolve();
+                        })
+                        .catch(function (error) {
+                            scope.closeLoadingModal();
+                            if (error.status === 502) {
+                                scope.handleDataProviderError();
+                            } else if (error.status === 400) {
+                                scope.$parent.handleTravelDateError();
+                            } else {
+                                scope.$parent.handleErrorResponse(error);
+                            }
+                            deferred.reject(error);
+                        })
+                } else {
+                    deferred.resolve();
+                }
+                return deferred.promise;
+            }
+
+            scope.save = function () {
+                validateData()
+                    .then(updateRoute)
+                    .then(function () {
+                        scope.saveDraft(scope.dirtyDraft)
+                            .then(function (draft) {
+                                scope.dirtyDraft = draft;
+                            })
+                            .catch(function (error) {
+                                console.error(error);
+                                scope.$parent.handleErrorResponse(error);
+                            });
+                    });
+            }
+
             scope.back = function () {
-                scope.neutralCallback({app: scope.dirtyApp});
+                scope.neutralCallback({draft: scope.dirtyDraft});
             };
 
             scope.cancel = function () {
-                scope.negativeCallback({app: scope.dirtyApp});
+                scope.negativeCallback({draft: scope.dirtyDraft});
             };
 
             /**
@@ -110,7 +165,7 @@ function returnEditForm($q, appProps, modals) {
              */
             function promptUserIfLongTrip(route) {
                 var deferred = $q.defer();
-                var startDate = moment(scope.dirtyApp.startDate, "YYYY-MM-DD", true);
+                var startDate = moment(scope.dirtyDraft.startDate, "YYYY-MM-DD", true);
                 var endDate = moment(route.returnLegs[route.returnLegs.length - 1].travelDate, "MM/DD/YYYY", true);
                 var duration = moment.duration(endDate - startDate);
                 if (duration.asDays() > 7) {

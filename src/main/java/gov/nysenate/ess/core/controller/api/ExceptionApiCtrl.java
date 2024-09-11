@@ -10,8 +10,10 @@ import gov.nysenate.ess.core.client.view.base.ParameterView;
 import gov.nysenate.ess.core.model.auth.AuthorizationStatus;
 import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.util.HttpResponseUtils;
+import gov.nysenate.ess.travel.department.DepartmentNotFoundEx;
 import org.apache.catalina.connector.ClientAbortException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.UnauthenticatedException;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.apache.shiro.subject.Subject;
@@ -40,8 +42,7 @@ import static gov.nysenate.ess.core.util.OutputUtils.toJson;
  * handled in that controller will be handled here.
  */
 @ControllerAdvice
-public class ExceptionApiCtrl extends BaseRestApiCtrl
-{
+public class ExceptionApiCtrl extends BaseRestApiCtrl {
     private static final Logger logger = LoggerFactory.getLogger(ExceptionApiCtrl.class);
 
     @ExceptionHandler(Exception.class)
@@ -96,10 +97,10 @@ public class ExceptionApiCtrl extends BaseRestApiCtrl
     }
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    @ExceptionHandler(UnauthorizedException.class)
+    @ExceptionHandler(AuthorizationException.class)
     @ResponseBody
     public AuthorizationResponse handleUnauthorizedException(HttpServletRequest request,
-                                                             UnauthorizedException ex) {
+                                                             AuthorizationException ex) {
         Object user = Optional.ofNullable(getSubject())
                 .map(Subject::getPrincipal)
                 .orElse(null);
@@ -137,6 +138,13 @@ public class ExceptionApiCtrl extends BaseRestApiCtrl
         final String messageTemplate = "Cannot respond with given media type.  Acceptable types include %s";
         final String message = String.format(messageTemplate, ex.getSupportedMediaTypes());
         return new SimpleResponse(false, message, "Response media type not supported");
+    }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(DepartmentNotFoundEx.class)
+    @ResponseBody
+    protected ErrorResponse handleDepartmentNotFoundEx(DepartmentNotFoundEx ex) {
+        return new ErrorResponse(ErrorCode.MISSING_DEPARTMENT, ex.getMessage());
     }
 
     /** --- Internal Methods --- */

@@ -5,34 +5,35 @@ import gov.nysenate.ess.core.dao.security.authorization.RoleDao;
 import gov.nysenate.ess.core.model.auth.EssRole;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.security.authorization.role.RoleFactory;
-import gov.nysenate.ess.time.service.personnel.SupervisorInfoService;
 import gov.nysenate.ess.travel.delegate.Delegation;
 import gov.nysenate.ess.travel.delegate.DelegationDao;
+import gov.nysenate.ess.travel.department.DepartmentNotFoundEx;
+import gov.nysenate.ess.travel.employee.TravelEmployee;
+import gov.nysenate.ess.travel.employee.TravelEmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 /**
  * Assigns all travel roles to an employee.
- * <p>
- * The TravelRole.MAJORITY_LEADER is assigned if the employee is assigned the EssRole.MAJORITY_LEADER
- * role from the ess.user_roles table.
  */
 @Service
 public class TravelRoleFactory implements RoleFactory {
 
     @Autowired private RoleDao essRoleDao;
-    @Autowired private SupervisorInfoService supervisorInfoService;
     @Autowired private DelegationDao delegateDao;
+    @Autowired private TravelEmployeeService travelEmployeeService;
 
     @Override
     public Stream<Enum<?>> getRoles(Employee employee) {
         // Add TravelRole.DELEGATE role if user has delegated roles.
         TravelRoles roles = travelRolesForEmp(employee);
         if (!roles.delegate().isEmpty()) {
+            // Add TravelRole.DELEGATE role if user has delegated roles.
             ImmutableList<TravelRole> delegatedRoles = new ImmutableList.Builder<TravelRole>()
                     .addAll(roles.delegate())
                     .add(TravelRole.DELEGATE)
@@ -58,22 +59,30 @@ public class TravelRoleFactory implements RoleFactory {
     }
 
     private List<TravelRole> primaryRoles(Employee employee) {
-        List<TravelRole> r = new ArrayList<>();
+        List<TravelRole> roles = new ArrayList<>();
+        // TRAVEL_ADMIN, SECRETARY_OF_SENATE, and MAJORITY_LEADER roles are stored here.
+        Set<EssRole> empRoles = essRoleDao.getRoles(employee);
 
-        if (supervisorInfoService.isSupervisor(employee.getEmployeeId())) {
-            r.add(TravelRole.SUPERVISOR);
-        }
-        if (employee.getJobTitle().equals("Deputy Executive Assistant")) {
-            r.add(TravelRole.DEPUTY_EXECUTIVE_ASSISTANT);
-        }
-        if (employee.getJobTitle().equals("Secretary of the Senate")) {
-            r.add(TravelRole.SECRETARY_OF_THE_SENATE);
-        }
-        if (essRoleDao.getRoles(employee).contains(EssRole.MAJORITY_LEADER)) {
-            r.add(TravelRole.MAJORITY_LEADER);
+        TravelEmployee travelEmployee = null;
+        try {
+            travelEmployee = travelEmployeeService.loadTravelEmployee(employee);
+        } catch (DepartmentNotFoundEx ignored) {
         }
 
-        return r;
+        if (empRoles.contains(EssRole.TRAVEL_ADMIN)) {
+            roles.add(TravelRole.TRAVEL_ADMIN);
+        }
+        if (empRoles.contains(EssRole.SECRETARY_OF_SENATE)) {
+            roles.add(TravelRole.SECRETARY_OF_THE_SENATE);
+        }
+        if (empRoles.contains(EssRole.MAJORITY_LEADER)) {
+            roles.add(TravelRole.MAJORITY_LEADER);
+        }
+        // The DEPARTMENT_HEAD role is not found in the ess_roles table like other roles.
+        if (travelEmployee != null && travelEmployee.isDepartmentHead()) {
+            roles.add(TravelRole.DEPARTMENT_HEAD);
+        }
+        return roles;
     }
 
     private List<TravelRole> delegateRoles(Employee employee) {
@@ -88,5 +97,4 @@ public class TravelRoleFactory implements RoleFactory {
 
         return delegatedRoles;
     }
-
 }

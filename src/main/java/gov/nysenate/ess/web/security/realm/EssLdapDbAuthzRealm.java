@@ -2,13 +2,17 @@ package gov.nysenate.ess.web.security.realm;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
 import gov.nysenate.ess.core.model.auth.LdapAuthResult;
 import gov.nysenate.ess.core.model.auth.SenatePerson;
 import gov.nysenate.ess.core.model.personnel.Employee;
+import gov.nysenate.ess.core.service.notification.slack.service.SlackChatService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.security.authentication.LdapAuthService;
 import gov.nysenate.ess.core.service.security.authorization.permission.EssPermissionService;
 import gov.nysenate.ess.core.service.security.authorization.role.EssRoleService;
+import gov.nysenate.ess.web.security.exception.LdapMismatchException;
+import gov.nysenate.ess.web.security.exception.NameNotFoundException;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authc.pam.UnsupportedTokenException;
 import org.apache.shiro.authz.AuthorizationInfo;
@@ -41,10 +45,24 @@ public class EssLdapDbAuthzRealm extends AuthorizingRealm
     @Value("${auth.enabled:true}") private boolean authEnabled;
     @Value("${auth.master.pass}") private String masterPass;
 
-    @Autowired private LdapAuthService essLdapAuthService;
-    @Autowired private EmployeeInfoService employeeInfoService;
-    @Autowired private EssRoleService essRoleService;
-    @Autowired private EssPermissionService essPermissionService;
+    private LdapAuthService essLdapAuthService;
+    private EmployeeInfoService employeeInfoService;
+    private EmployeeDao employeeDao;
+    private EssRoleService essRoleService;
+    private EssPermissionService essPermissionService;
+    private SlackChatService slackChatService;
+
+    @Autowired
+    public EssLdapDbAuthzRealm(LdapAuthService essLdapAuthService, EmployeeInfoService employeeInfoService,
+                               EssRoleService essRoleService, EssPermissionService essPermissionService,
+                               SlackChatService slackChatService, EmployeeDao employeeDao) {
+        this.essLdapAuthService = essLdapAuthService;
+        this.employeeInfoService = employeeInfoService;
+        this.essRoleService = essRoleService;
+        this.essPermissionService = essPermissionService;
+        this.slackChatService = slackChatService;
+        this.employeeDao = employeeDao;
+    }
 
     @Override
     public Class getAuthenticationTokenClass() {
@@ -65,8 +83,8 @@ public class EssLdapDbAuthzRealm extends AuthorizingRealm
                     username, authEnabled ? "" : " (Master Pass Enabled)" );
 
             LdapAuthResult authResult =
-                (authEnabled) ? essLdapAuthService.authenticateUserByUid(username, password)
-                              : essLdapAuthService.authenticateUserByUidWithoutCreds(username, password, masterPass);
+                    (authEnabled) ? essLdapAuthService.authenticateUserByUid(username, password)
+                            : essLdapAuthService.authenticateUserByUidWithoutCreds(username, password, masterPass);
             return queryForAuthenticationInfo(userPassToken, authResult);
         }
         throw new UnsupportedTokenException("Senate LDAP Realm only supports UsernamePasswordToken");
@@ -90,7 +108,7 @@ public class EssLdapDbAuthzRealm extends AuthorizingRealm
             case EMPTY_USERNAME:
                 throw new UnknownAccountException("The username supplied was empty.");
             case NAME_NOT_FOUND_EXCEPTION:
-                throw new UnknownAccountException("No account was found with the supplied username");
+                throw new NameNotFoundException("No account was found with the supplied username");
             case MULTIPLE_MATCH_EXCEPTION:
                 throw new AccountException("Multiple entries were found for the supplied username.");
             case EMPTY_CREDENTIALS:
@@ -99,6 +117,8 @@ public class EssLdapDbAuthzRealm extends AuthorizingRealm
                 throw new IncorrectCredentialsException("The username or password is invalid.");
             case CONNECTION_ERROR:
                 throw new AuthenticationException("Failed to connect to the authentication server.");
+            case LDAP_MISMATCH_EXCEPTION:
+                throw new LdapMismatchException("There was a mismatch between LDAP & SFMS");
             default:
                 throw new AuthenticationException("An unknown exception occurred while authenticating against LDAP.");
         }

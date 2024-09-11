@@ -23,6 +23,7 @@ public class AccrualUsage
     private BigDecimal famHoursUsed = BigDecimal.ZERO;
     private BigDecimal holHoursUsed = BigDecimal.ZERO;
     private BigDecimal miscHoursUsed = BigDecimal.ZERO;
+    private BigDecimal misc2HoursUsed = BigDecimal.ZERO;
 
     public AccrualUsage() {}
 
@@ -37,6 +38,7 @@ public class AccrualUsage
             this.famHoursUsed = lhs.famHoursUsed;
             this.holHoursUsed = lhs.holHoursUsed;
             this.miscHoursUsed = lhs.miscHoursUsed;
+            this.misc2HoursUsed = lhs.misc2HoursUsed;
         }
     }
 
@@ -58,6 +60,7 @@ public class AccrualUsage
         this.famHoursUsed = this.famHoursUsed.add(usage.famHoursUsed);
         this.holHoursUsed = this.holHoursUsed.add(usage.holHoursUsed);
         this.miscHoursUsed = this.miscHoursUsed.add(usage.miscHoursUsed);
+        this.misc2HoursUsed = this.misc2HoursUsed.add(usage.misc2HoursUsed);
     }
 
     /**
@@ -72,6 +75,7 @@ public class AccrualUsage
         this.famHoursUsed = BigDecimal.ZERO;
         this.holHoursUsed = BigDecimal.ZERO;
         this.miscHoursUsed = BigDecimal.ZERO;
+        this.misc2HoursUsed = BigDecimal.ZERO;
     }
 
     /* --- Functional Getters/Setters --- */
@@ -85,7 +89,8 @@ public class AccrualUsage
                 .add(empHoursUsed)
                 .add(famHoursUsed)
                 .add(holHoursUsed)
-                .add(miscHoursUsed);
+                .add(miscHoursUsed)
+                .add(misc2HoursUsed);
     }
 
     /**
@@ -128,6 +133,10 @@ public class AccrualUsage
         this.miscHoursUsed = Optional.ofNullable(miscHoursUsed).orElse(BigDecimal.ZERO);
     }
 
+    public void setMisc2HoursUsed(BigDecimal misc2HoursUsed) {
+        this.misc2HoursUsed = Optional.ofNullable(misc2HoursUsed).orElse(BigDecimal.ZERO);
+    }
+
     /* --- Basic Getters/Setters --- */
 
     public int getEmpId() {
@@ -168,5 +177,9 @@ public class AccrualUsage
 
     public BigDecimal getMiscHoursUsed() {
         return miscHoursUsed;
+    }
+
+    public BigDecimal getMisc2HoursUsed() {
+        return misc2HoursUsed;
     }
 }

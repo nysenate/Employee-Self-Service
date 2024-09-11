@@ -1,64 +1,51 @@
-<div class="content-container">
-  <p class="travel-content-info travel-text-bold" ng-bind="::title"></p>
+<div>
 
-  <form name="overridesForm" id="overridesForm"
-        ng-submit="overridesForm.$valid && next()" novalidate>
+  <div ng-show="overridesForm.$submitted && !overridesForm.$valid" class="margin-10">
+    <ess-notification level="error"
+                      message="Error. Overrides must be >= 0 and be in increments of 0.01"></ess-notification>
+  </div>
 
-    <div ng-show="overridesForm.$submitted && !overridesForm.$valid" class="margin-10">
-      <ess-notification level="error"
-                        message="Error. Overrides must be >= 0 and be in increments of 0.01"></ess-notification>
-    </div>
-
-    <ess-travel-inner-container title="Expense Overrides">
-      <p class="travel-text" style="magin-bottom: 10px;">
-        If you wish to override the automatically calculated expenses, enter a value here.
-      </p>
-      <div class="text-align-center">
-        <div style="display: flex; flex-direction: column;">
-
-          <div class="perdiem-overrides-edit-form-row">
-            <div class="perdiem-overrides-edit-form-calculated">
-              Calculated Mileage: {{::dirtyApp.mileagePerDiems.totalPerDiem | currency}}
-            </div>
-            <div class="perdiem-overrides-edit-form-override">
-              <label>Mileage Override $</label>
-              <input ng-model="dirtyApp.mileagePerDiems.overrideRate"
-                     type="number" step="0.01" min="0">
-            </div>
-          </div>
-
-          <div class="perdiem-overrides-edit-form-row">
-            <div class="perdiem-overrides-edit-form-calculated">
-              Calculated Meals: {{::dirtyApp.mealPerDiems.totalPerDiem | currency}}
-            </div>
-            <div class="perdiem-overrides-edit-form-override">
-              <label>Meals Override $</label>
-              <input ng-model="dirtyApp.mealPerDiems.overrideRate" type="number" step="0.01" min="0">
+  <div class="travel-card">
+    <form name="overridesForm" id="overridesForm"
+          ng-submit="overridesForm.$valid && next()" novalidate>
+      <div class="travel-card-item">
+        <h1 class="">Expense Overrides</h1>
+        <div class="padding-10">
+          <span class="padding-10">You may override the automatically calculated expenses below.</span>
+          <div>
+            <div ng-repeat="perdiem in perdiems"
+                 class="margin-10"
+                 style="display:flex; justify-content: center; align-items: center;">
+              <input type="checkbox"
+                     class="travel-input"
+                     ng-model="perdiem.isOverridden"
+                     ng-change="onCheckboxChange(perdiem)">
+              <label style="width: 110px; margin-left: 5px;">Override {{perdiem.name}}</label>
+              <span style="width: 10px;">$</span>
+              <input type="number" step="0.01" , min="0"
+                     class="travel-input"
+                     ng-class="{'disabled': !perdiem.isOverridden}"
+                     ng-disabled="!perdiem.isOverridden"
+                     ng-model="perdiem.overrideRate"
+                     style="width: 80px;">
             </div>
           </div>
-
-          <div class="perdiem-overrides-edit-form-row">
-            <div class="perdiem-overrides-edit-form-calculated">
-              Calculated Lodging: {{::dirtyApp.lodgingPerDiems.totalPerDiem | currency}}
-            </div>
-            <div class="perdiem-overrides-edit-form-override">
-              <label>Lodging Override $</label>
-              <input ng-model="dirtyApp.lodgingPerDiems.overrideRate" type="number" step="0.01" min="0">
-            </div>
-          </div>
-
         </div>
       </div>
-    </ess-travel-inner-container>
 
-    <div class="travel-button-container">
-      <input type="button" class="neutral-button" ng-value="::negativeLabel || 'Cancel'"
-             ng-click="cancel()">
-      <input type="button" class="travel-neutral-button" value="Back"
-             title="Back"
-             ng-click="back()">
-      <input type="submit" class="submit-button"
-             title="Save Overrides and Continue" value="Save Overrides">
-    </div>
-  </form>
+      <div class="travel-button-container">
+        <button type="button" class="travel-primary-btn"
+                ng-click="back()">
+          Back
+        </button>
+        <button type="button" class="travel-neutral-btn"
+                ng-click="cancel()">
+          {{::negativeLabel || 'Cancel'}}
+        </button>
+        <button type="submit" class="travel-submit-btn">
+          Next
+        </button>
+      </div>
+    </form>
+  </div>
 </div>

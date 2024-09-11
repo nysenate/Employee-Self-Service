@@ -3,6 +3,7 @@ package gov.nysenate.ess.web.config;
 import gov.nysenate.ess.core.dao.stats.UserAgentDao;
 import gov.nysenate.ess.web.security.filter.EssApiAuthenticationFilter;
 import gov.nysenate.ess.web.security.filter.EssAuthenticationFilter;
+import gov.nysenate.ess.web.security.filter.EssLdapAuthenticationFilter;
 import gov.nysenate.ess.web.security.filter.SessionTimeoutFilter;
 import gov.nysenate.ess.web.security.session.SessionTimeoutDao;
 import gov.nysenate.ess.web.security.xsrf.XsrfTokenValidator;
@@ -37,15 +38,18 @@ public class SecurityConfig
 
     private final UserAgentDao userAgentDao;
     private final SessionTimeoutDao sessionTimeoutDao;
+    private final EssLdapAuthenticationFilter essLdapAuthenticationFilter;
 
     @Autowired
     public SecurityConfig(UserAgentDao userAgentDao,
                           SessionTimeoutDao sessionTimeoutDao,
+                          EssLdapAuthenticationFilter essLdapAuthenticationFilter,
                           @Value("${login.url:/login}") String loginUrl,
                           @Value("${login.success.url:/}") String loginSuccessUrl,
                           @Value("${xsrf.token.bytes:128}") int xsrfBytesSize) {
         this.userAgentDao = userAgentDao;
         this.sessionTimeoutDao = sessionTimeoutDao;
+        this.essLdapAuthenticationFilter = essLdapAuthenticationFilter;
         this.loginUrl = loginUrl;
         this.loginSuccessUrl = loginSuccessUrl;
         this.xsrfBytesSize = xsrfBytesSize;
@@ -107,8 +111,8 @@ public class SecurityConfig
      * the bean name.
      */
     @Bean(name = "essAuthc")
-    public Filter essAuthenticationFilter () {
-        return new EssAuthenticationFilter(userAgentDao);
+    public Filter essAuthenticationFilter (EssLdapAuthenticationFilter essLdapAuthenticationFilter) {
+        return new EssAuthenticationFilter(userAgentDao, essLdapAuthenticationFilter);
     }
 
     /**

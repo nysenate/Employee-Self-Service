@@ -4,13 +4,13 @@ import gov.nysenate.ess.core.model.util.UnsuccessfulHttpReqException;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.HttpUtils;
 import gov.nysenate.ess.travel.provider.ProviderException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.HashMap;
 
@@ -34,24 +34,27 @@ public class GsaApi {
 
     /**
      * Returns data from the GSA API in a {@link GsaResponse} object for the given date and zip.
+     *
      * @param date The date to get GSA rates for.
-     * @param zip The zipcode to get GSA rates for.
+     * @param zip  The zipcode to get GSA rates for.
      * @return GsaResponse for the given date and zip.
      * @throws ProviderException
      */
-    public GsaResponse queryGsa(LocalDate date, String zip) throws ProviderException {
+    public GsaResponse queryGsaApi(LocalDate date, String zip) throws ProviderException {
         GsaResponseId id = new GsaResponseId(date, zip);
-        return queryApi(id);
+        return doQueryGsaApi(id);
     }
 
-    private GsaResponse queryApi(GsaResponseId id) throws ProviderException {
+    private GsaResponse doQueryGsaApi(GsaResponseId id) throws ProviderException {
         // Format the URL with the zip code and fiscal year of the request.
-        String url = String.format(baseUrl + ratesPathTemplate, id.getZipcode(), id.getFiscalYear());
+        String url = String.format(baseUrl + ratesPathTemplate,
+                URLEncoder.encode(id.getZipcode(), StandardCharsets.UTF_8),
+                URLEncoder.encode(String.valueOf(id.getFiscalYear()), StandardCharsets.UTF_8));
         try {
             String content = HttpUtils.urlToString(url);
             if (dateTooFarInFuture(id, content)) {
                 id = new GsaResponseId(id.getFiscalYear() - 1, id.getZipcode());
-                return queryApi(id);
+                return doQueryGsaApi(id);
             } else if (gsaResponseParser.isResponseEmpty(content)) {
                 // If no records are found, return an GsaResponse with no lodging rates and a meal tier of $0.
                 // This occurs when querying US locations outside of CONUS. i.e. Alaska, Hawaii.
@@ -59,7 +62,7 @@ public class GsaApi {
             } else {
                 return gsaResponseParser.parseGsaResponse(content);
             }
-        } catch(IOException|UnsuccessfulHttpReqException ex) {
+        } catch (IOException | UnsuccessfulHttpReqException ex) {
             throw new ProviderException(ex);
         }
     }

@@ -1,10 +1,9 @@
 package gov.nysenate.ess.travel.provider.gsa;
 
-import gov.nysenate.ess.core.model.unit.Address;
-import gov.nysenate.ess.core.service.notification.slack.service.DefaultSlackChatService;
+import gov.nysenate.ess.travel.request.address.TravelAddress;
 import gov.nysenate.ess.travel.provider.ProviderException;
-import gov.nysenate.ess.travel.provider.senate.SqlSenateMieDao;
 import gov.nysenate.ess.travel.utils.Dollars;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,68 +16,38 @@ public class GsaAllowanceService {
 
     private static final Logger logger = LoggerFactory.getLogger(GsaAllowanceService.class);
 
-    private GsaBatchResponseDao gsaBatchResponseDao;
     private GsaApi gsaApi;
-    private DefaultSlackChatService slackChatService;
-    private SqlSenateMieDao gsaMieDao;
 
     @Autowired
-    public GsaAllowanceService(GsaBatchResponseDao gsaBatchResponseDao, GsaApi gsaApi,
-                               DefaultSlackChatService slackChatService, SqlSenateMieDao gsaMieDao) {
-        this.gsaBatchResponseDao = gsaBatchResponseDao;
+    public GsaAllowanceService(GsaApi gsaApi) {
         this.gsaApi = gsaApi;
-        this.slackChatService = slackChatService;
-        this.gsaMieDao = gsaMieDao;
     }
 
     /**
-     * Returns the MealTier for the given date and address.
+     * Fetches and returns the GSA Meal tier for the given date and zip5.
+     * If no meal tier exists for the given date and zip5, returns Dollars.ZERO.
      *
-     * @throws ProviderException
+     * @throws ProviderException if there is an issue connecting to the GSA API.
      */
-    public Dollars fetchMealRate(LocalDate date, Address address) throws ProviderException {
-        if (addressIsOutsideUS(address)) {
-            return Dollars.ZERO;
-        }
-        GsaResponse res = fetchGsaResponse(date, address);
+    @NotNull
+    public Dollars fetchMealRate(LocalDate date, String zip5) throws ProviderException {
+        GsaResponse res = gsaApi.queryGsaApi(date, zip5);
         return new Dollars(res.getMealTier());
     }
 
     /**
-     * Returns the lodging rate for the given date and address.
-     * Returns Dollars.ZERO if there is no lodging rate.
-     * @throws ProviderException
+     * Returns the lodging rate for the given date and zip5.
+     * Returns Dollars.ZERO if there is no lodging rate or if the zip5 is outside of CONUS.
+     *
+     * @throws ProviderException is there is an issue connecting to the GSA API.
      */
-    public Dollars fetchLodgingRate(LocalDate date, Address address) throws ProviderException {
-        if (addressIsOutsideUS(address)) {
-            return Dollars.ZERO;
-        }
-        GsaResponse res = fetchGsaResponse(date, address);
-        return new Dollars(res.getLodging(date)); // TODO use dollars in GsaResponse
+    @NotNull
+    public Dollars fetchLodgingRate(LocalDate date, String zip5) throws ProviderException {
+        GsaResponse res = gsaApi.queryGsaApi(date, zip5);
+        return new Dollars(res.getLodging(date));
     }
 
-    private GsaResponse fetchGsaResponse(LocalDate date, Address address) throws ProviderException {
-        // TODO Batch/bulk data will have to be refactored due to new GSA API. For now query the API every time.
-//        try {
-//            res = gsaBatchResponseDao.getGsaData(gsaResponseId);
-//        }
-//        catch (DataAccessException e) {
-//            res = null;
-//            String errorMsg = "Unable to load local GSA data for fiscal year: " + gsaResponseId.getFiscalYear()
-//                    + " and zip: " + address.getZip5() + ". Exception was: \n" + ExceptionUtils.getStackTrace(e);
-//            logger.warn(errorMsg);
-//            slackChatService.sendMessage(errorMsg);
-//        }
-//        if (res == null) {
-//            res = gsaApi.queryGsa(date, address.getZip5())
-//            if (res != null) {
-//                gsaBatchResponseDao.handleNewData(res);
-//            }
-//        }
-        return gsaApi.queryGsa(date, address.getZip5());
-    }
-
-    private boolean addressIsOutsideUS(Address address) {
+    private boolean addressIsOutsideUS(TravelAddress address) {
         return !(address.getCountry().equalsIgnoreCase("United States") || address.getCountry().equalsIgnoreCase("US"));
     }
 }

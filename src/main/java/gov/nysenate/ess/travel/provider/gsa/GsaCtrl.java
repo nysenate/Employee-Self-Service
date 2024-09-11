@@ -33,8 +33,7 @@ public class GsaCtrl extends BaseRestApiCtrl {
         String responseText = "";
         if (success) {
             responseText = "Success: The GSA data was parsed and stored successfully";
-        }
-        else {
+        } else {
             responseText = "Failure: The GSA data was not updated";
         }
         return new StringView(responseText);
@@ -44,12 +43,11 @@ public class GsaCtrl extends BaseRestApiCtrl {
     public StringView updateGsaInformation(@PathVariable String zip) {
         checkPermission(SimpleEssPermission.ADMIN.getPermission());
 
-        GsaResponse gsaResponse = gsaApi.queryGsa(LocalDate.now(), zip);
+        GsaResponse gsaResponse = gsaApi.queryGsaApi(LocalDate.now(), zip);
         String responseText = "";
         if (gsaResponse != null) {
             responseText = "Success: " + gsaResponse;
-        }
-        else {
+        } else {
             responseText = "Failure: The GSA data was not updated";
         }
         return new StringView(responseText);

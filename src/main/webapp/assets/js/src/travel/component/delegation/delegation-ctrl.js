@@ -1,27 +1,38 @@
 var essTravel = angular.module('essTravel');
 
 essTravel.controller('DelegationCtrl',
-                     ['$scope', '$timeout', 'appProps', 'DelegationApi', 'ActiveEmployeeApi', delegationCtrl]);
+                     ['$scope', '$timeout', 'appProps', 'DelegationApi', 'ActiveEmployeeApi', 'TravelRoleService', delegationCtrl]);
 
-function delegationCtrl($scope, $timeout, appProps, delegationApi, empApi) {
+function delegationCtrl($scope, $timeout, appProps, delegationApi, empApi, roleService) {
 
     const DATEPICKER_FORMAT = "MM/DD/YYYY";
 
     var vm = this;
-    vm.displaySavedMessage = false;
+    vm.data = {
+        displaySavedMessage: false,
+        activeDelegations: [],
+        allowedDelegates: [], // Employees who are allowed to be assigned as a delegate of the current user.
+        roles: [], // Primary roles of the logged in employee.
+        isLoading: true
+    };
 
     (function () {
-        vm.activeDelegations = [];
-        vm.allowedDelegates = []; // Employees who are allowed to be assigned as a delegate of the current user.
-
-        setActiveDelegations();
+        setUserRoles()
+            .then(setActiveDelegations);
         setAllowedDelegates();
     })();
+
+    function setUserRoles() {
+        return roleService.roles()
+            .then(function (response) {
+                vm.data.roles = response.primary;
+            })
+    }
 
     function setActiveDelegations() {
         delegationApi.findDelegationsByPrincipalId(appProps.user.employeeId).$promise
             .then(function (response) {
-                vm.activeDelegations = response.result.filter(function (d) {
+                vm.data.activeDelegations = response.result.filter(function (d) {
                     return !d.isExpired;
                 });
         })
@@ -30,24 +41,25 @@ function delegationCtrl($scope, $timeout, appProps, delegationApi, empApi) {
     function setAllowedDelegates() {
         empApi.get({activeOnly: true}).$promise
             .then(function (response) {
-                vm.allowedDelegates = response.employees;
+                vm.data.allowedDelegates = response.employees;
+                vm.data.isLoading = false;
             });
     }
 
     vm.addNewDelegation = function () {
-        vm.activeDelegations.push(new Delegation());
+        vm.data.activeDelegations.push(new Delegation());
     };
 
     vm.deleteDelegation = function (index) {
-        vm.activeDelegations.splice(index, 1);
+        vm.data.activeDelegations.splice(index, 1);
     };
 
     vm.saveDelegations = function () {
-        delegationApi.saveDelegations(vm.activeDelegations).$promise
+        delegationApi.saveDelegations(vm.data.activeDelegations).$promise
             .then(function (response) {
-                vm.displaySavedMessage = true;
+                vm.data.displaySavedMessage = true;
                 $timeout(function() {
-                    vm.displaySavedMessage = false;
+                    vm.data.displaySavedMessage = false;
                 }, 1500);
             });
     };
@@ -70,6 +82,7 @@ function delegationCtrl($scope, $timeout, appProps, delegationApi, empApi) {
 
     function Delegation () {
         this.id = 0;
+        this.role = vm.data.roles[0];
         this.delegate = undefined;
         this.useStartDate = false;
         this.startDate = undefined;
