@@ -8,6 +8,7 @@ export function useEmployeeTransactions(empId) {
     queryFn: () => {
       return fetchApiJson(`/empTransactions/snapshot/current?empId=${empId}`)
         .then((body) => body.snapshot.items)
-    }
+    },
+    throwOnError: true,
   })
 }

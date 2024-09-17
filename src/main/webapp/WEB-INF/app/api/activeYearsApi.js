@@ -8,6 +8,7 @@ export function useEmployeeActiveYears(empId, useFiscalYears) {
     queryFn: () => {
       return fetchApiJson(`/employees/activeYears?empId=${empId}&fiscalYear=${useFiscalYears}`)
         .then((body) => body.activeYears)
-    }
+    },
+    throwOnError: true,
   })
 }

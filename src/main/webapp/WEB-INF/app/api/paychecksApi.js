@@ -8,6 +8,7 @@ export function useEmployeePaychecks(empId, year, useFiscalYear) {
     queryFn: () => {
       return fetchApiJson(`/paychecks?empId=${empId}&year=${year}&fiscalYear=${useFiscalYear}`)
         .then((body) => body.result)
-    }
+    },
+    throwOnError: true,
   })
 }

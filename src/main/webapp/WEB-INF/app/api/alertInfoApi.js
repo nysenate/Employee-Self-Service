@@ -8,7 +8,8 @@ export function useAlertInfo(empId) {
     queryFn: () => {
       return fetchApiJson(`/alert-info?empId=${empId}`)
         .then((body) => body.result)
-    }
+    },
+    throwOnError: true,
   })
 }
 
