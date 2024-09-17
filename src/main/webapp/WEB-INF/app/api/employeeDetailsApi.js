@@ -8,6 +8,7 @@ export function useEmployeeDetails(empId) {
     queryFn: () => {
       return fetchApiJson(`/employees?detail=true&empId=${empId}`)
         .then((body) => body.employee)
-    }
+    },
+    throwOnError: true,
   })
 }
