@@ -22,6 +22,6 @@ export function useMutateAlertInfo() {
     onSuccess: (data, { empId }) => {
       // Invalidate and refetch
       return queryClient.invalidateQueries({ queryKey: [ 'alert-info', empId ] })
-    }
+    },
   })
 }

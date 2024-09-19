@@ -22,7 +22,7 @@ export default function AlertInfoForm({ alertInfo }) {
       alternateEmail: alertInfo.alternateEmail || "",
     }
   }
-  const [ errorMsg, setErrorMsg ] = React.useState("")
+
   const {
     register,
     handleSubmit,
@@ -36,7 +36,6 @@ export default function AlertInfoForm({ alertInfo }) {
   }, [ alertInfo ])
 
   const onSubmit = data => {
-    setErrorMsg("")
     data.empId = alertInfo.empId
 
     // Check for and notify user of any duplicate phone numbers.
@@ -78,6 +77,9 @@ export default function AlertInfoForm({ alertInfo }) {
                   disabled={Object.keys(dirtyFields).length <= 0 || !isValid}>
             Save
           </Button>
+          {mutateAlertInfo.isError &&
+            <p className="mt-3 text-red-600">Error saving data, please try again later.</p>
+          }
         </div>
       </div>
     </form>
