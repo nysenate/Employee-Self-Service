@@ -13,11 +13,6 @@ module.exports = {
     alias: {
       app: path.resolve(__dirname, 'WEB-INF/app')
     },
-    fallback: {
-      path: require.resolve("path-browserify"),
-      stream: require.resolve("stream-browserify"),
-      util: require.resolve("util/"),
-    }
   },
   module: {
     rules: [
