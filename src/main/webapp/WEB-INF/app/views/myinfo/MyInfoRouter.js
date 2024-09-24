@@ -7,7 +7,7 @@ import SummaryIndex from "app/views/myinfo/personnel/summary/SummaryIndex";
 import CheckHistoryIndex from "app/views/myinfo/payroll/checkhistory/CheckHistoryIndex";
 import EmergencyAlertInfoIndex from "app/views/myinfo/personnel/emergency-alert-info/EmergencyAlertInfoIndex";
 import ToDoReporting from "app/views/myinfo/personnel/to-do-reporting/ToDoReporting";
-import TodoList from "app/views/myinfo/personnel/todo-list/TodoList";
+import TodoListIndex from "app/views/myinfo/personnel/todo-list/TodoListIndex";
 import AcknowledgmentAssignment from "app/views/myinfo/personnel/todo-list/AcknowledgmentAssignment";
 import VideoCourse from "app/views/myinfo/personnel/todo-list/VideoCourse";
 import MoodleCourse from "app/views/myinfo/personnel/todo-list/MoodleCourse";
@@ -20,13 +20,15 @@ export default function MyInfoRouter() {
       <Routes>
         <Route path="" element={<MyInfoLayout/>}>
           <Route path="personnel/summary" element={<SummaryIndex/>}/>
-          <Route path="personnel/todo/acknowledgment/:taskId" element={<AcknowledgmentAssignment/>}/>
-          <Route path="personnel/todo/video/:taskId" element={<VideoCourse/>}/>
-          <Route path="personnel/todo/legethics/:taskId" element={<MoodleCourse/>}/>
-          <Route path="personnel/todo/ethicscourse/:taskId" element={<EthicsCourse/>}/>
-          <Route path="personnel/todo/ethicslivecourse/:taskId" element={<EthicsLiveCourse/>}/>
           <Route path="personnel/emergency-alert-info" element={<EmergencyAlertInfoIndex/>}/>
-          <Route path="personnel/todo" element={<TodoList/>}/>
+          <Route path="personnel/todo">
+            <Route path="" element={<TodoListIndex/>}/>
+            <Route path="acknowledgment/:taskId" element={<AcknowledgmentAssignment/>}/>
+            <Route path="video/:taskId" element={<VideoCourse/>}/>
+            <Route path="legethics/:taskId" element={<MoodleCourse/>}/>
+            <Route path="ethicscourse/:taskId" element={<EthicsCourse/>}/>
+            <Route path="ethicslivecourse/:taskId" element={<EthicsLiveCourse/>}/>
+          </Route>
           <Route path="personnel/todo-report" element={<ToDoReporting/>}/>
           <Route path="payroll/checkhistory" element={<CheckHistoryIndex/>}/>
           <Route path="" element={<Navigate to="personnel/summary" replace/>}/>
