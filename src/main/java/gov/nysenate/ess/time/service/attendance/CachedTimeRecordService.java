@@ -2,7 +2,6 @@ package gov.nysenate.ess.time.service.attendance;
 
 import com.google.common.collect.*;
 import com.google.common.eventbus.EventBus;
-import gov.nysenate.ess.core.annotation.WorkInProgress;
 import gov.nysenate.ess.core.config.DatabaseConfig;
 import gov.nysenate.ess.core.model.cache.CacheType;
 import gov.nysenate.ess.core.model.payroll.PayType;
@@ -41,7 +40,6 @@ import static gov.nysenate.ess.time.model.attendance.TimeRecordAction.SUBMIT;
 import static gov.nysenate.ess.time.model.attendance.TimeRecordStatus.APPROVED;
 import static java.util.stream.Collectors.toList;
 
-@WorkInProgress(author = "Ash", since = "2015/09/11", desc = "Reworking methods in the class, adding caching")
 public class CachedTimeRecordService
         extends EmployeeEhCache<TimeRecordCacheCollection>
         implements TimeRecordService {

@@ -2,7 +2,6 @@ package gov.nysenate.ess.core.service.cache;
 
 import gov.nysenate.ess.core.config.InheritedService;
 import gov.nysenate.ess.core.model.cache.CacheType;
-import org.ehcache.Cache;
 
 /**
  * Defines methods that are required to manage a service that depends on one or more caches.
