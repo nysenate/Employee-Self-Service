@@ -5,10 +5,12 @@ import gov.nysenate.ess.core.dao.base.DbVendor;
 
 public enum PersonnelTaskAssignmentQuery implements BasicSqlQuery {
 
-    SELECT_TASKS_FOR_EMP("" +
-            "SELECT *\n" +
-            "FROM ${essSchema}.personnel_task_assignment\n" +
-            "WHERE emp_id = :empId"
+    SELECT_TASKS_FOR_EMP("""
+            SELECT *
+            FROM ${essSchema}.personnel_task_assignment
+            WHERE emp_id = :empId
+            ORDER BY task_id ASC
+            """
     ),
 
     SELECT_SPECIFIC_TASK_FOR_EMP("" +
@@ -18,9 +20,9 @@ public enum PersonnelTaskAssignmentQuery implements BasicSqlQuery {
 
     SELECT_NOTIFIABLE_ASSIGNMENTS(
             "SELECT *\n" +
-            "FROM ${essSchema}.personnel_task_assignment pta\n" +
-            "JOIN ${essSchema}.personnel_task pt ON pt.task_id = pta.task_id\n" +
-            "WHERE pt.active AND pt.notifiable AND pta.active AND NOT pta.completed"
+                    "FROM ${essSchema}.personnel_task_assignment pta\n" +
+                    "JOIN ${essSchema}.personnel_task pt ON pt.task_id = pta.task_id\n" +
+                    "WHERE pt.active AND pt.notifiable AND pta.active AND NOT pta.completed"
     ),
 
     SELECT_TASKS_QUERY("" +
@@ -53,7 +55,7 @@ public enum PersonnelTaskAssignmentQuery implements BasicSqlQuery {
             "WHERE emp_id = :empId AND task_id = :taskId"
     ),
 
-    UPDATE_TASK_DATES ("" +
+    UPDATE_TASK_DATES("" +
             "UPDATE ${essSchema}.personnel_task_assignment\n" +
             "SET assignment_date = :assignmentDate, due_date = :dueDate\n" +
             "WHERE emp_id = :empId AND task_id = :taskId"
