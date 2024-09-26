@@ -19,6 +19,11 @@
     select {
         @apply focus-visible:outline-0;
     }
+
+    a {
+        @apply text-teal-600 hover:text-teal-800 text-base;
+    }
+
 }
 
 

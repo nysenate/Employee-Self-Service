@@ -18,3 +18,8 @@ export function isoToMediumDate(isoDate) {
   const date = parseISO(isoDate)
   return format(date, "MMM d, yyyy")
 }
+
+export function isoToLongDate(isoDate) {
+  const date = parseISO(isoDate)
+  return format(date, "MMMM d, yyyy")
+}

@@ -74,8 +74,8 @@ const Link = ({ to, children }) => {
       console.error(`The theme "${theme}" is unknown to the Navigation.Link component.`)
       borderColor = "border-gray-700"
   }
-  const activeClasses = `block px-4 py-1 text-teal-600 hover:text-teal-800 font-semibold border-l-4 ${borderColor} bg-gray-50`
-  const inactiveClasses = `block px-5 py-1 text-teal-600 hover:text-teal-800 text-base`
+  const activeClasses = `block px-4 py-1 font-semibold border-l-4 ${borderColor} bg-gray-50`
+  const inactiveClasses = `block px-5 py-1`
   return (
     <li>
       <NavLink to={to} className={({ isActive }) => isActive ? activeClasses : inactiveClasses}>
