@@ -3,10 +3,13 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const Dotenv = require('dotenv-webpack');
 
 module.exports = {
-  entry: './WEB-INF/app/index.js',
+  entry: {
+    main: './WEB-INF/app/index.js',
+    "pdf.worker": "pdfjs-dist/build/pdf.worker.mjs",
+  },
   output: {
     path: path.resolve(__dirname, 'assets/dist'),
-    filename: 'index_bundle.js',
+    filename: "[name].bundle.js",
     publicPath: process.env.NODE_ENV === 'production' ? '/assets/dist/' : '/'
   },
   resolve: {
@@ -38,6 +41,7 @@ module.exports = {
         path: 'react-properties.env'
       }),
   ],
+  context: __dirname,
   mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
   devServer: {
     port: 3000,
