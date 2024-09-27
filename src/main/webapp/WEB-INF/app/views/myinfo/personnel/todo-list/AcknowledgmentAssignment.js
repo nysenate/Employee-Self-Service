@@ -4,12 +4,14 @@ import Hero from "app/components/Hero";
 import Card from "app/components/Card";
 import * as pdfjsLib from "pdfjs-dist";
 import { isoToLongDate } from "app/utils/dateUtils";
+import useScrollDetection from "app/hooks/useScrollDetection";
 
 
 export default function AcknowledgmentAssignment() {
   const [ doc, setDoc ] = useState(null)
   const [ pageNumbers, setPageNumbers ] = useState([])
   const assignment = TEST_ASSIGNMENT // TODO load assignment from id in url
+  const isScrolledToBottom = useScrollDetection()
 
   useEffect(() => {
     (async () => {
@@ -65,7 +67,7 @@ async function renderPage(doc, pageNum) {
   const canvasId = `pdf-canvas-${pageNum}`
   const canvas = document.getElementById(canvasId);
 
-  const viewport = page.getViewport({ scale: 4.0 });
+  const viewport = page.getViewport({ scale: 2.0 });
   canvas.width = viewport.width;
   canvas.height = viewport.height;
   const ctx = canvas.getContext("2d");
