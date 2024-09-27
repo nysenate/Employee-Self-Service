@@ -5,7 +5,7 @@ import gov.nysenate.ess.core.dao.base.DbVendor;
 
 public enum PersonnelTaskAssignmentQuery implements BasicSqlQuery {
 
-    SELECT_TASKS_FOR_EMP("""
+    SELECT_TASK_ASSIGNMENTS("""
             SELECT *
             FROM ${essSchema}.personnel_task_assignment
             WHERE emp_id = :empId
@@ -13,9 +13,12 @@ public enum PersonnelTaskAssignmentQuery implements BasicSqlQuery {
             """
     ),
 
-    SELECT_SPECIFIC_TASK_FOR_EMP("" +
-            SELECT_TASKS_FOR_EMP.sql + "\n" +
-            "  AND task_id = :taskId"
+    SELECT_SPECIFIC_TASK_ASSIGNMENT("""
+            SELECT *
+            FROM ${essSchema}.personnel_task_assignment
+            WHERE emp_id = :empId
+              AND task_id = :taskId
+            """
     ),
 
     SELECT_NOTIFIABLE_ASSIGNMENTS(

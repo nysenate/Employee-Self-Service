@@ -27,7 +27,7 @@ public class SqlPersonnelTaskAssignmentDao extends SqlBaseDao implements Personn
     @Override
     public List<PersonnelTaskAssignment> getAssignmentsForEmp(int empId) {
         return localNamedJdbc.query(
-                SELECT_TASKS_FOR_EMP.getSql(schemaMap()),
+                SELECT_TASK_ASSIGNMENTS.getSql(schemaMap()),
                 getEmpIdParams(empId),
                 patRowMapper
         );
@@ -38,15 +38,14 @@ public class SqlPersonnelTaskAssignmentDao extends SqlBaseDao implements Personn
             throws PersonnelTaskAssignmentNotFoundEx {
         try {
             List<PersonnelTaskAssignment> personnelTaskAssignments = localNamedJdbc.query(
-                    SELECT_SPECIFIC_TASK_FOR_EMP.getSql(schemaMap()),
+                    SELECT_SPECIFIC_TASK_ASSIGNMENT.getSql(schemaMap()),
                     getEmpIdTaskIdParams(empId, taskId),
                     patRowMapper
             );
             if (personnelTaskAssignments.isEmpty() || personnelTaskAssignments == null) {
                 logger.error("FAILED TO GET PERSONNEL TASK ASSIGNMENT WITH ID: " + taskId + " FOR EMPLOYEE: " + empId);
                 throw new PersonnelTaskAssignmentNotFoundEx(empId, taskId);
-            }
-            else {
+            } else {
                 return personnelTaskAssignments.get(0);
             }
         } catch (EmptyResultDataAccessException ex) {
@@ -116,7 +115,7 @@ public class SqlPersonnelTaskAssignmentDao extends SqlBaseDao implements Personn
         } else if (updated != 1) {
             throw new IllegalStateException(
                     "Too many updates (" + updated + ") occurred for assigned task - " +
-                            "empId:" + empId + " taskId:" + taskId );
+                            "empId:" + empId + " taskId:" + taskId);
         }
     }
 

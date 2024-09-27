@@ -4,22 +4,28 @@ import Hero from "app/components/Hero";
 import Card from "app/components/Card";
 import * as pdfjsLib from "pdfjs-dist";
 import { isoToLongDate } from "app/utils/dateUtils";
-import useScrollDetection from "app/hooks/useScrollDetection";
+import useScrollDetection from "app/views/myinfo/personnel/todo-list/useScrollDetection";
+import useAuth from "app/contexts/Auth/useAuth";
+import { useTaskAssignment } from "app/api/taskAssignmentApi";
+import LoadingIndicator from "app/components/LoadingIndicator";
 
 
 export default function AcknowledgmentAssignment() {
+  const auth = useAuth()
+  const { data: assignment, isPending } = useTaskAssignment(auth.empId(), 1) // TODO load taskId from url
   const [ doc, setDoc ] = useState(null)
   const [ pageNumbers, setPageNumbers ] = useState([])
-  const assignment = TEST_ASSIGNMENT // TODO load assignment from id in url
   const isScrolledToBottom = useScrollDetection()
 
   useEffect(() => {
     (async () => {
-      const [ doc, pageNums ] = await loadPdf(assignment.task.path)
-      setDoc(doc)
-      setPageNumbers(pageNums)
+      if (assignment) {
+        const [ doc, pageNums ] = await loadPdf(assignment.task.path)
+        setDoc(doc)
+        setPageNumbers(pageNums)
+      }
     })()
-  }, [])
+  }, [ assignment ])
 
   useEffect(() => {
     if (doc && pageNumbers) {
@@ -28,6 +34,10 @@ export default function AcknowledgmentAssignment() {
       }
     }
   }, [ doc, pageNumbers ])
+
+  if (isPending) {
+    return <LoadingIndicator/>
+  }
 
   return (
     <>
@@ -86,25 +96,4 @@ async function renderPage(doc, pageNum) {
     viewport: viewport
   };
   await page.render(renderContext);
-}
-
-const TEST_ASSIGNMENT = {
-  "empId": 11168,
-  "taskId": 1,
-  "timestamp": "2019-10-29T15:08:01.903",
-  "updateUserId": 11168,
-  "completed": true,
-  "active": true,
-  "task": {
-    "taskId": 1,
-    "taskType": "DOCUMENT_ACKNOWLEDGMENT",
-    "title": "2019 NYS Senate Harassment and Discrimination Policy",
-    "effectiveDateTime": "2019-10-28T18:27:55.001187",
-    "endDateTime": null,
-    "active": false,
-    "notifiable": false,
-    "url": null,
-    "resource": "2019_harassment_prevention_policy.pdf",
-    "path": "/assets/ack_docs/2019_harassment_prevention_policy.pdf"
-  }
 }
