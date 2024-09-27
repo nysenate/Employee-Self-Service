@@ -93,7 +93,7 @@ public class TravelAppUpdateService {
         Route fullRoute = routeService.createRoute(draft.getTravelApplication().getRoute());
         MileagePerDiems mileagePerDiems = createMileagePerDiems(fullRoute);
         MealPerDiems mealPerDiems = createMealPerDiems(fullRoute, draft.getTraveler());
-        LodgingPerDiems lodgingPerDiems = createLodgingPerDiems(fullRoute);
+        LodgingPerDiems lodgingPerDiems = lodgingPerDiemService.createLodgingPerDiems(fullRoute);
         draft.getTravelApplication().setRoute(fullRoute);
         draft.getTravelApplication().setMealPerDiems(mealPerDiems);
         draft.getTravelApplication().setMileagePerDiems(mileagePerDiems);
@@ -114,16 +114,6 @@ public class TravelAppUpdateService {
 
     private MealPerDiems createMealPerDiems(Route route, TravelEmployee traveler) {
         return mealPerDiemsFactory.create(route, traveler);
-    }
-
-    private LodgingPerDiems createLodgingPerDiems(Route route) {
-        Set<LodgingPerDiem> lodgingPerDiemSet = new HashSet<>();
-        for (Destination d : route.destinations()) {
-            for (LocalDate date : d.nights()) {
-                lodgingPerDiemSet.add(lodgingPerDiemService.createLodgingPerDiem(date, d.getAddress()));
-            }
-        }
-        return new LodgingPerDiems(lodgingPerDiemSet);
     }
 
     /**
