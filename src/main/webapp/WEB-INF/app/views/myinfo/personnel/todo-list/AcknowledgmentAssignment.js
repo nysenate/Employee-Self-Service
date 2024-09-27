@@ -67,14 +67,25 @@ async function renderPage(doc, pageNum) {
   const canvasId = `pdf-canvas-${pageNum}`
   const canvas = document.getElementById(canvasId);
 
-  const viewport = page.getViewport({ scale: 2.0 });
-  canvas.width = viewport.width;
-  canvas.height = viewport.height;
   const ctx = canvas.getContext("2d");
-  const renderTask = page.render({
+  const dpr = window.devicePixelRatio || 1
+  const bsr = ctx.webkitBackingStorePixelRatio ||
+    ctx.mozBackingStorePixelRatio ||
+    ctx.msBackingStorePixelRatio ||
+    ctx.oBackingStorePixelRatio ||
+    ctx.backingStorePixelRatio || 1
+  const ratio = dpr / bsr
+
+  const viewport = page.getViewport({ scale: 1.4, });
+  canvas.width = viewport.width * ratio
+  canvas.height = viewport.height * ratio
+  ctx.setTransform(ratio, 0, 0, ratio, 0, 0)
+
+  const renderContext = {
     canvasContext: ctx,
-    viewport,
-  });
+    viewport: viewport
+  };
+  await page.render(renderContext);
 }
 
 const TEST_ASSIGNMENT = {
