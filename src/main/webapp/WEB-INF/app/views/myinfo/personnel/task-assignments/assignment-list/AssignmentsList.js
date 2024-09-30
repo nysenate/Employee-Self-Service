@@ -21,19 +21,16 @@ const assignmentDisplayFields = (type) => {
     case "DOCUMENT_ACKNOWLEDGMENT":
       task.verbPastTense = "Acknowledged"
       task.verb = "Acknowledge"
-      task.link = "/myinfo/personnel/todo/acknowledgment"
       task.icon = <DocumentTextIcon className="size-4 text-teal-600"/>
       break
     case "VIDEO_CODE_ENTRY":
       task.verbPastTense = "Watched"
       task.verb = "Watch"
-      task.link = "/myinfo/personnel/todo/video"
       task.icon = <VideoCameraIcon className="size-4 text-teal-600"/>
       break
     case "MOODLE_COURSE":
       task.verbPastTense = "Completed"
       task.verb = "Complete"
-      task.link = "/myinfo/personnel/todo/legethics"
       task.icon = <AcademicCapIcon className="size-4 text-teal-600"/>
       break
     case "EVERFI_COURSE":
@@ -44,13 +41,11 @@ const assignmentDisplayFields = (type) => {
     case "ETHICS_COURSE":
       task.verbPastTense = "Completed"
       task.verb = "Complete"
-      task.link = "/myinfo/personnel/todo/ethicscourse"
       task.icon = <AcademicCapIcon className="size-4 text-teal-600"/>
       break
     case "ETHICS_LIVE_COURSE":
       task.verbPastTense = "Completed"
       task.verb = "Complete"
-      task.link = "/myinfo/personnel/todo/ethicslivecourse"
       task.icon = <AcademicCapIcon className="size-4 text-teal-600"/>
       break
   }
@@ -91,7 +86,7 @@ export default function AssignmentsList() {
                  <u>Complete: {assignment.task.title}</u>
                </a>) : (
                 <Link
-                  to={assignmentDisplayFields(assignment.task.taskType).link + `/${assignment.taskId}`}
+                  to={`${assignment.taskId}`}
                   state={{
                     task: assignment.task,
                     completed: assignment.completed,
@@ -126,7 +121,7 @@ export default function AssignmentsList() {
                  </span>
                </a>) : (
                 <Link
-                  to={assignmentDisplayFields(assignment.task.taskType).link + `/${assignment.taskId}`}
+                  to={`${assignment.taskId}`}
                   state={{
                     task: assignment.task,
                     completed: assignment.completed,

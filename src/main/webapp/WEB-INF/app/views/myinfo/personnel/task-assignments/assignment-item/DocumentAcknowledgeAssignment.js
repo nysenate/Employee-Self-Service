@@ -4,15 +4,11 @@ import Hero from "app/components/Hero";
 import Card from "app/components/Card";
 import * as pdfjsLib from "pdfjs-dist";
 import { isoToLongDate } from "app/utils/dateUtils";
-import useScrollDetection from "app/views/myinfo/personnel/todo-list/useScrollDetection";
-import useAuth from "app/contexts/Auth/useAuth";
-import { useTaskAssignment } from "app/api/taskAssignmentApi";
+import useScrollDetection from "app/views/myinfo/personnel/task-assignments/useScrollDetection";
 import LoadingIndicator from "app/components/LoadingIndicator";
 
 
-export default function AcknowledgmentAssignment() {
-  const auth = useAuth()
-  const { data: assignment, isPending } = useTaskAssignment(auth.empId(), 1) // TODO load taskId from url
+export default function DocumentAcknowledgeAssignment({ assignment }) {
   const [ doc, setDoc ] = useState(null)
   const [ pageNumbers, setPageNumbers ] = useState([])
   const isScrolledToBottom = useScrollDetection()
@@ -35,10 +31,6 @@ export default function AcknowledgmentAssignment() {
     }
   }, [ doc, pageNumbers ])
 
-  if (isPending) {
-    return <LoadingIndicator/>
-  }
-
   return (
     <>
       <Hero>{assignment.task.title}</Hero>
@@ -60,6 +52,10 @@ export default function AcknowledgmentAssignment() {
       </Card>
     </>
   )
+}
+
+function RenderPdf({ pdfPath }) {
+
 }
 
 async function loadPdf(url) {

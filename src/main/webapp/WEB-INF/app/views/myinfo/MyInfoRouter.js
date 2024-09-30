@@ -7,12 +7,15 @@ import SummaryIndex from "app/views/myinfo/personnel/summary/SummaryIndex";
 import CheckHistoryIndex from "app/views/myinfo/payroll/checkhistory/CheckHistoryIndex";
 import EmergencyAlertInfoIndex from "app/views/myinfo/personnel/emergency-alert-info/EmergencyAlertInfoIndex";
 import ToDoReporting from "app/views/myinfo/personnel/to-do-reporting/ToDoReporting";
-import TodoListIndex from "app/views/myinfo/personnel/todo-list/TodoListIndex";
-import AcknowledgmentAssignment from "app/views/myinfo/personnel/todo-list/AcknowledgmentAssignment";
-import VideoCourse from "app/views/myinfo/personnel/todo-list/VideoCourse";
-import MoodleCourse from "app/views/myinfo/personnel/todo-list/MoodleCourse";
-import EthicsCourse from "app/views/myinfo/personnel/todo-list/EthicsCourse";
-import EthicsLiveCourse from "app/views/myinfo/personnel/todo-list/EthicsLiveCourse";
+import TaskAssignmentsListIndex
+  from "app/views/myinfo/personnel/task-assignments/assignment-list/TaskAssignmentsListIndex";
+import DocumentAcknowledgeAssignment
+  from "app/views/myinfo/personnel/task-assignments/assignment-item/DocumentAcknowledgeAssignment";
+import VideoCourse from "app/views/myinfo/personnel/task-assignments/VideoCourse";
+import MoodleCourse from "app/views/myinfo/personnel/task-assignments/MoodleCourse";
+import EthicsCourse from "app/views/myinfo/personnel/task-assignments/EthicsCourse";
+import EthicsLiveCourse from "app/views/myinfo/personnel/task-assignments/EthicsLiveCourse";
+import TaskAssignmentIndex from "app/views/myinfo/personnel/task-assignments/assignment-item/TaskAssignmentIndex";
 
 export default function MyInfoRouter() {
   return (
@@ -21,14 +24,14 @@ export default function MyInfoRouter() {
         <Route path="" element={<MyInfoLayout/>}>
           <Route path="personnel/summary" element={<SummaryIndex/>}/>
           <Route path="personnel/emergency-alert-info" element={<EmergencyAlertInfoIndex/>}/>
-          <Route path="personnel/todo">
-            <Route path="" element={<TodoListIndex/>}/>
-            <Route path="acknowledgment/:taskId" element={<AcknowledgmentAssignment/>}/>
-            <Route path="video/:taskId" element={<VideoCourse/>}/>
-            <Route path="legethics/:taskId" element={<MoodleCourse/>}/>
-            <Route path="ethicscourse/:taskId" element={<EthicsCourse/>}/>
-            <Route path="ethicslivecourse/:taskId" element={<EthicsLiveCourse/>}/>
-          </Route>
+          <Route path="personnel/tasks/assignments" element={<TaskAssignmentsListIndex/>}/>
+          <Route path="personnel/tasks/assignments/:taskId" element={<TaskAssignmentIndex/>}/>
+          {/*<Route path="" element={<TaskAssignmentsIndex/>}/>*/}
+          {/*<Route path="acknowledgment/:taskId" element={<AcknowledgmentAssignment/>}/>*/}
+          {/*<Route path="video/:taskId" element={<VideoCourse/>}/>*/}
+          {/*<Route path="legethics/:taskId" element={<MoodleCourse/>}/>*/}
+          {/*<Route path="ethicscourse/:taskId" element={<EthicsCourse/>}/>*/}
+          {/*<Route path="ethicslivecourse/:taskId" element={<EthicsLiveCourse/>}/>*/}
           <Route path="personnel/todo-report" element={<ToDoReporting/>}/>
           <Route path="payroll/checkhistory" element={<CheckHistoryIndex/>}/>
           <Route path="" element={<Navigate to="personnel/summary" replace/>}/>
@@ -52,7 +55,7 @@ function MyInfoLayout() {
           <Navigation.Link to="/myinfo/personnel/emergency-alert-info">
             Emergency Alert Info
           </Navigation.Link>
-          <Navigation.Link to="/myinfo/personnel/todo">
+          <Navigation.Link to="/myinfo/personnel/tasks/assignments">
             To-Do List
           </Navigation.Link>
           <Navigation.Link to="/myinfo/personnel/todo-report">

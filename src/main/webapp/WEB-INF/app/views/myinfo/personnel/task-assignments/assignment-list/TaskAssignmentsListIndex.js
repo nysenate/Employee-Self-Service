@@ -3,7 +3,7 @@ import Hero from "app/components/Hero";
 import Card from "app/components/Card";
 import AssignmentsList from "./AssignmentsList";
 
-export default function TodoListIndex() {
+export default function TaskAssignmentsListIndex() {
   return (
     <div>
       <Hero>Personnel To-Do List</Hero>

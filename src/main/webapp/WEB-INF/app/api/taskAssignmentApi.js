@@ -7,7 +7,8 @@ export function useTaskAssignments(empId) {
     queryFn: () => {
       return fetchApiJson(`/personnel/task/assignment/${empId}?detail=true&activeOnly=true`)
         .then((body) => body.assignments)
-    }
+    },
+    throwOnError: true,
   })
 }
 
@@ -17,6 +18,7 @@ export function useTaskAssignment(empId, taskId) {
     queryFn: () => {
       return fetchApiJson(`/personnel/task/assignment/${empId}/${taskId}`)
         .then((body) => body.task)
-    }
+    },
+    throwOnError: true,
   })
 }

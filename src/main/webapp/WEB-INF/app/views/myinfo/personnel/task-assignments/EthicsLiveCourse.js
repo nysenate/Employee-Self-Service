@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Hero from "app/components/Hero";
 import Card from "app/components/Card";
 import { Link, useLocation } from "react-router-dom";
-import CodeForm from "app/views/myinfo/personnel/todo-list/CodeForm";
+import CodeForm from "app/views/myinfo/personnel/task-assignments/CodeForm";
 import LoadingIndicator from "app/components/LoadingIndicator";
 
 export default function EthicsLiveCourse() {
