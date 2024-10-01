@@ -23,5 +23,5 @@ public interface EmpTaskSearchService {
      * @param limitOffset {@link LimitOffset}
      * @return {@link PaginatedList<EmpTaskSearchService>}
      */
-    PaginatedList<EmployeeTaskSearchResult> searchForNotEmpTasks(EmpPTAQuery query, LimitOffset limitOffset);
+    PaginatedList<EmployeeTaskSearchResult> searchForNotAssignedEmpTasks(EmpPTAQuery query, LimitOffset limitOffset);
 }

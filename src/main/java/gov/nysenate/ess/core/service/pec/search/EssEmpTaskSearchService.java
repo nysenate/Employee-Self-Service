@@ -76,7 +76,7 @@ public class EssEmpTaskSearchService implements EmpTaskSearchService {
     }
 
     @Override
-    public PaginatedList<EmployeeTaskSearchResult> searchForNotEmpTasks(EmpPTAQuery query, LimitOffset limitOffset) {
+    public PaginatedList<EmployeeTaskSearchResult> searchForNotAssignedEmpTasks(EmpPTAQuery query, LimitOffset limitOffset) {
 
         List<PersonnelTaskAssignment> tasks = patDao.getAssignTasks(query.getPatQuery());
         List<Integer> activeTasks = patDao.getActiveTasks(true);

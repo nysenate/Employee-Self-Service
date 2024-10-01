@@ -77,7 +77,7 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
         this.assignmentDao = assignmentDao;
         this.everfiUserService = everfiUserService;
         this.employeeDao = employeeDao;
-        this.everfiReportEmails = Arrays.asList(everfiReportEmailList.replaceAll(" ","").split(","));
+        this.everfiReportEmails = Arrays.asList(everfiReportEmailList.replaceAll(" ", "").split(","));
         eventBus.register(this);
     }
 
@@ -102,8 +102,7 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
             return groupTaskAssigners.stream()
                     .map(groupAssigner -> groupAssigner.assignGroupTasks(empId, updateDb))
                     .flatMap(List::stream).collect(Collectors.toList());
-        }
-        else {
+        } else {
             if (updateDb) {
                 logger.info("Skipping task assignment for ineligible emp #{}", empId);
             }
@@ -116,7 +115,7 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
         personnelTaskDao.updatePersonnelAssignedTaskCompletion(empID, updateEmpID, completed, taskID);
 
         logger.info("Task assignment " + taskID + " was updated for Employee " + empID +
-        " by employee " + updateEmpID + ". Its completion status is " + completed);
+                " by employee " + updateEmpID + ". Its completion status is " + completed);
     }
 
     @Override
@@ -129,7 +128,7 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
 
     @Override
     public void updateAssignedTaskAssignment(int empID, int updateEmpID, boolean assigned, int taskID) {
-        personnelTaskDao.updatePersonnelAssignedTaskAssignment(empID,updateEmpID,assigned,taskID);
+        personnelTaskDao.updatePersonnelAssignedTaskAssignment(empID, updateEmpID, assigned, taskID);
     }
 
     @Override
@@ -141,7 +140,7 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
             boolean hasCompletedAnEthicsLiveTraining = false;
 
             for (PersonnelTaskAssignment assignment : empAssignments) {
-                for (PersonnelTask task: personnelTasks) {
+                for (PersonnelTask task : personnelTasks) {
                     if (assignment.getTaskId() == task.getTaskId() && assignment.isCompleted()
                             && task.getTaskType() == PersonnelTaskType.ETHICS_LIVE_COURSE) {
                         hasCompletedAnEthicsLiveTraining = true;
@@ -153,7 +152,7 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
                 if (!assignment.isActive() || assignment.isCompleted()) {
                     continue;
                 }
-                if ( !overrideExistingDueDates && assignment.getDueDate() != null) {
+                if (!overrideExistingDueDates && assignment.getDueDate() != null) {
                     continue;
                 }
                 PersonnelTaskType type = getPersonnelTaskType(assignment, personnelTasks);
@@ -171,111 +170,106 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
 
     @Override
     public void insertAssignedTask(int empID, int updateEmpID, int taskID) {
-
-        checkEverfiRecords(taskID, empID);
+        PersonnelTask task = personnelTaskDao.getPersonnelTask(taskID);
+        if (task.getTaskType() == PersonnelTaskType.EVERFI_COURSE) {
+            checkEverfiRecords(taskID, empID);
+        }
         personnelTaskDao.insertPersonnelAssignedTask(empID, updateEmpID, taskID);
 
-        logger.info("Task assignment " + taskID + " was updated for Employee " + empID +
+        logger.info("The task: " + task.getTitle() + " + was assigned to employee " + empID +
                 " by employee " + updateEmpID);
     }
 
     private void checkEverfiRecords(int taskID, int empID) {
-        PersonnelTask task = personnelTaskDao.getPersonnelTask(taskID);
-        List<Employee> emps = new ArrayList<>();
+        EverfiUserIDs everfiUserIDs = everfiUserDao.getEverfiUserIDsWithEmpID(empID);
         Employee employee = employeeDao.getEmployeeById(empID);
-        emps.add(employee);
-        if (task.getTaskType() == PersonnelTaskType.EVERFI_COURSE) {
-            EverfiUserIDs everfiUserIDs = everfiUserDao.getEverfiUserIDsWithEmpID(empID);
-            if (everfiUserIDs == null && employee.getEmail() == null) {
-                logger.info("Either EverfiUserIDs or Employee Email: " + employee.getEmail() +
-                        " are null");
-                //                TODO: Enable once ready
-//                sendEmailToEverfiReportEmails("Check this employee: ",
-//                        generateEmployeeListString(emps) + "is not registered in Everfi and didn't have the email.");
-            }
-            else if (everfiUserIDs == null) {
-                logger.info("Only EverfiUserIDs are null");
-                everfiUserService.addEmployeesToEverfi(emps);
-                //                TODO: Enable once ready
-//                sendEmailToEverfiReportEmails("Task Assigned for this employee:  ",
-//                        generateEmployeeListString(emps) + "This is registered in Everfi.");
-            }
-            else {
-                logger.info("Employee is registered in Everfi but the task is not assigned.");
-//                TODO: Enable once ready
-//                sendEmailToEverfiReportEmails("Check this employee: ", generateEmployeeListString(emps) + "is registered in Everfi but the task is not assigned.");
-            }
+        String subject = "PERSONNEL MANUAL EVERFI UPLOAD FOR " + employee.getFullName() + ", " + employee.getEmployeeId();
+
+        //Check if email is null. Send Report
+        if (employee.getEmail() == null || employee.getEmail().isEmpty()) {
+            logger.warn("Employee: " + employee.getEmployeeId() + " is missing an email in SFMS and cannot be uploaded to Everfi");
+            sendEmailToEverfiReportEmails(subject, employee.getFullName() + " needs their email updated in SFMS and their account created in Everfi + task assigned to them");
+        }
+        //check if they exist in Everfi.
+        else if (everfiUserIDs == null) {
+            logger.info("Employee: " + employee.getEmail() + " has an email but has not been uploaded to Everfi");
+            everfiUserService.addEmployeesToEverfi(Arrays.asList(employee));
+            sendEmailToEverfiReportEmails(subject, "ESS has attempted to create an Everfi account for " + employee.getFullName() + ". The account will be under the email " + employee.getEmail());
+        }
+        //else they are registered but not assigned. send report to have that manually changed
+        else {
+            logger.info("Employee: " + employee.getEmail() + " is registered in Everfi but the task is not assigned.");
+            sendEmailToEverfiReportEmails(subject, employee.getFullName() + " is registered in Everfi but the task is not assigned. Please assign the task to this individual. The task will appear in ESS already.");
         }
     }
 
-    private void sendEmailToEverfiReportEmails(String subject, String html) {
-        for (String email : this.everfiReportEmails) {
-            System.out.println(email);
-            sendEmail(email, subject, html);
-        }
+
+private void sendEmailToEverfiReportEmails(String subject, String html) {
+    for (String email : this.everfiReportEmails) {
+        sendEmail(email, subject, html);
+    }
+}
+
+private void sendEmail(String to, String subject, String html) {
+    try {
+        sendMailService.sendMessage(StringUtils.trim(to), subject, html);
+    } catch (Exception e) {
+        logger.error("There was an error trying to send the Everfi report email ", e.getMessage());
+    }
+}
+
+private String generateEmployeeListString(List<Employee> emps) {
+    StringBuilder employeeListDetails = new StringBuilder();
+    for (Employee employee : emps) {
+        employeeListDetails.append(" NAME: ").append(employee.getFullName())
+                .append(" EMAIL: ").append(employee.getEmail()).append(" EMPID: ")
+                .append(employee.getEmployeeId()).append("<br>\n");
     }
 
-    private void sendEmail(String to, String subject, String html) {
-        try {
-            sendMailService.sendMessage(StringUtils.trim(to), subject, html);
-        }
-        catch (Exception e) {
-            logger.error("There was an error trying to send the Everfi report email ", e.getMessage());
+    if (employeeListDetails.isEmpty()) {
+        employeeListDetails = new StringBuilder("There are no employees to perform this operation on");
+    }
+    return employeeListDetails.toString();
+}
+
+private PersonnelTaskType getPersonnelTaskType(PersonnelTaskAssignment assignment, List<PersonnelTask> personnelTasks) {
+    PersonnelTaskType type = null;
+    for (PersonnelTask task : personnelTasks) {
+        if (assignment.getTaskId() == task.getTaskId() && task.getTaskType() == PersonnelTaskType.MOODLE_COURSE) {
+            type = PersonnelTaskType.MOODLE_COURSE;
+        } else if (assignment.getTaskId() == task.getTaskId() && task.getTaskType() == PersonnelTaskType.ETHICS_LIVE_COURSE) {
+            type = PersonnelTaskType.ETHICS_LIVE_COURSE;
         }
     }
+    return type;
+}
 
-    private String generateEmployeeListString(List<Employee> emps) {
-        StringBuilder employeeListDetails = new StringBuilder();
-        for (Employee employee: emps) {
-            employeeListDetails.append(" NAME: ").append(employee.getFullName())
-                    .append(" EMAIL: ").append(employee.getEmail()).append(" EMPID: ")
-                    .append(employee.getEmployeeId()).append("<br>\n");
-        }
+/**
+ * Detect transaction posts for new or reappointed employees and assign tasks to the employees.
+ *
+ * @param txUpdateEvent {@link TransactionHistoryUpdateEvent}
+ */
+@Subscribe
+public void assignTasksToNewEmps(TransactionHistoryUpdateEvent txUpdateEvent) {
+    txUpdateEvent.getTransRecs().stream()
+            .filter(rec -> newEmpCodes.contains(rec.getTransCode()))
+            .map(TransactionRecord::getEmployeeId)
+            .distinct()
+            .forEach(empId -> assignTasks(empId, true));
+}
 
-        if (employeeListDetails.isEmpty()) {
-            employeeListDetails = new StringBuilder("There are no employees to perform this operation on");
-        }
-        return employeeListDetails.toString();
+/* --- Internal Methods --- */
+
+/**
+ * Determine if the employee is eligible for task assignment.
+ */
+private boolean needsTaskAssignment(int empId) {
+    if (empInfoService.getEmployee(empId).isSenator()) {
+        return false;
     }
-
-    private PersonnelTaskType getPersonnelTaskType(PersonnelTaskAssignment assignment, List<PersonnelTask> personnelTasks) {
-        PersonnelTaskType type = null;
-        for (PersonnelTask task: personnelTasks) {
-            if (assignment.getTaskId() == task.getTaskId() && task.getTaskType() == PersonnelTaskType.MOODLE_COURSE) {
-                type = PersonnelTaskType.MOODLE_COURSE;
-            }
-            else if (assignment.getTaskId() == task.getTaskId() && task.getTaskType() == PersonnelTaskType.ETHICS_LIVE_COURSE) {
-                type = PersonnelTaskType.ETHICS_LIVE_COURSE;
-            }
-        }
-        return type;
-    }
-
-    /**
-     * Detect transaction posts for new or reappointed employees and assign tasks to the employees.
-     * @param txUpdateEvent {@link TransactionHistoryUpdateEvent}
-     */
-    @Subscribe
-    public void assignTasksToNewEmps(TransactionHistoryUpdateEvent txUpdateEvent) {
-        txUpdateEvent.getTransRecs().stream()
-                .filter(rec -> newEmpCodes.contains(rec.getTransCode()))
-                .map(TransactionRecord::getEmployeeId)
-                .distinct()
-                .forEach(empId -> assignTasks(empId, true));
-    }
-
-    /* --- Internal Methods --- */
-
-    /**
-     * Determine if the employee is eligible for task assignment.
-     */
-    private boolean needsTaskAssignment(int empId) {
-        if (empInfoService.getEmployee(empId).isSenator()) {
-            return false;
-        }
-        TransactionHistory transHistory = transactionService.getTransHistory(empId);
-        Range<LocalDate> presentAndFuture = Range.atLeast(LocalDate.now());
-        // They are eligible if they are currently active, or will be active in the future.
-        return transHistory.getActiveDates().intersects(presentAndFuture);
-    }
+    TransactionHistory transHistory = transactionService.getTransHistory(empId);
+    Range<LocalDate> presentAndFuture = Range.atLeast(LocalDate.now());
+    // They are eligible if they are currently active, or will be active in the future.
+    return transHistory.getActiveDates().intersects(presentAndFuture);
+}
 }
