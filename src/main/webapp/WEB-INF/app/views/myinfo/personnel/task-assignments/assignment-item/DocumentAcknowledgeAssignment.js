@@ -6,22 +6,91 @@ import * as pdfjsLib from "pdfjs-dist";
 import { isoToLongDate } from "app/utils/dateUtils";
 import useScrollDetection from "app/views/myinfo/personnel/task-assignments/useScrollDetection";
 import LoadingIndicator from "app/components/LoadingIndicator";
+import { Button } from "app/components/Button";
 
 
 export default function DocumentAcknowledgeAssignment({ assignment }) {
+  const isScrolledToBottom = useScrollDetection()
+
+  return (
+    <>
+      <Hero>{assignment.task.title}</Hero>
+      <Card className="mt-5">
+        {assignment.completed
+         ? <Card.Header>You acknowledged this policy/document on {isoToLongDate(assignment.timestamp)}</Card.Header>
+         : <Card.Header>
+           Please review this policy/document and click the button to acknowledge it.
+           <br/>
+           <span className="font-bold">You must scroll to the end of the page for the button to become available.</span>
+           <br/>
+           If desired, click "Open Printable View" to open a separate tab to print the document.
+         </Card.Header>
+        }
+
+        <div className="m-5 flex justify-between">
+          <Link to="/myinfo/personnel/tasks/assignments">
+            Return to Personnel To-Do List
+          </Link>
+          <a href={assignment.task.path} target="_blank" rel="noopener noreferrer">
+            Open Printable View
+          </a>
+        </div>
+
+        <div className="pb-5">
+          <RenderPdf pdfPath={assignment.task.path}/>
+        </div>
+
+        {!assignment.completed &&
+          <AcknowledgeBanner isScrolledToBottom={isScrolledToBottom}/>
+        }
+      </Card>
+    </>
+  )
+}
+
+/**
+ * Displays a fixed banner at the bottom of the page containing an Acknowledge button and
+ * directions to read the entire document.
+ */
+function AcknowledgeBanner({ isScrolledToBottom }) {
+  return (
+    <div className="fixed bottom-0 w-[880px] border-x-4 border-t-4 border-green-600">
+      <Card className="py-5">
+        <div className="flex justify-between align-baseline">
+          <div className="w-5/12"></div>
+          <div className="w-2/12 text-center">
+            <Button type="submit"
+                    color="success"
+                    disabled={!isScrolledToBottom}>
+              Acknowledge
+            </Button>
+          </div>
+          <div className="w-5/12">
+            {!isScrolledToBottom &&
+              <div className="font-semibold text-red-600">
+                You must read the entire document to acknowledge
+              </div>
+            }
+          </div>
+        </div>
+      </Card>
+    </div>
+  )
+}
+
+function RenderPdf({ pdfPath }) {
   const [ doc, setDoc ] = useState(null)
   const [ pageNumbers, setPageNumbers ] = useState([])
-  const isScrolledToBottom = useScrollDetection()
 
   useEffect(() => {
     (async () => {
-      if (assignment) {
-        const [ doc, pageNums ] = await loadPdf(assignment.task.path)
+      if (pdfPath) {
+        const [ doc, pageNums ] = await loadPdf(pdfPath)
         setDoc(doc)
         setPageNumbers(pageNums)
       }
     })()
-  }, [ assignment ])
+  }, [ pdfPath ])
 
   useEffect(() => {
     if (doc && pageNumbers) {
@@ -32,30 +101,10 @@ export default function DocumentAcknowledgeAssignment({ assignment }) {
   }, [ doc, pageNumbers ])
 
   return (
-    <>
-      <Hero>{assignment.task.title}</Hero>
-      <Card className="mt-5">
-        <Card.Header>
-          You acknowledged this policy/document on {isoToLongDate(assignment.timestamp)}
-        </Card.Header>
-        <div className="m-5 flex justify-between">
-          <Link to="/myinfo/personnel/todo">
-            Return to Personnel To-Do List
-          </Link>
-          <a href={assignment.task.path} target="_blank" rel="noopener noreferrer">
-            Open Printable View
-          </a>
-        </div>
-        <div className="">
-          {pageNumbers.map((i) => <canvas id={`pdf-canvas-${i}`} className="w-full" width="880" key={i}></canvas>)}
-        </div>
-      </Card>
-    </>
+    <div className="">
+      {pageNumbers.map((i) => <canvas id={`pdf-canvas-${i}`} className="w-full" width="880" key={i}></canvas>)}
+    </div>
   )
-}
-
-function RenderPdf({ pdfPath }) {
-
 }
 
 async function loadPdf(url) {
