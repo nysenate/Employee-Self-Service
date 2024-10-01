@@ -21,7 +21,7 @@ public class LodgingPerDiemService {
     }
 
     public LodgingPerDiem createLodgingPerDiem(LocalDate date, TravelAddress address) {
-        Dollars lodgingRate = gsaAllowanceService.fetchLodgingRate(date, address);
+        Dollars lodgingRate = gsaAllowanceService.fetchLodgingRate(date, address.getZip5());
         return new LodgingPerDiem(address, date, lodgingRate);
     }
 }

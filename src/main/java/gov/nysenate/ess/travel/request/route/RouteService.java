@@ -101,14 +101,14 @@ public class RouteService {
         for (Destination d : route.destinations()) {
             // Meal Rates
             for (LocalDate date : d.days()) {
-                Dollars mealRate = gsaAllowanceService.fetchMealRate(date, d.getAddress());
+                Dollars mealRate = gsaAllowanceService.fetchMealRate(date, d.getAddress().getZip5());
                 PerDiem mealPerDiem = new PerDiem(date, mealRate);
                 d.addMealPerDiem(mealPerDiem);
             }
 
             // Lodging Rates
             for (LocalDate night : d.nights()) {
-                Dollars lodgingRate = gsaAllowanceService.fetchLodgingRate(night, d.getAddress());
+                Dollars lodgingRate = gsaAllowanceService.fetchLodgingRate(night, d.getAddress().getZip5());
                 PerDiem lodgingPerDiem = new PerDiem(night, lodgingRate);
                 d.addLodgingPerDiem(lodgingPerDiem);
             }
