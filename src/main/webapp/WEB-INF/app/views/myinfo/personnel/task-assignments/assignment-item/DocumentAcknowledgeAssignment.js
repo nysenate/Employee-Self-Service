@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Hero from "app/components/Hero";
 import Card from "app/components/Card";
 import * as pdfjsLib from "pdfjs-dist";
@@ -7,10 +7,42 @@ import { isoToLongDate } from "app/utils/dateUtils";
 import useScrollDetection from "app/views/myinfo/personnel/task-assignments/useScrollDetection";
 import LoadingIndicator from "app/components/LoadingIndicator";
 import { Button } from "app/components/Button";
+import Modal from "app/components/Modal";
+import ModalNotice from "app/components/ModalNotice";
+import { useAcknowledgeDocument } from "app/api/taskAssignmentApi";
+import useAuth from "app/contexts/Auth/useAuth";
+import ModalLoading from "app/components/ModalLoading";
 
 
 export default function DocumentAcknowledgeAssignment({ assignment }) {
+  const auth = useAuth()
+  const navigate = useNavigate()
+  const acknowledgeDocumentApi = useAcknowledgeDocument()
   const isScrolledToBottom = useScrollDetection()
+  const [ isConfirmationModalOpen, setIsConfirmationModalOpen ] = useState(false);
+  const [ isSuccessModalOpen, setIsSuccessModalOpen ] = useState(false);
+  const [ isAcknowledgmentInProgress, setIsAcknowledgmentInProgress ] = useState(false);
+
+  const onAcknowledge = () => {
+    setIsConfirmationModalOpen(true)
+    setIsAcknowledgmentInProgress(true)
+  }
+
+  const onAcknowledgeConfirmation = () => {
+    setIsConfirmationModalOpen(false)
+    acknowledgeDocumentApi.mutateAsync({
+      empId: auth.empId(),
+      taskId: assignment.taskId
+    }).then(() => {
+      setIsSuccessModalOpen(true)
+      setIsAcknowledgmentInProgress(false)
+    })
+  }
+
+  const onSuccessModalResolved = () => {
+    setIsConfirmationModalOpen(false)
+    navigate('/myinfo/personnel/tasks/assignments')
+  }
 
   return (
     <>
@@ -41,10 +73,59 @@ export default function DocumentAcknowledgeAssignment({ assignment }) {
         </div>
 
         {!assignment.completed &&
-          <AcknowledgeBanner isScrolledToBottom={isScrolledToBottom}/>
+          <AcknowledgeBanner isScrolledToBottom={isScrolledToBottom}
+                             onAcknowledged={onAcknowledge}
+                             isAcknowledgmentInProgress={isAcknowledgmentInProgress}/>
         }
       </Card>
+
+      <ConfirmationModal assignment={assignment}
+                         isOpen={isConfirmationModalOpen}
+                         onResolve={onAcknowledgeConfirmation}
+                         onReject={() => {
+                           setIsConfirmationModalOpen(false)
+                           setIsAcknowledgmentInProgress(false)
+                         }}/>
+      <ModalNotice isOpen={isSuccessModalOpen}
+                   onResolve={onSuccessModalResolved}
+                   title="Acknowledgement Complete"
+                   body="You have successfully acknowledged this policy/document."/>
     </>
+  )
+}
+
+function ConfirmationModal({ assignment, isOpen, onResolve, onReject }) {
+  return (
+    <Modal isOpen={isOpen}>
+      <Modal.Title>
+        Acknowledge Policy/Document
+      </Modal.Title>
+      <Modal.Body>
+        <div className="max-w-lg">
+          <p>
+            I hereby acknowledge receipt of the New York State Senate
+            <span className="font-bold"> {assignment.task.title} </span>
+            and state that I have read the same. I understand that compliance is a condition of employment and that
+            violation of any policy could subject me to penalties including, but not limited to, loss of privileges to
+            use Senate technologies, demotion, suspension or termination.
+          </p>
+          <p className="mt-3">
+            In addition for purposes of submitting this acknowledgment, the username and password is the electronic
+            signature of the employee. As liability attaches, the employee should ensure that his or her username and
+            password is securely kept and used.
+          </p>
+        </div>
+      </Modal.Body>
+      <Modal.Buttons>
+        <Button color="success" onClick={onResolve}>
+          I Agree
+        </Button>
+        <Button color="secondary" onClick={onReject}>
+          Cancel
+        </Button>
+      </Modal.Buttons>
+    </Modal>
+
   )
 }
 
@@ -52,7 +133,7 @@ export default function DocumentAcknowledgeAssignment({ assignment }) {
  * Displays a fixed banner at the bottom of the page containing an Acknowledge button and
  * directions to read the entire document.
  */
-function AcknowledgeBanner({ isScrolledToBottom }) {
+function AcknowledgeBanner({ isScrolledToBottom, onAcknowledged, isAcknowledgmentInProgress }) {
   return (
     <div className="fixed bottom-0 w-[880px] border-x-4 border-t-4 border-green-600">
       <Card className="py-5">
@@ -61,7 +142,9 @@ function AcknowledgeBanner({ isScrolledToBottom }) {
           <div className="w-2/12 text-center">
             <Button type="submit"
                     color="success"
-                    disabled={!isScrolledToBottom}>
+                    disabled={!isScrolledToBottom || isAcknowledgmentInProgress}
+                    onClick={onAcknowledged}
+            >
               Acknowledge
             </Button>
           </div>

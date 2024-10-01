@@ -9,7 +9,8 @@ import DocumentAcknowledgeAssignment
 
 export default function TaskAssignmentIndex() {
   const auth = useAuth()
-  const { taskId } = useParams()
+  let { taskId } = useParams()
+  taskId = Number(taskId)
   const { data: assignment, isLoading } = useTaskAssignment(auth.empId(), taskId)
 
 
