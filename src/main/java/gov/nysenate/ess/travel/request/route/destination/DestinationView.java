@@ -16,8 +16,6 @@ public class DestinationView implements ViewObject {
     private TravelAddressView address;
     private String arrivalDate;
     private String departureDate;
-    private List<PerDiemView> mealPerDiems;
-    private List<PerDiemView> lodgingPerDiems;
 
     public DestinationView() {
     }
@@ -27,19 +25,16 @@ public class DestinationView implements ViewObject {
         this.address = new TravelAddressView(d.getAddress());
         this.arrivalDate = d.arrivalDate() == null ? null : d.arrivalDate().format(ISO_DATE);
         this.departureDate = d.departureDate() == null ? null : d.departureDate().format(ISO_DATE);
-        this.mealPerDiems = d.mealPerDiems.stream().map(PerDiemView::new).collect(Collectors.toList());
-        this.lodgingPerDiems = d.lodgingPerDiems().stream().map(PerDiemView::new).collect(Collectors.toList());
     }
 
     public Destination toDestination() {
-        return new Destination(
-                id,
+        Destination d = new Destination(
                 address.toTravelAddress(),
                 arrivalDate == null ? null : LocalDate.parse(arrivalDate, ISO_DATE),
-                departureDate == null ? null : LocalDate.parse(departureDate, ISO_DATE),
-                mealPerDiems == null ? null : mealPerDiems.stream().map(PerDiemView::toPerDiem).collect(Collectors.toList()),
-                lodgingPerDiems == null ? null : lodgingPerDiems.stream().map(PerDiemView::toPerDiem).collect(Collectors.toList())
+                departureDate == null ? null : LocalDate.parse(departureDate, ISO_DATE)
         );
+        d.setId(id);
+        return d;
     }
 
     public int getId() {
@@ -56,14 +51,6 @@ public class DestinationView implements ViewObject {
 
     public String getDepartureDate() {
         return departureDate;
-    }
-
-    public List<PerDiemView> getMealPerDiems() {
-        return mealPerDiems;
-    }
-
-    public List<PerDiemView> getLodgingPerDiems() {
-        return lodgingPerDiems;
     }
 
     @Override

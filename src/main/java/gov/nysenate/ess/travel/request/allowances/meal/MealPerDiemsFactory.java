@@ -1,7 +1,9 @@
 package gov.nysenate.ess.travel.request.allowances.meal;
 
+import gov.nysenate.ess.core.service.notification.slack.service.SlackChatService;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.travel.employee.TravelEmployee;
+import gov.nysenate.ess.travel.provider.gsa.GsaAllowanceService;
 import gov.nysenate.ess.travel.provider.senate.SenateMie;
 import gov.nysenate.ess.travel.provider.senate.SqlSenateMieDao;
 import gov.nysenate.ess.travel.request.allowances.PerDiem;
@@ -23,10 +25,14 @@ public class MealPerDiemsFactory {
     private static final Logger logger = LoggerFactory.getLogger(MealPerDiemsFactory.class);
     private final static Comparator<MealPerDiem> dateComparator = Comparator.comparing(MealPerDiem::date);
     private final SqlSenateMieDao senateMieDao;
+    private final SlackChatService slackChatService;
+    private final GsaAllowanceService gsaAllowanceService;
 
     @Autowired
-    public MealPerDiemsFactory(SqlSenateMieDao senateMieDao) {
+    public MealPerDiemsFactory(SqlSenateMieDao senateMieDao, SlackChatService slackChatService, GsaAllowanceService gsaAllowanceService) {
         this.senateMieDao = senateMieDao;
+        this.slackChatService = slackChatService;
+        this.gsaAllowanceService = gsaAllowanceService;
     }
 
     public MealPerDiems create(Route route, TravelEmployee traveler) {
@@ -47,20 +53,32 @@ public class MealPerDiemsFactory {
     private Set<MealPerDiem> init(Route route) {
         Set<MealPerDiem> mealPerDiemSet = new HashSet<>();
         for (Destination d : route.destinations()) {
-            for (PerDiem pd : d.mealPerDiems()) {
-                // Ignore Per Diem if the rate is zero - there is no meal per diem.
-                if (!pd.isRateZero()) {
+            for (LocalDate date : d.days()) {
+                Dollars mieTotal = gsaAllowanceService.fetchMealRate(date, d.getAddress().getZip5());
+                // Ignore zero rates... TODO is this correct?
+                if (!mieTotal.equals(Dollars.ZERO)) {
                     SenateMie mie = null;
                     try {
-                        mie = senateMieDao.selectSenateMie(DateUtils.getFederalFiscalYear(pd.getDate()), new Dollars(pd.getRate()));
+                        mie = senateMieDao.selectSenateMie(DateUtils.getFederalFiscalYear(date), mieTotal);
                     } catch (IncorrectResultSizeDataAccessException ex) {
-                        logger.warn("Unable to find Senate mie for date: " + pd.getDate().toString() + " and total: " + pd.getRate().toString());
+                        sendSenateMieMissingErrorMessages(date, mieTotal);
                     }
-                    mealPerDiemSet.add(new MealPerDiem(d.getAddress(), pd.getDate(), new Dollars(pd.getRate()), mie));
+                    mealPerDiemSet.add(new MealPerDiem(d.getAddress(), date, mieTotal, mie));
                 }
             }
         }
         return mealPerDiemSet;
+    }
+
+    private void sendSenateMieMissingErrorMessages(LocalDate date, Dollars rate) {
+        String msg = """
+                     Unable to find Senate MIE rates for date %s, and total %s.
+                     If the Senate has not published their rates yet, you may estimate them from the GSA rates available at
+                     https://api.gsa.gov/travel/perdiem/v2/rates/conus/mie/{year}?api_key=
+                     Using the typical rules: senate.breakfast = gsa.breakfast, senate.dinner = gsa.dinner + gsa.lunch + gsa.incidental
+                     """.formatted(date, rate.toString());
+        slackChatService.sendMessage(msg);
+        logger.warn(msg);
     }
 
     // There can only be one meal per diem per day. This keeps the highest rate meal per diem for each day.
@@ -72,8 +90,7 @@ public class MealPerDiemsFactory {
                 if (mpd.rate().compareTo(dateToPerDiems.get(mpd.date()).rate()) > 0) {
                     dateToPerDiems.put(mpd.date(), mpd);
                 }
-            }
-            else {
+            } else {
                 dateToPerDiems.put(mpd.date(), mpd);
             }
         }

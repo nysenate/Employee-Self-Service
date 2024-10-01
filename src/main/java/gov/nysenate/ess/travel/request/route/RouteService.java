@@ -20,9 +20,6 @@ import java.util.stream.Collectors;
 @Service
 public class RouteService {
 
-    @Autowired private GsaAllowanceService gsaAllowanceService;
-    @Autowired private MileageAllowanceService mileageService;
-
     /**
      * Creates a fully populated route from a SimpleRouteView entered through the UI.
      * <p>
@@ -48,16 +45,8 @@ public class RouteService {
 
         Route fullRoute = new Route(outboundLegs, returnLegs,
                 route.firstLegQualifiesForBreakfast(), route.lastLegQualifiesForDinner());
-        setDestinationPerDiems(fullRoute);
 
         return fullRoute;
-    }
-
-    // Set per diems on each destination. If a day has multiple per diems only use the highest one.
-    private Set<Destination> destinationsVisitedOn(Route route, LocalDate date) {
-        return route.destinations().stream()
-                .filter(d -> d.wasVisitedOn(date))
-                .collect(Collectors.toSet());
     }
 
     private Leg createLeg(Route simpleRoute, int legIndex, boolean isOutbound) {
@@ -95,23 +84,5 @@ public class RouteService {
         LocalDate departure = nextLeg == null ? currentLeg.travelDate() : nextLeg.travelDate();
 
         return new Destination(address, arrival, departure);
-    }
-
-    private void setDestinationPerDiems(Route route) throws ProviderException {
-        for (Destination d : route.destinations()) {
-            // Meal Rates
-            for (LocalDate date : d.days()) {
-                Dollars mealRate = gsaAllowanceService.fetchMealRate(date, d.getAddress().getZip5());
-                PerDiem mealPerDiem = new PerDiem(date, mealRate);
-                d.addMealPerDiem(mealPerDiem);
-            }
-
-            // Lodging Rates
-            for (LocalDate night : d.nights()) {
-                Dollars lodgingRate = gsaAllowanceService.fetchLodgingRate(night, d.getAddress().getZip5());
-                PerDiem lodgingPerDiem = new PerDiem(night, lodgingRate);
-                d.addLodgingPerDiem(lodgingPerDiem);
-            }
-        }
     }
 }

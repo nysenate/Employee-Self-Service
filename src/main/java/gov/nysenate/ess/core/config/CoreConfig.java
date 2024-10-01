@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Profile;
 
 @Configuration
 @Profile({"test", "dev", "prod"})
-@Import({PropertyConfig.class, LdapConfig.class, EventBusConfig.class, SchedulerConfig.class, AsyncConfig.class,
+@Import({PropertyConfig.class, LdapConfig.class, EventBusConfig.class, AsyncConfig.class,
         DbConnectionPoolConfig.class, DatabaseConfig.class, BeanPostProcessorConfig.class,
         FreemarkerConfig.class, JacksonConfig.class})
 @ComponentScan(basePackages = {"gov.nysenate.ess.core", "gov.nysenate.ess.time",

@@ -1,6 +1,5 @@
 package gov.nysenate.ess.core.util;
 
-
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -9,10 +8,9 @@ import org.springframework.stereotype.Service;
  * @see Async
  */
 @Service
+@Async(value = "essAsync")
 public class AsyncRunner {
-    @Async
     public void run(Runnable runnable) {
         runnable.run();
     }
 }
-
