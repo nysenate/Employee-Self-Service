@@ -18,6 +18,7 @@ public enum EssRole {
     SUPPLY_REPORTER,
     /* Time */
     TIME_MANAGER,
+    DEVELOPER,
     /* Travel */
     MAJORITY_LEADER,
     TRAVEL_ADMIN,

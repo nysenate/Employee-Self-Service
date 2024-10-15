@@ -213,6 +213,39 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
     }
 
     /**
+     * Personnel Task Assignment Completion Override API
+     * ------------------------------------
+     *
+     * Updates the Completion status of a task for an employee
+     *
+     * Usage:
+     * (GET)   /api/v1/admin/personnel/task/overrride/{updateEmpID}/{taskID}/{completed}/{empID}
+     *
+     * Path params:
+     *
+     * @return {@link SimpleResponse}
+     */
+    @RequestMapping(value = "/overrride/{updateEmpID}/{taskID}/{empID}", method = GET)
+    public SimpleResponse overrideTaskCompletion(@PathVariable int updateEmpID,
+                                                 @PathVariable int taskID,
+                                                 @PathVariable int empID) throws AuthorizationException {
+        Subject subject = SecurityUtils.getSubject();
+
+        boolean isAdmin = subject.hasRole("ADMIN");
+        boolean isPecManager = subject.hasRole("PERSONNEL_COMPLIANCE_MANAGER");
+        if ( isPecManager || isAdmin ) {
+            taskAssigner.insertAssignedTask(empID,updateEmpID,taskID);
+            return new SimpleResponse(true,
+                    "Task assignment " + taskID + " was assigned for Employee " + empID +
+                            " by employee " + updateEmpID,
+                    "employee-task-assign");
+        }
+        return new SimpleResponse(false,
+                "You do not have permission to execute this api functionality",
+                "employee-task-assign");
+    }
+
+    /**
      * Personnel Task Assignment activation Override API
      * ------------------------------------
      *

@@ -69,6 +69,24 @@ public class SqlPersonnelTaskAssignmentDao extends SqlBaseDao implements Personn
     }
 
     @Override
+    public List<PersonnelTaskAssignment> getAssignTasks(PTAQueryBuilder query) {
+        return localNamedJdbc.query(
+                SELECT_NOT_IN_TASKS_QUERY.getSql(schemaMap()),
+                getPATQueryParams(query),
+                patRowMapper
+        );
+    }
+
+    @Override
+    public List<Integer> getActiveTasks(boolean active) {
+        return localNamedJdbc.query(
+                SELECT_ACTIVE_TASKS.getSql(schemaMap()),
+                getActiveTaskParams(active),
+                (rs, rowNum) -> rs.getInt(1)
+        );
+    }
+
+    @Override
     public void updateAssignment(PersonnelTaskAssignment task) {
         MapSqlParameterSource params = getPATParams(task);
         int updated = localNamedJdbc.update(UPDATE_TASK.getSql(schemaMap()), params);
@@ -192,6 +210,11 @@ public class SqlPersonnelTaskAssignmentDao extends SqlBaseDao implements Personn
                 .addValue("taskIdsPresent", queryBuilder.getTaskIds() == null)
                 .addValue("taskIds", queryBuilder.getTaskIds())
                 ;
+    }
+
+    private MapSqlParameterSource getActiveTaskParams(boolean active) {
+        return new MapSqlParameterSource()
+                .addValue("active", active);
     }
 
     private MapSqlParameterSource getManualOverrideStatusParams(PersonnelTaskAssignment task) {

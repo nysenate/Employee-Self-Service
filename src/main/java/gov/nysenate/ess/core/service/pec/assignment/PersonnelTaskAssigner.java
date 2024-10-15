@@ -41,4 +41,6 @@ public interface PersonnelTaskAssigner {
      * Assigns due dates to active, incomplete tasks in the database.
      */
     void generateDueDatesForExistingTaskAssignments(boolean overrideExistingDueDates);
+
+    void insertAssignedTask(int empID, int updateEmpID, int taskID);
 }

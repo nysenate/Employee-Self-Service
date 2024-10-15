@@ -15,6 +15,8 @@
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/myinfo/personnel/todo-report-ctrl.js"></script>
         <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/myinfo/personnel/todo-assignment.js"></script>
+        <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/myinfo/personnel/legethics-ctrl.js"></script>
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/myinfo/personnel/ethics-course-ctrl.js"></script>

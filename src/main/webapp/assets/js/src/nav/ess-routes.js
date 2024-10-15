@@ -33,6 +33,10 @@ essApp.config(function ($routeProvider, $locationProvider) {
         templateUrl: ctxPath + '/template/myinfo/personnel/todo-report'
     });
 
+    $routeProvider.when(ctxPath + '/myinfo/personnel/todo/assignment', {
+        templateUrl: ctxPath + '/template/myinfo/personnel/todo-assignment'
+    });
+
     $routeProvider.when(ctxPath + '/myinfo/personnel/todo/legethics/:taskId', {
         templateUrl: ctxPath + '/template/myinfo/personnel/legethics'
     });

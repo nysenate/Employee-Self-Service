@@ -20,11 +20,9 @@ import gov.nysenate.ess.core.model.pec.EmpPATSearchResultView;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
-import gov.nysenate.ess.core.model.pec.acknowledgment.AckDoc;
 import gov.nysenate.ess.core.model.pec.ethics.EthicsCourseTask;
 import gov.nysenate.ess.core.model.pec.ethics.EthicsLiveCourseTask;
 import gov.nysenate.ess.core.model.pec.everfi.EverfiCourseTask;
-import gov.nysenate.ess.core.model.pec.moodle.MoodleCourseTask;
 import gov.nysenate.ess.core.model.pec.video.VideoTask;
 import gov.nysenate.ess.core.service.pec.search.*;
 import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
@@ -190,6 +188,38 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
         EmpPTAQuery empPTAQuery = extractEmpPATQuery(request);
 
         PaginatedList<EmployeeTaskSearchResult> results = empTaskSearchService.searchForEmpTasks(empPTAQuery, limitOffset);
+        List<EmpPATSearchResultView> resultViews = results.getResults().stream()
+                .map(EmpPATSearchResultView::new)
+                .collect(Collectors.toList());
+        return ListViewResponse.of(resultViews, results.getTotal(), limitOffset);
+    }
+
+    /**
+     * Employee Assign Task Search
+     * --------------------
+     *
+     * Search for employees and tasks.
+     *
+     * Usage:
+     * (GET)    /api/v1/personnel/task/emp/assignSearch
+     *
+     * Request params:
+     * @see #extractEmpPATQuery(WebRequest) for facet parameters
+     * limit - int - default 10 - limit the number of results
+     * offset - int - default 1 - start the result list from this result.
+     *
+     * @return {@link ViewObjectResponse<PersonnelTaskAssignmentView>}
+     */
+    @RequestMapping(value = "/emp/assignSearch", method = {GET, HEAD})
+    public ListViewResponse<EmpPATSearchResultView> empAssignTaskSearch(WebRequest request) {
+
+        checkPermission(SimpleEssPermission.COMPLIANCE_REPORT_GENERATION.getPermission());
+
+        LimitOffset limitOffset = getLimitOffset(request, 10);
+
+        EmpPTAQuery empPTAQuery = extractEmpPATQuery(request);
+
+        PaginatedList<EmployeeTaskSearchResult> results = empTaskSearchService.searchForNotAssignedEmpTasks(empPTAQuery, limitOffset);
         List<EmpPATSearchResultView> resultViews = results.getResults().stream()
                 .map(EmpPATSearchResultView::new)
                 .collect(Collectors.toList());
@@ -405,6 +435,7 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
 
         searchBuilder.setName(request.getParameter("name"));
         searchBuilder.setActive(getBooleanParam(request, "empActive", null));
+        searchBuilder.setIsSenator(getBooleanParam(request, "isSenator", true));
 
         LocalDate contSrvFrom = Optional.ofNullable(request.getParameter("contSrvFrom"))
                 .map(ds -> parseISODate(ds, "contSrvFrom"))
