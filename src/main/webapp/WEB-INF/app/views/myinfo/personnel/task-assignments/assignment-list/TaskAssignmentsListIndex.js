@@ -9,10 +9,12 @@ export default function TaskAssignmentsListIndex() {
       <Hero>Personnel To-Do List</Hero>
       <Card className="mt-5">
         <Card.Header>
-          Listed below are personnel tasks that require your attention. <br/>
-          Click on a task link to take action on that task. <br/>
-          <b>FAILURE TO RESPOND MAY RESULT IN THE HOLDING OF YOUR PAYCHECK.</b><br/>
-          Contact the Personnel Office (518-455-3376) if you have any questions.
+          <p>
+            Listed below are personnel tasks that require your attention. <br/>
+            Click on a task link to take action on that task. <br/>
+            <b>FAILURE TO RESPOND MAY RESULT IN THE HOLDING OF YOUR PAYCHECK.</b><br/>
+            Contact the Personnel Office (518-455-3376) if you have any questions.
+          </p>
         </Card.Header>
         <AssignmentsList/>
       </Card>

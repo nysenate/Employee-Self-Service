@@ -5,7 +5,8 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { loadAuth } from "app/contexts/Auth/authStorage";
 import LoadingIndicator from "app/components/LoadingIndicator";
 import { isoToLongDate } from "app/utils/dateUtils";
-import CodeEntryForm from "app/views/myinfo/personnel/task-assignments/assignment-item/CodeEntryForm";
+import VideoCodeEntryForm
+  from "app/views/myinfo/personnel/task-assignments/assignment-item/video-assignment/VideoCodeEntryForm";
 import ModalNotice from "app/components/ModalNotice";
 
 export default function VideoAssignment({ assignment }) {
@@ -62,7 +63,7 @@ export default function VideoAssignment({ assignment }) {
                 </div>
               </Card.Header>
             </div>
-            <CodeEntryForm taskId={assignment.taskId} onSuccess={onCodeEntrySuccess}/>
+            <VideoCodeEntryForm taskId={assignment.taskId} onSuccess={onCodeEntrySuccess}/>
           </>
         }
       </Card>

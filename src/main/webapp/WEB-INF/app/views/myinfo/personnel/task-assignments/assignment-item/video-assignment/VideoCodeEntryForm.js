@@ -4,7 +4,7 @@ import { Button } from "app/components/Button";
 import { useSubmitVideoCodes } from "app/api/taskAssignmentApi";
 import useAuth from "app/contexts/Auth/useAuth";
 
-export default function CodeEntryForm({ taskId, onSuccess }) {
+export default function VideoCodeEntryForm({ taskId, onSuccess }) {
   const auth = useAuth();
   const submitVideoCodesApi = useSubmitVideoCodes()
   const {

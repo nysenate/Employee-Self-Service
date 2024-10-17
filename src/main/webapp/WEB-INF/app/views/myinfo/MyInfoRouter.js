@@ -10,8 +10,9 @@ import ToDoReporting from "app/views/myinfo/personnel/to-do-reporting/ToDoReport
 import TaskAssignmentsListIndex
   from "app/views/myinfo/personnel/task-assignments/assignment-list/TaskAssignmentsListIndex";
 import DocumentAcknowledgeAssignment
-  from "app/views/myinfo/personnel/task-assignments/assignment-item/DocumentAcknowledgeAssignment";
-import VideoAssignment from "app/views/myinfo/personnel/task-assignments/assignment-item/VideoAssignment";
+  from "app/views/myinfo/personnel/task-assignments/assignment-item/document-assignment/DocumentAcknowledgeAssignment";
+import VideoAssignment
+  from "app/views/myinfo/personnel/task-assignments/assignment-item/video-assignment/VideoAssignment";
 import MoodleCourse from "app/views/myinfo/personnel/task-assignments/MoodleCourse";
 import EthicsCourse from "app/views/myinfo/personnel/task-assignments/EthicsCourse";
 import EthicsLiveCourse from "app/views/myinfo/personnel/task-assignments/EthicsLiveCourse";

@@ -4,8 +4,9 @@ import useAuth from "app/contexts/Auth/useAuth";
 import { useTaskAssignment } from "app/api/taskAssignmentApi";
 import LoadingIndicator from "app/components/LoadingIndicator";
 import DocumentAcknowledgeAssignment
-  from "app/views/myinfo/personnel/task-assignments/assignment-item/DocumentAcknowledgeAssignment";
-import VideoAssignment from "app/views/myinfo/personnel/task-assignments/assignment-item/VideoAssignment";
+  from "app/views/myinfo/personnel/task-assignments/assignment-item/document-assignment/DocumentAcknowledgeAssignment";
+import VideoAssignment
+  from "app/views/myinfo/personnel/task-assignments/assignment-item/video-assignment/VideoAssignment";
 
 
 export default function TaskAssignmentIndex() {
