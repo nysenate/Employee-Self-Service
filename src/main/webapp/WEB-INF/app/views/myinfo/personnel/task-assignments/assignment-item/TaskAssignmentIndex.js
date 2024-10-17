@@ -5,6 +5,7 @@ import { useTaskAssignment } from "app/api/taskAssignmentApi";
 import LoadingIndicator from "app/components/LoadingIndicator";
 import DocumentAcknowledgeAssignment
   from "app/views/myinfo/personnel/task-assignments/assignment-item/DocumentAcknowledgeAssignment";
+import VideoAssignment from "app/views/myinfo/personnel/task-assignments/assignment-item/VideoAssignment";
 
 
 export default function TaskAssignmentIndex() {
@@ -22,7 +23,7 @@ export default function TaskAssignmentIndex() {
     case "DOCUMENT_ACKNOWLEDGMENT":
       return <DocumentAcknowledgeAssignment assignment={assignment}/>
     case "VIDEO_CODE_ENTRY":
-
+      return <VideoAssignment assignment={assignment}/>
     case "MOODLE_COURSE":
 
     case "EVERFI_COURSE":

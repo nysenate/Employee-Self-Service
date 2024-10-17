@@ -11,7 +11,7 @@ function Card({ children, className }) {
 
 function Header({ children }) {
   return (
-    <div className="py-3 mb-3 text-center border-b-1 border-solid border-teal-400">
+    <div className="py-3 mb-3 flex justify-center border-b-1 border-solid border-teal-400">
       {children}
     </div>
   )

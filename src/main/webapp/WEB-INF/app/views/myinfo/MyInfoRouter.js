@@ -11,7 +11,7 @@ import TaskAssignmentsListIndex
   from "app/views/myinfo/personnel/task-assignments/assignment-list/TaskAssignmentsListIndex";
 import DocumentAcknowledgeAssignment
   from "app/views/myinfo/personnel/task-assignments/assignment-item/DocumentAcknowledgeAssignment";
-import VideoCourse from "app/views/myinfo/personnel/task-assignments/VideoCourse";
+import VideoAssignment from "app/views/myinfo/personnel/task-assignments/assignment-item/VideoAssignment";
 import MoodleCourse from "app/views/myinfo/personnel/task-assignments/MoodleCourse";
 import EthicsCourse from "app/views/myinfo/personnel/task-assignments/EthicsCourse";
 import EthicsLiveCourse from "app/views/myinfo/personnel/task-assignments/EthicsLiveCourse";

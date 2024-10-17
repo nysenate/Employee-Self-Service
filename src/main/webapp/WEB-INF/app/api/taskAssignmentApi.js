@@ -35,3 +35,15 @@ export function useAcknowledgeDocument() {
     throwOnError: true,
   })
 }
+
+export function useSubmitVideoCodes() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (data) => {
+      return fetchApiJson(`/personnel/task/video/code`, { method: "POST", payload: data })
+    },
+    onSuccess: (data, { empId, taskId }) => {
+      return queryClient.invalidateQueries({ queryKey: [ 'tasks', 'assignments', 'detail', empId, taskId ] })
+    },
+  })
+}
