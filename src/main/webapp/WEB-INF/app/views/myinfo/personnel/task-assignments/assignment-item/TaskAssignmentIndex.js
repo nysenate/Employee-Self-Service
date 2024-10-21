@@ -9,6 +9,8 @@ import VideoAssignment
   from "app/views/myinfo/personnel/task-assignments/assignment-item/video-assignment/VideoAssignment";
 import MoodleAssignment
   from "app/views/myinfo/personnel/task-assignments/assignment-item/moodle-assignment/MoodleAssignment";
+import EthicsCourseAssignment
+  from "app/views/myinfo/personnel/task-assignments/assignment-item/ethics-course-assignment/EthicsCourseAssignment";
 
 
 export default function TaskAssignmentIndex() {
@@ -30,9 +32,10 @@ export default function TaskAssignmentIndex() {
     case "MOODLE_COURSE":
       return <MoodleAssignment assignment={assignment}/>
     case "EVERFI_COURSE":
-
+      window.location.href = assignment.task.url
+      return <></>
     case "ETHICS_COURSE":
-
+      return <EthicsCourseAssignment assignment={assignment}/>
     case "ETHICS_LIVE_COURSE":
   }
 
