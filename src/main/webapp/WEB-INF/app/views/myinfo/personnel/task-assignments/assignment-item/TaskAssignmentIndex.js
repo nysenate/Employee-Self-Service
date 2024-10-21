@@ -7,6 +7,8 @@ import DocumentAcknowledgeAssignment
   from "app/views/myinfo/personnel/task-assignments/assignment-item/document-assignment/DocumentAcknowledgeAssignment";
 import VideoAssignment
   from "app/views/myinfo/personnel/task-assignments/assignment-item/video-assignment/VideoAssignment";
+import MoodleAssignment
+  from "app/views/myinfo/personnel/task-assignments/assignment-item/moodle-assignment/MoodleAssignment";
 
 
 export default function TaskAssignmentIndex() {
@@ -26,7 +28,7 @@ export default function TaskAssignmentIndex() {
     case "VIDEO_CODE_ENTRY":
       return <VideoAssignment assignment={assignment}/>
     case "MOODLE_COURSE":
-
+      return <MoodleAssignment assignment={assignment}/>
     case "EVERFI_COURSE":
 
     case "ETHICS_COURSE":
