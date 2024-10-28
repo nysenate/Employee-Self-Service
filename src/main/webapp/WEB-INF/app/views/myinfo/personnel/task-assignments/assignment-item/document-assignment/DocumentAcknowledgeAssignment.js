@@ -4,7 +4,8 @@ import Hero from "app/components/Hero";
 import Card from "app/components/Card";
 import * as pdfjsLib from "pdfjs-dist";
 import { isoToLongDate } from "app/utils/dateUtils";
-import useScrollDetection from "app/views/myinfo/personnel/task-assignments/useScrollDetection";
+import useScrollDetection
+  from "app/views/myinfo/personnel/task-assignments/assignment-item/document-assignment/useScrollDetection";
 import LoadingIndicator from "app/components/LoadingIndicator";
 import { Button } from "app/components/Button";
 import Modal from "app/components/Modal";

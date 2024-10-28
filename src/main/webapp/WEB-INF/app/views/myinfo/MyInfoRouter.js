@@ -9,13 +9,6 @@ import EmergencyAlertInfoIndex from "app/views/myinfo/personnel/emergency-alert-
 import ToDoReporting from "app/views/myinfo/personnel/to-do-reporting/ToDoReporting";
 import TaskAssignmentsListIndex
   from "app/views/myinfo/personnel/task-assignments/assignment-list/TaskAssignmentsListIndex";
-import DocumentAcknowledgeAssignment
-  from "app/views/myinfo/personnel/task-assignments/assignment-item/document-assignment/DocumentAcknowledgeAssignment";
-import VideoAssignment
-  from "app/views/myinfo/personnel/task-assignments/assignment-item/video-assignment/VideoAssignment";
-import MoodleCourse from "app/views/myinfo/personnel/task-assignments/MoodleCourse";
-import EthicsCourse from "app/views/myinfo/personnel/task-assignments/EthicsCourse";
-import EthicsLiveCourse from "app/views/myinfo/personnel/task-assignments/EthicsLiveCourse";
 import TaskAssignmentIndex from "app/views/myinfo/personnel/task-assignments/assignment-item/TaskAssignmentIndex";
 
 export default function MyInfoRouter() {
@@ -27,12 +20,6 @@ export default function MyInfoRouter() {
           <Route path="personnel/emergency-alert-info" element={<EmergencyAlertInfoIndex/>}/>
           <Route path="personnel/tasks/assignments" element={<TaskAssignmentsListIndex/>}/>
           <Route path="personnel/tasks/assignments/:taskId" element={<TaskAssignmentIndex/>}/>
-          {/*<Route path="" element={<TaskAssignmentsIndex/>}/>*/}
-          {/*<Route path="acknowledgment/:taskId" element={<AcknowledgmentAssignment/>}/>*/}
-          {/*<Route path="video/:taskId" element={<VideoCourse/>}/>*/}
-          {/*<Route path="legethics/:taskId" element={<MoodleCourse/>}/>*/}
-          {/*<Route path="ethicscourse/:taskId" element={<EthicsCourse/>}/>*/}
-          {/*<Route path="ethicslivecourse/:taskId" element={<EthicsLiveCourse/>}/>*/}
           <Route path="personnel/todo-report" element={<ToDoReporting/>}/>
           <Route path="payroll/checkhistory" element={<CheckHistoryIndex/>}/>
           <Route path="" element={<Navigate to="personnel/summary" replace/>}/>
