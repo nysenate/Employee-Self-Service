@@ -1,5 +1,6 @@
 package gov.nysenate.ess.core.client.view.pec.video;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -11,9 +12,10 @@ public class PECCodeSubmission {
     private int taskId;
     private List<String> codes;
 
-    private String trainingDate;
+    private LocalDate trainingDate;
 
-    private PECCodeSubmission() {}
+    private PECCodeSubmission() {
+    }
 
     public int getEmpId() {
         return empId;
@@ -27,7 +29,7 @@ public class PECCodeSubmission {
         return codes;
     }
 
-    public String getTrainingDate() {
+    public LocalDate getTrainingDate() {
         return trainingDate;
     }
 

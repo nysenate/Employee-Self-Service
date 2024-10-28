@@ -16,6 +16,7 @@ import java.util.List;
 public class PersonnelCodeVerificationService {
 
     private final PersonnelTaskDao personnelTaskDao;
+
     @Autowired
     public PersonnelCodeVerificationService(PersonnelTaskDao personnelTaskDao) {
         this.personnelTaskDao = personnelTaskDao;
@@ -34,7 +35,7 @@ public class PersonnelCodeVerificationService {
         //User submitted codes and training date (converted to Epoch days)
         String code1 = codeSubmission.getCodes().get(0).toUpperCase();
         String code2 = codeSubmission.getCodes().get(1).toUpperCase();
-        long submitEpochDays = LocalDateTime.parse(codeSubmission.getTrainingDate().substring(0, 19)).toLocalDate().toEpochDay();
+        long submitEpochDays = codeSubmission.getTrainingDate().toEpochDay();
         int matchedEntries = 0;
 
         //Cycle thru the history of codes to see if 2 codes that are associated

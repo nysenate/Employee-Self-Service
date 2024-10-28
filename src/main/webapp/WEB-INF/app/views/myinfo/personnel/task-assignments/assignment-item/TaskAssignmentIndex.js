@@ -11,6 +11,8 @@ import MoodleAssignment
   from "app/views/myinfo/personnel/task-assignments/assignment-item/moodle-assignment/MoodleAssignment";
 import EthicsCourseAssignment
   from "app/views/myinfo/personnel/task-assignments/assignment-item/ethics-course-assignment/EthicsCourseAssignment";
+import EthicsLiveAssignment
+  from "app/views/myinfo/personnel/task-assignments/assignment-item/ethics-live-assignment/EthicsLiveAssignment";
 
 
 export default function TaskAssignmentIndex() {
@@ -37,6 +39,7 @@ export default function TaskAssignmentIndex() {
     case "ETHICS_COURSE":
       return <EthicsCourseAssignment assignment={assignment}/>
     case "ETHICS_LIVE_COURSE":
+      return <EthicsLiveAssignment assignment={assignment}/>
   }
 
   return (

@@ -47,3 +47,15 @@ export function useSubmitVideoCodes() {
     },
   })
 }
+
+export function useSubmitEthicsLiveForm() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (data) => {
+      return fetchApiJson(`/personnel/task/ethics/live/code`, { method: "POST", payload: data })
+    },
+    onSuccess: (data, { empId, taskId }) => {
+      return queryClient.invalidateQueries({ queryKey: [ 'tasks', 'assignments', 'detail', empId, taskId ] })
+    },
+  })
+}
