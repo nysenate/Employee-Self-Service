@@ -28,22 +28,23 @@ public enum PersonnelTaskAssignmentQuery implements BasicSqlQuery {
                     "WHERE pt.active AND pt.notifiable AND pta.active AND NOT pta.completed"
     ),
 
-    SELECT_TASKS_QUERY("" +
-            "SELECT *\n" +
-            "FROM ${essSchema}.personnel_task_assignment ta\n" +
-            "JOIN ${essSchema}.personnel_task t USING (task_id)\n" +
-            "WHERE (:active::boolean IS NULL OR ta.active = :active::boolean)\n" +
-            "  AND (:empId::int IS NULL OR emp_id = :empId)\n" +
-            "  AND (:taskType::ess.personnel_task_type IS NULL OR t.task_type = :taskType::ess.personnel_task_type)\n" +
-            "  AND (:completed::boolean IS NULL OR completed = :completed::boolean)\n" +
-            "  AND (:completed::boolean IS NULL OR :completed::boolean = FALSE OR\n" +
-            "        (:completedFrom::TIMESTAMP WITHOUT TIME ZONE IS NULL OR\n" +
-            "          timestamp >= :completedFrom::TIMESTAMP WITHOUT TIME ZONE)\n" +
-            "        AND\n" +
-            "        (:completedTo::TIMESTAMP WITHOUT TIME ZONE IS NULL OR\n" +
-            "          timestamp <= :completedTo::TIMESTAMP WITHOUT TIME ZONE)\n" +
-            "  )\n" +
-            "  AND (:taskIdsPresent OR ta.task_id IN (:taskIds))"
+    SELECT_TASKS_QUERY("""
+            SELECT *
+            FROM ${essSchema}.personnel_task_assignment ta
+            JOIN ${essSchema}.personnel_task t USING (task_id)
+            WHERE (:active::boolean IS NULL OR ta.active = :active::boolean)
+              AND (:empId::int IS NULL OR emp_id = :empId)
+              AND (:taskType::ess.personnel_task_type IS NULL OR t.task_type = :taskType::ess.personnel_task_type)
+              AND (:completed::boolean IS NULL OR completed = :completed::boolean)
+              AND (:completed::boolean IS NULL OR :completed::boolean = FALSE OR
+                    (:completedFrom::TIMESTAMP WITHOUT TIME ZONE IS NULL OR
+                      timestamp >= :completedFrom::TIMESTAMP WITHOUT TIME ZONE)
+                    AND
+                    (:completedTo::TIMESTAMP WITHOUT TIME ZONE IS NULL OR
+                      timestamp <= :completedTo::TIMESTAMP WITHOUT TIME ZONE)
+              )
+              AND (:taskIdsPresent OR ta.task_id IN (:taskIds))
+            """
     ),
 
     INSERT_TASK("" +
