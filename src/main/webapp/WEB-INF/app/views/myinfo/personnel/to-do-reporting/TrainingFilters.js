@@ -10,14 +10,7 @@ import EmployeeFilters from "./EmployeeFilters";
  * @returns {Element}
  * @constructor
  */
-export default function TrainingFilters({ params, onChildDataChange, handleAllTasks }) {
-  const [ receivedData, setReceivedData ] = useState(params);
-
-  const handleChildDataChange = (data) => {
-    setReceivedData(data);
-    onChildDataChange(receivedData)
-  };
-
+export default function TrainingFilters({ state, dispatch, handleAllTasks }) {
   return (
     <div style={{
       flex: "0 0 40%",
@@ -27,14 +20,14 @@ export default function TrainingFilters({ params, onChildDataChange, handleAllTa
     }}>
       <span className="text-lg font-semibold">Training Filters</span>
       <InputFilters
-        params={receivedData}
-        onChildDataChange={handleChildDataChange}
+        state={state}
+        dispatch={dispatch}
         handleAllTasks={handleAllTasks}/>
 
       <span className="text-lg font-semibold">Employee Filters</span>
-      <EmployeeFilters
-        params={receivedData}
-        onChildDataChange={handleChildDataChange}/>
+      {/*<EmployeeFilters*/}
+      {/*  params={params}*/}
+      {/*  setParams={setParams}/>*/}
     </div>
   )
 }

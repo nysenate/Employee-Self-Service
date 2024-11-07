@@ -1,86 +1,80 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import Hero from "app/components/Hero";
 import TrainingFilters from "./TrainingFilters";
 import EmployeeDetails from "./EmployeeDetails";
+import { useSearchTaskAssignments } from "app/api/searchTaskAssignmentsApi";
+import {
+  CLEAR_TRAININGS,
+  TOGGLE_INACTIVE_TRAININGS,
+  TOGGLE_TRAINING
+} from "app/views/myinfo/personnel/to-do-reporting/actionTypes";
 
-/**
- * This is the first component where TO-DO-Reporting starts
- * @returns {Element}
- * @constructor
- */
+
+function filterReducer(state, action) {
+  console.log(action)
+  let taskIds = state.taskId
+  switch (action.type) {
+    case TOGGLE_INACTIVE_TRAININGS:
+      if (action.payload.checked === false) {
+        // uncheck all inactive tasks
+        taskIds = taskIds.filter(taskId => !action.payload.inactiveTaskIds.includes(taskId))
+      }
+      return {
+        ...state,
+        taskActive: action.payload.checked === true ? null : true,
+        taskId: [ ...new Set(taskIds) ],
+      }
+    case TOGGLE_TRAINING:
+      if (action.payload.checked === true) {
+        taskIds.push(action.payload.taskId)
+      } else (
+        taskIds = taskIds.filter(taskId => taskId !== action.payload.taskId)
+      )
+      return {
+        ...state,
+        taskId: [ ...new Set(taskIds) ] // remove any duplicates
+      }
+    case CLEAR_TRAININGS:
+      return {
+        ...state,
+        taskId: []
+      }
+  }
+}
+
+const initialState = {
+  name: "",
+  empActive: true,
+  taskId: [],
+  contSrvFrom: null,
+  taskActive: true,
+  completed: null,
+  totalCompletion: null,
+  respCtrHead: [],
+  limit: 10,
+  offset: 1,
+  sort: [ "NAME:ASC", "OFFICE:ASC" ]
+}
+
 export default function ToDoReporting() {
+  const [ state, dispatch ] = useReducer(filterReducer, initialState)
+  const taskAssignmentsQuery = useSearchTaskAssignments(state)
+
   const [ allTasks, setAllTasks ] = useState([]);
 
-  /**
-   * This is params, which is a state variable, used to interact with Personal Task Assignment Table.
-   */
-  const [ params, setParams ] = useState({
-    name: "",
-    empActive: true,
-    taskId: [],
-    contSrvFrom: null,
-    taskActive: true,
-    completed: null,
-    totalCompletion: null,
-    respCtrHead: [],
-    limit: 10,
-    offset: 1,
-    sort: [ "NAME:ASC", "OFFICE:ASC" ]
-  });
+  const params = {}
   const [ receivedData, setReceivedData ] = useState(null);
   const [ loading, setLoading ] = useState(false);
 
-  useEffect(() => {
-    const fetchEmployeeResults = async () => {
-      setLoading(true);
-      try {
-        const keyValuePairs = [];
-        for (const key in params) {
-          if (params[key] !== '' && params[key] !== null) {
-            if (Array.isArray(params[key]) && params[key].length > 0) {
-              params[key].forEach(value => {
-                keyValuePairs.push(key + '=' + value);
-              });
-            } else if (!Array.isArray(params[key])) {
-              keyValuePairs.push(key + '=' + params[key]);
-            }
-          }
-        }
-        let queryString = keyValuePairs.join('&');
-        const init = {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-          },
-          cache: 'no-store',
-        };
-
-        const response = await fetch(`/api/v1/personnel/task/emp/search?${queryString}`, init);
-        if (!response.ok) {
-          throw new Error('Failed to fetch data');
-        }
-        const data = await response.json();
-        setReceivedData(data); // Set received data after successful fetch
-      } catch (error) {
-        console.error('Error fetching task details:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchEmployeeResults();
-  }, [ params ]);
-
   const handleDataChange = (data) => {
-    setParams((prev) => ({
-      ...prev,
+    setParams({
+      ...params,
       ...data
-    }));
+    });
   };
 
   const handleAllTasks = (tasks) => {
-    setAllTasks(tasks.tasks);
+    // setAllTasks(tasks.tasks);
   }
 
   return (
@@ -96,16 +90,16 @@ export default function ToDoReporting() {
         overflow: "auto"
       }}>
         <TrainingFilters
-          params={params}
-          onChildDataChange={handleDataChange}
+          state={state}
+          dispatch={dispatch}
           handleAllTasks={handleAllTasks}/>
 
-        <EmployeeDetails
-          params={params}
-          onChildDataChange={handleDataChange}
-          finalData={receivedData}
-          loading={loading}
-          allTasks={allTasks}/>
+        {/*<EmployeeDetails*/}
+        {/*  params={params}*/}
+        {/*  onChildDataChange={handleDataChange}*/}
+        {/*  finalData={receivedData}*/}
+        {/*  loading={loading}*/}
+        {/*  allTasks={allTasks}/>*/}
       </div>
     </div>
   );

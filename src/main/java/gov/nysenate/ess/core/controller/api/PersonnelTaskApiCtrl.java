@@ -188,11 +188,8 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping(value = "/emp/search", method = {GET, HEAD})
     public ListViewResponse<EmpPATSearchResultView> empTaskSearch(WebRequest request) {
-
         checkPermission(SimpleEssPermission.COMPLIANCE_REPORT_GENERATION.getPermission());
-
         LimitOffset limitOffset = getLimitOffset(request, 10);
-
         EmpPTAQuery empPTAQuery = extractEmpPATQuery(request);
 
         PaginatedList<EmployeeTaskSearchResult> results = empTaskSearchService.searchForEmpTasks(empPTAQuery, limitOffset);
