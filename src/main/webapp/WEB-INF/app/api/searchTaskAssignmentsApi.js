@@ -15,7 +15,7 @@ export function useSearchTaskAssignments(searchParams) {
 function buildQueryString(params) {
   const keyValuePairs = [];
   for (const key in params) {
-    if (params[key] !== '' && params[key] !== null) {
+    if (params[key] !== '' && params[key] != null) {
       if (Array.isArray(params[key]) && params[key].length > 0) {
         params[key].forEach(value => {
           keyValuePairs.push(key + '=' + value);

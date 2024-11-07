@@ -56,7 +56,7 @@ const variantStyles = {
       success: "px-2.5 py-1 font-semibold text-green-600 hover:text-green-800 hover:bg-green-100",
       secondary: "px-2.5 py-1 font-semibold text-gray-600 hover:text-gray-700 hover:bg-gray-100",
       error: "px-2.5 py-1 font-semibold text-red-600 hover:text-red-700 hover:bg-red-100",
-      link: "mx-2.5 my-1 font-base leading-none text-teal-600 border-b-1 border-teal-500",
+      link: "mx-2.5 my-1 font-base leading-none text-teal-600 hover:text-teal-800",
       myinfo: "px-2.5 py-1 font-semibold text-green-600 hover:text-green-800 hover:bg-green-100",
       time: "px-2.5 py-1 font-semibold text-teal-600 hover:text-teal-700 hover:bg-teal-100",
       supply: "px-2.5 py-1 font-semibold text-purple-700 hover:text-purple-800 hover:bg-purple-100",

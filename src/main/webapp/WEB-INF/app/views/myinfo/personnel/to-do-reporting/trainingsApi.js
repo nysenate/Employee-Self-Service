@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchApiJson } from "app/utils/fetchJson";
 
-export function useAssignments(activeOnly) {
+export function useTrainings(activeOnly) {
   return useQuery({
-    queryKey: [ 'assignments', activeOnly ],
+    queryKey: [ 'trainings', activeOnly ],
     queryFn: () => {
       return fetchApiJson(`/personnel/task`)
         .then(body => body.tasks)
