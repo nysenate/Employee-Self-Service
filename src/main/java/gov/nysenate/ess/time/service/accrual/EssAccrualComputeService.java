@@ -86,10 +86,12 @@ public class EssAccrualComputeService implements AccrualComputeService {
 
         PayPeriod prevPeriod = payPeriodService.getPayPeriod(
                 PayPeriodType.AF, payPeriod.getStartDate().minusDays(1));
+        PayPeriod prevPrevPeriod = payPeriodService.getPayPeriod(
+                PayPeriodType.AF, prevPeriod.getStartDate().minusDays(1));
 
-        // Get accrual records for the current and previous pay period
+        // Get accrual records for the current and previous two pay periods.
         TreeMap<PayPeriod, PeriodAccSummary> periodAccruals =
-                getAccruals(empId, Arrays.asList(prevPeriod, payPeriod));
+                getAccruals(empId, Arrays.asList(prevPrevPeriod, prevPeriod, payPeriod));
 
         PeriodAccSummary currentAccruals = periodAccruals.get(payPeriod);
         PeriodAccSummary lastAccruals = periodAccruals.get(prevPeriod);
