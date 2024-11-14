@@ -1,9 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchApiJson } from "app/utils/fetchJson";
 
-export function useSearchTaskAssignments(searchParams) {
+export function useSearchTaskAssignments(state) {
+  const searchParams = {
+    ...state,
+    respCtrHead: state.respCtrHead.map(r => r.code)
+  }
   return useQuery({
-    queryKey: [ 'tasks', 'assignments', 'search', searchParams ],
+    queryKey: ['tasks', 'assignments', 'search', searchParams],
     queryFn: () => {
       return fetchApiJson(`/personnel/task/emp/search?${buildQueryString(searchParams)}`)
         .then((body) => body.result)

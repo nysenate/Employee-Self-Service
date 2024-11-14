@@ -4,46 +4,68 @@ import TrainingFilters from "./TrainingFilters";
 import { useSearchTaskAssignments } from "app/api/searchTaskAssignmentsApi";
 import Card from "app/components/Card";
 import {
-  CLEAR_TRAININGS, COMPLETION_STATUS,
+  CLEAR_TRAININGS,
+  COMPLETION_STATUS, SET_RESP_CTR_HEADS,
   TOGGLE_INACTIVE_TRAININGS,
-  TOGGLE_TRAINING
+  TOGGLE_TRAINING, UPDATE_CONT_SERV_DATE,
 } from "app/views/myinfo/personnel/to-do-reporting/todoReportingActions";
 import AssignmentsSummary from "app/views/myinfo/personnel/to-do-reporting/AssignmentsSummary";
-
+import EmployeeFilters from "app/views/myinfo/personnel/to-do-reporting/EmployeeFilters";
+import { TOGGLE_INACTIVE_EMPLOYEES } from "./todoReportingActions";
 
 function filterReducer(state, action) {
-  console.log(action)
-  let taskIds = state.taskId
+  console.log(action);
+  let taskIds = state.taskId;
   switch (action.type) {
     case TOGGLE_INACTIVE_TRAININGS:
       if (action.payload.checked === false) {
         // If only active training should be shown, uncheck all inactive tasks
-        taskIds = taskIds.filter(taskId => !action.payload.inactiveTrainingIds.includes(taskId))
+        taskIds = taskIds.filter(
+          (taskId) => !action.payload.inactiveTrainingIds.includes(taskId),
+        );
       }
       return {
         ...state,
         taskActive: action.payload.checked === true ? null : true,
-        taskId: [ ...new Set(taskIds) ],
-      }
+        taskId: [...new Set(taskIds)],
+      };
     case TOGGLE_TRAINING:
       if (action.payload.checked === true) {
-        taskIds.push(action.payload.taskId)
-      } else (
-        taskIds = taskIds.filter(taskId => taskId !== action.payload.taskId)
-      )
+        taskIds.push(action.payload.taskId);
+      } else
+        taskIds = taskIds.filter((taskId) => taskId !== action.payload.taskId);
       return {
         ...state,
-        taskId: [ ...new Set(taskIds) ] // remove any duplicates
-      }
+        taskId: [...new Set(taskIds)], // remove any duplicates
+      };
     case CLEAR_TRAININGS:
       return {
         ...state,
-        taskId: []
-      }
+        taskId: [],
+      };
     case COMPLETION_STATUS:
       return {
         ...state,
-        totalCompletion: action.payload.completionStatus
+        totalCompletion: action.payload.completionStatus,
+      };
+    case TOGGLE_INACTIVE_EMPLOYEES:
+      return {
+        ...state,
+        empActive: action.payload.checked === true ? null : true,
+      };
+    case UPDATE_CONT_SERV_DATE:
+      return {
+        ...state,
+        contSrvFrom: action.payload.date,
+      };
+    case SET_RESP_CTR_HEADS:
+      return {
+        ...state,
+        respCtrHead: action.payload.respCtrHead
+      }
+    default:
+      return {
+        ...state
       }
   }
 }
@@ -52,19 +74,20 @@ const initialState = {
   name: "",
   empActive: true,
   taskId: [],
-  contSrvFrom: null,
+  contSrvFrom: "",
   taskActive: true,
   completed: null,
   totalCompletion: "",
   respCtrHead: [],
   limit: 10,
   offset: 1,
-  sort: [ "NAME:ASC", "OFFICE:ASC" ]
-}
+  sort: ["NAME:ASC", "OFFICE:ASC"],
+};
+
 
 export default function ToDoReporting() {
-  const [ state, dispatch ] = useReducer(filterReducer, initialState)
-  const taskAssignmentsQuery = useSearchTaskAssignments(state)
+  const [state, dispatch] = useReducer(filterReducer, initialState);
+  const taskAssignmentsQuery = useSearchTaskAssignments(state);
 
   return (
     <React.Fragment>
@@ -73,9 +96,14 @@ export default function ToDoReporting() {
         <div className="grid grid-cols-5 gap-4 p-4">
           <div className="col-span-2">
             <TrainingFilters state={state} dispatch={dispatch}/>
+            <EmployeeFilters state={state} dispatch={dispatch}/>
           </div>
           <div className="col-span-3">
-            <AssignmentsSummary taskAssignmentQuery={taskAssignmentsQuery} state={state} dispatch={dispatch}/>
+            <AssignmentsSummary
+              taskAssignmentQuery={taskAssignmentsQuery}
+              state={state}
+              dispatch={dispatch}
+            />
           </div>
         </div>
       </Card>
