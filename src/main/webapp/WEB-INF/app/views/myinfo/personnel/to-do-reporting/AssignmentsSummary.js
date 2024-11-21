@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import EmployeeSearch from "./EmployeeSearch";
-import styles from './EmployeeSearch.module.css';
 import EmployeeCount from "./EmployeeCount";
 import Employees from "./Employees";
 import PaginationComponent from "./PaginationComponent";

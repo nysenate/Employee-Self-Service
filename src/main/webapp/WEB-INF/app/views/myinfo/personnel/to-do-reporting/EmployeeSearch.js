@@ -1,27 +1,32 @@
 import React, { useState } from 'react';
-import styles from './EmployeeSearch.module.css';
+import { useDebounce } from "use-debounce";
+import { setEmpName } from "app/views/myinfo/personnel/to-do-reporting/todoReportingActions";
 
-export default function EmployeeSearch({ params, onChildDataChange }) {
-  const [ searchTerm, setSearchTerm ] = useState('');
+export default function EmployeeSearch({ state, dispatch }) {
+  const [term, setTerm] = useState('');
+  const [debouncedTerm] = useDebounce(term, 500);
 
-  const handleSearch = (event) => {
-    setSearchTerm(event.target.value);
-    params.name = event.target.value;
-    params.offset = 1;
-    onChildDataChange(params);
-  };
+  React.useEffect(() => {
+    dispatch(setEmpName(debouncedTerm))
+  }, [debouncedTerm])
+
+  React.useEffect(() => {
+    if (state.name !== term) {
+      setTerm(state.name)
+    }
+  }, [state.name])
 
   return (
     <div>
-      <label className={styles.labelCheck}>Search by Employee Name</label>
+      <label className="flex font-light" htmlFor="name">Search by Employee Name</label>
       <input
+        id="name"
         type="text"
-        value={searchTerm}
-        onChange={handleSearch}
-        className={styles.inputCheck}
+        autoComplete="off"
+        value={term}
+        onChange={e => setTerm(e.target.value)}
+        className="input w-64"
       />
     </div>
   );
 };
-
-

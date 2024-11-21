@@ -8,6 +8,7 @@ export const COMPLETION_STATUS = "COMPLETION_STATUS";
 export const TOGGLE_INACTIVE_EMPLOYEES = "TOGGLE_INACTIVE_EMPLOYEES";
 export const UPDATE_CONT_SERV_DATE = "UPDATE_CONT_SERV_DATE";
 export const SET_RESP_CTR_HEADS = "SET_RESP_CTR_HEADS";
+export const SET_EMP_NAME = "SET_EMP_NAME"
 
 export const PAGE = "PAGE";
 
@@ -44,4 +45,9 @@ export const updateContServDate = (date) => ({
 export const setRespCtrHeads = (respCtrHead) => ({
   type: SET_RESP_CTR_HEADS,
   payload: { respCtrHead },
-})
+});
+
+export const setEmpName = (name) => ({
+  type: SET_EMP_NAME,
+  payload: { name }
+});

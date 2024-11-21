@@ -5,13 +5,14 @@ import { useSearchTaskAssignments } from "app/api/searchTaskAssignmentsApi";
 import Card from "app/components/Card";
 import {
   CLEAR_TRAININGS,
-  COMPLETION_STATUS, SET_RESP_CTR_HEADS,
+  COMPLETION_STATUS, SET_EMP_NAME, SET_RESP_CTR_HEADS,
   TOGGLE_INACTIVE_TRAININGS,
   TOGGLE_TRAINING, UPDATE_CONT_SERV_DATE,
 } from "app/views/myinfo/personnel/to-do-reporting/todoReportingActions";
 import AssignmentsSummary from "app/views/myinfo/personnel/to-do-reporting/AssignmentsSummary";
 import EmployeeFilters from "app/views/myinfo/personnel/to-do-reporting/EmployeeFilters";
 import { TOGGLE_INACTIVE_EMPLOYEES } from "./todoReportingActions";
+import EmployeeSearch from "app/views/myinfo/personnel/to-do-reporting/EmployeeSearch";
 
 function filterReducer(state, action) {
   console.log(action);
@@ -62,6 +63,11 @@ function filterReducer(state, action) {
       return {
         ...state,
         respCtrHead: action.payload.respCtrHead
+      };
+    case SET_EMP_NAME:
+      return {
+        ...state,
+        name: action.payload.name,
       }
     default:
       return {
@@ -99,6 +105,7 @@ export default function ToDoReporting() {
             <EmployeeFilters state={state} dispatch={dispatch}/>
           </div>
           <div className="col-span-3">
+            <EmployeeSearch state={state} dispatch={dispatch}/>
             <AssignmentsSummary
               taskAssignmentQuery={taskAssignmentsQuery}
               state={state}
