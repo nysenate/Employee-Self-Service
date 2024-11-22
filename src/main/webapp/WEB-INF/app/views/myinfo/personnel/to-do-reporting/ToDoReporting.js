@@ -5,7 +5,7 @@ import { useSearchTaskAssignments } from "app/api/searchTaskAssignmentsApi";
 import Card from "app/components/Card";
 import {
   CLEAR_TRAININGS,
-  COMPLETION_STATUS, SET_EMP_NAME, SET_RESP_CTR_HEADS,
+  COMPLETION_STATUS, SET_EMP_NAME, SET_OFFSET, SET_RESP_CTR_HEADS,
   TOGGLE_INACTIVE_TRAININGS,
   TOGGLE_TRAINING, UPDATE_CONT_SERV_DATE,
 } from "app/views/myinfo/personnel/to-do-reporting/todoReportingActions";
@@ -68,6 +68,11 @@ function filterReducer(state, action) {
       return {
         ...state,
         name: action.payload.name,
+      }
+    case SET_OFFSET:
+      return {
+        ...state,
+        offset: action.payload.offset,
       }
     default:
       return {

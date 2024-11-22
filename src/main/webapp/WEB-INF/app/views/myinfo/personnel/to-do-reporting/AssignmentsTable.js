@@ -6,32 +6,32 @@ export default function AssignmentsTable({ taskAssignments, state, dispatch }) {
   console.log(taskAssignments);
   return (
     <>
-      <Pagination />
-      <Table taskAssignments={taskAssignments} />
-      <Pagination />
+      <Pagination/>
+      <Table taskAssignments={taskAssignments}/>
+      <Pagination/>
     </>
   );
 }
 
 function Table({ taskAssignments }) {
   return (
-    <div className="p-3">
+    <div className="py-3">
       <table className="table">
         <thead>
-          <tr className="table__head__row">
-            <th className="w-20">Completed/ Assigned</th>
-            <th>Name</th>
-            <th>Office</th>
-          </tr>
+        <tr className="table__head__row">
+          <th className="w-20">Completed/ Assigned</th>
+          <th>Name</th>
+          <th>Office</th>
+        </tr>
         </thead>
         <tbody className="table__body table__body--striped table__body--highlight">
-          {taskAssignments.map((a) => (
-            <AssignmentRow
-              key={a.employee.employeeId}
-              emp={a.employee}
-              assignments={a.tasks}
-            />
-          ))}
+        {taskAssignments.map((a) => (
+          <AssignmentRow
+            key={a.employee.employeeId}
+            emp={a.employee}
+            assignments={a.tasks}
+          />
+        ))}
         </tbody>
       </table>
     </div>
@@ -42,7 +42,7 @@ function AssignmentRow({ emp, assignments }) {
   return (
     <tr className="table__row">
       <td>
-        <CompletedStatus assignments={assignments} />
+        <CompletedStatus assignments={assignments}/>
       </td>
       <td className="table__cell table__cell--left">
         {emp.lastName}, {emp.firstName}
@@ -62,11 +62,11 @@ function CompletedStatus({ assignments }) {
 
   const completedStatusIcon = () => {
     if (completedCount === totalCount) {
-      return <CheckIcon className="h-4 w-4 text-green-900 cursor-pointer" />;
+      return <CheckIcon className="h-4 w-4 text-green-900 cursor-pointer"/>;
     } else if (completedCount === 0) {
-      return <XMarkIcon className="h-4 w-4 text-red-600 cursor-pointer" />;
+      return <XMarkIcon className="h-4 w-4 text-red-600 cursor-pointer"/>;
     } else {
-      return <MinusIcon className="h-4 w-4 text-yellow-600 cursor-pointer" />;
+      return <MinusIcon className="h-4 w-4 text-yellow-600 cursor-pointer"/>;
     }
   };
 

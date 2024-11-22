@@ -4,6 +4,8 @@ import Employees from "./Employees";
 import PaginationComponent from "./PaginationComponent";
 import LoadingIndicator from "app/components/LoadingIndicator";
 import AssignmentsTable from "app/views/myinfo/personnel/to-do-reporting/AssignmentsTable";
+import { searchTaskAssignmentsQueryParams } from "app/api/searchTaskAssignmentsApi";
+import { setOffset } from "app/views/myinfo/personnel/to-do-reporting/todoReportingActions";
 
 // export default function Results({ params, onChildDataChange, finalData, loading, allTasks }) {
 export default function AssignmentsSummary({ taskAssignmentQuery, state, dispatch }) {
@@ -23,15 +25,52 @@ export default function AssignmentsSummary({ taskAssignmentQuery, state, dispatc
   //   onChildDataChange(data);
   // };
 
+  const onPageChange = selectedPage => {
+    const offset = (selectedPage - 1) * state.limit + 1
+    dispatch(setOffset(offset))
+  }
+
   if (taskAssignmentQuery.isPending) {
     return <LoadingIndicator/>
   }
 
+  const currentPage = (state.offset + state.limit - 1) / state.limit
+  const totalPages = Math.ceil(taskAssignmentQuery.data.total / state.limit)
+
   return (
     <div>
-      <AssignmentsTable taskAssignments={taskAssignmentQuery.data} state={state} dispatch={dispatch}/>
+      <div className="my-3 flex justify-between items-center">
+        <TotalResults total={taskAssignmentQuery.data.total}/>
+        <CsvDownload state={state}/>
+      </div>
+      {taskAssignmentQuery.data.result.length > 0 &&
+        <>
+          <PaginationComponent currentPage={currentPage} totalPages={totalPages} onPageChange={onPageChange}/>
+          <AssignmentsTable taskAssignments={taskAssignmentQuery.data.result} state={state} dispatch={dispatch}/>
+          <PaginationComponent currentPage={currentPage} totalPages={totalPages} onPageChange={onPageChange}/>
+        </>
+      }
     </div>
   )
+}
+
+function TotalResults({ total }) {
+  return (
+    <span className="font-semibold">
+      {total} Matching Employees
+    </span>
+  )
+}
+
+function CsvDownload({ state }) {
+  return (
+    <a href={`/api/v1/personnel/task/emp/search/report?${searchTaskAssignmentsQueryParams(state)}`}
+       target="_blank"
+       rel="noopener noreferrer">
+      Download results as CSV
+    </a>
+  )
+}
 
 //   return (
 //     <div className={styles.card}>
@@ -76,4 +115,4 @@ export default function AssignmentsSummary({ taskAssignmentQuery, state, dispatc
 //       {/*</p>*/}
 //     </div>
 //   );
-}
+//}
