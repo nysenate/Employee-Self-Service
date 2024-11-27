@@ -102,13 +102,13 @@ public class TravelDepartmentAssigner {
     private Optional<Employee> supChainDeptHead(Employee employee) {
         Map<Integer, Employee> idToEmp = activeEmployees.stream()
                 .collect(Collectors.toMap(Employee::getEmployeeId, Function.identity()));
-        var prev = employee;
         var curr = idToEmp.get(employee.getSupervisorId());
-        while (curr != null && curr.getSupervisorId() != prev.getEmployeeId()) {
+        Set<Integer> visitedEmployeeIds = new HashSet<>();
+        while (curr != null && !visitedEmployeeIds.contains(curr.getSupervisorId())) {
+            visitedEmployeeIds.add(curr.getEmployeeId());
             if (departmentHeadIds.contains(curr.getEmployeeId())) {
                 return Optional.of(curr);
             }
-            prev = curr;
             curr = idToEmp.get(curr.getSupervisorId());
         }
         return Optional.empty();
