@@ -1,32 +1,43 @@
-import { format, parseISO } from "date-fns";
+import { format, isValid, parseISO } from "date-fns";
 
 /**
  * Converts an ISO date string to a short date format
  * i.e. 10/14/1983
  * @param isoDate an ISO date string, i.e. 2015-09-24 00:00:00
+ * @returns {string} isoDate in short form or an empty string if isoDate is invalid.
  */
 export function isoToShortDate(isoDate) {
-  const date = parseISO(isoDate)
-  return format(date, "MM/dd/yyyy")
+  return formatDate(isoDate, "MM/dd/yyyy")
 }
 
 /**
  * Converts an ISO date string to a medium date format
  * i.e. Jan 1, 2022
  * @param isoDate an ISO date string, i.e. 2020-08-14T15:45:44
+ * @returns {string} isoDate in medium form or an empty string if isoDate is invalid.
  */
 export function isoToMediumDate(isoDate) {
-  const date = parseISO(isoDate)
-  return format(date, "MMM d, yyyy")
+  return formatDate(isoDate, "MMM d, yyyy")
 }
 
 /**
  * Converts an ISO date string to a long date format
  * i.e. January 1, 2024
  * @param isoDate
- * @returns {string}
+ * @returns {string} isoDate in long form or an empty string if isoDate is invalid.
  */
 export function isoToLongDate(isoDate) {
+  return formatDate(isoDate, "MMMM d, yyyy")
+}
+
+function formatDate(isoDate, formatStr) {
+  // Prevent type error from calling parseISO with a non string.
+  if (typeof isoDate !== 'string') {
+    return "";
+  }
   const date = parseISO(isoDate)
-  return format(date, "MMMM d, yyyy")
+  if (!isValid(date)) {
+    return "";
+  }
+  return format(date, formatStr)
 }
