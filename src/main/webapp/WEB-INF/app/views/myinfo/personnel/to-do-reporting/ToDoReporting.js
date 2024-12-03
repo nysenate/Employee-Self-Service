@@ -127,17 +127,6 @@ export default function ToDoReporting() {
           </div>
         </div>
       </Card>
-      {/*<TrainingFilters*/}
-      {/*  state={state}*/}
-      {/*  dispatch={dispatch}*/}
-      {/*  handleAllTasks={handleAllTasks}/>*/}
-
-      {/*<EmployeeDetails*/}
-      {/*  params={params}*/}
-      {/*  onChildDataChange={handleDataChange}*/}
-      {/*  finalData={receivedData}*/}
-      {/*  loading={loading}*/}
-      {/*  allTasks={allTasks}/>*/}
     </React.Fragment>
   );
 }
