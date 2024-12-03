@@ -29,6 +29,7 @@ function filterReducer(state, action) {
         ...state,
         taskActive: action.payload.checked === true ? null : true,
         taskId: [...new Set(taskIds)],
+        offset: 1,
       };
     case TOGGLE_TRAINING:
       if (action.payload.checked === true) {
@@ -38,36 +39,43 @@ function filterReducer(state, action) {
       return {
         ...state,
         taskId: [...new Set(taskIds)], // remove any duplicates
+        offset: 1,
       };
     case CLEAR_TRAININGS:
       return {
         ...state,
         taskId: [],
+        offset: 1,
       };
     case COMPLETION_STATUS:
       return {
         ...state,
         totalCompletion: action.payload.completionStatus,
+        offset: 1,
       };
     case TOGGLE_INACTIVE_EMPLOYEES:
       return {
         ...state,
         empActive: action.payload.checked === true ? null : true,
+        offset: 1,
       };
     case UPDATE_CONT_SERV_DATE:
       return {
         ...state,
         contSrvFrom: action.payload.date,
+        offset: 1,
       };
     case SET_RESP_CTR_HEADS:
       return {
         ...state,
-        respCtrHead: action.payload.respCtrHead
+        respCtrHead: action.payload.respCtrHead,
+        offset: 1,
       };
     case SET_EMP_NAME:
       return {
         ...state,
         name: action.payload.name,
+        offset: 1,
       }
     case SET_OFFSET:
       return {
