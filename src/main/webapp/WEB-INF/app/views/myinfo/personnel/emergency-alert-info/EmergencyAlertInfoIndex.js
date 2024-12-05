@@ -2,14 +2,14 @@ import React from "react"
 import Hero from "app/components/Hero";
 import Card from "app/components/Card";
 import AlertInfoForm from "app/views/myinfo/personnel/emergency-alert-info/AlertInfoForm";
-import { useAlertInfo } from "app/api/alertInfoApi";
 import LoadingIndicator from "app/components/LoadingIndicator";
 import useAuth from "app/contexts/Auth/useAuth";
+import { useEmployeeAlertInfo } from "app/views/myinfo/personnel/emergency-alert-info/useEmployeeAlertInfo";
 
 
 export default function EmergencyAlertInfoIndex() {
   const auth = useAuth()
-  const alertInfo = useAlertInfo(auth.empId())
+  const alertInfo = useEmployeeAlertInfo(auth.empId())
 
   return (
     <div>

@@ -4,11 +4,11 @@ import Controls from "app/components/Controls";
 import LoadingIndicator from "app/components/LoadingIndicator";
 import Card from "app/components/Card";
 import Paycheck from "app/views/myinfo/payroll/checkhistory/Paycheck";
-import { useEmployeePaychecks } from "app/api/paychecksApi";
+import { useEmployeePaychecks } from "app/views/myinfo/payroll/checkhistory/useEmployeePaychecks";
 
 export default function CheckHistoryForm({ empId, calendarYears, fiscalYears }) {
-  const [ year, setYear ] = useState(Math.max(...calendarYears))
-  const [ useFiscalYears, setUseFiscalYears ] = useState(false)
+  const [year, setYear] = useState(Math.max(...calendarYears))
+  const [useFiscalYears, setUseFiscalYears] = useState(false)
 
   // Year can end up in the future when useFiscalYear = true and the most recent fiscal year is checked.
   // Then, unchecking useFiscalYear, will lead to year being an invalid value (not in calendarYears).
@@ -17,7 +17,7 @@ export default function CheckHistoryForm({ empId, calendarYears, fiscalYears }) 
     if (!useFiscalYears && year > Math.max(...calendarYears)) {
       setYear(Math.max(...calendarYears))
     }
-  }, [ useFiscalYears ])
+  }, [useFiscalYears])
 
   return (
     <div>
@@ -75,7 +75,6 @@ function CheckResults({ empId, year, useFiscalYears }) {
 }
 
 const yearOptions = (fiscalYears, calendarYears, useFiscalYears) => {
-  console.log(calendarYears)
   return useFiscalYears
          ? fiscalYears.map(year => <option value={year} key={year}>{year - 1} - {year}</option>)
          : calendarYears.map(year => <option value={year} key={year}>{year}</option>)

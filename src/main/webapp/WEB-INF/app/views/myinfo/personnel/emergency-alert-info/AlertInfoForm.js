@@ -3,11 +3,11 @@ import { useForm } from "react-hook-form";
 import PhoneInputs from "app/views/myinfo/personnel/emergency-alert-info/PhoneInputs";
 import EmailInputs from "app/views/myinfo/personnel/emergency-alert-info/EmailInputs";
 import { Button } from "app/components/Button";
-import { useMutateAlertInfo } from "app/api/alertInfoApi";
+import { useMutateEmployeeAlertInfo } from "app/views/myinfo/personnel/emergency-alert-info/useEmployeeAlertInfo";
 
 
 export default function AlertInfoForm({ alertInfo }) {
-  const mutateAlertInfo = useMutateAlertInfo()
+  const mutateAlertInfo = useMutateEmployeeAlertInfo()
   const useFormDefaultProps = {
     mode: "onBlur",
     defaultValues: {
@@ -33,7 +33,7 @@ export default function AlertInfoForm({ alertInfo }) {
 
   React.useEffect(() => {
     reset(useFormDefaultProps)
-  }, [ alertInfo ])
+  }, [alertInfo])
 
   const onSubmit = data => {
     data.empId = alertInfo.empId
@@ -106,7 +106,7 @@ function formatPhoneNumber(phoneNumberString) {
  * @returns {string[]} An array of the field names that are duplicates. If no duplicates were found this array is empty.
  */
 const duplicatePhoneNumbers = (formData) => {
-  const phoneNumberFields = [ "workPhone", "homePhone", "alternatePhone", "mobilePhone" ]
+  const phoneNumberFields = ["workPhone", "homePhone", "alternatePhone", "mobilePhone"]
   const phoneNumbers = phoneNumberFields.map(f => formatPhoneNumber(formData[f]))
     .filter(f => f !== "") // don't check empty phone numbers for duplicates.
   const duplicateNumbers = findDuplicates(phoneNumbers)
@@ -120,7 +120,7 @@ const duplicatePhoneNumbers = (formData) => {
  */
 const duplicateEmails = (formData) => {
   const cleanEmail = email => email?.trim().toLowerCase()
-  const emailFields = [ "workEmail", "personalEmail", "alternateEmail" ]
+  const emailFields = ["workEmail", "personalEmail", "alternateEmail"]
   const emailAddresses = emailFields.map(e => cleanEmail(formData[e] ?? ""))
     .filter(e => e !== "") // don't check empty emails for duplicates.
   const duplicateEmailAddresses = findDuplicates(emailAddresses)

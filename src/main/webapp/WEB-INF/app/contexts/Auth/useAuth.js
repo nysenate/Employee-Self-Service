@@ -1,16 +1,16 @@
 import React, { useState } from 'react'
 import { loadAuth, saveAuth } from "app/contexts/Auth/authStorage";
 import { add, isAfter } from "date-fns";
-import { fetchJson } from "app/utils/fetchJson";
+import { fetchJson } from "app/api/fetchJson";
 
 
 const AuthContext = React.createContext()
 
 function useProvideAuth() {
   const localStorageAuth = loadAuth()
-  const [ isAuthed, setIsAuthed ] = useState(localStorageAuth.isAuthed)
-  const [ expiresTime, setExpiresTime ] = useState(localStorageAuth.expiresTime)
-  const [ empId, setEmpId ] = useState(localStorageAuth.empId)
+  const [isAuthed, setIsAuthed] = useState(localStorageAuth.isAuthed)
+  const [expiresTime, setExpiresTime] = useState(localStorageAuth.expiresTime)
+  const [empId, setEmpId] = useState(localStorageAuth.empId)
 
   const isExpired = () => {
     return isAfter(new Date(), expiresTime)
@@ -20,7 +20,7 @@ function useProvideAuth() {
     // TODO will this overwrite local storage on initial load?
     // TODO save isAuthed = isAuthed()???? so once expires isAuthed = false
     saveAuth(isAuthed, expiresTime, empId)
-  }, [ isAuthed, expiresTime, empId ])
+  }, [isAuthed, expiresTime, empId])
 
   return {
     isAuthed() {

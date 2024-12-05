@@ -6,10 +6,10 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import SummaryIndex from "app/views/myinfo/personnel/summary/SummaryIndex";
 import CheckHistoryIndex from "app/views/myinfo/payroll/checkhistory/CheckHistoryIndex";
 import EmergencyAlertInfoIndex from "app/views/myinfo/personnel/emergency-alert-info/EmergencyAlertInfoIndex";
-import ToDoReporting from "app/views/myinfo/personnel/to-do-reporting/ToDoReporting";
+import ToDoReporting from "app/views/myinfo/personnel/pec/to-do-reporting/ToDoReporting";
 import TaskAssignmentsListIndex
-  from "app/views/myinfo/personnel/task-assignments/assignment-list/TaskAssignmentsListIndex";
-import TaskAssignmentIndex from "app/views/myinfo/personnel/task-assignments/assignment-item/TaskAssignmentIndex";
+  from "app/views/myinfo/personnel/pec/task-assignments/assignment-list/TaskAssignmentsListIndex";
+import TaskAssignmentIndex from "app/views/myinfo/personnel/pec/task-assignments/assignment-item/TaskAssignmentIndex";
 
 export default function MyInfoRouter() {
   return (

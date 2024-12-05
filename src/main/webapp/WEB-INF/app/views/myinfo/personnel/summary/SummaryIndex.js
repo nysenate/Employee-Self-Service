@@ -7,13 +7,13 @@ import PayrollInfo from "app/views/myinfo/personnel/summary/PayrollInfo";
 import { FederalTax, NewYorkCityTax, StateTax, YonkersTax } from "app/views/myinfo/personnel/summary/TaxInfo";
 import useAuth from "app/contexts/Auth/useAuth";
 import LoadingIndicator from "app/components/LoadingIndicator";
-import { useEmployeeDetails } from "app/api/employeeDetailsApi";
-import { useEmployeeTransactions } from "app/api/employeeTransactionsApi";
+import { useEmployee } from "app/views/myinfo/personnel/summary/useEmployee";
+import { useEmployeeTransactions } from "app/views/myinfo/personnel/summary/useEmployeeTransactions";
 
 
 export default function SummaryIndex() {
   const auth = useAuth();
-  const empDetails = useEmployeeDetails(auth.empId())
+  const empDetails = useEmployee(auth.empId())
   const transactions = useEmployeeTransactions(auth.empId())
 
   if (empDetails.isPending || transactions.isPending) {

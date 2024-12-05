@@ -2,7 +2,7 @@ import React from "react"
 import useAuth from "app/contexts/Auth/useAuth";
 import LoadingIndicator from "app/components/LoadingIndicator";
 import CheckHistoryForm from "app/views/myinfo/payroll/checkhistory/CheckHistoryForm";
-import { useEmployeeActiveYears } from "app/api/activeYearsApi";
+import { useEmployeeActiveYears } from "app/views/myinfo/payroll/checkhistory/useEmployeeActiveYears";
 
 
 export default function CheckHistoryIndex() {

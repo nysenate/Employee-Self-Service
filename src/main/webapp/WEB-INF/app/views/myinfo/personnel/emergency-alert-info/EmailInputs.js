@@ -11,7 +11,7 @@ export default function EmailInputs({ register, errors }) {
 
       <div className="col-span-3">
         <ContactLabel id="workEmail">Work</ContactLabel>
-        <EmailInput id="workEmail" register={register} errors={errors}/>
+        <EmailInput id="workEmail" register={register} errors={errors} readOnly/>
         <ErrorText id="workEmail" errors={errors}/>
       </div>
 
@@ -30,11 +30,11 @@ export default function EmailInputs({ register, errors }) {
   )
 }
 
-function EmailInput({ id, register, errors }) {
+function EmailInput({ id, register, errors, readOnly = false }) {
   return (
     <input id={id}
            name={id}
-           className={`input mx-3 ${errors[id] ? "input--invalid" : ""}`}
+           className={`${!readOnly && 'input'} mx-3 ${errors[id] ? "input--invalid" : ""}`}
            type="email"
            {...register(id, {
              pattern: {
@@ -42,6 +42,7 @@ function EmailInput({ id, register, errors }) {
                message: "Please enter a valid email address"
              },
            })}
+           readOnly={readOnly}
     />
   )
 }
