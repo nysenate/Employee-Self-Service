@@ -16,6 +16,7 @@ public class EmployeeSearchBuilder {
     private String name;
     private Boolean active;
     private Set<String> respCtrHeadCodes = new HashSet<>();
+    private Boolean isSenator;
 
     private LocalDate continuousServiceFrom;
     private LocalDate continuousServiceTo;
@@ -29,6 +30,11 @@ public class EmployeeSearchBuilder {
 
     public EmployeeSearchBuilder setActive(Boolean active) {
         this.active = active;
+        return this;
+    }
+
+    public EmployeeSearchBuilder setIsSenator(Boolean isSenator) {
+        this.isSenator = isSenator;
         return this;
     }
 
@@ -55,6 +61,10 @@ public class EmployeeSearchBuilder {
 
     public Boolean getActive() {
         return active;
+    }
+
+    public Boolean getIsSenator() {
+        return isSenator;
     }
 
     public Set<String> getRespCtrHeadCodes() {

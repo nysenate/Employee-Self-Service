@@ -149,6 +149,10 @@ essApi.factory('EmpPATSearchApi', ['$resource', 'appProps', function ($resource,
     return $resource(appProps.apiPath + '/personnel/task/emp/search');
 }]);
 
+essApi.factory('EmpAssignPATSearchApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/personnel/task/emp/assignSearch');
+}]);
+
 essApi.factory('PersonnelAssignmentsForEmpApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/personnel/task/assignment/:empId', {
         empId: '@empId'
@@ -164,6 +168,14 @@ essApi.factory('PersonnelAssignmentApi', ['$resource', 'appProps', function ($re
 
 essApi.factory('UpdatePersonnelTaskAssignmentCompletionApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/admin/personnel/task/overrride/:updateEmpID/:taskId/true/:empId', {
+        updateEmpID: '@updateEmpID',
+        taskId: '@taskId',
+        empId: '@empId'
+    });
+}]);
+
+essApi.factory('InsertPersonnelTaskAssignmentApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/admin/personnel/task/overrride/:updateEmpID/:taskId/:empId', {
         updateEmpID: '@updateEmpID',
         taskId: '@taskId',
         empId: '@empId'

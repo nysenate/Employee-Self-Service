@@ -60,4 +60,6 @@ public interface PersonnelTaskDao extends BaseDao {
     void insertEthicsCode(int taskId, int sequenceNo, String Label, String code, LocalDateTime StartDate, LocalDateTime endDate);
 
     List<DateRangedEthicsCode> getEthicsCodes();
+
+    void insertPersonnelAssignedTask(int empID, int updateEmpID, int taskID);
 }

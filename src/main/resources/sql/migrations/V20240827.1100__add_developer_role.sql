@@ -1,0 +1,1 @@
+ALTER TYPE ess_role ADD VALUE 'DEVELOPER';

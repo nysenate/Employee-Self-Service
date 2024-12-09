@@ -15,4 +15,13 @@ public interface EmpTaskSearchService {
      * @return {@link PaginatedList<EmpTaskSearchService>}
      */
     PaginatedList<EmployeeTaskSearchResult> searchForEmpTasks(EmpPTAQuery query, LimitOffset limitOffset);
+
+    /**
+     * Search for employees and tasks that match the given query criteria.
+     *
+     * @param query {@link EmpPTAQuery} query parameters
+     * @param limitOffset {@link LimitOffset}
+     * @return {@link PaginatedList<EmpTaskSearchService>}
+     */
+    PaginatedList<EmployeeTaskSearchResult> searchForNotAssignedEmpTasks(EmpPTAQuery query, LimitOffset limitOffset);
 }

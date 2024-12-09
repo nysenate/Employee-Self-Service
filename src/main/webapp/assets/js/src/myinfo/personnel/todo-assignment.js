@@ -1,8 +1,9 @@
 (function () {
     angular.module('essMyInfo')
-        .controller('TodoReportCtrl',
-                    ['$scope', '$httpParamSerializer', 'TaskUtils', 'EmpPATSearchApi', 'PaginationModel', 'appProps', 'modals', 'UpdatePersonnelTaskAssignmentCompletionApi', 'UpdatePersonnelTaskAssignmentActiveStatusApi', todoCtrl]);
-    function todoCtrl($scope, $httpParamSerializer, taskUtils, searchApi, pagination, appProps, modals, UpdatePersonnelTaskAssignmentCompletionApi, UpdatePersonnelTaskAssignmentActiveStatusApi) {
+        .controller('TodoReportAssign',
+                    ['$scope', '$httpParamSerializer', 'TaskUtils', 'EmpAssignPATSearchApi', 'PaginationModel', 'appProps', 'modals', 'InsertPersonnelTaskAssignmentApi', 'UpdatePersonnelTaskAssignmentActiveStatusApi', todoCtrl]);
+
+    function todoCtrl($scope, $httpParamSerializer, taskUtils, searchApi, pagination, appProps, modals, InsertPersonnelTaskAssignmentApi, UpdatePersonnelTaskAssignmentActiveStatusApi) {
 
         var itemsPerPage = 10;
 
@@ -12,6 +13,7 @@
         var defaultParams = {
             name: "",
             empActive: true,
+            isSenator: true,
             taskId: null,
             contServFrom: null,
             taskActive: true,
@@ -53,6 +55,7 @@
             taskList: null,
             taskMap: null,
             selTasks: null,
+            activeStatus:null,
             selContSrvDateOpt: $scope.contSrvDateOpts[0],
             customContSrvDate: moment().subtract(2, 'weeks').format('MM/DD/Y'),
             selectedRCHS: {
@@ -98,8 +101,8 @@
         $scope.overrideEmpTaskActiveStatus = overrideEmpTaskActiveStatus;
         $scope.getOverrideTaskEmpName = getOverrideTaskEmpName;
         $scope.getOverrideTaskTitle = getOverrideTaskTitle;
-        $scope.submitTaskOverride = submitTaskOverride;
-        $scope.rejectTaskOverride = rejectTaskOverride;
+        $scope.submitTaskAssignment = submitTaskAssignment;
+        $scope.rejectTaskAssignment = rejectTaskAssignment;
 
         function init() {
             $scope.state = angular.copy(defaultState);
@@ -124,13 +127,16 @@
         function setTasks(tasks) {
             var taskList = $scope.state.taskList = [],
                 taskMap = $scope.state.taskMap = {},
-                selTasks = $scope.state.selTasks = {};
+                selTasks = $scope.state.selTasks = {},
+                activeStatus = $scope.state.activeStatus = {};
             tasks.forEach(function (task) {
                 taskList.push(task);
                 taskMap[task.taskId] = task;
                 selTasks[task.taskId] = false;
+                activeStatus[task.taskId] = task.active;
             });
         }
+
         function getTaskTitle(taskId) {
             var taskMap = $scope.state.taskMap;
             if (taskId in taskMap) {
@@ -194,7 +200,6 @@
             var params = angular.copy($scope.state.params);
             params.limit = pagination.getLimit();
             params.offset = pagination.getOffset();
-
             $scope.state.request.search = true;
             searchApi.get(params).$promise
                 .then(setSearchResults)
@@ -212,7 +217,7 @@
 
         function setSearchResults(resp) {
             $scope.state.iSelResult = null;
-            $scope.state.results = resp.result.map(initializeResult);
+            $scope.state.results = resp.result.map(setAssignTasks);
             var pagination = $scope.state.pagination;
             pagination.setTotalItems(resp.total);
         }
@@ -222,10 +227,18 @@
             $scope.state.results = [];
         }
 
-        function initializeResult(result) {
-            result.completedCount = result.tasks.filter(function (task) {
-                return task.completed;
-            }).length;
+        function setAssignTasks(result){
+            var onlyActiveTasks = Object.keys($scope.state.activeStatus)
+                .filter(function (key) {
+                    if($scope.state.activeStatus[key] === true){
+                        return key;
+                    }}).map(Number);
+            var assigned=[];
+            result.tasks.filter(function (task) {
+                assigned.push(task.taskId);
+            });
+            result.diff = assigned;
+            result.activeCount = onlyActiveTasks.length;
             return result;
         }
 
@@ -337,22 +350,21 @@
             modals.open('task-active-status-override-dialog');
         }
 
-        function submitTaskOverride(changingActiveStatus) {
+        function submitTaskAssignment(assignStatus) {
             modals.resolve();
 
             var selectedEmpId = $scope.state.results[$scope.state.iSelResult].employee.employeeId;
             var tasks = $scope.state.results[$scope.state.iSelResult].tasks;
-            var taskToUpdate;
+            var taskToAssign;
 
             //Ensure task exists
             for (i = 0; i < tasks.length; i++ ) {
                 if (tasks[i].taskId === selectedTaskId) {
-                    taskToUpdate = tasks[i];
+                    taskToAssign = tasks[i];
                 }
             }
-            // console.log(taskToUpdate);
-            if (taskToUpdate == null) {
-                resetTaskOverrideVars();
+            if (taskToAssign == null) {
+                resetTaskAssignmentVars();
                 return;
             }
 
@@ -362,24 +374,21 @@
                 updateEmpID: appProps.user.employeeId
             };
 
-            if (changingActiveStatus) {
-                UpdatePersonnelTaskAssignmentActiveStatusApi.get(params).$promise.catch($scope.handleErrorResponse);
-            }
-            else {
-                UpdatePersonnelTaskAssignmentCompletionApi.get(params).$promise.catch($scope.handleErrorResponse);
+            if (!assignStatus) {
+                InsertPersonnelTaskAssignmentApi.get(params).$promise.catch($scope.handleErrorResponse);
             }
 
 
-            resetTaskOverrideVars();
+            resetTaskAssignmentVars();
             init();
         }
 
-        function rejectTaskOverride() {
+        function rejectTaskAssignment() {
             modals.reject();
-            resetTaskOverrideVars();
+            resetTaskAssignmentVars();
         }
 
-        function resetTaskOverrideVars() {
+        function resetTaskAssignmentVars() {
             selectedEmpName = "";
             selectedTaskName = "";
             selectedTaskId = "";

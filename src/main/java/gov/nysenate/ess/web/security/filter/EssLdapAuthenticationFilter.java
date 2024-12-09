@@ -82,9 +82,8 @@ public class EssLdapAuthenticationFilter {
             throw new UnsupportedTokenException("Senate LDAP Realm only supports UsernamePasswordToken");
         }
         catch (IndexOutOfBoundsException e) {
-            String error = "THE USERNAME PROVIDED DOES NOT MATCH ANYTHING IN LDAP";
+            String error = "THE USERNAME PROVIDED DOES NOT MATCH ANYTHING IN LDAP "  + username;
             logger.error(error);
-            slackChatService.sendMessage(error);
             return LdapAuthStatus.INCORRECT_CREDENTIALS;
         }
         catch (NamingException e) {

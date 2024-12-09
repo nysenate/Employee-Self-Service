@@ -19,6 +19,9 @@
       <li class="sub-topic green">
         <a href="${ctxPath}/myinfo/personnel/todo/report">To-Do Reporting</a>
       </li>
+      <li class="sub-topic green">
+        <a href="${ctxPath}/myinfo/personnel/todo/assignment">To-Do Assignment</a>
+      </li>
     </shiro:hasPermission>
   </ul>
   <h3 class="main-topic">Payroll</h3>

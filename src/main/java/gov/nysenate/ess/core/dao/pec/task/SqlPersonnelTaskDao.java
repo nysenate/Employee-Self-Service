@@ -127,6 +127,16 @@ public class SqlPersonnelTaskDao extends SqlBaseDao implements PersonnelTaskDao 
         return localNamedJdbc.query(SELECT_ETHICS_CODES.getSql(schemaMap()), ethicsCodeRowMapper);
     }
 
+    @Override
+    public void insertPersonnelAssignedTask(int empID, int updateEmpID, int taskID) {
+        MapSqlParameterSource updateParams = new MapSqlParameterSource();
+        updateParams.addValue("updateUserId",updateEmpID);
+        updateParams.addValue("empId",empID);
+        updateParams.addValue("taskId",taskID);
+
+        int value = localNamedJdbc.update(INSERT_TASK_ASSIGNMENT.getSql(schemaMap()), updateParams );
+    }
+
     private static final RowMapper<PersonnelTask> taskRowMapper = (rs, rowNum) ->
             new PersonnelTask(
                     rs.getInt("task_id"),

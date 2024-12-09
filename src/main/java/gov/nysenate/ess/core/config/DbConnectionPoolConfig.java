@@ -1,6 +1,5 @@
 package gov.nysenate.ess.core.config;
 
-import com.mchange.v2.c3p0.ComboPooledDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,8 +34,8 @@ public class DbConnectionPoolConfig
      * @return ComboPooledDataSource
      */
     @Bean(destroyMethod = "close", name = "localDataSource")
-    public ComboPooledDataSource localDataSource() {
-        ComboPooledDataSource cpds = getComboPooledDataSource(dbLocalType, dbLocalHost, dbLocalName, dbLocalDriver,
+    public ESSComboPooledDataSource localDataSource() {
+        ESSComboPooledDataSource cpds = getComboPooledDataSource(dbLocalType, dbLocalHost, dbLocalName, dbLocalDriver,
                 dbLocalUser, dbLocalPass);
         cpds.setMinPoolSize(3);
         cpds.setMaxPoolSize(10);
@@ -53,8 +52,8 @@ public class DbConnectionPoolConfig
      * @return ComboPooledDataSource
      */
     @Bean(destroyMethod = "close", name = "remoteDataSource")
-    public ComboPooledDataSource remoteDataSource() {
-        ComboPooledDataSource cpds = getComboPooledDataSource(dbRemoteType, dbRemoteHost, dbRemoteName, dbRemoteDriver,
+    public ESSComboPooledDataSource remoteDataSource() {
+        ESSComboPooledDataSource cpds = getComboPooledDataSource(dbRemoteType, dbRemoteHost, dbRemoteName, dbRemoteDriver,
                 dbRemoteUser, dbRemotePass);
         cpds.setMinPoolSize(3);
         cpds.setMaxPoolSize(10);
@@ -82,15 +81,15 @@ public class DbConnectionPoolConfig
      * @param pass Database password
      * @return PoolProperties
      */
-    private ComboPooledDataSource getComboPooledDataSource(String type, String host, String name, String driver,
+    private ESSComboPooledDataSource getComboPooledDataSource(String type, String host, String name, String driver,
                                                            String user, String pass) {
         final String jdbcUrlTemplate = "jdbc:%s//%s/%s";
-        ComboPooledDataSource pool = new ComboPooledDataSource();
+        var pool = new ESSComboPooledDataSource();
         try {
             pool.setDriverClass(driver);
         }
         catch (PropertyVetoException ex) {
-            logger.error("Error when setting the database driver " + driver + "{}", ex.getMessage());
+            logger.error("Error when setting the database driver {}{}", driver, ex.getMessage());
         }
         final String jdbcUrl = String.format(jdbcUrlTemplate, type, host, name);
 

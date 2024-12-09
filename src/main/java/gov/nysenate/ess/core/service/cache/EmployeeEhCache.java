@@ -20,6 +20,7 @@ import java.util.Set;
 @Service
 public abstract class EmployeeEhCache<Value> extends CachingService {
     private static final Logger logger = LoggerFactory.getLogger(EmployeeEhCache.class);
+
     protected Cache<Integer, Value> cache;
     @Autowired
     private AsyncRunner asyncRunner;
@@ -36,7 +37,11 @@ public abstract class EmployeeEhCache<Value> extends CachingService {
         Set<Integer> empIds = empIdService.getActiveEmployeeIds();
         this.cache = EssCacheManager.createCache(Integer.class, valueClass, this, empIds.size());
         if (warmOnStartup) {
-            asyncRunner.run(this::warmCache);
+            asyncRunner.run(() -> {
+                logger.info("Starting warming {} cache", cacheType());
+                warmCache();
+                logger.info("Finished warming {} cache", cacheType());
+            });
         }
     }
 
@@ -47,7 +52,7 @@ public abstract class EmployeeEhCache<Value> extends CachingService {
 
     @Override
     public void clearCache(boolean warmCache) {
-        logger.info("Clearing " + cacheType().name() + " cache...");
+        logger.info("Clearing {} cache...", cacheType().name());
         cache.clear();
         if (warmCache) {
             asyncRunner.run(this::warmCache);

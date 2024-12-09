@@ -1,7 +1,6 @@
 package gov.nysenate.ess.core.config;
 
 import com.google.common.collect.ImmutableMap;
-import com.mchange.v2.c3p0.ComboPooledDataSource;
 import gov.nysenate.ess.core.dao.base.SqlQueryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -14,6 +13,7 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import javax.sql.DataSource;
 import java.util.Map;
 
 /**
@@ -22,15 +22,14 @@ import java.util.Map;
 @EnableTransactionManagement
 @Configuration
 public class DatabaseConfig {
-
     public static final String localTxManager = "localTxManager";
     public static final String remoteTxManager = "remoteTxManager";
 
-    ComboPooledDataSource localDataSource;
-    ComboPooledDataSource remoteDataSource;
+    private final DataSource localDataSource;
+    private final DataSource remoteDataSource;
 
     @Autowired
-    public DatabaseConfig (ComboPooledDataSource localDataSource, ComboPooledDataSource remoteDataSource) {
+    public DatabaseConfig(DataSource localDataSource, DataSource remoteDataSource) {
         this.localDataSource = localDataSource;
         this.remoteDataSource = remoteDataSource;
     }
@@ -60,7 +59,7 @@ public class DatabaseConfig {
         return new DataSourceTransactionManager(localDataSource);
     }
 
-    @Bean(name = "remoteTxManager")
+    @Bean(name = remoteTxManager)
     public PlatformTransactionManager remoteTxManager() {
         return new DataSourceTransactionManager(remoteDataSource);
     }

@@ -14,6 +14,7 @@ import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.core.model.unit.LocationType;
 import gov.nysenate.ess.core.service.base.LocationService;
 import gov.nysenate.ess.core.service.cache.EmployeeEhCache;
+import gov.nysenate.ess.core.service.cache.EssCacheManager;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.LimitOffset;

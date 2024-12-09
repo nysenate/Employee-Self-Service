@@ -51,4 +51,10 @@
       <li class="sub-topic teal"><a href="${ctxPath}/time/personnel/search">Employee Search</a></li>
     </ul>
   </shiro:hasPermission>
+  <shiro:hasPermission name="<%= SimpleTimePermission.DEVELOPER.getPermissionString() %>">
+    <h3 class="main-topic">Developer</h3>
+    <ul class="sub-topic-list">
+      <li class="sub-topic teal"><a href="${ctxPath}/time/personnel/search">Employee Search</a></li>
+    </ul>
+  </shiro:hasPermission>
 </section>

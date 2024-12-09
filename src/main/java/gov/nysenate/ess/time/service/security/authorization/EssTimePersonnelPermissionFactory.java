@@ -28,7 +28,7 @@ public class EssTimePersonnelPermissionFactory implements PermissionFactory {
     public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum<?>> roles) {
         List<Permission> personnelPermissions = new ArrayList<>();
 
-        if (roles.contains(EssRole.TIME_MANAGER)) {
+        if (roles.contains(EssRole.TIME_MANAGER) || roles.contains(EssRole.DEVELOPER)) {
             personnelPermissions.addAll(getPersonnelManagerPermissions());
         }
 
