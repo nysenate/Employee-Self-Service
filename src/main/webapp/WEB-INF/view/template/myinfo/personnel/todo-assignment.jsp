@@ -13,18 +13,18 @@
         <a href ng-click="clearSelectedTasks()">Clear selected trainings</a>
         <hr>
         <div>
-        <label ng-repeat="task in state.taskList | filter:{'active':true}">
-          <input type="checkbox"
-                 ng-model="state.selTasks[task.taskId]">
-          {{task.title}}
-        </label>
+          <label ng-repeat="task in state.taskList | filter:{'active':true}">
+            <input type="checkbox"
+                   ng-model="state.selTasks[task.taskId]">
+            {{task.title}}
+          </label>
         </div>
       </div>
       <hr>
       <h3>Employee Filters</h3>
 
       <label class="todo-search-facet">
-        <input type="checkbox" ng-model="state.params.isSenator" ng-false-value="false" ng-true-value="true">
+        <input type="checkbox" ng-model="state.params.isSenator" ng-false-value="true" ng-true-value="false">
         Exclude Members
       </label>
 
@@ -32,7 +32,6 @@
         Offices
         <rch-picker resp-ctr-heads="state.selectedRCHS"></rch-picker>
       </label>
-
 
 
     </div>
