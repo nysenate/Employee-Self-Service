@@ -231,7 +231,7 @@ public class EssEmpTaskSearchService implements EmpTaskSearchService {
             List<Integer> toBeAssigned = getToBeAssigned(activeTasks, result, selected);
             if (!toBeAssigned.isEmpty()) {
                 List<PersonnelTaskAssignment> personalList = new ArrayList<>();
-                for (Integer taskId : toBeAssigned){
+                for (Integer taskId : toBeAssigned) {
                     PersonnelTaskAssignment taskAssignment = new PersonnelTaskAssignment(taskId,
                             0, null, null, false, false, null, null);
                     personalList.add(taskAssignment);
@@ -244,8 +244,7 @@ public class EssEmpTaskSearchService implements EmpTaskSearchService {
                         );
                         newResultList.add(employeeTaskSearchResult);
                     }
-                }
-                else{
+                } else {
                     if (!result.getEmployee().isSenator() && !personalList.isEmpty()) {
                         EmployeeTaskSearchResult employeeTaskSearchResult = new EmployeeTaskSearchResult(
                                 result.getEmployee(),
@@ -270,8 +269,7 @@ public class EssEmpTaskSearchService implements EmpTaskSearchService {
                 if (selected.contains(taskId) && !assignedTasks.contains(taskId)) {
                     toBeAssigned.add(taskId);
                 }
-            }
-            else{
+            } else {
                 if (!assignedTasks.contains(taskId)) {
                     toBeAssigned.add(taskId);
                 }
@@ -280,7 +278,7 @@ public class EssEmpTaskSearchService implements EmpTaskSearchService {
         return toBeAssigned;
     }
 
-    private List<EmployeeTaskSearchResult> buildResultList(ImmutableListMultimap<Integer, PersonnelTaskAssignment> empTaskMap){
+    private List<EmployeeTaskSearchResult> buildResultList(ImmutableListMultimap<Integer, PersonnelTaskAssignment> empTaskMap) {
 
         List<EmployeeTaskSearchResult> resultList = new ArrayList<>();
 
@@ -290,7 +288,7 @@ public class EssEmpTaskSearchService implements EmpTaskSearchService {
         ImmutableListMultimap.Builder<Integer, PersonnelTaskAssignment> builder = ImmutableListMultimap.builder();
         builder.putAll(empTaskMap);
 
-        for(Employee emp : allActiveEmployees){
+        for (Employee emp : allActiveEmployees) {
             if (!keys.contains(emp.getEmployeeId())) {
                 builder.put(emp.getEmployeeId(), new PersonnelTaskAssignment(-1, emp.getEmployeeId(), null, null, false, false, null, null));
             }
@@ -302,7 +300,7 @@ public class EssEmpTaskSearchService implements EmpTaskSearchService {
                 filter(id -> activeEmployeeIdService.getActiveEmployeeIds().contains(id)).collect(Collectors.toSet());
         Map<Integer, Employee> empMap = employeeInfoService.getEmployees(empIds);
 
-        for(Integer empId: empIds){
+        for (Integer empId : empIds) {
             resultList.add(new EmployeeTaskSearchResult(empMap.get(empId), finalEmpTaskMap.get(empId)));
         }
         return resultList;
