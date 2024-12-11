@@ -24,7 +24,7 @@
       <h3>Employee Filters</h3>
 
       <label class="todo-search-facet">
-        <input type="checkbox" ng-model="state.params.isSenator" ng-false-value="false" ng-true-value="true">
+        <input type="checkbox" ng-model="state.params.isSenator" ng-false-value="true" ng-true-value="false">
         Exclude Members
       </label>
 

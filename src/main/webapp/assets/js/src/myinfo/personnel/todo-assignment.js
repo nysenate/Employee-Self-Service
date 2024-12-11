@@ -13,7 +13,7 @@
         var defaultParams = {
             name: "",
             empActive: true,
-            isSenator: true,
+            isSenator: false,
             taskId: null,
             contServFrom: null,
             taskActive: true,

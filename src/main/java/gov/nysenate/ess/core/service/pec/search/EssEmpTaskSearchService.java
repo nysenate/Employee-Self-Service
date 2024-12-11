@@ -236,7 +236,7 @@ public class EssEmpTaskSearchService implements EmpTaskSearchService {
                             0, null, null, false, false, null, null);
                     personalList.add(taskAssignment);
                 }
-                if (!isSenator) {
+                if (isSenator) {
                     if (!personalList.isEmpty()) {
                         EmployeeTaskSearchResult employeeTaskSearchResult = new EmployeeTaskSearchResult(
                                 result.getEmployee(),
