@@ -54,14 +54,12 @@ public class EssEmpTaskSearchService implements EmpTaskSearchService {
         ImmutableListMultimap<Integer, PersonnelTaskAssignment> empTaskMap =
                 Multimaps.index(tasks, PersonnelTaskAssignment::getEmpId);
 
-        EmployeeSearchBuilder esb = query.getEmpQuery();
-
-        List<EmployeeTaskSearchResult> resultList = empTaskMap.asMap().entrySet().stream()
-                .map(e -> new EmployeeTaskSearchResult(
-                        employeeInfoService.getEmployee(e.getKey()),
-                        e.getValue()
-                ))
-                .collect(Collectors.toList());
+        List<EmployeeTaskSearchResult> resultList;
+        if (query.getEmpQuery().getActive() == null) {
+            resultList = buildResultList(empTaskMap, false);
+        } else {
+            resultList = buildResultList(empTaskMap, query.getEmpQuery().getActive());
+        }
 
         Comparator<EmployeeTaskSearchResult> comparator = getComparator(query.getSortDirectives());
 
@@ -93,7 +91,28 @@ public class EssEmpTaskSearchService implements EmpTaskSearchService {
                 .collect(Collectors.toList());
         resultList = updateNewResultList(resultList, query.getPatQuery().getTaskIds(), activeTasks, query.getEmpQuery().getIsSenator());
         List<EmployeeTaskSearchResult> limitedResultList = LimitOffset.limitList(resultList, limitOffset);
+
         return new PaginatedList<>(resultList.size(), limitOffset, limitedResultList);
+    }
+
+    private List<EmployeeTaskSearchResult> buildResultList(ImmutableListMultimap<Integer, PersonnelTaskAssignment> empTaskMap, Boolean active) {
+        List<EmployeeTaskSearchResult> resultList = new ArrayList<>();
+        ImmutableListMultimap.Builder<Integer, PersonnelTaskAssignment> builder = ImmutableListMultimap.builder();
+        builder.putAll(empTaskMap);
+
+        ImmutableListMultimap<Integer, PersonnelTaskAssignment> finalEmpTaskMap = builder.build();
+
+        Set<Integer> empIds = new HashSet<>(finalEmpTaskMap.keySet());
+        if (active) {
+            empIds = finalEmpTaskMap.keySet().stream().
+                    filter(id -> activeEmployeeIdService.getActiveEmployeeIds().contains(id)).collect(Collectors.toSet());
+        }
+        Map<Integer, Employee> empMap = employeeInfoService.getEmployees(empIds);
+
+        for (Integer empId : empIds) {
+            resultList.add(new EmployeeTaskSearchResult(empMap.get(empId), finalEmpTaskMap.get(empId)));
+        }
+        return resultList;
     }
 
     /**
