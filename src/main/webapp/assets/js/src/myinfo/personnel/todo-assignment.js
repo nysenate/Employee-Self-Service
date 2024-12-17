@@ -13,7 +13,7 @@
         var defaultParams = {
             name: "",
             empActive: true,
-            isSenator: true,
+            isSenator: false,
             taskId: null,
             contServFrom: null,
             taskActive: true,
@@ -55,7 +55,7 @@
             taskList: null,
             taskMap: null,
             selTasks: null,
-            activeStatus:null,
+            activeStatus: null,
             selContSrvDateOpt: $scope.contSrvDateOpts[0],
             customContSrvDate: moment().subtract(2, 'weeks').format('MM/DD/Y'),
             selectedRCHS: {
@@ -227,13 +227,14 @@
             $scope.state.results = [];
         }
 
-        function setAssignTasks(result){
+        function setAssignTasks(result) {
             var onlyActiveTasks = Object.keys($scope.state.activeStatus)
                 .filter(function (key) {
-                    if($scope.state.activeStatus[key] === true){
+                    if ($scope.state.activeStatus[key] === true) {
                         return key;
-                    }}).map(Number);
-            var assigned=[];
+                    }
+                }).map(Number);
+            var assigned = [];
             result.tasks.filter(function (task) {
                 assigned.push(task.taskId);
             });
@@ -358,7 +359,7 @@
             var taskToAssign;
 
             //Ensure task exists
-            for (i = 0; i < tasks.length; i++ ) {
+            for (i = 0; i < tasks.length; i++) {
                 if (tasks[i].taskId === selectedTaskId) {
                     taskToAssign = tasks[i];
                 }
