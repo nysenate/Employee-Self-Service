@@ -17,6 +17,9 @@ data.travel.attachments.dir = travel_request_attachments/
 # Subdirectory where log files are stored (needs "tomcat" ownership)
 data.log_subdir = log/
 
+# Subdirectory where intern rejuection CSV files are stored (needs "tomcat" ownership)
+data.intern_subdir = intern/
+
 # --- Domain Configuration ----------------------------------------------------
 
 # The domain URL and context path that ESS is hosted on (used for generating
@@ -361,3 +364,5 @@ everfi.report.email =
 
 #Supports comma-separated emails
 pec.code.admin.emails =
+
+internship.email =

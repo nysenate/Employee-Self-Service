@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 @Service
 public class PersonnelCodeGenerationService {
     private static final List<Character> charList = new ArrayList<>();
+
     static {
         for (char c = 'A'; c <= 'Z'; c++) {
             if (c != 'I' && c != 'O') {
@@ -65,7 +66,7 @@ public class PersonnelCodeGenerationService {
 
         for (PersonnelTask task : ethicsLiveTasks) {
             personnelTaskDao.insertEthicsCode(task.getTaskId(), 1, "First Code", code1, startDate, endDate);
-            personnelTaskDao.insertEthicsCode(task.getTaskId(), 2, "Second Code",code2, startDate, endDate);
+            personnelTaskDao.insertEthicsCode(task.getTaskId(), 2, "Second Code", code2, startDate, endDate);
             pecNotificationService.sendCodeEmail(pecCodeAdminEmails, code1, code2, task, startDate.toString(), endDate.toString());
             // Different codes per task
             if (!isFirstQuarter) {
@@ -89,36 +90,37 @@ public class PersonnelCodeGenerationService {
                 .map(i -> String.valueOf(charList.get(i))).collect(Collectors.joining());
     }
 
-    public static LocalDateTime generateEthicsStartDate(){
+    public static LocalDateTime generateEthicsStartDate() {
         LocalDate now = LocalDate.now();
         LocalDateTime output = null;
-        if(now.getDayOfMonth()>=28){
+        if (now.getDayOfMonth() >= 28) {
             output = LocalDateTime.of(now.getYear(), now.getMonthValue(), 28, 0, 0, 0);
             return output;
-        }
-        else if(now.getDayOfMonth()<28&&now.getMonthValue()>1){
-            output = LocalDateTime.of(now.getYear(), now.getMonthValue()-1, 28, 0, 0 ,0);
+        } else if (now.getDayOfMonth() < 28 && now.getMonthValue() > 1) {
+            output = LocalDateTime.of(now.getYear(), now.getMonthValue() - 1, 28, 0, 0, 0);
             return output;
-        }
-        else{
-            output = LocalDateTime.of(now.getYear()-1, 12, 28, 0, 0, 0);
+        } else {
+            output = LocalDateTime.of(now.getYear() - 1, 12, 28, 0, 0, 0);
             return output;
         }
     }
 
-    public static LocalDateTime generateEthicsEndDate(){
+    public static LocalDateTime generateEthicsEndDate() {
         LocalDate now = LocalDate.now();
         LocalDateTime output = null;
-        if(now.getDayOfMonth()>=28){
-            output = LocalDateTime.of(now.getYear(), now.getMonthValue()+1, 28, 0,0,0);
+        int nextMonth = now.getMonthValue() + 1;
+        int year = now.getYear();
+        if (nextMonth > 12) {
+            nextMonth = 1;
+            year = year + 1;
+        }
+
+        if (now.getDayOfMonth() >= 28) {
+            output = LocalDateTime.of(year, nextMonth, 28, 0, 0, 0);
             return output;
         }
-        else if(now.getDayOfMonth()<28&&now.getMonthValue()>1){
-            output = LocalDateTime.of(now.getYear(), now.getMonthValue(), 28, 0, 0, 0 );
-            return output;
-        }
-        else{
-            output = LocalDateTime.of(now.getYear()+1, 01, 28, 0, 0, 0);
+        else {
+            output = LocalDateTime.of(now.getYear(), now.getMonthValue(), 28, 0, 0, 0);
             return output;
         }
     }
@@ -128,8 +130,8 @@ public class PersonnelCodeGenerationService {
         LocalDate now = LocalDate.now();
 
         //Date range of the first quarter
-        LocalDate january = LocalDate.of(now.getYear(),1,1);
-        LocalDate march = LocalDate.of(now.getYear(),3,31);
+        LocalDate january = LocalDate.of(now.getYear(), 1, 1);
+        LocalDate march = LocalDate.of(now.getYear(), 3, 31);
 
         return now.isAfter(january) && now.isBefore(march);
     }
