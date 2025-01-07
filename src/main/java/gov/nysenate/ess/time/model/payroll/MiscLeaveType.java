@@ -24,6 +24,7 @@ public enum MiscLeaveType
     MILITARY_LEAVE("M", "Military Leave", "Military Leave", false, new BigInteger("191601132010626067538918565012971073672")),
     OTHER_LEAVE("O", "Other - 1", "Other Leave - 1", true, new BigInteger("191601132010627276464738179642145779848")),
     PARENTAL_LEAVE("P", "Parental Leave", "Parental Leave", false, new BigInteger("191601132010616396132361647979573424264")),
+    PRENATAL_LEAVE("N", "Prenatal Leave", "Prenatal Leave", false, new BigInteger("253666602241845525420608059722204649030")),
     SICK_LEAVE_HALF_PAY("S", "Sick Leave with Half Pay", "Sick Leave with Half Pay", false, new BigInteger("191601132010622440761459721125446955144")),
     VOL_FIRE_EMERG_MED_ACTIVITY("V", "Volunteer Fire/EMT", "Volunteer Fire Fighting and Emergency Medical Activities Leave", false, new BigInteger("191601132010629694316377408900495192200")),
     VOTING_LEAVE("T", "Voting", "Voting Leave", false, new BigInteger("186214696577130514392638601662177149240")),
