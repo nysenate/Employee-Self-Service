@@ -8,11 +8,11 @@ import {
   TOGGLE_INACTIVE_TRAININGS,
   TOGGLE_TRAINING, UPDATE_CONT_SERV_DATE,
 } from "app/views/myinfo/personnel/pec/to-do-reporting/todoReportingActions";
-import AssignmentsSummary from "app/views/myinfo/personnel/pec/to-do-reporting/AssignmentsSummary";
 import EmployeeFilters from "app/views/myinfo/personnel/pec/to-do-reporting/EmployeeFilters";
-import { TOGGLE_INACTIVE_EMPLOYEES } from "./todoReportingActions";
-import EmployeeSearch from "app/views/myinfo/personnel/pec/to-do-reporting/EmployeeSearch";
-import { useSearchTaskAssignments } from "app/views/myinfo/personnel/pec/useTaskAssignment";
+import { setEmpName, TOGGLE_INACTIVE_EMPLOYEES } from "./todoReportingActions";
+import { useSearchTaskAssignments } from "../useTaskAssignment";
+import AssignmentsSummary from "./AssignmentsSummary";
+import InputDebounced from "../InputDebounced";
 
 function filterReducer(state, action) {
   let taskIds = state.taskId;
@@ -117,7 +117,9 @@ export default function ToDoReporting() {
             <EmployeeFilters state={state} dispatch={dispatch}/>
           </div>
           <div className="col-span-3">
-            <EmployeeSearch state={state} dispatch={dispatch}/>
+            <InputDebounced label="Search by Employee Name"
+                            term={state.name}
+                            onChange={name => dispatch(setEmpName(name))}/>
             <AssignmentsSummary
               taskAssignmentQuery={taskAssignmentsQuery}
               state={state}
