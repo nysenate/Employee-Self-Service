@@ -13,6 +13,10 @@ export function searchTaskAssignments(queryParams) {
   return fetchApiJson(`/personnel/task/emp/search?${queryParams}`)
 }
 
+export function searchPotentialTaskAssignments(queryParams) {
+  return fetchApiJson(`/personnel/task/emp/assignSearch?${queryParams}`)
+}
+
 export function acknowledgeDocument({ empId, taskId }) {
   return fetchApiJson(`/personnel/task/acknowledgment?empId=${empId}&taskId=${taskId}`, { method: "POST" })
 }
@@ -31,4 +35,8 @@ export function manuallyOverrideCompletionStatus(data) {
 
 export function manuallyDeactivateTaskAssignment(data) {
   return fetchApiJson(`/admin/personnel/task/overrride/activation/${data.updatedByEmpId}/${data.taskId}/${data.isActive}/${data.assignedEmpId}`)
+}
+
+export function manuallyAssignTask(data) {
+  return fetchApiJson(`/admin/personnel/task/overrride/${data.updatedByEmpId}/${data.taskId}/${data.assignedEmpId}`)
 }

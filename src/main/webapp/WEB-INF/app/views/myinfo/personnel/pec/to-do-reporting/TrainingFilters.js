@@ -6,7 +6,7 @@ import {
   toggleTraining,
 } from "app/views/myinfo/personnel/pec/to-do-reporting/todoReportingActions";
 import { Button } from "app/components/Button";
-import { useTrainings } from "app/views/myinfo/personnel/pec/to-do-reporting/useTrainings";
+import { useTrainings } from "app/views/myinfo/personnel/pec/useTrainings";
 
 /**
  * This component fetches all trainings and presents various options for filtering by trainings.

@@ -56,4 +56,4 @@ export const setEmpName = (name) => ({
 export const setOffset = (offset) => ({
   type: SET_OFFSET,
   payload: { offset }
-})
+});

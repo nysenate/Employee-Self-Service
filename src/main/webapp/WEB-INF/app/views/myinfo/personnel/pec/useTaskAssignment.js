@@ -7,13 +7,15 @@ import {
   submitVideoCodes
 } from "app/api/taskAssignment";
 import { fetchApiJson } from "app/api/fetchJson";
+import { manuallyAssignTask, searchPotentialTaskAssignments } from "../../../../api/taskAssignment";
 
 
 const taskAssignmentKeys = {
   all: ['tasks', 'assignments'],
   list: (empId) => [...taskAssignmentKeys.all, empId, 'list'],
-  search: (params) => [...taskAssignmentKeys.all, 'search', { ...params }],
-  detail: (empId, taskId) => [...taskAssignmentKeys.all, empId, taskId]
+  search: (params) => [...taskAssignmentKeys.all, 'search', params],
+  detail: (empId, taskId) => [...taskAssignmentKeys.all, empId, taskId],
+  potential: (params) => [...taskAssignmentKeys.all, 'potential', params],
 }
 
 export function useTaskAssignments(empId) {
@@ -89,12 +91,33 @@ export function useManuallyDeactivateTaskAssignment() {
   })
 }
 
+export function useManuallyAssignTask() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: manuallyAssignTask,
+    onSuccess: (data) => {
+      return queryClient.invalidateQueries({ queryKey: taskAssignmentKeys.all })
+    }
+  })
+}
+
 export function useSearchTaskAssignments(state) {
   const queryParams = searchTaskAssignmentsQueryParams(state)
   return useQuery({
     queryKey: taskAssignmentKeys.search(queryParams),
     queryFn: () => {
       return searchTaskAssignments(queryParams)
+    },
+    cacheTime: 0 // Disable caching for this query.
+  })
+}
+
+export function useSearchPotentialAssignments(state) {
+  const queryParams = searchTaskAssignmentsQueryParams(state)
+  return useQuery({
+    queryKey: taskAssignmentKeys.potential(queryParams),
+    queryFn: () => {
+      return searchPotentialTaskAssignments(queryParams)
     },
     cacheTime: 0 // Disable caching for this query.
   })

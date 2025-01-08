@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchApiJson } from "app/api/fetchJson";
 import { getTasks } from "app/api/tasks";
 
 export function useTasks(activeOnly = false) {

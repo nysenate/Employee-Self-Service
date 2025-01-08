@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import PaginationComponent from "./PaginationComponent";
+import PaginationComponent from "../../../../../components/PaginationComponent";
 import LoadingIndicator from "app/components/LoadingIndicator";
 import AssignmentsTable from "app/views/myinfo/personnel/pec/to-do-reporting/AssignmentsTable";
 import { setOffset } from "app/views/myinfo/personnel/pec/to-do-reporting/todoReportingActions";

@@ -9,10 +9,11 @@ import {
   TOGGLE_TRAINING, UPDATE_CONT_SERV_DATE,
 } from "app/views/myinfo/personnel/pec/to-do-reporting/todoReportingActions";
 import EmployeeFilters from "app/views/myinfo/personnel/pec/to-do-reporting/EmployeeFilters";
-import { setEmpName, TOGGLE_INACTIVE_EMPLOYEES } from "./todoReportingActions";
+import { setEmpName } from "./todoReportingActions";
+import InputDebounced from "../InputDebounced";
+import { TOGGLE_INACTIVE_EMPLOYEES } from "./todoReportingActions";
 import { useSearchTaskAssignments } from "../useTaskAssignment";
 import AssignmentsSummary from "./AssignmentsSummary";
-import InputDebounced from "../InputDebounced";
 
 function filterReducer(state, action) {
   let taskIds = state.taskId;
