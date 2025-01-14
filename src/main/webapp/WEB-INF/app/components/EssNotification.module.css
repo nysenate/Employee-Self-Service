@@ -1,0 +1,102 @@
+/*@import "./colors";*/
+
+/*.ess-notification {*/
+/*    padding:.3em;*/
+/*    font-weight: bold;*/
+/*    text-align:center;*/
+/*    border-bottom: 1px solid #ddd;*/
+/*    h1 {*/
+/*        font-size: 2.5em;*/
+/*    }*/
+/*    h1, h2, h3, h4, p, span, li {*/
+/*        color: white;*/
+/*    }*/
+/*    ul {*/
+/*        padding: 0;*/
+/*    }*/
+/*    &.info {*/
+/*        background: white;*/
+/*        h1, h2, h3, h4, p, span {*/
+/*            color: @navy;*/
+/*        }*/
+/*    }*/
+/*    &.warn {*/
+/*        background: @orange;*/
+/*    }*/
+/*    &.error {*/
+/*        background: @redorange;*/
+/*        a {*/
+/*            color: #6fb9de;*/
+/*            text-decoration: underline;*/
+/*        }*/
+/*    }*/
+/*}*/
+p {
+    display: block;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    unicode-bidi: isolate;
+}
+h2 {
+    display: block;
+    font-size: 1.5em;
+    margin-block-start: 0.83em;
+    margin-block-end: 0.83em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    font-weight: 400;
+    unicode-bidi: isolate;
+}
+
+.essNotification {
+    padding: .3em;
+    font-weight: bold;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+
+.essNotification h1 {
+    font-size: 2.5em;
+}
+
+.essNotification h1,
+.essNotification h2,
+.essNotification h3,
+.essNotification h4,
+.essNotification p,
+.essNotification span,
+.essNotification li {
+    color: white;
+}
+
+.essNotification ul {
+    padding: 0;
+}
+
+.essNotification.info {
+    background: white;
+}
+
+.essNotification.info h1,
+.essNotification.info h2,
+.essNotification.info h3,
+.essNotification.info h4,
+.essNotification.info p,
+.essNotification.info span {
+    color: #0E4E5AFF; /* Use CSS variable if defined in colors.css */
+}
+
+.essNotification.warn {
+    background: #d19525; /* Use CSS variable if defined in colors.css */
+}
+
+.essNotification.error {
+    background: #E64727FF; /* Use CSS variable if defined in colors.css */
+}
+
+.essNotification.error a {
+    color: #6fb9de;
+    text-decoration: underline;
+}

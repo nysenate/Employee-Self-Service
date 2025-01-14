@@ -1,10 +1,11 @@
 import React from 'react'
+import Hero from "../../components/Hero";
 
 
 export default function Travel() {
   return (
-    <>
-      Travel
-    </>
+    <div>
+      <Hero>Travel</Hero>
+    </div>
   )
 }
