@@ -9,6 +9,7 @@ import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.RangeUtils;
+import gov.nysenate.ess.core.util.SortOrder;
 import gov.nysenate.ess.time.model.expectedhrs.ExpectedHours;
 import gov.nysenate.ess.time.model.expectedhrs.InvalidExpectedHourDatesEx;
 import gov.nysenate.ess.time.service.allowance.AllowanceService;
@@ -63,7 +64,16 @@ public class TxExpectedHoursService implements ExpectedHoursService {
 
         Range<LocalDate> yearToDate = Range.closedOpen(LocalDate.ofYearDay(year, 1), beginDate);
 
-        BigDecimal yearlyHoursExpected = transactionHistory.getEffectiveMinHours(dateRange).lastEntry().getValue();
+        RangeSet<LocalDate> activeDates = transactionHistory.getActiveDates(); // Fallback dates
+
+        BigDecimal yearlyHoursExpected = BigDecimal.ZERO;
+        if (!transactionHistory.getEffectiveMinHours(dateRange).isEmpty()) {
+            yearlyHoursExpected = transactionHistory.getEffectiveMinHours(dateRange).lastEntry().getValue();
+        }
+        else if (!transactionHistory.getEffectiveMinHours( activeDates.span() ).isEmpty()){
+            yearlyHoursExpected = transactionHistory.getEffectiveMinHours( activeDates.span() ).lastEntry().getValue(); //NUMINTOTHRS apt rtp
+        }
+
 
         BigDecimal ytdHoursExpected = getExpectedHours(transactionHistory, yearToDate);
         // Add any Temporary Actual Hours to the Expected Hours within the year prior to the given Pay Period.
