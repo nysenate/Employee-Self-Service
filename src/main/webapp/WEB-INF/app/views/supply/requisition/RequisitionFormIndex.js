@@ -3,7 +3,6 @@ import { useSearchParams } from 'react-router-dom';
 import Hero from "../../../components/Hero";
 import { OverOrderPopup, ChangeDestinationPopup } from "../../../components/Popups";
 import styles from '../universalStyles.module.css';
-import { Button } from "../../../components/Button";
 import useAuth from "app/contexts/Auth/useAuth";
 import LoadingIndicator from "app/components/LoadingIndicator";
 import Pagination from "../../../components/Pagination";
@@ -13,22 +12,14 @@ import DestinationDetails from "./DestinationDetails";
 import SelectDestination from "./SelectDestination";
 import ItemsGrid from "./ItemsGrid";
 import CartSummary from "app/views/supply/requisition/CartSummary";
-
-
+import { useSupplyContext } from "app/views/supply/requisition/useSupplyContext";
 
 
 export default function RequisitionFormIndex({ setCategories }) {
   const auth = useAuth();
   const [locations, setLocations] = useState([]);
-  const [destination, setDestination] = useState(() => {
-    try {
-      const destinationData = localStorage.getItem('destination');
-      return destinationData && destinationData !== "undefined" ? JSON.parse(destinationData) : null;
-    } catch (e) {
-      console.error('Failed to parse destination from localStorage:', e);
-      return null;
-    }
-  });
+  const { destination, deleteDestination } = useSupplyContext()
+
   const [items, setItems] = useState([]);
   const itemsPerPage = 16;
   const [currentPage, setCurrentPage] = useState(1);
@@ -68,7 +59,7 @@ export default function RequisitionFormIndex({ setCategories }) {
   }, [cart]);
 
   useEffect(() => {
-    if(selectedCategories.length === 0) {
+    if (selectedCategories.length === 0) {
       setFilteredItems(items);
       return;
     }
@@ -95,12 +86,6 @@ export default function RequisitionFormIndex({ setCategories }) {
     setItems(sortItems(items, e.target.value));
   };
 
-  const handleConfirmClick = (tempDestination) => {
-    setDestination(tempDestination);
-    setCurrentPage(1);
-    localStorage.setItem('destination', JSON.stringify(tempDestination));
-  };
-
   const handleChangeClick = () => {
     const isCartEmpty = cart && Object.keys(cart).length === 0;
     if (!isCartEmpty) {
@@ -113,7 +98,7 @@ export default function RequisitionFormIndex({ setCategories }) {
   const fullWipe = () => {
     clearCart();
     setCart({});
-    setDestination(null);
+    deleteDestination()
     setItems([]);
     setFilteredItems([]);
     setCategories([]);
@@ -147,76 +132,80 @@ export default function RequisitionFormIndex({ setCategories }) {
     localStorage.removeItem('pending');
     localStorage.removeItem('pendingQuantity');
   };
-  const handleChangeDestinationAction = (decision) => { if (decision) fullWipe(); };
+  const handleChangeDestinationAction = (decision) => {
+    if (decision) fullWipe();
+  };
 
-  if (!locations.length || (destination && !filteredItems.length)) {
+  if (!destination) {
     return (
-        <div>
-          <Hero>Requisition Form</Hero>
-          <LoadingIndicator />
-        </div>
+      <SelectDestination/>
+    )
+  }
+
+  if (!locations.length || (!destination && !filteredItems.length)) {
+    return (
+      <div>
+        <Hero>Requisition Form</Hero>
+        <LoadingIndicator/>
+      </div>
     );
   }
 
   return (
-      <div>
-        <div className={styles.supplyOrderHero} style={{ display: "inline-block", width: '100%' }}>
-          <h2 className={styles.requisitionTitle}>Requisition Form</h2>
-          <a href={"/supply/cart"}>
-            <CartSummary cart={cart}/>
-          </a>
-        </div>
-        {destination ? (
-            <div>
-              <DestinationDetails
-                  destination={destination}
-                  handleChangeClick={handleChangeClick}
-                  sortOption={sortOption}
-                  handleSortChange={handleSortChange}
-              />
-              {filteredItems.length > itemsPerPage && (
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={Math.ceil(filteredItems.length / itemsPerPage)}
-                  onPageChange={handlePageChange}
-                />
-              )}
-              <ItemsGrid
-                  items={filteredItems}
-                  currentPage={currentPage}
-                  itemsPerPage={itemsPerPage}
-                  cart={cart}
-                  handleQuantityChange={handleQuantityChange}
-                  handleOverOrderAttempt={handleOverOrderAttempt}
-              />
-              {filteredItems.length > itemsPerPage && (
-                <div className={styles.contentContainer}>
-                  <Pagination
-                    currentPage={currentPage}
-                    totalPages={Math.ceil(filteredItems.length / itemsPerPage)}
-                    onPageChange={handlePageChange}
-                  />
-                </div>
-              )}
-            </div>
-        ) : (
-            <SelectDestination
-                locations={locations}
-                currentDestination={destination}
-                handleConfirmClick={handleConfirmClick}
-            />
-        )}
-        <OverOrderPopup
-            isModalOpen={isOverOrderPopupOpen}
-            closeModal={closeOverOrderPopup}
-            onAction={handleOverOrderAction}
-        />
-        <ChangeDestinationPopup
-            isModalOpen={isChangeDestinationPopupOpen}
-            closeModal={closeChangeDestinationPopup}
-            onAction={handleChangeDestinationAction}
-        />
+    <div>
+      <div className={styles.supplyOrderHero} style={{ display: "inline-block", width: '100%' }}>
+        <h2 className={styles.requisitionTitle}>Requisition Form</h2>
+        <a href={"/supply/cart"}>
+          <CartSummary cart={cart}/>
+        </a>
       </div>
+      {destination ? (
+        <div>
+          <DestinationDetails
+            destination={destination}
+            handleChangeClick={handleChangeClick}
+            sortOption={sortOption}
+            handleSortChange={handleSortChange}
+          />
+          {filteredItems.length > itemsPerPage && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={Math.ceil(filteredItems.length / itemsPerPage)}
+              onPageChange={handlePageChange}
+            />
+          )}
+          <ItemsGrid
+            items={filteredItems}
+            currentPage={currentPage}
+            itemsPerPage={itemsPerPage}
+            cart={cart}
+            handleQuantityChange={handleQuantityChange}
+            handleOverOrderAttempt={handleOverOrderAttempt}
+          />
+          {filteredItems.length > itemsPerPage && (
+            <div className={styles.contentContainer}>
+              <Pagination
+                currentPage={currentPage}
+                totalPages={Math.ceil(filteredItems.length / itemsPerPage)}
+                onPageChange={handlePageChange}
+              />
+            </div>
+          )}
+        </div>
+      ) : (
+         <></>
+       )}
+      <OverOrderPopup
+        isModalOpen={isOverOrderPopupOpen}
+        closeModal={closeOverOrderPopup}
+        onAction={handleOverOrderAction}
+      />
+      <ChangeDestinationPopup
+        isModalOpen={isChangeDestinationPopupOpen}
+        closeModal={closeChangeDestinationPopup}
+        onAction={handleChangeDestinationAction}
+      />
+    </div>
   );
 }
 

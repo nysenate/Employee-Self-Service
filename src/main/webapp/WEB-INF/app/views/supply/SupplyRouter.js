@@ -14,12 +14,14 @@ import Navigation from "app/components/Navigation";
 import Card from "app/components/Card";
 import CategoryCard from "./requisition/CategoryCard";
 import styles from "./universalStyles.module.css";
+import { SupplyContextProvider } from "app/views/supply/requisition/useSupplyContext";
 
 export default function SupplyRouter() {
   const [categories, setCategories] = useState([]);
 
   return (
-      <ThemeContext.Provider value={themes.supply}>
+    <ThemeContext.Provider value={themes.supply}>
+      <SupplyContextProvider>
         <Routes>
           <Route path="" element={<SupplyLayout categories={categories}/>}>
             <Route path="requisition-form" element={<RequisitionFormIndex setCategories={setCategories}/>}/>
@@ -34,7 +36,8 @@ export default function SupplyRouter() {
             <Route path="*" element={<div>404</div>}/>
           </Route>
         </Routes>
-      </ThemeContext.Provider>
+      </SupplyContextProvider>
+    </ThemeContext.Provider>
   );
 }
 
@@ -42,49 +45,49 @@ function SupplyLayout({ categories }) {
   const location = useLocation();
 
   return (
-      <AppLayout>
-        <Navigation notWrapInCard={true}>
-          <Card className="pb-5">
+    <AppLayout>
+      <Navigation notWrapInCard={true}>
+        <Card className="pb-5">
+          <Navigation.Title>
+            Supply Menu
+          </Navigation.Title>
+          <Navigation.Section name="My Supply">
+            <Navigation.Link to="/supply/requisition-form">
+              Requisition Form
+            </Navigation.Link>
+            <Navigation.Link to="/supply/cart">
+              Shopping Cart
+            </Navigation.Link>
+            <Navigation.Link to="/supply/order-history">
+              Order History
+            </Navigation.Link>
+          </Navigation.Section>
+          <Navigation.Section name="Manage Supply">
+            <Navigation.Link to="/supply/fulfillment">
+              Fulfillment
+            </Navigation.Link>
+            <Navigation.Link to="/supply/reconciliation">
+              Reconciliation
+            </Navigation.Link>
+            <Navigation.Link to="/supply/requisition-history">
+              Requisition History
+            </Navigation.Link>
+            <Navigation.Link to="/supply/item-history">
+              Item History
+            </Navigation.Link>
+          </Navigation.Section>
+        </Card>
+        {location.pathname === "/supply/requisition-form" && categories.length !== 0 && (
+          // Big boy
+          <div className={`${styles.marginTop20}`} style={{ marginBottom: '100px', minHeight: '0px', minWidth: '0px' }}>
             <Navigation.Title>
-              Supply Menu
+              Categories
             </Navigation.Title>
-            <Navigation.Section name="My Supply">
-              <Navigation.Link to="/supply/requisition-form">
-                Requisition Form
-              </Navigation.Link>
-              <Navigation.Link to="/supply/cart">
-                Shopping Cart
-              </Navigation.Link>
-              <Navigation.Link to="/supply/order-history">
-                Order History
-              </Navigation.Link>
-            </Navigation.Section>
-            <Navigation.Section name="Manage Supply">
-              <Navigation.Link to="/supply/fulfillment">
-                Fulfillment
-              </Navigation.Link>
-              <Navigation.Link to="/supply/reconciliation">
-                Reconciliation
-              </Navigation.Link>
-              <Navigation.Link to="/supply/requisition-history">
-                Requisition History
-              </Navigation.Link>
-              <Navigation.Link to="/supply/item-history">
-                Item History
-              </Navigation.Link>
-            </Navigation.Section>
-          </Card>
-          {location.pathname === "/supply/requisition-form" && categories.length !== 0 && (
-              // Big boy
-              <div className={`${styles.marginTop20}`} style={{ marginBottom: '100px', minHeight: '0px', minWidth: '0px'}}>
-                  <Navigation.Title>
-                    Categories
-                  </Navigation.Title>
-                  <CategoryCard categories={categories}/>
-              </div>
-          )}
-        </Navigation>
-      </AppLayout>
+            <CategoryCard categories={categories}/>
+          </div>
+        )}
+      </Navigation>
+    </AppLayout>
   );
 }
 
