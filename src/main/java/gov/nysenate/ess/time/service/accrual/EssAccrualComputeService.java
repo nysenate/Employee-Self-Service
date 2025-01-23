@@ -522,7 +522,10 @@ public class EssAccrualComputeService implements AccrualComputeService {
 
         // If pay period is start of new year perform necessary adjustments to the accruals.
         if (gapPeriod.isStartOfYearSplit()) {
-            accrualState.applyYearRollover();
+            BigDecimal priorYearDonations = donationService.getHoursDonated(transHistory.getEmployeeId(), gapPeriod.getYear()-1);
+            BigDecimal currentYearDonations = donationService.getHoursDonated(transHistory.getEmployeeId(), gapPeriod.getYear());
+
+            accrualState.applyYearRollover(priorYearDonations, currentYearDonations);
         }
 
         boolean usesSubmittedRecord = false;

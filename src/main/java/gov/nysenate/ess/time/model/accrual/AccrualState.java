@@ -5,8 +5,10 @@ import com.google.common.collect.TreeRangeSet;
 import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.util.DateUtils;
+import gov.nysenate.ess.time.service.accrual.DonationService;
 import gov.nysenate.ess.time.util.AccrualUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -40,6 +42,8 @@ public class AccrualState extends AccrualSummary
     protected BigDecimal sickRate;
     protected BigDecimal vacRate;
     protected BigDecimal ytdHoursExpected;
+
+    private DonationService donationService;
     /** Tracks usage for each period */
     private Map<PayPeriod, PeriodAccUsage> periodAccUsageMap = new HashMap<>();
 
@@ -157,7 +161,7 @@ public class AccrualState extends AccrualSummary
      * - Year to date accrual usages and hours worked are set back to 0.
      * - Personal hours are reset to their initial state (35 hours prorated based on min hours required).
      */
-    public void applyYearRollover() {
+    public void applyYearRollover(BigDecimal prevYearDonations, BigDecimal curYearDonations) {
         this.setPerHoursAccrued(AccrualUtils.roundPersonalHours(
                 ANNUAL_PER_HOURS.multiply(getProratePercentage())));
 
@@ -173,11 +177,13 @@ public class AccrualState extends AccrualSummary
                         .subtract(this.getVacHoursUsed())
                         .min(AccrualRate.VACATION.getMaxHoursBanked()));
         this.setVacHoursAccrued(BigDecimal.ZERO);
+
         this.setEmpHoursBanked(
                 this.getEmpHoursBanked()
                         .add(this.getEmpHoursAccrued())
                         .subtract(this.getEmpHoursUsed())
                         .subtract(this.getFamHoursUsed())
+                        .subtract(prevYearDonations)
                         .min(AccrualRate.SICK.getMaxHoursBanked()));
         this.setEmpHoursAccrued(BigDecimal.ZERO);
         this.setYtdHoursExpected(BigDecimal.ZERO);
