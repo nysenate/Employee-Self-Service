@@ -5,10 +5,8 @@ import com.google.common.collect.TreeRangeSet;
 import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.util.DateUtils;
-import gov.nysenate.ess.time.service.accrual.DonationService;
 import gov.nysenate.ess.time.util.AccrualUtils;
 import org.apache.commons.lang3.ObjectUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -43,7 +41,6 @@ public class AccrualState extends AccrualSummary
     protected BigDecimal vacRate;
     protected BigDecimal ytdHoursExpected;
 
-    private DonationService donationService;
     /** Tracks usage for each period */
     private Map<PayPeriod, PeriodAccUsage> periodAccUsageMap = new HashMap<>();
 
