@@ -1,21 +1,21 @@
 import React from "react";
-import * as essLocalStorage from "app/utils/essLocalStorage";
 import { useContext, useEffect, useState } from "react";
+import useLocalStorage from "app/views/useLocalStorage";
 
 
 const SupplyContext = React.createContext()
-
 const SUPPLY_DESTINATION_KEY = "supplyDestination"
 
 // TODO add Cart
 export function SupplyContextProvider({ children }) {
+  const storage = useLocalStorage()
   const [destination, setDestination] = useState(() =>
-    essLocalStorage.load(SUPPLY_DESTINATION_KEY)
+    storage.load(SUPPLY_DESTINATION_KEY)
   );
 
   useEffect(() => {
     if (destination !== undefined) {
-      essLocalStorage.save(SUPPLY_DESTINATION_KEY, destination);
+      storage.save(SUPPLY_DESTINATION_KEY, destination);
     }
   }, [destination]);
 
