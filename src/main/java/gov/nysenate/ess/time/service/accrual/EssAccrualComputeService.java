@@ -44,6 +44,8 @@ import static gov.nysenate.ess.time.model.EssTimeConstants.ANNUAL_PER_HOURS;
 import static gov.nysenate.ess.time.model.EssTimeConstants.MAX_DAYS_PER_YEAR;
 import static gov.nysenate.ess.time.util.AccrualUtils.getProratePercentage;
 import static gov.nysenate.ess.time.util.AccrualUtils.roundPersonalHours;
+import static java.time.temporal.TemporalAdjusters.lastDayOfYear;
+import static java.time.temporal.TemporalAdjusters.firstDayOfYear;
 
 /**
  * Service layer for computing accrual information for an employee based on processed accrual
@@ -519,13 +521,20 @@ public class EssAccrualComputeService implements AccrualComputeService {
                 RangeUtils.intersection(expectedHoursDates, ImmutableRangeSet.of(gapPeriodRange));
         accrualState.setExpectedDates(expectedPeriodDates);
 
-
         // If pay period is start of new year perform necessary adjustments to the accruals.
         if (gapPeriod.isStartOfYearSplit()) {
-            BigDecimal priorYearDonations = donationService.getHoursDonated(transHistory.getEmployeeId(), gapPeriod.getYear()-1);
-            BigDecimal currentYearDonations = donationService.getHoursDonated(transHistory.getEmployeeId(), gapPeriod.getYear());
 
-            accrualState.applyYearRollover(priorYearDonations, currentYearDonations);
+            // Setting to the whole year. It's easier to simply set. If employee terms within year that may change
+            accrualState.setBeginDate(gapPeriod.getStartDate().with(firstDayOfYear()));
+            accrualState.setEndDate(gapPeriod.getStartDate().with(lastDayOfYear()));
+
+            // Set Current and prior Year Donations here for Accural State.
+            // Setting it in other spots is too early.
+
+            accrualState.setCurrentYearDonations(donationService.getHoursDonated(transHistory.getEmployeeId(), gapPeriod.getYear()));
+            accrualState.setPriorYearDonations(donationService.getHoursDonated(transHistory.getEmployeeId(), gapPeriod.getYear() -1 ));
+
+            accrualState.applyYearRollover();
         }
 
         boolean usesSubmittedRecord = false;

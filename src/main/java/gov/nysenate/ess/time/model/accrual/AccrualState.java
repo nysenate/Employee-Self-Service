@@ -9,7 +9,6 @@ import gov.nysenate.ess.time.util.AccrualUtils;
 import org.apache.commons.lang3.ObjectUtils;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
@@ -158,7 +157,7 @@ public class AccrualState extends AccrualSummary
      * - Year to date accrual usages and hours worked are set back to 0.
      * - Personal hours are reset to their initial state (35 hours prorated based on min hours required).
      */
-    public void applyYearRollover(BigDecimal prevYearDonations, BigDecimal curYearDonations) {
+    public void applyYearRollover() {
         this.setPerHoursAccrued(AccrualUtils.roundPersonalHours(
                 ANNUAL_PER_HOURS.multiply(getProratePercentage())));
 
@@ -180,7 +179,8 @@ public class AccrualState extends AccrualSummary
                         .add(this.getEmpHoursAccrued())
                         .subtract(this.getEmpHoursUsed())
                         .subtract(this.getFamHoursUsed())
-                        .subtract(prevYearDonations)
+                        .subtract(this.getPriorYearDonations())
+                        .subtract(this.getCurrentYearDonations())
                         .min(AccrualRate.SICK.getMaxHoursBanked()));
         this.setEmpHoursAccrued(BigDecimal.ZERO);
         this.setYtdHoursExpected(BigDecimal.ZERO);
@@ -237,6 +237,10 @@ public class AccrualState extends AccrualSummary
 
     public LocalDate getBeginDate() {
         return beginDate;
+    }
+
+    public void setBeginDate(LocalDate beginDate) {
+        this.beginDate = beginDate;
     }
 
     public boolean isEmpAccruing() {
