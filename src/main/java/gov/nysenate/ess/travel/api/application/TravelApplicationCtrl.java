@@ -75,6 +75,16 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
         return ListViewResponse.of(appViews);
     }
 
+    @RequestMapping(value = "/application/attachment/{uuid}/ohh", method = RequestMethod.GET)
+    public ResponseEntity<byte[]> getAttachments(@PathVariable String uuid) throws IOException {
+        Attachment attachment = attachmentDao.selectAttachment(uuid);
+        File attachmentFile = attachmentService.getAttachmentFile(uuid);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.valueOf(attachment.getContentType()));
+        byte[] bytes = FileUtils.readFileToByteArray(attachmentFile);
+        return new ResponseEntity<>(bytes, headers, HttpStatus.OK);
+    }
+
     @RequestMapping(value = "/application/attachment/{uuid}", method = RequestMethod.GET)
     public ResponseEntity<byte[]> getAttachment(@PathVariable String uuid) throws IOException {
         Attachment attachment = attachmentDao.selectAttachment(uuid);
