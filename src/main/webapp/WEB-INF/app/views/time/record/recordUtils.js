@@ -1,17 +1,17 @@
 const timeEntryFields = [
-  'workHours',
-  'travelHours',
-  'holidayHours',
-  'vacationHours',
-  'personalHours',
-  'sickEmpHours',
-  'sickFamHours',
-  'miscHours'
+  "workHours",
+  "travelHours",
+  "holidayHours",
+  "vacationHours",
+  "personalHours",
+  "sickEmpHours",
+  "sickFamHours",
+  "miscHours",
 ];
 
 export function getDailyTotal(entry) {
   return timeEntryFields
-    .map(timeField => {
+    .map((timeField) => {
       const fieldValue = entry[timeField];
       return isNaN(fieldValue) ? 0 : +fieldValue;
     })
@@ -44,10 +44,10 @@ export function getRecordTotals(record) {
   for (const field of timeEntryFields) {
     totals[field] = getTotal(record, field);
   }
-  totals.raSaWorkHours = getTotal(record, 'workHours', ['RA', 'SA']);
-  totals.tempWorkHours = getTotal(record, 'workHours', ['TE']);
-  totals.raSaTotal = getTotal(record, 'total', ['RA', 'SA']);
-  totals.total = getTotal(record, 'total');
+  totals.raSaWorkHours = getTotal(record, "workHours", ["RA", "SA"]);
+  totals.tempWorkHours = getTotal(record, "workHours", ["TE"]);
+  totals.raSaTotal = getTotal(record, "total", ["RA", "SA"]);
+  totals.total = getTotal(record, "total");
   return totals;
 }
 
@@ -60,9 +60,9 @@ export function formatAttendRecord(attendRecord) {
     sickEmpHours: attendRecord.sickEmpHours,
     sickFamHours: attendRecord.sickFamHours,
     miscHours: attendRecord.miscHours,
-    total: attendRecord.totalHours
+    total: attendRecord.totalHours,
   };
-  attendRecord.recordStatus = 'APPROVED_PERSONNEL';
+  attendRecord.recordStatus = "APPROVED_PERSONNEL";
   attendRecord.payPeriod = { payPeriodNum: attendRecord.payPeriodNum };
   return attendRecord;
 }
@@ -108,7 +108,7 @@ export function isFullTempRecord(timeRecord) {
     return false;
   }
   for (const entry of entries) {
-    if (entry.payType !== 'TE') {
+    if (entry.payType !== "TE") {
       return false;
     }
   }

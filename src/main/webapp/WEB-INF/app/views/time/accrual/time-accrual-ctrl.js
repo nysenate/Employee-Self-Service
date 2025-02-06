@@ -9,9 +9,9 @@ import { fetchApiJson } from "app/api/fetchJson";
 export const fetchDonationInfo = async (params) => {
   const queryParams = new URLSearchParams();
 
-  Object.keys(params).forEach(key => {
+  Object.keys(params).forEach((key) => {
     if (Array.isArray(params[key])) {
-      params[key].forEach(value => queryParams.append(key, value));
+      params[key].forEach((value) => queryParams.append(key, value));
     } else {
       queryParams.append(key, params[key]);
     }
@@ -20,10 +20,10 @@ export const fetchDonationInfo = async (params) => {
   const path = `/donation/info?${queryParams.toString()}`;
 
   try {
-    const response = await fetchApiJson(path, { method: 'GET' });
+    const response = await fetchApiJson(path, { method: "GET" });
     return response;
   } catch (error) {
-    console.error('Fetch error:', error);
+    console.error("Fetch error:", error);
     throw error;
   }
 };
@@ -37,9 +37,9 @@ export const fetchDonationInfo = async (params) => {
 export const fetchDonationHistory = async (params) => {
   const queryParams = new URLSearchParams();
 
-  Object.keys(params).forEach(key => {
+  Object.keys(params).forEach((key) => {
     if (Array.isArray(params[key])) {
-      params[key].forEach(value => queryParams.append(key, value));
+      params[key].forEach((value) => queryParams.append(key, value));
     } else {
       queryParams.append(key, params[key]);
     }
@@ -48,14 +48,13 @@ export const fetchDonationHistory = async (params) => {
   const path = `/donation/history?${queryParams.toString()}`;
 
   try {
-    const response = await fetchApiJson(path, { method: 'GET' });
+    const response = await fetchApiJson(path, { method: "GET" });
     return response;
   } catch (error) {
-    console.error('Fetch error:', error);
+    console.error("Fetch error:", error);
     throw error;
   }
 };
-
 
 /**
  * Fetch employee info based on provided parameters.
@@ -66,9 +65,9 @@ export const fetchDonationHistory = async (params) => {
 export const fetchEmployeeInfo = async (params) => {
   const queryParams = new URLSearchParams();
 
-  Object.keys(params).forEach(key => {
+  Object.keys(params).forEach((key) => {
     if (Array.isArray(params[key])) {
-      params[key].forEach(value => queryParams.append(key, value));
+      params[key].forEach((value) => queryParams.append(key, value));
     } else {
       queryParams.append(key, params[key]);
     }
@@ -77,10 +76,10 @@ export const fetchEmployeeInfo = async (params) => {
   const path = `/employees?${queryParams.toString()}`;
 
   try {
-    const response = await fetchApiJson(path, { method: 'GET' });
+    const response = await fetchApiJson(path, { method: "GET" });
     return response;
   } catch (error) {
-    console.error('Fetch error:', error);
+    console.error("Fetch error:", error);
     throw error;
   }
 };
@@ -94,9 +93,9 @@ export const fetchEmployeeInfo = async (params) => {
 export const fetchAccrualActiveYears = async (params) => {
   const queryParams = new URLSearchParams();
 
-  Object.keys(params).forEach(key => {
+  Object.keys(params).forEach((key) => {
     if (Array.isArray(params[key])) {
-      params[key].forEach(value => queryParams.append(key, value));
+      params[key].forEach((value) => queryParams.append(key, value));
     } else {
       queryParams.append(key, params[key]);
     }
@@ -105,10 +104,10 @@ export const fetchAccrualActiveYears = async (params) => {
   const path = `/accruals/active-years?${queryParams.toString()}`;
 
   try {
-    const response = await fetchApiJson(path, { method: 'GET' });
+    const response = await fetchApiJson(path, { method: "GET" });
     return response;
   } catch (error) {
-    console.error('Fetch error:', error);
+    console.error("Fetch error:", error);
     throw error;
   }
 };
@@ -122,9 +121,9 @@ export const fetchAccrualActiveYears = async (params) => {
 export const fetchAccrualSummaries = async (params) => {
   const queryParams = new URLSearchParams();
 
-  Object.keys(params).forEach(key => {
+  Object.keys(params).forEach((key) => {
     if (Array.isArray(params[key])) {
-      params[key].forEach(value => queryParams.append(key, value));
+      params[key].forEach((value) => queryParams.append(key, value));
     } else {
       queryParams.append(key, params[key]);
     }
@@ -133,10 +132,10 @@ export const fetchAccrualSummaries = async (params) => {
   const path = `/accruals/history?${queryParams.toString()}`;
 
   try {
-    const response = await fetchApiJson(path, { method: 'GET' });
+    const response = await fetchApiJson(path, { method: "GET" });
     return response;
   } catch (error) {
-    console.error('Fetch error:', error);
+    console.error("Fetch error:", error);
     throw error;
   }
 };
@@ -150,9 +149,9 @@ export const fetchAccrualSummaries = async (params) => {
 export const fetchAccruals = async (params) => {
   const queryParams = new URLSearchParams();
 
-  Object.keys(params).forEach(key => {
+  Object.keys(params).forEach((key) => {
     if (Array.isArray(params[key])) {
-      params[key].forEach(value => queryParams.append(key, value));
+      params[key].forEach((value) => queryParams.append(key, value));
     } else {
       queryParams.append(key, params[key]);
     }
@@ -161,14 +160,13 @@ export const fetchAccruals = async (params) => {
   const path = `/accruals?${queryParams.toString()}`;
 
   try {
-    const response = await fetchApiJson(path, { method: 'GET' });
+    const response = await fetchApiJson(path, { method: "GET" });
     return response;
   } catch (error) {
-    console.error('Fetch error:', error);
+    console.error("Fetch error:", error);
     throw error;
   }
 };
-
 
 /**
  * Fetch supervisor employees based on provided parameters.
@@ -180,9 +178,9 @@ export const fetchAccruals = async (params) => {
 export const fetchSupEmployeeApi = async (params) => {
   const queryParams = new URLSearchParams();
 
-  Object.keys(params).forEach(key => {
+  Object.keys(params).forEach((key) => {
     if (Array.isArray(params[key])) {
-      params[key].forEach(value => queryParams.append(key, value));
+      params[key].forEach((value) => queryParams.append(key, value));
     } else {
       queryParams.append(key, params[key]);
     }
@@ -191,10 +189,10 @@ export const fetchSupEmployeeApi = async (params) => {
   const path = `/supervisor/employees?${queryParams.toString()}`;
 
   try {
-    const response = await fetchApiJson(path, { method: 'GET' });
+    const response = await fetchApiJson(path, { method: "GET" });
     return response;
   } catch (error) {
-    console.error('Fetch error:', error);
+    console.error("Fetch error:", error);
     throw error;
   }
 };
@@ -209,9 +207,9 @@ export const fetchSupEmployeeApi = async (params) => {
 export const fetchSupOverrideApi = async (params) => {
   const queryParams = new URLSearchParams();
 
-  Object.keys(params).forEach(key => {
+  Object.keys(params).forEach((key) => {
     if (Array.isArray(params[key])) {
-      params[key].forEach(value => queryParams.append(key, value));
+      params[key].forEach((value) => queryParams.append(key, value));
     } else {
       queryParams.append(key, params[key]);
     }
@@ -220,10 +218,10 @@ export const fetchSupOverrideApi = async (params) => {
   const path = `/supervisor/overrides?${queryParams.toString()}`;
 
   try {
-    const response = await fetchApiJson(path, { method: 'GET' });
+    const response = await fetchApiJson(path, { method: "GET" });
     return response;
   } catch (error) {
-    console.error('Fetch error:', error);
+    console.error("Fetch error:", error);
     throw error;
   }
 };

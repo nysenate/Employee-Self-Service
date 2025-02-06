@@ -1,6 +1,5 @@
 import { fetchApiJson } from "app/api/fetchJson";
 
-
 /**
  * Fetch employee info based on provided parameters.
  *
@@ -10,9 +9,9 @@ import { fetchApiJson } from "app/api/fetchJson";
 export const fetchEmployeeInfo = async (params) => {
   const queryParams = new URLSearchParams();
 
-  Object.keys(params).forEach(key => {
+  Object.keys(params).forEach((key) => {
     if (Array.isArray(params[key])) {
-      params[key].forEach(value => queryParams.append(key, value));
+      params[key].forEach((value) => queryParams.append(key, value));
     } else {
       queryParams.append(key, params[key]);
     }
@@ -21,10 +20,10 @@ export const fetchEmployeeInfo = async (params) => {
   const path = `/employees?${queryParams.toString()}`;
 
   try {
-    const response = await fetchApiJson(path, { method: 'GET' });
+    const response = await fetchApiJson(path, { method: "GET" });
     return response;
   } catch (error) {
-    console.error('Fetch error:', error);
+    console.error("Fetch error:", error);
     throw error;
   }
 };
@@ -37,9 +36,9 @@ export const fetchEmployeeInfo = async (params) => {
 export const fetchEmployeeSearchApi = async (params) => {
   const queryParams = new URLSearchParams();
 
-  Object.keys(params).forEach(key => {
+  Object.keys(params).forEach((key) => {
     if (Array.isArray(params[key])) {
-      params[key].forEach(value => queryParams.append(key, value));
+      params[key].forEach((value) => queryParams.append(key, value));
     } else {
       queryParams.append(key, params[key]);
     }
@@ -48,16 +47,20 @@ export const fetchEmployeeSearchApi = async (params) => {
   const path = `/employees/search?${queryParams.toString()}`;
 
   try {
-    const response = await fetchApiJson(path, { method: 'GET' });
+    const response = await fetchApiJson(path, { method: "GET" });
     return response;
   } catch (error) {
-    console.error('Fetch error:', error);
+    console.error("Fetch error:", error);
     throw error;
   }
 };
 
-
-export const setSearchParam = (paramName, paramValue, condition = true, replace = true) => {
+export const setSearchParam = (
+  paramName,
+  paramValue,
+  condition = true,
+  replace = true,
+) => {
   const searchParams = new URLSearchParams(window.location.search);
   if (condition !== false && paramValue) {
     searchParams.set(paramName, paramValue);
@@ -68,9 +71,9 @@ export const setSearchParam = (paramName, paramValue, condition = true, replace 
   const newUrl = `${window.location.pathname}?${searchParams.toString()}`;
 
   if (replace) {
-    window.history.replaceState(null, '', newUrl);
+    window.history.replaceState(null, "", newUrl);
   } else {
-    window.history.pushState(null, '', newUrl);
+    window.history.pushState(null, "", newUrl);
   }
 };
 

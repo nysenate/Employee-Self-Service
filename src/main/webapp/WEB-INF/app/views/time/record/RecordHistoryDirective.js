@@ -1,19 +1,28 @@
-import React, { useState, useEffect } from 'react';
-import styles from '../universalStyles.module.css';
-import { fetchAttendanceRecordApi, fetchTimeRecordApi, fetchActiveYearsTimeRecordsApi } from './time-record-ctrl';
-import { formatDateYYYYMMDD } from 'app/views/time/helpers';
+import React, { useEffect, useState } from "react";
+import styles from "../universalStyles.module.css";
+import {
+  fetchActiveYearsTimeRecordsApi,
+  fetchAttendanceRecordApi,
+  fetchTimeRecordApi,
+} from "./time-record-ctrl";
+import { formatDateYYYYMMDD } from "app/views/time/helpers";
 import {
   calculateDailyTotals,
   compareRecords,
   formatAttendRecord,
   getRecordTotals,
-} from 'app/views/time/record/recordUtils';
-import ActiveAttendanceRecords from 'app/views/time/record/ActiveAttendanceRecords';
-import SubmittedAttendanceRecords from 'app/views/time/record/SubmittedAttendanceRecords';
+} from "app/views/time/record/recordUtils";
+import ActiveAttendanceRecords from "app/views/time/record/ActiveAttendanceRecords";
+import SubmittedAttendanceRecords from "app/views/time/record/SubmittedAttendanceRecords";
 import EssNotification from "app/components/EssNotification";
 
-
-const RecordHistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage, scopeHideTitle }) => {
+const RecordHistoryDirective = ({
+  viewDetails,
+  user,
+  empSupInfo,
+  linkToEntryPage,
+  scopeHideTitle,
+}) => {
   const [state, setState] = useState({
     supId: user.employeeId,
     searching: false,
@@ -82,7 +91,9 @@ const RecordHistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage
     }));
 
     try {
-      const resp = await fetchActiveYearsTimeRecordsApi({ empId: state.selectedEmp.empId });
+      const resp = await fetchActiveYearsTimeRecordsApi({
+        empId: state.selectedEmp.empId,
+      });
       handleActiveYearsResponse(resp);
     } catch (error) {
       console.error(error);
@@ -104,7 +115,9 @@ const RecordHistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage
     const endDate = isUserSup ? emp.supEndDate : emp.effectiveEndDate;
     const supStartYear = new Date(startDate || 0).getFullYear();
     const supEndYear = new Date(endDate || Date.now()).getFullYear();
-    const recordYrs = resp.years.filter((year) => year >= supStartYear && year <= supEndYear).reverse();
+    const recordYrs = resp.years
+      .filter((year) => year >= supStartYear && year <= supEndYear)
+      .reverse();
 
     setState((prevState) => ({
       ...prevState,
@@ -130,7 +143,7 @@ const RecordHistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage
     const nextYearStart = new Date(year + 1, 0, 1);
 
     const supStartMoment = new Date(supStartDate || 0);
-    const supEndMoment = new Date(supEndDate || '3000-01-01');
+    const supEndMoment = new Date(supEndDate || "3000-01-01");
 
     const fromMoment = new Date(Math.max(yearStart, supStartMoment));
     const toMoment = new Date(Math.min(nextYearStart, supEndMoment));
@@ -147,8 +160,16 @@ const RecordHistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage
 
     try {
       const [timesheetRecordsResp, attendRecordsResp] = await Promise.all([
-        fetchTimeRecordApi({ empId: emp.empId, from: formatDateYYYYMMDD(fromMoment), to: formatDateYYYYMMDD(toMoment) }),
-        fetchAttendanceRecordApi({ empId: emp.empId, from: formatDateYYYYMMDD(fromMoment), to: formatDateYYYYMMDD(toMoment) }),
+        fetchTimeRecordApi({
+          empId: emp.empId,
+          from: formatDateYYYYMMDD(fromMoment),
+          to: formatDateYYYYMMDD(toMoment),
+        }),
+        fetchAttendanceRecordApi({
+          empId: emp.empId,
+          from: formatDateYYYYMMDD(fromMoment),
+          to: formatDateYYYYMMDD(toMoment),
+        }),
       ]);
 
       setState((prevState) => ({
@@ -158,7 +179,10 @@ const RecordHistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage
       }));
       initTimesheetRecords(timesheetRecordsResp.result.items[emp.empId]);
       initAttendRecords(attendRecordsResp.records);
-      combineRecords(timesheetRecordsResp.result.items[emp.empId], attendRecordsResp.records);
+      combineRecords(
+        timesheetRecordsResp.result.items[emp.empId],
+        attendRecordsResp.records,
+      );
     } catch (error) {
       console.error(error);
     } finally {
@@ -174,7 +198,7 @@ const RecordHistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage
 
   const initTimesheetRecords = (records) => {
     const timesheetMap = {};
-    if(records) {
+    if (records) {
       records.forEach((record) => {
         calculateDailyTotals(record);
         record.totals = getRecordTotals(record);
@@ -189,7 +213,7 @@ const RecordHistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage
   };
 
   const initAttendRecords = (records) => {
-    if(records.length !== 0) {
+    if (records.length !== 0) {
       records.forEach(formatAttendRecord);
     }
   };
@@ -200,9 +224,9 @@ const RecordHistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage
       submitted: [],
     };
     let paperTimesheetsDisplayed = false;
-    let attendEnd = new Date('1970-01-01T00:00:00');
+    let attendEnd = new Date("1970-01-01T00:00:00");
 
-    if(attendRecords.length !== 0) {
+    if (attendRecords.length !== 0) {
       attendRecords.forEach((attendRecord) => {
         if (new Date(attendRecord.endDate) > attendEnd) {
           attendEnd = new Date(attendRecord.endDate);
@@ -213,9 +237,10 @@ const RecordHistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage
           return;
         }
         attendRecord.timesheetIds.forEach((tsId) => {
-          const record = timesheetRecords?.find((r) => r.timeRecordId === tsId) || null;
+          const record =
+            timesheetRecords?.find((r) => r.timeRecordId === tsId) || null;
           if (!record) {
-            console.error('Could not find timesheet with id:', tsId);
+            console.error("Could not find timesheet with id:", tsId);
             return;
           }
           records.submitted.push(record);
@@ -223,10 +248,10 @@ const RecordHistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage
       });
     }
 
-    if(timesheetRecords) {
+    if (timesheetRecords) {
       timesheetRecords.forEach((timesheet) => {
         if (new Date(timesheet.endDate) > attendEnd) {
-          if (timesheet.scope === 'E') {
+          if (timesheet.scope === "E") {
             records.employee.push(timesheet);
           } else {
             records.submitted.push(timesheet);
@@ -265,7 +290,9 @@ const RecordHistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage
     return Object.values(state.request).some((req) => req === true);
   };
 
-  const isUser = () => { return state.selectedEmp.empId === user.employeeId; };
+  const isUser = () => {
+    return state.selectedEmp.empId === user.employeeId;
+  };
 
   const showDetails = (record) => {
     // if (record.paperTimesheet) return;
@@ -277,41 +304,63 @@ const RecordHistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage
     <div>
       {isLoading() && <div className={styles.loader}></div>}
 
-      {!isLoading() && state.recordYears.length > 0 && (<div className={`${styles.contentContainer} 
-      ${hideTitle || isUser() ? styles.contentControls : ''}`}>
-        {!(hideTitle || isUser()) && (
-        // {!(false) && (
-          <h1 className={styles.contentInfo}>
-            {state.selectedEmp.empFirstName} {state.selectedEmp.empLastName}'s Attendance Records
-          </h1>
-        )}
-        <p className={styles.contentInfo} style={{ marginBottom: 0, backgroundColor: 'white' }}>
-          View attendance records for year &nbsp;
-          <select
-            style={{ color: 'black', fontWeight: '400' }}
-            value={state.selectedRecYear}
-            onChange={(e) => setState({ ...state, selectedRecYear: e.target.value })}
+      {!isLoading() && state.recordYears.length > 0 && (
+        <div
+          className={`${styles.contentContainer} 
+      ${hideTitle || isUser() ? styles.contentControls : ""}`}
+        >
+          {!(hideTitle || isUser()) && (
+            // {!(false) && (
+            <h1 className={styles.contentInfo}>
+              {state.selectedEmp.empFirstName} {state.selectedEmp.empLastName}'s
+              Attendance Records
+            </h1>
+          )}
+          <p
+            className={styles.contentInfo}
+            style={{ marginBottom: 0, backgroundColor: "white" }}
           >
-            {state.recordYears.map((year) => (
-              <option key={year} value={year}>
-                {year}
-              </option>
-            ))}
-          </select>
-        </p>
-      </div>)}
-      {!(state.records.employee.length > 0 || state.records.submitted.length > 0 || isLoading()) && (
-        <EssNotification level="warn" title={`No Employee Records For ${state.selectedRecYear}`}>
+            View attendance records for year &nbsp;
+            <select
+              style={{ color: "black", fontWeight: "400" }}
+              value={state.selectedRecYear}
+              onChange={(e) =>
+                setState({ ...state, selectedRecYear: e.target.value })
+              }
+            >
+              {state.recordYears.map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </select>
+          </p>
+        </div>
+      )}
+      {!(
+        state.records.employee.length > 0 ||
+        state.records.submitted.length > 0 ||
+        isLoading()
+      ) && (
+        <EssNotification
+          level="warn"
+          title={`No Employee Records For ${state.selectedRecYear}`}
+        >
           <p>
             It appears as if the employee has no records for the selected year.
             <br />
-            Please contact Senate Personnel at (518) 455-3376 if you require any assistance.
+            Please contact Senate Personnel at (518) 455-3376 if you require any
+            assistance.
           </p>
         </EssNotification>
       )}
 
       {!isLoading() && state.records.employee.length > 0 && (
-        <ActiveAttendanceRecords state={state} linkToEntryPage={linkToEntryPage} showDetails={showDetails} />
+        <ActiveAttendanceRecords
+          state={state}
+          linkToEntryPage={linkToEntryPage}
+          showDetails={showDetails}
+        />
       )}
 
       {!isLoading() && state.records.submitted.length > 0 && (
@@ -321,11 +370,13 @@ const RecordHistoryDirective = ({ viewDetails, user, empSupInfo, linkToEntryPage
       {!isLoading() && state.recordYears.length === 0 && (
         <EssNotification level="info" title="No Time Record History">
           <p>
-            {isUser() ? 'You have' : `${empSupInfo?.fullName} has`} no time records.
+            {isUser() ? "You have" : `${empSupInfo?.fullName} has`} no time
+            records.
           </p>
           {empSupInfo?.senator && (
             <p>
-              {empSupInfo.fullName} is a Senator and does not currently enter time.
+              {empSupInfo.fullName} is a Senator and does not currently enter
+              time.
             </p>
           )}
         </EssNotification>

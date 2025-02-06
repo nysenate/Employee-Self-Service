@@ -5,22 +5,23 @@ import useAuth from "app/contexts/Auth/useAuth";
 import EmployeeSelect from "../accrual/EmployeeSelect";
 import { RecordDetailsPopup } from "app/views/time/record/RecordDetailsPopup";
 
-
 const RecordEmpHistoryIndex = () => {
   // Connected Components' State Variables + setter/renderer functions
   const { userData } = useAuth();
-  const [selectedEmpSupInfo, setSelectedEmpSupInfo] = useState(userData().employee);
-  const [ isModalOpen, setIsModalOpen ] = useState(false);
-  const [ selectedRecord, setSelectedRecord ] = useState(null);
+  const [selectedEmpSupInfo, setSelectedEmpSupInfo] = useState(
+    userData().employee,
+  );
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedRecord, setSelectedRecord] = useState(null);
   const viewDetails = (selectedRecord) => {
     console.log(selectedRecord);
     setSelectedRecord(selectedRecord);
     setIsModalOpen(true);
-  }
+  };
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedRecord(null);
-  }
+  };
 
   return (
     <div>
@@ -29,19 +30,23 @@ const RecordEmpHistoryIndex = () => {
         setSelectedEmp={setSelectedEmpSupInfo}
         selectSubject={"Attendance Records"}
       />
-      {selectedEmpSupInfo && (<RecordHistoryDirective
-        viewDetails={viewDetails}
-        user={userData().employee}
-        empSupInfo={selectedEmpSupInfo}
-        linkToEntryPage={true}
-      />)}
-      {selectedRecord && (<RecordDetailsPopup
-        record={selectedRecord}
-        isModalOpen={isModalOpen}
-        closeModal={closeModal}
-      />)}
+      {selectedEmpSupInfo && (
+        <RecordHistoryDirective
+          viewDetails={viewDetails}
+          user={userData().employee}
+          empSupInfo={selectedEmpSupInfo}
+          linkToEntryPage={true}
+        />
+      )}
+      {selectedRecord && (
+        <RecordDetailsPopup
+          record={selectedRecord}
+          isModalOpen={isModalOpen}
+          closeModal={closeModal}
+        />
+      )}
     </div>
   );
-}
+};
 
 export default RecordEmpHistoryIndex;

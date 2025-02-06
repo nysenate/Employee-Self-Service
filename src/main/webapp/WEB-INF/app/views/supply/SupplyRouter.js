@@ -23,17 +23,29 @@ export default function SupplyRouter() {
     <ThemeContext.Provider value={themes.supply}>
       <SupplyContextProvider>
         <Routes>
-          <Route path="" element={<SupplyLayout categories={categories}/>}>
-            <Route path="requisition-form" element={<RequisitionFormIndex setCategories={setCategories}/>}/>
-            <Route path="cart" element={<ShoppingCartIndex/>}/>
-            <Route path="order-history/order/:orderId" element={<OrderDetail/>}/>
-            <Route path="order-history" element={<OrderHistoryIndex/>}/>
-            <Route path="fulfillment" element={<FulfillmentIndex/>}/>
-            <Route path="reconciliation" element={<ReconciliationIndex/>}/>
-            <Route path="requisition-history" element={<RequisitionHistoryIndex/>}/>
-            <Route path="item-history" element={<ItemHistoryIndex/>}/>
-            <Route path="" element={<Navigate to="requisition-form" replace/>}/>
-            <Route path="*" element={<div>404</div>}/>
+          <Route path="" element={<SupplyLayout categories={categories} />}>
+            <Route
+              path="requisition-form"
+              element={<RequisitionFormIndex setCategories={setCategories} />}
+            />
+            <Route path="cart" element={<ShoppingCartIndex />} />
+            <Route
+              path="order-history/order/:orderId"
+              element={<OrderDetail />}
+            />
+            <Route path="order-history" element={<OrderHistoryIndex />} />
+            <Route path="fulfillment" element={<FulfillmentIndex />} />
+            <Route path="reconciliation" element={<ReconciliationIndex />} />
+            <Route
+              path="requisition-history"
+              element={<RequisitionHistoryIndex />}
+            />
+            <Route path="item-history" element={<ItemHistoryIndex />} />
+            <Route
+              path=""
+              element={<Navigate to="requisition-form" replace />}
+            />
+            <Route path="*" element={<div>404</div>} />
           </Route>
         </Routes>
       </SupplyContextProvider>
@@ -48,16 +60,12 @@ function SupplyLayout({ categories }) {
     <AppLayout>
       <Navigation notWrapInCard={true}>
         <Card className="pb-5">
-          <Navigation.Title>
-            Supply Menu
-          </Navigation.Title>
+          <Navigation.Title>Supply Menu</Navigation.Title>
           <Navigation.Section name="My Supply">
             <Navigation.Link to="/supply/requisition-form">
               Requisition Form
             </Navigation.Link>
-            <Navigation.Link to="/supply/cart">
-              Shopping Cart
-            </Navigation.Link>
+            <Navigation.Link to="/supply/cart">Shopping Cart</Navigation.Link>
             <Navigation.Link to="/supply/order-history">
               Order History
             </Navigation.Link>
@@ -77,17 +85,22 @@ function SupplyLayout({ categories }) {
             </Navigation.Link>
           </Navigation.Section>
         </Card>
-        {location.pathname === "/supply/requisition-form" && categories.length !== 0 && (
-          // Big boy
-          <div className={`${styles.marginTop20}`} style={{ marginBottom: '100px', minHeight: '0px', minWidth: '0px' }}>
-            <Navigation.Title>
-              Categories
-            </Navigation.Title>
-            <CategoryCard categories={categories}/>
-          </div>
-        )}
+        {location.pathname === "/supply/requisition-form" &&
+          categories.length !== 0 && (
+            // Big boy
+            <div
+              className={`${styles.marginTop20}`}
+              style={{
+                marginBottom: "100px",
+                minHeight: "0px",
+                minWidth: "0px",
+              }}
+            >
+              <Navigation.Title>Categories</Navigation.Title>
+              <CategoryCard categories={categories} />
+            </div>
+          )}
       </Navigation>
     </AppLayout>
   );
 }
-

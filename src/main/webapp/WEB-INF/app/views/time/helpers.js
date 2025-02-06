@@ -10,9 +10,9 @@ import { fetchApiJson } from "app/api/fetchJson";
 export const fetchUniversal = async (path, params) => {
   const queryParams = new URLSearchParams();
 
-  Object.keys(params).forEach(key => {
+  Object.keys(params).forEach((key) => {
     if (Array.isArray(params[key])) {
-      params[key].forEach(value => queryParams.append(key, value));
+      params[key].forEach((value) => queryParams.append(key, value));
     } else {
       queryParams.append(key, params[key]);
     }
@@ -21,15 +21,14 @@ export const fetchUniversal = async (path, params) => {
   const finalPath = `${path}?${queryParams.toString()}`;
 
   try {
-    const response = await fetchApiJson(finalPath, { method: 'GET' });
+    const response = await fetchApiJson(finalPath, { method: "GET" });
     // console.log("fetchAttendanceRecordApi with params: ", params, " response: ", response);
     return response;
   } catch (error) {
-    console.error('Fetch error:', error);
+    console.error("Fetch error:", error);
     throw error;
   }
 };
-
 
 /**
  * Format a date string to a readable format.
@@ -39,14 +38,14 @@ export const fetchUniversal = async (path, params) => {
  */
 export function formatDate(dateString) {
   const options = {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: true
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
   };
-  return new Date(dateString).toLocaleString('en-US', options);
+  return new Date(dateString).toLocaleString("en-US", options);
 }
 
 /**
@@ -56,37 +55,37 @@ export function formatDate(dateString) {
  * @returns {String} The formatted date string.
  */
 export function formatDateToMMDDYYYY(date) {
-  if (typeof date === 'string') {
-    const [year, month, day] = date.split('-');
+  if (typeof date === "string") {
+    const [year, month, day] = date.split("-");
     return `${month}/${day}/${year}`;
   } else if (date instanceof Date) {
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
     const year = date.getFullYear();
     return `${month}/${day}/${year}`;
   } else {
-    throw new Error('Invalid date format');
+    throw new Error("Invalid date format");
   }
 }
 
 // YYYY-MM-DD, this is also what the api tends to give
 export function formatDateYYYYMMDD(date) {
   const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 }
 
 // Mon, Tue, Wed, Thu, Fri, Sat, Sun
 export function formatDayShort(dateString) {
   const date = new Date(`${dateString}T00:00:00Z`);
-  const options = { weekday: 'short', timeZone: 'UTC' };
-  return new Intl.DateTimeFormat('en-US', options).format(date);
+  const options = { weekday: "short", timeZone: "UTC" };
+  return new Intl.DateTimeFormat("en-US", options).format(date);
 }
 
 // MM/DD/YYYY or M/D/YYYY
 export function formatDateStandard(dateString) {
-  const dateParts = dateString.split('-');
+  const dateParts = dateString.split("-");
   const date = new Date(Date.UTC(dateParts[0], dateParts[1] - 1, dateParts[2]));
   // console.log("dateString", dateString, "date", date);
   return `${date.getUTCMonth() + 1}/${date.getUTCDate()}/${date.getUTCFullYear()}`;
@@ -102,14 +101,15 @@ export function formatDateStandardWithShort(dateString) {
   const dayOfWeekDate = new Date(originalDate);
   dayOfWeekDate.setUTCDate(dayOfWeekDate.getUTCDate() + 1);
 
-  const dayOfWeek = dayOfWeekDate.toLocaleDateString('en-US', { weekday: 'short' }); // e.g., 'Thu'
+  const dayOfWeek = dayOfWeekDate.toLocaleDateString("en-US", {
+    weekday: "short",
+  }); // e.g., 'Thu'
   const formattedMonth = originalDate.getUTCMonth() + 1; // getUTCMonth() is zero-based, so add 1
   const formattedDay = originalDate.getUTCDate(); // getUTCDate() is one-based
   const yearFormatted = originalDate.getUTCFullYear(); // e.g., '2024'
 
   return `${dayOfWeek} ${formattedMonth}/${formattedDay}/${yearFormatted}`;
 }
-
 
 export function timeRecordStatus(status, showColor) {
   const statusDispMap = {
@@ -119,11 +119,11 @@ export function timeRecordStatus(status, showColor) {
     APPROVED: ["Supervisor Approved", "#799933"],
     DISAPPROVED_PERSONNEL: ["Personnel Disapproved", "#B90504"],
     SUBMITTED_PERSONNEL: ["Submitted Personnel", "#808d0a"],
-    APPROVED_PERSONNEL: ["Personnel Approved", "#799933"]
+    APPROVED_PERSONNEL: ["Personnel Approved", "#799933"],
   };
   const [statusText, color] = statusDispMap.hasOwnProperty(status)
-                              ? statusDispMap[status]
-                              : ["Unknown Status", "red"];
+    ? statusDispMap[status]
+    : ["Unknown Status", "red"];
   if (!showColor) return statusText;
   return `<span style='color:${color}'>${statusText}</span>`;
 }
@@ -141,9 +141,15 @@ export function hoursDiffHighlighter(accruals) {
   let color = "#0e4e5a";
   let sign = "";
   let hours = (accruals.serviceYtd - accruals.serviceYtdExpected).toFixed(2);
-  hours > 0 ? (color = "#09BB05", sign = "+") : hours < 0 && (color = "#BB0505");
-  return <span style={{ color: color }}>{sign} {hours}</span>;
-};
+  hours > 0
+    ? ((color = "#09BB05"), (sign = "+"))
+    : hours < 0 && (color = "#BB0505");
+  return (
+    <span style={{ color: color }}>
+      {sign} {hours}
+    </span>
+  );
+}
 
 /**
  * Colors a number based on whether it's positive or negative to provide a
@@ -161,18 +167,25 @@ export function hoursDiffHighlighter(accruals) {
 export function hoursDiffHighlighterCustom(positive) {
   let color = "#0e4e5a";
   let sign = "";
-  let hours = (positive).toFixed(2);
-  hours > 0 ? (color = "#09BB05", sign = "+") : hours < 0 && (color = "#BB0505");
-  return <span style={{ color: color }}>{sign}{hours}</span>;
-};
+  let hours = positive.toFixed(2);
+  hours > 0
+    ? ((color = "#09BB05"), (sign = "+"))
+    : hours < 0 && (color = "#BB0505");
+  return (
+    <span style={{ color: color }}>
+      {sign}
+      {hours}
+    </span>
+  );
+}
 
 // Helper functions to determine entry types
 function isTemporaryEmployee(entry) {
-  return entry.payType === 'TE';
+  return entry.payType === "TE";
 }
 
 function isSalariedEmployee(entry) {
-  return entry.payType === 'RA' || entry.payType === 'SA';
+  return entry.payType === "RA" || entry.payType === "SA";
 }
 
 // Function to check if there are temporary or salaried entries
@@ -198,7 +211,7 @@ export function entryHoursFilter(value) {
 
 let miscLeaveMap = {
   EXTRAORDINARY_LEAVE: {
-    shortName: 'Extraordinary Leave', //This is as much as I could guess from examples
+    shortName: "Extraordinary Leave", //This is as much as I could guess from examples
   },
 };
 
@@ -216,7 +229,7 @@ export function miscLeave(miscLeaveType, defaultLabel) {
   }
   // if empty, return provided defaultLabel or '--' if none is provided
   if (!miscLeaveType) {
-    return defaultLabel ? defaultLabel : '--';
+    return defaultLabel ? defaultLabel : "--";
   }
 
   // default unknown print

@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
-import { fetchSupEmployeeApi, fetchSupOverrideApi } from './time-accrual-ctrl';
+import { useCallback, useEffect, useState } from "react";
+import { fetchSupEmployeeApi, fetchSupOverrideApi } from "./time-accrual-ctrl";
 import useAuth from "app/contexts/Auth/useAuth";
 
 let extendedSupEmpGroup = null;
@@ -33,22 +33,26 @@ const getTier = (empId) => {
 const setEmpMaps = (userId, user) => {
   const primaryEmpInfos = extendedSupEmpGroup.primaryEmployees;
   const empOverrideInfos = extendedSupEmpGroup.empOverrideEmployees;
-  const supOverrideInfos = Object.keys(extendedSupEmpGroup.supOverrideEmployees).map(k => extendedSupEmpGroup.supOverrideEmployees[k]);
+  const supOverrideInfos = Object.keys(
+    extendedSupEmpGroup.supOverrideEmployees,
+  ).map((k) => extendedSupEmpGroup.supOverrideEmployees[k]);
 
-  let allEmpInfos = primaryEmpInfos.concat(empOverrideInfos).concat(supOverrideInfos);
+  let allEmpInfos = primaryEmpInfos
+    .concat(empOverrideInfos)
+    .concat(supOverrideInfos);
 
   const empSupEmpGroupMap = extendedSupEmpGroup.employeeSupEmpGroups;
-  Object.values(empSupEmpGroupMap).forEach(supEmpGroups => {
-    supEmpGroups.forEach(supEmpGroup => {
+  Object.values(empSupEmpGroupMap).forEach((supEmpGroups) => {
+    supEmpGroups.forEach((supEmpGroup) => {
       allEmpInfos = allEmpInfos.concat(supEmpGroup.primaryEmployees);
     });
   });
 
-  allEmpInfos.forEach(empInfo => {
+  allEmpInfos.forEach((empInfo) => {
     nameMap[empInfo.empId] = {
       firstName: empInfo.empFirstName,
       lastName: empInfo.empLastName,
-      fullName: `${empInfo.empFirstName} ${empInfo.empLastName}`
+      fullName: `${empInfo.empFirstName} ${empInfo.empLastName}`,
     };
 
     if (!empInfo.empOverride) {
@@ -59,29 +63,33 @@ const setEmpMaps = (userId, user) => {
   nameMap[userId] = {
     firstName: user.firstName,
     lastName: user.lastName,
-    fullName: `${user.firstName} ${user.lastName}`
+    fullName: `${user.firstName} ${user.lastName}`,
   };
 };
 
 const setSupEmpGroups = () => {
   const empSupEmpGroups = [];
 
-  Object.values(extendedSupEmpGroup.employeeSupEmpGroups).forEach(supEmpGroups => {
-    supEmpGroups.forEach(empGroup => {
-      empGroup.supStartDate = empGroup.effectiveFrom;
-      empGroup.supEndDate = empGroup.effectiveTo;
-      empGroup.empFirstName = nameMap[empGroup.supId].firstName;
-      empGroup.empLastName = nameMap[empGroup.supId].lastName;
-      empSupEmpGroups.push(empGroup);
-    });
-  });
+  Object.values(extendedSupEmpGroup.employeeSupEmpGroups).forEach(
+    (supEmpGroups) => {
+      supEmpGroups.forEach((empGroup) => {
+        empGroup.supStartDate = empGroup.effectiveFrom;
+        empGroup.supEndDate = empGroup.effectiveTo;
+        empGroup.empFirstName = nameMap[empGroup.supId].firstName;
+        empGroup.empLastName = nameMap[empGroup.supId].lastName;
+        empSupEmpGroups.push(empGroup);
+      });
+    },
+  );
 
   empSupEmpGroups.sort((a, b) => {
     const tierA = getTier(a.supId);
     const tierB = getTier(b.supId);
     if (tierA !== tierB) return tierA - tierB;
-    if (a.empLastName !== b.empLastName) return a.empLastName.localeCompare(b.empLastName);
-    if (a.empFirstName !== b.empFirstName) return a.empFirstName.localeCompare(b.empFirstName);
+    if (a.empLastName !== b.empLastName)
+      return a.empLastName.localeCompare(b.empLastName);
+    if (a.empFirstName !== b.empFirstName)
+      return a.empFirstName.localeCompare(b.empFirstName);
     return a.supId - b.supId;
   });
 
@@ -101,7 +109,7 @@ export const useSupEmpGroupService = () => {
     try {
       await Promise.all([loadSupEmpGroup(), loadSupOverrides()]);
     } catch (error) {
-      console.error('Initialization error:', error);
+      console.error("Initialization error:", error);
     } finally {
       setLoading(false);
     }
@@ -110,12 +118,12 @@ export const useSupEmpGroupService = () => {
   const loadSupEmpGroup = useCallback(async () => {
     const fromDate = new Date();
     fromDate.setFullYear(fromDate.getFullYear() - 2);
-    const fromDateString = fromDate.toISOString().split('T')[0];
+    const fromDateString = fromDate.toISOString().split("T")[0];
 
     const params = {
       supId: userId,
       fromDate: fromDateString,
-      extended: true
+      extended: true,
     };
 
     const response = await fetchSupEmployeeApi(params);
@@ -129,14 +137,14 @@ export const useSupEmpGroupService = () => {
     const params = { supId: userId };
     const response = await fetchSupOverrideApi(params);
 
-    response.overrides.forEach(override => {
+    response.overrides.forEach((override) => {
       const ovrEmpId = override.overrideSupervisorId;
       const ovrEmpInfo = override.overrideSupervisor;
 
       nameMap[ovrEmpInfo.employeeId] = {
         firstName: ovrEmpInfo.firstName,
         lastName: ovrEmpInfo.lastName,
-        fullName: ovrEmpInfo.fullName
+        fullName: ovrEmpInfo.fullName,
       };
 
       supIdMap[ovrEmpId] = override.supervisorId;
@@ -159,25 +167,27 @@ export const useSupEmpGroupService = () => {
     empList = empList.concat(primaryEmps);
 
     if (isUser) {
-      selEmpGroup.empOverrideEmployees.forEach(emp => {
+      selEmpGroup.empOverrideEmployees.forEach((emp) => {
         emp.empOverride = true; //FIX::: this attribute needs to be inserted (does not exist prior)
         empList.push(emp);
       });
-      Object.values(selEmpGroup.supOverrideEmployees.items).forEach(supGroup => {
-        supGroup.forEach(emp => {
-          emp.supOverride = true; //FIX::: this attribute needs to be inserted (does not exist prior)
-          empList.push(emp);
-        });
-      });
+      Object.values(selEmpGroup.supOverrideEmployees.items).forEach(
+        (supGroup) => {
+          supGroup.forEach((emp) => {
+            emp.supOverride = true; //FIX::: this attribute needs to be inserted (does not exist prior)
+            empList.push(emp);
+          });
+        },
+      );
     }
 
-    return empList.filter(emp => !(omitSenators && emp.senator));
+    return empList.filter((emp) => !(omitSenators && emp.senator));
   }, []);
 
   const getSupEmpGroupList = useCallback(() => supEmpGroupList, []);
-  const getName = useCallback(empId => nameMap[empId], []);
-  const getSupId = useCallback(empId => supIdMap[empId], []);
-  const getTier = useCallback(empId => getTier(empId), []);
+  const getName = useCallback((empId) => nameMap[empId], []);
+  const getSupId = useCallback((empId) => supIdMap[empId], []);
+  const getTier = useCallback((empId) => getTier(empId), []);
 
   return {
     loading,
@@ -185,6 +195,6 @@ export const useSupEmpGroupService = () => {
     getSupEmpGroupList,
     getName,
     getSupId,
-    getTier
+    getTier,
   };
 };

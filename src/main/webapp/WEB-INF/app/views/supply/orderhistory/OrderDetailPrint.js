@@ -23,15 +23,23 @@ const OrderDetailPrint = ({ selectedVersion }) => {
       </div>
 
       {/* General Information */}
-      <div className={`${styles.contentContainer} ${styles.largePrintFontSize}`}>
+      <div
+        className={`${styles.contentContainer} ${styles.largePrintFontSize}`}
+      >
         <div className={styles.contentInfo}>
           <div className={`${styles.grid} ${styles.paddingX}`}>
             <b>Requesting Office</b>
-            <span style={{ paddingLeft: '10px' }}>{selectedVersion.destination.locId}</span>
-            <span style={{ paddingLeft: '10px' }}>{selectedVersion.destination.respCenterHead.shortName}</span>
-            <span style={{ paddingLeft: '10px' }}>
-              {selectedVersion.destination.address.addr1}, {selectedVersion.destination.address.city},
-              {selectedVersion.destination.address.state} {selectedVersion.destination.address.zip5}
+            <span style={{ paddingLeft: "10px" }}>
+              {selectedVersion.destination.locId}
+            </span>
+            <span style={{ paddingLeft: "10px" }}>
+              {selectedVersion.destination.respCenterHead.shortName}
+            </span>
+            <span style={{ paddingLeft: "10px" }}>
+              {selectedVersion.destination.address.addr1},{" "}
+              {selectedVersion.destination.address.city},
+              {selectedVersion.destination.address.state}{" "}
+              {selectedVersion.destination.address.zip5}
             </span>
           </div>
         </div>
@@ -42,7 +50,8 @@ const OrderDetailPrint = ({ selectedVersion }) => {
               <b>Requested By:</b> {selectedVersion.customer.fullName}
             </div>
             <div className={styles.col412}>
-              <b>Requested Date:</b> {formatDate(selectedVersion.orderedDateTime)}
+              <b>Requested Date:</b>{" "}
+              {formatDate(selectedVersion.orderedDateTime)}
             </div>
             <div className={styles.col412}>
               <b>Status:</b> {selectedVersion.status}
@@ -53,8 +62,12 @@ const OrderDetailPrint = ({ selectedVersion }) => {
         <div className={styles.contentInfo}>
           <div className={`${styles.grid} ${styles.paddingV}`}>
             <div className={styles.col412}>
-              {selectedVersion.status === 'PENDING' || selectedVersion.status === 'PROCESSING' ?
-               (<b>Issuer: </b>) : (<b>Issued By: </b>)}
+              {selectedVersion.status === "PENDING" ||
+              selectedVersion.status === "PROCESSING" ? (
+                <b>Issuer: </b>
+              ) : (
+                <b>Issued By: </b>
+              )}
               {selectedVersion.issuer?.lastName}
             </div>
             <div className={styles.col412}>
@@ -69,16 +82,16 @@ const OrderDetailPrint = ({ selectedVersion }) => {
 
       {/* Notes */}
       {(selectedVersion.note || selectedVersion.specialInstructions) && (
-        <div className={`${styles.contentContainer} ${styles.largePrintFontSize}`}>
+        <div
+          className={`${styles.contentContainer} ${styles.largePrintFontSize}`}
+        >
           <div className={styles.contentInfo}>
             {selectedVersion.note && (
               <div className={`${styles.grid} ${styles.paddingV}`}>
                 <div className={`${styles.col212} ${styles.bold}`}>
                   Supply Note:
                 </div>
-                <div className={styles.col1012}>
-                  {selectedVersion.note}
-                </div>
+                <div className={styles.col1012}>{selectedVersion.note}</div>
               </div>
             )}
             {selectedVersion.specialInstructions && (
@@ -86,7 +99,7 @@ const OrderDetailPrint = ({ selectedVersion }) => {
                 <div className={`${styles.col412} ${styles.bold}`}>
                   Special Instructions:
                 </div>
-                <div className={styles.col812} style={{ textAlign: 'left' }}>
+                <div className={styles.col812} style={{ textAlign: "left" }}>
                   {selectedVersion.specialInstructions}
                 </div>
               </div>
@@ -98,29 +111,35 @@ const OrderDetailPrint = ({ selectedVersion }) => {
       {/* Order Items */}
       <div className={`${styles.contentContainer} ${styles.closeTo}`}>
         <div className={styles.paddingV}>
-          <table className={`${styles.essTable} ${styles.supplyListingTablePrintOnly}`}>
+          <table
+            className={`${styles.essTable} ${styles.supplyListingTablePrintOnly}`}
+          >
             <thead>
-            <tr style={{ pageBreakInside: 'avoid' }}>
-              <th>Commodity Code</th>
-              <th>Item</th>
-              <th>Quantity</th>
-            </tr>
+              <tr style={{ pageBreakInside: "avoid" }}>
+                <th>Commodity Code</th>
+                <th>Item</th>
+                <th>Quantity</th>
+              </tr>
             </thead>
             <tbody>
-            {sortedLineItems.map((lineItem, index) => (
-              <tr key={index}>
-                <td>{lineItem.item.commodityCode}</td>
-                <td>{lineItem.item.description}</td>
-                <td>{lineItem.quantity}</td>
-              </tr>
-            ))}
+              {sortedLineItems.map((lineItem, index) => (
+                <tr key={index}>
+                  <td>{lineItem.item.commodityCode}</td>
+                  <td>{lineItem.item.description}</td>
+                  <td>{lineItem.quantity}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
       </div>
 
-      <div className={styles.largePrintFontSize} style={{ marginTop: '60px', padding: '20px' }}>
-        Received By: _______________________________ Received Date: ________________________________
+      <div
+        className={styles.largePrintFontSize}
+        style={{ marginTop: "60px", padding: "20px" }}
+      >
+        Received By: _______________________________ Received Date:
+        ________________________________
       </div>
     </div>
   );

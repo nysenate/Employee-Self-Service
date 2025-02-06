@@ -7,19 +7,18 @@ import useAuth from "app/contexts/Auth/useAuth";
 
 export default function AllowanceEmpStatusIndex() {
   const { userData } = useAuth();
-  const [ selectedEmpSupInfo, setSelectedEmpSupInfo ] = useState(null);
-  const [ isModalOpen, setIsModalOpen ] = useState(false);
-  const [ selectedAccrual, setSelectedAccrual ] = useState(null);
+  const [selectedEmpSupInfo, setSelectedEmpSupInfo] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedAccrual, setSelectedAccrual] = useState(null);
 
-  const viewDetails = ( record ) => {
+  const viewDetails = (record) => {
     setSelectedAccrual(record);
     setIsModalOpen(true);
-  }
+  };
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedAccrual(null);
-  }
-
+  };
 
   return (
     <div>
@@ -30,11 +29,13 @@ export default function AllowanceEmpStatusIndex() {
         activeOnly={true}
         payType={"TE"}
       />
-      {selectedEmpSupInfo && (<AllowanceStatusDirective
-        viewDetails={viewDetails}
-        user={userData().employee}
-        empSupInfo={selectedEmpSupInfo}
-      />)}
+      {selectedEmpSupInfo && (
+        <AllowanceStatusDirective
+          viewDetails={viewDetails}
+          user={userData().employee}
+          empSupInfo={selectedEmpSupInfo}
+        />
+      )}
       {selectedAccrual && (
         <AccrualDetailsPopup
           accruals={selectedAccrual}
@@ -43,5 +44,5 @@ export default function AllowanceEmpStatusIndex() {
         />
       )}
     </div>
-  )
+  );
 }

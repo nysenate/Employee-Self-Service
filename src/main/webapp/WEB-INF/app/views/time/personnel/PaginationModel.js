@@ -29,7 +29,7 @@ class PaginationModel {
   }
 
   getOffset() {
-    return (this.itemsPerPage * (this.currPage - 1)) + 1;
+    return this.itemsPerPage * (this.currPage - 1) + 1;
   }
 
   getLimit() {

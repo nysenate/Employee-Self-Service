@@ -1,36 +1,42 @@
 import React, { useEffect, useState } from "react";
 import useAuth from "app/contexts/Auth/useAuth";
-import { formatDateToMMDDYYYY, formatDateYYYYMMDD } from "app/views/time/helpers";
+import {
+  formatDateToMMDDYYYY,
+  formatDateYYYYMMDD,
+} from "app/views/time/helpers";
 import { fetchApiJson } from "app/api/fetchJson";
 import Hero from "app/components/Hero";
 import EssNotification from "app/components/EssNotification";
 import LoadingIndicator from "app/components/LoadingIndicator";
 import styles from "../universalStyles.module.css";
-import { fetchChainData, fetchGrantData, fetchOverrideData } from "app/views/time/record/time-record-ctrl";
-import { formatDateForInput } from "app/views/supply/helpers";
+import {
+  fetchChainData,
+  fetchGrantData,
+  fetchOverrideData,
+} from "app/views/time/record/time-record-ctrl";
 
 export default function Grant() {
-  const { userData } = useAuth()
+  const { userData } = useAuth();
   const [state, setState] = useState({
     empId: userData().employee.employeeId || null,
     selectedGrantee: null,
-    grantees: [],   // Stores an ordered list of the supervisors.
+    grantees: [], // Stores an ordered list of the supervisors.
     granteeMap: {}, // Map of supId -> sup, allows easy modification of supervisor grant status.
 
-    granters: [],    // List of overrides this supervisor has been granted
+    granters: [], // List of overrides this supervisor has been granted
 
-    modified: false,   // If the state has been altered.
-    fetched: false,   // If the data has been fetched.
+    modified: false, // If the state has been altered.
+    fetched: false, // If the data has been fetched.
     saving: false,
-    saved: false
-  })
+    saved: false,
+  });
 
   useEffect(() => {
     if (!state.empId) {
-      console.log('no state.empId');
+      console.log("no state.empId");
       return;
     }
-    console.log('state.empId: ', state.empId);
+    console.log("state.empId: ", state.empId);
     init();
   }, [state.empId]);
 
@@ -111,8 +117,12 @@ export default function Grant() {
           updatedGrantees = [...updatedGrantees, grant.granteeSupervisor];
         }
         updatedGranteeMap[supId].granted = true;
-        updatedGranteeMap[supId].grantStart = grant.startDate ? formatDateToMMDDYYYY(grant.startDate) : null;
-        updatedGranteeMap[supId].grantEnd = grant.endDate ? formatDateToMMDDYYYY(grant.endDate) : null;
+        updatedGranteeMap[supId].grantStart = grant.startDate
+          ? formatDateToMMDDYYYY(grant.startDate)
+          : null;
+        updatedGranteeMap[supId].grantEnd = grant.endDate
+          ? formatDateToMMDDYYYY(grant.endDate)
+          : null;
       });
 
       updatedTempState = {
@@ -128,24 +138,30 @@ export default function Grant() {
   };
   const fetchOverrides = async (updatedTempState) => {
     try {
-      const response = await fetchOverrideData({ supId: updatedTempState.empId }); // replace with actual API call
+      const response = await fetchOverrideData({
+        supId: updatedTempState.empId,
+      }); // replace with actual API call
       const updatedGranters = response.overrides
         .filter((ovr) => ovr.active)
         .map((ovr) => {
           let granter = ovr.overrideSupervisor;
           const startMoment = new Date(ovr.startDate || 0);
-          const endMoment = new Date(ovr.endDate || '3000-01-01');
-          granter.grantStartStr = ovr.startDate ? formatDateToMMDDYYYY(startMoment) : 'No Start Date';
-          granter.grantEndStr = ovr.endDate ? formatDateToMMDDYYYY(endMoment) : 'No End Date';
-          granter.status = ovr.active ? 'Active' : 'Inactive';
+          const endMoment = new Date(ovr.endDate || "3000-01-01");
+          granter.grantStartStr = ovr.startDate
+            ? formatDateToMMDDYYYY(startMoment)
+            : "No Start Date";
+          granter.grantEndStr = ovr.endDate
+            ? formatDateToMMDDYYYY(endMoment)
+            : "No End Date";
+          granter.status = ovr.active ? "Active" : "Inactive";
 
           const today = new Date();
           if (today < startMoment) {
-            granter.status = 'Pending';
+            granter.status = "Pending";
           } else if (today > endMoment) {
-            granter.status = 'Expired';
+            granter.status = "Expired";
           } else {
-            granter.status = 'Active';
+            granter.status = "Active";
           }
           return granter;
         });
@@ -165,16 +181,21 @@ export default function Grant() {
   // Updater
   const saveGrants = async () => {
     if (!state.modified || !state.fetched) return;
-    let modifiedGrantees = state.grantees.filter((grantee) => {
-      return grantee.modified === true;
-    }).map((grantee) => {
-      return createGrantSaveView(grantee);
-    });
+    let modifiedGrantees = state.grantees
+      .filter((grantee) => {
+        return grantee.modified === true;
+      })
+      .map((grantee) => {
+        return createGrantSaveView(grantee);
+      });
     let tempState = { ...state, saving: true };
 
     const payload = modifiedGrantees;
     try {
-      await fetchApiJson(`/supervisor/grants`, { method: 'POST', payload: payload });
+      await fetchApiJson(`/supervisor/grants`, {
+        method: "POST",
+        payload: payload,
+      });
       tempState = {
         ...tempState,
         saving: false,
@@ -185,17 +206,19 @@ export default function Grant() {
     } catch (err) {
       console.error(err);
     }
-  }
+  };
 
   const createGrantSaveView = (grantee) => {
     return {
       granteeSupervisorId: grantee.employeeId,
       active: grantee.granted,
       granterSupervisorId: state.empId,
-      startDate: (grantee.grantStart) ? formatDateToMMDDYYYY(grantee.grantStart) : null,
-      endDate: (grantee.grantEnd) ? formatDateToMMDDYYYY(grantee.grantEnd) : null,
-    }
-  }
+      startDate: grantee.grantStart
+        ? formatDateToMMDDYYYY(grantee.grantStart)
+        : null,
+      endDate: grantee.grantEnd ? formatDateToMMDDYYYY(grantee.grantEnd) : null,
+    };
+  };
 
   // Modifiers
   const setStartDate = (index, grantee) => {
@@ -205,7 +228,7 @@ export default function Grant() {
       granteeStart = formatDateYYYYMMDD(today);
     }
     setModified(index, { ...grantee, grantStart: granteeStart });
-  }
+  };
 
   const setEndDate = (index, grantee) => {
     let granteeEnd = null;
@@ -214,7 +237,7 @@ export default function Grant() {
       granteeEnd = formatDateYYYYMMDD(today);
     }
     setModified(index, { ...grantee, grantEnd: granteeEnd });
-  }
+  };
 
   const setModified = (index, grantee) => {
     setState((prevState) => {
@@ -230,125 +253,166 @@ export default function Grant() {
         grantees: updatedGrantees,
       };
     });
-  }
+  };
 
   const reset = () => {
     init();
-  }
+  };
   useEffect(() => {
     console.log(state);
   }, [state]);
 
   const inlineDisabledStyles = {
-    background: 'url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==) repeat',
+    background:
+      "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==) repeat",
   };
 
   return (
     <>
       <Hero>Grant Supervisor Access</Hero>
       {state.fetched === true && state.grantees.length == 0 && (
-        <EssNotification title={"No supervisor grants available."} level={'warn'}>
+        <EssNotification
+          title={"No supervisor grants available."}
+          level={"warn"}
+        >
           <p>
-            You do not have any supervisors that you can delegate your employee's record approvals to. Please contact
-            Senate Personnel for more information.
+            You do not have any supervisors that you can delegate your
+            employee's record approvals to. Please contact Senate Personnel for
+            more information.
           </p>
         </EssNotification>
       )}
 
-      {state.fetched === false && (<LoadingIndicator/>)}
+      {state.fetched === false && <LoadingIndicator />}
 
       <div className={`${styles.contentContainer} ${styles.contentControls}`}>
         {state.fetched === true && state.grantees.length > 0 && (
           <div>
             <p className={styles.contentInfo}>
-              Grant another supervisor privileges to review and/or approve your direct employee's time records.
+              Grant another supervisor privileges to review and/or approve your
+              direct employee's time records.
             </p>
             <div className={styles.paddingX}>
               <table className={styles.simpleTable}>
                 <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Supervisor</th>
-                  <th>Status</th>
-                  <th>Start Date</th>
-                  <th>End Date</th>
-                </tr>
+                  <tr>
+                    <th>#</th>
+                    <th>Supervisor</th>
+                    <th>Status</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                  </tr>
                 </thead>
                 <tbody>
-                {state.grantees.map((grantee, index) => (
-                  <tr key={index}>
-                    <td>{index + 1}</td>
-                    <td>{`${grantee.firstName} ${grantee.lastName}`}</td>
-                    <td>
-                      <div className={styles.horizontalInputGroup}>
-                        <input
-                          type="checkbox"
-                          checked={grantee.granted}
-                          onChange={() => setModified(index, { ...grantee, granted: !(grantee.granted) })}
-                        />
-                        <label
-                          className={grantee.granted ? styles.successBoldLabel : ''}
-                          htmlFor={`grant-status-yes-${index}`}
-                        >
-                          Grant Access
-                        </label>
-                      </div>
-                    </td>
-                    <td className={!grantee.granted ? styles.halfOpacity : ''}>
-                      <div className={styles.horizontalInputGroup}>
-                        <input
-                          checked={grantee.grantStart}
-                          disabled={!grantee.granted}
-                          type="checkbox"
-                          onChange={() => setStartDate(index, grantee)}
-                        />
-                        <label className={styles.bold}>Set Start Date </label>
-                        <input
-                          className={
-                            !grantee.granted || !grantee.grantStart ? styles.halfOpacity : ''
-                          }
-                          disabled={!grantee.granted || !grantee.grantStart}
-                          value={grantee.grantStart ? grantee.grantStart : ''}
-                          onChange={(e) => setModified(index, { ...grantee, grantStart: e.target.value })}
-                          style={{ width: '100px' }}
-                          type="date"
-                        />
-                      </div>
-                    </td>
-                    <td className={!grantee.granted ? styles.halfOpacity : ''}>
-                      <div className={styles.horizontalInputGroup}>
-                        <input
-                          checked={grantee.grantEnd}
-                          disabled={!grantee.granted}
-                          type="checkbox"
-                          onChange={() => setEndDate(index, grantee)}
-                        />
-                        <label htmlFor={`grant-end-date-${index}`}>Set End Date</label>
-                        <input
-                          key={index}
-                          disabled={!grantee.granted}
-                          value={grantee.grantEnd ? grantee.grantEnd : ''}
-                          onChange={(e) => setModified(index, { ...grantee, grantEnd: e.target.value })}
-                          style={{ width: '100px' }}
-                          type="date"
-                        />
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                  {state.grantees.map((grantee, index) => (
+                    <tr key={index}>
+                      <td>{index + 1}</td>
+                      <td>{`${grantee.firstName} ${grantee.lastName}`}</td>
+                      <td>
+                        <div className={styles.horizontalInputGroup}>
+                          <input
+                            type="checkbox"
+                            checked={grantee.granted}
+                            onChange={() =>
+                              setModified(index, {
+                                ...grantee,
+                                granted: !grantee.granted,
+                              })
+                            }
+                          />
+                          <label
+                            className={
+                              grantee.granted ? styles.successBoldLabel : ""
+                            }
+                            htmlFor={`grant-status-yes-${index}`}
+                          >
+                            Grant Access
+                          </label>
+                        </div>
+                      </td>
+                      <td
+                        className={!grantee.granted ? styles.halfOpacity : ""}
+                      >
+                        <div className={styles.horizontalInputGroup}>
+                          <input
+                            checked={grantee.grantStart}
+                            disabled={!grantee.granted}
+                            type="checkbox"
+                            onChange={() => setStartDate(index, grantee)}
+                          />
+                          <label className={styles.bold}>Set Start Date </label>
+                          <input
+                            className={
+                              !grantee.granted || !grantee.grantStart
+                                ? styles.halfOpacity
+                                : ""
+                            }
+                            disabled={!grantee.granted || !grantee.grantStart}
+                            value={grantee.grantStart ? grantee.grantStart : ""}
+                            onChange={(e) =>
+                              setModified(index, {
+                                ...grantee,
+                                grantStart: e.target.value,
+                              })
+                            }
+                            style={{ width: "100px" }}
+                            type="date"
+                          />
+                        </div>
+                      </td>
+                      <td
+                        className={!grantee.granted ? styles.halfOpacity : ""}
+                      >
+                        <div className={styles.horizontalInputGroup}>
+                          <input
+                            checked={grantee.grantEnd}
+                            disabled={!grantee.granted}
+                            type="checkbox"
+                            onChange={() => setEndDate(index, grantee)}
+                          />
+                          <label htmlFor={`grant-end-date-${index}`}>
+                            Set End Date
+                          </label>
+                          <input
+                            key={index}
+                            disabled={!grantee.granted}
+                            value={grantee.grantEnd ? grantee.grantEnd : ""}
+                            onChange={(e) =>
+                              setModified(index, {
+                                ...grantee,
+                                grantEnd: e.target.value,
+                              })
+                            }
+                            style={{ width: "100px" }}
+                            type="date"
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
-              <hr/>
-              {state.saving === true && <LoadingIndicator/>}
+              <hr />
+              {state.saving === true && <LoadingIndicator />}
               {state.saved === true && !state.modified && (
-                <EssNotification level="info" title="Grants have been updated."/>
+                <EssNotification
+                  level="info"
+                  title="Grants have been updated."
+                />
               )}
-              <div className={styles.contentInfo} style={{ textAlign: 'center' }}>
+              <div
+                className={styles.contentInfo}
+                style={{ textAlign: "center" }}
+              >
                 <input
                   type="button"
                   className={styles.timeNeutralButton}
                   disabled={!state.modified}
-                  style={!state.modified ? { ...inlineDisabledStyles, ...{ marginRight: '3px' } } : { marginRight: '3px' }}
+                  style={
+                    !state.modified
+                      ? { ...inlineDisabledStyles, ...{ marginRight: "3px" } }
+                      : { marginRight: "3px" }
+                  }
                   value="Discard Changes"
                   onClick={reset}
                 />
@@ -366,8 +430,9 @@ export default function Grant() {
         )}
       </div>
       {state.granters.length > 0 && (
-        <div className={`${styles.contentContainer} ${styles.contentControls}`}
-             style={{ marginTop: '20px' }}
+        <div
+          className={`${styles.contentContainer} ${styles.contentControls}`}
+          style={{ marginTop: "20px" }}
         >
           <p className={styles.contentInfo}>
             The following employees have granted privileges to you.
@@ -375,24 +440,24 @@ export default function Grant() {
           <div className={styles.paddingX}>
             <table className={styles.simpleTable}>
               <thead>
-              <tr>
-                <th>#</th>
-                <th>Supervisor</th>
-                <th>Status</th>
-                <th>Start Date</th>
-                <th>End Date</th>
-              </tr>
+                <tr>
+                  <th>#</th>
+                  <th>Supervisor</th>
+                  <th>Status</th>
+                  <th>Start Date</th>
+                  <th>End Date</th>
+                </tr>
               </thead>
               <tbody>
-              {state.granters.map((granter, index) => (
-                <tr key={index}>
-                  <td>{index + 1}</td>
-                  <td>{`${granter.firstName} ${granter.lastName}`}</td>
-                  <td>{granter.status}</td>
-                  <td>{granter.grantStartStr}</td>
-                  <td>{granter.grantEndStr}</td>
-                </tr>
-              ))}
+                {state.granters.map((granter, index) => (
+                  <tr key={index}>
+                    <td>{index + 1}</td>
+                    <td>{`${granter.firstName} ${granter.lastName}`}</td>
+                    <td>{granter.status}</td>
+                    <td>{granter.grantStartStr}</td>
+                    <td>{granter.grantEndStr}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
@@ -400,22 +465,5 @@ export default function Grant() {
       )}
       {/*  Modal Containter?? */}
     </>
-  )
+  );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

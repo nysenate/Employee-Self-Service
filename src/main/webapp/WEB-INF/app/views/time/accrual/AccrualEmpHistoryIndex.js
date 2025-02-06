@@ -7,19 +7,18 @@ import useAuth from "app/contexts/Auth/useAuth";
 
 const AccrualEmpHistoryIndex = () => {
   const { userData } = useAuth();
-  const [ selectedEmpSupInfo, setSelectedEmpSupInfo ] = useState(null);
-  const [ isModalOpen, setIsModalOpen ] = useState(false);
-  const [ selectedAccrual, setSelectedAccrual ] = useState(null);
+  const [selectedEmpSupInfo, setSelectedEmpSupInfo] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedAccrual, setSelectedAccrual] = useState(null);
 
-  const viewDetails = ( record ) => {
+  const viewDetails = (record) => {
     setSelectedAccrual(record);
     setIsModalOpen(true);
-  }
+  };
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedAccrual(null);
-  }
-
+  };
 
   return (
     <div>
@@ -28,11 +27,13 @@ const AccrualEmpHistoryIndex = () => {
         setSelectedEmp={setSelectedEmpSupInfo}
         selectSubject={"Accrual History"}
       />
-      {selectedEmpSupInfo && (<AccrualHistoryDirective
-        viewDetails={viewDetails}
-        user={userData().employee}
-        empSupInfo={selectedEmpSupInfo}
-      />)}
+      {selectedEmpSupInfo && (
+        <AccrualHistoryDirective
+          viewDetails={viewDetails}
+          user={userData().employee}
+          empSupInfo={selectedEmpSupInfo}
+        />
+      )}
       {selectedAccrual && (
         <AccrualDetailsPopup
           accruals={selectedAccrual}
@@ -41,7 +42,7 @@ const AccrualEmpHistoryIndex = () => {
         />
       )}
     </div>
-  )
-}
+  );
+};
 
 export default AccrualEmpHistoryIndex;

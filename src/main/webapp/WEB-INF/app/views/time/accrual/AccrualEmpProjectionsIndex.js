@@ -8,18 +8,18 @@ import EmployeeSelect from "app/views/time/accrual/EmployeeSelect";
 const AccrualEmpProjectionsIndex = () => {
   const { userData } = useAuth();
   // Connected Components' State Variables + setter/renderer functions
-  const [ selectedEmpSupInfo, setSelectedEmpSupInfo ] = useState(null);
-  const [ isModalOpen, setIsModalOpen ] = useState(false);
-  const [ selectedAccrual, setSelectedAccrual ] = useState(null);
+  const [selectedEmpSupInfo, setSelectedEmpSupInfo] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedAccrual, setSelectedAccrual] = useState(null);
   const viewDetails = (accrualRecord) => {
     console.log(accrualRecord);
     setSelectedAccrual(accrualRecord);
     setIsModalOpen(true);
-  }
+  };
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedAccrual(null);
-  }
+  };
 
   return (
     <div>
@@ -28,11 +28,13 @@ const AccrualEmpProjectionsIndex = () => {
         setSelectedEmp={setSelectedEmpSupInfo}
         selectSubject={"Accrual Projections"}
       />
-      {selectedEmpSupInfo && (<AccrualProjectionsDirective
-        viewDetails={viewDetails}
-        user={userData().employee}
-        empSupInfo={selectedEmpSupInfo}
-      />)}
+      {selectedEmpSupInfo && (
+        <AccrualProjectionsDirective
+          viewDetails={viewDetails}
+          user={userData().employee}
+          empSupInfo={selectedEmpSupInfo}
+        />
+      )}
       {selectedAccrual && (
         <AccrualDetailsPopup
           accruals={selectedAccrual}
@@ -42,6 +44,6 @@ const AccrualEmpProjectionsIndex = () => {
       )}
     </div>
   );
-}
+};
 
 export default AccrualEmpProjectionsIndex;

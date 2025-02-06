@@ -1,14 +1,14 @@
-import React, { useEffect, useRef, useState } from 'react';
-import Hero from '../../../components/Hero';
-import { fetchApiJson } from 'app/api/fetchJson';
-import styles from '../universalStyles.module.css';
-import LoadingIndicator from '../../../components/LoadingIndicator';
-import { formatDate } from '../helpers';
-import { Button } from '../../../components/Button';
+import React, { useEffect, useRef, useState } from "react";
+import Hero from "../../../components/Hero";
+import { fetchApiJson } from "app/api/fetchJson";
+import styles from "../universalStyles.module.css";
+import LoadingIndicator from "../../../components/LoadingIndicator";
+import { formatDate } from "../helpers";
+import { Button } from "../../../components/Button";
 import { useNavigate } from "react-router-dom";
 import Popup from "../../../components/Popup";
-import ReconciliationPrint from './ReconciliationPrint';
-import { useReactToPrint } from 'react-to-print';
+import ReconciliationPrint from "./ReconciliationPrint";
+import { useReactToPrint } from "react-to-print";
 
 export default function ReconciliationIndex() {
   const navigate = useNavigate();
@@ -23,7 +23,7 @@ export default function ReconciliationIndex() {
     matches: [],
     items: [],
     response: {},
-    error: false
+    error: false,
   });
   const [activeItemGroup, setActiveItemGroup] = useState(1);
   const [reconcilableItemMap, setReconcilableItemMap] = useState({});
@@ -42,7 +42,7 @@ export default function ReconciliationIndex() {
         setInventory(response.result.inventory);
         return response;
       } catch (error) {
-        console.error('Error fetching reconciliation:', error);
+        console.error("Error fetching reconciliation:", error);
       } finally {
         setLoading(false);
       }
@@ -66,7 +66,10 @@ export default function ReconciliationIndex() {
         isComplete() {
           for (const itemId in this.itemQuantities) {
             if (this.itemQuantities.hasOwnProperty(itemId)) {
-              if (this.itemQuantities[itemId] === null || this.itemQuantities[itemId] === '') {
+              if (
+                this.itemQuantities[itemId] === null ||
+                this.itemQuantities[itemId] === ""
+              ) {
                 return false;
               }
             }
@@ -89,12 +92,12 @@ export default function ReconciliationIndex() {
 
   const handleQuantityChange = (e, itemId) => {
     const { value } = e.target;
-    setInventory(prev => ({
+    setInventory((prev) => ({
       ...prev,
       itemQuantities: {
         ...prev.itemQuantities,
-        [itemId]: value
-      }
+        [itemId]: value,
+      },
     }));
   };
 
@@ -103,7 +106,8 @@ export default function ReconciliationIndex() {
   };
 
   const isItemSelected = (item) => selectedItem === item;
-  const isReconciliationError = (item) => reconciliationStatus.resultErrorMap.get(item.id) != null;
+  const isReconciliationError = (item) =>
+    reconciliationStatus.resultErrorMap.get(item.id) != null;
 
   const getShipmentsWithItem = (item) => {
     return reconcilableItemMap[item.id];
@@ -119,7 +123,9 @@ export default function ReconciliationIndex() {
   };
 
   const viewShipment = (shipment) => {
-    navigate(`/supply/order-history/order/${shipment.requisitionId}`, { state: { order: shipment } });
+    navigate(`/supply/order-history/order/${shipment.requisitionId}`, {
+      state: { order: shipment },
+    });
   };
 
   const reconcile = async () => {
@@ -127,7 +133,7 @@ export default function ReconciliationIndex() {
       attempted: true,
       // resetResults:
       result: {},
-      resultErrorMap: new Map()
+      resultErrorMap: new Map(),
     });
     if (!inventory.isComplete()) {
       return;
@@ -138,27 +144,27 @@ export default function ReconciliationIndex() {
       const response = await saveSupplyReconciliation(inventory); // This is the POST
 
       // saveResults(response)
-      setReconciliationStatus(prevStatus => ({
+      setReconciliationStatus((prevStatus) => ({
         ...prevStatus,
-        result: response.result
+        result: response.result,
       }));
       // catch($scope.handleErrorResponse)
-      response.result.errors.forEach(error => {
-        setReconciliationStatus(prevStatus => ({
+      response.result.errors.forEach((error) => {
+        setReconciliationStatus((prevStatus) => ({
           ...prevStatus,
-          resultErrorMap: prevStatus.resultErrorMap.set(error.itemId, error)
+          resultErrorMap: prevStatus.resultErrorMap.set(error.itemId, error),
         }));
       });
 
       // displayReconciliationResults
       console.log(response.result);
       if (response.result.success) {
-        setIsSuccessModalOpen(true);  // This is supposed to be success popup
+        setIsSuccessModalOpen(true); // This is supposed to be success popup
       } else {
-        setIsErrorModalOpen(true);  // This is supposed to be error popup
+        setIsErrorModalOpen(true); // This is supposed to be error popup
       }
     } catch (error) {
-      console.error('Error during reconciliation:', error);
+      console.error("Error during reconciliation:", error);
     }
   };
 
@@ -175,7 +181,7 @@ export default function ReconciliationIndex() {
     return (
       <div>
         <Hero>Reconciliation</Hero>
-        <LoadingIndicator/>
+        <LoadingIndicator />
       </div>
     );
   }
@@ -197,33 +203,60 @@ export default function ReconciliationIndex() {
     <div>
       <Hero>Reconciliation</Hero>
       <div className={styles.contentContainer}>
-        <div className={styles.paddingX} style={{ textAlign: 'center' }}>
+        <div className={styles.paddingX} style={{ textAlign: "center" }}>
           {reconciliationStatus.attempted && !inventory.isComplete() && (
             <div>
               <div className={styles.essNotification}>
                 <h2>Missing item quantities.</h2>
-                <p style={{ margin: '13px 0px' }}>To reconcile, you must enter a quantity for all items on both
-                  pages.</p>
+                <p style={{ margin: "13px 0px" }}>
+                  To reconcile, you must enter a quantity for all items on both
+                  pages.
+                </p>
               </div>
             </div>
           )}
         </div>
 
-        <div className={styles.specialUlContainer} style={{ display: 'inline-block', width: '100%' }}>
+        <div
+          className={styles.specialUlContainer}
+          style={{ display: "inline-block", width: "100%" }}
+        >
           <ul className={styles.reconciliationTabLinks}>
-            <li className={activeItemGroup === 1 ? styles.activeReconciliationTab : ''}><a href="#"
-                                                                                           onClick={() => setActiveItemGroup(1)}>Item
-              group 1</a></li>
-            <li className={activeItemGroup === 2 ? styles.activeReconciliationTab : ''}><a href="#"
-                                                                                           onClick={() => setActiveItemGroup(2)}>Item
-              group 2</a></li>
+            <li
+              className={
+                activeItemGroup === 1 ? styles.activeReconciliationTab : ""
+              }
+            >
+              <a href="#" onClick={() => setActiveItemGroup(1)}>
+                Item group 1
+              </a>
+            </li>
+            <li
+              className={
+                activeItemGroup === 2 ? styles.activeReconciliationTab : ""
+              }
+            >
+              <a href="#" onClick={() => setActiveItemGroup(2)}>
+                Item group 2
+              </a>
+            </li>
           </ul>
-          <a className={styles.noPrint} style={{ margin: '10px', float: 'right' }} onClick={handlePrint}>Print</a>
-          <Button style={{ float: 'right' }} onClick={reconcile}>Reconcile</Button>
+          <a
+            className={styles.noPrint}
+            style={{ margin: "10px", float: "right" }}
+            onClick={handlePrint}
+          >
+            Print
+          </a>
+          <Button style={{ float: "right" }} onClick={reconcile}>
+            Reconcile
+          </Button>
         </div>
 
         {/* HEADER */}
-        <div className={`${styles.supplyDivTable} ${styles.largePrintFontSize}`}>
+        <div
+          className={`${styles.supplyDivTable} ${styles.largePrintFontSize}`}
+        >
           <div className={styles.supplyDivTableHeader}>
             <div className={styles.col212}>Commodity Code</div>
             <div className={styles.col712}>Item</div>
@@ -232,74 +265,112 @@ export default function ReconciliationIndex() {
               {reconciliationStatus.resultErrorMap.size > 0 ? (
                 <span>Difference</span>
               ) : (
-                 <span>&nbsp;</span>
-               )}
+                <span>&nbsp;</span>
+              )}
             </div>
           </div>
-          <div className={`${styles.supplyDivTableBody} ${styles.printGrayBottomBorder}`}>
-            {reconcilableSearch.items.filter(item => item.reconciliationPage === activeItemGroup).map((item, index) => (
-              <React.Fragment key={item.id}>
-                <div
-                  className={`${styles.supplyDivTableRow} ${isItemSelected(item) ? styles.supplyHighlightRow : ''} ${isReconciliationError(item) ? styles.warnImportant : ''} ${index % 2 === 0 ? styles.darkBackground : ''}`}
-                >
-                  <div className={styles.col212} onClick={() => toggleDetails(item)}>{item.commodityCode}</div>
-                  <div className={styles.col712} style={{ overflow: 'hidden' }}
-                       onClick={() => toggleDetails(item)}>{item.description}</div>
-                  <div className={`${styles.col212} ${styles.noPrint}`}>
-                    <input
-                      type="number"
-                      style={{ width: '10em' }}
-                      value={inventory.itemQuantities[item.id] || ''}
-                      placeholder="Quantity"
-                      onChange={(e) => handleQuantityChange(e, item.id)}
-                      className={`${reconciliationStatus.attempted === true && (inventory.itemQuantities[item.id] === null || inventory.itemQuantities[item.id] === '') ? styles.warnImportant : ''}`}
-                    />
+          <div
+            className={`${styles.supplyDivTableBody} ${styles.printGrayBottomBorder}`}
+          >
+            {reconcilableSearch.items
+              .filter((item) => item.reconciliationPage === activeItemGroup)
+              .map((item, index) => (
+                <React.Fragment key={item.id}>
+                  <div
+                    className={`${styles.supplyDivTableRow} ${isItemSelected(item) ? styles.supplyHighlightRow : ""} ${isReconciliationError(item) ? styles.warnImportant : ""} ${index % 2 === 0 ? styles.darkBackground : ""}`}
+                  >
+                    <div
+                      className={styles.col212}
+                      onClick={() => toggleDetails(item)}
+                    >
+                      {item.commodityCode}
+                    </div>
+                    <div
+                      className={styles.col712}
+                      style={{ overflow: "hidden" }}
+                      onClick={() => toggleDetails(item)}
+                    >
+                      {item.description}
+                    </div>
+                    <div className={`${styles.col212} ${styles.noPrint}`}>
+                      <input
+                        type="number"
+                        style={{ width: "10em" }}
+                        value={inventory.itemQuantities[item.id] || ""}
+                        placeholder="Quantity"
+                        onChange={(e) => handleQuantityChange(e, item.id)}
+                        className={`${reconciliationStatus.attempted === true && (inventory.itemQuantities[item.id] === null || inventory.itemQuantities[item.id] === "") ? styles.warnImportant : ""}`}
+                      />
+                    </div>
+                    <div className={styles.col112}>
+                      {reconciliationStatus.resultErrorMap.size > 0 ? (
+                        <span
+                          className={`${styles.boldText} ${styles.noPrint}`}
+                        >
+                          {reconciliationStatus.resultErrorMap.get(item.id)
+                            .expectedQuantity -
+                            reconciliationStatus.resultErrorMap.get(item.id)
+                              .actualQuantity}
+                        </span>
+                      ) : (
+                        <span>&nbsp;</span>
+                      )}
+                    </div>
                   </div>
-                  <div className={styles.col112}>
-                    {reconciliationStatus.resultErrorMap.size > 0 ? (
-                      <span className={`${styles.boldText} ${styles.noPrint}`}>
-                        {reconciliationStatus.resultErrorMap.get(item.id).expectedQuantity - reconciliationStatus.resultErrorMap.get(item.id).actualQuantity}
-                      </span>
-                    ) : (
-                       <span>&nbsp;</span>
-                     )}
-                  </div>
-                </div>
-                {isItemSelected(item) && (
-                  <div className={styles.supplySubTable}>
-                    <table className={`${styles.essTable} ${styles.supplyListingTable}`}>
-                      <thead>
-                      <tr>
-                        <th>Id</th>
-                        <th>Location</th>
-                        <th>Quantity</th>
-                        <th>Issued By</th>
-                        <th>Approved Date</th>
-                      </tr>
-                      </thead>
-                      <tbody>
-                      {getShipmentsWithItem(item).map((shipment) => (
-                        <tr key={shipment.requisitionId} onClick={() => viewShipment(shipment)}>
-                          <td>{shipment.requisitionId}</td>
-                          <td>{shipment.destination.locId}</td>
-                          <td>{getOrderedQuantity(shipment, item)}</td>
-                          <td>{shipment.issuer ? shipment.issuer.lastName : ''}</td>
-                          <td>{shipment.approvedDateTime ? formatDate(shipment.approvedDateTime) : ''}</td>
-                        </tr>
-                      ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              </React.Fragment>
-            ))}
+                  {isItemSelected(item) && (
+                    <div className={styles.supplySubTable}>
+                      <table
+                        className={`${styles.essTable} ${styles.supplyListingTable}`}
+                      >
+                        <thead>
+                          <tr>
+                            <th>Id</th>
+                            <th>Location</th>
+                            <th>Quantity</th>
+                            <th>Issued By</th>
+                            <th>Approved Date</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {getShipmentsWithItem(item).map((shipment) => (
+                            <tr
+                              key={shipment.requisitionId}
+                              onClick={() => viewShipment(shipment)}
+                            >
+                              <td>{shipment.requisitionId}</td>
+                              <td>{shipment.destination.locId}</td>
+                              <td>{getOrderedQuantity(shipment, item)}</td>
+                              <td>
+                                {shipment.issuer
+                                  ? shipment.issuer.lastName
+                                  : ""}
+                              </td>
+                              <td>
+                                {shipment.approvedDateTime
+                                  ? formatDate(shipment.approvedDateTime)
+                                  : ""}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </React.Fragment>
+              ))}
           </div>
         </div>
       </div>
-      <ReconciliationSuccessPopup isModalOpen={isSuccessModalOpen} closeModal={closeModal}/>
-      <ReconciliationErrorPopup isModalOpen={isErrorModalOpen} closeModal={closeModal}/>
+      <ReconciliationSuccessPopup
+        isModalOpen={isSuccessModalOpen}
+        closeModal={closeModal}
+      />
+      <ReconciliationErrorPopup
+        isModalOpen={isErrorModalOpen}
+        closeModal={closeModal}
+      />
       {/* Hidden print component */}
-      <div style={{ display: 'none' }}>
+      <div style={{ display: "none" }}>
         <div ref={printRef}>
           <ReconciliationPrint
             reconcilableSearch={reconcilableSearch}
@@ -321,11 +392,14 @@ export default function ReconciliationIndex() {
 }
 
 export const fetchSupplyReconciliation = async () => {
-  return fetchApiJson('/supply/reconciliation', { method: 'GET' });
+  return fetchApiJson("/supply/reconciliation", { method: "GET" });
 };
 
 export const saveSupplyReconciliation = async (inventory) => {
-  return fetchApiJson('/supply/reconciliation', { method: 'POST', payload: inventory });
+  return fetchApiJson("/supply/reconciliation", {
+    method: "POST",
+    payload: inventory,
+  });
 };
 
 const alphabetizeItemsByCommodityCode = (items) => {
@@ -351,16 +425,22 @@ const ReconciliationSuccessPopup = ({ isModalOpen, closeModal }) => {
       title={"Successful reconciliation"}
     >
       <div className={styles.confirmModal}>
-        <div style={{ textAlign: 'left', padding: '12px' }}>
+        <div style={{ textAlign: "left", padding: "12px" }}>
           <div className={styles.inputContainer}>
-            <input type={"button"} onClick={resolve} className={styles.approveButton} value={"Ok"} title={"Ok"}
-                   tabIndex={"1"}/>
+            <input
+              type={"button"}
+              onClick={resolve}
+              className={styles.approveButton}
+              value={"Ok"}
+              title={"Ok"}
+              tabIndex={"1"}
+            />
           </div>
         </div>
       </div>
     </Popup>
   );
-}
+};
 
 const ReconciliationErrorPopup = ({ isModalOpen, closeModal }) => {
   const handleReviewErrors = () => {
@@ -375,9 +455,17 @@ const ReconciliationErrorPopup = ({ isModalOpen, closeModal }) => {
     >
       <div className={styles.confirmModal}>
         <div className={styles.confirmationMessage}>
-          <h4>One or more of the quantities entered is incorrect. Errors will be highlighted red.</h4>
+          <h4>
+            One or more of the quantities entered is incorrect. Errors will be
+            highlighted red.
+          </h4>
           <div className={styles.inputContainer}>
-            <Button onClick={handleReviewErrors} style={{ backgroundColor: '#6270bd' }}>Review Errors</Button>
+            <Button
+              onClick={handleReviewErrors}
+              style={{ backgroundColor: "#6270bd" }}
+            >
+              Review Errors
+            </Button>
           </div>
         </div>
       </div>

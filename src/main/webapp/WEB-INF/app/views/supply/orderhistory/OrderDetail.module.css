@@ -10,6 +10,7 @@
     margin-top: 20px;
     box-sizing: border-box;
 }
+
 .contentInfo {
     margin-top: 0;
     padding: 11px;
@@ -17,6 +18,7 @@
     text-align: center;
     border-bottom: 1px solid rgba(0, 107, 128, .25);
 }
+
 .paddingX {
     padding: 10px;
 }
@@ -30,13 +32,16 @@ label {
 .a1 {
     color: teal;
 }
+
 .a1:active, a1:hover {
     outline: 0;
 }
+
 .a1:hover {
     cursor: pointer;
     color: #004d4d;
 }
+
 .a1:active, a1:focus, a1:hover {
     outline: 0 !important;
     border: none;
@@ -50,14 +55,17 @@ label {
     margin: 0 auto;
     overflow: hidden;
 }
+
 .col412, .col812 {
     width: 33.33%;
     float: left;
     padding-right: 20px;
 }
+
 .col812 {
     width: 66.66%;
 }
+
 b, strong {
     font-weight: 700;
 }
@@ -66,9 +74,11 @@ b, strong {
 table.essTable {
     width: 100%;
 }
+
 .supplyListingTable {
     padding-top: 0;
 }
+
 table {
     border-collapse: collapse;
     border-spacing: 0;
@@ -80,20 +90,24 @@ thead {
     unicode-bidi: isolate;
     border-color: inherit;
 }
+
 table.essTable thead {
     background: #fff;
 }
+
 tr {
     display: table-row;
     vertical-align: inherit;
     unicode-bidi: isolate;
     border-color: inherit;
 }
+
 table.essTable thead tr {
     color: #333;
     font-size: .9em;
     border-bottom: 1px solid #155c69;
 }
+
 th {
     display: table-cell;
     vertical-align: inherit;
@@ -101,6 +115,7 @@ th {
     text-align: -internal-center;
     unicode-bidi: isolate;
 }
+
 table.ess-table thead tr th {
     padding: 10px 5px;
 }
@@ -109,18 +124,22 @@ table.essTable tbody tr {
     border-top: 1px solid transparent;
     border-bottom: 1px solid #bbb;
 }
+
 .supplyListingTable tbody tr {
     border-bottom: 0 solid #eee !important;
     cursor: pointer;
 }
+
 table.essTable tbody tr td {
     text-align: left;
 }
+
 .supplyListingTable tbody tr td {
     padding: .5em;
     border: 0;
     text-align: center !important;
 }
+
 .supplyListingTable tbody tr:nth-child(even) {
     background: rgba(51, 51, 51, .05);
 }

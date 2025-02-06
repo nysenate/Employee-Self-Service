@@ -1,11 +1,15 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import useAuth from "app/contexts/Auth/useAuth";
 import { fetchUniversal, formatDateYYYYMMDD } from "app/views/time/helpers";
 import {
   computeRemaining,
-  getAvailableHours as getAvailableHoursFromAllowance
+  getAvailableHours as getAvailableHoursFromAllowance,
 } from "app/views/time/allowance/time-allowance-ctrl";
-import { calculateDailyTotals, getRecordTotals, getTimeEntryFields } from "app/views/time/record/recordUtils";
+import {
+  calculateDailyTotals,
+  getRecordTotals,
+  getTimeEntryFields,
+} from "app/views/time/record/recordUtils";
 
 // For MiscLeave look at MiscLeaveType.java src/main/java/gov/nysenate/ess/time/model/payrolll
 // Needs:
@@ -14,7 +18,7 @@ import { calculateDailyTotals, getRecordTotals, getTimeEntryFields } from "app/v
 //    -Period end should not be 0 => fixing dueFromNowStr calculation in record-entry-ctrl.js: getRecords()
 //    -
 export const useRecordEntryCtrl = () => {
-  const { userData } = useAuth()
+  const { userData } = useAuth();
   const [state, setState] = useState(getInitialState());
 
   const [recordsLoading, setRecordsLoading] = useState(false);
@@ -35,33 +39,35 @@ export const useRecordEntryCtrl = () => {
     }
 
     return {
-      empId: userData().employee.employeeId,    // Employee Id
+      empId: userData().employee.employeeId, // Employee Id
       // miscLeaves: appProps.miscLeaves,    // Listing of misc leave types
-      miscLeaveGrantInfoList: null,       // List of info about grants of a misc leave type for the currently selected record
-      miscLeaveUsageErrors: [],           // Data on misc leave that too much is being used of
-      accrual: null,                      // Accrual info for selected record
-      expectedHrs: null,                  // An object containing expected hour data for the selected record
-      allowances: {},                     // A map that stores yearly temp employee allowances
-      selectedYear: 0,                    // The year of the selected record (makes it easy to get the selected record's allowance)
-      records: [],                        // All active employee records
-      iSelectedRecord: 0,                 // Index of the currently selected record,
-      salaryRecs: [],                     // A list of salary recs that are active during the selected record's date range
-      iSelSalRec: 0,                      // Index of the selected salary rec (used when there is a salary change mid record)
-      tempEntries: false,                 // True if the selected record contains TE pay entries
-      annualEntries: false,               // True if the selected record contains RA or SA entries
-      totals: {},                         // Stores record wide totals for time entry fields of the selected record
-      holidays: null,                     // Stores a map of holidays
+      miscLeaveGrantInfoList: null, // List of info about grants of a misc leave type for the currently selected record
+      miscLeaveUsageErrors: [], // Data on misc leave that too much is being used of
+      accrual: null, // Accrual info for selected record
+      expectedHrs: null, // An object containing expected hour data for the selected record
+      allowances: {}, // A map that stores yearly temp employee allowances
+      selectedYear: 0, // The year of the selected record (makes it easy to get the selected record's allowance)
+      records: [], // All active employee records
+      iSelectedRecord: 0, // Index of the currently selected record,
+      salaryRecs: [], // A list of salary recs that are active during the selected record's date range
+      iSelSalRec: 0, // Index of the selected salary rec (used when there is a salary change mid record)
+      tempEntries: false, // True if the selected record contains TE pay entries
+      annualEntries: false, // True if the selected record contains RA or SA entries
+      totals: {}, // Stores record wide totals for time entry fields of the selected record
+      holidays: null, // Stores a map of holidays
 
-      request: {                          // Flags indicating if ajax requests are in progress
-        records: false,                 //  Get active records
-        accruals: false,                //  Get accruals for selected record
-        allowances: false,              //  Get allowances for selected record
-        save: false                     //  Save selected record
+      request: {
+        // Flags indicating if ajax requests are in progress
+        records: false, //  Get active records
+        accruals: false, //  Get accruals for selected record
+        allowances: false, //  Get allowances for selected record
+        save: false, //  Save selected record
       },
       // A map for displaying convenience.
       // miscLeavesShortnameMap: shortnameMap(appProps.miscLeaves),
-    }
+    };
   }
+
   function resetLoading() {
     setRecordsLoading(false);
     setHolidaysLoading(false);
@@ -116,17 +122,18 @@ export const useRecordEntryCtrl = () => {
           updatedState = await getMiscLeaveTypeGrants(updatedState);
           // console.log("updatedState after getMiscLeaveTypeGrants ", updatedState);
 
-
           fullValidationCheck(updatedState);
           // console.log("updatedState after fullValidationCheck ", updatedState);
 
           // Finally, set the state once with all the updates
           setState(updatedState);
         } catch (error) {
-          console.error('Error updating state:', error);
+          console.error("Error updating state:", error);
         }
       } else {
-        console.log("Failed: state.records && state.records[state.iSelectedRecord]");
+        console.log(
+          "Failed: state.records && state.records[state.iSelectedRecord]",
+        );
       }
     };
 
@@ -144,13 +151,13 @@ export const useRecordEntryCtrl = () => {
     //   console.log('prevState != getInitialState()');
     //   return;
     // }
-    const params = { empId: prevState.empId }
+    const params = { empId: prevState.empId };
     setRecordsLoading(true);
     try {
       const response = await fetchUniversal("/timerecords/active", params);
       if (response.result.items[prevState.empId]) {
         const allRecords = response.result.items[prevState.empId];
-        const records = allRecords.filter(record => record.scope === 'E');
+        const records = allRecords.filter((record) => record.scope === "E");
 
         records.forEach((record, index) => {
           const endDate = new Date(record.endDate);
@@ -180,18 +187,22 @@ export const useRecordEntryCtrl = () => {
           record.initialRemarks = record.remarks;
           // linkRecordFromQueryParam();
         });
-        return { ...prevState, records: records, allRecords: allRecords, };
+        return { ...prevState, records: records, allRecords: allRecords };
       }
-    } catch(err) { console.error(err); } finally {
+    } catch (err) {
+      console.error(err);
+    } finally {
       setRecordsLoading(false);
     }
-  }
+  };
 
   /* Saves or submits the currently selected record.
    * This assumes any necessary validation has already been
    * made on this record.
    * @param submit - true if the record is to be submitted */
-  const saveRecord = async () => { console.log('implement saveRecord'); }
+  const saveRecord = async () => {
+    console.log("implement saveRecord");
+  };
 
   /**
    * Fetches the accruals for the currently selected time record from the server.
@@ -200,7 +211,7 @@ export const useRecordEntryCtrl = () => {
    * @returns updatedState
    */
   const getAccrualForSelectedRecord = async (prevState) => {
-    if(prevState.annualEntries) {
+    if (prevState.annualEntries) {
       let empId = prevState.empId;
       let record = prevState.records[prevState.iSelectedRecord];
       let periodStartMoment = new Date(record.payPeriod.startDate);
@@ -210,14 +221,16 @@ export const useRecordEntryCtrl = () => {
       };
       setAccrualsLoading(true);
       try {
-        const response = await fetchUniversal('/accruals', params);
-        return {...prevState, accrual: response.result};
-      } catch(err) { console.error(err); } finally {
+        const response = await fetchUniversal("/accruals", params);
+        return { ...prevState, accrual: response.result };
+      } catch (err) {
+        console.error(err);
+      } finally {
         setAccrualsLoading(false);
       }
     }
     return prevState;
-  }
+  };
 
   /**
    * Fetches the expected hours for the currently selected record
@@ -226,9 +239,9 @@ export const useRecordEntryCtrl = () => {
    * @returns updatedState
    */
   const getExpectedHoursForSelRecord = async (prevState) => {
-    if(!prevState.annualEntries) return prevState;
+    if (!prevState.annualEntries) return prevState;
     let empId = prevState.empId;
-    let record = prevState.records[prevState.iSelectedRecord]
+    let record = prevState.records[prevState.iSelectedRecord];
     const params = {
       empId: empId,
       beginDate: record.beginDate,
@@ -236,12 +249,14 @@ export const useRecordEntryCtrl = () => {
     };
     setExpectedHrsLoading(true);
     try {
-      const response = await fetchUniversal('/expectedhrs', params);
-      return {...prevState, expectedHrs: response.result};
-    } catch(err) { console.error(err); } finally {
+      const response = await fetchUniversal("/expectedhrs", params);
+      return { ...prevState, expectedHrs: response.result };
+    } catch (err) {
+      console.error(err);
+    } finally {
       setExpectedHrsLoading(false);
     }
-  }
+  };
 
   /**
    * Gets the allowance state for the year of the selected record, if it hasn't already been retrieved
@@ -250,26 +265,34 @@ export const useRecordEntryCtrl = () => {
    * @returns updatedState
    */
   const getAllowanceForSelRecord = async (prevState) => {
-    let record = prevState.records[prevState.iSelectedRecord]
-    let newState = { ...prevState, selectedYear: new Date(record.beginDate).getFullYear() };
-    if (prevState.tempEntries && !prevState.allowances.hasOwnProperty(prevState.selectedYear)) {
+    let record = prevState.records[prevState.iSelectedRecord];
+    let newState = {
+      ...prevState,
+      selectedYear: new Date(record.beginDate).getFullYear(),
+    };
+    if (
+      prevState.tempEntries &&
+      !prevState.allowances.hasOwnProperty(prevState.selectedYear)
+    ) {
       const params = {
         empId: prevState.empId,
-        year: prevState.selectedYear
+        year: prevState.selectedYear,
       };
       setAllowancesLoading(true);
       try {
-        const response = await fetchUniversal('/allowances', params);
+        const response = await fetchUniversal("/allowances", params);
         response.result.forEach((allowance) => {
           newState.allowances[allowance.year] = allowance;
         });
-        return { ...newState, };
-      } catch(err) { console.error(err); } finally {
+        return { ...newState };
+      } catch (err) {
+        console.error(err);
+      } finally {
         setAllowancesLoading(false);
       }
     }
-    return newState
-  }
+    return newState;
+  };
 
   /**
    * Gets getMiscLeaveTypeGrants
@@ -280,17 +303,25 @@ export const useRecordEntryCtrl = () => {
   const getMiscLeaveTypeGrants = async (prevState) => {
     const params = {
       empId: prevState.empId,
-      endDateStr: prevState.records[prevState.iSelectedRecord].beginDate
+      endDateStr: prevState.records[prevState.iSelectedRecord].beginDate,
     };
     try {
-      const response = await fetchUniversal('/miscleave/grantsWithRemainingHours', params);
+      const response = await fetchUniversal(
+        "/miscleave/grantsWithRemainingHours",
+        params,
+      );
       console.log("miscLeaveGrantInfoList: response.result", response.result);
-      console.log("returning: ", { ...prevState, miscLeaveGrantInfoList: response.result});
+      console.log("returning: ", {
+        ...prevState,
+        miscLeaveGrantInfoList: response.result,
+      });
 
-      return { ...prevState, miscLeaveGrantInfoList: response.result, };
-    } catch(err) { console.error(err); } finally {
+      return { ...prevState, miscLeaveGrantInfoList: response.result };
+    } catch (err) {
+      console.error(err);
+    } finally {
     }
-  }
+  };
 
   /**
    * Gets the holidays
@@ -301,32 +332,35 @@ export const useRecordEntryCtrl = () => {
   const getHolidays = async (prevState) => {
     const fromDateObj = new Date();
     fromDateObj.setFullYear(fromDateObj.getFullYear() - 1);
-    const fromDate = fromDateObj.toISOString().split('T')[0];
+    const fromDate = fromDateObj.toISOString().split("T")[0];
 
     const toDateObj = new Date();
     toDateObj.setFullYear(toDateObj.getFullYear() + 1);
-    const toDate = toDateObj.toISOString().split('T')[0];
+    const toDate = toDateObj.toISOString().split("T")[0];
 
     const params = {
       fromDate: fromDate,
-      toDate: toDate
+      toDate: toDate,
     };
     setHolidaysLoading(true);
     try {
       const response = await fetchUniversal("/holidays", params);
       const holidays = {};
-      response.holidays.forEach(holiday => {
+      response.holidays.forEach((holiday) => {
         if (!holiday.unofficial) {
           holidays[holiday.date] = holiday;
         }
       });
-      return { ...prevState, holidays: holidays}
-    } catch(err) { console.error(err); } finally {
+      return { ...prevState, holidays: holidays };
+    } catch (err) {
+      console.error(err);
+    } finally {
       setHolidaysLoading(false);
     }
-  }
+  };
+
   function createNextRecord() {
-    if(!canCreateNextRecord()) return;
+    if (!canCreateNextRecord()) return;
     let latestRecord = getLatestRecord();
     let nextRecBeginDate = new Date(latestRecord.endDate);
     nextRecBeginDate.setDate(nextRecBeginDate.getDate() + 1);
@@ -336,24 +370,31 @@ export const useRecordEntryCtrl = () => {
     };
     setRecordsLoading(true);
     try {
-      console.log('Save recordCreationApi = /timerecords/new');
+      console.log("Save recordCreationApi = /timerecords/new");
       init();
-    } catch(err) {
+    } catch (err) {
       console.error(err);
       setRecordsLoading(false);
     }
   }
 
   /** --- Display Methods --- */
+
   /* Returns the currently selected record.
    * @returns timeRecord object */
-  function getSelectedRecord(thisState) { return thisState?.records[thisState?.iSelectedRecord]; }
+  function getSelectedRecord(thisState) {
+    return thisState?.records[thisState?.iSelectedRecord];
+  }
 
   /* Closes any open modals by resolving them.*/
-  function resolveModal() { console.log('Resolve: Implement close all modals/popups'); }
+  function resolveModal() {
+    console.log("Resolve: Implement close all modals/popups");
+  }
 
   /* Closes any open modals by rejecting them.*/
-  function rejectModal() { console.log('Reject: Implement close all modals/popups'); }
+  function rejectModal() {
+    console.log("Reject: Implement close all modals/popups");
+  }
 
   /* Returns true if the given date falls on a weekend.
    * @param date - ISO, JS, new Date, or Moment Date
@@ -369,18 +410,28 @@ export const useRecordEntryCtrl = () => {
     return dayOfWeek === 0 || dayOfWeek === 6;
   }
 
-
   /* This method is called every time a field is modified on the currently selected record. */
   function setDirty(entry, index) {
     let updatedState = { ...state };
-    if(Number.isInteger(index) && index >= 0) console.log('Index must be an integer greater than or equal to 0');
-    if(state.records[state.iSelectedRecord].timeEntries.filter(entry => entry.payType !== 'TE')[index] === entry)
+    if (Number.isInteger(index) && index >= 0)
+      console.log("Index must be an integer greater than or equal to 0");
+    if (
+      state.records[state.iSelectedRecord].timeEntries.filter(
+        (entry) => entry.payType !== "TE",
+      )[index] === entry
+    )
       console.log("state's index not correlate to entry");
-    if(updatedState.records[state.iSelectedRecord].timeEntries.filter(entry => entry.payType !== 'TE')[index] === entry)
+    if (
+      updatedState.records[state.iSelectedRecord].timeEntries.filter(
+        (entry) => entry.payType !== "TE",
+      )[index] === entry
+    )
       console.log("updatedState's index not correlate to entry");
     updatedState.records[state.iSelectedRecord].dirty = true;
     if (entry) {
-      updatedState.records[state.iSelectedRecord].timeEntries.filter(entry => entry.payType !== 'TE')[index].dirty = true;
+      updatedState.records[state.iSelectedRecord].timeEntries.filter(
+        (entry) => entry.payType !== "TE",
+      )[index].dirty = true;
     }
     updatedState = onRecordChange(updatedState);
     setState({ ...updatedState });
@@ -390,7 +441,7 @@ export const useRecordEntryCtrl = () => {
    * @returns {boolean} */
   function recordValid() {
     let record = getSelectedRecord(state);
-    return !(record == null || selRecordHasEntryErrors() );
+    return !(record == null || selRecordHasEntryErrors());
   }
 
   function isRecordEmpty(record) {
@@ -401,9 +452,15 @@ export const useRecordEntryCtrl = () => {
       const entry = timeEntries[i];
       const isRASA = entry.payType === "RA" || entry.payType === "SA";
       const hasNoHours = entry.totalHours === 0;
-      const hasSomeHours = entry.workHours !== null || entry.travelHours !== null || entry.holidayHours !== null ||
-        entry.vacationHours !== null || entry.personalHours !== null || entry.sickEmpHours !== null ||
-        entry.sickFamHours !== null || entry.miscHours !== null;
+      const hasSomeHours =
+        entry.workHours !== null ||
+        entry.travelHours !== null ||
+        entry.holidayHours !== null ||
+        entry.vacationHours !== null ||
+        entry.personalHours !== null ||
+        entry.sickEmpHours !== null ||
+        entry.sickFamHours !== null ||
+        entry.miscHours !== null;
 
       if (isRASA && hasNoHours) {
         nullRecordCount++;
@@ -417,15 +474,16 @@ export const useRecordEntryCtrl = () => {
     return nullRecordCount === timeEntries.length;
   }
 
-
   /* Returns true if the record is submittable, i.e. it exists, passes all validations, and has ended or will end
    * today.
    * @returns {boolean}*/
   function recordSubmittable() {
-    return !requestInProgress() &&
+    return (
+      !requestInProgress() &&
       recordValid() &&
       !selRecordHasRecordErrors() &&
-      !isRecordEmpty(getSelectedRecord(state));
+      !isRecordEmpty(getSelectedRecord(state))
+    );
   }
 
   /* Get the number of available work hours at the selected salary rate
@@ -434,7 +492,7 @@ export const useRecordEntryCtrl = () => {
   function getAvailableHours() {
     let allowance = state.allowances[$scope.state.selectedYear];
     let tempWorkHours = state.totals.tempWorkHours;
-    return getAvailableHoursFromAllowance(allowance, tempWorkHours)
+    return getAvailableHoursFromAllowance(allowance, tempWorkHours);
   }
 
   /*
@@ -450,8 +508,10 @@ export const useRecordEntryCtrl = () => {
     const salaryEndDate = new Date(salaryRec.endDate);
 
     // Determine the beginDate and endDate
-    const beginDate = effectDate > recordBeginDate ? effectDate : recordBeginDate;
-    const endDate = salaryEndDate > recordEndDate ? recordEndDate : salaryEndDate;
+    const beginDate =
+      effectDate > recordBeginDate ? effectDate : recordBeginDate;
+    const endDate =
+      salaryEndDate > recordEndDate ? recordEndDate : salaryEndDate;
 
     // Format the dates as M/D
     const formatDate = (date) => `${date.getMonth() + 1}/${date.getDate()}`;
@@ -459,7 +519,6 @@ export const useRecordEntryCtrl = () => {
     // Return the formatted date range
     return `${formatDate(beginDate)} - ${formatDate(endDate)}`;
   }
-
 
   /* Get the start date of the given salary rec with respect to the selected record
    * @param salaryRec
@@ -487,7 +546,8 @@ export const useRecordEntryCtrl = () => {
   function getRecordRangeDisplay(record) {
     const beginDate = new Date(record.beginDate);
     const endDate = new Date(record.endDate);
-    const formatDate = (date) => `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
+    const formatDate = (date) =>
+      `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
     return `${formatDate(beginDate)} - ${formatDate(endDate)}`;
   }
 
@@ -505,12 +565,12 @@ export const useRecordEntryCtrl = () => {
   // };
 
   let accrualTabIndex = {
-    holiday: getAccrualTabIndexFn('holidayHours'),
-    vacation: getAccrualTabIndexFn('vacationHours'),
-    personal: getAccrualTabIndexFn('personalHours'),
-    sickEmp: getAccrualTabIndexFn('sickEmpHours'),
-    sickFam: getAccrualTabIndexFn('sickFamHours'),
-    misc: getAccrualTabIndexFn('miscHours')
+    holiday: getAccrualTabIndexFn("holidayHours"),
+    vacation: getAccrualTabIndexFn("vacationHours"),
+    personal: getAccrualTabIndexFn("personalHours"),
+    sickEmp: getAccrualTabIndexFn("sickEmpHours"),
+    sickFam: getAccrualTabIndexFn("sickFamHours"),
+    misc: getAccrualTabIndexFn("miscHours"),
   };
 
   function getAccrualTabIndexFn(propName) {}
@@ -535,14 +595,13 @@ export const useRecordEntryCtrl = () => {
     return endDate > today;
   }
 
-
   /* Return a misc leave predicate function that will determine if a misc leave can be used on the given date
    * @param date
    * @returns {Function} */
   function getMiscLeavePredicate(date) {
     const dateObj = new Date(date);
 
-    return function(miscLeave) {
+    return function (miscLeave) {
       // Return true if the misc leave is not restricted
       if (!miscLeave.restricted) {
         return true;
@@ -568,14 +627,12 @@ export const useRecordEntryCtrl = () => {
     };
   }
 
-
   /* Returns true iff the given entry is a holiday
    * @param entry
    * @returns {boolean} */
   function isHoliday(entry) {
     return state.holidays && state.holidays.hasOwnProperty(entry.date);
   }
-
 
   /**
    * Return the number of holiday hours allotted for the given date
@@ -584,12 +641,14 @@ export const useRecordEntryCtrl = () => {
    * @returns {number}
    */
   function getHolidayHours(entry) {
-    if (!state.holidays) { // Return the max holiday hours if holidays have not yet loaded
+    if (!state.holidays) {
+      // Return the max holiday hours if holidays have not yet loaded
       return 7;
     }
-    return state.holidays.hasOwnProperty(entry.date) ? state.holidays[entry.date].hours : 0;
+    return state.holidays.hasOwnProperty(entry.date)
+      ? state.holidays[entry.date].hours
+      : 0;
   }
-
 
   /* Return true if the employee is eligible to create a new time record for the next period
    * @returns {boolean} */
@@ -597,7 +656,7 @@ export const useRecordEntryCtrl = () => {
     if (state.records.length > 0) return false;
 
     // Return false if any existing record has a begin date past the current date
-    state.allRecords?.forEach(record => {
+    state.allRecords?.forEach((record) => {
       const beginDate = new Date(record.beginDate);
       const currentDate = new Date();
 
@@ -617,10 +676,9 @@ export const useRecordEntryCtrl = () => {
     return true;
   }
 
-
   /* Return true if a request is in progress */
   function requestInProgress() {
-    return Object.values(state.request).some(value => value === true);
+    return Object.values(state.request).some((value) => value === true);
   }
 
   /* Refreshes totals and validates a record when a change occurs on a record. */
@@ -629,7 +687,7 @@ export const useRecordEntryCtrl = () => {
     // Old file: Todo delay sanitation to allow entry of .25 and .75
     // Old file: sanitizeEntries(record);
     calculateDailyTotals(record);
-    return { ...prevState, totals: getRecordTotals(record), }; //this could be a scoping issue, don't think so tho
+    return { ...prevState, totals: getRecordTotals(record) }; //this could be a scoping issue, don't think so tho
   }
 
   /* Ensure that all time entered is in multiples of 0.25 or 0.5 for Temporary and Annual entries respectively
@@ -637,11 +695,11 @@ export const useRecordEntryCtrl = () => {
   function sanitizeEntries(record) {
     const timeEntryFields = getTimeEntryFields();
 
-    record.timeEntries.forEach(entry => {
+    record.timeEntries.forEach((entry) => {
       const validInterval = isTemporaryEmployee(entry) ? 0.25 : 0.5;
       const inverse = 1 / validInterval;
 
-      timeEntryFields.forEach(fieldName => {
+      timeEntryFields.forEach((fieldName) => {
         const value = entry[fieldName];
         if (value) {
           entry[fieldName] = Math.round(value * inverse) / inverse;
@@ -649,7 +707,6 @@ export const useRecordEntryCtrl = () => {
       });
     });
   }
-
 
   /* Iterates through the entries of the currently selected record,
    * setting the state to indicate if the record has TE pay entries, RA/SA entries or both
@@ -660,7 +717,7 @@ export const useRecordEntryCtrl = () => {
 
     if (prevState.records.length > 0) {
       const record = getSelectedRecord(prevState);
-      record.timeEntries.forEach(entry => {
+      record.timeEntries.forEach((entry) => {
         if (isTemporaryEmployee(entry)) {
           tempEntries = true;
         } else if (isSalariedEmployee(entry)) {
@@ -668,9 +725,12 @@ export const useRecordEntryCtrl = () => {
         }
       });
     }
-    return { ...prevState, tempEntries: tempEntries, annualEntries: annualEntries,};
+    return {
+      ...prevState,
+      tempEntries: tempEntries,
+      annualEntries: annualEntries,
+    };
   }
-
 
   /* Adds all salaryRecs relevant to the selected record to the salaryRecs state object */
   function getSelectedSalaryRecs(prevState) {
@@ -685,7 +745,7 @@ export const useRecordEntryCtrl = () => {
     const record = getSelectedRecord(updatedState);
     let highestRate = 0;
 
-    allowance.salaryRecs.forEach(salaryRec => {
+    allowance.salaryRecs.forEach((salaryRec) => {
       // Convert dates to Date objects
       const effectDate = new Date(salaryRec.effectDate);
       const endDate = new Date(record.endDate);
@@ -694,7 +754,7 @@ export const useRecordEntryCtrl = () => {
 
       // Select only temporary salaries that are effective during the record date range
       if (
-        salaryRec.payType === 'TE' &&
+        salaryRec.payType === "TE" &&
         effectDate <= endDate &&
         beginDate <= salaryEndDate
       ) {
@@ -708,42 +768,45 @@ export const useRecordEntryCtrl = () => {
 
     // Call the imported function to compute remaining allowance
     computeRemaining(allowance, record);
-    return { ...updatedState, };
+    return { ...updatedState };
   }
-
 
   function getLatestRecord() {
     let latestRecord = null;
-    state.allRecords?.forEach(record => {
-      if (!latestRecord || new Date(record.beginDate) > new Date(latestRecord.beginDate)) {
+    state.allRecords?.forEach((record) => {
+      if (
+        !latestRecord ||
+        new Date(record.beginDate) > new Date(latestRecord.beginDate)
+      ) {
         latestRecord = record;
       }
     });
     return latestRecord;
   }
 
-
   /* Recursively ensures that all boolean fields are false within the given object.
    * @param object
    * @returns {boolean} */
   function allFalse(object) {
-    if (typeof object === 'boolean') {
-      return !object;  // Return true if the boolean is false
+    if (typeof object === "boolean") {
+      return !object; // Return true if the boolean is false
     }
     for (const prop in object) {
-      if (Object.prototype.hasOwnProperty.call(object, prop) && !allFalse(object[prop])) return false;
+      if (
+        Object.prototype.hasOwnProperty.call(object, prop) &&
+        !allFalse(object[prop])
+      )
+        return false;
     }
     return true;
   }
-
 
   /* Sets the search params to indicate the currently active record. */
   function setRecordSearchParams() {
     const record = state.records[state.iSelectedRecord];
     // setSearchParam('record', record.beginDate);
-    console.log('implement setSearchParam');
+    console.log("implement setSearchParam");
   }
-
 
   /* Checks for a 'record' search param in the url and if it exists, the record with a start date that matches
    * the given date will be set as the selected record. */
@@ -760,12 +823,16 @@ export const useRecordEntryCtrl = () => {
     //     }
     //   }
     // }
-    console.log('implement getSearchParam(record)');
-
+    console.log("implement getSearchParam(record)");
   }
-  function isTemporaryEmployee(entry) { return entry.payType === 'TE'; }
 
-  function isSalariedEmployee(entry) { return entry.payType === 'RA' || entry.payType === 'SA'; }
+  function isTemporaryEmployee(entry) {
+    return entry.payType === "TE";
+  }
+
+  function isSalariedEmployee(entry) {
+    return entry.payType === "RA" || entry.payType === "SA";
+  }
 
   // function getSubmitDialogs() {
   //   const submitDialogs = [];
@@ -797,8 +864,6 @@ export const useRecordEntryCtrl = () => {
   //   return submitDialogs;
   // }
 
-
-
   /** --- Validation --- **/
 
   /* Runs a full validation check on the selected record
@@ -812,7 +877,7 @@ export const useRecordEntryCtrl = () => {
     let recordValid = true;
 
     if (record && record.timeEntries) {
-      record.timeEntries.forEach(entry => {
+      record.timeEntries.forEach((entry) => {
         // Perform validation check on each entry
         recordValid = recordValid && checkEntry(entry);
       });
@@ -821,12 +886,11 @@ export const useRecordEntryCtrl = () => {
     return recordValid;
   }
 
-
   /* Runs validation checks on the given entry
    * @param entry
    * @returns {boolean} */
   function checkEntry(entry) {
-    const validationType = isSalariedEmployee(entry) ? 'raSa' : 'te';
+    const validationType = isSalariedEmployee(entry) ? "raSa" : "te";
     let entryValid = true;
 
     // Iterate over the validators using a for...in loop
@@ -840,25 +904,23 @@ export const useRecordEntryCtrl = () => {
     return entryValid;
   }
 
-
   /* This function is called before time entries are validated
    * this resets any error flags (they will be restored if errors are detected during validation)
    * and also does any validations on the record scope */
   function preValidation(updatedState) {
     const record = getSelectedRecord(updatedState);
     errorTypes.reset();
-    updatedState = {...state, miscLeaveUsageErrors: [],};
+    updatedState = { ...state, miscLeaveUsageErrors: [] };
     setState(updatedState);
     checkForPrevUnsubmittedRaSa(record, updatedState);
   }
 
-
   /* Check for any unsubmitted salaried records before the given record
    * @param record */
   function checkForPrevUnsubmittedRaSa(record, updatedState) {
-    updatedState.records.forEach(otherRecord => {
+    updatedState.records.forEach((otherRecord) => {
       if (new Date(otherRecord.beginDate) < new Date(record.beginDate)) {
-        otherRecord.timeEntries.forEach(entry => {
+        otherRecord.timeEntries.forEach((entry) => {
           if (isSalariedEmployee(entry)) {
             errorTypes.record.prevUnsubmittedRecord = true;
             return;
@@ -871,12 +933,13 @@ export const useRecordEntryCtrl = () => {
   /* Search for and return any unsubmitted temporary time records before the given record. */
   function getPrevUnsubmittedTe() {
     const currentRec = getSelectedRecord(state);
-    return state.records.filter(rec => {
-      return rec.scope === 'E' &&
-        new Date(rec.beginDate) < new Date(currentRec.beginDate);
+    return state.records.filter((rec) => {
+      return (
+        rec.scope === "E" &&
+        new Date(rec.beginDate) < new Date(currentRec.beginDate)
+      );
     });
   }
-
 
   // FIX
   let errorTypes = {
@@ -896,7 +959,7 @@ export const useRecordEntryCtrl = () => {
       noMiscTypeGiven: false,
       noMiscHoursGiven: false,
       halfHourIncrements: false,
-      notEnoughMiscTime: false
+      notEnoughMiscTime: false,
     },
     // Error messages for temporary pay time entries
     te: {
@@ -904,26 +967,25 @@ export const useRecordEntryCtrl = () => {
       notEnoughWorkHours: false,
       noComment: false,
       noWorkHoursForComment: false,
-      fifteenMinIncrements: false
+      fifteenMinIncrements: false,
     },
     // Record scope errors that do not depend on time entries
     record: {
-      prevUnsubmittedRecord: false
+      prevUnsubmittedRecord: false,
     },
     // Recursively set all boolean error properties to false
-    reset: function(object = this) {
+    reset: function (object = this) {
       for (let key in object) {
         if (object.hasOwnProperty(key)) {
-          if (typeof object[key] === 'boolean') {
+          if (typeof object[key] === "boolean") {
             object[key] = false;
-          } else if (typeof object[key] === 'object') {
+          } else if (typeof object[key] === "object") {
             this.reset(object[key]);
           }
         }
       }
-    }
+    },
   };
-
 
   /**
    *  --- Error Indication Methods ---
@@ -966,7 +1028,7 @@ export const useRecordEntryCtrl = () => {
   // Todo Why are the hours modulated by 1 before 0.5/0.25 ?
   // Seems harmless so I am leaving it in for now in case it is necessary for fp precision etc.
   function checkRaSaHourIncrements(hours) {
-    if (isNaN(hours) || hours % 1 % 0.5 === 0) {
+    if (isNaN(hours) || (hours % 1) % 0.5 === 0) {
       return true;
     }
     errorTypes.raSa.halfHourIncrements = true;
@@ -975,13 +1037,17 @@ export const useRecordEntryCtrl = () => {
 
   function grantApplies(grant, entry) {
     let entryDate = new Date(entry.date);
-    return entry.miscHours && entry.miscType === grant.miscLeaveType
-      && new Date(grant.beginDate) <= entryDate && entryDate <= new Date(grant.endDate);
+    return (
+      entry.miscHours &&
+      entry.miscType === grant.miscLeaveType &&
+      new Date(grant.beginDate) <= entryDate &&
+      entryDate <= new Date(grant.endDate)
+    );
   }
 
   // e.g. turns "2024-01-04" into "1/4/24"
   function dateToStr(date) {
-    let year = date.substring(0, 4)
+    let year = date.substring(0, 4);
     let month = parseInt(date.substring(5, 7));
     let dayOfMonth = parseInt(date.substring(8, 10));
     return month + "/" + dayOfMonth + "/" + year;
@@ -992,7 +1058,7 @@ export const useRecordEntryCtrl = () => {
    * @param hours
    * @returns {boolean} */
   function checkTeHourIncrements(hours) {
-    if (isNaN(hours) || hours % 1 % 0.25 === 0) {
+    if (isNaN(hours) || (hours % 1) % 0.25 === 0) {
       return true;
     }
     errorTypes.te.fifteenMinIncrements = true;
@@ -1002,7 +1068,6 @@ export const useRecordEntryCtrl = () => {
   /** --- Time Entry Validation Methods --- */
 
   const entryValidators = {
-
     /** --- Regular / Special Annual time entry validators --- */
 
     raSa: {
@@ -1012,7 +1077,7 @@ export const useRecordEntryCtrl = () => {
           return true;
         }
         let isValid = true;
-        if (typeof hrs === 'undefined') {
+        if (typeof hrs === "undefined") {
           errorTypes.raSa.workHoursInvalidRange = true;
           isValid = false;
         }
@@ -1021,7 +1086,11 @@ export const useRecordEntryCtrl = () => {
       },
 
       holidayHours: function (entry) {
-        if (entry.payType !== 'SA' || !state.holidays || !isHoliday(entry, state)) {
+        if (
+          entry.payType !== "SA" ||
+          !state.holidays ||
+          !isHoliday(entry, state)
+        ) {
           return true;
         }
         const hrs = entry.holidayHours;
@@ -1029,7 +1098,7 @@ export const useRecordEntryCtrl = () => {
         if (hrs === 0 || hrs === null) {
           return true;
         }
-        if (typeof hrs === 'undefined') {
+        if (typeof hrs === "undefined") {
           errorTypes.raSa.holidayHoursInvalidRange = true;
           isValid = false;
         }
@@ -1043,11 +1112,14 @@ export const useRecordEntryCtrl = () => {
         if (hrs === 0 || hrs === null) {
           return true;
         }
-        if (state.accrual && state.totals.vacationHours > state.accrual.vacationAvailable) {
+        if (
+          state.accrual &&
+          state.totals.vacationHours > state.accrual.vacationAvailable
+        ) {
           errorTypes.raSa.notEnoughVacationTime = true;
           isValid = false;
         }
-        if (typeof hrs === 'undefined') {
+        if (typeof hrs === "undefined") {
           errorTypes.raSa.vacationHoursInvalidRange = true;
           isValid = false;
         }
@@ -1061,11 +1133,14 @@ export const useRecordEntryCtrl = () => {
         if (hrs === 0 || hrs === null) {
           return true;
         }
-        if (state.accrual && state.totals.personalHours > state.accrual.personalAvailable) {
+        if (
+          state.accrual &&
+          state.totals.personalHours > state.accrual.personalAvailable
+        ) {
           errorTypes.raSa.notEnoughPersonalTime = true;
           isValid = false;
         }
-        if (typeof hrs === 'undefined') {
+        if (typeof hrs === "undefined") {
           errorTypes.raSa.personalHoursInvalidRange = true;
           isValid = false;
         }
@@ -1080,7 +1155,7 @@ export const useRecordEntryCtrl = () => {
           return true;
         }
         isValid = isValid && isEnoughSickTime();
-        if (typeof hrs === 'undefined') {
+        if (typeof hrs === "undefined") {
           errorTypes.raSa.sickEmpHoursInvalidRange = true;
           isValid = false;
         }
@@ -1095,7 +1170,7 @@ export const useRecordEntryCtrl = () => {
           return true;
         }
         isValid = isValid && isEnoughSickTime();
-        if (typeof hrs === 'undefined') {
+        if (typeof hrs === "undefined") {
           errorTypes.raSa.sickFamHoursInvalidRange = true;
           isValid = false;
         }
@@ -1109,7 +1184,7 @@ export const useRecordEntryCtrl = () => {
         if (hrs === 0 || hrs === null) {
           return true;
         }
-        if (typeof hrs === 'undefined') {
+        if (typeof hrs === "undefined") {
           errorTypes.raSa.miscHoursInvalidRange = true;
           isValid = false;
         }
@@ -1118,9 +1193,16 @@ export const useRecordEntryCtrl = () => {
         const entries = state.records[state.iSelectedRecord].timeEntries;
         const grantInfoList = state.miscLeaveGrantInfoList;
 
-        for (let grantIndex = 0; grantIndex < grantInfoList.length; grantIndex++) {
+        for (
+          let grantIndex = 0;
+          grantIndex < grantInfoList.length;
+          grantIndex++
+        ) {
           const grantInfo = grantInfoList[grantIndex];
-          if (grantInfo.hoursRemaining === null || !grantApplies(grantInfo.grant, entry)) {
+          if (
+            grantInfo.hoursRemaining === null ||
+            !grantApplies(grantInfo.grant, entry)
+          ) {
             continue;
           }
           let hoursUsed = 0.0;
@@ -1134,8 +1216,16 @@ export const useRecordEntryCtrl = () => {
           if (hoursUsed > grantInfo.hoursRemaining) {
             errorTypes.raSa.notEnoughMiscTime = true;
             const shortname = state.miscLeavesShortnameMap[entry.miscType];
-            const range = dateToStr(grantInfo.grant.beginDate) + " - " + dateToStr(grantInfo.grant.endDate);
-            const data = { shortname: shortname, range: range, hoursUsed: hoursUsed, hoursRemaining: grantInfo.hoursRemaining };
+            const range =
+              dateToStr(grantInfo.grant.beginDate) +
+              " - " +
+              dateToStr(grantInfo.grant.endDate);
+            const data = {
+              shortname: shortname,
+              range: range,
+              hoursUsed: hoursUsed,
+              hoursRemaining: grantInfo.hoursRemaining,
+            };
             state.miscLeaveUsageErrors.push(data);
             isValid = false;
           }
@@ -1164,7 +1254,7 @@ export const useRecordEntryCtrl = () => {
         }
         errorTypes.raSa.totalHoursInvalidRange = true;
         return false;
-      }
+      },
     },
 
     /** --- Temporary Time Entry Validators --- */
@@ -1176,7 +1266,7 @@ export const useRecordEntryCtrl = () => {
           return true;
         }
         let isValid = true;
-        if (typeof hrs === 'undefined') {
+        if (typeof hrs === "undefined") {
           errorTypes.te.workHoursInvalidRange = true;
           isValid = false;
         }
@@ -1200,13 +1290,17 @@ export const useRecordEntryCtrl = () => {
           return false;
         }
         return true;
-      }
-    }
+      },
+    },
   };
 
-  let activeRow = null
-  const getActiveRow = () => {return activeRow;}
-  const setActiveRow = (rowIndex) => {activeRow = rowIndex;}
+  let activeRow = null;
+  const getActiveRow = () => {
+    return activeRow;
+  };
+  const setActiveRow = (rowIndex) => {
+    activeRow = rowIndex;
+  };
 
   return {
     state,
@@ -1223,14 +1317,4 @@ export const useRecordEntryCtrl = () => {
     recordSubmittable,
     getRecordRangeDisplay,
   };
-}
-
-
-
-
-
-
-
-
-
-
+};

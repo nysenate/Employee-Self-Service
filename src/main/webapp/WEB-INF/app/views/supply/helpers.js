@@ -1,5 +1,4 @@
 import { fetchApiJson } from "app/api/fetchJson";
-import { clearCart } from "./cartUtils";
 
 /**
  * Fetch orderable items for a given location ID.
@@ -8,7 +7,9 @@ import { clearCart } from "./cartUtils";
  * @returns {Promise<Object>} The result of the fetch call.
  */
 export const getItems = async (locId) => {
-  return await fetchApiJson(`/supply/items/orderable/${locId}`).then((body) => body.result);
+  return await fetchApiJson(`/supply/items/orderable/${locId}`).then(
+    (body) => body.result,
+  );
 };
 
 /**
@@ -32,17 +33,16 @@ export const restrictNumericInput = (e) => {
  */
 const fetchRequisitions = async (params) => {
   const queryString = new URLSearchParams();
-  Object.keys(params).forEach(key => {
+  Object.keys(params).forEach((key) => {
     if (Array.isArray(params[key])) {
-      params[key].forEach(value => queryString.append(key, value));
+      params[key].forEach((value) => queryString.append(key, value));
     } else {
       queryString.append(key, params[key]);
     }
   });
   const path = `/supply/requisitions?${queryString.toString()}`;
-  return fetchApiJson(path, { method: 'GET' });
+  return fetchApiJson(path, { method: "GET" });
 };
-
 
 /**
  * Format a date string to a readable format.
@@ -52,14 +52,14 @@ const fetchRequisitions = async (params) => {
  */
 export function formatDate(dateString) {
   const options = {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: true
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
   };
-  return new Date(dateString).toLocaleString('en-US', options);
+  return new Date(dateString).toLocaleString("en-US", options);
 }
 
 /**
@@ -70,14 +70,14 @@ export function formatDate(dateString) {
  */
 export function formatDateYY(dateString) {
   const options = {
-    year: '2-digit',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: true
+    year: "2-digit",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
   };
-  return new Date(dateString).toLocaleString('en-US', options);
+  return new Date(dateString).toLocaleString("en-US", options);
 }
 
 /**
@@ -90,11 +90,19 @@ export function formatDateYY(dateString) {
 export function alphabetizeLineItems(lineItems, valueField) {
   if (valueField) {
     return lineItems.sort((a, b) => {
-      return a.item[valueField] < b.item[valueField] ? -1 : a.item[valueField] > b.item[valueField] ? 1 : 0;
+      return a.item[valueField] < b.item[valueField]
+        ? -1
+        : a.item[valueField] > b.item[valueField]
+          ? 1
+          : 0;
     });
   }
   return lineItems.sort((a, b) => {
-    return a.item.description < b.item.description ? -1 : a.item.description > b.item.description ? 1 : 0;
+    return a.item.description < b.item.description
+      ? -1
+      : a.item.description > b.item.description
+        ? 1
+        : 0;
   });
 }
 
@@ -105,7 +113,7 @@ export function alphabetizeLineItems(lineItems, valueField) {
  * @returns {String} The formatted date string.
  */
 export const formatDateForInput = (date) => {
-  return date.toISOString().split('T')[0];
+  return date.toISOString().split("T")[0];
 };
 
 /**
@@ -125,18 +133,18 @@ export const formatDateForApi = (date) => {
  */
 export const getCurrentDate = () => {
   const today = new Date();
-  return today.toISOString().split('.')[0] + '-04:00'; // Adjust for your timezone offset if needed
+  return today.toISOString().split(".")[0] + "-04:00"; // Adjust for your timezone offset if needed
 };
 
 export const getExactCurrentDate = () => {
   const now = new Date();
   const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0'); // Months are 0-based
-  const day = String(now.getDate()).padStart(2, '0');
-  const hours = String(now.getHours()).padStart(2, '0');
-  const minutes = String(now.getMinutes()).padStart(2, '0');
-  const seconds = String(now.getSeconds()).padStart(2, '0');
-  const milliseconds = String(now.getMilliseconds()).padStart(3, '0');
+  const month = String(now.getMonth() + 1).padStart(2, "0"); // Months are 0-based
+  const day = String(now.getDate()).padStart(2, "0");
+  const hours = String(now.getHours()).padStart(2, "0");
+  const minutes = String(now.getMinutes()).padStart(2, "0");
+  const seconds = String(now.getSeconds()).padStart(2, "0");
+  const milliseconds = String(now.getMilliseconds()).padStart(3, "0");
 
   return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}`;
 };
@@ -149,7 +157,7 @@ export const getExactCurrentDate = () => {
 export const getOneMonthBeforeDate = () => {
   const today = new Date();
   today.setMonth(today.getMonth() - 1);
-  return today.toISOString().split('.')[0] + '-04:00'; // Adjust for your timezone offset if needed
+  return today.toISOString().split(".")[0] + "-04:00"; // Adjust for your timezone offset if needed
 };
 
 // GETS:::: //
@@ -166,8 +174,16 @@ export const getOneMonthBeforeDate = () => {
  * @param {String} to The end date for fetching order history.
  * @returns {Promise<Object>} The result of the fetch call.
  */
-export const getOrderHistory = async (customerId, from, limit, location, offset, status, to) => {
-  const basePath = '/supply/requisitions/orderHistory';
+export const getOrderHistory = async (
+  customerId,
+  from,
+  limit,
+  location,
+  offset,
+  status,
+  to,
+) => {
+  const basePath = "/supply/requisitions/orderHistory";
   const queryParams = new URLSearchParams({
     customerId,
     from,
@@ -177,11 +193,17 @@ export const getOrderHistory = async (customerId, from, limit, location, offset,
     offset,
   });
 
-  if (status === 'ALL') {
-    const statuses = ['PENDING', 'PROCESSING', 'COMPLETED', 'APPROVED', 'REJECTED'];
-    statuses.forEach(status => queryParams.append('status', status));
+  if (status === "ALL") {
+    const statuses = [
+      "PENDING",
+      "PROCESSING",
+      "COMPLETED",
+      "APPROVED",
+      "REJECTED",
+    ];
+    statuses.forEach((status) => queryParams.append("status", status));
   } else {
-    queryParams.append('status', status);
+    queryParams.append("status", status);
   }
 
   const path = `${basePath}?${queryParams.toString()}`;
@@ -190,7 +212,7 @@ export const getOrderHistory = async (customerId, from, limit, location, offset,
     const response = await fetchApiJson(path);
     return response;
   } catch (error) {
-    console.error('Fetch error:', error);
+    console.error("Fetch error:", error);
     throw error;
   }
 };
@@ -207,8 +229,16 @@ export const getOrderHistory = async (customerId, from, limit, location, offset,
  * @param {String} [itemId] The item ID to filter supply requisitions.
  * @returns {Promise<Object>} The result of the fetch call.
  */
-export const getSupplyRequisitions = async (from, limit, location, offset, to, issuerId, itemId) => {
-  const basePath = '/supply/requisitions';
+export const getSupplyRequisitions = async (
+  from,
+  limit,
+  location,
+  offset,
+  to,
+  issuerId,
+  itemId,
+) => {
+  const basePath = "/supply/requisitions";
   const queryParams = new URLSearchParams({
     from,
     to,
@@ -217,10 +247,12 @@ export const getSupplyRequisitions = async (from, limit, location, offset, to, i
     offset,
   });
 
-  if (issuerId && issuerId !== 'All') queryParams.append('issuerId', issuerId);
-  if (itemId && itemId !== 'All') queryParams.append('itemId', itemId);
+  if (issuerId && issuerId !== "All") queryParams.append("issuerId", issuerId);
+  if (itemId && itemId !== "All") queryParams.append("itemId", itemId);
 
-  ['APPROVED', 'REJECTED'].forEach(status => queryParams.append('status', status));
+  ["APPROVED", "REJECTED"].forEach((status) =>
+    queryParams.append("status", status),
+  );
 
   const path = `${basePath}?${queryParams.toString()}`;
 
@@ -228,7 +260,7 @@ export const getSupplyRequisitions = async (from, limit, location, offset, to, i
     const response = await fetchApiJson(path);
     return response;
   } catch (error) {
-    console.error('Fetch error:', error);
+    console.error("Fetch error:", error);
     throw error;
   }
 };
@@ -246,15 +278,15 @@ export const getSupplyRequisitions = async (from, limit, location, offset, to, i
  * @returns {Promise<Object>} The result of the fetch call.
  */
 export const getItemHistory = async (from, itemId, location, to) => {
-  const basePath = '/supply/requisitions';
+  const basePath = "/supply/requisitions";
   const queryParams = new URLSearchParams({
-    dateField: 'completed_date_time',
+    dateField: "completed_date_time",
     from,
     itemId,
-    limit: 'ALL',
+    limit: "ALL",
     location,
     offset: 0,
-    status: 'APPROVED',
+    status: "APPROVED",
     to,
   });
 
@@ -266,7 +298,7 @@ export const getItemHistory = async (from, itemId, location, to) => {
     const response = await fetchApiJson(path);
     return response;
   } catch (error) {
-    console.error('Fetch error:', error);
+    console.error("Fetch error:", error);
     throw error;
   }
 };
@@ -278,7 +310,9 @@ export const getItemHistory = async (from, itemId, location, to) => {
  * @returns {Promise<Object>} The result of the fetch call.
  */
 export const getLocations = async (empId) => {
-  return await fetchApiJson(`/supply/destinations/${empId}`).then((body) => body);
+  return await fetchApiJson(`/supply/destinations/${empId}`).then(
+    (body) => body,
+  );
 };
 
 // POSTS:::: //
@@ -292,14 +326,17 @@ export const getLocations = async (empId) => {
 export const saveRequisitionPost = async (editedRequisition) => {
   const payload = editedRequisition;
   try {
-    const response = await fetchApiJson(`/supply/requisitions/${editedRequisition.requisitionId}`, {
-      method: 'POST',
-      payload: payload
-    });
+    const response = await fetchApiJson(
+      `/supply/requisitions/${editedRequisition.requisitionId}`,
+      {
+        method: "POST",
+        payload: payload,
+      },
+    );
   } catch (error) {
-    console.error('Post error:', error);
+    console.error("Post error:", error);
   }
-}
+};
 
 /**
  * Process Requisition Post.
@@ -310,15 +347,18 @@ export const saveRequisitionPost = async (editedRequisition) => {
 export const processRequisitionPost = async (editedRequisition) => {
   const payload = editedRequisition;
   try {
-    const response = await fetchApiJson(`/supply/requisitions/${editedRequisition.requisitionId}/process`, {
-      method: 'POST',
-      payload: payload
-    });
-    console.log('Post response:', response);
+    const response = await fetchApiJson(
+      `/supply/requisitions/${editedRequisition.requisitionId}/process`,
+      {
+        method: "POST",
+        payload: payload,
+      },
+    );
+    console.log("Post response:", response);
   } catch (error) {
-    console.error('Post error:', error);
+    console.error("Post error:", error);
   }
-}
+};
 
 /**
  * Reject Requisition Post.
@@ -329,14 +369,17 @@ export const processRequisitionPost = async (editedRequisition) => {
 export const rejectRequisitionPost = async (editedRequisition) => {
   const payload = editedRequisition;
   try {
-    const response = await fetchApiJson(`/supply/requisitions/${editedRequisition.requisitionId}/reject`, {
-      method: 'POST',
-      payload: payload
-    });
+    const response = await fetchApiJson(
+      `/supply/requisitions/${editedRequisition.requisitionId}/reject`,
+      {
+        method: "POST",
+        payload: payload,
+      },
+    );
   } catch (error) {
-    console.error('Post error:', error);
+    console.error("Post error:", error);
   }
-}
+};
 
 /**
  * Undo Requisition Post.
@@ -347,11 +390,14 @@ export const rejectRequisitionPost = async (editedRequisition) => {
 export const undoRequisitionPost = async (editedRequisition) => {
   const payload = editedRequisition;
   try {
-    const response = await fetchApiJson(`/supply/requisitions/${editedRequisition.requisitionId}/undo`, {
-      method: 'POST',
-      payload: payload
-    });
+    const response = await fetchApiJson(
+      `/supply/requisitions/${editedRequisition.requisitionId}/undo`,
+      {
+        method: "POST",
+        payload: payload,
+      },
+    );
   } catch (error) {
-    console.error('Post error:', error);
+    console.error("Post error:", error);
   }
-}
+};

@@ -1,7 +1,12 @@
 import styles from "./ShoppingCartIndex.module.css";
 import React, { useEffect, useState } from "react";
 
-const ItemsGrid = ({ items, cart, handleQuantityChange, handleOverOrderAttempt }) => {
+const ItemsGrid = ({
+  items,
+  cart,
+  handleQuantityChange,
+  handleOverOrderAttempt,
+}) => {
   return (
     <div className={styles.itemGrid}>
       {items.map((item) => (
@@ -17,7 +22,12 @@ const ItemsGrid = ({ items, cart, handleQuantityChange, handleOverOrderAttempt }
   );
 };
 
-const ItemDisplay = ({ item, cart, handleQuantityChange, handleOverOrderAttempt }) => {
+const ItemDisplay = ({
+  item,
+  cart,
+  handleQuantityChange,
+  handleOverOrderAttempt,
+}) => {
   const itemInCart = cart[item.id];
   const isMaxQuantity = itemInCart && itemInCart >= item.perOrderAllowance;
   const [localValue, setLocalValue] = useState(cart[item.id] || 0);
@@ -29,7 +39,8 @@ const ItemDisplay = ({ item, cart, handleQuantityChange, handleOverOrderAttempt 
 
   const handleTempInputChange = (e) => {
     const { value } = e.target;
-    if (/^\d*$/.test(value)) { // Only allow numbers
+    if (/^\d*$/.test(value)) {
+      // Only allow numbers
       setLocalValue(value);
     }
   };
@@ -55,13 +66,23 @@ const ItemDisplay = ({ item, cart, handleQuantityChange, handleOverOrderAttempt 
       </div>
       <div className={styles.qtyContainer}>
         <div className={styles.qtySelectorContainer}>
-          <div className="text-align-center" style={{textAlign: 'center', width: '200px'}}>
-            <p style={{color: 'dark-grey', margin: '0', height: '18px'}}>{item.unit}</p>
-            <div  className={styles.qtySelector}>
+          <div
+            className="text-align-center"
+            style={{ textAlign: "center", width: "200px" }}
+          >
+            <p style={{ color: "dark-grey", margin: "0", height: "18px" }}>
+              {item.unit}
+            </p>
+            <div className={styles.qtySelector}>
               {/* Decrement Button */}
               <button
                 className={styles.qtyAdjustButton}
-                onClick={() => handleQuantityChange(item.id, Math.max(0, parseInt(localValue, 10) - 1))}
+                onClick={() =>
+                  handleQuantityChange(
+                    item.id,
+                    Math.max(0, parseInt(localValue, 10) - 1),
+                  )
+                }
               >
                 -
               </button>
@@ -69,13 +90,21 @@ const ItemDisplay = ({ item, cart, handleQuantityChange, handleOverOrderAttempt 
               {/* Quantity Input */}
               <input
                 className={styles.qtyInput}
-                style={{ color: parseInt(localValue, 10) > item.perOrderAllowance ? 'red' : '' }}
+                style={{
+                  color:
+                    parseInt(localValue, 10) > item.perOrderAllowance
+                      ? "red"
+                      : "",
+                }}
                 type="text"
                 value={localValue}
                 onChange={handleTempInputChange}
                 onBlur={() => {
                   const numericLocalValue = parseInt(localValue, 10); // Ensure it's a number
-                  if (numericLocalValue > item.perOrderAllowance && itemInCart <= item.perOrderAllowance) {
+                  if (
+                    numericLocalValue > item.perOrderAllowance &&
+                    itemInCart <= item.perOrderAllowance
+                  ) {
                     handleOverOrderAttempt(item.id, numericLocalValue);
                     setLocalValue(cart[item.id]);
                   } else {
@@ -95,7 +124,7 @@ const ItemDisplay = ({ item, cart, handleQuantityChange, handleOverOrderAttempt 
                     handleQuantityChange(item.id, numericLocalValue + 1);
                   }
                 }}
-                style={{ backgroundColor: isMaxQuantity ? 'red' : '' }}
+                style={{ backgroundColor: isMaxQuantity ? "red" : "" }}
               >
                 +
               </button>

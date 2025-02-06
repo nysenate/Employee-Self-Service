@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react";
 import { ThemeContext, themes } from "app/contexts/ThemeContext";
 import Navigation from "app/components/Navigation";
 import AppLayout from "app/components/AppLayout";
@@ -23,27 +23,36 @@ export default function TimeRouter() {
   return (
     <ThemeContext.Provider value={themes.time}>
       <Routes>
-        <Route path="" element={<TimeLayout/>}>
-          <Route path="record/entry" element={<RecordEntryDirective/>}/>
-          <Route path="record/history" element={<RecordHistoryIndex/>}/>
-          <Route path="allowance/status" element={<AllowanceStatusIndex/>}/>
-          <Route path="period/calendar" element={<CalendarIndex/>}/>
-          <Route path="accrual/history" element={<AccrualHistoryIndex/>}/>
-          <Route path="accrual/projections" element={<AccrualProjections/>}/>
-          <Route path="accrual/donation" element={<Donation/>}/>
+        <Route path="" element={<TimeLayout />}>
+          <Route path="record/entry" element={<RecordEntryDirective />} />
+          <Route path="record/history" element={<RecordHistoryIndex />} />
+          <Route path="allowance/status" element={<AllowanceStatusIndex />} />
+          <Route path="period/calendar" element={<CalendarIndex />} />
+          <Route path="accrual/history" element={<AccrualHistoryIndex />} />
+          <Route path="accrual/projections" element={<AccrualProjections />} />
+          <Route path="accrual/donation" element={<Donation />} />
           {/*<Route path="record/manage" element={<SickLeaveDonation/>}/>*/}
-          <Route path="record/emphistory" element={<RecordEmpHistoryIndex/>}/>
-          <Route path="allowance/emp-status" element={<AllowanceEmpStatusIndex/>}/>
-          <Route path="accrual/emphistory" element={<AccrualEmpHistoryIndex/>}/>
-          <Route path="accrual/emp-projections" element={<AccrualEmpProjectionsIndex/>}/>
-          <Route path="record/grant" element={<Grant/>}/>
-          <Route path="personnel/search" element={<PersonnelSearchIndex/>}/>
-          <Route path="" element={<Navigate to="record/entry" replace/>}/>
-          <Route path="*" element={<div>404</div>}/>
+          <Route path="record/emphistory" element={<RecordEmpHistoryIndex />} />
+          <Route
+            path="allowance/emp-status"
+            element={<AllowanceEmpStatusIndex />}
+          />
+          <Route
+            path="accrual/emphistory"
+            element={<AccrualEmpHistoryIndex />}
+          />
+          <Route
+            path="accrual/emp-projections"
+            element={<AccrualEmpProjectionsIndex />}
+          />
+          <Route path="record/grant" element={<Grant />} />
+          <Route path="personnel/search" element={<PersonnelSearchIndex />} />
+          <Route path="" element={<Navigate to="record/entry" replace />} />
+          <Route path="*" element={<div>404</div>} />
         </Route>
       </Routes>
     </ThemeContext.Provider>
-  )
+  );
 }
 
 // Gonna Need to do hidden based on empId here too
@@ -51,9 +60,7 @@ function TimeLayout() {
   return (
     <AppLayout>
       <Navigation>
-        <Navigation.Title>
-          My Info Menu
-        </Navigation.Title>
+        <Navigation.Title>My Info Menu</Navigation.Title>
         <Navigation.Section name="My Attendance">
           <Navigation.Link to="/time/record/entry">
             Attendance Record Entry
@@ -106,5 +113,5 @@ function TimeLayout() {
         </Navigation.Section>
       </Navigation>
     </AppLayout>
-  )
+  );
 }

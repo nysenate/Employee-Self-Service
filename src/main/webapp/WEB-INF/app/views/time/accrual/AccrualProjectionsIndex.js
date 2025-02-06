@@ -7,26 +7,28 @@ import AccrualProjectionsDirective from "app/views/time/accrual/AccrualProjectio
 const AccrualProjectionsIndex = () => {
   const { userData } = useAuth();
   // Connected Components' State Variables + setter/renderer functions
-  const [ isModalOpen, setIsModalOpen ] = useState(false);
-  const [ selectedAccrual, setSelectedAccrual ] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedAccrual, setSelectedAccrual] = useState(null);
   const viewDetails = (accrualRecord) => {
     console.log(accrualRecord);
     setSelectedAccrual(accrualRecord);
     setIsModalOpen(true);
-  }
+  };
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedAccrual(null);
-  }
+  };
 
   return (
     <div>
       <Hero>Accrual Projections</Hero>
-      {userData().employee && (<AccrualProjectionsDirective
-        viewDetails={viewDetails}
-        user={userData().employee}
-        empSupInfo={userData().employee}
-      />)}
+      {userData().employee && (
+        <AccrualProjectionsDirective
+          viewDetails={viewDetails}
+          user={userData().employee}
+          empSupInfo={userData().employee}
+        />
+      )}
       {selectedAccrual && (
         <AccrualDetailsPopup
           accruals={selectedAccrual}
@@ -36,6 +38,6 @@ const AccrualProjectionsIndex = () => {
       )}
     </div>
   );
-}
+};
 
 export default AccrualProjectionsIndex;

@@ -9,9 +9,9 @@ import { fetchApiJson } from "app/api/fetchJson";
 export const fetchAttendanceRecordApi = async (params) => {
   const queryParams = new URLSearchParams();
 
-  Object.keys(params).forEach(key => {
+  Object.keys(params).forEach((key) => {
     if (Array.isArray(params[key])) {
-      params[key].forEach(value => queryParams.append(key, value));
+      params[key].forEach((value) => queryParams.append(key, value));
     } else {
       queryParams.append(key, params[key]);
     }
@@ -20,11 +20,11 @@ export const fetchAttendanceRecordApi = async (params) => {
   const path = `/attendance/records?${queryParams.toString()}`;
 
   try {
-    const response = await fetchApiJson(path, { method: 'GET' });
+    const response = await fetchApiJson(path, { method: "GET" });
     // console.log("fetchAttendanceRecordApi with params: ", params, " response: ", response);
     return response;
   } catch (error) {
-    console.error('Fetch error:', error);
+    console.error("Fetch error:", error);
     throw error;
   }
 };
@@ -38,9 +38,9 @@ export const fetchAttendanceRecordApi = async (params) => {
 export const fetchTimeRecordApi = async (params) => {
   const queryParams = new URLSearchParams();
 
-  Object.keys(params).forEach(key => {
+  Object.keys(params).forEach((key) => {
     if (Array.isArray(params[key])) {
-      params[key].forEach(value => queryParams.append(key, value));
+      params[key].forEach((value) => queryParams.append(key, value));
     } else {
       queryParams.append(key, params[key]);
     }
@@ -49,11 +49,11 @@ export const fetchTimeRecordApi = async (params) => {
   const path = `/timerecords?${queryParams.toString()}`;
 
   try {
-    const response = await fetchApiJson(path, { method: 'GET' });
+    const response = await fetchApiJson(path, { method: "GET" });
     // console.log("fetchTimeRecordApi with params: ", params, " response: ", response);
     return response;
   } catch (error) {
-    console.error('Fetch error:', error);
+    console.error("Fetch error:", error);
     throw error;
   }
 };
@@ -67,9 +67,9 @@ export const fetchTimeRecordApi = async (params) => {
 export const fetchActiveYearsTimeRecordsApi = async (params) => {
   const queryParams = new URLSearchParams();
 
-  Object.keys(params).forEach(key => {
+  Object.keys(params).forEach((key) => {
     if (Array.isArray(params[key])) {
-      params[key].forEach(value => queryParams.append(key, value));
+      params[key].forEach((value) => queryParams.append(key, value));
     } else {
       queryParams.append(key, params[key]);
     }
@@ -78,15 +78,14 @@ export const fetchActiveYearsTimeRecordsApi = async (params) => {
   const path = `/timerecords/activeYears?${queryParams.toString()}`;
 
   try {
-    const response = await fetchApiJson(path, { method: 'GET' });
+    const response = await fetchApiJson(path, { method: "GET" });
     // console.log("fetchActiveYearsTimeRecordsApi with params: ", params, " response: ", response);
     return response;
   } catch (error) {
-    console.error('Fetch error:', error);
+    console.error("Fetch error:", error);
     throw error;
   }
 };
-
 
 // GRANT:::
 /**
@@ -98,9 +97,9 @@ export const fetchActiveYearsTimeRecordsApi = async (params) => {
 export const fetchChainData = async (params) => {
   const queryParams = new URLSearchParams();
 
-  Object.keys(params).forEach(key => {
+  Object.keys(params).forEach((key) => {
     if (Array.isArray(params[key])) {
-      params[key].forEach(value => queryParams.append(key, value));
+      params[key].forEach((value) => queryParams.append(key, value));
     } else {
       queryParams.append(key, params[key]);
     }
@@ -109,11 +108,11 @@ export const fetchChainData = async (params) => {
   const path = `/supervisor/chain?${queryParams.toString()}`;
 
   try {
-    const response = await fetchApiJson(path, { method: 'GET' });
+    const response = await fetchApiJson(path, { method: "GET" });
     // console.log("fetchChainData with params: ", params, " response: ", response);
     return response;
   } catch (error) {
-    console.error('Fetch error:', error);
+    console.error("Fetch error:", error);
     throw error;
   }
 };
@@ -127,9 +126,9 @@ export const fetchChainData = async (params) => {
 export const fetchGrantData = async (params) => {
   const queryParams = new URLSearchParams();
 
-  Object.keys(params).forEach(key => {
+  Object.keys(params).forEach((key) => {
     if (Array.isArray(params[key])) {
-      params[key].forEach(value => queryParams.append(key, value));
+      params[key].forEach((value) => queryParams.append(key, value));
     } else {
       queryParams.append(key, params[key]);
     }
@@ -138,11 +137,11 @@ export const fetchGrantData = async (params) => {
   const path = `/supervisor/grants?${queryParams.toString()}`;
 
   try {
-    const response = await fetchApiJson(path, { method: 'GET' });
+    const response = await fetchApiJson(path, { method: "GET" });
     // console.log("fetchGrantData with params: ", params, " response: ", response);
     return response;
   } catch (error) {
-    console.error('Fetch error:', error);
+    console.error("Fetch error:", error);
     throw error;
   }
 };
@@ -156,9 +155,9 @@ export const fetchGrantData = async (params) => {
 export const fetchOverrideData = async (params) => {
   const queryParams = new URLSearchParams();
 
-  Object.keys(params).forEach(key => {
+  Object.keys(params).forEach((key) => {
     if (Array.isArray(params[key])) {
-      params[key].forEach(value => queryParams.append(key, value));
+      params[key].forEach((value) => queryParams.append(key, value));
     } else {
       queryParams.append(key, params[key]);
     }
@@ -167,11 +166,11 @@ export const fetchOverrideData = async (params) => {
   const path = `/supervisor/overrides?${queryParams.toString()}`;
 
   try {
-    const response = await fetchApiJson(path, { method: 'GET' });
+    const response = await fetchApiJson(path, { method: "GET" });
     // console.log("fetchOverrideData with params: ", params, " response: ", response);
     return response;
   } catch (error) {
-    console.error('Fetch error:', error);
+    console.error("Fetch error:", error);
     throw error;
   }
 };

@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from "react-router-dom";
 import Hero from "../../../components/Hero";
-import { OverOrderPopup, ChangeDestinationPopup } from "../../../components/Popups";
-import styles from '../universalStyles.module.css';
+import {
+  ChangeDestinationPopup,
+  OverOrderPopup,
+} from "../../../components/Popups";
+import styles from "../universalStyles.module.css";
 import useAuth from "app/contexts/Auth/useAuth";
 import LoadingIndicator from "app/components/LoadingIndicator";
 import Pagination from "../../../components/Pagination";
-import { clearCart, updateItemQuantity, getCartTotalQuantity } from '../cartUtils';
+import { clearCart, updateItemQuantity } from "../cartUtils";
 import { getItems, getLocations } from "../helpers";
 import DestinationDetails from "./DestinationDetails";
 import SelectDestination from "./SelectDestination";
@@ -14,24 +17,25 @@ import ItemsGrid from "./ItemsGrid";
 import CartSummary from "app/views/supply/requisition/CartSummary";
 import { useSupplyContext } from "app/views/supply/requisition/useSupplyContext";
 
-
 export default function RequisitionFormIndex({ setCategories }) {
   const auth = useAuth();
   const [locations, setLocations] = useState([]);
-  const { destination, deleteDestination } = useSupplyContext()
+  const { destination, deleteDestination } = useSupplyContext();
 
   const [items, setItems] = useState([]);
   const itemsPerPage = 16;
   const [currentPage, setCurrentPage] = useState(1);
-  const [cart, setCart] = useState(() => JSON.parse(localStorage.getItem('cart')) || {});
-  const [sortOption, setSortOption] = useState('name');
+  const [cart, setCart] = useState(
+    () => JSON.parse(localStorage.getItem("cart")) || {},
+  );
+  const [sortOption, setSortOption] = useState("name");
   const [searchParams, setSearchParams] = useSearchParams();
   const [filteredItems, setFilteredItems] = useState([]);
-  const selectedCategories = searchParams.getAll('category');
+  const selectedCategories = searchParams.getAll("category");
 
   useEffect(() => {
-    localStorage.removeItem('pending'); // Clean up pending if refresh occurred before popup conclusion
-    localStorage.removeItem('pendingQuantity'); // Clean up pending if refresh occurred before popup conclusion
+    localStorage.removeItem("pending"); // Clean up pending if refresh occurred before popup conclusion
+    localStorage.removeItem("pendingQuantity"); // Clean up pending if refresh occurred before popup conclusion
   }, []);
 
   useEffect(() => {
@@ -55,7 +59,7 @@ export default function RequisitionFormIndex({ setCategories }) {
   }, [destination]);
 
   useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(cart));
+    localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
 
   useEffect(() => {
@@ -63,22 +67,23 @@ export default function RequisitionFormIndex({ setCategories }) {
       setFilteredItems(items);
       return;
     }
-    const updatedFilteredItems = items.filter(item => selectedCategories.includes(item.category));
+    const updatedFilteredItems = items.filter((item) =>
+      selectedCategories.includes(item.category),
+    );
     if (!arraysAreEqual(filteredItems, updatedFilteredItems)) {
       setFilteredItems(updatedFilteredItems);
     }
   }, [selectedCategories, items]);
 
-
   const handleOverOrderAttempt = (itemId, newQuantity) => {
-    localStorage.setItem('pending', JSON.stringify(itemId));
-    localStorage.setItem('pendingQuantity', JSON.stringify(newQuantity));
+    localStorage.setItem("pending", JSON.stringify(itemId));
+    localStorage.setItem("pendingQuantity", JSON.stringify(newQuantity));
     setIsOverOrderPopupOpen(true);
   };
 
   const handleQuantityChange = (itemId, quantity) => {
     updateItemQuantity(itemId, quantity);
-    setCart(JSON.parse(localStorage.getItem('cart')));
+    setCart(JSON.parse(localStorage.getItem("cart")));
   };
 
   const handleSortChange = (e) => {
@@ -98,13 +103,13 @@ export default function RequisitionFormIndex({ setCategories }) {
   const fullWipe = () => {
     clearCart();
     setCart({});
-    deleteDestination()
+    deleteDestination();
     setItems([]);
     setFilteredItems([]);
     setCategories([]);
-    localStorage.removeItem('destination');
-    localStorage.removeItem('pending');
-    localStorage.removeItem('pendingQuantity');
+    localStorage.removeItem("destination");
+    localStorage.removeItem("pending");
+    localStorage.removeItem("pendingQuantity");
     const newParams = new URLSearchParams();
     setSearchParams(newParams);
   };
@@ -116,7 +121,8 @@ export default function RequisitionFormIndex({ setCategories }) {
   };
 
   const [isOverOrderPopupOpen, setIsOverOrderPopupOpen] = useState(false);
-  const [isChangeDestinationPopupOpen, setIsChangeDestinationPopupOpen] = useState(false);
+  const [isChangeDestinationPopupOpen, setIsChangeDestinationPopupOpen] =
+    useState(false);
   const closeOverOrderPopup = () => {
     setIsOverOrderPopupOpen(false);
   };
@@ -125,38 +131,41 @@ export default function RequisitionFormIndex({ setCategories }) {
   };
   const handleOverOrderAction = (decision) => {
     if (decision) {
-      const pending = JSON.parse(localStorage.getItem('pending'));
-      const pendingQuantity = JSON.parse(localStorage.getItem('pendingQuantity'));
+      const pending = JSON.parse(localStorage.getItem("pending"));
+      const pendingQuantity = JSON.parse(
+        localStorage.getItem("pendingQuantity"),
+      );
       handleQuantityChange(pending, pendingQuantity);
     }
-    localStorage.removeItem('pending');
-    localStorage.removeItem('pendingQuantity');
+    localStorage.removeItem("pending");
+    localStorage.removeItem("pendingQuantity");
   };
   const handleChangeDestinationAction = (decision) => {
     if (decision) fullWipe();
   };
 
   if (!destination) {
-    return (
-      <SelectDestination/>
-    )
+    return <SelectDestination />;
   }
 
   if (!locations.length || (!destination && !filteredItems.length)) {
     return (
       <div>
         <Hero>Requisition Form</Hero>
-        <LoadingIndicator/>
+        <LoadingIndicator />
       </div>
     );
   }
 
   return (
     <div>
-      <div className={styles.supplyOrderHero} style={{ display: "inline-block", width: '100%' }}>
+      <div
+        className={styles.supplyOrderHero}
+        style={{ display: "inline-block", width: "100%" }}
+      >
         <h2 className={styles.requisitionTitle}>Requisition Form</h2>
         <a href={"/supply/cart"}>
-          <CartSummary cart={cart}/>
+          <CartSummary cart={cart} />
         </a>
       </div>
       {destination ? (
@@ -193,8 +202,8 @@ export default function RequisitionFormIndex({ setCategories }) {
           )}
         </div>
       ) : (
-         <></>
-       )}
+        <></>
+      )}
       <OverOrderPopup
         isModalOpen={isOverOrderPopupOpen}
         closeModal={closeOverOrderPopup}
@@ -211,7 +220,7 @@ export default function RequisitionFormIndex({ setCategories }) {
 
 function extractCategoriesFromItems(items) {
   const uniqueCategories = new Set();
-  items.forEach(item => {
+  items.forEach((item) => {
     uniqueCategories.add(item.category);
   });
   const categoriesArray = Array.from(uniqueCategories);
@@ -226,12 +235,13 @@ const arraysAreEqual = (arr1, arr2) => {
   return true;
 };
 
-
 const sortItems = (items, sortOption) => {
-  if (sortOption === 'name') {
-    return [...items].sort((a, b) => a.description.localeCompare(b.description));
+  if (sortOption === "name") {
+    return [...items].sort((a, b) =>
+      a.description.localeCompare(b.description),
+    );
   }
-  if (sortOption === 'category') {
+  if (sortOption === "category") {
     return [...items].sort((a, b) => a.category.localeCompare(b.category));
   }
   return items;

@@ -1,5 +1,5 @@
 import { Button } from "app/components/Button";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Hero from "app/components/Hero";
 import Controls from "app/components/Controls";
 import useAuth from "app/contexts/Auth/useAuth";

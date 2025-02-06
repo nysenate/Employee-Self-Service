@@ -1,5 +1,4 @@
 import { fetchApiJson } from "app/api/fetchJson";
-import { hoursDiffHighlighterCustom } from "app/views/time/helpers";
 
 /**
  * Compute remaining allowance, hours, and total hours
@@ -12,9 +11,11 @@ export function computeRemaining(allowance, dateRange) {
   let highestRate = 0;
   allowance.salaryRecs.forEach((salaryRec) => {
     // Select only temporary salaries that are effective during the record date range
-    if (salaryRec.payType === 'TE' &&
+    if (
+      salaryRec.payType === "TE" &&
       new Date(salaryRec.effectDate) < new Date(dateRange.endDate) &&
-      new Date(dateRange.beginDate) < new Date(salaryRec.endDate)) {
+      new Date(dateRange.beginDate) < new Date(salaryRec.endDate)
+    ) {
       if (salaryRec.salaryRate > highestRate) {
         highestRate = salaryRec.salaryRate;
       }
@@ -22,10 +23,10 @@ export function computeRemaining(allowance, dateRange) {
   });
 
   // Not exist yet: remainingAllowance, remainingHours, totalHours
-  allowance.remainingAllowance = allowance.yearlyAllowance - allowance.moneyUsed;
+  allowance.remainingAllowance =
+    allowance.yearlyAllowance - allowance.moneyUsed;
   allowance.remainingHours = allowance.remainingAllowance / highestRate;
   allowance.remainingHours = Math.floor(allowance.remainingHours * 4) / 4;
-  ;
   allowance.totalHours = allowance.hoursUsed + allowance.remainingHours;
 }
 
@@ -36,16 +37,14 @@ export function computeRemaining(allowance, dateRange) {
  */
 export function getAvailableHours(allowance, tempWorkHours) {
   let remainingHours = (allowance || {}).remainingHours;
-  console.log('remainingHours', remainingHours);
-  console.log('remainingHours - tempWorkHours', remainingHours - tempWorkHours);
+  console.log("remainingHours", remainingHours);
+  console.log("remainingHours - tempWorkHours", remainingHours - tempWorkHours);
   return remainingHours - tempWorkHours;
 }
-
 
 // export const getAvailableHours = (allowance, subtractingAmount) => {
 //   return hoursDiffHighlighterCustom(getTotalAllowedHours(allowance),subtractingAmount);
 // }
-
 
 /**
  * Fetch Basic Allowance info with provided parameters.
@@ -56,9 +55,9 @@ export function getAvailableHours(allowance, tempWorkHours) {
 export const fetchAllowance = async (params) => {
   const queryParams = new URLSearchParams();
 
-  Object.keys(params).forEach(key => {
+  Object.keys(params).forEach((key) => {
     if (Array.isArray(params[key])) {
-      params[key].forEach(value => queryParams.append(key, value));
+      params[key].forEach((value) => queryParams.append(key, value));
     } else {
       queryParams.append(key, params[key]);
     }
@@ -67,14 +66,13 @@ export const fetchAllowance = async (params) => {
   const path = `/allowances?${queryParams.toString()}`;
 
   try {
-    const response = await fetchApiJson(path, { method: 'GET' });
+    const response = await fetchApiJson(path, { method: "GET" });
     return response;
   } catch (error) {
-    console.error('Fetch error:', error);
+    console.error("Fetch error:", error);
     throw error;
   }
 };
-
 
 /**
  * Fetch Basic Allowance info with provided parameters.
@@ -85,9 +83,9 @@ export const fetchAllowance = async (params) => {
 export const fetchPeriodAllowanceUsage = async (params) => {
   const queryParams = new URLSearchParams();
 
-  Object.keys(params).forEach(key => {
+  Object.keys(params).forEach((key) => {
     if (Array.isArray(params[key])) {
-      params[key].forEach(value => queryParams.append(key, value));
+      params[key].forEach((value) => queryParams.append(key, value));
     } else {
       queryParams.append(key, params[key]);
     }
@@ -96,10 +94,10 @@ export const fetchPeriodAllowanceUsage = async (params) => {
   const path = `/allowances/period?${queryParams.toString()}`;
 
   try {
-    const response = await fetchApiJson(path, { method: 'GET' });
+    const response = await fetchApiJson(path, { method: "GET" });
     return response;
   } catch (error) {
-    console.error('Fetch error:', error);
+    console.error("Fetch error:", error);
     throw error;
   }
 };
@@ -113,9 +111,9 @@ export const fetchPeriodAllowanceUsage = async (params) => {
 export const fetchAllowancesActiveYears = async (params) => {
   const queryParams = new URLSearchParams();
 
-  Object.keys(params).forEach(key => {
+  Object.keys(params).forEach((key) => {
     if (Array.isArray(params[key])) {
-      params[key].forEach(value => queryParams.append(key, value));
+      params[key].forEach((value) => queryParams.append(key, value));
     } else {
       queryParams.append(key, params[key]);
     }
@@ -124,10 +122,10 @@ export const fetchAllowancesActiveYears = async (params) => {
   const path = `/allowances/active-years?${queryParams.toString()}`;
 
   try {
-    const response = await fetchApiJson(path, { method: 'GET' });
+    const response = await fetchApiJson(path, { method: "GET" });
     return response;
   } catch (error) {
-    console.error('Fetch error:', error);
+    console.error("Fetch error:", error);
     throw error;
   }
 };
@@ -141,9 +139,9 @@ export const fetchAllowancesActiveYears = async (params) => {
 export const fetchEmployeeInfo = async (params) => {
   const queryParams = new URLSearchParams();
 
-  Object.keys(params).forEach(key => {
+  Object.keys(params).forEach((key) => {
     if (Array.isArray(params[key])) {
-      params[key].forEach(value => queryParams.append(key, value));
+      params[key].forEach((value) => queryParams.append(key, value));
     } else {
       queryParams.append(key, params[key]);
     }
@@ -152,10 +150,10 @@ export const fetchEmployeeInfo = async (params) => {
   const path = `/employees?${queryParams.toString()}`;
 
   try {
-    const response = await fetchApiJson(path, { method: 'GET' });
+    const response = await fetchApiJson(path, { method: "GET" });
     return response;
   } catch (error) {
-    console.error('Fetch error:', error);
+    console.error("Fetch error:", error);
     throw error;
   }
 };

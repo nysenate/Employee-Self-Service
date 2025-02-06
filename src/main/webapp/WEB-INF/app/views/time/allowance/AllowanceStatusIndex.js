@@ -6,27 +6,28 @@ import useAuth from "app/contexts/Auth/useAuth";
 
 export default function AllowanceStatusIndex() {
   const { userData } = useAuth();
-  const [ isModalOpen, setIsModalOpen ] = useState(false);
-  const [ selectedAccrual, setSelectedAccrual ] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedAccrual, setSelectedAccrual] = useState(null);
 
   const viewDetails = (accrual) => {
     setSelectedAccrual(accrual);
     setIsModalOpen(true);
-  }
+  };
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedAccrual(null);
-  }
-
+  };
 
   return (
     <div>
       <Hero>Allowed Hours</Hero>
-      {userData().employee && (<AllowanceStatusDirective
-        viewDetails={viewDetails}
-        user={userData().employee}
-        empSupInfo={userData().employee}
-      />)}
+      {userData().employee && (
+        <AllowanceStatusDirective
+          viewDetails={viewDetails}
+          user={userData().employee}
+          empSupInfo={userData().employee}
+        />
+      )}
       {selectedAccrual && (
         <AccrualDetailsPopup
           accruals={selectedAccrual}
@@ -35,5 +36,5 @@ export default function AllowanceStatusIndex() {
         />
       )}
     </div>
-  )
+  );
 }

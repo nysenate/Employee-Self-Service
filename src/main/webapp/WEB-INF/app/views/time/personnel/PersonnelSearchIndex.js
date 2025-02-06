@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import Hero from "app/components/Hero";
 import EmployeeSearchDirective from "app/views/time/personnel/EmployeeSearchDirective";
 import EssNotification from "app/components/EssNotification";
@@ -16,9 +16,12 @@ import { fetchAccrualActiveYears } from "app/views/time/accrual/time-accrual-ctr
 import {
   computeRemaining,
   fetchAllowance,
-  fetchAllowancesActiveYears
+  fetchAllowancesActiveYears,
 } from "app/views/time/allowance/time-allowance-ctrl";
-import { fetchEmployeeSearchApi, getSearchParam } from "app/views/time/personnel/personnel-Api-ctrl";
+import {
+  fetchEmployeeSearchApi,
+  getSearchParam,
+} from "app/views/time/personnel/personnel-Api-ctrl";
 
 // Abisha Vijayashanthar 14160 => AccBar, AttendHist, AccHist, AccProj
 // Maya L. Allen 14421 => AllowBar, (AttHist), AllowHist
@@ -27,7 +30,7 @@ import { fetchEmployeeSearchApi, getSearchParam } from "app/views/time/personnel
 //    -Amir Abbady (not senate employee) section needs margin top styling
 export default function PersonnelSearchIndex() {
   const { userData } = useAuth();
-  const [empId, setEmpId] = useState(parseInt(getSearchParam('empId') || NaN))
+  const [empId, setEmpId] = useState(parseInt(getSearchParam("empId") || NaN));
   const [selectedEmp, setSelectedEmp] = useState(null);
 
   const [showAllowanceHistory, setShowAllowanceHistory] = useState(false);
@@ -38,11 +41,11 @@ export default function PersonnelSearchIndex() {
   const [loadingAllowance, setLoadingAllowance] = useState(null);
 
   useEffect(() => {
-    if(empId) getSelectedEmp();
+    if (empId) getSelectedEmp();
   }, [empId]);
 
   useEffect(() => {
-    if(selectedEmp && empId) {
+    if (selectedEmp && empId) {
       getAccrualYears();
       getAllowanceYears();
       getAllowance();
@@ -54,49 +57,58 @@ export default function PersonnelSearchIndex() {
     try {
       const params = {
         empId: empId,
-      }
+      };
       const response = await fetchEmployeeSearchApi(params);
       setSelectedEmp(response.employees[0]);
     } catch (err) {
       console.error(err);
     }
   }
-  const getAccrualYears = async() => {
+
+  const getAccrualYears = async () => {
     setShowAccrualHistory(false);
     setShowAccruals(false);
-    if(!selectedEmp) return;
+    if (!selectedEmp) return;
     const currentYear = new Date().getFullYear();
 
-    const params = {empId: selectedEmp.empId};
+    const params = { empId: selectedEmp.empId };
     try {
       const response = await fetchAccrualActiveYears(params);
       let showAcrlHist = response.years && response.years.length > 0;
-      let showAcrls = showAcrlHist && response.years.includes(currentYear) &&
-        selectedEmp.payType !== 'TE' && !selectedEmp.senator;
+      let showAcrls =
+        showAcrlHist &&
+        response.years.includes(currentYear) &&
+        selectedEmp.payType !== "TE" &&
+        !selectedEmp.senator;
       setShowAccrualHistory(showAcrlHist);
       setShowAccruals(showAcrls);
-    } catch(err) {
+    } catch (err) {
       console.error(err);
     }
-  }
-  const getAllowanceYears = async() => {
+  };
+  const getAllowanceYears = async () => {
     setShowAccrualHistory(false);
-    if(!selectedEmp) return;
+    if (!selectedEmp) return;
 
-    const params = {empId: selectedEmp.empId};
+    const params = { empId: selectedEmp.empId };
     try {
       const response = await fetchAllowancesActiveYears(params);
-      setShowAllowanceHistory(response.years && response.years.length > 0)
-    } catch(err) {
+      setShowAllowanceHistory(response.years && response.years.length > 0);
+    } catch (err) {
       console.error(err);
     }
-  }
+  };
 
   const getAllowance = async () => {
-    console.log('starting getAllow')
+    console.log("starting getAllow");
     setAllowance(null);
-    if(!selectedEmp || selectedEmp.senator || selectedEmp.payType !== 'TE' || !selectedEmp.active) {
-      console.error('why god');
+    if (
+      !selectedEmp ||
+      selectedEmp.senator ||
+      selectedEmp.payType !== "TE" ||
+      !selectedEmp.active
+    ) {
+      console.error("why god");
       return;
     }
 
@@ -116,58 +128,76 @@ export default function PersonnelSearchIndex() {
         beginDate: new Date(),
         endDate: new Date(),
       });
-      console.log('PS tempAllow',tempAllowance);
+      console.log("PS tempAllow", tempAllowance);
       setAllowance(tempAllowance);
     } catch (err) {
       console.error("Error fetching Allowance in PersonnelSearchIndex", err);
     } finally {
       setLoadingAllowance(false);
     }
-  }
+  };
 
   // Popups:
   const [isRecordModalOpen, setIsRecordModalOpen] = useState(false);
-  const [ selectedRecord, setSelectedRecord ] = useState(null);
+  const [selectedRecord, setSelectedRecord] = useState(null);
   const [isAccrualModalOpen, setIsAccrualModalOpen] = useState(false);
-  const [ selectedAccrual, setSelectedAccrual ] = useState(null);
-  const closeModal = () => {setIsRecordModalOpen(false);setIsAccrualModalOpen(false);}
+  const [selectedAccrual, setSelectedAccrual] = useState(null);
+  const closeModal = () => {
+    setIsRecordModalOpen(false);
+    setIsAccrualModalOpen(false);
+  };
   const viewRecordDetails = (record) => {
     console.log("viewRecordDetails input: ", record);
     setSelectedRecord(record);
     setIsRecordModalOpen(true);
-  }
+  };
   const viewAccrualDetails = (accrual) => {
     console.log("viewAccrualDetails input: ", accrual);
     setSelectedAccrual(accrual);
     setIsAccrualModalOpen(true);
-  }
+  };
 
   return (
     <div>
       <Hero>Employee Search</Hero>
-      <EmployeeSearchDirective selectedEmp={selectedEmp} setSelectedEmp={setSelectedEmp}/>
+      <EmployeeSearchDirective
+        selectedEmp={selectedEmp}
+        setSelectedEmp={setSelectedEmp}
+      />
       {selectedEmp && (
         <div>
-          {!(selectedEmp.active) && (
-            <EssNotification level="info" title={`${selectedEmp.fullName} is not a current Senate employee.`}/>
+          {!selectedEmp.active && (
+            <EssNotification
+              level="info"
+              title={`${selectedEmp.fullName} is not a current Senate employee.`}
+            />
           )}
           {selectedEmp.senator && (
-            <EssNotification level="info" title={`${selectedEmp.fullName} is a Senator`}>
+            <EssNotification
+              level="info"
+              title={`${selectedEmp.fullName} is a Senator`}
+            >
               <p>
                 They cannot use or project accruals.
                 <br />
-                They will not have any attendance or accrual history unless they were a non-senator employee in the past.
+                They will not have any attendance or accrual history unless they
+                were a non-senator employee in the past.
               </p>
             </EssNotification>
           )}
           {selectedEmp.active && (
             <div>
-              {showAccruals && <AccrualBar empId={empId}/>}
-              {selectedEmp.payType === 'TE' && <AllowanceBar allowance={allowance} loading={loadingAllowance}/>}
+              {showAccruals && <AccrualBar empId={empId} />}
+              {selectedEmp.payType === "TE" && (
+                <AllowanceBar
+                  allowance={allowance}
+                  loading={loadingAllowance}
+                />
+              )}
             </div>
           )}
 
-          <TogglePanel open={false} label={"Attendance History"} >
+          <TogglePanel open={false} label={"Attendance History"}>
             <RecordHistoryDirective
               viewDetails={viewRecordDetails}
               user={userData().employee}
@@ -176,30 +206,35 @@ export default function PersonnelSearchIndex() {
               scopeHideTitle={true}
             />
           </TogglePanel>
-          {showAccrualHistory && (<TogglePanel open={false} label={"Accrual History"}>
-            <AccrualHistoryDirective
-              viewDetails={viewAccrualDetails}
-              user={userData().employee}
-              empSupInfo={selectedEmp}
-              scopeHideTitle={true}
-            />
-          </TogglePanel>)}
-          {selectedEmp?.payType !== 'TE' && !selectedEmp?.senator && (<TogglePanel open={false} label={"Accrual Projections"}>
-            <AccrualProjectionsDirective
-              viewDetails={viewAccrualDetails}
-              user={userData().employee}
-              empSupInfo={selectedEmp}
-              scopeHideTitle={true}
-            />
-          </TogglePanel>)}
-          {showAllowanceHistory && (<TogglePanel open={false} label={"Allowance History"}>
-            <AllowanceHistoryDirective
-              user={userData().employee}
-              empSupInfo={selectedEmp}
-              scopeHideTitle={true}
-            />
-          </TogglePanel>)}
-
+          {showAccrualHistory && (
+            <TogglePanel open={false} label={"Accrual History"}>
+              <AccrualHistoryDirective
+                viewDetails={viewAccrualDetails}
+                user={userData().employee}
+                empSupInfo={selectedEmp}
+                scopeHideTitle={true}
+              />
+            </TogglePanel>
+          )}
+          {selectedEmp?.payType !== "TE" && !selectedEmp?.senator && (
+            <TogglePanel open={false} label={"Accrual Projections"}>
+              <AccrualProjectionsDirective
+                viewDetails={viewAccrualDetails}
+                user={userData().employee}
+                empSupInfo={selectedEmp}
+                scopeHideTitle={true}
+              />
+            </TogglePanel>
+          )}
+          {showAllowanceHistory && (
+            <TogglePanel open={false} label={"Allowance History"}>
+              <AllowanceHistoryDirective
+                user={userData().employee}
+                empSupInfo={selectedEmp}
+                scopeHideTitle={true}
+              />
+            </TogglePanel>
+          )}
         </div>
       )}
       {selectedRecord && (
@@ -218,4 +253,4 @@ export default function PersonnelSearchIndex() {
       )}
     </div>
   );
-};
+}
