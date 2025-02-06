@@ -16,15 +16,13 @@ import SelectDestination from "./SelectDestination";
 import ItemsGrid from "./ItemsGrid";
 import CartSummary from "app/views/supply/requisition/CartSummary";
 import { useSupplyContext } from "app/views/supply/requisition/useSupplyContext";
+import ItemListing from "app/views/supply/requisition/ItemListing";
 
 export default function RequisitionFormIndex({ setCategories }) {
   const auth = useAuth();
-  const [locations, setLocations] = useState([]);
   const { destination, deleteDestination } = useSupplyContext();
 
   const [items, setItems] = useState([]);
-  const itemsPerPage = 16;
-  const [currentPage, setCurrentPage] = useState(1);
   const [cart, setCart] = useState(
     () => JSON.parse(localStorage.getItem("cart")) || {},
   );
@@ -37,14 +35,6 @@ export default function RequisitionFormIndex({ setCategories }) {
     localStorage.removeItem("pending"); // Clean up pending if refresh occurred before popup conclusion
     localStorage.removeItem("pendingQuantity"); // Clean up pending if refresh occurred before popup conclusion
   }, []);
-
-  useEffect(() => {
-    const fetchInitialData = async () => {
-      const fetchedLocations = await getLocations(auth.empId());
-      setLocations(fetchedLocations.result);
-    };
-    fetchInitialData();
-  }, [auth]);
 
   useEffect(() => {
     if (destination) {
@@ -114,12 +104,6 @@ export default function RequisitionFormIndex({ setCategories }) {
     setSearchParams(newParams);
   };
 
-  const handlePageChange = (page) => {
-    if (page >= 1 && page <= Math.ceil(items.length / itemsPerPage)) {
-      setCurrentPage(page);
-    }
-  };
-
   const [isOverOrderPopupOpen, setIsOverOrderPopupOpen] = useState(false);
   const [isChangeDestinationPopupOpen, setIsChangeDestinationPopupOpen] =
     useState(false);
@@ -148,7 +132,7 @@ export default function RequisitionFormIndex({ setCategories }) {
     return <SelectDestination />;
   }
 
-  if (!locations.length || (!destination && !filteredItems.length)) {
+  if (!destination && !filteredItems.length) {
     return (
       <div>
         <Hero>Requisition Form</Hero>
@@ -176,30 +160,12 @@ export default function RequisitionFormIndex({ setCategories }) {
             sortOption={sortOption}
             handleSortChange={handleSortChange}
           />
-          {filteredItems.length > itemsPerPage && (
-            <Pagination
-              currentPage={currentPage}
-              totalPages={Math.ceil(filteredItems.length / itemsPerPage)}
-              onPageChange={handlePageChange}
-            />
-          )}
-          <ItemsGrid
+          <ItemListing
             items={filteredItems}
-            currentPage={currentPage}
-            itemsPerPage={itemsPerPage}
             cart={cart}
             handleQuantityChange={handleQuantityChange}
             handleOverOrderAttempt={handleOverOrderAttempt}
           />
-          {filteredItems.length > itemsPerPage && (
-            <div className={styles.contentContainer}>
-              <Pagination
-                currentPage={currentPage}
-                totalPages={Math.ceil(filteredItems.length / itemsPerPage)}
-                onPageChange={handlePageChange}
-              />
-            </div>
-          )}
         </div>
       ) : (
         <></>

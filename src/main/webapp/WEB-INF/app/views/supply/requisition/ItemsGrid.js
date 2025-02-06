@@ -3,18 +3,13 @@ import React, { useEffect, useState } from "react";
 
 const ItemsGrid = ({
   items,
-  currentPage,
-  itemsPerPage,
   cart,
   handleQuantityChange,
   handleOverOrderAttempt,
 }) => {
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentItems = items.slice(startIndex, startIndex + itemsPerPage);
-
   return (
     <div className={styles.grid}>
-      {currentItems.map((item) => (
+      {items.map((item) => (
         <ItemDisplay
           key={item.id}
           item={item}
@@ -26,6 +21,7 @@ const ItemsGrid = ({
     </div>
   );
 };
+
 const ItemDisplay = ({
   item,
   cart,
