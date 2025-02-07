@@ -9,7 +9,6 @@ import gov.nysenate.ess.time.util.AccrualUtils;
 import org.apache.commons.lang3.ObjectUtils;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,6 +39,7 @@ public class AccrualState extends AccrualSummary
     protected BigDecimal sickRate;
     protected BigDecimal vacRate;
     protected BigDecimal ytdHoursExpected;
+
     /** Tracks usage for each period */
     private Map<PayPeriod, PeriodAccUsage> periodAccUsageMap = new HashMap<>();
 
@@ -173,11 +173,14 @@ public class AccrualState extends AccrualSummary
                         .subtract(this.getVacHoursUsed())
                         .min(AccrualRate.VACATION.getMaxHoursBanked()));
         this.setVacHoursAccrued(BigDecimal.ZERO);
+
         this.setEmpHoursBanked(
                 this.getEmpHoursBanked()
                         .add(this.getEmpHoursAccrued())
                         .subtract(this.getEmpHoursUsed())
                         .subtract(this.getFamHoursUsed())
+                        .subtract(this.getPriorYearDonations())
+                        .subtract(this.getCurrentYearDonations())
                         .min(AccrualRate.SICK.getMaxHoursBanked()));
         this.setEmpHoursAccrued(BigDecimal.ZERO);
         this.setYtdHoursExpected(BigDecimal.ZERO);
@@ -234,6 +237,10 @@ public class AccrualState extends AccrualSummary
 
     public LocalDate getBeginDate() {
         return beginDate;
+    }
+
+    public void setBeginDate(LocalDate beginDate) {
+        this.beginDate = beginDate;
     }
 
     public boolean isEmpAccruing() {
