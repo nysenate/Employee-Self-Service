@@ -275,7 +275,14 @@ public class EssAccrualComputeService implements AccrualComputeService {
                 countRemainingPeriod = true;
             }
 
-            computeGapPeriodAccruals(period, accrualState, empTrans,
+            /**
+             *  Pass the last Annual Accrual Summary Record since we need
+             *  the year to determine if we need to include the prior year
+             *  Donations as part of the calculations. Included the Annual
+             *  Accrual Summary instead of passing in its year so that it would
+             *  be easier to obtain other information from it if needed.
+             */
+            computeGapPeriodAccruals(period, accrualState, empTrans,  lastAnnualAccSummary,
                     timeRecords, periodUsages, accrualAllowedDates, expectedHourDates, countRemainingPeriod);
 
             if (countRemainingPeriod) {
@@ -484,12 +491,15 @@ public class EssAccrualComputeService implements AccrualComputeService {
      * @param periodUsages        TreeMap<PayPeriod, PeriodAccUsage>
      * @param accrualAllowedDates
      */
-    private void computeGapPeriodAccruals(PayPeriod gapPeriod, AccrualState accrualState, TransactionHistory transHistory,
+    private void computeGapPeriodAccruals(PayPeriod gapPeriod, AccrualState accrualState, TransactionHistory transHistory, AnnualAccSummary lastAnnualAccSummary,
                                           List<TimeRecord> timeRecords, TreeMap<PayPeriod, PeriodAccUsage> periodUsages,
                                           RangeSet<LocalDate> accrualAllowedDates,
                                           RangeSet<LocalDate> expectedHoursDates,
                                           boolean countRemainingPeriod) {
         Range<LocalDate> gapPeriodRange = gapPeriod.getDateRange();
+
+        TreeMap<Integer, AnnualAccSummary> annualAcc =
+                new TreeMap<>(accrualInfoService.getAnnualAccruals(transHistory.getEmployeeId(), gapPeriod.getYear()));
 
         TreeMap<LocalDate, PersonnelStatus> statusTreeMap = transHistory.getEffectivePersonnelStatus(gapPeriodRange);
         PersonnelStatus lastStatus;
@@ -532,7 +542,21 @@ public class EssAccrualComputeService implements AccrualComputeService {
             // Setting it in other spots is too early.
 
             accrualState.setCurrentYearDonations(donationService.getHoursDonated(transHistory.getEmployeeId(), gapPeriod.getYear()));
-            accrualState.setPriorYearDonations(donationService.getHoursDonated(transHistory.getEmployeeId(), gapPeriod.getYear() -1 ));
+
+            /**
+             *  Include prior year donations only if the current year*  Attendance Annual Master Record doesn't exist
+             *  (the latest year is earlier than the Pay Period's year).
+             *
+             */
+            if (lastAnnualAccSummary.getYear() < gapPeriod.getYear()) {
+                accrualState.setPriorYearDonations(donationService.getHoursDonated(transHistory.getEmployeeId(), gapPeriod.getYear() - 1));
+            }
+            else {
+                /** Pass a zero value for prior year donations if current
+                 * Annual Master Record exists so it's effectively not used
+                 * */
+                accrualState.setPriorYearDonations(BigDecimal.ZERO);
+            }
 
             accrualState.applyYearRollover();
         }
