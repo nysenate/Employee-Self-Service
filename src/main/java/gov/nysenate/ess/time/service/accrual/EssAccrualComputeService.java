@@ -498,11 +498,9 @@ public class EssAccrualComputeService implements AccrualComputeService {
                                           boolean countRemainingPeriod) {
         Range<LocalDate> gapPeriodRange = gapPeriod.getDateRange();
 
-        TreeMap<Integer, AnnualAccSummary> annualAcc =
-                new TreeMap<>(accrualInfoService.getAnnualAccruals(transHistory.getEmployeeId(), gapPeriod.getYear()));
-
         TreeMap<LocalDate, PersonnelStatus> statusTreeMap = transHistory.getEffectivePersonnelStatus(gapPeriodRange);
         PersonnelStatus lastStatus;
+
         if (statusTreeMap.isEmpty()) {
             lastStatus = PersonnelStatus.NONE;
         } else {
