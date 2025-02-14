@@ -178,13 +178,18 @@ public class AccrualState extends AccrualSummary
      * - Personal hours are reset to their initial state (35 hours prorated based on min hours required).
      */
     public void applyYearRollover() {
-        this.setPerHoursAccrued(AccrualUtils.roundPersonalHours(
-                ANNUAL_PER_HOURS.multiply(getProratePercentage())));
+        if (this.empAccruing) {
+            this.setPerHoursAccrued(AccrualUtils.roundPersonalHours(
+                    ANNUAL_PER_HOURS.multiply(getProratePercentage())));
 
-        if (this.payType == SA) {
-            this.setPerHoursAccrued(
-                    AccrualUtils.roundPersonalHours(
-                            ANNUAL_PER_HOURS.multiply( getSpecialAnnualProratePercentage() ) ) );
+            if (this.payType == SA) {
+                this.setPerHoursAccrued(
+                        AccrualUtils.roundPersonalHours(
+                                ANNUAL_PER_HOURS.multiply(getSpecialAnnualProratePercentage())));
+            }
+        }
+        else {
+            this.setPerHoursAccrued(BigDecimal.ZERO);
         }
 
         this.setVacHoursBanked(
