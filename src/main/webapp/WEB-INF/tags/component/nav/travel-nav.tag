@@ -15,6 +15,7 @@
       <li class="sub-topic orange"><a href="${ctxPath}/travel/application/new">Submit Travel Application</a></li>
       <li class="sub-topic orange"><a href="${ctxPath}/travel/applications">Travel History</a></li>
       <li class="sub-topic orange"><a href="${ctxPath}/travel/drafts">Drafts</a></li>
+<%--      <li class="sub-topic orange"><a href="${ctxPath}/travel/application/all">Travel Statistics</a></li>--%>
       <%--<li class="sub-topic"><a href="${ctxPath}/travel/config">User Configuration</a></li>--%>
     </ul>
     </shiro:hasPermission>

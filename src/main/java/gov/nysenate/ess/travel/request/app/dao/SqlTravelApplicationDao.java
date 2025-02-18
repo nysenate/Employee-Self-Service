@@ -105,6 +105,15 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
     }
 
     @Override
+    public List<TravelApplication> selectAllApplications() {
+        String sql = SqlTravelApplicationQuery.TRAVEL_APP_SELECT.getSql(schemaMap());
+        List<TravelAppRepositoryView> appRepViews = localNamedJdbc.query(sql, new TravelApplicationRowMapper());
+        return appRepViews.stream()
+                .map(this::populateApplicationDetails)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public List<TravelApplication> selectTravelApplications(int userId) {
         MapSqlParameterSource params = new MapSqlParameterSource("userId", userId);
         String sql = SqlTravelApplicationQuery.SELECT_APP_BY_TRAVELER.getSql(schemaMap());

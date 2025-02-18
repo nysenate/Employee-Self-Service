@@ -14,4 +14,6 @@ public interface TravelApplicationDao {
     TravelApplication selectTravelApplication(int appId);
 
     List<TravelApplication> selectTravelApplications(int travelerId);
+
+    List<TravelApplication> selectAllApplications();
 }

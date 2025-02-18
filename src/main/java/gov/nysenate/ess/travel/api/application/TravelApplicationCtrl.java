@@ -5,6 +5,7 @@ import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
+import gov.nysenate.ess.travel.request.app.TravelApplicationStatus;
 import gov.nysenate.ess.travel.request.attachment.Attachment;
 import gov.nysenate.ess.travel.request.attachment.SqlAttachmentDao;
 import gov.nysenate.ess.travel.request.app.TravelApplication;
@@ -26,7 +27,13 @@ import org.springframework.web.bind.annotation.*;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -66,6 +73,21 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
         }
     }
 
+    @RequestMapping(value = "/applications/all")
+    public List<TravelStatusCountView> getAllTravelApps(
+            @RequestParam("fromDate") String fromDate,
+            @RequestParam(value = "toDate", required = false) String toDate) {
+        LocalDate fromLocalDate = LocalDate.parse(fromDate);
+        LocalDateTime fromLocalDateTime = fromLocalDate.atStartOfDay();
+        if (toDate == null || toDate.isEmpty()) {
+            toDate = LocalDate.now().toString();
+        }
+        LocalDate toLocalDate = LocalDate.parse(toDate);
+        LocalDateTime toLocalDateTime = toLocalDate.atStartOfDay();
+        List<TravelStatusCountView> apps = appService.selectAllTravelApplications(fromLocalDateTime, toLocalDateTime);
+
+        return apps;
+    }
     @RequestMapping(value = "/applications")
     public BaseResponse getActiveTravelApps() {
         List<TravelApplication> apps = appService.selectTravelApplications(getSubjectEmployeeId());
@@ -75,15 +97,6 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
         return ListViewResponse.of(appViews);
     }
 
-    @RequestMapping(value = "/application/attachment/{uuid}/ohh", method = RequestMethod.GET)
-    public ResponseEntity<byte[]> getAttachments(@PathVariable String uuid) throws IOException {
-        Attachment attachment = attachmentDao.selectAttachment(uuid);
-        File attachmentFile = attachmentService.getAttachmentFile(uuid);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.valueOf(attachment.getContentType()));
-        byte[] bytes = FileUtils.readFileToByteArray(attachmentFile);
-        return new ResponseEntity<>(bytes, headers, HttpStatus.OK);
-    }
 
     @RequestMapping(value = "/application/attachment/{uuid}", method = RequestMethod.GET)
     public ResponseEntity<byte[]> getAttachment(@PathVariable String uuid) throws IOException {
