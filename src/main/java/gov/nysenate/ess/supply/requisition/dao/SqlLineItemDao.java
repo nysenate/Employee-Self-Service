@@ -29,11 +29,12 @@ public class SqlLineItemDao extends SqlBaseDao {
 
     /**
      * Does a batch insert of all line items for a requisition.
+     *
      * @param requisition
      */
     protected void insertRequisitionLineItems(Requisition requisition) {
         List<SqlParameterSource> paramList = new ArrayList<>();
-        for (LineItem lineItem: requisition.getLineItems()) {
+        for (LineItem lineItem : requisition.getLineItems()) {
             MapSqlParameterSource params = new MapSqlParameterSource()
                     .addValue("revisionId", requisition.getRevisionId())
                     .addValue("itemId", lineItem.getItem().getId())
@@ -70,19 +71,19 @@ public class SqlLineItemDao extends SqlBaseDao {
 
         INSERT_LINE_ITEM(
                 "INSERT INTO ${supplySchema}.line_item(revision_id, item_id, quantity) \n" +
-                "VALUES (:revisionId, :itemId, :quantity)"
+                        "VALUES (:revisionId, :itemId, :quantity)"
         ),
         GET_LINE_ITEMS(
                 "SELECT item_id, quantity \n" +
-                "FROM ${supplySchema}.line_item \n" +
-                "WHERE revision_id = :revisionId"
+                        "FROM ${supplySchema}.line_item \n" +
+                        "WHERE revision_id = :revisionId"
         ),
         LOCATION_AGGREGATE_LINE_ITEMS(
                 "SELECT item_id, quantity FROM ${supplySchema}.line_item i \n" +
-                "INNER JOIN ${supplySchema}.requisition_content c ON c.revision_id = i.revision_id \n" +
-                "INNER JOIN ${supplySchema}.requisition r ON r.current_revision_id = c.revision_id \n" +
-                "WHERE c.destination = :locationId \n" +
-                "AND r.ordered_date_time BETWEEN :from AND :to"
+                        "INNER JOIN ${supplySchema}.requisition_content c ON c.revision_id = i.revision_id \n" +
+                        "INNER JOIN ${supplySchema}.requisition r ON r.current_revision_id = c.revision_id \n" +
+                        "WHERE c.destination = :locationId \n" +
+                        "AND r.ordered_date_time BETWEEN :from AND :to"
         );
 
         private final String sql;
@@ -104,7 +105,7 @@ public class SqlLineItemDao extends SqlBaseDao {
 
     /**
      * Return a set of line items sorted alphabetically by their descriptions.
-     *
+     * <p>
      * Cant sort in original select statement since description information is
      * not contained in local database.
      */
@@ -126,9 +127,9 @@ public class SqlLineItemDao extends SqlBaseDao {
         }
 
         Set<LineItem> getResults() {
-            Set<SupplyItem> items = itemDao.getItemsByIds(itemIdToCounts.keySet());
+            List<SupplyItem> items = itemDao.getItemsByIds(itemIdToCounts.keySet());
             TreeSet<LineItem> lineItems = new TreeSet<>(alphabeticalItemDesc);
-            for(SupplyItem item : items) {
+            for (SupplyItem item : items) {
                 lineItems.add(new LineItem(item, itemIdToCounts.get(item.getId())));
             }
             return lineItems;

@@ -10,10 +10,7 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Repository
 public class SupplyItemDao extends SqlBaseDao {
@@ -25,9 +22,9 @@ public class SupplyItemDao extends SqlBaseDao {
         this.itemRestrictionDao = itemRestrictionDao;
     }
 
-    public Set<SupplyItem> getSupplyItems() {
+    public List<SupplyItem> getSupplyItems() {
         String sql = OracleSupplyItemQuery.GET_ALL_SUPPLY_ITEMS.getSql(schemaMap(), new OrderBy("CDCOMMODITY", SortOrder.ASC));
-        Set<SupplyItem> items = new HashSet<>(remoteNamedJdbc.query(sql, new SupplyItemRowMapper()));
+        List<SupplyItem> items = new ArrayList<>(remoteNamedJdbc.query(sql, new SupplyItemRowMapper()));
         applyItemRestrictions(items);
         return items;
     }
@@ -35,10 +32,10 @@ public class SupplyItemDao extends SqlBaseDao {
     /**
      * Get a set of items from a set of item ids.
      */
-    public Set<SupplyItem> getItemsByIds(Set<Integer> ids) {
+    public List<SupplyItem> getItemsByIds(Set<Integer> ids) {
         MapSqlParameterSource params = new MapSqlParameterSource("ids", ids);
         String sql = OracleSupplyItemQuery.GET_SUPPLY_ITEMS_BY_IDS.getSql(schemaMap());
-        Set<SupplyItem> items = new HashSet<>(remoteNamedJdbc.query(sql, params, new SupplyItemRowMapper()));
+        List<SupplyItem> items = new ArrayList<>(remoteNamedJdbc.query(sql, params, new SupplyItemRowMapper()));
         applyItemRestrictions(items);
         return items;
     }
@@ -53,13 +50,12 @@ public class SupplyItemDao extends SqlBaseDao {
         List<SupplyItem> itemList = remoteNamedJdbc.query(sql, params, new SupplyItemRowMapper());
         if (itemList.isEmpty() || itemList == null) {
             throw new IncorrectResultSizeDataAccessException(0);
-        }
-        else {
+        } else {
             return setItemRestriction(itemList.get(0));
         }
     }
 
-    private void applyItemRestrictions(Set<SupplyItem> items) {
+    private void applyItemRestrictions(List<SupplyItem> items) {
         Map<Integer, ItemRestriction> restrictions = itemRestrictionDao.getItemRestrictions();
         for (SupplyItem item : items) {
             ItemRestriction restriction = restrictions.get(item.getId());

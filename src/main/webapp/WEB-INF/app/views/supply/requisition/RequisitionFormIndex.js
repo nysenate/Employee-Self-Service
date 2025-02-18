@@ -1,19 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import Hero from "../../../components/Hero";
-import {
-  ChangeDestinationPopup,
-  OverOrderPopup,
-} from "../../../components/Popups";
+import Hero from "app/components/Hero";
+import { ChangeDestinationPopup, OverOrderPopup } from "app/components/Popups";
 import styles from "../universalStyles.module.css";
 import useAuth from "app/contexts/Auth/useAuth";
 import LoadingIndicator from "app/components/LoadingIndicator";
-import Pagination from "../../../components/Pagination";
 import { clearCart, updateItemQuantity } from "../cartUtils";
 import { getItems, getLocations } from "../helpers";
 import DestinationDetails from "./DestinationDetails";
 import SelectDestination from "./SelectDestination";
-import ItemsGrid from "./ItemsGrid";
 import CartSummary from "app/views/supply/requisition/CartSummary";
 import { useSupplyContext } from "app/views/supply/requisition/useSupplyContext";
 import ItemListing from "app/views/supply/requisition/ItemListing";
@@ -27,9 +22,7 @@ export default function RequisitionFormIndex({ setCategories }) {
     () => JSON.parse(localStorage.getItem("cart")) || {},
   );
   const [sortOption, setSortOption] = useState("name");
-  const [searchParams, setSearchParams] = useSearchParams();
   const [filteredItems, setFilteredItems] = useState([]);
-  const selectedCategories = searchParams.getAll("category");
 
   useEffect(() => {
     localStorage.removeItem("pending"); // Clean up pending if refresh occurred before popup conclusion
@@ -37,33 +30,8 @@ export default function RequisitionFormIndex({ setCategories }) {
   }, []);
 
   useEffect(() => {
-    if (destination) {
-      const fetchItems = async () => {
-        const fetchedItems = await getItems(destination.locId);
-        setItems(fetchedItems);
-        const categories = extractCategoriesFromItems(fetchedItems);
-        setCategories(categories);
-      };
-      fetchItems();
-    }
-  }, [destination]);
-
-  useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
-
-  useEffect(() => {
-    if (selectedCategories.length === 0) {
-      setFilteredItems(items);
-      return;
-    }
-    const updatedFilteredItems = items.filter((item) =>
-      selectedCategories.includes(item.category),
-    );
-    if (!arraysAreEqual(filteredItems, updatedFilteredItems)) {
-      setFilteredItems(updatedFilteredItems);
-    }
-  }, [selectedCategories, items]);
 
   const handleOverOrderAttempt = (itemId, newQuantity) => {
     localStorage.setItem("pending", JSON.stringify(itemId));
@@ -101,7 +69,7 @@ export default function RequisitionFormIndex({ setCategories }) {
     localStorage.removeItem("pending");
     localStorage.removeItem("pendingQuantity");
     const newParams = new URLSearchParams();
-    setSearchParams(newParams);
+    //setSearchParams(newParams);
   };
 
   const [isOverOrderPopupOpen, setIsOverOrderPopupOpen] = useState(false);
@@ -161,10 +129,10 @@ export default function RequisitionFormIndex({ setCategories }) {
             handleSortChange={handleSortChange}
           />
           <ItemListing
-            items={filteredItems}
             cart={cart}
             handleQuantityChange={handleQuantityChange}
             handleOverOrderAttempt={handleOverOrderAttempt}
+            setCategories={setCategories}
           />
         </div>
       ) : (
@@ -183,23 +151,6 @@ export default function RequisitionFormIndex({ setCategories }) {
     </div>
   );
 }
-
-function extractCategoriesFromItems(items) {
-  const uniqueCategories = new Set();
-  items.forEach((item) => {
-    uniqueCategories.add(item.category);
-  });
-  const categoriesArray = Array.from(uniqueCategories);
-  return categoriesArray;
-}
-
-const arraysAreEqual = (arr1, arr2) => {
-  if (arr1.length !== arr2.length) return false;
-  for (let i = 0; i < arr1.length; i++) {
-    if (arr1[i] !== arr2[i]) return false;
-  }
-  return true;
-};
 
 const sortItems = (items, sortOption) => {
   if (sortOption === "name") {
