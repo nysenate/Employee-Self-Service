@@ -74,7 +74,7 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
     }
 
     @RequestMapping(value = "/applications/all")
-    public List<TravelStatusCountView> getAllTravelApps(
+    public BaseResponse getAllTravelApps(
             @RequestParam("fromDate") String fromDate,
             @RequestParam(value = "toDate", required = false) String toDate) {
         LocalDate fromLocalDate = LocalDate.parse(fromDate);
@@ -86,7 +86,7 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
         LocalDateTime toLocalDateTime = toLocalDate.atStartOfDay();
         List<TravelStatusCountView> apps = appService.selectAllTravelApplications(fromLocalDateTime, toLocalDateTime);
 
-        return apps;
+        return ListViewResponse.of(apps);
     }
     @RequestMapping(value = "/applications")
     public BaseResponse getActiveTravelApps() {
