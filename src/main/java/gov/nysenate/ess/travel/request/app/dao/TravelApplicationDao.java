@@ -3,6 +3,7 @@ package gov.nysenate.ess.travel.request.app.dao;
 import gov.nysenate.ess.travel.request.app.TravelApplication;
 import gov.nysenate.ess.travel.request.app.TravelApplicationStatus;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface TravelApplicationDao {
@@ -15,5 +16,5 @@ public interface TravelApplicationDao {
 
     List<TravelApplication> selectTravelApplications(int travelerId);
 
-    List<TravelApplication> selectAllApplications();
+    List<TravelApplication> selectAllApplications(LocalDateTime fromDate, LocalDateTime toDate);
 }

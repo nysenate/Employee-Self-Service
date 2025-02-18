@@ -1,18 +1,11 @@
 package gov.nysenate.ess.travel.request.app;
 
-import gov.nysenate.ess.travel.api.application.TravelApplicationStatusView;
-import gov.nysenate.ess.travel.api.application.TravelStatusCountView;
 import gov.nysenate.ess.travel.request.app.dao.TravelApplicationDao;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,22 +38,10 @@ public class TravelApplicationService {
      *
      * @return
      */
-    public List<TravelStatusCountView> selectAllTravelApplications(LocalDateTime from, LocalDateTime to) {
-        List<TravelApplication> travelAllApplications = travelApplicationDao.selectAllApplications().stream()
+    public List<TravelApplication> selectAllTravelApplications(LocalDateTime from, LocalDateTime to) {
+        return travelApplicationDao.selectAllApplications(from, to).stream()
                                     .filter(app -> app.getSubmittedDateTime() != null)
                                     .collect(Collectors.toList());
-
-        List<TravelApplication> filteredApplications = travelAllApplications.stream()
-                .filter(app -> !app.getSubmittedDateTime().isBefore(from) && !app.getSubmittedDateTime().isAfter(to))
-                .toList();
-
-        Map<String, Long> statusCountMap = filteredApplications.stream()
-                .collect(Collectors.groupingBy(app -> app.getStatus().status().label(), Collectors.counting()));
-
-        return statusCountMap.entrySet().stream()
-                .map(entry ->
-                        new TravelStatusCountView(entry.getKey(), entry.getValue().intValue()))
-                .toList();
 
     }
 

@@ -4,8 +4,10 @@ import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
+import gov.nysenate.ess.travel.api.application.statistics.TravelApplicationStatisticsUtil;
+import gov.nysenate.ess.travel.api.application.statistics.TravelStatusCountDTO;
+import gov.nysenate.ess.travel.api.application.statistics.TravelStatusCountView;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
-import gov.nysenate.ess.travel.request.app.TravelApplicationStatus;
 import gov.nysenate.ess.travel.request.attachment.Attachment;
 import gov.nysenate.ess.travel.request.attachment.SqlAttachmentDao;
 import gov.nysenate.ess.travel.request.app.TravelApplication;
@@ -27,13 +29,9 @@ import org.springframework.web.bind.annotation.*;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -73,20 +71,23 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
         }
     }
 
-    @RequestMapping(value = "/applications/all")
-    public BaseResponse getAllTravelApps(
+    @RequestMapping(value = "/applications/statistics")
+    public BaseResponse getTravelAppStatistics(
             @RequestParam("fromDate") String fromDate,
             @RequestParam(value = "toDate", required = false) String toDate) {
-        LocalDate fromLocalDate = LocalDate.parse(fromDate);
+        LocalDate fromLocalDate = parseISODate(fromDate, "from-date");
         LocalDateTime fromLocalDateTime = fromLocalDate.atStartOfDay();
         if (toDate == null || toDate.isEmpty()) {
             toDate = LocalDate.now().toString();
         }
-        LocalDate toLocalDate = LocalDate.parse(toDate);
+        LocalDate toLocalDate = parseISODate(toDate, "from-date");
         LocalDateTime toLocalDateTime = toLocalDate.atStartOfDay();
-        List<TravelStatusCountView> apps = appService.selectAllTravelApplications(fromLocalDateTime, toLocalDateTime);
-
-        return ListViewResponse.of(apps);
+        List<TravelApplication> apps = appService.selectAllTravelApplications(fromLocalDateTime, toLocalDateTime);
+        List<TravelStatusCountDTO> appStatuses = TravelApplicationStatisticsUtil.getTravelStatusCount(apps);
+        List<TravelStatusCountView> appViews = appStatuses.stream()
+                                                            .map(TravelStatusCountView::new)
+                                                            .collect(Collectors.toList());
+        return ListViewResponse.of(appViews);
     }
     @RequestMapping(value = "/applications")
     public BaseResponse getActiveTravelApps() {

@@ -38,6 +38,10 @@ enum SqlTravelApplicationQuery implements BasicSqlQuery {
     SELECT_APP_BY_TRAVELER(
             TRAVEL_APP_SELECT.getSql() + "\n" +
                     "WHERE (app.traveler_id = :userId OR app.submitted_by_id = :userId)"
+    ),
+    SELECT_APPS_BY_FROM_AND_TO_DATES(
+            TRAVEL_APP_SELECT.getSql() + "\n" +
+                    "WHERE created_date_time BETWEEN :fromDate AND :toDate"
     );
 
     private String sql;

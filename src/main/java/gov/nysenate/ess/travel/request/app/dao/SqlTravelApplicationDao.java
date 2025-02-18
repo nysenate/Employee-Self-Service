@@ -21,7 +21,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+
+import static java.util.Map.entry;
 
 @Repository
 public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplicationDao {
@@ -105,9 +108,14 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
     }
 
     @Override
-    public List<TravelApplication> selectAllApplications() {
-        String sql = SqlTravelApplicationQuery.TRAVEL_APP_SELECT.getSql(schemaMap());
-        List<TravelAppRepositoryView> appRepViews = localNamedJdbc.query(sql, new TravelApplicationRowMapper());
+    public List<TravelApplication> selectAllApplications(LocalDateTime fromDate, LocalDateTime toDate) {
+        Map<String, ?> paramsMap = Map.ofEntries(
+                entry("fromDate", fromDate),
+                entry("toDate", toDate)
+        );
+        MapSqlParameterSource params = new MapSqlParameterSource(paramsMap);
+        String sql = SqlTravelApplicationQuery.SELECT_APPS_BY_FROM_AND_TO_DATES.getSql(schemaMap());
+        List<TravelAppRepositoryView> appRepViews = localNamedJdbc.query(sql, params, new TravelApplicationRowMapper());
         return appRepViews.stream()
                 .map(this::populateApplicationDetails)
                 .collect(Collectors.toList());
