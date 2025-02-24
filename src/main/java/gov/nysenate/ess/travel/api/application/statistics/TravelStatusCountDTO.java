@@ -1,5 +1,6 @@
 package gov.nysenate.ess.travel.api.application.statistics;
 
+import gov.nysenate.ess.travel.api.application.TravelApplicationView;
 import gov.nysenate.ess.travel.request.app.TravelApplication;
 import java.util.List;
 
@@ -8,10 +9,10 @@ public class TravelStatusCountDTO {
     private String status;
     private int count;
     private String totalExpenses;
-    private List<TravelApplication> travelApplicationList;
+    private List<TravelApplicationView> travelApplicationList;
 
     // Constructor
-    public TravelStatusCountDTO(String status, int count, String totalExpenses, List<TravelApplication> travelApplicationList) {
+    public TravelStatusCountDTO(String status, int count, String totalExpenses, List<TravelApplicationView> travelApplicationList) {
         this.status = status;
         this.count = count;
         this.totalExpenses = totalExpenses;
@@ -40,9 +41,9 @@ public class TravelStatusCountDTO {
     public void setTotalExpenses(String totalExpenses) {
         this.totalExpenses = totalExpenses;
     }
-    public List<TravelApplication> getTravelApplicationList() { return travelApplicationList; }
+    public List<TravelApplicationView> getTravelApplicationList() { return travelApplicationList; }
 
-    public void setTravelApplicationList(List<TravelApplication> travelApplicationList) {
+    public void setTravelApplicationList(List<TravelApplicationView> travelApplicationList) {
         this.travelApplicationList = travelApplicationList;
     }
 }

@@ -83,11 +83,14 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
         LocalDate toLocalDate = parseISODate(toDate, "from-date");
         LocalDateTime toLocalDateTime = toLocalDate.atStartOfDay();
         List<TravelApplication> apps = appService.selectAllTravelApplications(fromLocalDateTime, toLocalDateTime);
-        List<TravelStatusCountDTO> appStatuses = TravelApplicationStatisticsUtil.getTravelStatusCount(apps);
-        List<TravelStatusCountView> appViews = appStatuses.stream()
+        List<TravelApplicationView> appViews = apps.stream()
+                .map(TravelApplicationView::new)
+                .collect(Collectors.toList());
+        List<TravelStatusCountDTO> appStatuses = TravelApplicationStatisticsUtil.getTravelStatusCount(appViews);
+        List<TravelStatusCountView> appStatsViews = appStatuses.stream()
                                                             .map(TravelStatusCountView::new)
                                                             .collect(Collectors.toList());
-        return ListViewResponse.of(appViews);
+        return ListViewResponse.of(appStatsViews);
     }
     @RequestMapping(value = "/applications")
     public BaseResponse getActiveTravelApps() {

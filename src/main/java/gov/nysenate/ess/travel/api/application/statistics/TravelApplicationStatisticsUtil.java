@@ -1,5 +1,6 @@
 package gov.nysenate.ess.travel.api.application.statistics;
 
+import gov.nysenate.ess.travel.api.application.TravelApplicationView;
 import gov.nysenate.ess.travel.request.app.TravelApplication;
 import gov.nysenate.ess.travel.utils.Dollars;
 
@@ -10,14 +11,14 @@ import java.util.Map;
 
 public class TravelApplicationStatisticsUtil {
 
-    public static List<TravelStatusCountDTO> getTravelStatusCount(List<TravelApplication> travelApplicationList){
+    public static List<TravelStatusCountDTO> getTravelStatusCount(List<TravelApplicationView> travelApplicationList){
 
         Map<String, StatusSummary> statusCountMap = new HashMap<>();
 
-        for (TravelApplication travelApplication : travelApplicationList) {
-            String status = travelApplication.getStatus().status().name();
-            Dollars totalExpenses = travelApplication.totalAllowance();
-            List<TravelApplication> travelApplications = new ArrayList<>();
+        for (TravelApplicationView travelApplication : travelApplicationList) {
+            String status = travelApplication.getStatus().getName();
+            String totalExpenses = travelApplication.getActiveAmendment().getTotalAllowance();
+            List<TravelApplicationView> travelApplications = new ArrayList<>();
             if (statusCountMap.containsKey(status)) {
                 StatusSummary summary = statusCountMap.get(status);
                 summary.count++;
@@ -42,9 +43,9 @@ public class TravelApplicationStatisticsUtil {
     private static class StatusSummary {
         int count;
         String totalExpenses;
-        List<TravelApplication> travelApplications;
+        List<TravelApplicationView> travelApplications;
 
-        public StatusSummary(int count, String totalExpenses, List<TravelApplication> travelApplications) {
+        public StatusSummary(int count, String totalExpenses, List<TravelApplicationView> travelApplications) {
             this.count = count;
             this.totalExpenses = totalExpenses;
             this.travelApplications = travelApplications;
