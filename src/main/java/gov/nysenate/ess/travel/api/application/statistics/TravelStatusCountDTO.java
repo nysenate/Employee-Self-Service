@@ -1,19 +1,23 @@
 package gov.nysenate.ess.travel.api.application.statistics;
 
+import gov.nysenate.ess.core.client.view.EmployeeView;
+
 import java.util.List;
 
 public class TravelStatusCountDTO {
 
     private Integer emplId;
+    private EmployeeView employeeView;
     private int count;
     private String totalExpenses;
     private List<StatusSummary> statusSummaryList;
 
 
     // Constructor
-    public TravelStatusCountDTO(Integer emplId, int count, String totalExpenses, List<StatusSummary> statusSummaryList) {
+    public TravelStatusCountDTO(Integer emplId, EmployeeView employeeView, int count, String totalExpenses, List<StatusSummary> statusSummaryList) {
         this.emplId = emplId;
         this.count = count;
+        this.employeeView = employeeView;
         this.totalExpenses = totalExpenses;
         this.statusSummaryList = statusSummaryList;
     }
@@ -33,6 +37,14 @@ public class TravelStatusCountDTO {
 
     public void setCount(int count) {
         this.count = count;
+    }
+
+    public EmployeeView getEmployeeView() {
+        return employeeView;
+    }
+
+    public void setEmployeeView(EmployeeView employeeView) {
+        this.employeeView = employeeView;
     }
 
     public String getTotalExpenses() { return totalExpenses; }

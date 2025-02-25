@@ -1,5 +1,6 @@
 package gov.nysenate.ess.travel.api.application.statistics;
 
+import gov.nysenate.ess.core.client.view.EmployeeView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.travel.api.application.TravelApplicationView;
 
@@ -11,13 +12,15 @@ public class TravelStatusCountView implements ViewObject {
 
     private Integer emplId;
     private int count;
+    private EmployeeView employeeView;
     private String totalExpenses;
     private List<StatusSummary> statusSummaryList;
 
     // Constructor
-    public TravelStatusCountView(Integer emplId, int count, String totalExpenses, List<StatusSummary> statusSummaryList) {
+    public TravelStatusCountView(Integer emplId, EmployeeView employeeView, int count, String totalExpenses, List<StatusSummary> statusSummaryList) {
         this.emplId = emplId;
         this.count = count;
+        this.employeeView = employeeView;
         this.totalExpenses = totalExpenses;
         this.statusSummaryList = statusSummaryList;
     }
@@ -58,6 +61,14 @@ public class TravelStatusCountView implements ViewObject {
 
     public void setStatusSummaryList(List<StatusSummary> statusSummaryList) {
         this.statusSummaryList = statusSummaryList;
+    }
+
+    public EmployeeView getEmployeeView() {
+        return employeeView;
+    }
+
+    public void setEmployeeView(EmployeeView employeeView) {
+        this.employeeView = employeeView;
     }
 
     @Override

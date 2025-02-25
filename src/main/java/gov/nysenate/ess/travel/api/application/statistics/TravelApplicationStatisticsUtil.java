@@ -85,6 +85,7 @@ public class TravelApplicationStatisticsUtil {
 
             travelStatusCountDTOList.add(new TravelStatusCountDTO(
                                                         entry.getKey(),
+                                                        summary.employeeView,
                                                         summary.countOfApplications,
                                                         summary.totalExpenses,
                                                         travelStatusCountList
