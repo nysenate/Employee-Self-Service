@@ -1,5 +1,6 @@
-package gov.nysenate.ess.core.client.view.pec;
+package gov.nysenate.ess.core.client.view.pec.everfi;
 
+import gov.nysenate.ess.core.client.view.pec.PersonnelTaskViewFactory;
 import gov.nysenate.ess.core.model.pec.everfi.EverfiCourseTask;
 import org.springframework.stereotype.Service;
 

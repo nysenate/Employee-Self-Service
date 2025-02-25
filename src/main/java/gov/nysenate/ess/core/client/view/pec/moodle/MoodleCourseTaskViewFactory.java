@@ -1,5 +1,6 @@
-package gov.nysenate.ess.core.client.view.pec;
+package gov.nysenate.ess.core.client.view.pec.moodle;
 
+import gov.nysenate.ess.core.client.view.pec.PersonnelTaskViewFactory;
 import gov.nysenate.ess.core.model.pec.moodle.MoodleCourseTask;
 import org.springframework.stereotype.Service;
 

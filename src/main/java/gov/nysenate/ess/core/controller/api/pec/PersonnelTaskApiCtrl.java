@@ -1,4 +1,4 @@
-package gov.nysenate.ess.core.controller.api;
+package gov.nysenate.ess.core.controller.api.pec;
 
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
@@ -7,8 +7,13 @@ import gov.nysenate.ess.core.client.response.error.ViewObjectErrorResponse;
 import gov.nysenate.ess.core.client.view.DetailedEmployeeView;
 import gov.nysenate.ess.core.client.view.pec.*;
 import gov.nysenate.ess.core.client.view.pec.acknowledgment.AckDocView;
+import gov.nysenate.ess.core.client.view.pec.ethicsCourse.EthicsCourseTaskView;
 import gov.nysenate.ess.core.client.view.pec.ethicsLive.EthicsLiveCourseTaskView;
+import gov.nysenate.ess.core.client.view.pec.everfi.EverfiTaskView;
+import gov.nysenate.ess.core.client.view.pec.knowBe4.KnowBe4TaskView;
+import gov.nysenate.ess.core.client.view.pec.moodle.MoodleTaskView;
 import gov.nysenate.ess.core.client.view.pec.video.PECVideoView;
+import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.dao.pec.assignment.PTAQueryBuilder;
 import gov.nysenate.ess.core.dao.pec.assignment.PTAQueryCompletionStatus;
 import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
@@ -23,6 +28,7 @@ import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
 import gov.nysenate.ess.core.model.pec.ethics.EthicsCourseTask;
 import gov.nysenate.ess.core.model.pec.ethics.EthicsLiveCourseTask;
 import gov.nysenate.ess.core.model.pec.everfi.EverfiCourseTask;
+import gov.nysenate.ess.core.model.pec.knowbe4.KnowBe4CourseTask;
 import gov.nysenate.ess.core.model.pec.video.VideoTask;
 import gov.nysenate.ess.core.service.pec.search.*;
 import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
@@ -410,6 +416,9 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
                     new EthicsCourseTaskView((EthicsCourseTask) detailedTask);
             case ETHICS_LIVE_COURSE ->
                     new EthicsLiveCourseTaskView((EthicsLiveCourseTask) detailedTask);
+            case KNOWBE4_COURSE ->
+                    new KnowBe4TaskView( (KnowBe4CourseTask) detailedTask);
+
         };
     }
 
