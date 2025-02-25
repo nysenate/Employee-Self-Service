@@ -28,6 +28,7 @@ public class TravelStatusCountView implements ViewObject {
     public TravelStatusCountView(TravelStatusCountDTO travelStatusCountDTO) {
         emplId = travelStatusCountDTO.getEmplId();
         count = travelStatusCountDTO.getCount();
+        employeeView = travelStatusCountDTO.getEmployeeView();
         totalExpenses = travelStatusCountDTO.getTotalExpenses();
         statusSummaryList = travelStatusCountDTO.getStatusSummaryList();
     }
