@@ -1,31 +1,30 @@
 package gov.nysenate.ess.travel.api.application.statistics;
 
-import gov.nysenate.ess.travel.api.application.TravelApplicationView;
-import gov.nysenate.ess.travel.request.app.TravelApplication;
 import java.util.List;
 
 public class TravelStatusCountDTO {
 
-    private String status;
+    private Integer emplId;
     private int count;
     private String totalExpenses;
-    private List<TravelApplicationView> travelApplicationList;
+    private List<StatusSummary> statusSummaryList;
+
 
     // Constructor
-    public TravelStatusCountDTO(String status, int count, String totalExpenses, List<TravelApplicationView> travelApplicationList) {
-        this.status = status;
+    public TravelStatusCountDTO(Integer emplId, int count, String totalExpenses, List<StatusSummary> statusSummaryList) {
+        this.emplId = emplId;
         this.count = count;
         this.totalExpenses = totalExpenses;
-        this.travelApplicationList = travelApplicationList;
+        this.statusSummaryList = statusSummaryList;
     }
 
     // Getters and Setters
-    public String getStatus() {
-        return status;
+    public Integer getEmplId() {
+        return emplId;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setEmplId(Integer emplId) {
+        this.emplId = emplId;
     }
 
     public int getCount() {
@@ -41,9 +40,9 @@ public class TravelStatusCountDTO {
     public void setTotalExpenses(String totalExpenses) {
         this.totalExpenses = totalExpenses;
     }
-    public List<TravelApplicationView> getTravelApplicationList() { return travelApplicationList; }
+    public List<StatusSummary> getStatusSummaryList() { return statusSummaryList; }
 
-    public void setTravelApplicationList(List<TravelApplicationView> travelApplicationList) {
-        this.travelApplicationList = travelApplicationList;
+    public void setStatusSummaryList(List<StatusSummary> statusSummaryList) {
+        this.statusSummaryList = statusSummaryList;
     }
 }

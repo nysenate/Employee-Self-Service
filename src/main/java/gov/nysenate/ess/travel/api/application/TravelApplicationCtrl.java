@@ -75,18 +75,24 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
     public BaseResponse getTravelAppStatistics(
             @RequestParam("fromDate") String fromDate,
             @RequestParam(value = "toDate", required = false) String toDate) {
+
         LocalDate fromLocalDate = parseISODate(fromDate, "from-date");
         LocalDateTime fromLocalDateTime = fromLocalDate.atStartOfDay();
         if (toDate == null || toDate.isEmpty()) {
             toDate = LocalDate.now().toString();
         }
-        LocalDate toLocalDate = parseISODate(toDate, "from-date");
+
+        LocalDate toLocalDate = parseISODate(toDate, "to-date");
         LocalDateTime toLocalDateTime = toLocalDate.atStartOfDay();
+
         List<TravelApplication> apps = appService.selectAllTravelApplications(fromLocalDateTime, toLocalDateTime);
+
         List<TravelApplicationView> appViews = apps.stream()
-                .map(TravelApplicationView::new)
-                .collect(Collectors.toList());
+                                                    .map(TravelApplicationView::new)
+                                                    .collect(Collectors.toList());
+
         List<TravelStatusCountDTO> appStatuses = TravelApplicationStatisticsUtil.getTravelStatusCount(appViews);
+
         List<TravelStatusCountView> appStatsViews = appStatuses.stream()
                                                             .map(TravelStatusCountView::new)
                                                             .collect(Collectors.toList());

@@ -1,40 +1,41 @@
 package gov.nysenate.ess.travel.api.application.statistics;
+
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.travel.api.application.TravelApplicationView;
-import gov.nysenate.ess.travel.request.app.TravelApplication;
 
 import java.util.List;
+import java.util.Map;
 
 
 public class TravelStatusCountView implements ViewObject {
 
-    private String status;
+    private Integer emplId;
     private int count;
     private String totalExpenses;
-    private List<TravelApplicationView> travelApplications;
+    private List<StatusSummary> statusSummaryList;
 
     // Constructor
-    public TravelStatusCountView(String status, int count, String totalExpenses, List<TravelApplicationView> travelApplications) {
-        this.status = status;
+    public TravelStatusCountView(Integer emplId, int count, String totalExpenses, List<StatusSummary> statusSummaryList) {
+        this.emplId = emplId;
         this.count = count;
         this.totalExpenses = totalExpenses;
-        this.travelApplications = travelApplications;
+        this.statusSummaryList = statusSummaryList;
     }
 
     public TravelStatusCountView(TravelStatusCountDTO travelStatusCountDTO) {
-        status = travelStatusCountDTO.getStatus();
+        emplId = travelStatusCountDTO.getEmplId();
         count = travelStatusCountDTO.getCount();
         totalExpenses = travelStatusCountDTO.getTotalExpenses();
-        travelApplications = travelStatusCountDTO.getTravelApplicationList();
+        statusSummaryList = travelStatusCountDTO.getStatusSummaryList();
     }
 
     // Getters and Setters
-    public String getStatus() {
-        return status;
+    public Integer getEmplId() {
+        return emplId;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setEmplId(Integer emplId) {
+        this.emplId = emplId;
     }
 
     public int getCount() {
@@ -53,12 +54,10 @@ public class TravelStatusCountView implements ViewObject {
         this.totalExpenses = totalExpenses;
     }
 
-    public List<TravelApplicationView> getTravelApplications() {
-        return travelApplications;
-    }
+    public List<StatusSummary> getStatusSummaryList() { return statusSummaryList; }
 
-    public void setTravelApplications(List<TravelApplicationView> travelApplications) {
-        this.travelApplications = travelApplications;
+    public void setStatusSummaryList(List<StatusSummary> statusSummaryList) {
+        this.statusSummaryList = statusSummaryList;
     }
 
     @Override
