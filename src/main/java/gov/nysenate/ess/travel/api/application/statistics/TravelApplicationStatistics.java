@@ -4,18 +4,21 @@ import java.util.List;
 
 public class TravelApplicationStatistics {
 
+    private int count;
     private Long totalExpenses;
     private List<TravelStatusCountDTO> appStatuses;
 
-    public TravelApplicationStatistics(Long totalExpenses, List<TravelStatusCountDTO> appStatuses) {
+    public TravelApplicationStatistics(int count, Long totalExpenses, List<TravelStatusCountDTO> appStatuses) {
         this.totalExpenses = totalExpenses;
         this.appStatuses = appStatuses;
+        this.count = count;
     }
 
     @Override
     public String toString() {
         return "TravelApplicationStatistics{" +
-                "totalExpenses=" + totalExpenses +
+                "count=" + count +
+                ", totalExpenses=" + totalExpenses +
                 ", appStatuses=" + appStatuses +
                 '}';
     }
@@ -34,5 +37,13 @@ public class TravelApplicationStatistics {
 
     public void setAppStatuses(List<TravelStatusCountDTO> appStatuses) {
         this.appStatuses = appStatuses;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
     }
 }
