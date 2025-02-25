@@ -1,9 +1,7 @@
-package gov.nysenate.ess.core.client.view.pec;
+package gov.nysenate.ess.core.client.view.pec.moodle;
 
+import gov.nysenate.ess.core.client.view.pec.PersonnelTaskView;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
-import gov.nysenate.ess.core.model.pec.moodle.MoodleCourseTask;
-
-import java.util.Objects;
 
 public class MoodleTaskView extends PersonnelTaskView {
 

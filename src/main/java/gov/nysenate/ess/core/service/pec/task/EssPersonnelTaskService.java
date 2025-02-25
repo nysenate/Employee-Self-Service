@@ -13,6 +13,7 @@ import gov.nysenate.ess.core.service.RefreshedCachedData;
 import gov.nysenate.ess.core.util.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
@@ -24,6 +25,7 @@ import java.util.stream.Stream;
  * Implements {@link PersonnelTaskService} using {@link PersonnelTaskDao} and {@link PersonnelTaskDetailDao}
  * and utilizing caching to improve performance.
  */
+@Service
 public class EssPersonnelTaskService
         extends RefreshedCachedData<Integer, PersonnelTask>
         implements PersonnelTaskService {

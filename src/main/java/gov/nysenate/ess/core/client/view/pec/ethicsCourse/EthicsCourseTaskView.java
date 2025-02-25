@@ -1,9 +1,7 @@
-package gov.nysenate.ess.core.client.view.pec;
+package gov.nysenate.ess.core.client.view.pec.ethicsCourse;
 
+import gov.nysenate.ess.core.client.view.pec.PersonnelTaskView;
 import gov.nysenate.ess.core.model.pec.ethics.EthicsCourseTask;
-import gov.nysenate.ess.core.model.pec.everfi.EverfiCourseTask;
-
-import java.util.Objects;
 
 public class EthicsCourseTaskView extends PersonnelTaskView {
 

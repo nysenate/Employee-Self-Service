@@ -1,7 +1,8 @@
-package gov.nysenate.ess.core.controller.api;
+package gov.nysenate.ess.core.controller.api.pec;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import gov.nysenate.ess.core.client.response.base.SimpleResponse;
+import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
 import gov.nysenate.ess.core.service.pec.external.MoodleRecordService;
 import org.slf4j.Logger;
@@ -19,7 +20,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import static gov.nysenate.ess.core.model.auth.SimpleEssPermission.ADMIN;
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController

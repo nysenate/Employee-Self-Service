@@ -234,7 +234,7 @@ public class EssAuthenticationFilter extends AuthenticationFilter
                 ((HttpServletRequest) request).getHeader("User-Agent"),
                 LocalDateTime.now()
         ));
-        logger.debug("Login for user {} was successful.", user);
+        logger.info("Login for user {} was successful.", user);
         return false;
     }
 

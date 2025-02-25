@@ -24,6 +24,15 @@ public class AccrualSummary extends AccrualUsage
     /** The number of sick employee hours that have rolled over from prior years. */
     protected BigDecimal empHoursBanked = BigDecimal.ZERO;
 
+    /** The number of hours donated in the previous year */
+
+    BigDecimal priorYearDonations = BigDecimal.ZERO;
+    //donationService.getHoursDonated(transHistory.getEmployeeId(), gapPeriod.getYear()-1);
+
+    /** The number of hours donated in the current year */
+    BigDecimal currentYearDonations  = BigDecimal.ZERO;
+    //= donationService.getHoursDonated(transHistory.getEmployeeId(), gapPeriod.getYear());
+
     /** --- Constructors --- */
 
     public AccrualSummary() {}
@@ -56,6 +65,13 @@ public class AccrualSummary extends AccrualUsage
 
     public void setEmpHoursBanked(BigDecimal empHoursBanked) {
         this.empHoursBanked = Optional.ofNullable(empHoursBanked).orElse(BigDecimal.ZERO);
+    }
+    public void setCurrentYearDonations(BigDecimal currentYearDonations) {
+        this.currentYearDonations = Optional.ofNullable(currentYearDonations).orElse(BigDecimal.ZERO);
+    }
+
+    public void setPriorYearDonations(BigDecimal priorYearDonations) {
+        this.priorYearDonations = Optional.ofNullable(priorYearDonations).orElse(BigDecimal.ZERO);
     }
 
     /** --- Copy Constructor --- */
@@ -92,4 +108,9 @@ public class AccrualSummary extends AccrualUsage
     public BigDecimal getEmpHoursBanked() {
         return empHoursBanked;
     }
+
+    public BigDecimal getPriorYearDonations() { return priorYearDonations; }
+
+    public BigDecimal getCurrentYearDonations() { return currentYearDonations; }
+
 }

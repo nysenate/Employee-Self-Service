@@ -9,5 +9,6 @@ public enum PersonnelTaskType {
     VIDEO_CODE_ENTRY,
     EVERFI_COURSE,
     ETHICS_COURSE,
-    ETHICS_LIVE_COURSE
+    ETHICS_LIVE_COURSE,
+    KNOWBE4_COURSE
 }

@@ -23,6 +23,8 @@
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/myinfo/personnel/ethics-course-live-ctrl.js"></script>
         <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/myinfo/personnel/knowbe4-course-ctrl.js"></script>
+        <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/myinfo/personnel/pec-vid-ctrl.js"></script>
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/myinfo/personnel/ack-doc-view-ctrl.js"></script>

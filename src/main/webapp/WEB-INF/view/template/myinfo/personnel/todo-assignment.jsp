@@ -51,10 +51,6 @@
 
         <p class="todo-search-match-info">
           <span class="bold-text">{{state.pagination.totalItems}} Matching Employees</span>
-          <a ng-href="{{ctxPath}}/api/v1/personnel/task/emp/search/report?{{state.paramQueryString}}"
-             target="_blank">
-            Download results as CSV
-          </a>
         </p>
 
         <div class="todo-report-pagination-controls">

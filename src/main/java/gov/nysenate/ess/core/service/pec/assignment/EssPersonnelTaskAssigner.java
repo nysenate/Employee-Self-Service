@@ -168,11 +168,17 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
         logger.info("Completed Date Assignment Processing");
     }
 
+    /**
+     * This Method is called from the Personnel Task Assignment interface
+     */
     @Override
     public void insertAssignedTask(int empID, int updateEmpID, int taskID) {
         PersonnelTask task = personnelTaskDao.getPersonnelTask(taskID);
         if (task.getTaskType() == PersonnelTaskType.EVERFI_COURSE) {
             checkEverfiRecords(taskID, empID);
+        }
+        else if (task.getTaskType() == PersonnelTaskType.KNOWBE4_COURSE) {
+            reportKnowBe4MaunalAssignment(taskID, empID);
         }
         personnelTaskDao.insertPersonnelAssignedTask(empID, updateEmpID, taskID);
 
@@ -201,6 +207,16 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
             logger.info("Employee: " + employee.getEmail() + " is registered in Everfi but the task is not assigned.");
             sendEmailToEverfiReportEmails(subject, employee.getFullName() + " is registered in Everfi but the task is not assigned. Please assign the task to this individual. The task will appear in ESS already.");
         }
+    }
+
+    private void reportKnowBe4MaunalAssignment(int taskID, int empID) {
+        Employee employee = employeeDao.getEmployeeById(empID);
+        PersonnelTask task = personnelTaskDao.getPersonnelTask(taskID);
+        String subject = "PERSONNEL MANUAL KNOWBE4 UPLOAD FOR " + employee.getFullName() + ", " + employee.getEmployeeId();
+
+        logger.warn("Personnel attempted to add Employee: " + employee.getEmployeeId() + " to KnowBe4 but we do not have a process to upload users to KnowBe4!");
+        sendEmailToEverfiReportEmails(subject, "Personnel attempted to add Employee: " + employee.getEmployeeId() +
+                " to KnowBe4 task: " + task.getTitle() + " but we do not have a process to upload users to KnowBe4!");
     }
 
 

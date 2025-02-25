@@ -1,6 +1,7 @@
-package gov.nysenate.ess.core.controller.api;
+package gov.nysenate.ess.core.controller.api.pec;
 
 import gov.nysenate.ess.core.client.response.base.SimpleResponse;
+import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.pec.external.everfi.EverfiRecordService;
@@ -32,7 +33,7 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
     private EverfiUserService everfiUserService;
     private EverfiCategoryService everfiCategoryService;
     final LocalDateTime jan1970 = LocalDateTime.of(1970,1,1,0,0,0,0);
-    final LocalDateTime jan2023 = LocalDateTime.of(2023,1,1,0,0);
+    final LocalDateTime lastYearJan = LocalDateTime.of(LocalDateTime.now().getYear() - 1,1,1,0,0);
     private static final Logger logger = LoggerFactory.getLogger(EverfiApiCtrl.class);
 
     @Autowired
@@ -119,8 +120,8 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
         if (since.equals("1970")) {
             ldtsince = jan1970;
         }
-        else if (since.equals("2023")) {
-            ldtsince = jan2023;
+        else if (since.equals("lastYear")) {
+            ldtsince = lastYearJan;
         }
         else {
             ldtsince = stringToLocalDateTime(since);

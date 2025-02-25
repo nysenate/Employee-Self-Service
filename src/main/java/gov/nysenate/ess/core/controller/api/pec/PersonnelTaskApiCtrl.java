@@ -1,4 +1,4 @@
-package gov.nysenate.ess.core.controller.api;
+package gov.nysenate.ess.core.controller.api.pec;
 
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
@@ -7,8 +7,13 @@ import gov.nysenate.ess.core.client.response.error.ViewObjectErrorResponse;
 import gov.nysenate.ess.core.client.view.DetailedEmployeeView;
 import gov.nysenate.ess.core.client.view.pec.*;
 import gov.nysenate.ess.core.client.view.pec.acknowledgment.AckDocView;
+import gov.nysenate.ess.core.client.view.pec.ethicsCourse.EthicsCourseTaskView;
 import gov.nysenate.ess.core.client.view.pec.ethicsLive.EthicsLiveCourseTaskView;
+import gov.nysenate.ess.core.client.view.pec.everfi.EverfiTaskView;
+import gov.nysenate.ess.core.client.view.pec.knowBe4.KnowBe4TaskView;
+import gov.nysenate.ess.core.client.view.pec.moodle.MoodleTaskView;
 import gov.nysenate.ess.core.client.view.pec.video.PECVideoView;
+import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.dao.pec.assignment.PTAQueryBuilder;
 import gov.nysenate.ess.core.dao.pec.assignment.PTAQueryCompletionStatus;
 import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
@@ -23,6 +28,7 @@ import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
 import gov.nysenate.ess.core.model.pec.ethics.EthicsCourseTask;
 import gov.nysenate.ess.core.model.pec.ethics.EthicsLiveCourseTask;
 import gov.nysenate.ess.core.model.pec.everfi.EverfiCourseTask;
+import gov.nysenate.ess.core.model.pec.knowbe4.KnowBe4CourseTask;
 import gov.nysenate.ess.core.model.pec.video.VideoTask;
 import gov.nysenate.ess.core.service.pec.search.*;
 import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
@@ -142,16 +148,16 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
     /**
      * Get Task for Emp API
      * --------------------
-     * <p>
+     *
      * Gets a specific task assignment.
-     * <p>
+     *
      * Usage:
      * (GET)    /api/v1/personnel/task/assignment/{empId}/{taskId}
-     * <p>
-     * Path params:
      *
-     * @param empId  int - employee id
+     * Path params:
+     * @param empId int - employee id
      * @param taskId int - task id
+     *
      * @return {@link ViewObjectResponse<PersonnelTaskAssignmentView>}
      */
     @RequestMapping(value = "/assignment/{empId}/{taskId}", method = {GET, HEAD})
@@ -171,23 +177,26 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
     /**
      * Employee Task Search
      * --------------------
-     * <p>
+     *
      * Search for employees and tasks.
-     * <p>
+     *
      * Usage:
      * (GET)    /api/v1/personnel/task/emp/search
-     * <p>
-     * Request params:
      *
-     * @return {@link ViewObjectResponse<PersonnelTaskAssignmentView>}
+     * Request params:
      * @see #extractEmpPATQuery(WebRequest) for facet parameters
      * limit - int - default 10 - limit the number of results
      * offset - int - default 1 - start the result list from this result.
+     *
+     * @return {@link ViewObjectResponse<PersonnelTaskAssignmentView>}
      */
     @RequestMapping(value = "/emp/search", method = {GET, HEAD})
     public ListViewResponse<EmpPATSearchResultView> empTaskSearch(WebRequest request) {
+
         checkPermission(SimpleEssPermission.COMPLIANCE_REPORT_GENERATION.getPermission());
+
         LimitOffset limitOffset = getLimitOffset(request, 10);
+
         EmpPTAQuery empPTAQuery = extractEmpPATQuery(request);
 
         PaginatedList<EmployeeTaskSearchResult> results = empTaskSearchService.searchForEmpTasks(empPTAQuery, limitOffset);
@@ -232,21 +241,21 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
     /**
      * Employee Task Search Report
      * ---------------------------
-     * <p>
+     *
      * Returns a CSV report based on the passed in request params
-     * <p>
+     *
      * Usage:
      * (GET)    /api/v1/personnel/task/emp/search/report
-     * <p>
-     * Request params:
      *
+     * Request params:
      * @see #extractEmpPATQuery(WebRequest) for facet parameters
+     *
      */
     @RequestMapping(value = "/emp/search/report", method = {GET, HEAD})
     public void generateSearchReportCSV(WebRequest request, HttpServletResponse response) throws IOException {
         checkPermission(SimpleEssPermission.COMPLIANCE_REPORT_GENERATION.getPermission());
 
-        String csvFileName = "PEC_Report" + LocalDateTime.now().withNano(0) + ".csv";
+        String csvFileName =  "PEC_Report" + LocalDateTime.now().withNano(0)+".csv";
         // creates mock data
         String headerKey = "Content-Disposition";
         String headerValue = String.format("attachment; filename=\"%s\"",
@@ -299,7 +308,7 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
      */
     private int getMaxNumOfTasks(List<EmpPATSearchResultView> resultViews) {
         int max = 1;
-        for (EmpPATSearchResultView searchResultView : resultViews) {
+        for (EmpPATSearchResultView searchResultView: resultViews) {
             int recordCount = searchResultView.getTasks().size();
             if (recordCount > max) {
                 max = recordCount;
@@ -314,12 +323,12 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
     private CSVPrinter createProperCSVPrinter(int maxNumOfTasks, HttpServletResponse response) throws IOException {
         StringBuilder testOriginalTaskString = new StringBuilder("EmpId, Name, Email, Work Phone, Resp Center, Continuous Service, ");
 
-        for (int i = 1; i < maxNumOfTasks + 1; i++) {
+        for (int i = 1; i < maxNumOfTasks+1; i++) {
             testOriginalTaskString.append(createTaskStrings(i));
         }
 
-        return new CSVPrinter(response.getWriter(), CSVFormat.DEFAULT
-                .withHeader(testOriginalTaskString.toString().split(",")));
+         return new CSVPrinter(response.getWriter(), CSVFormat.DEFAULT
+                    .withHeader(testOriginalTaskString.toString().split(",")));
     }
 
     /**
@@ -378,7 +387,8 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
         String respCenter = "";
         try {
             respCenter = currentEmployee.getRespCtr().getRespCenterHead().getShortName();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             //No need to do anything. This means that the employee does not have a responsibility center
         }
         return respCenter;
@@ -397,17 +407,24 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
         return new DetailPersonnelTaskAssignmentView(taskAssignment, taskView);
     }
 
-    /**
-     * Generate a task view for the given task
-     */
+    /** Generate a task view for the given task */
     private PersonnelTaskView getPersonnelTaskView(PersonnelTask detailedTask) {
         return switch (detailedTask.getTaskType()) {
-            case DOCUMENT_ACKNOWLEDGMENT -> new AckDocView(detailedTask, assets + ackDocPath);
-            case MOODLE_COURSE -> new MoodleTaskView(detailedTask);
-            case VIDEO_CODE_ENTRY -> new PECVideoView((VideoTask) detailedTask, assets + pecVidPath);
-            case EVERFI_COURSE -> new EverfiTaskView((EverfiCourseTask) detailedTask);
-            case ETHICS_COURSE -> new EthicsCourseTaskView((EthicsCourseTask) detailedTask);
-            case ETHICS_LIVE_COURSE -> new EthicsLiveCourseTaskView((EthicsLiveCourseTask) detailedTask);
+            case DOCUMENT_ACKNOWLEDGMENT ->
+                    new AckDocView(detailedTask, assets + ackDocPath);
+            case MOODLE_COURSE ->
+                    new MoodleTaskView(detailedTask);
+            case VIDEO_CODE_ENTRY ->
+                    new PECVideoView((VideoTask) detailedTask, assets + pecVidPath);
+            case EVERFI_COURSE ->
+                    new EverfiTaskView((EverfiCourseTask) detailedTask);
+            case ETHICS_COURSE ->
+                    new EthicsCourseTaskView((EthicsCourseTask) detailedTask);
+            case ETHICS_LIVE_COURSE ->
+                    new EthicsLiveCourseTaskView((EthicsLiveCourseTask) detailedTask);
+            case KNOWBE4_COURSE ->
+                    new KnowBe4TaskView( (KnowBe4CourseTask) detailedTask);
+
         };
     }
 

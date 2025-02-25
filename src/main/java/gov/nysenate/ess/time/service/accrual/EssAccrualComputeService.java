@@ -44,6 +44,8 @@ import static gov.nysenate.ess.time.model.EssTimeConstants.ANNUAL_PER_HOURS;
 import static gov.nysenate.ess.time.model.EssTimeConstants.MAX_DAYS_PER_YEAR;
 import static gov.nysenate.ess.time.util.AccrualUtils.getProratePercentage;
 import static gov.nysenate.ess.time.util.AccrualUtils.roundPersonalHours;
+import static java.time.temporal.TemporalAdjusters.lastDayOfYear;
+import static java.time.temporal.TemporalAdjusters.firstDayOfYear;
 
 /**
  * Service layer for computing accrual information for an employee based on processed accrual
@@ -273,7 +275,14 @@ public class EssAccrualComputeService implements AccrualComputeService {
                 countRemainingPeriod = true;
             }
 
-            computeGapPeriodAccruals(period, accrualState, empTrans,
+            /**
+             *  Pass the last Annual Accrual Summary Record since we need
+             *  the year to determine if we need to include the prior year
+             *  Donations as part of the calculations. Included the Annual
+             *  Accrual Summary instead of passing in its year so that it would
+             *  be easier to obtain other information from it if needed.
+             */
+            computeGapPeriodAccruals(period, accrualState, empTrans,  lastAnnualAccSummary,
                     timeRecords, periodUsages, accrualAllowedDates, expectedHourDates, countRemainingPeriod);
 
             if (countRemainingPeriod) {
@@ -459,8 +468,17 @@ public class EssAccrualComputeService implements AccrualComputeService {
         if (!payTypesMap.isEmpty()) {
             accrualState.setPayType(transHistory.getEffectivePayTypes(initialRange).firstEntry().getValue());
         }
+
+        BigDecimal minTotalHours = BigDecimal.ZERO;
+        if (!transHistory.getEffectiveMinHours(initialRange).isEmpty()) {
+            minTotalHours = transHistory.getEffectiveMinHours(initialRange).firstEntry().getValue();
+        }
+        else if (!transHistory.getEffectiveMinHours( transHistory.getActiveDates().span() ).isEmpty()){
+            minTotalHours = transHistory.getEffectiveMinHours( transHistory.getActiveDates().span() ).lastEntry().getValue(); //NUMINTOTHRS apt rtp
+        }
+
         accrualState.setNumintotend(accrualDao.getBasisForSAPersonalTime(transHistory.getEmployeeId()));
-        accrualState.setMinTotalHours(transHistory.getEffectiveMinHours(initialRange).firstEntry().getValue());
+        accrualState.setMinTotalHours(minTotalHours);
         accrualState.computeRates();
         return accrualState;
     }
@@ -473,7 +491,7 @@ public class EssAccrualComputeService implements AccrualComputeService {
      * @param periodUsages        TreeMap<PayPeriod, PeriodAccUsage>
      * @param accrualAllowedDates
      */
-    private void computeGapPeriodAccruals(PayPeriod gapPeriod, AccrualState accrualState, TransactionHistory transHistory,
+    private void computeGapPeriodAccruals(PayPeriod gapPeriod, AccrualState accrualState, TransactionHistory transHistory, AnnualAccSummary lastAnnualAccSummary,
                                           List<TimeRecord> timeRecords, TreeMap<PayPeriod, PeriodAccUsage> periodUsages,
                                           RangeSet<LocalDate> accrualAllowedDates,
                                           RangeSet<LocalDate> expectedHoursDates,
@@ -482,6 +500,7 @@ public class EssAccrualComputeService implements AccrualComputeService {
 
         TreeMap<LocalDate, PersonnelStatus> statusTreeMap = transHistory.getEffectivePersonnelStatus(gapPeriodRange);
         PersonnelStatus lastStatus;
+
         if (statusTreeMap.isEmpty()) {
             lastStatus = PersonnelStatus.NONE;
         } else {
@@ -510,9 +529,33 @@ public class EssAccrualComputeService implements AccrualComputeService {
                 RangeUtils.intersection(expectedHoursDates, ImmutableRangeSet.of(gapPeriodRange));
         accrualState.setExpectedDates(expectedPeriodDates);
 
-
         // If pay period is start of new year perform necessary adjustments to the accruals.
         if (gapPeriod.isStartOfYearSplit()) {
+
+            // Setting to the whole year. It's easier to simply set. If employee terms within year that may change
+            accrualState.setBeginDate(gapPeriod.getStartDate().with(firstDayOfYear()));
+            accrualState.setEndDate(gapPeriod.getStartDate().with(lastDayOfYear()));
+
+            // Set Current and prior Year Donations here for Accural State.
+            // Setting it in other spots is too early.
+
+            accrualState.setCurrentYearDonations(donationService.getHoursDonated(transHistory.getEmployeeId(), gapPeriod.getYear()));
+
+            /**
+             *  Include prior year donations only if the current year*  Attendance Annual Master Record doesn't exist
+             *  (the latest year is earlier than the Pay Period's year).
+             *
+             */
+            if (lastAnnualAccSummary.getYear() < gapPeriod.getYear()) {
+                accrualState.setPriorYearDonations(donationService.getHoursDonated(transHistory.getEmployeeId(), gapPeriod.getYear() - 1));
+            }
+            else {
+                /** Pass a zero value for prior year donations if current
+                 * Annual Master Record exists so it's effectively not used
+                 * */
+                accrualState.setPriorYearDonations(BigDecimal.ZERO);
+            }
+
             accrualState.applyYearRollover();
         }
 

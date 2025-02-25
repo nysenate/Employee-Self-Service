@@ -9,7 +9,6 @@ import gov.nysenate.ess.time.util.AccrualUtils;
 import org.apache.commons.lang3.ObjectUtils;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,6 +39,9 @@ public class AccrualState extends AccrualSummary
     protected BigDecimal sickRate;
     protected BigDecimal vacRate;
     protected BigDecimal ytdHoursExpected;
+
+    protected int latestYear;
+
     /** Tracks usage for each period */
     private Map<PayPeriod, PeriodAccUsage> periodAccUsageMap = new HashMap<>();
 
@@ -49,6 +51,24 @@ public class AccrualState extends AccrualSummary
     public AccrualState(AnnualAccSummary annualAccSummary) {
         super(annualAccSummary);
         if (annualAccSummary != null) {
+            /**
+             *   Set the year to be the latest Annual Attendance Record
+             *   which is used to later determine if we need to subtract out
+             *   Prior Year Donations as well. Prior Year Donations should only
+             *   be subtracted out  when there's no Attendance Master Annual Record
+             *   created for the current record.
+             *
+             *   Code takes the following Assumptions:
+             *      * Attendance Annual Master Records are always created in succession
+             *          ie: Employee's 2023 record is created first, 2024 created later,
+             *          2025 created after both, etc...
+             *      * Once the Attendance Annual Master Record is created for an employee,
+             *        the previous year's donations will have already been accounted for since
+             *        it's baked into SFMS when new Annual Master Records are created.
+             *      * Once the Attendance Annual Master Record is created for an employee,
+             *        all previous year Attendance Annual Master Records should all exist.
+             */
+            this.setLatestYear(annualAccSummary.getYear());
             this.beginDate = ObjectUtils.max(
                     LocalDate.ofYearDay(annualAccSummary.getYear(), 1),
                     annualAccSummary.getContServiceDate());
@@ -158,13 +178,18 @@ public class AccrualState extends AccrualSummary
      * - Personal hours are reset to their initial state (35 hours prorated based on min hours required).
      */
     public void applyYearRollover() {
-        this.setPerHoursAccrued(AccrualUtils.roundPersonalHours(
-                ANNUAL_PER_HOURS.multiply(getProratePercentage())));
+        if (this.empAccruing) {
+            this.setPerHoursAccrued(AccrualUtils.roundPersonalHours(
+                    ANNUAL_PER_HOURS.multiply(getProratePercentage())));
 
-        if (this.payType == SA) {
-            this.setPerHoursAccrued(
-                    AccrualUtils.roundPersonalHours(
-                            ANNUAL_PER_HOURS.multiply( getSpecialAnnualProratePercentage() ) ) );
+            if (this.payType == SA) {
+                this.setPerHoursAccrued(
+                        AccrualUtils.roundPersonalHours(
+                                ANNUAL_PER_HOURS.multiply(getSpecialAnnualProratePercentage())));
+            }
+        }
+        else {
+            this.setPerHoursAccrued(BigDecimal.ZERO);
         }
 
         this.setVacHoursBanked(
@@ -173,11 +198,17 @@ public class AccrualState extends AccrualSummary
                         .subtract(this.getVacHoursUsed())
                         .min(AccrualRate.VACATION.getMaxHoursBanked()));
         this.setVacHoursAccrued(BigDecimal.ZERO);
+
+        //  Fix donations by not subtracting donations from Prior Year if the
+        // Attendance Master record is for this year.
+
         this.setEmpHoursBanked(
                 this.getEmpHoursBanked()
                         .add(this.getEmpHoursAccrued())
                         .subtract(this.getEmpHoursUsed())
                         .subtract(this.getFamHoursUsed())
+                        .subtract(this.getPriorYearDonations()) // Prior Year Donations will be 0 when it's not to be subtracted out
+                        .subtract(this.getCurrentYearDonations())
                         .min(AccrualRate.SICK.getMaxHoursBanked()));
         this.setEmpHoursAccrued(BigDecimal.ZERO);
         this.setYtdHoursExpected(BigDecimal.ZERO);
@@ -234,6 +265,10 @@ public class AccrualState extends AccrualSummary
 
     public LocalDate getBeginDate() {
         return beginDate;
+    }
+
+    public void setBeginDate(LocalDate beginDate) {
+        this.beginDate = beginDate;
     }
 
     public boolean isEmpAccruing() {
@@ -315,4 +350,8 @@ public class AccrualState extends AccrualSummary
     public void setExpectedDates(RangeSet<LocalDate> expectedDates) {
         this.expectedDates = expectedDates;
     }
+
+    public int getLatestYear() {return this.latestYear;};
+
+    public void setLatestYear(int latestYear) {this.latestYear = latestYear;};
 }
