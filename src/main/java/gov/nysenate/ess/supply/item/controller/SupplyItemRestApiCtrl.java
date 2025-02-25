@@ -59,9 +59,9 @@ public class SupplyItemRestApiCtrl extends BaseRestApiCtrl {
     @RequestMapping("")
     public BaseResponse getSupplyItems(
             @RequestParam String locId,
-            @RequestParam String[] categories,
-            @RequestParam String term,
-            @RequestParam(defaultValue = "name") String sort,
+            @RequestParam(defaultValue = "", required = false) String[] categories,
+            @RequestParam(defaultValue = "", required = false) String term,
+            @RequestParam(defaultValue = "name", required = false) String sort,
             WebRequest webRequest) {
         LocationId locationId = LocationId.ofString(locId);
         if (locationService.getLocation(locationId) == null) {

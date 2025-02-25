@@ -8,6 +8,8 @@ import { useSupplyContext } from "app/views/supply/requisition/useSupplyContext"
 import LoadingIndicator from "app/components/LoadingIndicator";
 import { useItems } from "app/views/supply/requisition/useItems";
 
+const ITEMS_PER_PAGE = 16;
+
 export default function ItemListing({
   cart,
   handleQuantityChange,
@@ -15,36 +17,28 @@ export default function ItemListing({
   setCategories,
 }) {
   const { destination } = useSupplyContext();
+  const [term, setTerm] = useState("");
+  const [sort, setSort] = useState("Name"); // TODO integrate with select element.
+  const [limit, setLimit] = useState(ITEMS_PER_PAGE);
+  const [offset, setOffset] = useState(1);
+  const itemsQuery = useItems({
+    locId: destination.locId,
+    categories: [],
+    term: term,
+    sort: sort,
+    limit: limit,
+    offset: offset,
+  });
   const [searchParams, setSearchParams] = useSearchParams();
-  const itemsQuery = useItems(destination);
   const selectedCategories = searchParams.getAll("category");
-  const [pageItems, setPageItems] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 16;
 
-  const handlePageChange = (page) => {
-    if (page >= 1 && page <= Math.ceil(items.length / itemsPerPage)) {
-      setCurrentPage(page);
-    }
+  const getCurrentPage = () => {
+    return itemsQuery.data.offsetEnd / itemsQuery.data.limit;
   };
 
-  // useEffect(() => {
-  //   const startIndex = (currentPage - 1) * itemsPerPage;
-  //   setPageItems(items.slice(startIndex, startIndex + itemsPerPage));
-  // }, [pageItems, currentPage]);
-  //
-
-  useEffect(() => {
-    let filtered = pageItems;
-    const updatedFilteredItems = items.filter((item) =>
-      selectedCategories.includes(item.category),
-    );
-    if (!arraysAreEqual(filtered, updatedFilteredItems)) {
-      filtered = updatedFilteredItems;
-    }
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    setPageItems(filtered.slice(startIndex, startIndex + itemsPerPage));
-  }, [selectedCategories, itemsQuery.data, currentPage]);
+  const handlePageChange = (page) => {
+    setOffset(page * limit - limit + 1);
+  };
 
   if (itemsQuery.isPending) {
     return <LoadingIndicator />;
@@ -52,24 +46,26 @@ export default function ItemListing({
 
   return (
     <div>
-      {items.length > itemsPerPage && (
+      {itemsQuery.data.total > itemsQuery.data.result.length && (
         <Pagination
-          currentPage={currentPage}
-          totalPages={Math.ceil(items.length / itemsPerPage)}
+          currentPage={getCurrentPage()}
+          totalPages={Math.ceil(itemsQuery.data.total / itemsQuery.data.limit)}
           onPageChange={handlePageChange}
         />
       )}
       <ItemsGrid
-        items={pageItems}
+        items={itemsQuery.data.result}
         cart={cart}
         handleQuantityChange={handleQuantityChange}
         handleOverOrderAttempt={handleOverOrderAttempt}
       />
-      {items.length > itemsPerPage && (
+      {itemsQuery.data.total > itemsQuery.data.result.length && (
         <div className={styles.contentContainer}>
           <Pagination
-            currentPage={currentPage}
-            totalPages={Math.ceil(items.length / itemsPerPage)}
+            currentPage={getCurrentPage()}
+            totalPages={Math.ceil(
+              itemsQuery.data.total / itemsQuery.data.limit,
+            )}
             onPageChange={handlePageChange}
           />
         </div>
