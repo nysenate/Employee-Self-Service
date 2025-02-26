@@ -151,10 +151,10 @@ function ItemFilters({ term, setTerm, sort, setSort }) {
             onKeyDown={handleKeyDown}
           />
         </label>
-        <Button type="button" color="success" onClick={handleSave}>
+        <Button color="success" onClick={handleSave}>
           Search
         </Button>
-        <Button type="button" color="secondary">
+        <Button color="secondary" className="mx-2">
           Reset
         </Button>
       </div>

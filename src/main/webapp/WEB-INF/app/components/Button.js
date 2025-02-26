@@ -1,6 +1,6 @@
-import React, { useContext } from 'react'
+import React, { useContext } from "react";
 import { ThemeContext } from "app/contexts/ThemeContext";
-
+import { twMerge } from "tailwind-merge";
 
 /**
  * A common button component for ESS.
@@ -12,28 +12,33 @@ import { ThemeContext } from "app/contexts/ThemeContext";
  * @param passThroughProps Any valid attributes for a button element, besides those in controlledProps, will
  *                         be passed onto the button element. For example: "onClick", "disabled", etc.
  */
-export function Button({ variant = "contained", color, children, ...passThroughProps }) {
-  const theme = useContext(ThemeContext)
+export function Button({
+  variant = "contained",
+  color,
+  children,
+  className = "",
+  ...passThroughProps
+}) {
+  const theme = useContext(ThemeContext);
   if (!color) {
-    color = variantDefaultColors[variant]
+    color = variantDefaultColors[variant];
   } else if (color === "theme") {
-    color = theme
+    color = theme;
   }
 
-  const controlledProps = {
-    "type": "button",
-    "className": `transition disabled:pointer-events-none disabled:opacity-50
+  const classes = twMerge(
+    `transition disabled:pointer-events-none disabled:opacity-50
                   ${variantStyles[variant].core} ${variantStyles[variant].color[color]}`,
-  }
-  const props = { ...controlledProps, ...passThroughProps }
+    className,
+  );
 
   return (
-    <span className={props.disabled ? 'cursor-not-allowed' : ''}>
-      <button {...props}>
+    <span className={passThroughProps.disabled ? "cursor-not-allowed" : ""}>
+      <button {...passThroughProps} type="button" className={classes}>
         {children}
       </button>
     </span>
-  )
+  );
 }
 
 // All styles have to be hard coded, they cannot be dynamic due to tailwind's JIT compiler.
@@ -48,34 +53,45 @@ const variantStyles = {
       time: "bg-teal-600 border-teal-800 hover:bg-teal-500",
       supply: "bg-purple-600 border-purple-800 hover:bg-purple-500",
       travel: "bg-orange-600 border-orange-800 hover:bg-orange-500",
-    }
+    },
   },
   text: {
     core: "",
     color: {
-      success: "px-2.5 py-1 font-semibold text-green-600 hover:text-green-800 hover:bg-green-100",
-      secondary: "px-2.5 py-1 font-semibold text-gray-600 hover:text-gray-700 hover:bg-gray-100",
-      error: "px-2.5 py-1 font-semibold text-red-600 hover:text-red-700 hover:bg-red-100",
+      success:
+        "px-2.5 py-1 font-semibold text-green-600 hover:text-green-800 hover:bg-green-100",
+      secondary:
+        "px-2.5 py-1 font-semibold text-gray-600 hover:text-gray-700 hover:bg-gray-100",
+      error:
+        "px-2.5 py-1 font-semibold text-red-600 hover:text-red-700 hover:bg-red-100",
       link: "font-base leading-none text-teal-600 hover:text-teal-800",
-      myinfo: "px-2.5 py-1 font-semibold text-green-600 hover:text-green-800 hover:bg-green-100",
+      myinfo:
+        "px-2.5 py-1 font-semibold text-green-600 hover:text-green-800 hover:bg-green-100",
       time: "px-2.5 py-1 font-semibold text-teal-600 hover:text-teal-700 hover:bg-teal-100",
-      supply: "px-2.5 py-1 font-semibold text-purple-700 hover:text-purple-800 hover:bg-purple-100",
-      travel: "px-2.5 py-1 font-semibold text-orange-700 hover:text-orange-800 hover:bg-orange-100",
-    }
+      supply:
+        "px-2.5 py-1 font-semibold text-purple-700 hover:text-purple-800 hover:bg-purple-100",
+      travel:
+        "px-2.5 py-1 font-semibold text-orange-700 hover:text-orange-800 hover:bg-orange-100",
+    },
   },
   outlined: {
     core: "px-2.5 py-1 font-semibold border-1",
     color: {
-      success: "text-green-700 border-green-700 hover:text-green-800 hover:bg-green-100",
-      secondary: "text-gray-600 border-gray-600 hover:text-gray-700 hover:bg-gray-100",
+      success:
+        "text-green-700 border-green-700 hover:text-green-800 hover:bg-green-100",
+      secondary:
+        "text-gray-600 border-gray-600 hover:text-gray-700 hover:bg-gray-100",
       error: "text-red-600 border-red-600 hover:text-red-700 hover:bg-red-100",
-      myinfo: "text-green-700 border-green-700 hover:text-green-800 hover:bg-green-100",
+      myinfo:
+        "text-green-700 border-green-700 hover:text-green-800 hover:bg-green-100",
       time: "text-teal-600 border-teal-600 hover:text-teal-700 hover:bg-teal-100",
-      supply: "text-purple-700 border-purple-700 hover:text-purple-800 hover:bg-purple-100",
-      travel: "text-orange-700 border-orange-700 hover:text-orange-800 hover:bg-orange-100",
-    }
-  }
-}
+      supply:
+        "text-purple-700 border-purple-700 hover:text-purple-800 hover:bg-purple-100",
+      travel:
+        "text-orange-700 border-orange-700 hover:text-orange-800 hover:bg-orange-100",
+    },
+  },
+};
 
 /**
  * Default colors for variants.
@@ -85,4 +101,4 @@ const variantDefaultColors = {
   contained: "success",
   outlined: "secondary",
   text: "link",
-}
+};
