@@ -43,15 +43,13 @@ public class MimeSendMailService extends JavaMailSenderImpl implements SendMailS
     private final InternetAddress testModeAddress;
 
     private final List<String> reportEmails;
-    private final SendMailService sendMailService;
 
     @Autowired
     public MimeSendMailService(MailUtils mailUtils,
                                @Value("${runtime.level}") String runtimeLevel,
                                @Value("${mail.test.enabled:true}") boolean testModeEnabled,
                                @Value("${mail.test.address:}") String testModeAddress,
-                               @Value("${report.email}") String reportEmailList,
-                               SendMailService sendMailService) {
+                               @Value("${report.email}") String reportEmailList) {
         setSession(mailUtils.getSmtpSession());
 
         this.runtimeLevel = RuntimeLevel.of(runtimeLevel);
@@ -70,7 +68,6 @@ public class MimeSendMailService extends JavaMailSenderImpl implements SendMailS
         }
         this.testModeAddress = address;
         this.reportEmails = List.of(reportEmailList.replaceAll(" ", "").split(","));
-        this.sendMailService = sendMailService;
     }
 
     /**
