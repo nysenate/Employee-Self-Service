@@ -5,7 +5,6 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "app/contexts/Auth/useAuth";
 import EssLayout from "app/views/EssLayout";
 import Time from "app/views/time/Time";
-import Travel from "app/views/travel/Travel";
 import LoginIndex from "app/views/login/LoginIndex";
 import MyInfoRouter from "app/views/myinfo/MyInfoRouter";
 import SupplyRouter from "app/views/supply/SupplyRouter";
@@ -14,6 +13,7 @@ import EssIndex from "app/views/EssIndex";
 import NotFound from "app/views/NotFound";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import TravelRouter from "app/views/travel/TravelRouter";
 
 
 function App() {
@@ -27,7 +27,7 @@ function App() {
             <Route path="/myinfo/*" element={<MyInfoRouter/>}/>
             <Route path="/time/*" element={<Time/>}/>
             <Route path="/supply/*" element={<SupplyRouter/>}/>
-            <Route path="/travel/*" element={<Travel/>}/>
+            <Route path="/travel/*" element={<TravelRouter/>}/>
           </Route>
           <Route path="/login" element={<LoginIndex/>}/>
           <Route path="/logout" element={<Logout/>}/>
