@@ -8,9 +8,9 @@ public class TravelApplicationStatisticsView implements ViewObject {
 
     private int count;
     private String totalExpenses;
-    private List<TravelStatusCountView> appStatuses;
+    private List<TravelEmployeeStatisticsView> appStatuses;
 
-    public TravelApplicationStatisticsView(int count, String totalExpenses, List<TravelStatusCountView> appStatuses) {
+    public TravelApplicationStatisticsView(int count, String totalExpenses, List<TravelEmployeeStatisticsView> appStatuses) {
         this.totalExpenses = totalExpenses;
         this.appStatuses = appStatuses;
         this.count = count;
@@ -33,11 +33,11 @@ public class TravelApplicationStatisticsView implements ViewObject {
         this.totalExpenses = totalExpenses;
     }
 
-    public List<TravelStatusCountView> getAppStatuses() {
+    public List<TravelEmployeeStatisticsView> getAppStatuses() {
         return appStatuses;
     }
 
-    public void setAppStatuses(List<TravelStatusCountView> appStatuses) {
+    public void setAppStatuses(List<TravelEmployeeStatisticsView> appStatuses) {
         this.appStatuses = appStatuses;
     }
 

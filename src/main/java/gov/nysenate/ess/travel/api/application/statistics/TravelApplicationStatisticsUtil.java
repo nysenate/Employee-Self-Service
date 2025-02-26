@@ -23,7 +23,7 @@ public class TravelApplicationStatisticsUtil {
         TravelApplicationStatisticsUtil.employeeInfoService = employeeInfoService;
     }
 
-    public static List<TravelStatusCountDTO> getTravelStatusCount(List<TravelApplicationView> travelApplicationList) {
+    public static List<TravelEmployeeStatisticsDTO> getTravelStatusCount(List<TravelApplicationView> travelApplicationList) {
         Map<Integer, EmployeeStatusSummary> employeeMap = new HashMap<>();
 
         for (TravelApplicationView travelApplication : travelApplicationList) {
@@ -72,8 +72,8 @@ public class TravelApplicationStatisticsUtil {
         summary.getTravelApplications().add(travelApplication);
     }
 
-    private static List<TravelStatusCountDTO> buildTravelStatusCountDTOList(Map<Integer, EmployeeStatusSummary> employeeMap) {
-        List<TravelStatusCountDTO> travelStatusCountDTOList = new ArrayList<>();
+    private static List<TravelEmployeeStatisticsDTO> buildTravelStatusCountDTOList(Map<Integer, EmployeeStatusSummary> employeeMap) {
+        List<TravelEmployeeStatisticsDTO> travelEmployeeStatisticsDTOList = new ArrayList<>();
 
         for (Map.Entry<Integer, EmployeeStatusSummary> entry : employeeMap.entrySet()) {
             EmployeeStatusSummary summary = entry.getValue();
@@ -83,7 +83,7 @@ public class TravelApplicationStatisticsUtil {
                 travelStatusCountList.add(statusEntry.getValue());
             }
 
-            travelStatusCountDTOList.add(new TravelStatusCountDTO(
+            travelEmployeeStatisticsDTOList.add(new TravelEmployeeStatisticsDTO(
                                                         entry.getKey(),
                                                         summary.employeeView,
                                                         summary.countOfApplications,
@@ -91,16 +91,16 @@ public class TravelApplicationStatisticsUtil {
                                                         travelStatusCountList
             ));
         }
-        return travelStatusCountDTOList;
+        return travelEmployeeStatisticsDTOList;
     }
 
-    public static TravelApplicationStatisticsView buildTravelApplicationStatisticsView(List<TravelStatusCountView> appStatsViews) {
+    public static TravelApplicationStatisticsView buildTravelApplicationStatisticsView(List<TravelEmployeeStatisticsView> appStatsViews) {
 
         int count=0;
         Double totalExpenses = 0.0;
-        for (TravelStatusCountView travelStatusCountView : appStatsViews) {
-            count += travelStatusCountView.getCount();
-            totalExpenses += Double.parseDouble(travelStatusCountView.getTotalExpenses());
+        for (TravelEmployeeStatisticsView travelEmployeeStatisticsView : appStatsViews) {
+            count += travelEmployeeStatisticsView.getCount();
+            totalExpenses += Double.parseDouble(travelEmployeeStatisticsView.getTotalExpenses());
         }
         return new TravelApplicationStatisticsView(count, totalExpenses.toString(), appStatsViews);
     }

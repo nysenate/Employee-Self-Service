@@ -2,13 +2,11 @@ package gov.nysenate.ess.travel.api.application.statistics;
 
 import gov.nysenate.ess.core.client.view.EmployeeView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
-import gov.nysenate.ess.travel.api.application.TravelApplicationView;
 
 import java.util.List;
-import java.util.Map;
 
 
-public class TravelStatusCountView implements ViewObject {
+public class TravelEmployeeStatisticsView implements ViewObject {
 
     private Integer emplId;
     private int count;
@@ -17,7 +15,7 @@ public class TravelStatusCountView implements ViewObject {
     private List<StatusSummary> statusSummaryList;
 
     // Constructor
-    public TravelStatusCountView(Integer emplId, EmployeeView employeeView, int count, String totalExpenses, List<StatusSummary> statusSummaryList) {
+    public TravelEmployeeStatisticsView(Integer emplId, EmployeeView employeeView, int count, String totalExpenses, List<StatusSummary> statusSummaryList) {
         this.emplId = emplId;
         this.count = count;
         this.employeeView = employeeView;
@@ -25,12 +23,12 @@ public class TravelStatusCountView implements ViewObject {
         this.statusSummaryList = statusSummaryList;
     }
 
-    public TravelStatusCountView(TravelStatusCountDTO travelStatusCountDTO) {
-        emplId = travelStatusCountDTO.getEmplId();
-        count = travelStatusCountDTO.getCount();
-        employeeView = travelStatusCountDTO.getEmployeeView();
-        totalExpenses = travelStatusCountDTO.getTotalExpenses();
-        statusSummaryList = travelStatusCountDTO.getStatusSummaryList();
+    public TravelEmployeeStatisticsView(TravelEmployeeStatisticsDTO travelEmployeeStatisticsDTO) {
+        emplId = travelEmployeeStatisticsDTO.getEmplId();
+        count = travelEmployeeStatisticsDTO.getCount();
+        employeeView = travelEmployeeStatisticsDTO.getEmployeeView();
+        totalExpenses = travelEmployeeStatisticsDTO.getTotalExpenses();
+        statusSummaryList = travelEmployeeStatisticsDTO.getStatusSummaryList();
     }
 
     // Getters and Setters

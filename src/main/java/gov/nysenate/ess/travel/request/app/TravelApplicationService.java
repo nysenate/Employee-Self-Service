@@ -34,15 +34,14 @@ public class TravelApplicationService {
     }
 
     /**
-     * Get a list of all travel applications.
+     * Get a list of all travel applications between fromDate and toDate.
      *
-     * @return
+     * @return List<TravelApplication>
      */
-    public List<TravelApplication> selectAllTravelApplications(LocalDateTime from, LocalDateTime to) {
+    public List<TravelApplication> selectTravelApplicationsBetweenFromAndToDates(LocalDateTime from, LocalDateTime to) {
         return travelApplicationDao.selectAllApplications(from, to).stream()
-                                    .filter(app -> app.getSubmittedDateTime() != null)
-                                    .collect(Collectors.toList());
-
+                .filter(app -> app.getSubmittedDateTime() != null)
+                .collect(Collectors.toList());
     }
 
     public void saveApplication(TravelApplication app) {

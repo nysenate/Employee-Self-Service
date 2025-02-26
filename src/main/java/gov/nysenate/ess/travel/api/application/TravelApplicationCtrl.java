@@ -6,14 +6,14 @@ import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.travel.api.application.statistics.TravelApplicationStatisticsUtil;
 import gov.nysenate.ess.travel.api.application.statistics.TravelApplicationStatisticsView;
-import gov.nysenate.ess.travel.api.application.statistics.TravelStatusCountDTO;
-import gov.nysenate.ess.travel.api.application.statistics.TravelStatusCountView;
+import gov.nysenate.ess.travel.api.application.statistics.TravelEmployeeStatisticsDTO;
+import gov.nysenate.ess.travel.api.application.statistics.TravelEmployeeStatisticsView;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
-import gov.nysenate.ess.travel.request.attachment.Attachment;
-import gov.nysenate.ess.travel.request.attachment.SqlAttachmentDao;
+import gov.nysenate.ess.travel.report.pdf.TravelAppPdfGenerator;
 import gov.nysenate.ess.travel.request.app.TravelApplication;
 import gov.nysenate.ess.travel.request.app.TravelApplicationService;
-import gov.nysenate.ess.travel.report.pdf.TravelAppPdfGenerator;
+import gov.nysenate.ess.travel.request.attachment.Attachment;
+import gov.nysenate.ess.travel.request.attachment.SqlAttachmentDao;
 import gov.nysenate.ess.travel.review.ApplicationReview;
 import gov.nysenate.ess.travel.review.ApplicationReviewService;
 import gov.nysenate.ess.travel.utils.AttachmentService;
@@ -86,20 +86,20 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
         LocalDate toLocalDate = parseISODate(toDate, "to-date");
         LocalDateTime toLocalDateTime = toLocalDate.atStartOfDay();
 
-        List<TravelApplication> apps = appService.selectAllTravelApplications(fromLocalDateTime, toLocalDateTime);
+        List<TravelApplication> apps = appService.selectTravelApplicationsBetweenFromAndToDates(fromLocalDateTime, toLocalDateTime);
 
         List<TravelApplicationView> appViews = apps.stream()
                                                     .map(TravelApplicationView::new)
                                                     .collect(Collectors.toList());
 
-        List<TravelStatusCountDTO> appStatuses = TravelApplicationStatisticsUtil.getTravelStatusCount(appViews);
+        List<TravelEmployeeStatisticsDTO> appStatistics = TravelApplicationStatisticsUtil.getTravelStatusCount(appViews);
 
-        List<TravelStatusCountView> appStatsViews = appStatuses.stream()
-                                                            .map(TravelStatusCountView::new)
+        List<TravelEmployeeStatisticsView> appStatisticsViews = appStatistics.stream()
+                                                            .map(TravelEmployeeStatisticsView::new)
                                                             .collect(Collectors.toList());
 
         TravelApplicationStatisticsView travelApplicationStatisticsView =
-                TravelApplicationStatisticsUtil.buildTravelApplicationStatisticsView(appStatsViews);
+                TravelApplicationStatisticsUtil.buildTravelApplicationStatisticsView(appStatisticsViews);
         return new ViewObjectResponse<>(travelApplicationStatisticsView);
     }
     @RequestMapping(value = "/applications")

@@ -4,7 +4,7 @@ import gov.nysenate.ess.core.client.view.EmployeeView;
 
 import java.util.List;
 
-public class TravelStatusCountDTO {
+public class TravelEmployeeStatisticsDTO {
 
     private Integer emplId;
     private EmployeeView employeeView;
@@ -14,7 +14,7 @@ public class TravelStatusCountDTO {
 
 
     // Constructor
-    public TravelStatusCountDTO(Integer emplId, EmployeeView employeeView, int count, String totalExpenses, List<StatusSummary> statusSummaryList) {
+    public TravelEmployeeStatisticsDTO(Integer emplId, EmployeeView employeeView, int count, String totalExpenses, List<StatusSummary> statusSummaryList) {
         this.emplId = emplId;
         this.count = count;
         this.employeeView = employeeView;
