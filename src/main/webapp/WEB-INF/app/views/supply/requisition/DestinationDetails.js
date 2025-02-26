@@ -20,22 +20,6 @@ const DestinationDetails = ({
             [change]
           </button>
         </div>
-        <div className={styles.searchBar}>
-          <input type="text" className={styles.searchInput} />
-          <Button>Search</Button>
-          <Button className={styles.resetButton}>Reset</Button>
-        </div>
-        <div className={styles.sortBy}>
-          <label>Sort By:</label>
-          <select
-            className={styles.sortSelect}
-            value={sortOption}
-            onChange={handleSortChange}
-          >
-            <option value="name">Name</option>
-            <option value="category">Category</option>
-          </select>
-        </div>
       </div>
     </div>
   );
