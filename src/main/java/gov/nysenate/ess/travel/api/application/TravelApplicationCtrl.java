@@ -5,6 +5,7 @@ import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.travel.api.application.statistics.TravelApplicationStatisticsUtil;
+import gov.nysenate.ess.travel.api.application.statistics.TravelApplicationStatisticsView;
 import gov.nysenate.ess.travel.api.application.statistics.TravelStatusCountDTO;
 import gov.nysenate.ess.travel.api.application.statistics.TravelStatusCountView;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
@@ -96,7 +97,10 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
         List<TravelStatusCountView> appStatsViews = appStatuses.stream()
                                                             .map(TravelStatusCountView::new)
                                                             .collect(Collectors.toList());
-        return ListViewResponse.of(appStatsViews);
+
+        TravelApplicationStatisticsView travelApplicationStatisticsView =
+                TravelApplicationStatisticsUtil.buildTravelApplicationStatisticsView(appStatsViews);
+        return new ViewObjectResponse<>(travelApplicationStatisticsView);
     }
     @RequestMapping(value = "/applications")
     public BaseResponse getActiveTravelApps() {

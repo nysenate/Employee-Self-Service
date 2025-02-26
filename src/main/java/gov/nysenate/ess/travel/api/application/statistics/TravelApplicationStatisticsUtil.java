@@ -94,6 +94,17 @@ public class TravelApplicationStatisticsUtil {
         return travelStatusCountDTOList;
     }
 
+    public static TravelApplicationStatisticsView buildTravelApplicationStatisticsView(List<TravelStatusCountView> appStatsViews) {
+
+        int count=0;
+        Double totalExpenses = 0.0;
+        for (TravelStatusCountView travelStatusCountView : appStatsViews) {
+            count += travelStatusCountView.getCount();
+            totalExpenses += Double.parseDouble(travelStatusCountView.getTotalExpenses());
+        }
+        return new TravelApplicationStatisticsView(count, totalExpenses.toString(), appStatsViews);
+    }
+
     private static class EmployeeStatusSummary {
         int countOfApplications;
         String totalExpenses;

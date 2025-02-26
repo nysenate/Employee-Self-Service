@@ -1,14 +1,16 @@
 package gov.nysenate.ess.travel.api.application.statistics;
 
+import gov.nysenate.ess.core.client.view.base.ViewObject;
+
 import java.util.List;
 
-public class TravelApplicationStatistics {
+public class TravelApplicationStatisticsView implements ViewObject {
 
     private int count;
-    private Long totalExpenses;
-    private List<TravelStatusCountDTO> appStatuses;
+    private String totalExpenses;
+    private List<TravelStatusCountView> appStatuses;
 
-    public TravelApplicationStatistics(int count, Long totalExpenses, List<TravelStatusCountDTO> appStatuses) {
+    public TravelApplicationStatisticsView(int count, String totalExpenses, List<TravelStatusCountView> appStatuses) {
         this.totalExpenses = totalExpenses;
         this.appStatuses = appStatuses;
         this.count = count;
@@ -16,26 +18,26 @@ public class TravelApplicationStatistics {
 
     @Override
     public String toString() {
-        return "TravelApplicationStatistics{" +
+        return "TravelApplicationStatisticsView{" +
                 "count=" + count +
                 ", totalExpenses=" + totalExpenses +
                 ", appStatuses=" + appStatuses +
                 '}';
     }
 
-    public Long getTotalExpenses() {
+    public String getTotalExpenses() {
         return totalExpenses;
     }
 
-    public void setTotalExpenses(Long totalExpenses) {
+    public void setTotalExpenses(String totalExpenses) {
         this.totalExpenses = totalExpenses;
     }
 
-    public List<TravelStatusCountDTO> getAppStatuses() {
+    public List<TravelStatusCountView> getAppStatuses() {
         return appStatuses;
     }
 
-    public void setAppStatuses(List<TravelStatusCountDTO> appStatuses) {
+    public void setAppStatuses(List<TravelStatusCountView> appStatuses) {
         this.appStatuses = appStatuses;
     }
 
@@ -45,5 +47,10 @@ public class TravelApplicationStatistics {
 
     public void setCount(int count) {
         this.count = count;
+    }
+
+    @Override
+    public String getViewType() {
+        return "travel_application_statistics";
     }
 }
