@@ -20,6 +20,7 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.util.Collection;
+import java.util.List;
 
 import static javax.mail.Message.RecipientType.*;
 
@@ -41,12 +42,16 @@ public class MimeSendMailService extends JavaMailSenderImpl implements SendMailS
     private final boolean testModeEnabled;
     private final InternetAddress testModeAddress;
 
+    private final List<String> reportEmails;
+    private final SendMailService sendMailService;
+
     @Autowired
     public MimeSendMailService(MailUtils mailUtils,
                                @Value("${runtime.level}") String runtimeLevel,
                                @Value("${mail.test.enabled:true}") boolean testModeEnabled,
-                               @Value("${mail.test.address:}") String testModeAddress
-    ) {
+                               @Value("${mail.test.address:}") String testModeAddress,
+                               @Value("${report.email}") String reportEmailList,
+                               SendMailService sendMailService) {
         setSession(mailUtils.getSmtpSession());
 
         this.runtimeLevel = RuntimeLevel.of(runtimeLevel);
@@ -64,6 +69,29 @@ public class MimeSendMailService extends JavaMailSenderImpl implements SendMailS
             }
         }
         this.testModeAddress = address;
+        this.reportEmails = List.of(reportEmailList.replaceAll(" ", "").split(","));
+        this.sendMailService = sendMailService;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void sendMessageToReportEmails(String subject, String text) {
+        for (String email : reportEmails) {
+            sendMessage(email, subject, text);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void sendHTMLMessageToReportEmails(String subject, String html) {
+        for (String email : reportEmails) {
+            MimeMessage message = newHtmlMessage(email, subject, html);
+            send(message);
+        }
     }
 
     /**
