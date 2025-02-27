@@ -1,5 +1,6 @@
 import styles from "../universalStyles.module.css";
 import React, { useEffect, useState } from "react";
+import { useSupplyContext } from "app/views/supply/requisition/useSupplyContext";
 
 const ItemsGrid = ({
   items,
@@ -28,6 +29,7 @@ const ItemDisplay = ({
   handleQuantityChange,
   handleOverOrderAttempt,
 }) => {
+  const { incrementItem } = useSupplyContext();
   const itemInCart = cart[item.id];
   const isMaxQuantity = itemInCart && itemInCart >= item.perOrderAllowance;
   const [localValue, setLocalValue] = useState(cart[item.id] || 0);
@@ -82,7 +84,8 @@ const ItemDisplay = ({
               {!itemInCart ? (
                 <input
                   className={styles.addToCartBtn}
-                  onClick={() => handleQuantityChange(item.id, localValue + 1)}
+                  // onClick={() => handleQuantityChange(item.id, localValue + 1)}
+                  onClick={() => incrementItem(item.id)}
                   type="button"
                   value="Add to Cart"
                 />
