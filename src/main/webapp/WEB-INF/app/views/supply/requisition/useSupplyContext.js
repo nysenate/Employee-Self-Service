@@ -13,6 +13,7 @@ const initialCartState = {
 
 const INCREMENT_ITEM = "INCREMENT";
 const DECREMENT_ITEM = "DECREMENT_ITEM";
+const UPDATE_QUANTITY = "UPDATE_QUANTITY";
 
 const cartReducer = (state, action) => {
   switch (action.type) {
@@ -37,6 +38,21 @@ const cartReducer = (state, action) => {
         [itemId]: newQuantity,
       };
       if (newQuantity <= 0) {
+        delete newItems[itemId];
+      }
+      return {
+        ...state,
+        items: newItems,
+        totalItems: calculateTotalItems(newItems),
+      };
+    }
+    case UPDATE_QUANTITY: {
+      const { itemId, quantity } = action.payload;
+      const newItems = {
+        ...state.items,
+        [itemId]: quantity,
+      };
+      if (quantity <= 0) {
         delete newItems[itemId];
       }
       return {
@@ -87,6 +103,10 @@ export function SupplyContextProvider({ children }) {
     dispatch({ type: DECREMENT_ITEM, payload: { itemId } });
   };
 
+  const updateQuantity = (itemId, quantity) => {
+    dispatch({ type: UPDATE_QUANTITY, payload: { itemId, quantity } });
+  };
+
   const value = {
     destination,
     setDestination,
@@ -94,6 +114,7 @@ export function SupplyContextProvider({ children }) {
     cart,
     incrementItem,
     decrementItem,
+    updateQuantity,
   };
 
   return (
