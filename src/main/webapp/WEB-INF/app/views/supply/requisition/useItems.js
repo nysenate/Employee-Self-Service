@@ -17,8 +17,11 @@ function getQueryKey(locId, categories, term, sort, limit, offset) {
 }
 
 // export function useItems({locId, categories, term, sort, limit, offset}) {
-export function useItems(params) {
-  console.log(params);
+export function useItems(locId, filterState) {
+  const params = {
+    locId,
+    ...filterState,
+  };
   const queryParams = buildQueryString(params);
   return useQuery({
     queryKey: getQueryKey(

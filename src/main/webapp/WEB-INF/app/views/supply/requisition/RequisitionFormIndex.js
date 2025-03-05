@@ -1,100 +1,67 @@
-import React, { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import React, { useEffect, useReducer, useState } from "react";
 import Hero from "app/components/Hero";
-import { ChangeDestinationPopup, OverOrderPopup } from "app/components/Popups";
 import styles from "../universalStyles.module.css";
-import useAuth from "app/contexts/Auth/useAuth";
 import LoadingIndicator from "app/components/LoadingIndicator";
-import { clearCart, updateItemQuantity } from "../cartUtils";
-import { getItems, getLocations } from "../helpers";
-import DestinationDetails from "./DestinationDetails";
 import SelectDestination from "./SelectDestination";
 import CartSummary from "app/views/supply/requisition/CartSummary";
 import { useSupplyContext } from "app/views/supply/requisition/useSupplyContext";
 import ItemListing from "app/views/supply/requisition/ItemListing";
+import RequisitionFilters from "app/views/supply/requisition/RequisitionFilters";
+import Controls from "app/components/Controls";
+import {
+  RESET_FILTERS,
+  SET_PAGE,
+  SET_SORT,
+  SET_TERM,
+} from "app/views/supply/requisition/itemFilterActions";
+
+const initFilterState = {
+  term: "",
+  categories: [],
+  sort: "Name",
+  limit: 16,
+  offset: 1,
+  page: 1,
+};
+
+function itemFilterReducer(state, action) {
+  switch (action.type) {
+    case SET_TERM:
+      return {
+        ...state,
+        term: action.payload.term,
+      };
+    case SET_PAGE:
+      return {
+        ...state,
+        page: action.payload.page,
+        offset: action.payload.page * state.limit - state.limit + 1,
+      };
+    case SET_SORT:
+      return {
+        ...state,
+        sort: action.payload.sort,
+      };
+    case RESET_FILTERS:
+      return {
+        ...initFilterState,
+      };
+    default:
+      return {
+        ...state,
+      };
+  }
+}
 
 export default function RequisitionFormIndex({ setCategories }) {
-  const auth = useAuth();
-  const { destination, deleteDestination } = useSupplyContext();
-
+  const { cart, destination, deleteDestination } = useSupplyContext();
   const [items, setItems] = useState([]);
-  const [cart, setCart] = useState(
-    () => JSON.parse(localStorage.getItem("cart")) || {},
-  );
-  const [sortOption, setSortOption] = useState("name");
   const [filteredItems, setFilteredItems] = useState([]);
 
-  useEffect(() => {
-    localStorage.removeItem("pending"); // Clean up pending if refresh occurred before popup conclusion
-    localStorage.removeItem("pendingQuantity"); // Clean up pending if refresh occurred before popup conclusion
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cart));
-  }, [cart]);
-
-  const handleOverOrderAttempt = (itemId, newQuantity) => {
-    localStorage.setItem("pending", JSON.stringify(itemId));
-    localStorage.setItem("pendingQuantity", JSON.stringify(newQuantity));
-    setIsOverOrderPopupOpen(true);
-  };
-
-  const handleQuantityChange = (itemId, quantity) => {
-    updateItemQuantity(itemId, quantity);
-    setCart(JSON.parse(localStorage.getItem("cart")));
-  };
-
-  const handleSortChange = (e) => {
-    setSortOption(e.target.value);
-    setItems(sortItems(items, e.target.value));
-  };
-
-  const handleChangeClick = () => {
-    const isCartEmpty = cart && Object.keys(cart).length === 0;
-    if (!isCartEmpty) {
-      setIsChangeDestinationPopupOpen(true);
-    } else {
-      fullWipe();
-    }
-  };
-
-  const fullWipe = () => {
-    clearCart();
-    setCart({});
-    deleteDestination();
-    setItems([]);
-    setFilteredItems([]);
-    setCategories([]);
-    localStorage.removeItem("destination");
-    localStorage.removeItem("pending");
-    localStorage.removeItem("pendingQuantity");
-    const newParams = new URLSearchParams();
-    //setSearchParams(newParams);
-  };
-
-  const [isOverOrderPopupOpen, setIsOverOrderPopupOpen] = useState(false);
-  const [isChangeDestinationPopupOpen, setIsChangeDestinationPopupOpen] =
-    useState(false);
-  const closeOverOrderPopup = () => {
-    setIsOverOrderPopupOpen(false);
-  };
-  const closeChangeDestinationPopup = () => {
-    setIsChangeDestinationPopupOpen(false);
-  };
-  const handleOverOrderAction = (decision) => {
-    if (decision) {
-      const pending = JSON.parse(localStorage.getItem("pending"));
-      const pendingQuantity = JSON.parse(
-        localStorage.getItem("pendingQuantity"),
-      );
-      handleQuantityChange(pending, pendingQuantity);
-    }
-    localStorage.removeItem("pending");
-    localStorage.removeItem("pendingQuantity");
-  };
-  const handleChangeDestinationAction = (decision) => {
-    if (decision) fullWipe();
-  };
+  const [filterState, dispatch] = useReducer(
+    itemFilterReducer,
+    initFilterState,
+  );
 
   if (!destination) {
     return <SelectDestination />;
@@ -120,46 +87,26 @@ export default function RequisitionFormIndex({ setCategories }) {
           <CartSummary cart={cart} />
         </a>
       </div>
-      {destination ? (
-        <div>
-          <DestinationDetails
-            destination={destination}
-            handleChangeClick={handleChangeClick}
-            sortOption={sortOption}
-            handleSortChange={handleSortChange}
-          />
-          <ItemListing
-            cart={cart}
-            handleQuantityChange={handleQuantityChange}
-            handleOverOrderAttempt={handleOverOrderAttempt}
-            setCategories={setCategories}
-          />
-        </div>
-      ) : (
-        <></>
-      )}
-      <OverOrderPopup
-        isModalOpen={isOverOrderPopupOpen}
-        closeModal={closeOverOrderPopup}
-        onAction={handleOverOrderAction}
+      <div className="">
+        <Controls>
+          <RequisitionFilters filterState={filterState} dispatch={dispatch} />
+        </Controls>
+      </div>
+      <ItemListing
+        filterState={filterState}
+        dispatch={dispatch}
+        setCategories={setCategories}
       />
-      <ChangeDestinationPopup
-        isModalOpen={isChangeDestinationPopupOpen}
-        closeModal={closeChangeDestinationPopup}
-        onAction={handleChangeDestinationAction}
-      />
+      {/*<OverOrderPopup*/}
+      {/*  isModalOpen={isOverOrderPopupOpen}*/}
+      {/*  closeModal={closeOverOrderPopup}*/}
+      {/*  onAction={handleOverOrderAction}*/}
+      {/*/>*/}
+      {/*<ChangeDestinationPopup*/}
+      {/*  isModalOpen={isChangeDestinationPopupOpen}*/}
+      {/*  closeModal={closeChangeDestinationPopup}*/}
+      {/*  onAction={handleChangeDestinationAction}*/}
+      {/*/>*/}
     </div>
   );
 }
-
-const sortItems = (items, sortOption) => {
-  if (sortOption === "name") {
-    return [...items].sort((a, b) =>
-      a.description.localeCompare(b.description),
-    );
-  }
-  if (sortOption === "category") {
-    return [...items].sort((a, b) => a.category.localeCompare(b.category));
-  }
-  return items;
-};

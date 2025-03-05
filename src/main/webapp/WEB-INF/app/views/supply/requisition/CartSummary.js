@@ -31,11 +31,6 @@ const CartIcon = () => {
 };
 
 const CartSummary = ({ cart }) => {
-  let totalItems = 0;
-  Object.keys(cart).forEach((id) => {
-    totalItems += cart[id] || 0;
-  });
-
   return (
     <div className={styles.cartWidget}>
       <div style={{ paddingTop: "13px", width: "100px" }}>
@@ -43,7 +38,7 @@ const CartSummary = ({ cart }) => {
           <CartIcon />
         </div>
         <div className={styles.col612} style={{ color: "white" }}>
-          {totalItems} {totalItems === 1 ? "item" : "items"}
+          {cart.totalItems} {cart.totalItems === 1 ? "item" : "items"}
         </div>
       </div>
     </div>
