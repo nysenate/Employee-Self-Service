@@ -1,34 +1,17 @@
 import React, { useState } from "react";
 
-export default function DatePicker() {
+export default function DatePicker({ onFetchStatistics }) {
 
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
 
   const handleFetchStatistics = async () => {
+
     if (!fromDate) {
-      alert("Please select a 'From Date'");
+      alert("Please select from date.");
       return;
     }
-
-    try {
-      const response = await fetch(`/api/v1/travel/applications/statistics?fromDate=${fromDate}&toDate=${toDate}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch data");
-      }
-
-      const data = await response.json();
-      console.log("API Response:", data);
-    } catch (error) {
-      console.error("Error fetching statistics:", error);
-    }
+    onFetchStatistics(fromDate, toDate);
   };
 
   return (
@@ -37,22 +20,23 @@ export default function DatePicker() {
         <label className="font-bold p-2">
           From Date:
         </label>
-          <input
-            type="date"
-            value={fromDate}
-            onChange={(e) => setFromDate(e.target.value)}
-            className="border rounded p-2 w-100"
-          />
+        <input
+          required={true}
+          type="date"
+          value={fromDate}
+          onChange={(e) => setFromDate(e.target.value)}
+          className="border rounded p-2 w-100"
+        />
 
         <label className="font-bold p-2">
           To Date:
         </label>
-          <input
-            type="date"
-            value={toDate}
-            onChange={(e) => setToDate(e.target.value)}
-            className="border rounded p-2 w-100"
-          />
+        <input
+          type="date"
+          value={toDate}
+          onChange={(e) => setToDate(e.target.value)}
+          className="border rounded p-2 w-100"
+        />
 
         <button
           onClick={handleFetchStatistics}

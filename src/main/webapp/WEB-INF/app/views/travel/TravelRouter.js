@@ -9,8 +9,8 @@ export default function TravelRouter() {
   return (
     <ThemeContext.Provider value={themes.travel}>
       <Routes>
-        <Route path="" element={<TravelLayout />}>
-          <Route path="/stats" element={<Travel />} />
+        <Route path="" element={<TravelLayout/>}>
+          <Route path="/stats" element={<Travel/>} />
         </Route>
       </Routes>
     </ThemeContext.Provider>

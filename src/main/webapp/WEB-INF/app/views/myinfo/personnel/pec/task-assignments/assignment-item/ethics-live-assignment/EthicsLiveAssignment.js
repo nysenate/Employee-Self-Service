@@ -48,7 +48,7 @@ export default function EthicsLiveAssignment({ assignment }) {
               <h2 className="text-2xl my-2">
                 Training Instructions
               </h2>
-              <p>
+              <p className="text-justify">
                 Existing employees must attend a LIVE in-person or online ethics training within the calendar year.
                 New employees must attend a LIVE in-person or online ethics training within 90 days of their employment
                 (pursuant to Chapter 56 of the Laws of 2022).

@@ -28,8 +28,6 @@ public class TravelApplicationStatisticsUtil {
 
         for (TravelApplicationView travelApplication : travelApplicationList) {
             int deptHead = travelApplication.getTravelerDeptHeadEmpId();
-
-            // Fetch or create EmployeeStatusSummary
             EmployeeStatusSummary summary;
             if (employeeMap.containsKey(deptHead)) {
                 summary = employeeMap.get(deptHead);
@@ -97,12 +95,13 @@ public class TravelApplicationStatisticsUtil {
     public static TravelApplicationStatisticsView buildTravelApplicationStatisticsView(List<TravelEmployeeStatisticsView> appStatsViews) {
 
         int count=0;
-        Double totalExpenses = 0.0;
+        double totalExpenses = 0.0;
         for (TravelEmployeeStatisticsView travelEmployeeStatisticsView : appStatsViews) {
             count += travelEmployeeStatisticsView.getCount();
             totalExpenses += Double.parseDouble(travelEmployeeStatisticsView.getTotalExpenses());
         }
-        return new TravelApplicationStatisticsView(count, totalExpenses.toString(), appStatsViews);
+        String roundedValue = String.format("%.2f", totalExpenses);
+        return new TravelApplicationStatisticsView(count, roundedValue, appStatsViews);
     }
 
     private static class EmployeeStatusSummary {
