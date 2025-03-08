@@ -8,7 +8,7 @@ import gov.nysenate.ess.supply.requisition.view.RequisitionView;
  */
 public class RequisitionUpdateEvent {
 
-    private RequisitionView requisitionView;
+    private final RequisitionView requisitionView;
 
     public RequisitionUpdateEvent(RequisitionView requisitionView) {
         this.requisitionView = requisitionView;

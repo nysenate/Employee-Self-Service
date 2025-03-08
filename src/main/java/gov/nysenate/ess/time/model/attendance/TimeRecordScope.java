@@ -4,8 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Set;
 
-public enum TimeRecordScope
-{
+public enum TimeRecordScope {
     EMPLOYEE("E"),
     SUPERVISOR("S"),
     PERSONNEL("P");
@@ -14,18 +13,6 @@ public enum TimeRecordScope
 
     TimeRecordScope(String code) {
         this.code = code;
-    }
-
-    public Set<TimeRecordStatus> getStatuses() {
-        return switch (this) {
-            case EMPLOYEE -> TimeRecordStatus.unlockedForEmployee();
-            case SUPERVISOR -> TimeRecordStatus.unlockedForSupervisor();
-            case PERSONNEL -> TimeRecordStatus.unlockedForPersonnel();
-        };
-    }
-
-    public String getCode() {
-        return code;
     }
 
     public static TimeRecordScope getScopeFromCode(String code) {
@@ -43,5 +30,17 @@ public enum TimeRecordScope
             default:
                 throw new IllegalArgumentException("Code did not match nay time record scopes.");
         }
+    }
+
+    public Set<TimeRecordStatus> getStatuses() {
+        return switch (this) {
+            case EMPLOYEE -> TimeRecordStatus.unlockedForEmployee();
+            case SUPERVISOR -> TimeRecordStatus.unlockedForSupervisor();
+            case PERSONNEL -> TimeRecordStatus.unlockedForPersonnel();
+        };
+    }
+
+    public String getCode() {
+        return code;
     }
 }

@@ -5,7 +5,10 @@ import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.requisition.model.Requisition;
 import gov.nysenate.ess.supply.statistics.SupplyStatistic;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -15,7 +18,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class LocationStatistic extends SupplyStatistic {
 
-    private Location location;
+    private final Location location;
 
     public LocationStatistic(Location location, Set<Requisition> requisitions) {
         super(requisitions);
@@ -37,8 +40,8 @@ public class LocationStatistic extends SupplyStatistic {
 
     private List<Requisition> requisitionsWithDestination(Location location) {
         return this.requisitions.stream()
-                                .filter(r -> r.getDestination().getLocId() == location.getLocId())
-                                .collect(Collectors.toList());
+                .filter(r -> r.getDestination().getLocId() == location.getLocId())
+                .collect(Collectors.toList());
     }
 
     private void addRequisitionQuantitiesToTotalQuantities(Map<String, Integer> requisitionQuantities, Map<String, Integer> totalQuantities) {

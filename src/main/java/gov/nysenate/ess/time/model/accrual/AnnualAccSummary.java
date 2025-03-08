@@ -1,15 +1,12 @@
 package gov.nysenate.ess.time.model.accrual;
 
-import gov.nysenate.ess.time.model.accrual.AccrualSummary;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
  * Represents a summary of accruals over a given year.
  */
-public class AnnualAccSummary extends AccrualSummary
-{
+public class AnnualAccSummary extends AccrualSummary {
     protected int year;
     protected LocalDate endDate;
     protected LocalDate closeDate;
@@ -21,7 +18,8 @@ public class AnnualAccSummary extends AccrualSummary
 
     /** --- Constructors --- */
 
-    public AnnualAccSummary() {}
+    public AnnualAccSummary() {
+    }
 
     /** --- Basic Getters/Setters --- */
 

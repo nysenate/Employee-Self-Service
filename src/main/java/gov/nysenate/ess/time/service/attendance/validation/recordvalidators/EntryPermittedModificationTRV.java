@@ -28,8 +28,52 @@ public class EntryPermittedModificationTRV implements TimeRecordValidator {
 
     private static final Logger logger = LoggerFactory.getLogger(EntryPermittedModificationTRV.class);
 
+    /**
+     * Raises exception if one entry is missing but the other isn't (from same date)
+     */
+    private static void checkForDateDiscrepancy(TimeEntry newEntry, TimeEntry prevEntry) {
+        if (newEntry == null ^ prevEntry == null) {
+            LocalDate existingDate = Optional.ofNullable(newEntry)
+                    .orElse(prevEntry)
+                    .getDate();
+            throw new TimeRecordErrorException(TimeRecordErrorCode.TIME_ENTRY_DATE_DISCREPANCY,
+                    new DateView(existingDate));
+        }
+    }
+
+    /**
+     * Check fields for equality between new and previous entries
+     */
+    private static void checkEntryFields(TimeEntry newEntry, TimeEntry prevEntry) {
+        checkEntryField(newEntry, prevEntry, "entryId", "BigInteger", TimeEntry::getEntryId);
+        checkEntryField(newEntry, prevEntry, "timeRecordId", "BigInteger", TimeEntry::getTimeRecordId);
+        checkEntryField(newEntry, prevEntry, "empId", "BigInteger", TimeEntry::getEmpId);
+        checkEntryField(newEntry, prevEntry, "active", "boolean", TimeEntry::isActive);
+        checkEntryField(newEntry, prevEntry, "payType", "String", TimeEntry::getPayType);
+        checkEntryField(newEntry, prevEntry, "employeeName", "String", TimeEntry::getEmployeeName);
+    }
+
+    /* --- Internal Methods --- */
+
+    /**
+     * Checks the two time entry field values to ensure they are equal
+     *
+     * @throws TimeRecordErrorException expressing the fields' immutability if they are not equal
+     */
+    private static void checkEntryField(TimeEntry newEntry, TimeEntry prevEntry,
+                                        String fieldName, String fieldType, Function<TimeEntry, ?> fieldGetter)
+            throws TimeRecordErrorException {
+        Object newVal = fieldGetter.apply(newEntry);
+        Object prevVal = fieldGetter.apply(prevEntry);
+        if (!Objects.equals(prevVal, newVal)) {
+            throw new TimeRecordErrorException(TimeRecordErrorCode.UNAUTHORIZED_ENTRY_MODIFICATION,
+                    new InvalidTimeEntryParameterView(prevEntry, fieldName, fieldType,
+                            fieldName + " is immutable to users", String.valueOf(newVal)));
+        }
+    }
+
     @Override
-    public boolean isApplicable(TimeRecord record, Optional<TimeRecord> previousState,TimeRecordAction action) {
+    public boolean isApplicable(TimeRecord record, Optional<TimeRecord> previousState, TimeRecordAction action) {
         // Always applicable
         return true;
     }
@@ -37,7 +81,7 @@ public class EntryPermittedModificationTRV implements TimeRecordValidator {
     /**
      * Check all time entries to ensure that only permitted fields were modified
      *
-     * @param record TimeRecord - A posted time record in the process of validation
+     * @param record        TimeRecord - A posted time record in the process of validation
      * @param previousState TimeRecord - The most recently saved version of the posted time record
      * @throws TimeRecordErrorException if invalid fields were modified
      **/
@@ -69,48 +113,5 @@ public class EntryPermittedModificationTRV implements TimeRecordValidator {
             checkEntryFields(newEntry, prevEntry);
         }
 
-    }
-
-    /* --- Internal Methods --- */
-
-    /**
-     * Raises exception if one entry is missing but the other isn't (from same date)
-     */
-    private static void checkForDateDiscrepancy(TimeEntry newEntry, TimeEntry prevEntry) {
-        if (newEntry == null ^ prevEntry == null) {
-            LocalDate existingDate = Optional.ofNullable(newEntry)
-                    .orElse(prevEntry)
-                    .getDate();
-            throw new TimeRecordErrorException(TimeRecordErrorCode.TIME_ENTRY_DATE_DISCREPANCY,
-                    new DateView(existingDate));
-        }
-    }
-
-    /**
-     * Check fields for equality between new and previous entries
-     */
-    private static void checkEntryFields(TimeEntry newEntry, TimeEntry prevEntry) {
-        checkEntryField(newEntry, prevEntry, "entryId", "BigInteger", TimeEntry::getEntryId);
-        checkEntryField(newEntry, prevEntry, "timeRecordId", "BigInteger", TimeEntry::getTimeRecordId);
-        checkEntryField(newEntry, prevEntry, "empId", "BigInteger", TimeEntry::getEmpId);
-        checkEntryField(newEntry, prevEntry, "active", "boolean", TimeEntry::isActive);
-        checkEntryField(newEntry, prevEntry, "payType", "String", TimeEntry::getPayType);
-        checkEntryField(newEntry, prevEntry, "employeeName", "String", TimeEntry::getEmployeeName);
-    }
-
-    /**
-     * Checks the two time entry field values to ensure they are equal
-     * @throws TimeRecordErrorException expressing the fields' immutability if they are not equal
-     */
-    private static void checkEntryField(TimeEntry newEntry, TimeEntry prevEntry,
-                                        String fieldName, String fieldType, Function<TimeEntry, ?> fieldGetter)
-            throws TimeRecordErrorException {
-        Object newVal = fieldGetter.apply(newEntry);
-        Object prevVal = fieldGetter.apply(prevEntry);
-        if (!Objects.equals(prevVal, newVal)) {
-            throw new TimeRecordErrorException(TimeRecordErrorCode.UNAUTHORIZED_ENTRY_MODIFICATION,
-                    new InvalidTimeEntryParameterView(prevEntry, fieldName, fieldType,
-                            fieldName + " is immutable to users", String.valueOf(newVal)));
-        }
     }
 }

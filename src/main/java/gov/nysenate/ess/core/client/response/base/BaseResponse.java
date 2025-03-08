@@ -8,8 +8,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.io.IOException;
 
 @XmlRootElement(name = "BaseResponse")
-public abstract class BaseResponse
-{
+public abstract class BaseResponse {
     @XmlElement
     public boolean success = false;
     @XmlElement

@@ -18,8 +18,7 @@ import java.util.TreeSet;
 import static gov.nysenate.ess.time.dao.attendance.SqlAttendanceQuery.*;
 
 @Service
-public class SqlAttendanceDao extends SqlBaseDao implements AttendanceDao
-{
+public class SqlAttendanceDao extends SqlBaseDao implements AttendanceDao {
     /** {@inheritDoc} */
     @Override
     public SortedSet<Integer> getOpenAttendanceYears(Integer empId) {
@@ -73,12 +72,11 @@ public class SqlAttendanceDao extends SqlBaseDao implements AttendanceDao
         MapSqlParameterSource params = new MapSqlParameterSource("empId", empId)
                 .addValue("endDate", toDate(period.getEndDate()));
         try {
-            List<AttendanceRecord> attendanceRecordList =  remoteNamedJdbc.query(GET_ATTENDANCE_RECORD.getSql(schemaMap()),
+            List<AttendanceRecord> attendanceRecordList = remoteNamedJdbc.query(GET_ATTENDANCE_RECORD.getSql(schemaMap()),
                     params, new AttendanceRecordRowMapper());
             if (attendanceRecordList.isEmpty() || attendanceRecordList == null) {
                 throw new AttendanceRecordNotFoundEx(empId, period);
-            }
-            else {
+            } else {
                 return attendanceRecordList.get(0);
             }
         } catch (EmptyResultDataAccessException ex) {

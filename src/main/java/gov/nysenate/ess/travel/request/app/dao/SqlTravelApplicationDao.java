@@ -1,13 +1,14 @@
 package gov.nysenate.ess.travel.request.app.dao;
 
-import gov.nysenate.ess.core.dao.base.*;
+import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.travel.request.allowances.SqlAllowancesDao;
 import gov.nysenate.ess.travel.request.allowances.lodging.SqlLodgingPerDiemsDao;
 import gov.nysenate.ess.travel.request.allowances.meal.SqlMealPerDiemsDao;
 import gov.nysenate.ess.travel.request.allowances.mileage.SqlMileagePerDiemsDao;
-import gov.nysenate.ess.travel.request.app.*;
+import gov.nysenate.ess.travel.request.app.TravelApplication;
+import gov.nysenate.ess.travel.request.app.TravelApplicationStatus;
 import gov.nysenate.ess.travel.request.attachment.SqlAttachmentDao;
 import gov.nysenate.ess.travel.request.route.RouteDao;
 import org.slf4j.Logger;
@@ -29,7 +30,7 @@ import static java.util.Map.entry;
 @Repository
 public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplicationDao {
 
-    private Logger logger = LoggerFactory.getLogger(SqlTravelApplicationDao.class);
+    private final Logger logger = LoggerFactory.getLogger(SqlTravelApplicationDao.class);
 
     @Autowired private EmployeeInfoService employeeInfoService;
     @Autowired private RouteDao routeDao;
@@ -68,12 +69,12 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
 
     @Override
     public void updateTravelApplicationStatus(int appId, TravelApplicationStatus status) {
-       MapSqlParameterSource params = new MapSqlParameterSource()
-               .addValue("appId", appId)
-               .addValue("status", status.status().name())
-               .addValue("note", status.note());
-       String sql = SqlTravelApplicationQuery.UPDATE_APP_STATUS.getSql(schemaMap());
-       localNamedJdbc.update(sql, params);
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("appId", appId)
+                .addValue("status", status.status().name())
+                .addValue("note", status.note());
+        String sql = SqlTravelApplicationQuery.UPDATE_APP_STATUS.getSql(schemaMap());
+        localNamedJdbc.update(sql, params);
     }
 
     private void saveApplication(TravelApplication app) {

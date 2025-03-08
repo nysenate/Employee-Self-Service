@@ -26,7 +26,8 @@ public class SupplyStatisticsRestCtrl extends BaseRestApiCtrl {
     /**
      * Return a Map of location strings to location statistics for easy
      * look up in the front end.
-     * @param year The year to generate statistics for.
+     *
+     * @param year  The year to generate statistics for.
      * @param month The month to generate statistics for.
      */
     @RequestMapping("/locations")

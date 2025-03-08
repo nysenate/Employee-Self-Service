@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * A utility class that uses the thread pool configured in Spring to run a given {@link Runnable}
+ *
  * @see Async
  */
 @Service

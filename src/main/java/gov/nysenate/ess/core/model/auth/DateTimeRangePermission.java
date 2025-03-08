@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 
 /**
  * Represents a wildcard permission that is only valid for a period of time
+ *
  * @see WildcardPermission
  * DateTimeRangePermission cannot imply a non DateTimeRangePermission unless it includes all
  */
@@ -51,11 +52,12 @@ public class DateTimeRangePermission extends WildcardPermission {
 
     /**
      * Return true if this permission's wildcard permission component implies the other's
-     *  and the effective date time range of this permission encloses or intersects the other's,
-     *  depending on the other permission's requireEnclosing setting.
-     * @see WildcardPermission#implies(Permission)
+     * and the effective date time range of this permission encloses or intersects the other's,
+     * depending on the other permission's requireEnclosing setting.
+     *
      * @param p Permission
      * @return boolean
+     * @see WildcardPermission#implies(Permission)
      */
     @Override
     public boolean implies(Permission p) {
@@ -78,9 +80,8 @@ public class DateTimeRangePermission extends WildcardPermission {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof DateTimeRangePermission)) return false;
+        if (!(o instanceof DateTimeRangePermission that)) return false;
         if (!super.equals(o)) return false;
-        DateTimeRangePermission that = (DateTimeRangePermission) o;
         return Objects.equal(effectiveRange, that.effectiveRange);
     }
 

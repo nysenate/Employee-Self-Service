@@ -19,8 +19,8 @@ import java.util.TreeMap;
 class CachedAnnualAccrualService extends EmployeeEhCache<CachedAnnualAccrualService.AnnualAccCacheTree> {
     private static final Logger logger = LoggerFactory.getLogger(CachedAnnualAccrualService.class);
     private final AccrualDao accrualDao;
-    private LocalDateTime lastUpdateDateTime;
     private final ActiveEmployeeIdService employeeIdService;
+    private LocalDateTime lastUpdateDateTime;
 
     @Autowired
     CachedAnnualAccrualService(AccrualDao accrualDao, ActiveEmployeeIdService employeeIdService) {
@@ -40,15 +40,6 @@ class CachedAnnualAccrualService extends EmployeeEhCache<CachedAnnualAccrualServ
     private void putId(int empId) {
         var annualAccCacheTree = new AnnualAccCacheTree(accrualDao.getAnnualAccruals(empId, DateUtils.THE_FUTURE.getYear()));
         cache.put(empId, annualAccCacheTree);
-    }
-
-    /**
-     * Used to prevent type erasure. The summaries are stored as a map of year -> summary
-     */
-    static final class AnnualAccCacheTree extends TreeMap<Integer, AnnualAccSummary> {
-        private AnnualAccCacheTree(TreeMap<Integer, AnnualAccSummary> annualAccruals) {
-            super(annualAccruals);
-        }
     }
 
     /** {@inheritDoc} */
@@ -77,5 +68,14 @@ class CachedAnnualAccrualService extends EmployeeEhCache<CachedAnnualAccrualServ
         lastUpdateDateTime = updatedAnnualAccs.stream().map(AnnualAccSummary::getUpdateDate)
                 .max(LocalDateTime::compareTo).orElse(lastUpdateDateTime);
         logger.info("Refreshed cache with {} updated annual accrual records", updatedAnnualAccs.size());
+    }
+
+    /**
+     * Used to prevent type erasure. The summaries are stored as a map of year -> summary
+     */
+    static final class AnnualAccCacheTree extends TreeMap<Integer, AnnualAccSummary> {
+        private AnnualAccCacheTree(TreeMap<Integer, AnnualAccSummary> annualAccruals) {
+            super(annualAccruals);
+        }
     }
 }

@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
  * First, it gets the users roles. Then calls an instance of
  * {@link PermissionFactory} to map those roles to permissions for
  * each app in ESS.
- *
+ * <p>
  * New Ess apps should create an implementation of {@code PermissionFactory},
  * and inject it into spring to be included in the permission factory list in this class
  */

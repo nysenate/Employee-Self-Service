@@ -36,5 +36,5 @@ public class TravelPageCtrl {
             modelMap.addAllAttributes(pageCtrlUtils.commonPageData());
             return "travel";
         }
-	}
+    }
 }

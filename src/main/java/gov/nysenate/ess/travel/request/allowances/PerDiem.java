@@ -23,6 +23,7 @@ public final class PerDiem implements Comparable<PerDiem> {
     /**
      * Checks if the rate for this Per Diem is zero.
      * Uses compareTo instead of equals to check only the value for equality, not the scale.
+     *
      * @return
      */
     public boolean isRateZero() {
@@ -63,8 +64,7 @@ public final class PerDiem implements Comparable<PerDiem> {
     public int compareTo(PerDiem o) {
         if (this.date.equals(o.date)) {
             return this.rate.compareTo(o.rate);
-        }
-        else {
+        } else {
             return this.date.compareTo(o.date);
         }
     }

@@ -4,7 +4,6 @@ import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.auth.SimpleEssPermission;
 import gov.nysenate.ess.web.client.response.PingResponse;
 import gov.nysenate.ess.web.security.session.SessionTimeoutDao;
-import org.apache.shiro.authz.UnauthorizedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +15,10 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 /**
  * This class uses to maintaining heart-beating.
- *
+ * <p>
  * Provides an api method that can be used by the front end to track
  * the user's session timeout and keep the session alive.
- *
+ * <p>
  * Created by Chenguang He on 6/30/2016.
  * Modified by Sam Stouffer on 3/7/2018
  */

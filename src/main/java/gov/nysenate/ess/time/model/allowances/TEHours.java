@@ -15,6 +15,10 @@ public class TEHours {
     protected int hourStatus;
     protected int empId;
 
+    public BigDecimal getTEHours() {
+        return TEHours;
+    }
+
     /**
      * --- Basic Getters/Setters ---
      */
@@ -23,40 +27,36 @@ public class TEHours {
         this.TEHours = TEHours;
     }
 
-    public BigDecimal getTEHours() {
-        return TEHours;
+    public Date getBeginDate() {
+        return beginDate;
     }
 
     public void setBeginDate(Date beginDate) {
         this.beginDate = beginDate;
     }
 
-    public Date getBeginDate() {
-        return beginDate;
+    public Date getEndDate() {
+        return endDate;
     }
 
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
     }
 
-    public Date getEndDate() {
-        return endDate;
+    public int getHourStatus() {
+        return hourStatus;
     }
 
     public void setHourStatus(int hourStatus) {
         this.hourStatus = hourStatus;
     }
 
-    public int getHourStatus() {
-        return hourStatus;
+    public int getEmpId() {
+        return empId;
     }
 
     public void setEmpId(int empId) {
         this.empId = empId;
-    }
-
-    public int getEmpId() {
-        return empId;
     }
 
 

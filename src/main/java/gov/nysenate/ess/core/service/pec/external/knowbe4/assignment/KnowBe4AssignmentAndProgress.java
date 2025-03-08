@@ -41,7 +41,8 @@ public class KnowBe4AssignmentAndProgress {
     @JsonProperty("policy_acknowledged")
     private boolean policy_acknowledged;
 
-    public KnowBe4AssignmentAndProgress() {}
+    public KnowBe4AssignmentAndProgress() {
+    }
 
     public Integer getEnrollment_id() {
         return enrollment_id;

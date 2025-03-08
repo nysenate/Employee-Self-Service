@@ -18,7 +18,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static gov.nysenate.ess.time.model.auth.TimePermissionObject.*;
+import static gov.nysenate.ess.time.model.auth.TimePermissionObject.ATTENDANCE_RECORDS;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.HEAD;
 
@@ -31,17 +31,18 @@ public class AttendanceRestApiCtrl extends BaseRestApiCtrl {
     /**
      * Get Attendance Record API
      * -------------------
-     *
+     * <p>
      * Get all attendance records for one employee during the given year:
      * (GET) /api/v1/attendance/records[.json]
-     *
+     * <p>
      * Request Parameters:
+     *
      * @param empId - Integer - required - Records will be retrieved for these employee ids
-     * @param year - Integer - Specifies the attendance year for which records will be retrieved
+     * @param year  - Integer - Specifies the attendance year for which records will be retrieved
      */
     @RequestMapping(value = "records", method = {GET, HEAD}, params = {"empId", "year"})
     public BaseResponse getAttendanceRecords(@RequestParam Integer empId, @RequestParam Integer year) {
-        checkPermission(new EssTimePermission( empId, ATTENDANCE_RECORDS, GET, DateUtils.yearDateRange(year)));
+        checkPermission(new EssTimePermission(empId, ATTENDANCE_RECORDS, GET, DateUtils.yearDateRange(year)));
 
         return getRecordResponse(attendanceDao.getAttendanceRecords(empId, year));
     }
@@ -49,15 +50,15 @@ public class AttendanceRestApiCtrl extends BaseRestApiCtrl {
     /**
      * Get Attendance Record API
      * -------------------
-     *
+     * <p>
      * Get all attendance records for one employee during the given date range:
      * (GET) /api/v1/attendance/records[.json]
-     *
+     * <p>
      * Request Parameters:
-     * @param empId - Integer - required - Records will be retrieved for these employee ids
-     * @param from - String (ISO 8601 Date) - Records will be retrieved starting from this date
-     * @param to - String (ISO 8601 Date) - Records will be retrieved up to this date
      *
+     * @param empId - Integer - required - Records will be retrieved for these employee ids
+     * @param from  - String (ISO 8601 Date) - Records will be retrieved starting from this date
+     * @param to    - String (ISO 8601 Date) - Records will be retrieved up to this date
      */
     @RequestMapping(value = "records", method = {GET, HEAD}, params = {"empId", "from", "to"})
     public BaseResponse getAttendanceRecords(@RequestParam Integer empId,
@@ -67,7 +68,7 @@ public class AttendanceRestApiCtrl extends BaseRestApiCtrl {
         LocalDate toDate = parseISODate(to, "to");
         Range<LocalDate> dateRange = getClosedOpenRange(fromDate, toDate, "from", "to");
 
-        checkPermission(new EssTimePermission( empId, ATTENDANCE_RECORDS, GET, dateRange));
+        checkPermission(new EssTimePermission(empId, ATTENDANCE_RECORDS, GET, dateRange));
 
         return getRecordResponse(attendanceDao.getAttendanceRecords(empId, dateRange));
     }

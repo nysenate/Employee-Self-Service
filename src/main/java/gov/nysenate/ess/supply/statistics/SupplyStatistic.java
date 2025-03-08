@@ -2,7 +2,6 @@ package gov.nysenate.ess.supply.statistics;
 
 import gov.nysenate.ess.supply.requisition.model.Requisition;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 

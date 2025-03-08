@@ -1,7 +1,6 @@
 package gov.nysenate.ess.core.util;
 
 import com.google.common.collect.*;
-import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
@@ -12,8 +11,7 @@ import java.util.EnumSet;
 import java.util.GregorianCalendar;
 
 
-public class DateUtils
-{
+public class DateUtils {
     /** --- Reference Dates --- */
 
     public static final LocalDate LONG_AGO = LocalDate.of(1970, 1, 1);
@@ -44,7 +42,8 @@ public class DateUtils
 
     /**
      * Return a range of dates corresponding to all of the days in the given year
-     *  range is in the form [Jan 1 {year}, Jan 1 {year + 1})
+     * range is in the form [Jan 1 {year}, Jan 1 {year + 1})
+     *
      * @param year int
      * @return Range<LocalDate> - all of the days in the given year
      */
@@ -69,6 +68,7 @@ public class DateUtils
 
     /**
      * Gets the senate fiscal year of the given date
+     *
      * @param localDate LocalDate
      * @return int - fiscal year of given date
      */
@@ -78,6 +78,7 @@ public class DateUtils
 
     /**
      * Gets the federal fiscal year of the given date.
+     *
      * @param date
      * @return int - federal fiscal year of given date.
      */
@@ -94,7 +95,8 @@ public class DateUtils
 
     /**
      * Converts a date range to a range of years enclosing the date range
-     * @param dateRange Range<LocalDate>
+     *
+     * @param dateRange   Range<LocalDate>
      * @param fiscalYears boolean - will return range of fiscal years if true
      * @return Range<Integer> - a closed open range containing all years covered by the date range
      */
@@ -164,6 +166,7 @@ public class DateUtils
     /**
      * Converts the given date range to a date time range
      * The resulting date time range is in the format [start of earliest day, start of latest day + 1)
+     *
      * @param localDateRange Range<LocalDate>
      * @return Range<LocalDateTime>
      */
@@ -190,6 +193,7 @@ public class DateUtils
 
     /**
      * Return true if the date is a weekday
+     *
      * @param date LocalDate
      * @return Boolean
      */
@@ -199,6 +203,7 @@ public class DateUtils
 
     /**
      * Get the number of weekdays during the given date range
+     *
      * @param dateRange Range<LocalDate>
      * @return Integer
      */
@@ -236,9 +241,10 @@ public class DateUtils
 
     /**
      * Get the number of weekdays during the given date range set
-     * @see #getNumberOfWeekdays(Range)
+     *
      * @param dateRange RangeSet<LocalDate>
      * @return Integer
+     * @see #getNumberOfWeekdays(Range)
      */
     public static long getNumberOfWeekdays(RangeSet<LocalDate> dateRange) {
         return dateRange.asRanges().stream()
@@ -295,8 +301,7 @@ public class DateUtils
             if (dateTimeRange.hasLowerBound()) {
                 lower = (dateTimeRange.lowerBoundType().equals(BoundType.CLOSED))
                         ? dateTimeRange.lowerEndpoint() : dateTimeRange.lowerEndpoint().plusNanos(1);
-            }
-            else {
+            } else {
                 lower = LONG_AGO.atStartOfDay();
             }
             return lower;
@@ -320,8 +325,7 @@ public class DateUtils
         if (dateTimeRange.hasUpperBound()) {
             upper = (dateTimeRange.upperBoundType().equals(BoundType.CLOSED))
                     ? dateTimeRange.upperEndpoint() : dateTimeRange.upperEndpoint().minusNanos(1);
-        }
-        else {
+        } else {
             upper = atEndOfDay(THE_FUTURE);
         }
         return upper;
@@ -335,7 +339,7 @@ public class DateUtils
      * @return LocalDate
      */
     public static LocalDate firstDayOfPreviousYear(LocalDate date) {
-        return LocalDate.from(date).minusYears(1).withDayOfYear(1);
+        return date.minusYears(1).withDayOfYear(1);
     }
 
     /**
@@ -356,8 +360,8 @@ public class DateUtils
     public static DiscreteDomain<LocalDate> getLocalDateDiscreteDomain() {
         return LocalDateDomain.INSTANCE;
     }
-    private static final class LocalDateDomain extends DiscreteDomain<LocalDate>
-    {
+
+    private static final class LocalDateDomain extends DiscreteDomain<LocalDate> {
         private static final LocalDateDomain INSTANCE = new LocalDateDomain();
 
         @Override

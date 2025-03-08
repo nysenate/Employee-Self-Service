@@ -21,6 +21,14 @@ import java.util.List;
 
 @Repository
 public class EthicsLiveCourseTaskDetailDao extends SqlBaseDao implements PersonnelTaskDetailDao<EthicsLiveCourseTask> {
+    private static final RowMapper<VideoTaskCode> codeRowMapper = (rs, rowNum) ->
+            new VideoTaskCode(
+                    rs.getInt("task_id"),
+                    rs.getInt("sequence_no"),
+                    rs.getString("label"),
+                    rs.getString("code")
+            );
+
     @Override
     public PersonnelTaskType taskType() {
         return PersonnelTaskType.ETHICS_LIVE_COURSE;
@@ -37,10 +45,36 @@ public class EthicsLiveCourseTaskDetailDao extends SqlBaseDao implements Personn
         return rowHandler.getResult();
     }
 
+    private enum Query implements BasicSqlQuery {
+
+        SELECT_ETHICS_LIVE_COURSE("SELECT *\n" +
+                "FROM ${essSchema}.ethics_code\n" +
+                "LEFT JOIN ${essSchema}.personnel_task c USING (task_id)\n" +
+                "WHERE task_id = :taskId"
+        ),
+        ;
+
+        private final String sql;
+
+        Query(String sql) {
+            this.sql = sql;
+        }
+
+        @Override
+        public String getSql() {
+            return sql;
+        }
+
+        @Override
+        public DbVendor getVendor() {
+            return DbVendor.POSTGRES;
+        }
+    }
+
     private static class EthicsLiveCourseRowHandler implements RowCallbackHandler {
         private final PersonnelTask task;
         private Integer taskID = null;
-        private List<VideoTaskCode> codes = new ArrayList<>();
+        private final List<VideoTaskCode> codes = new ArrayList<>();
 
         private EthicsLiveCourseRowHandler(PersonnelTask personnelTask) {
             this.task = personnelTask;
@@ -67,41 +101,6 @@ public class EthicsLiveCourseTaskDetailDao extends SqlBaseDao implements Personn
                 throw new EmptyResultDataAccessException("No ethics live course code id found for task " + task.getTaskId(), 1);
             }
             return new EthicsLiveCourseTask(task, codes);
-        }
-    }
-
-    private static final RowMapper<VideoTaskCode> codeRowMapper = (rs, rowNum) ->
-            new VideoTaskCode(
-                    rs.getInt("task_id"),
-                    rs.getInt("sequence_no"),
-                    rs.getString("label"),
-                    rs.getString("code")
-            );
-
-    private enum Query implements BasicSqlQuery {
-
-        SELECT_ETHICS_LIVE_COURSE("" +
-                "SELECT *\n" +
-                "FROM ${essSchema}.ethics_code\n" +
-                "LEFT JOIN ${essSchema}.personnel_task c USING (task_id)\n" +
-                "WHERE task_id = :taskId"
-        ),
-        ;
-
-        private final String sql;
-
-        Query(String sql) {
-            this.sql = sql;
-        }
-
-        @Override
-        public String getSql() {
-            return sql;
-        }
-
-        @Override
-        public DbVendor getVendor() {
-            return DbVendor.POSTGRES;
         }
     }
 }

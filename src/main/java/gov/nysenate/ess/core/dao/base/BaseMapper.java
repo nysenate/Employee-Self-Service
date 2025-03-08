@@ -5,8 +5,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-public abstract class BaseMapper
-{
+public abstract class BaseMapper {
     /**
      * Read the 'column' date value from the result set and cast it to a LocalDate.
      */

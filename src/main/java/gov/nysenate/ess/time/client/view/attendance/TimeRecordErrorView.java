@@ -3,8 +3,7 @@ package gov.nysenate.ess.time.client.view.attendance;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.time.service.attendance.validation.TimeRecordErrorCode;
 
-public class TimeRecordErrorView implements ViewObject
-{
+public class TimeRecordErrorView implements ViewObject {
 
     protected int errorCode;
     protected String errorName;

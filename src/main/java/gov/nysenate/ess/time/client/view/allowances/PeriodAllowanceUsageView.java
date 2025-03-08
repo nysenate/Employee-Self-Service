@@ -8,10 +8,10 @@ import java.math.BigDecimal;
 
 public class PeriodAllowanceUsageView extends AllowanceUsageView {
 
-    private PayPeriodView payPeriod;
+    private final PayPeriodView payPeriod;
 
-    private BigDecimal periodHoursUsed;
-    private BigDecimal periodMoneyUsed;
+    private final BigDecimal periodHoursUsed;
+    private final BigDecimal periodMoneyUsed;
 
     public PeriodAllowanceUsageView(PeriodAllowanceUsage allowanceUsage) {
         super(allowanceUsage);

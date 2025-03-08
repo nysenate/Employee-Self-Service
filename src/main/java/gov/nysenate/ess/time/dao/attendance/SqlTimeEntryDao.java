@@ -25,55 +25,8 @@ import static gov.nysenate.ess.time.dao.attendance.SqlTimeEntryQuery.INSERT_TIME
 import static gov.nysenate.ess.time.dao.attendance.SqlTimeEntryQuery.UPDATE_TIME_ENTRY;
 
 @Repository
-public class SqlTimeEntryDao extends SqlBaseDao implements TimeEntryDao
-{
+public class SqlTimeEntryDao extends SqlBaseDao implements TimeEntryDao {
     private static final Logger logger = LoggerFactory.getLogger(SqlTimeEntryDao.class);
-
-    @Override
-    public TimeEntry getTimeEntryById(BigInteger timeEntryId) {
-        throw new NotImplementedException("getTimeEntryById not yet implemented");
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @param timeRecordId
-     */
-    @Override
-    public List<TimeEntry> getTimeEntriesByRecordId(BigInteger timeRecordId) throws TimeEntryException {
-        List<TimeEntry> timeEntryList;
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("status", "A");
-        params.addValue("timesheetId", new BigDecimal(timeRecordId));
-        try {
-            timeEntryList = remoteNamedJdbc.query(
-                    SqlTimeEntryQuery.SELECT_TIME_ENTRIES_BY_TIME_RECORD_ID.getSql(schemaMap(),
-                            new OrderBy("DTDAY", SortOrder.ASC)), params, new RemoteEntryRowMapper());
-        }
-        catch (DataRetrievalFailureException ex) {
-            logger.warn("Retrieve time entries for record {} error: {}", timeRecordId, ex.getMessage());
-            throw new TimeEntryNotFoundEx("No matching TimeEntries for TimeRecord id: " + timeRecordId);
-        }
-        return timeEntryList;
-    }
-
-    @Override
-    public void updateTimeEntry(TimeEntry timeEntry) {
-        MapSqlParameterSource params = getTimeEntryParams(timeEntry);
-        KeyHolder entryIdHolder = new GeneratedKeyHolder();
-        String[] updFields = new String[]{"NUXRDAY"};
-
-        int updated = remoteNamedJdbc.update(UPDATE_TIME_ENTRY.getSql(schemaMap()), params);
-
-        // If the update didn't affect anything and the new entry is active, insert a new record.
-        // Inactive time records should not be inserted due to an odd trigger that sets them as active after save.
-        if (updated == 0 && timeEntry.isActive()) {
-            remoteNamedJdbc.update(INSERT_TIME_ENTRY.getSql(schemaMap()), params, entryIdHolder, updFields);
-            timeEntry.setEntryId(((BigDecimal) entryIdHolder.getKeys().get("NUXRDAY")).toBigInteger());
-            timeEntry.setOriginalDate(LocalDateTime.now());
-        }
-        timeEntry.setUpdateDate(LocalDateTime.now());
-    }
 
     private static MapSqlParameterSource getTimeEntryParams(TimeEntry timeEntry) {
         MapSqlParameterSource param = new MapSqlParameterSource();
@@ -104,5 +57,50 @@ public class SqlTimeEntryDao extends SqlBaseDao implements TimeEntryDao
         param.addValue("empComment", timeEntry.getEmpComment());
         param.addValue("payType", timeEntry.getPayType() != null ? timeEntry.getPayType().name() : null);
         return param;
+    }
+
+    @Override
+    public TimeEntry getTimeEntryById(BigInteger timeEntryId) {
+        throw new NotImplementedException("getTimeEntryById not yet implemented");
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @param timeRecordId
+     */
+    @Override
+    public List<TimeEntry> getTimeEntriesByRecordId(BigInteger timeRecordId) throws TimeEntryException {
+        List<TimeEntry> timeEntryList;
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("status", "A");
+        params.addValue("timesheetId", new BigDecimal(timeRecordId));
+        try {
+            timeEntryList = remoteNamedJdbc.query(
+                    SqlTimeEntryQuery.SELECT_TIME_ENTRIES_BY_TIME_RECORD_ID.getSql(schemaMap(),
+                            new OrderBy("DTDAY", SortOrder.ASC)), params, new RemoteEntryRowMapper());
+        } catch (DataRetrievalFailureException ex) {
+            logger.warn("Retrieve time entries for record {} error: {}", timeRecordId, ex.getMessage());
+            throw new TimeEntryNotFoundEx("No matching TimeEntries for TimeRecord id: " + timeRecordId);
+        }
+        return timeEntryList;
+    }
+
+    @Override
+    public void updateTimeEntry(TimeEntry timeEntry) {
+        MapSqlParameterSource params = getTimeEntryParams(timeEntry);
+        KeyHolder entryIdHolder = new GeneratedKeyHolder();
+        String[] updFields = new String[]{"NUXRDAY"};
+
+        int updated = remoteNamedJdbc.update(UPDATE_TIME_ENTRY.getSql(schemaMap()), params);
+
+        // If the update didn't affect anything and the new entry is active, insert a new record.
+        // Inactive time records should not be inserted due to an odd trigger that sets them as active after save.
+        if (updated == 0 && timeEntry.isActive()) {
+            remoteNamedJdbc.update(INSERT_TIME_ENTRY.getSql(schemaMap()), params, entryIdHolder, updFields);
+            timeEntry.setEntryId(((BigDecimal) entryIdHolder.getKeys().get("NUXRDAY")).toBigInteger());
+            timeEntry.setOriginalDate(LocalDateTime.now());
+        }
+        timeEntry.setUpdateDate(LocalDateTime.now());
     }
 }

@@ -18,12 +18,14 @@ public interface Header {
 
     /**
      * get header value
+     *
      * @return header value
      */
     String getHeaderValue();
 
     /**
      * get the map of header
+     *
      * @return map of header
      */
     Map<String, String> toMap();

@@ -22,7 +22,7 @@ public interface PersonnelTaskService {
     /**
      * Get the {@link PersonnelTask} for the given id
      *
-     * @param taskId int
+     * @param taskId    int
      * @param getDetail boolean
      * @return {@link PersonnelTask}
      * @throws PersonnelTaskNotFoundEx if no task exists for the given id.
@@ -35,9 +35,10 @@ public interface PersonnelTaskService {
 
     /**
      * Get a list of all active personnel tasks.
-     * @return {@link List <PersonnelTask>}
+     *
      * @param activeOnly if only active tasks should be retrieved.
-     * @param getDetail if a detailed version should be returned.
+     * @param getDetail  if a detailed version should be returned.
+     * @return {@link List <PersonnelTask>}
      */
     List<PersonnelTask> getPersonnelTasks(boolean activeOnly, boolean getDetail);
 
@@ -47,6 +48,7 @@ public interface PersonnelTaskService {
 
     /**
      * Gets a list of active personnel tasks for a particular assignment group.
+     *
      * @param assignmentGroup {@link PersonnelTaskAssignmentGroup}
      * @return {@link List<PersonnelTask>}
      */

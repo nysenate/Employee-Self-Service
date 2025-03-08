@@ -1,13 +1,11 @@
 package gov.nysenate.ess.time.model.personnel;
 
-import java.util.HashSet;
 import java.util.Set;
 
 /**
  * Stores any modifications that are made to the supervisor chain for an employee.
  */
-public class SupervisorChainAlteration
-{
+public class SupervisorChainAlteration {
     protected Set<Integer> chainInclusions;
     protected Set<Integer> chainExclusions;
 

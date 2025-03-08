@@ -19,16 +19,15 @@ import java.util.TreeMap;
  * Data access layer for retrieving and computing accrual information
  * (e.g personal hours, vacation hours, etc).
  */
-public interface AccrualDao extends BaseDao
-{
+public interface AccrualDao extends BaseDao {
     /**
      * Retrieve the per-pay-period accrual summaries for the given employee that occur before a specific date.
      * A TreeMap is returned which maps the PeriodAccSummary object with it's associated 'basePayPeriod'.
      *
-     * @param empId int - Employee id
+     * @param empId   int - Employee id
      * @param endDate LocalDate - The retrieved period summaries will be effective prior to this date.
-     * @param limOff LimitOffset - Limit the result set
-     * @param order SortOrder - Order by pay period end date
+     * @param limOff  LimitOffset - Limit the result set
+     * @param order   SortOrder - Order by pay period end date
      * @return TreeMap<LocalDate, PeriodAccSummary>
      */
     TreeMap<PayPeriod, PeriodAccSummary> getPeriodAccruals(int empId, LocalDate endDate, LimitOffset limOff,
@@ -37,7 +36,7 @@ public interface AccrualDao extends BaseDao
     /**
      * Retrieve the running annual accrual summaries for the given employee for all years before or on the 'endYear'.
      *
-     * @param empId int - Employee id
+     * @param empId   int - Employee id
      * @param endYear int - The year to retrieve annual summaries until.
      * @return TreeMap<Integer, AnnualAccSummary>
      */
@@ -45,6 +44,7 @@ public interface AccrualDao extends BaseDao
 
     /**
      * Get a list of annual accrual summaries that have been updated since the given datetime
+     *
      * @param updatedSince LocalDateTime - will retrieve summaries updated after this time
      * @return List<AnnualAccSummary>
      */
@@ -53,7 +53,7 @@ public interface AccrualDao extends BaseDao
     /**
      * Retrieve the period accrual usage objects that represent the hours charged during a given pay period.
      *
-     * @param empId int - Employee id
+     * @param empId     int - Employee id
      * @param dateRange Range<LocalDate> - The date range to obtain usages within
      * @return TreeMap<PayPeriod, PeriodAccUsage>
      */

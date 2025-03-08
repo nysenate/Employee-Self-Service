@@ -16,6 +16,22 @@ import static gov.nysenate.ess.time.dao.payroll.SqlMiscLeaveQuery.GET_SICK_LEAVE
 
 @Repository
 public class SqlMiscLeaveDao extends SqlBaseDao implements MiscLeaveDao {
+    private final RowMapper<MiscLeaveGrant> miscLeaveGrantRowMapper = (rs, rowNum) ->
+            new MiscLeaveGrant(
+                    rs.getInt("NUXREFEM"),
+                    MiscLeaveType.valueOfId(
+                            Optional.ofNullable(rs.getBigDecimal("NUXRMISC"))
+                                    .map(BigDecimal::toBigInteger)
+                                    .orElse(null)
+                    ),
+                    getLocalDate(rs, "DTBEGIN"),
+                    getLocalDate(rs, "DTEND"),
+                    null);
+    private final RowMapper<MiscLeaveGrant> donatedSickLeaveGrantRowMapper = (rs, rowNum) ->
+            new MiscLeaveGrant(rs.getInt("NUXREFEM"), MiscLeaveType.LEAVE_DONATION,
+                    getLocalDate(rs, "DTEFFECT"), getLocalDate(rs, "DTEND"),
+                    rs.getBigDecimal("NUAPPROVEHRS"));
+
     @Override
     public List<MiscLeaveGrant> getMiscLeaveGrants(int empId) {
         var param = new MapSqlParameterSource("empId", empId);
@@ -27,21 +43,4 @@ public class SqlMiscLeaveDao extends SqlBaseDao implements MiscLeaveDao {
                 param, donatedSickLeaveGrantRowMapper));
         return miscLeaveList;
     }
-
-    private final RowMapper<MiscLeaveGrant> miscLeaveGrantRowMapper = (rs, rowNum) ->
-        new MiscLeaveGrant(
-                rs.getInt("NUXREFEM"),
-                MiscLeaveType.valueOfId(
-                        Optional.ofNullable(rs.getBigDecimal("NUXRMISC"))
-                                .map(BigDecimal::toBigInteger)
-                                .orElse(null)
-                ),
-                getLocalDate(rs, "DTBEGIN"),
-                getLocalDate(rs, "DTEND"),
-                null);
-
-    private final RowMapper<MiscLeaveGrant> donatedSickLeaveGrantRowMapper = (rs, rowNum) ->
-            new MiscLeaveGrant(rs.getInt("NUXREFEM"), MiscLeaveType.LEAVE_DONATION,
-            getLocalDate(rs, "DTEFFECT"), getLocalDate(rs, "DTEND"),
-            rs.getBigDecimal("NUAPPROVEHRS"));
 }

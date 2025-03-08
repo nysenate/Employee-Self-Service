@@ -7,7 +7,7 @@ import java.util.Objects;
 
 public class TravelEmployee extends Employee {
 
-    private Department department;
+    private final Department department;
 
     public TravelEmployee(Employee other, Department department) {
         super(other);

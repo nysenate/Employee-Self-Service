@@ -14,8 +14,7 @@ public enum SqlResponsibilityHeadQuery implements BasicSqlQuery {
                     "FROM ${masterSchema}.SL16RSPCTRHD \n" +
                     "WHERE CDRESPCTRHD IN (:codes)"
     ),
-    RCHS_SEARCH("" +
-            "SELECT CDRESPCTRHD, CDSTATUS, CDAFFILIATE, DERESPCTRHDS, FFDERESPCTRHDF, COUNT(*) OVER () AS total\n" +
+    RCHS_SEARCH("SELECT CDRESPCTRHD, CDSTATUS, CDAFFILIATE, DERESPCTRHDS, FFDERESPCTRHDF, COUNT(*) OVER () AS total\n" +
             "FROM ${masterSchema}.SL16RSPCTRHD\n" +
             "WHERE CDSTATUS = 'A'\n" +
             "  AND (\n" +

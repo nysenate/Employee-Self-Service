@@ -12,16 +12,16 @@ import java.util.List;
 /**
  * Utility for writing serialized output to HttpServletResponse for various content types.
  */
-public class HttpResponseUtils
-{
+public class HttpResponseUtils {
     private static final Logger logger = LoggerFactory.getLogger(HttpResponseUtils.class);
 
     /**
      * This method serializes an object writes it to the HttpServletResponse. The media type supplied
      * determines what format the object will be serialized into. For JSON use MediaType.APPLICATION_JSON.
      * For XML use MediaType.APPLICATION_XML. The appropriate headers and content length will be set as well.
-     * @param response HttpServletResponse
-     * @param object   Object to write
+     *
+     * @param response  HttpServletResponse
+     * @param object    Object to write
      * @param mediaType MediaType that indicates the format to serialize the object into.
      * @return String representing serialized output or empty if response/object is null.
      */
@@ -32,14 +32,11 @@ public class HttpResponseUtils
             }
             if (mediaType.equals(MediaType.APPLICATION_JSON)) {
                 return writeJsonHttpResponse(response, object);
-            }
-            else if (mediaType.equals(MediaType.APPLICATION_XML)) {
+            } else if (mediaType.equals(MediaType.APPLICATION_XML)) {
                 return writeXmlHttpResponse(response, object);
-            }
-            else if (mediaType.equals(MediaType.TEXT_HTML)) {
+            } else if (mediaType.equals(MediaType.TEXT_HTML)) {
                 return writeHtmlHttpResponse(response, object);
-            }
-            else {
+            } else {
                 return writePlainHttpResponse(response, object);
             }
         }
@@ -48,9 +45,10 @@ public class HttpResponseUtils
 
     /**
      * Same as overloaded method except the MediaType is automatically determined first.
-     * @param request HttpServletRequest
+     *
+     * @param request  HttpServletRequest
      * @param response HttpServletResponse
-     * @param object Object to write
+     * @param object   Object to write
      * @return String representing serialized output or empty if response/object is null.
      */
     public static String writeHttpResponse(HttpServletRequest request, HttpServletResponse response, Object object) {
@@ -60,8 +58,9 @@ public class HttpResponseUtils
 
     /**
      * Serialize the object into JSON and write it to the HttpServletResponse.
+     *
      * @param response HttpServletResponse
-     * @param object Object to write
+     * @param object   Object to write
      * @return String representing the JSON output.
      */
     public static String writeJsonHttpResponse(HttpServletResponse response, Object object) {
@@ -72,8 +71,9 @@ public class HttpResponseUtils
 
     /**
      * Serialize the object into XML and write it to the HttpServletResponse.
+     *
      * @param response HttpServletResponse
-     * @param object Object to write
+     * @param object   Object to write
      * @return String representing the XML output.
      */
     public static String writeXmlHttpResponse(HttpServletResponse response, Object object) {
@@ -85,8 +85,9 @@ public class HttpResponseUtils
     /**
      * Serialize the object into HTML and write it to the HttpServletResponse. Nothing special
      * really happens to the output, just the correct content type header is set.
+     *
      * @param response HttpServletResponse
-     * @param html Object (String) to write
+     * @param html     Object (String) to write
      * @return String representing the HTML output.
      */
     public static String writeHtmlHttpResponse(HttpServletResponse response, Object html) {
@@ -96,8 +97,9 @@ public class HttpResponseUtils
 
     /**
      * Serialize the object into plain text (via toString()) and write it to the HttpServletResponse.
+     *
      * @param response HttpServletResponse
-     * @param text Object (String) to write
+     * @param text     Object (String) to write
      * @return String representing output.
      */
     public static String writePlainHttpResponse(HttpServletResponse response, Object text) {
@@ -107,8 +109,9 @@ public class HttpResponseUtils
 
     /**
      * Writes the output string into the HttpServletResponse and sets the content length header.
+     *
      * @param response HttpServletResponse
-     * @param output String to write
+     * @param output   String to write
      * @return String output
      */
     protected static String writeStringHttpResponse(HttpServletResponse response, String output) {
@@ -116,8 +119,7 @@ public class HttpResponseUtils
             try {
                 response.getWriter().write(output);
                 response.setContentLength(output.length());
-            }
-            catch (IOException ex) {
+            } catch (IOException ex) {
                 logger.error("Failed to write output to HttpResponse!", ex);
             }
         }
@@ -126,6 +128,7 @@ public class HttpResponseUtils
 
     /**
      * Sets headers that instruct browsers not to cache the given response
+     *
      * @param response HttpServletResponse
      */
     public static void preventCaching(HttpServletResponse response) {
@@ -137,6 +140,7 @@ public class HttpResponseUtils
      * Determines the highest quality media type that is accepted by the request and attempts
      * to establish a hierarchy of media types to be returned if the type is wild-carded.
      * That hierarchy is as follows: JSON, XML, HTML.
+     *
      * @param request HttpServletRequest
      * @return matched MediaType
      */
@@ -149,22 +153,18 @@ public class HttpResponseUtils
                 if (mediaType != null) {
                     if (mediaType.isCompatibleWith(MediaType.APPLICATION_JSON)) {
                         return MediaType.APPLICATION_JSON;
-                    }
-                    else if (mediaType.isCompatibleWith(MediaType.APPLICATION_XML) ||
+                    } else if (mediaType.isCompatibleWith(MediaType.APPLICATION_XML) ||
                             mediaType.isCompatibleWith(MediaType.TEXT_XML)) {
                         return MediaType.APPLICATION_XML;
-                    }
-                    else if (mediaType.isCompatibleWith(MediaType.APPLICATION_XHTML_XML) ||
+                    } else if (mediaType.isCompatibleWith(MediaType.APPLICATION_XHTML_XML) ||
                             mediaType.isCompatibleWith(MediaType.TEXT_HTML)) {
                         return MediaType.TEXT_HTML;
-                    }
-                    else {
+                    } else {
                         return mediaType;
                     }
                 }
             }
-        }
-        catch(IllegalArgumentException ex) {
+        } catch (IllegalArgumentException ex) {
             logger.warn("Failed to parse media type for the given Accept header: {}", acceptHeader);
         }
         return MediaType.TEXT_PLAIN;
@@ -172,6 +172,7 @@ public class HttpResponseUtils
 
     /**
      * Constructs the full request url including query parameters for the given {@link HttpServletRequest}
+     *
      * @param request HttpServletRequest
      * @return String
      */

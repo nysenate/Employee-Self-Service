@@ -27,6 +27,7 @@ public class SqlDepartmentHeadOverridesDao extends SqlBaseDao {
     /**
      * Returns an optional containing the employees department head employee id if they are included
      * in the overrides table. Otherwise, returns an empty Optional.
+     *
      * @param employeeId Try to find a department head override for this employee id.
      */
     public Optional<Integer> departmentHeadOverrideForEmployee(int employeeId) {
@@ -53,24 +54,23 @@ public class SqlDepartmentHeadOverridesDao extends SqlBaseDao {
 
     private enum SqlDepartmentHeadOverridesQuery implements BasicSqlQuery {
         SELECT_OVERRIDES("""
-                SELECT employee_id, department_head_emp_id
-                FROM ${essSchema}.department_head_override
-                WHERE effective_date_range @> :date::date
-                """),
+                         SELECT employee_id, department_head_emp_id
+                         FROM ${essSchema}.department_head_override
+                         WHERE effective_date_range @> :date::date
+                         """),
         SELECT_DEPT_HD_FOR_EMP("""
-                SELECT department_head_emp_id
-                FROM ${essSchema}.department_head_override
-                WHERE employee_id = :employeeId
-                  AND effective_date_range @> :date::date
-                """),
+                               SELECT department_head_emp_id
+                               FROM ${essSchema}.department_head_override
+                               WHERE employee_id = :employeeId
+                                 AND effective_date_range @> :date::date
+                               """),
         SELECT_DEPT_HDS("""
-                SELECT distinct(department_head_emp_id)
-                FROM ${essSchema}.department_head_override
-                WHERE effective_date_range @> :date::date
-                """)
-        ;
+                        SELECT distinct(department_head_emp_id)
+                        FROM ${essSchema}.department_head_override
+                        WHERE effective_date_range @> :date::date
+                        """);
 
-        private String sql;
+        private final String sql;
 
         SqlDepartmentHeadOverridesQuery(String sql) {
             this.sql = sql;
@@ -89,7 +89,7 @@ public class SqlDepartmentHeadOverridesDao extends SqlBaseDao {
 
     private class DepartmentHeadOverridesHandler extends BaseHandler {
 
-        private Map<Integer, Integer> empIdToDeptHdId;
+        private final Map<Integer, Integer> empIdToDeptHdId;
 
         public DepartmentHeadOverridesHandler() {
             this.empIdToDeptHdId = new HashMap<>();

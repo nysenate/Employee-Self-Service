@@ -48,8 +48,7 @@ public class EssApiAuthenticationFilter extends AuthenticationFilter {
         try {
             subject.login(authToken);
             return true;
-        }
-        catch(AuthenticationException ex) {
+        } catch (AuthenticationException ex) {
             writeApiUnauthenticatedResponse(request, response);
         }
         return false;
@@ -57,7 +56,8 @@ public class EssApiAuthenticationFilter extends AuthenticationFilter {
 
     /**
      * Generate an unauthenticated error response for an unauthenticated api call
-     * @param request {@link ServletRequest}
+     *
+     * @param request  {@link ServletRequest}
      * @param response {@link ServletResponse}
      * @throws IOException
      */

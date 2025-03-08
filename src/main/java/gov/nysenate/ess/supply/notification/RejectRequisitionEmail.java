@@ -23,11 +23,11 @@ import java.util.Map;
 @Service
 public class RejectRequisitionEmail {
 
-    private SendMailService sendMailService;
-    private Configuration freemarkerCfg;
     private static final String template = "requisition_rejection.ftlh";
     private static final String subject = "Your supply requisition request has been rejected.";
     private static String domainUrl;
+    private final SendMailService sendMailService;
+    private final Configuration freemarkerCfg;
 
     @Autowired
     public RejectRequisitionEmail(SendMailService sendMailService, Configuration freemarkerCfg,

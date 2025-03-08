@@ -32,16 +32,14 @@ import static gov.nysenate.ess.core.model.pec.PersonnelTaskType.DOCUMENT_ACKNOWL
 public class TaskPDFSignatureService {
 
     private static final Logger logger = LoggerFactory.getLogger(TaskPDFSignatureService.class);
-
-    @Value("${data.dir}") String dataDir;
-    @Value("${data.ackdoc_subdir}") String ackDocSubDir;
-    @Value("${data.pdf_subdir}") String pdfSubDir;
-    @Value("${pec.nysenate.seal}") String nysenateSeal;
-
     private final EmployeeInfoService empInfoService;
     private final SqlPersonnelTaskAssignmentDao taskAssignmentDao;
     private final EssPersonnelTaskService personnelTaskService;
     private final AckDocTaskDetailDao ackDocTaskDetailDao;
+    @Value("${data.dir}") String dataDir;
+    @Value("${data.ackdoc_subdir}") String ackDocSubDir;
+    @Value("${data.pdf_subdir}") String pdfSubDir;
+    @Value("${pec.nysenate.seal}") String nysenateSeal;
 
     @Autowired
     public TaskPDFSignatureService(EmployeeInfoService empInfoService,
@@ -49,9 +47,21 @@ public class TaskPDFSignatureService {
                                    EssPersonnelTaskService personnelTaskService,
                                    AckDocTaskDetailDao ackDocTaskDetailDao) {
         this.empInfoService = empInfoService;
-        this.taskAssignmentDao =  taskAssignmentDao;
+        this.taskAssignmentDao = taskAssignmentDao;
         this.personnelTaskService = personnelTaskService;
         this.ackDocTaskDetailDao = ackDocTaskDetailDao;
+    }
+
+    public static Calendar localDateTimeToCalendar(LocalDateTime localDateTime) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.clear();
+        calendar.set(localDateTime.getYear(), localDateTime.getMonthValue() - 1, localDateTime.getDayOfMonth(),
+                localDateTime.getHour(), localDateTime.getMinute(), localDateTime.getSecond());
+        return calendar;
+    }
+
+    public static void copyFile(File from, File to) throws IOException {
+        FileUtils.copyFile(from, to);
     }
 
     public File createEmployeeSignatureForTask(int empID, int taskID) throws IOException {
@@ -66,7 +76,7 @@ public class TaskPDFSignatureService {
 
 
         //ensure the task is actually a document and is completed by the employee
-        if (taskAssignment.isCompleted() ) {
+        if (taskAssignment.isCompleted()) {
 
             String orignalFileName = "";
             String newFileName = "";
@@ -81,8 +91,7 @@ public class TaskPDFSignatureService {
                 signatureDocument = new File(newFileName);
                 copyFile(originalDoc, signatureDocument);
                 document = PDDocument.load(signatureDocument);
-            }
-            else {
+            } else {
                 newFileName = pdfDir + employee.getFirstName() + "_" + employee.getLastName() + "_" + task.getTitle().replaceAll(" ", "_") + ".pdf";
                 // create new file
                 document = new PDDocument();
@@ -137,24 +146,11 @@ public class TaskPDFSignatureService {
                 }
 
                 return signatureDocument;
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 logger.error("There was an error creating the signature for an employee", e);
             }
         }
         return null;
-    }
-
-    public static Calendar localDateTimeToCalendar(LocalDateTime localDateTime) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.clear();
-        calendar.set(localDateTime.getYear(), localDateTime.getMonthValue()-1, localDateTime.getDayOfMonth(),
-                localDateTime.getHour(), localDateTime.getMinute(), localDateTime.getSecond());
-        return calendar;
-    }
-
-    public static void copyFile(File from, File to) throws IOException {
-        FileUtils.copyFile(from, to);
     }
 
     private void writeToPDF(PDPageContentStream pdPageContentStream, int x, int y, PDType1Font font, int foztSize, String text) throws IOException {

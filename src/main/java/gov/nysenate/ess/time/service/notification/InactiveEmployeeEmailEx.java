@@ -20,13 +20,13 @@ public class InactiveEmployeeEmailEx extends RuntimeException {
         this.employees = ImmutableSet.copyOf(employees);
     }
 
-    public ImmutableSet<Employee> getEmployees() {
-        return employees;
-    }
-
     private static Set<Integer> getEmpIds(Set<Employee> employees) {
         return employees.stream()
                 .map(Employee::getEmployeeId)
                 .collect(toSet());
+    }
+
+    public ImmutableSet<Employee> getEmployees() {
+        return employees;
     }
 }

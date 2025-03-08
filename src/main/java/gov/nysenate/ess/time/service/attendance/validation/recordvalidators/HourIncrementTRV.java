@@ -39,15 +39,15 @@ public class HourIncrementTRV implements TimeRecordValidator {
     /**
      * Check hourly increments for all of the daily records
      *
-     * @param record TimeRecord - A posted time record in the process of validation
+     * @param record        TimeRecord - A posted time record in the process of validation
      * @param previousState TimeRecord - The most recently saved version of the posted time record
-     * @param action {@link TimeRecordAction}
+     * @param action        {@link TimeRecordAction}
      * @throws TimeRecordErrorException if any hourly increments are off
      */
     @Override
     public void checkTimeRecord(TimeRecord record, Optional<TimeRecord> previousState, TimeRecordAction action)
             throws TimeRecordErrorException {
-        ImmutableList<TimeEntry> entries =  record.getTimeEntries();
+        ImmutableList<TimeEntry> entries = record.getTimeEntries();
 
         for (TimeEntry entry : entries) {
             checkHourIncrements(entry);
@@ -59,11 +59,10 @@ public class HourIncrementTRV implements TimeRecordValidator {
     /**
      * Check entry increments using a method that depends on the entry's pay type.
      */
-    private void checkHourIncrements(TimeEntry entry)  throws TimeRecordErrorException {
+    private void checkHourIncrements(TimeEntry entry) throws TimeRecordErrorException {
         if (entry.getPayType() == PayType.TE) {
             checkTeHourIncrements(entry);
-        }
-        else {
+        } else {
             checkRaSaHourIncrements(entry);
         }
     }

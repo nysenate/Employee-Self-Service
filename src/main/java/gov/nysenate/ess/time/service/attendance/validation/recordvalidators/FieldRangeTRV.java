@@ -39,7 +39,7 @@ public class FieldRangeTRV implements TimeRecordValidator {
     /**
      * Check hour entry values for each entry in the time record
      *
-     * @param record TimeRecord - A posted time record in the process of validation
+     * @param record        TimeRecord - A posted time record in the process of validation
      * @param previousState TimeRecord - The most recently saved version of the posted time record
      * @throws TimeRecordErrorException if the submitted record contains invalid hour values
      */
@@ -53,7 +53,7 @@ public class FieldRangeTRV implements TimeRecordValidator {
     /**
      * Check all hour values for the given time entry
      */
-    private void checkAllFieldsMaxMin(TimeEntry entry)  throws TimeRecordErrorException {
+    private void checkAllFieldsMaxMin(TimeEntry entry) throws TimeRecordErrorException {
 
         // Set the non-work hour maximum depending on the employee's pay type
         BigDecimal nonWorkMax = entry.getPayType() == PayType.TE ? BigDecimal.ZERO : annualEmpNonWorkMax;
@@ -67,7 +67,7 @@ public class FieldRangeTRV implements TimeRecordValidator {
         checkFieldMaxMin("miscHours", entry.getMiscHours(), nonWorkMax);
     }
 
-    private void checkFieldMaxMin(String fieldName, Optional<BigDecimal> fieldValueOpt, BigDecimal maxValue)  throws TimeRecordErrorException {
+    private void checkFieldMaxMin(String fieldName, Optional<BigDecimal> fieldValueOpt, BigDecimal maxValue) throws TimeRecordErrorException {
         checkFieldMaxMin(fieldName, fieldValueOpt, maxValue, BigDecimal.ZERO);
     }
 
@@ -83,7 +83,7 @@ public class FieldRangeTRV implements TimeRecordValidator {
         } else if (fieldValue.compareTo(maxValue) > 0) {
             throw new TimeRecordErrorException(TimeRecordErrorCode.FIELD_GREATER_THAN_MAX,
                     new InvalidParameterView("fieldHrs", "decimal",
-                            fieldName + " <= " + maxValue , fieldValue));
+                            fieldName + " <= " + maxValue, fieldValue));
 
         }
     }

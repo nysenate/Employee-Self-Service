@@ -9,6 +9,7 @@ public class UnitUtils {
 
     /**
      * Converts meters to miles rounding to the nearest tenth of a mile.
+     *
      * @param meters meters to convert to miles, must be a positive number.
      */
     public static BigDecimal metersToMiles(long meters) {
@@ -21,7 +22,8 @@ public class UnitUtils {
 
     /**
      * Round a double to the given number of places.
-     * @param value The value to be rounded.
+     *
+     * @param value  The value to be rounded.
      * @param places The number of decimal places to round to.
      * @return
      */

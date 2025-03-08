@@ -16,7 +16,8 @@ public class KnowBe4AssignmentUser {
     @JsonProperty("email")
     String email;
 
-    public KnowBe4AssignmentUser() {}
+    public KnowBe4AssignmentUser() {
+    }
 
     public Integer getId() {
         return id;

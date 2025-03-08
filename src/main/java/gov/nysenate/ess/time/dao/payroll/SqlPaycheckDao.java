@@ -15,8 +15,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public class SqlPaycheckDao extends SqlBaseDao implements PayCheckDao
-{
+public class SqlPaycheckDao extends SqlBaseDao implements PayCheckDao {
     private static final OrderBy defaultOrderBy = new OrderBy("DTCHECK", SortOrder.ASC);
 
     /** {@inheritDoc} */
@@ -24,7 +23,7 @@ public class SqlPaycheckDao extends SqlBaseDao implements PayCheckDao
     public List<Paycheck> getEmployeePaychecksForYear(int empId, int year) {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("empId", empId)
-              .addValue("year", year);
+                .addValue("year", year);
         return getPaycheckListForQuery(SqlPaycheckQuery.GET_EMPLOYEE_PAYCHECKS_BY_YEAR, params);
     }
 

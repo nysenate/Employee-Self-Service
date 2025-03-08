@@ -9,7 +9,6 @@ import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.RangeUtils;
-import gov.nysenate.ess.core.util.SortOrder;
 import gov.nysenate.ess.time.model.expectedhrs.ExpectedHours;
 import gov.nysenate.ess.time.model.expectedhrs.InvalidExpectedHourDatesEx;
 import gov.nysenate.ess.time.service.allowance.AllowanceService;
@@ -27,7 +26,7 @@ import java.util.Arrays;
 /**
  * @author Brian Heitner
  * @author Sam Stouffer
- *
+ * <p>
  * Implements functionality defined in {@link ExpectedHoursService} using point in time values extracted from
  * employees' {@link TransactionHistory} retrieved from {@link EmpTransactionService}
  */
@@ -69,9 +68,8 @@ public class TxExpectedHoursService implements ExpectedHoursService {
         BigDecimal yearlyHoursExpected = BigDecimal.ZERO;
         if (!transactionHistory.getEffectiveMinHours(dateRange).isEmpty()) {
             yearlyHoursExpected = transactionHistory.getEffectiveMinHours(dateRange).lastEntry().getValue();
-        }
-        else if (!transactionHistory.getEffectiveMinHours( activeDates.span() ).isEmpty()){
-            yearlyHoursExpected = transactionHistory.getEffectiveMinHours( activeDates.span() ).lastEntry().getValue(); //NUMINTOTHRS apt rtp
+        } else if (!transactionHistory.getEffectiveMinHours(activeDates.span()).isEmpty()) {
+            yearlyHoursExpected = transactionHistory.getEffectiveMinHours(activeDates.span()).lastEntry().getValue(); //NUMINTOTHRS apt rtp
         }
 
 
@@ -117,7 +115,7 @@ public class TxExpectedHoursService implements ExpectedHoursService {
      * - not a senator
      * - not a temporary employee
      *
-     * @param empTrans TransactionHistory - Employee Transaction History
+     * @param empTrans  TransactionHistory - Employee Transaction History
      * @param dateRange Range<LocalDate> - date range to filter the result
      * @return ImmutableRangeSet<LocalDate>
      */
@@ -145,7 +143,7 @@ public class TxExpectedHoursService implements ExpectedHoursService {
      * Generates a range map containing the employee's minimum annual expected hours over time.
      * This range map will be filter to only contain entries within the given date range.
      *
-     * @param empTrans TransactionHistory - Employee Transactions
+     * @param empTrans  TransactionHistory - Employee Transactions
      * @param dateRange Range<LocalDate> - date range
      * @return EmpTransactionService RangeMap<LocalDate, BigDecimal>
      */

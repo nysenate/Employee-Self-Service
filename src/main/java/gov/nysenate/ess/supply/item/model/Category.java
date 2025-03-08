@@ -20,8 +20,8 @@ public final class Category {
     @Override
     public String toString() {
         return "Category{" +
-               "name='" + name + '\'' +
-               '}';
+                "name='" + name + '\'' +
+                '}';
     }
 
     @Override

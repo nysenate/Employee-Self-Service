@@ -20,15 +20,15 @@ import java.time.format.DateTimeFormatter;
 
 public class AppPdfExpenseSummaryWriter implements AppPdfWriter {
 
-    private final PdfConfig config;
-    private final PDDocument doc;
-    private final float contentWidth;
-    private float y;
-    private float yStartNewPage;
-    private final TravelApplication app;
     private static final float tableFontSize = 10f;
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("MM/dd/yyyy");
     private static final float FREE_SPACE_FOR_PAGE_BREAK = 200f; // If there is less than this much free space, start table on a new page.
+    private final PdfConfig config;
+    private final PDDocument doc;
+    private final float contentWidth;
+    private final TravelApplication app;
+    private float y;
+    private float yStartNewPage;
 
     public AppPdfExpenseSummaryWriter(PDDocument doc, float contentWidth, PdfConfig config, TravelApplication app) {
         this.doc = doc;

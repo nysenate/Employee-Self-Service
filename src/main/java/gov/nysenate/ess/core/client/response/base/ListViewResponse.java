@@ -17,10 +17,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @JsonSerialize(using = ListViewResponse.ListViewResponseJsonSerializer.class)
-public class ListViewResponse<ViewType> extends PaginationResponse
-{
+public class ListViewResponse<ViewType> extends PaginationResponse {
     @XmlElement public ListView<ViewType> result;
-    private String resultFieldName;
+    private final String resultFieldName;
 
     protected ListViewResponse(ListView<ViewType> result, String resultFieldName, int total, LimitOffset limitOffset) {
         super(total, limitOffset);
@@ -36,7 +35,7 @@ public class ListViewResponse<ViewType> extends PaginationResponse
     }
 
     public static <ViewType extends ViewObject> ListViewResponse<ViewType> of(Collection<ViewType> items) {
-        return of(items, null,  items.size(), new LimitOffset(items.size()));
+        return of(items, null, items.size(), new LimitOffset(items.size()));
     }
 
     public static <ViewType extends ViewObject> ListViewResponse<ViewType> of(Collection<ViewType> items, String resultFieldName) {
@@ -48,7 +47,7 @@ public class ListViewResponse<ViewType> extends PaginationResponse
     }
 
     public static <ViewType extends ViewObject> ListViewResponse<ViewType> of(
-        Collection<ViewType> items, String resultFieldName, int total, LimitOffset limitOffset) {
+            Collection<ViewType> items, String resultFieldName, int total, LimitOffset limitOffset) {
         return new ListViewResponse<>(ListView.of(items), resultFieldName, total, limitOffset);
     }
 
@@ -72,8 +71,7 @@ public class ListViewResponse<ViewType> extends PaginationResponse
         return new ListViewResponse<>(ListView.ofIntList(items), resultFieldName, total, limitOffset);
     }
 
-    public static class ListViewResponseJsonSerializer extends JsonSerializer<ListViewResponse>
-    {
+    public static class ListViewResponseJsonSerializer extends JsonSerializer<ListViewResponse> {
         @Override
         public void serialize(ListViewResponse listViewResponse, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
             jsonGenerator.writeStartObject();

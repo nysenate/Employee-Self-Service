@@ -25,7 +25,7 @@ public class CacheManagementCtrl extends BaseRestApiCtrl {
      * Cache Stats Api
      * ---------------
      * Returns statistics for all ess caches
-     *
+     * <p>
      * Usage:
      * (GET)    /api/v1/admin/cache/stats
      *
@@ -45,15 +45,15 @@ public class CacheManagementCtrl extends BaseRestApiCtrl {
      * Warms one or all ess caches
      * This will clear the affected caches and populate them with default elements
      * Some caches do not support warming
-     *
+     * <p>
      * Usage:
      * (PUT)    /api/v1/admin/cache/{cacheName}
-     *
+     * <p>
      * Path Variables:
-     * @param cacheName String - the name of the cache to warm, use "all" to warm all caches
-     *                  @see CacheType for cache names
      *
+     * @param cacheName String - the name of the cache to warm, use "all" to warm all caches
      * @return SimpleResponse - indicating cache warm success
+     * @see CacheType for cache names
      */
     @RequestMapping(value = "/{cacheName}", method = RequestMethod.PUT)
     public SimpleResponse warmCache(@PathVariable String cacheName) {
@@ -66,15 +66,15 @@ public class CacheManagementCtrl extends BaseRestApiCtrl {
      * Cache Evict Api
      * --------------
      * Evicts one or all ess caches
-     *
+     * <p>
      * Usage:
      * (DELETE)    /api/v1/admin/cache/{cacheName}
-     *
+     * <p>
      * Path Variables:
-     * @param cacheName String - the name of the cache to evict, use "all" to evict all caches
-     *                  @see CacheType for cache names
      *
+     * @param cacheName String - the name of the cache to evict, use "all" to evict all caches
      * @return SimpleResponse - indicating cache evict success
+     * @see CacheType for cache names
      */
     @RequestMapping(value = "/{cacheName}", method = RequestMethod.DELETE)
     public SimpleResponse evictCache(@PathVariable String cacheName) {
@@ -87,17 +87,17 @@ public class CacheManagementCtrl extends BaseRestApiCtrl {
      * Cache Element Evict Api
      * --------------
      * Evicts a single element from an ess cache
-     *
+     * <p>
      * Usage:
      * (DELETE)    /api/v1/admin/cache/{cacheName}
-     *
+     * <p>
      * Path Variables:
-     * @param cacheName String - the name of the cache to warm, use "all" to warm all caches
-     *                  @see CacheType for cache names
-     * Request Params:
-     * @param key String - key for the element to evict
      *
+     * @param cacheName String - the name of the cache to warm, use "all" to warm all caches
+     * @param key       String - key for the element to evict
      * @return SimpleResponse - indicating cache element evict success
+     * @see CacheType for cache names
+     * Request Params:
      */
     @RequestMapping(value = "/{cacheName}", params = {"key"}, method = RequestMethod.DELETE)
     public SimpleResponse evictCacheElement(@PathVariable String cacheName,

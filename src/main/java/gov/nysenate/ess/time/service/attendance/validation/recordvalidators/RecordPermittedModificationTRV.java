@@ -19,9 +19,39 @@ import java.util.function.Function;
  * and that saved time records do not contain illegal modifications
  */
 @Service
-public class RecordPermittedModificationTRV implements TimeRecordValidator
-{
+public class RecordPermittedModificationTRV implements TimeRecordValidator {
     private static final Logger logger = LoggerFactory.getLogger(RecordPermittedModificationTRV.class);
+
+    /**
+     * Checks the two field values to ensure they are equal
+     *
+     * @throws TimeRecordErrorException expressing the fields' immutability if they are not equal
+     */
+    private static void checkField(Object newVal, Object prevVal, String fieldName, String fieldType)
+            throws TimeRecordErrorException {
+        if (!Objects.equals(prevVal, newVal)) {
+            logger.warn("prevVal is " + prevVal + " , newVal is " + newVal);
+            logger.warn("fieldName is " + fieldName + " , fieldType is " + fieldType);
+            TimeRecordErrorException exception = new TimeRecordErrorException(TimeRecordErrorCode.UNAUTHORIZED_MODIFICATION,
+                    new InvalidParameterView(fieldName, fieldType,
+                            fieldName + " is immutable to users", String.valueOf(newVal)));
+            logger.error("Time record validation failed ", exception);
+            throw exception;
+        }
+    }
+
+    /**
+     * Checks that the two given time records contain equal values for a particular field
+     *
+     * @see #checkField(Object, Object, String, String)
+     */
+    private static void checkTimeRecordField(TimeRecord newRecord, TimeRecord prevRecord,
+                                             String fieldName, String fieldType, Function<TimeRecord, ?> fieldGetter)
+            throws TimeRecordErrorException {
+        checkField(fieldGetter.apply(newRecord), fieldGetter.apply(prevRecord), fieldName, fieldType);
+    }
+
+    /** --- Internal Methods --- */
 
     @Override
     public boolean isApplicable(TimeRecord record, Optional<TimeRecord> previousState, TimeRecordAction action) {
@@ -47,34 +77,5 @@ public class RecordPermittedModificationTRV implements TimeRecordValidator
         checkTimeRecordField(record, prevRecord, "endDate", "Date", TimeRecord::getEndDate);
         checkTimeRecordField(record, prevRecord, "exceptionDetails", "String", TimeRecord::getExceptionDetails);
         checkTimeRecordField(record, prevRecord, "processedDate", "Date", TimeRecord::getProcessedDate);
-    }
-
-    /** --- Internal Methods --- */
-
-    /**
-     * Checks the two field values to ensure they are equal
-     * @throws TimeRecordErrorException expressing the fields' immutability if they are not equal
-     */
-    private static void checkField(Object newVal, Object prevVal, String fieldName, String fieldType)
-            throws TimeRecordErrorException {
-        if (!Objects.equals(prevVal, newVal)) {
-            logger.warn("prevVal is " + prevVal + " , newVal is " + newVal );
-            logger.warn("fieldName is " + fieldName + " , fieldType is " + fieldType);
-            TimeRecordErrorException exception =  new TimeRecordErrorException(TimeRecordErrorCode.UNAUTHORIZED_MODIFICATION,
-                    new InvalidParameterView(fieldName, fieldType,
-                            fieldName + " is immutable to users", String.valueOf(newVal)));
-            logger.error("Time record validation failed ", exception);
-            throw exception;
-        }
-    }
-
-    /**
-     * Checks that the two given time records contain equal values for a particular field
-     * @see #checkField(Object, Object, String, String)
-     */
-    private static void checkTimeRecordField(TimeRecord newRecord, TimeRecord prevRecord,
-                                             String fieldName, String fieldType, Function<TimeRecord, ?> fieldGetter)
-            throws TimeRecordErrorException {
-        checkField(fieldGetter.apply(newRecord), fieldGetter.apply(prevRecord), fieldName, fieldType);
     }
 }

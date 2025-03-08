@@ -15,7 +15,7 @@ import java.io.FileNotFoundException;
 
 @RestController
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/employment")
-public class EmploymentRestApiCtrl extends BaseRestApiCtrl{
+public class EmploymentRestApiCtrl extends BaseRestApiCtrl {
 
     private static final Logger logger = LoggerFactory.getLogger(EmploymentRestApiCtrl.class);
 
@@ -30,11 +30,12 @@ public class EmploymentRestApiCtrl extends BaseRestApiCtrl{
      * Send Intern Rejection Emails API
      * -----------------------------
      * Get a list of years that the employee was active
-     *
+     * <p>
      * Usage:       (GET) /api/v1/employment/internship/rejection
-     *
+     * <p>
      * Request Params:
-     * @param year Integer - required - the year of the internhsip
+     *
+     * @param year   Integer - required - the year of the internhsip
      * @param season String - required - the season of the internship SPRING, SUMMER, FALL
      * @return {@link ListViewResponse} of integers containing active years
      */
@@ -46,8 +47,7 @@ public class EmploymentRestApiCtrl extends BaseRestApiCtrl{
 
         if (internshipSeason == null) {
             return new SimpleResponse(false, "Wrong internship season submitted", "rejection-emails");
-        }
-        else {
+        } else {
             try {
                 potentialEmployeeRejectionService.ProcessInternEmails(year, internshipSeason);
             } catch (FileNotFoundException e) {

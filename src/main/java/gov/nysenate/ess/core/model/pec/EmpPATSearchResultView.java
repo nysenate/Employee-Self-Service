@@ -10,8 +10,8 @@ import java.util.stream.Collectors;
 
 public class EmpPATSearchResultView implements ViewObject {
 
-    private DetailedEmployeeView employee;
-    private List<PersonnelTaskAssignmentView> tasks;
+    private final DetailedEmployeeView employee;
+    private final List<PersonnelTaskAssignmentView> tasks;
 
     public EmpPATSearchResultView(EmployeeTaskSearchResult result) {
         this.employee = new DetailedEmployeeView(result.getEmployee());

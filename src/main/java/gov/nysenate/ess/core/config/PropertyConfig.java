@@ -12,8 +12,7 @@ import org.springframework.core.io.Resource;
  */
 @Configuration
 @Profile({"dev", "prod"})
-public class PropertyConfig
-{
+public class PropertyConfig {
     public static final String PROPERTY_FILENAME = "app.properties";
 
     /**
@@ -24,7 +23,7 @@ public class PropertyConfig
     @Bean
     public static PropertySourcesPlaceholderConfigurer properties() {
         PropertySourcesPlaceholderConfigurer pspc = new PropertySourcesPlaceholderConfigurer();
-        Resource[] resources = new ClassPathResource[] { new ClassPathResource(PROPERTY_FILENAME) };
+        Resource[] resources = new ClassPathResource[]{new ClassPathResource(PROPERTY_FILENAME)};
         pspc.setLocations(resources);
         pspc.setIgnoreUnresolvablePlaceholders(true);
         return pspc;

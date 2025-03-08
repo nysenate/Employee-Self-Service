@@ -14,8 +14,7 @@ import java.util.Optional;
  * A TimeEntry contains all the hours worked and charged for a specific date.
  * TimeEntries are associated together via a common TimeRecord Id.
  */
-public class TimeEntry extends AttendanceHours
-{
+public class TimeEntry extends AttendanceHours {
     protected BigInteger entryId;
     protected BigInteger timeRecordId;
     protected int empId;
@@ -33,7 +32,8 @@ public class TimeEntry extends AttendanceHours
 
     /** --- Constructors --- */
 
-    public TimeEntry() {}
+    public TimeEntry() {
+    }
 
     public TimeEntry(BigInteger timeRecordId, int empId) {
         this.timeRecordId = timeRecordId;
@@ -89,9 +89,8 @@ public class TimeEntry extends AttendanceHours
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof TimeEntry)) return false;
+        if (!(o instanceof TimeEntry timeEntry)) return false;
         if (!super.equals(o)) return false;
-        TimeEntry timeEntry = (TimeEntry) o;
         return empId == timeEntry.empId &&
                 active == timeEntry.active &&
                 Objects.equal(entryId, timeEntry.entryId) &&

@@ -14,8 +14,7 @@ import java.util.Properties;
  * Contains methods that can be used to interact with mail servers
  */
 @Service
-public class MailUtils
-{
+public class MailUtils {
     @Value("${mail.smtp.host}") private String host;
     @Value("${mail.smtp.port}") private String port;
     @Value("${mail.smtp.auth:false}") private boolean auth;
@@ -50,6 +49,7 @@ public class MailUtils
 
     /**
      * Gets an authenticated smtp mail session
+     *
      * @return Session
      */
     public Session getSmtpSession() {
@@ -58,6 +58,7 @@ public class MailUtils
 
     /**
      * Gets a mail session for use with imaps
+     *
      * @return Session
      */
     public Session getImapsSession() {
@@ -74,7 +75,7 @@ public class MailUtils
      * Password authenticator based on smtp credentials
      */
     private static class EssPasswordAuthenticator extends Authenticator {
-        private PasswordAuthentication pa;
+        private final PasswordAuthentication pa;
 
         public EssPasswordAuthenticator(PasswordAuthentication pa) {
             this.pa = pa;

@@ -8,13 +8,12 @@ import java.util.Objects;
  * Typically used to represent a Senate employee's place of work or some other location
  * that serves a business purpose.
  */
-public final class Location
-{
+public final class Location {
     private final LocationId locId;
     private Address address;
     private ResponsibilityHead responsibilityHead;
     private String locationDescription;
-    private boolean isActive;
+    private final boolean isActive;
 
     public Location(LocationId locId) {
         this.locId = locId;

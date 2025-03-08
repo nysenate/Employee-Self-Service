@@ -32,5 +32,6 @@ public final class EssTimeConstants {
     /** The number of personal time hours allotted to a regular annual employee for a single year */
     public static final BigDecimal ANNUAL_PER_HOURS = new BigDecimal(35);
 
-    private EssTimeConstants() {}
+    private EssTimeConstants() {
+    }
 }

@@ -13,8 +13,8 @@ import java.util.Set;
 @Service
 public class TravelEmployeeService {
 
-    private TravelDepartmentService departmentService;
-    private EmployeeInfoService employeeInfoService;
+    private final TravelDepartmentService departmentService;
+    private final EmployeeInfoService employeeInfoService;
 
     @Autowired
     public TravelEmployeeService(TravelDepartmentService departmentService,

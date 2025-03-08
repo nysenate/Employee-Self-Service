@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Represents a time record email reminder to be sent to the specified
  * employee for the specified time records.
- *
+ * <p>
  * wasReminderSent tracks whether the email was delivered successfully or not.
  */
 public class EssTimeRecordEmailReminder {

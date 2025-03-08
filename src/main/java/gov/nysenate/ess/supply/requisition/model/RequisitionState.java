@@ -8,10 +8,11 @@ import java.time.LocalDateTime;
  */
 public abstract class RequisitionState {
 
-    RequisitionState() {}
+    RequisitionState() {
+    }
 
     public static RequisitionState of(RequisitionStatus status) {
-        switch(status) {
+        switch (status) {
             case PENDING:
                 return new PendingState();
             case PROCESSING:
@@ -31,7 +32,7 @@ public abstract class RequisitionState {
      * Advances a Requisition the its next RequisitionState.
      * Generally follows: PENDING->PROCESSING->COMPLETED->APPROVED
      *
-     * @param requisition The requisition to update
+     * @param requisition       The requisition to update
      * @param processedDateTime The date time this processing occured.
      * @return An updated requisition.
      */
@@ -41,7 +42,8 @@ public abstract class RequisitionState {
 
     /**
      * This method rejects a Requisition.
-     * @param requisition The requisition to reject
+     *
+     * @param requisition      The requisition to reject
      * @param rejectedDateTime The date time of the rejection
      * @return An updated Requisition.
      */

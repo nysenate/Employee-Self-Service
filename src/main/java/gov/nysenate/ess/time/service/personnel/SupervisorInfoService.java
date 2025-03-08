@@ -10,12 +10,11 @@ import java.util.List;
 /**
  * Provides methods that query for data pertaining to time and attendance supervisors
  */
-public interface SupervisorInfoService
-{
+public interface SupervisorInfoService {
     /**
      * Determines if the given employee is a supervisor at any point during the given date range.
      *
-     * @param empId int
+     * @param empId     int
      * @param dateRange Range<LocalDate>
      * @return boolean - true if employee was a supervisor during this range.
      */
@@ -24,6 +23,7 @@ public interface SupervisorInfoService
     /**
      * Overload of {@link #isSupervisorDuring(int, Range)}
      * that indicates if the given employee was a supervisor in the past year
+     *
      * @param empId int
      * @return boolean - true if employee was a supervisor during the past year
      */
@@ -35,6 +35,7 @@ public interface SupervisorInfoService
     /**
      * Overload of {@link #isSupervisorDuring(int, Range)}
      * that indicates if the given employee is currently a supervisor
+     *
      * @param empId int
      * @return boolean - true if employee is currently a supervisor
      */
@@ -46,7 +47,7 @@ public interface SupervisorInfoService
      * Retrieve the effective T&A supervisor id for the given employee id during the supplied date.
      *
      * @param empId int - Employee id
-     * @param date LocalDate - Point in time to get the supervisor for
+     * @param date  LocalDate - Point in time to get the supervisor for
      * @return int - Supervisor id
      * @throws SupervisorException - SupervisorNotFoundEx if the supervisor could not be found
      */
@@ -57,7 +58,7 @@ public interface SupervisorInfoService
      * This service layer implementation should make an effort to cache this data so it's preferable to use
      * this over the similar dao method when performance is required.
      *
-     * @param supId int
+     * @param supId     int
      * @param dateRange Range<LocalDate>
      * @return SupervisorEmpGroup
      * @throws SupervisorException - will be thrown if the employee was never a supervisor.
@@ -68,7 +69,7 @@ public interface SupervisorInfoService
      * Returns an {@link ExtendedSupEmpGroup} for the given employee,
      * effective during the given date range.
      *
-     * @param supId int
+     * @param supId     int
      * @param dateRange Range<LocalDate>
      * @return {@link ExtendedSupEmpGroup}
      * @throws SupervisorException - if the employee was never a supervisor
@@ -79,8 +80,8 @@ public interface SupervisorInfoService
     /**
      * Returns a chain of supervisors that are above the given supervisor on the given date.
      *
-     * @param supId int
-     * @param activeDate LocalDate
+     * @param supId          int
+     * @param activeDate     LocalDate
      * @param maxChainLength int - the maximum number of parent supervisors to fetch.
      * @return SupervisorChain
      * @throws SupervisorException - will be thrown if the employee was never a supervisor.
@@ -89,6 +90,7 @@ public interface SupervisorInfoService
 
     /**
      * Retrieves a list of active supervisor overrides that have been granted to the given supervisor.
+     *
      * @param supId int - Supervisor id
      * @return List<SupervisorOverride>
      * @throws SupervisorException
@@ -97,6 +99,7 @@ public interface SupervisorInfoService
 
     /**
      * Retrieves a list of supervisors that have been granted overrides by the given supervisor.
+     *
      * @param supId int - Supervisor id
      * @return List<SupervisorOverride>
      * @throws SupervisorException
@@ -104,10 +107,9 @@ public interface SupervisorInfoService
     List<SupervisorOverride> getSupervisorGrants(int supId) throws SupervisorException;
 
     /**
-     *
      * @param override SupervisorOverride
      * @throws SupervisorException - SupervisorNotFoundEx if either supervisor could not be found
-     *                               SupervisorNotInChainEx if 'ovrSupId' is not in 'supId's' chain
+     *                             SupervisorNotInChainEx if 'ovrSupId' is not in 'supId's' chain
      */
     void updateSupervisorOverride(SupervisorOverride override) throws SupervisorException;
 }

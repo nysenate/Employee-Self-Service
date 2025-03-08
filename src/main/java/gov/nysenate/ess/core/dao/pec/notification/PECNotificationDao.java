@@ -4,6 +4,7 @@ public interface PECNotificationDao {
 
     /**
      * Find out if a notification was sent for a specific task for an employee
+     *
      * @param empId
      * @param taskId
      * @return
@@ -12,6 +13,7 @@ public interface PECNotificationDao {
 
     /**
      * Update the database to show that the notification has been sent and with a timestamp
+     *
      * @param empId
      * @param taskId
      */

@@ -12,14 +12,29 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-import static gov.nysenate.ess.core.model.alert.AlertInfo.Builder;
 import static gov.nysenate.ess.core.dao.alert.SqlAlertInfoQuery.*;
+import static gov.nysenate.ess.core.model.alert.AlertInfo.Builder;
 
 /**
  * Implements {@link AlertInfo} for a local postgres database
  */
 @Repository
 public class SqlAlertInfoDao extends SqlBaseDao implements AlertInfoDao {
+
+    private static final RowMapper<AlertInfo> alertInfoRowMapper = ((rs, rowNum) -> {
+        Builder builder = AlertInfo.builder();
+        builder.setEmpId(rs.getInt("employee_id"))
+                .setHomePhone(rs.getString("phone_home"))
+                .setMobilePhone(rs.getString("phone_mobile"))
+                .setMobileOptions(Optional.ofNullable(rs.getString("mobile_options"))
+                        .map(ContactOptions::valueOf).orElse(ContactOptions.EVERYTHING))
+                .setAlternatePhone(rs.getString("phone_alternate"))
+                .setAlternateOptions(Optional.ofNullable(rs.getString("alternate_options"))
+                        .map(ContactOptions::valueOf).orElse(ContactOptions.EVERYTHING))
+                .setPersonalEmail(rs.getString("email_personal"))
+                .setAlternateEmail(rs.getString("email_alternate"));
+        return builder.build();
+    });
 
     /**
      * {@inheritDoc}
@@ -32,8 +47,7 @@ public class SqlAlertInfoDao extends SqlBaseDao implements AlertInfoDao {
             List<AlertInfo> alertInfos = localNamedJdbc.query(sql, params, alertInfoRowMapper);
             if (alertInfos.isEmpty() || alertInfos == null) {
                 throw new AlertInfoNotFound(empId);
-            }
-            else {
+            } else {
                 return alertInfos.get(0);
             }
         } catch (EmptyResultDataAccessException ex) {
@@ -50,6 +64,8 @@ public class SqlAlertInfoDao extends SqlBaseDao implements AlertInfoDao {
         return localNamedJdbc.query(sql, alertInfoRowMapper);
     }
 
+    /* --- Internal Methods --- */
+
     /**
      * {@inheritDoc}
      */
@@ -63,23 +79,6 @@ public class SqlAlertInfoDao extends SqlBaseDao implements AlertInfoDao {
             localNamedJdbc.update(insertDml, params);
         }
     }
-
-    /* --- Internal Methods --- */
-
-    private static final RowMapper<AlertInfo> alertInfoRowMapper = ((rs, rowNum) -> {
-        Builder builder = AlertInfo.builder();
-        builder.setEmpId(rs.getInt("employee_id"))
-                .setHomePhone(rs.getString("phone_home"))
-                .setMobilePhone(rs.getString("phone_mobile"))
-                .setMobileOptions(Optional.ofNullable(rs.getString("mobile_options"))
-                        .map(ContactOptions::valueOf).orElse(ContactOptions.EVERYTHING))
-                .setAlternatePhone(rs.getString("phone_alternate"))
-                .setAlternateOptions(Optional.ofNullable(rs.getString("alternate_options"))
-                        .map(ContactOptions::valueOf).orElse(ContactOptions.EVERYTHING))
-                .setPersonalEmail(rs.getString("email_personal"))
-                .setAlternateEmail(rs.getString("email_alternate"));
-        return builder.build();
-    });
 
     private MapSqlParameterSource getAlertInfoParams(AlertInfo alertInfo) {
         MapSqlParameterSource params = new MapSqlParameterSource();

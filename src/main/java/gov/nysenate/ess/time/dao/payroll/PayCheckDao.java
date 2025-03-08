@@ -7,19 +7,20 @@ import gov.nysenate.ess.time.model.payroll.Paycheck;
 import java.time.LocalDate;
 import java.util.List;
 
-public interface PayCheckDao extends BaseDao
-{
+public interface PayCheckDao extends BaseDao {
     /**
      * Get all employee paychecks for a given year.
+     *
      * @param empId employee id.
-     * @param year year.
+     * @param year  year.
      * @return
      */
     List<Paycheck> getEmployeePaychecksForYear(int empId, int year);
 
     /**
      * Get all employee paychecks paid for dates within the given date range
-     * @param empId int - employee id
+     *
+     * @param empId     int - employee id
      * @param dateRange Range<LocalDate> - date range
      * @return List<Paycheck>
      */

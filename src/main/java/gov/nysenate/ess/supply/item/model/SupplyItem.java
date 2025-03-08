@@ -14,8 +14,8 @@ public final class SupplyItem {
     private final Category category;
     private final ItemAllowance allowance;
     private final ItemUnit unit;
-    private ItemRestriction restriction;
     private final int reconciliationPage;
+    private ItemRestriction restriction;
 
     public SupplyItem(Builder builder) {
         this.id = builder.id;
@@ -93,6 +93,34 @@ public final class SupplyItem {
         return reconciliationPage;
     }
 
+    @Override
+    public String toString() {
+        return "SupplyItem{" +
+                "id=" + id +
+                ", commodityCode='" + commodityCode + '\'' +
+                ", description='" + description + '\'' +
+                ", status=" + status +
+                ", category=" + category +
+                ", allowance=" + allowance +
+                ", unit=" + unit +
+                ", restriction=" + restriction +
+                ", reconciliationPage=" + reconciliationPage +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SupplyItem that = (SupplyItem) o;
+        return id == that.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
+    }
+
     public static class Builder {
         private int id;
         private String commodityCode;
@@ -146,33 +174,5 @@ public final class SupplyItem {
         public SupplyItem build() {
             return new SupplyItem(this);
         }
-    }
-
-    @Override
-    public String toString() {
-        return "SupplyItem{" +
-                "id=" + id +
-                ", commodityCode='" + commodityCode + '\'' +
-                ", description='" + description + '\'' +
-                ", status=" + status +
-                ", category=" + category +
-                ", allowance=" + allowance +
-                ", unit=" + unit +
-                ", restriction=" + restriction +
-                ", reconciliationPage=" + reconciliationPage +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        SupplyItem that = (SupplyItem) o;
-        return id == that.id;
-    }
-
-    @Override
-    public int hashCode() {
-        return id;
     }
 }

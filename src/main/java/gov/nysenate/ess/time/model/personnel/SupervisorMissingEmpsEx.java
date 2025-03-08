@@ -1,9 +1,6 @@
 package gov.nysenate.ess.time.model.personnel;
 
-import java.time.LocalDate;
-
-public class SupervisorMissingEmpsEx extends SupervisorException
-{
+public class SupervisorMissingEmpsEx extends SupervisorException {
     private static final long serialVersionUID = 792981752519254089L;
 
     public SupervisorMissingEmpsEx(int empId) {

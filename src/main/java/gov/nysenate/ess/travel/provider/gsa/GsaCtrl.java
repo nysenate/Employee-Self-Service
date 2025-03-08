@@ -15,9 +15,9 @@ import java.time.LocalDate;
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/gsa")
 public class GsaCtrl extends BaseRestApiCtrl {
 
-    private GsaBatchResponseService gsaBatchResponseService;
-    private GsaApi gsaApi;
-    private GsaAllowanceService gsaAllowanceService;
+    private final GsaBatchResponseService gsaBatchResponseService;
+    private final GsaApi gsaApi;
+    private final GsaAllowanceService gsaAllowanceService;
 
     @Autowired
     public GsaCtrl(GsaBatchResponseService gsaBatchResponseService, GsaApi gsaApi, GsaAllowanceService gsaAllowanceService) {

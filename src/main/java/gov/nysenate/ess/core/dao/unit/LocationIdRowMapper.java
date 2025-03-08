@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public class LocationIdRowMapper extends BaseRowMapper<LocationId> {
 
-    private String pfx;
+    private final String pfx;
 
     public LocationIdRowMapper(String pfx) {
         this.pfx = pfx;

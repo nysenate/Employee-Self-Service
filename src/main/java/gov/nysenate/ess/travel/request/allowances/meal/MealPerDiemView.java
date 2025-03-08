@@ -2,8 +2,8 @@ package gov.nysenate.ess.travel.request.allowances.meal;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
-import gov.nysenate.ess.travel.request.address.TravelAddressView;
 import gov.nysenate.ess.travel.provider.senate.SenateMieView;
+import gov.nysenate.ess.travel.request.address.TravelAddressView;
 import gov.nysenate.ess.travel.utils.Dollars;
 
 import java.time.LocalDate;

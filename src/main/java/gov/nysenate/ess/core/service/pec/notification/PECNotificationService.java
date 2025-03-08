@@ -69,6 +69,7 @@ public class PECNotificationService {
     /**
      * Fetches data on emails that would be sent right now, if the relevant cron ran.
      * Notably does NOT include invite emails.
+     *
      * @param sendAdminEmails whether to send emails about employees with missing emails.
      * @return List of email information.
      */
@@ -80,7 +81,7 @@ public class PECNotificationService {
             // Continue processing employee if they have outstanding assignments and a valid email
             Employee employee = entry.getKey();
             if (Strings.isBlank(employee.getEmail())) {
-                missingEmails.add("NAME: " + employee.getFullName() +  " EMPID: " + employee.getEmployeeId());
+                missingEmails.add("NAME: " + employee.getFullName() + " EMPID: " + employee.getEmployeeId());
                 logger.warn("Employee %s #%d is missing an email! No notification will be sent to them."
                         .formatted(employee.getFullName(), employee.getEmployeeId()));
             } else {

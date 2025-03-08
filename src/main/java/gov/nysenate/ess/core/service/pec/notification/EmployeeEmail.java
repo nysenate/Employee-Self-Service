@@ -20,7 +20,7 @@ public class EmployeeEmail {
                     "Or, go to this link <a href=\"%s\">HERE</a><br><br>" +
                     "<b>You must complete the following trainings: </b><br>",
 
-            singleTaskHtml =
+    singleTaskHtml =
             "<b>%s, our records indicate you have a mandatory outstanding training assignment.</b><br>" +
                     "You can find instructions to complete it by logging into ESS, " +
                     "then clicking the My Info tab and clicking on the To Do List. " +
@@ -28,13 +28,12 @@ public class EmployeeEmail {
                     "<b>You must complete the following training: </b><br>",
             completionHtml = "Our records have been updated to indicate you have completed %s.",
 
-            ethicsLiveLegalLanguage = "New employees have 90 days from their hiring date to complete this assignment.<br>" +
-                    "All employees are required to complete the training by DECEMBER, 31 2024.",
+    ethicsLiveLegalLanguage = "New employees have 90 days from their hiring date to complete this assignment.<br>" +
+            "All employees are required to complete the training by DECEMBER, 31 2024.",
 
-            assignLengthStr = "You have %d days from your hiring date to complete this assignment. It is due by %s.<br>",
+    assignLengthStr = "You have %d days from your hiring date to complete this assignment. It is due by %s.<br>",
 
-            pastDueAssignLengthStr = "You had %d days from your hiring date to complete this assignment. It was due by %s.<br>";
-    ;
+    pastDueAssignLengthStr = "You had %d days from your hiring date to complete this assignment. It was due by %s.<br>";
 
     private final PecEmailType type;
     private final Employee employee;
@@ -79,16 +78,12 @@ public class EmployeeEmail {
             return Optional.empty();
         }
         LocalDate dueDate = dueDateTime.toLocalDate();
-        boolean pastDue = false;
-        if (LocalDate.now().isAfter(dueDateTime.toLocalDate())) {
-            pastDue = true;
-        }
+        boolean pastDue = LocalDate.now().isAfter(dueDateTime.toLocalDate());
         String unambiguousDate = dueDate.getMonth() + ", " + dueDate.getDayOfMonth() + " " + dueDate.getYear();
         if (type == PersonnelTaskType.MOODLE_COURSE) {
             if (pastDue) {
                 return Optional.of(pastDueAssignLengthStr.formatted(30, unambiguousDate));
-            }
-            else {
+            } else {
                 return Optional.of(assignLengthStr.formatted(30, unambiguousDate));
             }
 
@@ -97,8 +92,7 @@ public class EmployeeEmail {
         if (type == PersonnelTaskType.ETHICS_LIVE_COURSE) {
             if (pastDue) {
                 ethicsLiveStr = pastDueAssignLengthStr.formatted(90, unambiguousDate);
-            }
-            else {
+            } else {
                 ethicsLiveStr = assignLengthStr.formatted(90, unambiguousDate);
             }
             ethicsLiveStr = ethicsLiveStr + ethicsLiveLegalLanguage;

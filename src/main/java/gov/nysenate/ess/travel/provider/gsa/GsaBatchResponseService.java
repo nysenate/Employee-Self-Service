@@ -23,8 +23,8 @@ public class GsaBatchResponseService {
     private final GsaBatchResponseDao gsaBatchResponseDao;
 
     @Value("${travel.gsa.api.url_path}") private String apiUrl;
-    @Value("${travel.gsa.api.url_base}")private String hostUrl;
-    private String limit = "&limit=";
+    @Value("${travel.gsa.api.url_base}") private String hostUrl;
+    private final String limit = "&limit=";
 
 
     @Autowired
@@ -57,7 +57,7 @@ public class GsaBatchResponseService {
             while (offset < total) {
                 logger.info("Processing batch at offset: " + offset + " out of total: " + total);
                 urlString = hostUrl + nextBatchUrl;
-                String result = HttpUtils.urlToString(urlString );
+                String result = HttpUtils.urlToString(urlString);
                 nextBatchUrl = parseBatchGsaResponse(result);
                 offset = offset + batchNumber;
             }

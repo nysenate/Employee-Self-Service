@@ -9,6 +9,7 @@ public interface RoleDao {
 
     /**
      * Gets a list of {@link EssRole EssRole's} for a user.
+     *
      * @param employee The {@link Employee} who's roles should be returned.
      * @return Immutable set of the users roles.
      */

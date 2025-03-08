@@ -37,7 +37,8 @@ public class SimpleTimeRecordView implements ViewObject {
     protected LocalDateTime updateDate;
     protected LocalDateTime overallUpdateDate;
 
-    protected SimpleTimeRecordView() {}
+    protected SimpleTimeRecordView() {
+    }
 
     public SimpleTimeRecordView(TimeRecord record) {
         if (record != null) {

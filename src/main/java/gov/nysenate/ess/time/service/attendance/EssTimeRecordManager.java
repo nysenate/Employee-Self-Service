@@ -50,8 +50,7 @@ import static gov.nysenate.ess.time.model.attendance.TimeRecordStatus.APPROVED_P
 import static gov.nysenate.ess.time.model.attendance.TimeRecordStatus.SUBMITTED;
 
 @Service
-public class EssTimeRecordManager implements TimeRecordManager
-{
+public class EssTimeRecordManager implements TimeRecordManager {
     private static final Logger logger = LoggerFactory.getLogger(EssTimeRecordManager.class);
 
     /** A set of transactions that, when posted, will require changes in existing time records */
@@ -155,6 +154,7 @@ public class EssTimeRecordManager implements TimeRecordManager
 
     /**
      * invokes the ensureAllActiveRecords method according to the configured cron value
+     *
      * @see #ensureAllActiveRecords()
      */
     @Scheduled(cron = "${scheduler.timerecord.ensureall.cron}")
@@ -166,6 +166,7 @@ public class EssTimeRecordManager implements TimeRecordManager
 
     /**
      * Modifies records when new transactions are posted
+     *
      * @param event TransactionHistoryUpdateEvent
      */
     @Subscribe
@@ -187,7 +188,7 @@ public class EssTimeRecordManager implements TimeRecordManager
      */
     @Transactional(DatabaseConfig.remoteTxManager)
     protected int ensureRecords(int empId, Collection<PayPeriod> payPeriods, Collection<TimeRecord> existingRecords,
-                              Collection<AttendanceRecord> attendanceRecords) {
+                                Collection<AttendanceRecord> attendanceRecords) {
         logger.info("Generating records for {} over {} pay periods with {} existing records",
                 empId, payPeriods.size(), existingRecords.size());
 
@@ -242,10 +243,11 @@ public class EssTimeRecordManager implements TimeRecordManager
 
     /**
      * Check existing records to make sure that records correspond with the computed record date ranges,
-     *  and contain correct information
+     * and contain correct information
      * Records that are already approved by personnel will not be patched
      * As existing records are checked, corresponding covered ranges are removed from recordRanges
      * Records that do not check out are modified accordingly
+     *
      * @return List<TimeRecord> - a list of existing records that were modified
      */
     private List<TimeRecord> patchExistingRecords(
@@ -259,11 +261,12 @@ public class EssTimeRecordManager implements TimeRecordManager
 
     /**
      * Checks the given record and patches it if necessary
-     * @param record {@link TimeRecord} - Time record to be patched
+     *
+     * @param record       {@link TimeRecord} - Time record to be patched
      * @param recordRanges LinkedHashSet<Range<LocalDate>> - Set of date ranges for which there should be records
      *                     The date ranges corresponding to the passed in time record are removed
      * @return List<TimeRecord> - List of new or existing time records that have been modified
-     *                            and need to be saved
+     * and need to be saved
      */
     private List<TimeRecord> patchRecord(TimeRecord record, LinkedHashSet<Range<LocalDate>> recordRanges) {
         // Get list of record ranges that cover the given record
@@ -310,6 +313,7 @@ public class EssTimeRecordManager implements TimeRecordManager
 
     /**
      * Splits an existing time record according to the given date ranges
+     *
      * @param record TimeRecord
      * @param ranges List<Range<LocalDate>> - ranges corresponding to dates for which there should be distinct time records
      *               These ranges should all intersect with the existing time record
@@ -365,6 +369,7 @@ public class EssTimeRecordManager implements TimeRecordManager
     /**
      * Verify that the given time record contains correct data
      * If not the record will be patched
+     *
      * @return true iff the record was patched
      */
     private boolean patchRecordData(TimeRecord record) {
@@ -376,7 +381,7 @@ public class EssTimeRecordManager implements TimeRecordManager
             // If the record was approved by a supervisor that is no longer valid, revert it to submitted
             if (record.getScope() == PERSONNEL && !Objects.equals(record.getApprovalEmpId(), record.getSupervisorId())) {
                 logger.info("Reverting approved record to {} due to sup change.  " +
-                        "Emp: {}, dates: {}, appr. sup: {}, new sup: {}",
+                                "Emp: {}, dates: {}, appr. sup: {}, new sup: {}",
                         SUBMITTED, record.getEmployeeId(), record.getDateRange(),
                         record.getApprovalEmpId(), record.getSupervisorId());
                 record.setRecordStatus(SUBMITTED);
@@ -388,6 +393,7 @@ public class EssTimeRecordManager implements TimeRecordManager
 
     /**
      * Verify the time entries of the given record, patching them if they have incorrect pay types
+     *
      * @return true if one or more entries were patched
      */
     private boolean patchEntries(TimeRecord record) {

@@ -9,8 +9,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class EssPaycheckService implements  PaycheckService
-{
+public class EssPaycheckService implements PaycheckService {
     @Autowired
     SqlPaycheckDao paycheckDao;
 

@@ -33,6 +33,10 @@ public class AttendanceRecord extends AttendanceHours {
         return Optional.ofNullable(postDate);
     }
 
+    public void setPostDate(LocalDateTime postDate) {
+        this.postDate = postDate;
+    }
+
     public boolean isPosted() {
         return getPostDate().isPresent();
     }
@@ -41,13 +45,9 @@ public class AttendanceRecord extends AttendanceHours {
         return Range.closedOpen(beginDate, endDate.plusDays(1));
     }
 
-    public void setTimesheetIds(Collection<BigInteger> timesheetIds) {
-        this.timesheetIds = new LinkedHashSet<>(timesheetIds);
-    }
-
     /**
      * Get a subset of given time records that cover this attendance record, iff there is a subset that fully covers it.
-     *
+     * <p>
      * If none of the given time records are listed on this attendance record,
      * or the given time records do not contain all time records listed on this attendance record,
      * return an empty list.
@@ -109,10 +109,6 @@ public class AttendanceRecord extends AttendanceHours {
         this.year = year;
     }
 
-    public void setPostDate(LocalDateTime postDate) {
-        this.postDate = postDate;
-    }
-
     public LocalDateTime getCreatedDate() {
         return createdDate;
     }
@@ -139,6 +135,10 @@ public class AttendanceRecord extends AttendanceHours {
 
     public LinkedHashSet<BigInteger> getTimesheetIds() {
         return timesheetIds;
+    }
+
+    public void setTimesheetIds(Collection<BigInteger> timesheetIds) {
+        this.timesheetIds = new LinkedHashSet<>(timesheetIds);
     }
 
     public Integer getExpectedDays() {

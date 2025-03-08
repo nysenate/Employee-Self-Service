@@ -5,6 +5,7 @@ import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
 
 /**
  * A dao that loads detailed information for a specific task.
+ *
  * @param <DT> class representing the task details.
  */
 public interface PersonnelTaskDetailDao<DT extends PersonnelTask> {

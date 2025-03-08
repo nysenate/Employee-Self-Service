@@ -35,7 +35,7 @@ public class TotalTRV implements TimeRecordValidator {
     /**
      * Check entry totals for the time record.
      *
-     * @param record TimeRecord - A posted time record in the process of validation
+     * @param record        TimeRecord - A posted time record in the process of validation
      * @param previousState TimeRecord - The most recently saved version of the posted time record
      * @throws TimeRecordErrorException if the total for any time entry is unacceptable.
      */
@@ -47,7 +47,7 @@ public class TotalTRV implements TimeRecordValidator {
     /**
      * Check the sum of all hours in a time entry
      */
-    private void checkTotal(TimeEntry entry)  throws TimeRecordErrorException {
+    private void checkTotal(TimeEntry entry) throws TimeRecordErrorException {
         final BigDecimal twentyFour = new BigDecimal(24);
         BigDecimal totalHours = entry.getTotalHours();
 

@@ -2,13 +2,13 @@ package gov.nysenate.ess.travel.api.application;
 
 import gov.nysenate.ess.core.client.view.DetailedEmployeeView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
-import gov.nysenate.ess.travel.request.allowances.mileage.MileagePerDiemsView;
-import gov.nysenate.ess.travel.request.app.TravelApplication;
-import gov.nysenate.ess.travel.request.attachment.Attachment;
 import gov.nysenate.ess.travel.request.address.TravelAddress;
 import gov.nysenate.ess.travel.request.allowances.AllowancesView;
 import gov.nysenate.ess.travel.request.allowances.lodging.LodgingPerDiemsView;
 import gov.nysenate.ess.travel.request.allowances.meal.MealPerDiemsView;
+import gov.nysenate.ess.travel.request.allowances.mileage.MileagePerDiemsView;
+import gov.nysenate.ess.travel.request.app.TravelApplication;
+import gov.nysenate.ess.travel.request.attachment.Attachment;
 import gov.nysenate.ess.travel.request.route.RouteView;
 import gov.nysenate.ess.travel.request.route.destination.Destination;
 

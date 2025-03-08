@@ -42,10 +42,10 @@ public class MoodleRecordService implements ESSMoodleRecordService {
     //process moodle records into tasks for storage in the db
     private static final Logger logger = LoggerFactory.getLogger(MoodleRecordService.class);
 
-    private ObjectMapper objectMapper = new ObjectMapper();
-    private EmployeeDao employeeDao;
-    private PersonnelTaskAssignmentDao personnelTaskAssignmentDao;
-    private PersonnelTaskService taskService;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final EmployeeDao employeeDao;
+    private final PersonnelTaskAssignmentDao personnelTaskAssignmentDao;
+    private final PersonnelTaskService taskService;
 
     @Value("${legethics.url:}") private String moodleUrl;
     @Value("${legethics.api.path:}") private String moodleApiPath;
@@ -69,7 +69,8 @@ public class MoodleRecordService implements ESSMoodleRecordService {
 
     //get record list
     public List<MoodleEmployeeRecord> getMoodleRecordsFromJson(String jsonString) throws IOException {
-        return objectMapper.readValue(jsonString, new TypeReference<>() {});
+        return objectMapper.readValue(jsonString, new TypeReference<>() {
+        });
     }
 
     //process records into tasks for completion
@@ -82,13 +83,12 @@ public class MoodleRecordService implements ESSMoodleRecordService {
 
         for (MoodleEmployeeRecord moodleEmployeeRecord : moodleEmployeeRecords) {
             Employee employee;
-            String filteredEmail = filterMoodleEmail( moodleEmployeeRecord.getEmail() );
+            String filteredEmail = filterMoodleEmail(moodleEmployeeRecord.getEmail());
 
             try {
                 logger.debug("Attempting to find a match with: " + filteredEmail);
                 employee = employeeDao.getEmployeeByEmail(filteredEmail);
-            }
-            catch (EmployeeException e) {
+            } catch (EmployeeException e) {
                 logger.warn("No Employee exists with email: " + filteredEmail);
                 continue;
             }
@@ -98,20 +98,17 @@ public class MoodleRecordService implements ESSMoodleRecordService {
             try {
 
                 PersonnelTaskAssignment currentTaskAssignment =
-                        personnelTaskAssignmentDao.getTaskForEmp(employee.getEmployeeId(),5);
+                        personnelTaskAssignmentDao.getTaskForEmp(employee.getEmployeeId(), 5);
 
-                if ( currentTaskAssignment.isCompleted() ) {
+                if (currentTaskAssignment.isCompleted()) {
+                    continue;
+                } else if (currentTaskAssignment.getUpdateEmpId() != null &&
+                        currentTaskAssignment.getEmpId() != currentTaskAssignment.getUpdateEmpId()) {
+                    continue;
+                } else if (currentTaskAssignment.isCompleted() && currentTaskAssignment.wasManuallyOverridden()) {
                     continue;
                 }
-                else if ( currentTaskAssignment.getUpdateEmpId() != null &&
-                        currentTaskAssignment.getEmpId() != currentTaskAssignment.getUpdateEmpId() ) {
-                    continue;
-                }
-                else if ( currentTaskAssignment.isCompleted() && currentTaskAssignment.wasManuallyOverridden() ) {
-                    continue;
-                }
-            }
-            catch (PersonnelTaskAssignmentNotFoundEx ex) {
+            } catch (PersonnelTaskAssignmentNotFoundEx ex) {
                 //This means they dont have a task to insert so we dont need to do anything
             }
 
@@ -124,7 +121,7 @@ public class MoodleRecordService implements ESSMoodleRecordService {
                     true,
                     LocalDateTime.now(),
                     null
-                    );
+            );
             personnelTaskAssignmentDao.updateAssignment(taskToInsert);
         }
 
@@ -135,7 +132,7 @@ public class MoodleRecordService implements ESSMoodleRecordService {
         String[] emailParts = email.toLowerCase().split("@");
         String firstHalf = emailParts[0];
         String secondHalf = emailParts[1];
-        firstHalf = firstHalf.replaceAll(".nysenate","").replaceAll(".senate","");
+        firstHalf = firstHalf.replaceAll(".nysenate", "").replaceAll(".senate", "");
         return firstHalf + "@" + secondHalf;
     }
 
@@ -164,8 +161,8 @@ public class MoodleRecordService implements ESSMoodleRecordService {
         }
         logger.info("Beginning Moodle Record Cron");
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime theYear2023 = LocalDateTime.of(2023,1,1,0,0);
-        JsonNode json = contactMoodleForRecords( theYear2023, now, "Senate");
+        LocalDateTime theYear2023 = LocalDateTime.of(2023, 1, 1, 0, 0);
+        JsonNode json = contactMoodleForRecords(theYear2023, now, "Senate");
         processMoodleEmployeeRecords(getMoodleRecordsFromJson(json.toString()));
         logger.info("Completed Moodle Record Cron");
     }

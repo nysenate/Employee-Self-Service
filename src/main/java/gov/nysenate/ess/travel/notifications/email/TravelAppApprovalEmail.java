@@ -18,17 +18,17 @@ import java.util.Map;
 @Service
 public class TravelAppApprovalEmail {
 
-    private SendMailService sendMailService;
-    private Configuration freemarkerCfg;
     private static final String template = "travel_app_approval_notice.ftlh";
     private static String domainUrl;
+    private final SendMailService sendMailService;
+    private final Configuration freemarkerCfg;
 
     @Autowired
     public TravelAppApprovalEmail(SendMailService sendMailService, Configuration freemarkerCfg,
                                   @Value("${domain.url}") final String domainUrl) {
         this.sendMailService = sendMailService;
         this.freemarkerCfg = freemarkerCfg;
-        this.domainUrl = domainUrl;
+        TravelAppApprovalEmail.domainUrl = domainUrl;
     }
 
     public MimeMessage createEmail(TravelAppEmailView view, Employee recipient) {

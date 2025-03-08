@@ -26,8 +26,7 @@ public class LodgingPerDiems {
                 if (lpd.rate().compareTo(dateToPerDiems.get(lpd.date()).rate()) > 0) {
                     dateToPerDiems.put(lpd.date(), lpd);
                 }
-            }
-            else {
+            } else {
                 dateToPerDiems.put(lpd.date(), lpd);
             }
         }

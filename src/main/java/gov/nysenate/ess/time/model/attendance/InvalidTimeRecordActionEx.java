@@ -4,8 +4,8 @@ public class InvalidTimeRecordActionEx extends RuntimeException {
 
     private static final long serialVersionUID = 1436675983194790361L;
 
-    private TimeRecordStatus status;
-    private TimeRecordAction action;
+    private final TimeRecordStatus status;
+    private final TimeRecordAction action;
 
     public InvalidTimeRecordActionEx(TimeRecordStatus status, TimeRecordAction action) {
         super("Action " + action + " cannot be applied to time records with status " + status);

@@ -25,27 +25,27 @@ public class DateRangeTRV implements TimeRecordValidator {
     private static final Logger logger = LoggerFactory.getLogger(DateRangeTRV.class);
 
     @Override
-    public boolean isApplicable(TimeRecord record, Optional<TimeRecord> previousState,TimeRecordAction action) {
+    public boolean isApplicable(TimeRecord record, Optional<TimeRecord> previousState, TimeRecordAction action) {
         return true;
     }
 
     /**
      * Check time record for entries that fall outside of the record's date range.
      *
-     * @param record TimeRecord - A posted time record in the process of validation
+     * @param record        TimeRecord - A posted time record in the process of validation
      * @param previousState TimeRecord - The most recently saved version of the posted time record
      * @throws TimeRecordErrorException - if time entries exist outside of the record's date range
      */
     @Override
     public void checkTimeRecord(TimeRecord record, Optional<TimeRecord> previousState, TimeRecordAction action) throws TimeRecordErrorException {
-        ImmutableList<TimeEntry> entries =  record.getTimeEntries();
+        ImmutableList<TimeEntry> entries = record.getTimeEntries();
         LocalDate entryDate;
 
         for (TimeEntry entry : entries) {
 
             entryDate = entry.getDate();
 
-            if (entryDate == null)  {
+            if (entryDate == null) {
                 throw new TimeRecordErrorException(TimeRecordErrorCode.NULL_DATE,
                         new InvalidParameterView("date", "string",
                                 "time entry date cannot be null", null));

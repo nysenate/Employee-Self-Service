@@ -10,6 +10,7 @@ public class Inventory {
 
     /**
      * Creates an empty inventory with the given itemIds.
+     *
      * @param itemIds
      */
     public Inventory(Collection<Integer> itemIds) {

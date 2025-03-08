@@ -88,6 +88,7 @@ public class EssTimeSupervisorPermissionFactory implements PermissionFactory {
 
     /**
      * Returns permissions for reading an employee's attendance data
+     *
      * @param supInfo EmployeeSupInfo
      * @return List<Permission>
      */
@@ -95,18 +96,19 @@ public class EssTimeSupervisorPermissionFactory implements PermissionFactory {
         int empId = supInfo.getEmpId();
         Range<LocalDate> effectiveRange = supInfo.getEffectiveDateRange();
         return Arrays.asList(
-                new EssTimePermission(empId, ATTENDANCE_RECORDS,        GET,    effectiveRange),
-                new EssTimePermission(empId, ACCRUAL,                   GET,    effectiveRange),
-                new EssTimePermission(empId, ACCRUAL_ACTIVE_YEARS,      GET,    Range.all()),
-                new EssTimePermission(empId, ALLOWANCE,                 GET,    getEffectiveYearRange(effectiveRange)),
-                new EssTimePermission(empId, ALLOWANCE_ACTIVE_YEARS,    GET,    Range.all()),
-                new EssTimePermission(empId, TIME_RECORD_ACTIVE_YEARS,  GET,    Range.all()),
-                new EssTimePermission(empId, TIME_RECORDS,              GET,    effectiveRange)
+                new EssTimePermission(empId, ATTENDANCE_RECORDS, GET, effectiveRange),
+                new EssTimePermission(empId, ACCRUAL, GET, effectiveRange),
+                new EssTimePermission(empId, ACCRUAL_ACTIVE_YEARS, GET, Range.all()),
+                new EssTimePermission(empId, ALLOWANCE, GET, getEffectiveYearRange(effectiveRange)),
+                new EssTimePermission(empId, ALLOWANCE_ACTIVE_YEARS, GET, Range.all()),
+                new EssTimePermission(empId, TIME_RECORD_ACTIVE_YEARS, GET, Range.all()),
+                new EssTimePermission(empId, TIME_RECORDS, GET, effectiveRange)
         );
     }
 
     /**
      * Returns permissions for writing employee attendance data
+     *
      * @param supInfo EmployeeSupInfo
      * @return List<Permission>
      */
@@ -114,13 +116,14 @@ public class EssTimeSupervisorPermissionFactory implements PermissionFactory {
         int empId = supInfo.getEmpId();
         Range<LocalDate> effectiveRange = supInfo.getEffectiveDateRange();
         return Arrays.asList(
-                new EssTimePermission(empId, TIME_RECORDS,              POST,   effectiveRange),
-                new EssTimePermission(empId, TIME_RECORD_NOTIFICATION,  POST,   effectiveRange)
+                new EssTimePermission(empId, TIME_RECORDS, POST, effectiveRange),
+                new EssTimePermission(empId, TIME_RECORD_NOTIFICATION, POST, effectiveRange)
         );
     }
 
     /**
      * Return a list of permissions for supervisor functions for the given employees
+     *
      * @param supInfo {@link EmployeeSupInfo}
      * @return List<Permission>
      */
@@ -136,6 +139,7 @@ public class EssTimeSupervisorPermissionFactory implements PermissionFactory {
 
     /**
      * Get a range containing all days of all years present in the given range
+     *
      * @param effectiveRange Range<LocalDate>
      * @return Range<LocalDate>
      */

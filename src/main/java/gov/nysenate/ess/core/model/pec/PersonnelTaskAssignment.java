@@ -12,7 +12,7 @@ import java.util.StringJoiner;
 
 /**
  * An assignment of a personnel task to an employee.
- *
+ * <p>
  * Contains reference to the task and the current completion status.
  */
 public class PersonnelTaskAssignment implements Comparable<PersonnelTaskAssignment> {
@@ -82,8 +82,7 @@ public class PersonnelTaskAssignment implements Comparable<PersonnelTaskAssignme
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof PersonnelTaskAssignment)) return false;
-        PersonnelTaskAssignment that = (PersonnelTaskAssignment) o;
+        if (!(o instanceof PersonnelTaskAssignment that)) return false;
         return taskId == that.taskId &&
                 empId == that.empId &&
                 Objects.equal(updateEmpId, that.updateEmpId) &&
@@ -162,9 +161,10 @@ public class PersonnelTaskAssignment implements Comparable<PersonnelTaskAssignme
     /**
      * Returns a new PersonnelTaskAssignment that's a copy of this one,
      * but with assignment and due date added.
+     *
      * @param continuousServiceDate of the related employee.
-     * @param type of the related task.
-     * @param isNew if this is a newly created assignment.
+     * @param type                  of the related task.
+     * @param isNew                 if this is a newly created assignment.
      * @return a new PersonnelTaskAssignment with the proper dates.
      */
     public PersonnelTaskAssignment withDates(LocalDate continuousServiceDate, PersonnelTaskType type, boolean isNew, boolean hasCompletedAnEthicsLiveTraining) {
@@ -179,15 +179,14 @@ public class PersonnelTaskAssignment implements Comparable<PersonnelTaskAssignme
     public LocalDate getDueDate(LocalDate continuousServiceDate, PersonnelTaskType type, boolean hasCompletedAnEthicsLiveTraining) {
         LocalDate dueDate = null;
         if (type == PersonnelTaskType.MOODLE_COURSE) {
-            dueDate = DateUtils.addDays(continuousServiceDate,30);
+            dueDate = DateUtils.addDays(continuousServiceDate, 30);
         } else if (type == PersonnelTaskType.ETHICS_LIVE_COURSE) {
             LocalDate ninetyDaysAgo = LocalDate.now(ZoneId.systemDefault()).minus(Period.ofDays(90));
             // Checks whether this is an old employee.
             if (continuousServiceDate.isBefore(ninetyDaysAgo) || hasCompletedAnEthicsLiveTraining) {
-                dueDate = LocalDate.of(LocalDate.now().getYear(), 12,31);
-            }
-            else {
-                dueDate = DateUtils.addDays(continuousServiceDate,90);
+                dueDate = LocalDate.of(LocalDate.now().getYear(), 12, 31);
+            } else {
+                dueDate = DateUtils.addDays(continuousServiceDate, 90);
             }
         }
         return dueDate;

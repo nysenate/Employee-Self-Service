@@ -14,7 +14,6 @@ import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.core.model.unit.LocationType;
 import gov.nysenate.ess.core.service.base.LocationService;
 import gov.nysenate.ess.core.service.cache.EmployeeEhCache;
-import gov.nysenate.ess.core.service.cache.EssCacheManager;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.LimitOffset;
@@ -55,6 +54,37 @@ public class CachedEmployeeInfoService extends EmployeeEhCache<Employee>
         this.transService = transService;
         this.locationService = locationService;
         lastUpdateDateTime = employeeDao.getLastUpdateTime();
+    }
+
+    /**
+     * These methods extract the most up-to-date value of a particular employee field from a transaction history
+     * effective after a given date
+     * TODO: you can't get every value of these objects from the transaction layer
+     */
+    private static void setRespCenterAtDate(Employee emp, TransactionHistory transHistory, LocalDate effectiveDate) {
+        if (emp.getRespCenter() == null) {
+            emp.setRespCenter(new ResponsibilityCenter());
+        }
+        ResponsibilityCenter rctr = emp.getRespCenter();
+        rctr.setCode(Integer.parseInt(transHistory.latestValueOf("CDRESPCTR", effectiveDate, true).orElse(Integer.toString(rctr.getCode()))));
+        setAgencyAtDate(rctr, transHistory, effectiveDate);
+        setRespHeadAtDate(rctr, transHistory, effectiveDate);
+    }
+
+    private static void setAgencyAtDate(ResponsibilityCenter respCtr, TransactionHistory transHistory, LocalDate effectiveDate) {
+        if (respCtr.getAgency() == null) {
+            respCtr.setAgency(new Agency());
+        }
+        Agency agency = respCtr.getAgency();
+        agency.setCode(transHistory.latestValueOf("CDAGENCY", effectiveDate, true).orElse(agency.getCode()));
+    }
+
+    private static void setRespHeadAtDate(ResponsibilityCenter respCtr, TransactionHistory transHistory, LocalDate effectiveDate) {
+        if (respCtr.getHead() == null) {
+            respCtr.setHead(new ResponsibilityHead());
+        }
+        ResponsibilityHead rHead = respCtr.getHead();
+        rHead.setCode(transHistory.latestValueOf("CDRESPCTRHD", effectiveDate, false).orElse(rHead.getCode()));
     }
 
     /**
@@ -154,6 +184,8 @@ public class CachedEmployeeInfoService extends EmployeeEhCache<Employee>
         return activeOnly ? getActiveEmployeesFromCache() : employeeDao.getAllEmployees();
     }
 
+    // --- CachingService Implemented Methods ---
+
     private Set<Employee> getActiveEmployeesFromCache() {
         return employeeIdService.getActiveEmployeeIds().stream()
                 .map(this::getEmployee)
@@ -175,8 +207,6 @@ public class CachedEmployeeInfoService extends EmployeeEhCache<Employee>
     public PaginatedList<Employee> searchEmployees(EmployeeSearchBuilder employeeSearchBuilder, LimitOffset limitOffset) {
         return employeeDao.searchEmployees(employeeSearchBuilder, limitOffset);
     }
-
-    // --- CachingService Implemented Methods ---
 
     /**
      * {@inheritDoc}
@@ -220,37 +250,6 @@ public class CachedEmployeeInfoService extends EmployeeEhCache<Employee>
         } else {
             logger.debug("found no updated employees");
         }
-    }
-
-    /**
-     * These methods extract the most up-to-date value of a particular employee field from a transaction history
-     * effective after a given date
-     * TODO: you can't get every value of these objects from the transaction layer
-     */
-    private static void setRespCenterAtDate(Employee emp, TransactionHistory transHistory, LocalDate effectiveDate) {
-        if (emp.getRespCenter() == null) {
-            emp.setRespCenter(new ResponsibilityCenter());
-        }
-        ResponsibilityCenter rctr = emp.getRespCenter();
-        rctr.setCode(Integer.parseInt(transHistory.latestValueOf("CDRESPCTR", effectiveDate, true).orElse(Integer.toString(rctr.getCode()))));
-        setAgencyAtDate(rctr, transHistory, effectiveDate);
-        setRespHeadAtDate(rctr, transHistory, effectiveDate);
-    }
-
-    private static void setAgencyAtDate(ResponsibilityCenter respCtr, TransactionHistory transHistory, LocalDate effectiveDate) {
-        if (respCtr.getAgency() == null) {
-            respCtr.setAgency(new Agency());
-        }
-        Agency agency = respCtr.getAgency();
-        agency.setCode(transHistory.latestValueOf("CDAGENCY", effectiveDate, true).orElse(agency.getCode()));
-    }
-
-    private static void setRespHeadAtDate(ResponsibilityCenter respCtr, TransactionHistory transHistory, LocalDate effectiveDate) {
-        if (respCtr.getHead() == null) {
-            respCtr.setHead(new ResponsibilityHead());
-        }
-        ResponsibilityHead rHead = respCtr.getHead();
-        rHead.setCode(transHistory.latestValueOf("CDRESPCTRHD", effectiveDate, false).orElse(rHead.getCode()));
     }
 
     /**

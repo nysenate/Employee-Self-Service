@@ -7,10 +7,10 @@ import gov.nysenate.ess.time.model.attendance.TimeEntryException;
 import java.math.BigInteger;
 import java.util.List;
 
-public interface TimeEntryDao extends BaseDao
-{
+public interface TimeEntryDao extends BaseDao {
     /**
      * Retrieve a time entry from its unique id
+     *
      * @param timeEntryId
      * @return TimeEntry
      */
@@ -18,6 +18,7 @@ public interface TimeEntryDao extends BaseDao
 
     /**
      * Retrieve all time entries that belong to a specific time record.
+     *
      * @param timeRecordId int - Id of the parent TimeRecord
      * @return List<TimeEntry>
      * @throws TimeEntryException - TimeEntryNotFoundEx if no matching time entries were found
@@ -26,7 +27,8 @@ public interface TimeEntryDao extends BaseDao
 
     /**
      * Update or insert a time entry using TimeEntry Object
+     *
      * @param tsd - TimeEntry class object containing data to be updated
      */
     void updateTimeEntry(TimeEntry tsd);
-  }
+}

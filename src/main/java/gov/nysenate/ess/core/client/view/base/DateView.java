@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 public class DateView implements ViewObject {
 
-    private LocalDate date;
+    private final LocalDate date;
 
     public DateView(LocalDate date) {
         this.date = date;

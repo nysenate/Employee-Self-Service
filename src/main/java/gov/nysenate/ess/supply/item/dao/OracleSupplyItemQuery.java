@@ -21,7 +21,7 @@ public enum OracleSupplyItemQuery implements BasicSqlQuery {
 
     GET_SUPPLY_ITEMS_BY_IDS(
             SUPPLY_ITEM_QUERY.getSql() +
-            "WHERE com.nuxrefco IN (:ids)"
+                    "WHERE com.nuxrefco IN (:ids)"
     ),
 
     GET_ALL_SUPPLY_ITEMS(

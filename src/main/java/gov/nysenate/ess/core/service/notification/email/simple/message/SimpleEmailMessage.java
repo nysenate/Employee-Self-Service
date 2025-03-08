@@ -62,14 +62,14 @@ public class SimpleEmailMessage implements Message {
     }
 
     @Override
-    public void setHeader(Header... headers) {
-        for (Header h : headers)
-            header.put(h.getHeaderName(), h.getHeaderValue());
+    public Map<String, String> getHeader() {
+        return header;
     }
 
     @Override
-    public Map<String, String> getHeader() {
-        return header;
+    public void setHeader(Header... headers) {
+        for (Header h : headers)
+            header.put(h.getHeaderName(), h.getHeaderValue());
     }
 
 }

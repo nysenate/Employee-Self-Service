@@ -13,7 +13,7 @@ public class MileagePerDiems {
      */
     private static final double MILE_THRESHOLD = 35.0;
     private final ImmutableList<MileagePerDiem> perDiems;
-    private Dollars overrideRate;
+    private final Dollars overrideRate;
 
     public MileagePerDiems(Collection<MileagePerDiem> perDiems) {
         this(ImmutableList.copyOf(perDiems), Dollars.ZERO);

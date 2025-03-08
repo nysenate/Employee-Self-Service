@@ -7,9 +7,10 @@ public class DistrictResponseView implements ViewObject {
     private String districtName;
     private int districtNumber;
 
-    public DistrictResponseView() {}
+    public DistrictResponseView() {
+    }
 
-    public DistrictResponseView (DistrictResponse districtResponse) {
+    public DistrictResponseView(DistrictResponse districtResponse) {
         this.districtName = districtResponse.getDistrictName();
         this.districtNumber = districtResponse.getDistrictNumber();
     }

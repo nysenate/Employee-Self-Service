@@ -2,7 +2,7 @@ package gov.nysenate.ess.core.client.response.error;
 
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 
-public class ViewObjectErrorResponse extends ErrorResponse{
+public class ViewObjectErrorResponse extends ErrorResponse {
 
     protected Object errorData;
 
@@ -10,10 +10,12 @@ public class ViewObjectErrorResponse extends ErrorResponse{
         super(errorCode);
         this.errorData = errorData;
     }
+
     public ViewObjectErrorResponse(ErrorCode errorCode, String errorData) {
         super(errorCode);
         this.errorData = errorData;
     }
+
     public ViewObjectErrorResponse(ErrorCode errorCode, Integer errorData) {
         super(errorCode);
         this.errorData = errorData;
@@ -22,6 +24,7 @@ public class ViewObjectErrorResponse extends ErrorResponse{
     public Object getErrorData() {
         return errorData;
     }
+
     public String getErrorDataType() {
         return ViewObject.getViewTypeOf(errorData);
     }

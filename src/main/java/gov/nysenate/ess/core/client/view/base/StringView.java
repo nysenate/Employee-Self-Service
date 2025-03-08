@@ -1,7 +1,6 @@
 package gov.nysenate.ess.core.client.view.base;
 
-public class StringView implements ViewObject
-{
+public class StringView implements ViewObject {
     protected String text;
 
     public StringView(String text) {

@@ -1,8 +1,11 @@
 package gov.nysenate.ess.time.dao.personnel;
 
-import gov.nysenate.ess.core.model.transaction.TransactionInfo;
 import gov.nysenate.ess.core.dao.base.BaseDao;
-import gov.nysenate.ess.time.model.personnel.*;
+import gov.nysenate.ess.core.model.transaction.TransactionInfo;
+import gov.nysenate.ess.time.model.personnel.PrimarySupEmpGroup;
+import gov.nysenate.ess.time.model.personnel.SupervisorChainAlteration;
+import gov.nysenate.ess.time.model.personnel.SupervisorException;
+import gov.nysenate.ess.time.model.personnel.SupervisorOverride;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -11,11 +14,11 @@ import java.util.List;
 /**
  * Data access layer for retrieving T&A supervisor info as well as setting overrides.
  */
-public interface SupervisorDao extends BaseDao
-{
+public interface SupervisorDao extends BaseDao {
 
     /**
      * Indicates whether the given empId was ever a T&A supervisor
+     *
      * @param empId int - employee id
      * @return boolean - true iff 'empId' had subordinates at any point during their time at the senate.
      */
@@ -41,6 +44,7 @@ public interface SupervisorDao extends BaseDao
 
     /**
      * Retrieves a list of active supervisor and employee overrides for the given supervisor.
+     *
      * @param supId int - Supervisor Id
      * @return {@link List<SupervisorOverride>}
      * @throws SupervisorException
@@ -49,6 +53,7 @@ public interface SupervisorDao extends BaseDao
 
     /**
      * Retrieves a list of active supervisor overrides for the given supervisor.
+     *
      * @param supId int - Supervisor id
      * @return List<SupervisorOverride>
      * @throws SupervisorException
@@ -57,6 +62,7 @@ public interface SupervisorDao extends BaseDao
 
     /**
      * Retrieves a list of active supervisor grants for the given supervisor.
+     *
      * @param supId int - Supervisor id
      * @return List<SupervisorOverride>
      * @throws SupervisorException
@@ -69,9 +75,9 @@ public interface SupervisorDao extends BaseDao
      *
      * @param granterSupId int - The supervisor granting the override.
      * @param granteeSupId int - The supervisor receiving the override.
-     * @param active boolean - Indicates if this grant is active.
-     * @param startDate LocalDate - set to null for no start date.
-     * @param endDate LocalDate - set to null for no end date.
+     * @param active       boolean - Indicates if this grant is active.
+     * @param startDate    LocalDate - set to null for no start date.
+     * @param endDate      LocalDate - set to null for no end date.
      */
     void setSupervisorOverride(int granterSupId, int granteeSupId, boolean active, LocalDate startDate, LocalDate endDate);
 

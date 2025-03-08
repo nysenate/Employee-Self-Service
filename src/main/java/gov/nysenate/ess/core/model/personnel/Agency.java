@@ -5,8 +5,7 @@ import java.util.Objects;
 /**
  * Represents a senate agency.
  */
-public class Agency
-{
+public class Agency {
     public static final String SENATOR_AGENCY_CODE = "04210";
 
     protected String code;
@@ -14,7 +13,8 @@ public class Agency
     protected String shortName;
     protected String name;
 
-    public Agency() {}
+    public Agency() {
+    }
 
     public Agency(Agency other) {
         this.code = other.code;

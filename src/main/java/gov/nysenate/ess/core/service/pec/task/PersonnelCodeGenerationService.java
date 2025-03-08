@@ -48,40 +48,6 @@ public class PersonnelCodeGenerationService {
         this.pecCodeAdminEmails = Arrays.asList(pecCodeAdminEmails.replaceAll(" ", "").split(","));
     }
 
-    @Scheduled(cron = "${scheduler.ethics.code.autogen.cron}")
-    public void runUpdateMethods() {
-        if (pecEthicsCodeAutogen) {
-            handleCodeChangesForEthicsLiveCourses();
-        }
-    }
-
-    public void handleCodeChangesForEthicsLiveCourses() {
-        //Get all ACTIVE ethics live courses. At most should be 2 active at any time.
-        List<PersonnelTask> ethicsLiveTasks = getEthicsLiveCourses();
-        boolean isFirstQuarter = isFirstQuarterOfTheYear();
-        String code1 = createCode();
-        String code2 = createCode();
-        LocalDateTime startDate = generateEthicsStartDate();
-        LocalDateTime endDate = generateEthicsEndDate();
-
-        for (PersonnelTask task : ethicsLiveTasks) {
-            personnelTaskDao.insertEthicsCode(task.getTaskId(), 1, "First Code", code1, startDate, endDate);
-            personnelTaskDao.insertEthicsCode(task.getTaskId(), 2, "Second Code", code2, startDate, endDate);
-            pecNotificationService.sendCodeEmail(pecCodeAdminEmails, code1, code2, task, startDate.toString(), endDate.toString());
-            // Different codes per task
-            if (!isFirstQuarter) {
-                code1 = createCode();
-                code2 = createCode();
-            }
-        }
-    }
-
-    private List<PersonnelTask> getEthicsLiveCourses() {
-        return personnelTaskDao.getAllTasks().stream()
-                .filter(task -> task.getTaskType() == PersonnelTaskType.ETHICS_LIVE_COURSE && task.isActive())
-                .collect(Collectors.toList());
-    }
-
     /**
      * @return a randomized 6-character string of letters and numbers.
      */
@@ -118,8 +84,7 @@ public class PersonnelCodeGenerationService {
         if (now.getDayOfMonth() >= 28) {
             output = LocalDateTime.of(year, nextMonth, 28, 0, 0, 0);
             return output;
-        }
-        else {
+        } else {
             output = LocalDateTime.of(now.getYear(), now.getMonthValue(), 28, 0, 0, 0);
             return output;
         }
@@ -134,5 +99,39 @@ public class PersonnelCodeGenerationService {
         LocalDate march = LocalDate.of(now.getYear(), 3, 31);
 
         return now.isAfter(january) && now.isBefore(march);
+    }
+
+    @Scheduled(cron = "${scheduler.ethics.code.autogen.cron}")
+    public void runUpdateMethods() {
+        if (pecEthicsCodeAutogen) {
+            handleCodeChangesForEthicsLiveCourses();
+        }
+    }
+
+    public void handleCodeChangesForEthicsLiveCourses() {
+        //Get all ACTIVE ethics live courses. At most should be 2 active at any time.
+        List<PersonnelTask> ethicsLiveTasks = getEthicsLiveCourses();
+        boolean isFirstQuarter = isFirstQuarterOfTheYear();
+        String code1 = createCode();
+        String code2 = createCode();
+        LocalDateTime startDate = generateEthicsStartDate();
+        LocalDateTime endDate = generateEthicsEndDate();
+
+        for (PersonnelTask task : ethicsLiveTasks) {
+            personnelTaskDao.insertEthicsCode(task.getTaskId(), 1, "First Code", code1, startDate, endDate);
+            personnelTaskDao.insertEthicsCode(task.getTaskId(), 2, "Second Code", code2, startDate, endDate);
+            pecNotificationService.sendCodeEmail(pecCodeAdminEmails, code1, code2, task, startDate.toString(), endDate.toString());
+            // Different codes per task
+            if (!isFirstQuarter) {
+                code1 = createCode();
+                code2 = createCode();
+            }
+        }
+    }
+
+    private List<PersonnelTask> getEthicsLiveCourses() {
+        return personnelTaskDao.getAllTasks().stream()
+                .filter(task -> task.getTaskType() == PersonnelTaskType.ETHICS_LIVE_COURSE && task.isActive())
+                .collect(Collectors.toList());
     }
 }

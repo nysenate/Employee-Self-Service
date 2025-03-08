@@ -8,9 +8,9 @@ import java.util.*;
 
 public class Destination {
 
-    protected int id;
     protected final TravelAddress address;
     protected final Range<LocalDate> dateRange;
+    protected int id;
 
     public Destination(int id) {
         this(id, null, null, null);

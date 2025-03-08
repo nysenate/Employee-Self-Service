@@ -12,6 +12,7 @@ public interface ESSMoodleRecordService {
 
     /**
      * This method is meant to convert the steam of input from the http request into a json node
+     *
      * @param inputStream
      * @return
      * @throws IOException
@@ -20,6 +21,7 @@ public interface ESSMoodleRecordService {
 
     /**
      * Parses a list of MoodleEmployeeRecords from a Json Node
+     *
      * @param jsonString
      * @return
      * @throws IOException
@@ -28,12 +30,14 @@ public interface ESSMoodleRecordService {
 
     /**
      * Creates a PersonnelTask and then sends it to the PersonnelTaskDao for db insertion
+     *
      * @param moodleEmployeeRecords
      */
     void processMoodleEmployeeRecords(List<MoodleEmployeeRecord> moodleEmployeeRecords);
 
     /**
      * Contacts the Moodle ethics app for data in a certain time range
+     *
      * @param from
      * @param to
      * @param organization

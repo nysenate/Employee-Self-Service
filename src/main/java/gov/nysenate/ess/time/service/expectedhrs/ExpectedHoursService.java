@@ -10,7 +10,7 @@ import java.time.LocalDate;
 /**
  * @author Brian Heitner
  * @author Sam Stouffer
- *
+ * <p>
  * Defines a service that can provide information about an employee's expected hours.
  */
 public interface ExpectedHoursService {
@@ -18,7 +18,7 @@ public interface ExpectedHoursService {
     /**
      * Calculate {@link ExpectedHours} for the given date range.
      *
-     * @param empId int
+     * @param empId     int
      * @param dateRange Range<LocalDate>
      * @return {@link ExpectedHours}
      * @throws InvalidExpectedHourDatesEx if provided date range is invalid
@@ -29,7 +29,7 @@ public interface ExpectedHoursService {
     /**
      * Calculate {@link ExpectedHours} for the given pay period
      *
-     * @param empId int
+     * @param empId     int
      * @param payPeriod {@link PayPeriod}
      * @return {@link ExpectedHours}
      * @throws InvalidExpectedHourDatesEx if provided date range is invalid

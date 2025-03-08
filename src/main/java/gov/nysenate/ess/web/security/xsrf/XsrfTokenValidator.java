@@ -14,8 +14,7 @@ import javax.servlet.http.HttpSession;
  * are the same, it means that request is coming from the form rendered by the server and is not some
  * spoofed request url crafted by an attacker.
  */
-public class XsrfTokenValidator implements XsrfValidator
-{
+public class XsrfTokenValidator implements XsrfValidator {
     private static final Logger logger = LoggerFactory.getLogger(XsrfTokenValidator.class);
 
     /** The number of random bytes to be generated */
@@ -35,6 +34,7 @@ public class XsrfTokenValidator implements XsrfValidator
 
     /**
      * Generates a random Base64 encoded string that can be used as an XSRF token.
+     *
      * @return base64 encoded String
      */
     public String generateXsrfToken() {
@@ -54,7 +54,7 @@ public class XsrfTokenValidator implements XsrfValidator
         String xsrfTokenFromSession = getXsrfTokenFromSession(session);
         String xsrfToken = (xsrfTokenFromSession != null) ? xsrfTokenFromSession : generateXsrfToken();
         if (setXsrfTokenInSession(session, xsrfToken) &&
-            setXsrfTokenInRequestAttribute(request, xsrfToken)) {
+                setXsrfTokenInRequestAttribute(request, xsrfToken)) {
             return xsrfToken;
         }
         return null;
@@ -64,7 +64,7 @@ public class XsrfTokenValidator implements XsrfValidator
      * Validates an {xsrfToken} string against the token stored in the session.
      * Returns an XsrfTokenStatus enum value.
      *
-     * @param session HttpSession
+     * @param session   HttpSession
      * @param xsrfToken String
      * @return XsrfTokenStatus
      */
@@ -87,7 +87,8 @@ public class XsrfTokenValidator implements XsrfValidator
 
     /**
      * Sets the XSRF token as a session attribute.
-     * @param session HttpSession
+     *
+     * @param session   HttpSession
      * @param xsrfToken String
      * @return true if success, false otherwise
      */
@@ -102,6 +103,7 @@ public class XsrfTokenValidator implements XsrfValidator
 
     /**
      * Returns the XSRF token stored in the session.
+     *
      * @param session HttpSession
      * @return String
      */
@@ -114,7 +116,8 @@ public class XsrfTokenValidator implements XsrfValidator
 
     /**
      * Sets the XSRF token as a request attribute.
-     * @param request HttpServletRequest
+     *
+     * @param request   HttpServletRequest
      * @param xsrfToken String
      * @return true if success, false otherwise
      */

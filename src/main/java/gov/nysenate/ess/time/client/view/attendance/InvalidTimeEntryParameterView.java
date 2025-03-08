@@ -4,7 +4,6 @@ import gov.nysenate.ess.core.client.view.base.InvalidParameterView;
 import gov.nysenate.ess.time.model.attendance.TimeEntry;
 
 import java.time.LocalDate;
-import java.util.Objects;
 
 public class InvalidTimeEntryParameterView extends InvalidParameterView {
 

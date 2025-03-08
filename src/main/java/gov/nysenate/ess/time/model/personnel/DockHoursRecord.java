@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 /**
  * @author Brian Heitner
- *
+ * <p>
  * This is a data object structure for holding Docked Hours information.
  */
 public class DockHoursRecord {
@@ -67,12 +67,12 @@ public class DockHoursRecord {
         this.updatedDate = updatedDate;
     }
 
-    public void setDockHours(BigDecimal dockHours) {
-        this.dockHours = dockHours;
-    }
-
     public BigDecimal getDockHours() {
         return this.dockHours;
+    }
+
+    public void setDockHours(BigDecimal dockHours) {
+        this.dockHours = dockHours;
     }
 
 }

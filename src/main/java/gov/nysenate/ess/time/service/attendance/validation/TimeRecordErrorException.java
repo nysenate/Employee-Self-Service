@@ -10,8 +10,8 @@ public class TimeRecordErrorException extends RuntimeException implements Serial
 
     private static final ViewObject defaultErrorData = () -> "empty-error-data";
 
-    private TimeRecordErrorCode code;
-    private ViewObject errorData;
+    private final TimeRecordErrorCode code;
+    private final ViewObject errorData;
 
     public TimeRecordErrorException(TimeRecordErrorCode code, ViewObject errorData) {
         super(code.getMessage());

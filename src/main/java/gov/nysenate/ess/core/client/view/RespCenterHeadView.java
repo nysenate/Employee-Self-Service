@@ -7,15 +7,15 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class RespCenterHeadView implements ViewObject
-{
+public class RespCenterHeadView implements ViewObject {
     protected boolean active;
     protected String code;
     protected String shortName;
     protected String name;
     protected String affiliateCode;
 
-    public RespCenterHeadView() {}
+    public RespCenterHeadView() {
+    }
 
     public RespCenterHeadView(ResponsibilityHead head) {
         if (head != null) {

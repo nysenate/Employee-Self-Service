@@ -22,12 +22,12 @@ import java.util.Map;
 @Service
 public class CustomerConfirmationEmail {
 
+    private static final String template = "requisition_confirmation.ftlh";
+    private static final String subject = "Your supply requisition request has been submitted.";
     private final SendMailService sendMailService;
     private final Configuration freemarkerCfg;
     @Value("${domain.url}")
     private String domainUrl;
-    private static final String template = "requisition_confirmation.ftlh";
-    private static final String subject = "Your supply requisition request has been submitted.";
 
     @Autowired
     public CustomerConfirmationEmail(SendMailService sendMailService, Configuration freemarkerCfg) {

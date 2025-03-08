@@ -26,12 +26,12 @@ import static gov.nysenate.ess.core.util.DateUtils.startOfDateRange;
 
 /** {@inheritDoc} */
 @Repository
-public class SqlPayPeriodDao extends SqlBaseDao implements PayPeriodDao
-{
+public class SqlPayPeriodDao extends SqlBaseDao implements PayPeriodDao {
     private static final Logger logger = LoggerFactory.getLogger(SqlPayPeriodDao.class);
 
     /**
      * {@inheritDoc}
+     *
      * @throws IllegalArgumentException if date is null
      */
     @Override
@@ -52,12 +52,10 @@ public class SqlPayPeriodDao extends SqlBaseDao implements PayPeriodDao
             if (payPeriods.isEmpty() || payPeriods == null) {
                 logger.warn("Error retrieving pay period of type: {} during: {} | {}", type, date);
                 throw new IncorrectResultSizeDataAccessException(0);
-            }
-            else {
+            } else {
                 return payPeriods.get(0);
             }
-        }
-        catch (DataRetrievalFailureException ex) {
+        } catch (DataRetrievalFailureException ex) {
             logger.warn("Error retrieving pay period of type: {} during: {} | {}", type, date, ex.getMessage());
             throw new PayPeriodNotFoundEx("No matching pay period(s) of type " + type + " during " + date);
         }
@@ -67,9 +65,9 @@ public class SqlPayPeriodDao extends SqlBaseDao implements PayPeriodDao
     @Override
     public List<PayPeriod> getPayPeriods(PayPeriodType type, Range<LocalDate> dateRange, SortOrder dateOrder) {
         MapSqlParameterSource params = new MapSqlParameterSource()
-            .addValue("periodType", type.getCode())
-            .addValue("startDate", toDate(startOfDateRange(dateRange)))
-            .addValue("endDate", toDate(endOfDateRange(dateRange)));
+                .addValue("periodType", type.getCode())
+                .addValue("startDate", toDate(startOfDateRange(dateRange)))
+                .addValue("endDate", toDate(endOfDateRange(dateRange)));
         OrderBy orderBy = new OrderBy("DTBEGIN", dateOrder);
         String sql = GET_PAY_PERIODS_IN_RANGE_SQL.getSql(schemaMap(), orderBy);
         return remoteNamedJdbc.query(sql, params, new PayPeriodRowMapper(""));

@@ -1,21 +1,13 @@
 package gov.nysenate.ess.travel.request.route;
 
-import gov.nysenate.ess.travel.request.address.TravelAddress;
-import gov.nysenate.ess.travel.request.allowances.PerDiem;
-import gov.nysenate.ess.travel.request.route.destination.Destination;
 import gov.nysenate.ess.travel.provider.ProviderException;
-import gov.nysenate.ess.travel.provider.gsa.GsaAllowanceService;
-import gov.nysenate.ess.travel.provider.miles.MileageAllowanceService;
-import gov.nysenate.ess.travel.utils.Dollars;
-import org.springframework.beans.factory.annotation.Autowired;
+import gov.nysenate.ess.travel.request.address.TravelAddress;
+import gov.nysenate.ess.travel.request.route.destination.Destination;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class RouteService {

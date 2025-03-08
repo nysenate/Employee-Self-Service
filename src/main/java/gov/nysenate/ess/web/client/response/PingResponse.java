@@ -4,7 +4,7 @@ import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 
 public class PingResponse extends SimpleResponse {
 
-    private long remainingInactivity;
+    private final long remainingInactivity;
 
     public PingResponse(long remainingInactivity) {
         super(true, "ping!", "ping");

@@ -9,8 +9,7 @@ import gov.nysenate.ess.time.model.personnel.SupervisorChain;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class SupervisorChainView implements ViewObject
-{
+public class SupervisorChainView implements ViewObject {
     protected int supervisorId;
     protected ListView<EmployeeView> supChain;
 
@@ -18,9 +17,9 @@ public class SupervisorChainView implements ViewObject
         if (chain != null) {
             this.supervisorId = chain.getEmployeeId();
             this.supChain = ListView.of(
-                chain.getChain().stream()
-                    .map(supId -> new EmployeeView(empMap.get(supId)))
-                    .collect(Collectors.toList()));
+                    chain.getChain().stream()
+                            .map(supId -> new EmployeeView(empMap.get(supId)))
+                            .collect(Collectors.toList()));
         }
     }
 

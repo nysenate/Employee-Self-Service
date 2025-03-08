@@ -12,6 +12,26 @@ import java.util.Set;
 
 public class SendWordNowCsv {
 
+    /**
+     * Don't include employees in the dump if their information is incomplete in our system.
+     * This should only include new employees while their info is being populated.
+     *
+     * @return true if this employee has been completely entered into our system, false otherwise.
+     * An initialized employee should have a Uid, name, job title, resp center, resp center head,
+     * agency, and work address.
+     */
+    private static boolean isEmployeeInitialized(Employee emp) {
+        return emp.getUid() != null
+                && emp.getFirstName() != null
+                && emp.getLastName() != null
+                && emp.getJobTitle() != null
+                && emp.getRespCenter() != null
+                && emp.getRespCenter().getHead() != null
+                && emp.getRespCenter().getAgency() != null
+                && emp.getWorkLocation() != null
+                && emp.getWorkLocation().getAddress() != null;
+    }
+
     public void createCsv(HttpServletResponse response, Set<Employee> employees, Map<Integer, AlertInfo> alertInfos) {
         try (CSVPrinter printer = new CSVPrinter(response.getWriter(), CSVFormat.DEFAULT)) {
             // Print Headers
@@ -52,31 +72,11 @@ public class SendWordNowCsv {
                             empAlertInfo.mobileSms(),
                             empAlertInfo.getPersonalEmail(),
                             empAlertInfo.getAlternateEmail()
-                            );
+                    );
                 }
             }
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-    }
-
-    /**
-     * Don't include employees in the dump if their information is incomplete in our system.
-     * This should only include new employees while their info is being populated.
-     *
-     * @return true if this employee has been completely entered into our system, false otherwise.
-     * An initialized employee should have a Uid, name, job title, resp center, resp center head,
-     * agency, and work address.
-     */
-    private static boolean isEmployeeInitialized(Employee emp) {
-        return emp.getUid() != null
-                && emp.getFirstName() != null
-                && emp.getLastName() != null
-                && emp.getJobTitle() != null
-                && emp.getRespCenter() != null
-                && emp.getRespCenter().getHead() != null
-                && emp.getRespCenter().getAgency() != null
-                && emp.getWorkLocation() != null
-                && emp.getWorkLocation().getAddress() != null;
     }
 }

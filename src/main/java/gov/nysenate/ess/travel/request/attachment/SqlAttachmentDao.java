@@ -18,6 +18,7 @@ public class SqlAttachmentDao extends SqlBaseDao {
 
     /**
      * Fetch all Attachments linked to a given Travel Application.
+     *
      * @param appId
      * @return
      */
@@ -60,9 +61,10 @@ public class SqlAttachmentDao extends SqlBaseDao {
 
     /**
      * Links an {@link Attachment} to a {@link TravelApplication}.
+     *
      * @param attachments The attachment to link to a Travel App. This attachment should already be
      *                    persisted to the database.
-     * @param appId The id of the travel app.
+     * @param appId       The id of the travel app.
      */
     public void saveTravelAppAttachments(Collection<Attachment> attachments, int appId) {
         deleteAttachments(appId);
@@ -92,35 +94,35 @@ public class SqlAttachmentDao extends SqlBaseDao {
 
     private enum SqlAttachmentQuery implements BasicSqlQuery {
         SELECT_ATTACHMENTS("""
-                SELECT *
-                FROM ${travelSchema}.app_attachment
-                JOIN ${travelSchema}.attachment USING (attachment_id)
-                WHERE app_id = :appId
-                """
+                           SELECT *
+                           FROM ${travelSchema}.app_attachment
+                           JOIN ${travelSchema}.attachment USING (attachment_id)
+                           WHERE app_id = :appId
+                           """
         ),
         SELECT_ATTACHMENT_BY_FILENAME("""
-                SELECT *
-                FROM ${travelSchema}.attachment
-                WHERE attachment_id = :attachmentId::uuid
-                """
+                                      SELECT *
+                                      FROM ${travelSchema}.attachment
+                                      WHERE attachment_id = :attachmentId::uuid
+                                      """
         ),
         DELETE_ATTACHMENTS("""
-                DELETE FROM ${travelSchema}.app_attachment
-                WHERE app_id = :appId
-                """
+                           DELETE FROM ${travelSchema}.app_attachment
+                           WHERE app_id = :appId
+                           """
         ),
         INSERT_ATTACHMENT("""
-                INSERT INTO ${travelSchema}.attachment(attachment_id, original_filename, content_type)
-                VALUES (:attachmentId, :originalFilename, :contentType)
-                """
+                          INSERT INTO ${travelSchema}.attachment(attachment_id, original_filename, content_type)
+                          VALUES (:attachmentId, :originalFilename, :contentType)
+                          """
         ),
         INSERT_APP_ATTACHMENT("""
-                INSERT INTO ${travelSchema}.app_attachment(attachment_id, app_id)
-                VALUES (:attachmentId, :appId)
-                """
+                              INSERT INTO ${travelSchema}.app_attachment(attachment_id, app_id)
+                              VALUES (:attachmentId, :appId)
+                              """
         );
 
-        private String sql;
+        private final String sql;
 
         SqlAttachmentQuery(String sql) {
             this.sql = sql;
@@ -139,8 +141,8 @@ public class SqlAttachmentDao extends SqlBaseDao {
 
     private class AttachmentHandler extends BaseHandler {
 
-        private List<Attachment> attachments = new ArrayList<>();
-        private AttachmentMapper attachmentMapper = new AttachmentMapper();
+        private final List<Attachment> attachments = new ArrayList<>();
+        private final AttachmentMapper attachmentMapper = new AttachmentMapper();
 
         @Override
         public void processRow(ResultSet rs) throws SQLException {

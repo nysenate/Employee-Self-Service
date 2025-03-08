@@ -34,6 +34,7 @@ public class Delegation {
 
     /**
      * Get the principal employee for this delegation.
+     *
      * @return
      */
     public Employee principal() {
@@ -42,6 +43,7 @@ public class Delegation {
 
     /**
      * Get the delegate
+     *
      * @return
      */
     public Employee delegate() {

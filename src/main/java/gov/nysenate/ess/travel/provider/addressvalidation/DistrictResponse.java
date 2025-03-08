@@ -5,7 +5,8 @@ public class DistrictResponse {
     private String districtName;
     private int districtNumber;
 
-    public DistrictResponse() {}
+    public DistrictResponse() {
+    }
 
     public DistrictResponse(String districtName, int districtNumber) {
         this.districtName = districtName;

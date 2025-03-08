@@ -29,25 +29,21 @@ import java.util.regex.Pattern;
 public class CsvTaskAssigner {
 
     private static final Logger logger = LoggerFactory.getLogger(CsvTaskAssigner.class);
-
+    private static final Pattern manualAsssignmentCSV =
+            Pattern.compile("manual_assignment_V(\\d)");
+    private static final Pattern personnelManualAsssignmentCSV =
+            Pattern.compile("personnel_manual_assignment_V(\\d)");
     private final EmployeeDao employeeDao;
     private final PersonnelTaskAssignmentDao personnelTaskAssignmentDao;
     private final EmployeeInfoService employeeInfoService;
-
     private final String csvFileDir;
-
-    private static final Pattern manualAsssignmentCSV =
-            Pattern.compile("manual_assignment_V(\\d)");
-
-    private static final Pattern personnelManualAsssignmentCSV =
-            Pattern.compile("personnel_manual_assignment_V(\\d)");
 
 
     @Autowired
     public CsvTaskAssigner(EmployeeDao employeeDao,
-                              PersonnelTaskAssignmentDao personnelTaskAssignmentDao,
-                              EmployeeInfoService employeeInfoService,
-                              @Value("${data.dir:}") String dataDir) {
+                           PersonnelTaskAssignmentDao personnelTaskAssignmentDao,
+                           EmployeeInfoService employeeInfoService,
+                           @Value("${data.dir:}") String dataDir) {
         this.employeeDao = employeeDao;
         this.personnelTaskAssignmentDao = personnelTaskAssignmentDao;
         this.employeeInfoService = employeeInfoService;
@@ -69,7 +65,7 @@ public class CsvTaskAssigner {
     }
 
     //This method assigns and unassigns tasks only
-    private void processSTSManualAssignments (File manualAssignmentCSV) throws IOException {
+    private void processSTSManualAssignments(File manualAssignmentCSV) throws IOException {
         //empID, taskID, active, updateEmpID
 
         Reader reader = Files.newBufferedReader(Paths.get(manualAssignmentCSV.getAbsolutePath()));
@@ -92,18 +88,16 @@ public class CsvTaskAssigner {
 
                 if (!active) {
                     personnelTaskAssignmentDao.deactivatePersonnelTaskAssignment(empId, taskId);
-                }
-                else {
+                } else {
                     logger.info("Creating task for emp " + empId + " for task " + taskId);
                     PersonnelTaskAssignment taskToInsertForEmp =
                             new PersonnelTaskAssignment(
-                                    taskId,empId,updateEmpID, LocalDateTime.now(),false, true, LocalDateTime.now(), null);
+                                    taskId, empId, updateEmpID, LocalDateTime.now(), false, true, LocalDateTime.now(), null);
 
                     personnelTaskAssignmentDao.updateAssignment(taskToInsertForEmp);
                 }
 
-            }
-            catch (EmployeeNotFoundEx e) {
+            } catch (EmployeeNotFoundEx e) {
                 logger.warn("Could not find employee in ESS.  empId: {}\trecord: {}", e.getEmpId(), csvRecord);
             }
 
@@ -126,7 +120,7 @@ public class CsvTaskAssigner {
         }
     }
 
-    private void processPersonnelManualAssignments (File manualAssignmentCSV) throws IOException {
+    private void processPersonnelManualAssignments(File manualAssignmentCSV) throws IOException {
         //NAME, EMAIL, DATE, TASKNO
 
         Reader reader = Files.newBufferedReader(Paths.get(manualAssignmentCSV.getAbsolutePath()));
@@ -140,7 +134,7 @@ public class CsvTaskAssigner {
 
             try {
                 String email = csvRecord.get(1).toLowerCase().trim();
-                int taskId =  Integer.parseInt(csvRecord.get(3));
+                int taskId = Integer.parseInt(csvRecord.get(3));
                 //verify that the employee exists. We don't want bad data in the database
                 Employee employee = employeeDao.getEmployeeByEmail(email);
                 int empId = employee.getEmployeeId();
@@ -149,8 +143,7 @@ public class CsvTaskAssigner {
                 if (!employee.isActive()) {
                     logger.info("employee: " + empId + " " + email + " is not active");
                     personnelTaskAssignmentDao.deactivatePersonnelTaskAssignment(empId, taskId);
-                }
-                else {
+                } else {
                     logger.info("Creating task for emp " + empId + " for task " + taskId);
                     count++;
                     logger.info(count + "");
@@ -164,16 +157,14 @@ public class CsvTaskAssigner {
                                     taskId, empId, empId, personnelTaskAssignment.getUpdateTime(), personnelTaskAssignment.isCompleted(), true, LocalDateTime.now(), null);
                             personnelTaskAssignmentDao.updateAssignment(taskToInsertForEmp);
                         }
-                    }
-                    catch (IncorrectResultSizeDataAccessException e) {
+                    } catch (IncorrectResultSizeDataAccessException e) {
                         taskToInsertForEmp = new PersonnelTaskAssignment(
                                 taskId, empId, empId, LocalDateTime.now(), false, true, LocalDateTime.now(), null);
                         personnelTaskAssignmentDao.updateAssignment(taskToInsertForEmp);
                     }
                 }
 
-            }
-            catch (EmployeeNotFoundEx e) {
+            } catch (EmployeeNotFoundEx e) {
                 logger.warn("Could not find employee in ESS.  empId: {}\trecord: {}", e.getEmpId(), csvRecord);
             }
 

@@ -25,6 +25,14 @@ import java.util.List;
 @Repository
 public class VideoTaskDetailDao extends SqlBaseDao implements PersonnelTaskDetailDao<VideoTask> {
 
+    private static final RowMapper<VideoTaskCode> codeRowMapper = (rs, rowNum) ->
+            new VideoTaskCode(
+                    rs.getInt("task_id"),
+                    rs.getInt("sequence_no"),
+                    rs.getString("label"),
+                    rs.getString("code")
+            );
+
     @Override
     public PersonnelTaskType taskType() {
         return PersonnelTaskType.VIDEO_CODE_ENTRY;
@@ -41,11 +49,36 @@ public class VideoTaskDetailDao extends SqlBaseDao implements PersonnelTaskDetai
         return rowHandler.getResult();
     }
 
+    private enum Query implements BasicSqlQuery {
+        SELECT_VIDEO_TASK("SELECT *\n" +
+                "FROM ${essSchema}.pec_video_code v\n" +
+                "LEFT JOIN ${essSchema}.personnel_task c USING (task_id)\n" +
+                "WHERE task_id = :taskId"
+        ),
+        ;
+
+        private final String sql;
+
+        Query(String sql) {
+            this.sql = sql;
+        }
+
+        @Override
+        public String getSql() {
+            return sql;
+        }
+
+        @Override
+        public DbVendor getVendor() {
+            return DbVendor.POSTGRES;
+        }
+    }
+
     private static class SingleVideoRowHandler implements RowCallbackHandler {
 
         private final PersonnelTask task;
         private Integer videoId = null;
-        private List<VideoTaskCode> codes = new ArrayList<>();
+        private final List<VideoTaskCode> codes = new ArrayList<>();
 
         private SingleVideoRowHandler(PersonnelTask task) {
             this.task = task;
@@ -71,40 +104,6 @@ public class VideoTaskDetailDao extends SqlBaseDao implements PersonnelTaskDetai
                 throw new EmptyResultDataAccessException("No video task found for id " + task.getTaskId(), 1);
             }
             return new VideoTask(task, codes);
-        }
-    }
-
-    private static final RowMapper<VideoTaskCode> codeRowMapper = (rs, rowNum) ->
-            new VideoTaskCode(
-                    rs.getInt("task_id"),
-                    rs.getInt("sequence_no"),
-                    rs.getString("label"),
-                    rs.getString("code")
-            );
-
-    private enum Query implements BasicSqlQuery {
-        SELECT_VIDEO_TASK("" +
-                "SELECT *\n" +
-                "FROM ${essSchema}.pec_video_code v\n" +
-                "LEFT JOIN ${essSchema}.personnel_task c USING (task_id)\n" +
-                "WHERE task_id = :taskId"
-        ),
-        ;
-
-        private final String sql;
-
-        Query(String sql) {
-            this.sql = sql;
-        }
-
-        @Override
-        public String getSql() {
-            return sql;
-        }
-
-        @Override
-        public DbVendor getVendor() {
-            return DbVendor.POSTGRES;
         }
     }
 }

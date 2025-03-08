@@ -47,7 +47,7 @@ public class RequisitionQuery {
 
     /**
      * Converts "All" to "%".
-     *
+     * <p>
      * This is a temporary fix, until {@code RequisitionRestApiCtrl.searchRequisitions}
      * stops using 'All' params.
      */
@@ -58,9 +58,17 @@ public class RequisitionQuery {
         return param;
     }
 
+    public String getDestination() {
+        return useWildcard(destination);
+    }
+
     public RequisitionQuery setDestination(String destination) {
         this.destination = destination;
         return this;
+    }
+
+    public String getCustomerId() {
+        return useWildcard(customerId);
     }
 
     public RequisitionQuery setCustomerId(int customerId) {
@@ -73,9 +81,17 @@ public class RequisitionQuery {
         return this;
     }
 
+    public EnumSet<RequisitionStatus> getStatuses() {
+        return statuses;
+    }
+
     public RequisitionQuery setStatuses(EnumSet<RequisitionStatus> statuses) {
         this.statuses = statuses;
         return this;
+    }
+
+    public LocalDateTime getFromDateTime() {
+        return fromDateTime;
     }
 
     public RequisitionQuery setFromDateTime(LocalDateTime fromDateTime) {
@@ -83,25 +99,37 @@ public class RequisitionQuery {
         return this;
     }
 
+    public LocalDateTime getToDateTime() {
+        return toDateTime;
+    }
+
     public RequisitionQuery setToDateTime(LocalDateTime toDateTime) {
         this.toDateTime = toDateTime;
         return this;
     }
 
+    public String getDateField() {
+        return dateField;
+    }
+
     /**
      * Sets the dateField. Must be a valid date column in the requisition table,
      * throws a {@code IllegalArgumentException} if not.
+     *
      * @param dateField a date column which is filtered by from/to date time.
      */
     public RequisitionQuery setDateField(String dateField) {
         if (DATE_FIELDS.contains(dateField)) {
             this.dateField = dateField;
-        }
-        else {
+        } else {
             throw new IllegalArgumentException("datefield " + dateField +
                     " is not valid. Valid options are " + DATE_FIELDS);
         }
         return this;
+    }
+
+    public String getSavedInSfms() {
+        return useWildcard(savedInSfms);
     }
 
     public RequisitionQuery setSavedInSfms(boolean savedInSfms) {
@@ -114,9 +142,17 @@ public class RequisitionQuery {
         return this;
     }
 
+    public String getIssuerId() {
+        return useWildcard(issuerId);
+    }
+
     public RequisitionQuery setIssuerId(String issuerId) {
         this.issuerId = issuerId;
         return this;
+    }
+
+    public String getItemId() {
+        return useWildcard(itemId);
     }
 
     public RequisitionQuery setItemId(String itemId) {
@@ -124,9 +160,17 @@ public class RequisitionQuery {
         return this;
     }
 
+    public LimitOffset getLimitOffset() {
+        return limitOffset;
+    }
+
     public RequisitionQuery setLimitOffset(LimitOffset limitOffset) {
         this.limitOffset = limitOffset;
         return this;
+    }
+
+    public OrderBy getOrderBy() {
+        return orderBy;
     }
 
     public RequisitionQuery setOrderBy(OrderBy orderBy) {
@@ -134,63 +178,19 @@ public class RequisitionQuery {
         return this;
     }
 
+    public String getReconciled() {
+        return reconciled;
+    }
+
     public RequisitionQuery setReconciled(String reconciled) {
-        if(reconciled != null){
-            if(reconciled.equals("t") || StringUtils.equalsIgnoreCase(reconciled, "true")){
+        if (reconciled != null) {
+            if (reconciled.equals("t") || StringUtils.equalsIgnoreCase(reconciled, "true")) {
                 this.reconciled = "true";
             }
-            if(reconciled.equals("f")|| StringUtils.equalsIgnoreCase(reconciled, "false")){
+            if (reconciled.equals("f") || StringUtils.equalsIgnoreCase(reconciled, "false")) {
                 this.reconciled = "false";
             }
         }
         return this;
-    }
-
-    public String getDestination() {
-        return useWildcard(destination);
-    }
-
-    public String getCustomerId() {
-        return useWildcard(customerId);
-    }
-
-    public EnumSet<RequisitionStatus> getStatuses() {
-        return statuses;
-    }
-
-    public LocalDateTime getFromDateTime() {
-        return fromDateTime;
-    }
-
-    public LocalDateTime getToDateTime() {
-        return toDateTime;
-    }
-
-    public String getDateField() {
-        return dateField;
-    }
-
-    public String getSavedInSfms() {
-        return useWildcard(savedInSfms);
-    }
-
-    public String getIssuerId() {
-        return useWildcard(issuerId);
-    }
-
-    public String getItemId() {
-        return useWildcard(itemId);
-    }
-
-    public LimitOffset getLimitOffset() {
-        return limitOffset;
-    }
-
-    public OrderBy getOrderBy() {
-        return orderBy;
-    }
-
-    public String getReconciled() {
-        return reconciled;
     }
 }

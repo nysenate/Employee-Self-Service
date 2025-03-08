@@ -39,8 +39,7 @@ public class IrsMileageRateDao extends SqlBaseDao {
         List<MileageRate> mileageRateList = localNamedJdbc.query(sql, params, mapper);
         if (mileageRateList.isEmpty()) {
             throw new IncorrectResultSizeDataAccessException(0);
-        }
-        else {
+        } else {
             return mileageRateList.get(0);
         }
     }
@@ -51,7 +50,7 @@ public class IrsMileageRateDao extends SqlBaseDao {
                 "INSERT INTO ${travelSchema}.irs_mileage_rate\n" +
                         "VALUES (:startDate, :endDate, :rate)"
         ),
-        UPDATE_END_DATE (
+        UPDATE_END_DATE(
                 "UPDATE ${travelSchema}.irs_mileage_rate\n" +
                         "set end_date = :new_end_date\n" +
                         "where start_date = :old_start_date;"
@@ -62,11 +61,11 @@ public class IrsMileageRateDao extends SqlBaseDao {
                         "WHERE :date BETWEEN m.start_date and m.end_date"
         );
 
+        private final String sql;
+
         SqlIrsRateQuery(String sql) {
             this.sql = sql;
         }
-
-        private final String sql;
 
         @Override
         public String getSql() {

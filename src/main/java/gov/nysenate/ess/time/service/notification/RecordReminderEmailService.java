@@ -1,9 +1,7 @@
 package gov.nysenate.ess.time.service.notification;
 
-import com.google.common.collect.Multimap;
 import gov.nysenate.ess.time.model.notification.EssTimeRecordEmailReminder;
 
-import java.time.LocalDate;
 import java.util.List;
 
 /**

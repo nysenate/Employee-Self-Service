@@ -7,8 +7,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class SimpleEmployeeView implements ViewObject
-{
+public class SimpleEmployeeView implements ViewObject {
     protected int employeeId;
     protected String uid;
     protected String firstName;
@@ -17,7 +16,8 @@ public class SimpleEmployeeView implements ViewObject
     protected String email;
     protected boolean active;
 
-    public SimpleEmployeeView() {}
+    public SimpleEmployeeView() {
+    }
 
     public SimpleEmployeeView(Employee employee) {
         if (employee != null) {

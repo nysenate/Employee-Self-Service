@@ -19,7 +19,8 @@ public class Address {
     protected String zip4 = "";
     protected String country = "";
 
-    public Address() {}
+    public Address() {
+    }
 
     public Address(String addr1) {
         this(addr1, "", "", "", "", "");
@@ -53,12 +54,11 @@ public class Address {
     @Override
     public String toString() {
         if (isParsed()) {
-            return ((!addr1.isEmpty() ? addr1 : "") + (!addr2.isEmpty() ? " " + addr2 + "" : "")
+            return ((!addr1.isEmpty() ? addr1 : "") + (!addr2.isEmpty() ? " " + addr2 : "")
                     + (!addr1.isEmpty() || !addr2.isEmpty() ? "," : "")
                     + (!city.isEmpty() ? " " + city + "," : "") + (!state.isEmpty() ? " " + state : "")
                     + (!zip5.isEmpty() ? " " + zip5 : "") + (!zip4.isEmpty() ? "-" + zip4 : "")).trim();
-        }
-        else {
+        } else {
             return addr1;
         }
     }

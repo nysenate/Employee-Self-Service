@@ -30,10 +30,6 @@ public abstract class SqlBaseDao implements BaseDao {
     @Resource(name = "schemaMap")
     protected ImmutableMap<String, String> schemaMap;
 
-    protected Map<String, String> schemaMap() {
-        return schemaMap;
-    }
-
     /**
      * Convert a LocalDate to a Date. Returns null on null input.
      */
@@ -73,7 +69,7 @@ public abstract class SqlBaseDao implements BaseDao {
 
     /**
      * Get a nullable int value from the given result set.
-     *
+     * <p>
      * This is needed because {@link ResultSet#getInt(String)} returns 0 if the column is null.
      */
     public static Integer getNullableInt(ResultSet rs, String column) throws SQLException {
@@ -86,19 +82,26 @@ public abstract class SqlBaseDao implements BaseDao {
 
     /**
      * Converts true to 'A' and false to 'I'
+     *
      * @param status Boolean
      * @return char
      */
     public static char getStatusCode(Boolean status) {
         return (status != null && status.equals(true)) ? 'A' : 'I';
     }
+
     /**
      * Converts true to 'Y' and false to 'N'
+     *
      * @param accruing Boolean
      * @return char
      */
     public static char getAccruingCode(Boolean accruing) {
         return (accruing != null && accruing.equals(true)) ? 'Y' : 'N';
+    }
+
+    protected Map<String, String> schemaMap() {
+        return schemaMap;
     }
 
 }

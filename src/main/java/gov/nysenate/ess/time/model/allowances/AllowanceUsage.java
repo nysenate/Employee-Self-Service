@@ -73,11 +73,6 @@ public class AllowanceUsage {
         return baseHoursUsed.add(recordHoursUsed);
     }
 
-    public void setSalaryRecs(Collection<SalaryRec> salaryRecs) {
-        salaryRecMap.clear();
-        salaryRecs.forEach(rec -> salaryRecMap.put(rec.getEffectiveRange(), rec));
-    }
-
     public SalaryRec getSalaryRec(LocalDate date) {
         return salaryRecMap.get(date);
     }
@@ -86,8 +81,14 @@ public class AllowanceUsage {
         return ImmutableList.copyOf(salaryRecMap.asMapOfRanges().values());
     }
 
+    public void setSalaryRecs(Collection<SalaryRec> salaryRecs) {
+        salaryRecMap.clear();
+        salaryRecs.forEach(rec -> salaryRecMap.put(rec.getEffectiveRange(), rec));
+    }
+
     /**
      * Calculate the cost of a time record using the salary recs
+     *
      * @param record TimeRecord
      * @return BigDecimal - record cost
      */
@@ -99,6 +100,7 @@ public class AllowanceUsage {
 
     /**
      * Get the cost of a single time entry given the salary recs in this AllowanceUsage
+     *
      * @param entry TimeEntry
      * @return BigDecimal - entry cost
      */

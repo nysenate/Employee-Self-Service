@@ -5,7 +5,6 @@ import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.personnel.EmployeeNotFoundEx;
-import gov.nysenate.ess.core.service.personnel.CachedEmployeeInfoService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +37,18 @@ class PecEmailUtils {
         this.assignmentDao = assignmentDao;
         this.employeeDao = employeeDao;
         this.employeeInfoService = employeeInfoService;
+    }
+
+    /**
+     * Emails should send biweekly, unless the due date is within a week.
+     * Then, they should be sent whenever this method is called.
+     */
+    private static boolean shouldSendReminder(LocalDateTime dueDate) {
+        int currDay = LocalDate.now().getDayOfMonth();
+        if (currDay == 1 || currDay == 15) {
+            return true;
+        }
+        return dueDate != null && ChronoUnit.DAYS.between(LocalDateTime.now(), dueDate) <= 7;
     }
 
     /**
@@ -86,24 +97,11 @@ class PecEmailUtils {
                 if (emp.isActive() && !emp.isSenator()) {
                     empToTaskMap.put(emp, entry.getValue());
                 }
-            }
-            catch (EmployeeNotFoundEx e) {
+            } catch (EmployeeNotFoundEx e) {
                 logger.error("Error retrieving employee: " + e);
                 continue;
             }
         }
         return empToTaskMap;
-    }
-
-    /**
-     * Emails should send biweekly, unless the due date is within a week.
-     * Then, they should be sent whenever this method is called.
-     */
-    private static boolean shouldSendReminder(LocalDateTime dueDate) {
-        int currDay = LocalDate.now().getDayOfMonth();
-        if (currDay == 1 || currDay == 15) {
-            return true;
-        }
-        return dueDate != null && ChronoUnit.DAYS.between(LocalDateTime.now(), dueDate) <= 7;
     }
 }

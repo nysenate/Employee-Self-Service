@@ -30,8 +30,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.HEAD;
 
 @RestController
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/allowances")
-public class AllowanceRestApiCtrl extends BaseRestApiCtrl
-{
+public class AllowanceRestApiCtrl extends BaseRestApiCtrl {
 
     private static final Logger logger = LoggerFactory.getLogger(AllowanceRestApiCtrl.class);
 
@@ -45,14 +44,14 @@ public class AllowanceRestApiCtrl extends BaseRestApiCtrl
     /**
      * Get Allowance Api
      * -----------------
-     *
+     * <p>
      * Get employees' allowance usage for given years:
      * (GET) /api/v1/allowances[.json]
-     *
+     * <p>
      * Request Params:
-     * @param empId int[] - required - Employee ids for retrieved allowances
-     * @param year int[] - required - Years for which allowances will be retrieved
      *
+     * @param empId int[] - required - Employee ids for retrieved allowances
+     * @param year  int[] - required - Years for which allowances will be retrieved
      * @return {@link ListViewResponse<AllowanceUsageView>} allowance usages for each employee for each year
      */
     @RequestMapping(method = {GET, HEAD}, produces = "application/json")
@@ -80,18 +79,18 @@ public class AllowanceRestApiCtrl extends BaseRestApiCtrl
     /**
      * Get Period Allowance Api
      * ------------------------
-     *
+     * <p>
      * Get a breakdown of an employee's allowance usage by period for a given year:
      * (GET) /api/v1/allowances/period[.json]
-     *
+     * <p>
      * Request Params:
-     * @param empId int - required - Employee id for retrieved allowance
-     * @param year int - required - Year for retrieved allowance
      *
+     * @param empId int - required - Employee id for retrieved allowance
+     * @param year  int - required - Year for retrieved allowance
      * @return {@link ListViewResponse<PeriodAllowanceUsageView>}
-     *  The employee's allowance usage for each active period in the given year.
+     * The employee's allowance usage for each active period in the given year.
      */
-    @RequestMapping(value = "/period" ,method = {GET, HEAD}, produces = "application/json")
+    @RequestMapping(value = "/period", method = {GET, HEAD}, produces = "application/json")
     public ListViewResponse<PeriodAllowanceUsageView> getPeriodAllowances(@RequestParam int empId,
                                                                           @RequestParam int year) {
         checkPermission(new EssTimePermission(empId, ALLOWANCE, GET, DateUtils.yearDateRange(year)));
@@ -107,15 +106,15 @@ public class AllowanceRestApiCtrl extends BaseRestApiCtrl
     /**
      * Get Active Allowance Years Api
      * ------------------------------
-     *
+     * <p>
      * Get a list of years for which the employee has an allowance:
      * (GET) /api/v1/allowances/period[.json]
-     *
+     * <p>
      * Request Params:
-     * @param empId int - required - Employee id for retrieved allowance years
      *
+     * @param empId int - required - Employee id for retrieved allowance years
      * @return {@link ListViewResponse<Integer>}
-     *  A list of years for which the employee has an allowance
+     * A list of years for which the employee has an allowance
      */
     @RequestMapping(value = "/active-years", method = {GET, HEAD}, produces = "application/json")
     public ListViewResponse<Integer> getActiveAccrualYears(@RequestParam int empId) {

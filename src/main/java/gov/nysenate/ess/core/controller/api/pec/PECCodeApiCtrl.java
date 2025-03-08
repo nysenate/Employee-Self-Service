@@ -71,12 +71,12 @@ public class PECCodeApiCtrl extends BaseRestApiCtrl {
     /**
      * Update Personnel Task Assignment API
      * ------------------------------------
-     *
+     * <p>
      * Create new codes to be used for personnel ethics tasks
-     *
+     * <p>
      * Usage:
      * (GET)   /api/v1/personnel/task/codes/generate
-     *
+     * <p>
      * Path params:
      *
      * @return {@link SimpleResponse}
@@ -99,12 +99,12 @@ public class PECCodeApiCtrl extends BaseRestApiCtrl {
     /**
      * Update Personnel Task Assignment API
      * ------------------------------------
-     *
+     * <p>
      * Create new codes to be used for personnel ethics tasks
-     *
+     * <p>
      * Usage:
      * (POST)   /api/v1/personnel/task/codes/autogen
-     *
+     * <p>
      * Path params:
      *
      * @return {@link SimpleResponse}
@@ -126,15 +126,15 @@ public class PECCodeApiCtrl extends BaseRestApiCtrl {
     /**
      * Ethics Live Course Code Submission API
      * --------------------------------------
-     *
+     * <p>
      * Submit codes to indicate that an employee watched a video.
-     *
+     * <p>
      * Usage:
      * (POST)    /api/v1/personnel/task/ethics/live/code
-     *
+     * <p>
      * Request body:
-     * @param submission {@link PECCodeSubmission}
      *
+     * @param submission {@link PECCodeSubmission}
      * @return {@link SimpleResponse} if successful
      */
     @RequestMapping(value = "/ethics/live/code", method = POST, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -143,7 +143,7 @@ public class PECCodeApiCtrl extends BaseRestApiCtrl {
 
         ensureEmpIdExists(submission.getEmpId(), "empId");
 
-        EthicsLiveCourseTask ethicsLiveCourseTask = (EthicsLiveCourseTask) getEthicsLiveCourseFromIdParams(submission.getTaskId(), "taskId");
+        EthicsLiveCourseTask ethicsLiveCourseTask = getEthicsLiveCourseFromIdParams(submission.getTaskId(), "taskId");
 
         personnelCodeVerificationService.verifyDateRangedEthics(submission);
         int authenticatedEmpId = ShiroUtils.getAuthenticatedEmpId();
@@ -155,15 +155,15 @@ public class PECCodeApiCtrl extends BaseRestApiCtrl {
     /**
      * Video Code Submission API
      * -------------------------
-     *
+     * <p>
      * Submit codes to indicate that an employee watched a video.
-     *
+     * <p>
      * Usage:
      * (POST)    /api/v1/personnel/task/video/code
-     *
+     * <p>
      * Request body:
-     * @param submission {@link PECCodeSubmission}
      *
+     * @param submission {@link PECCodeSubmission}
      * @return {@link SimpleResponse} if successful
      */
     @RequestMapping(value = "/video/code", method = POST, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -172,7 +172,7 @@ public class PECCodeApiCtrl extends BaseRestApiCtrl {
 
         ensureEmpIdExists(submission.getEmpId(), "empId");
 
-        VideoTask videoTask = (VideoTask) getVideoFromIdParams(submission.getTaskId(), "taskId");
+        VideoTask videoTask = getVideoFromIdParams(submission.getTaskId(), "taskId");
 
         validateCodeFormat(submission.getCodes(), videoTask, "codes");
 
@@ -213,8 +213,7 @@ public class PECCodeApiCtrl extends BaseRestApiCtrl {
             }
 
             return videoTaskDetailDao.getTaskDetails(task);
-        }
-        catch (PersonnelTaskNotFoundEx ex) {
+        } catch (PersonnelTaskNotFoundEx ex) {
             throw invalidTaskIdEx;
         }
     }
@@ -246,8 +245,7 @@ public class PECCodeApiCtrl extends BaseRestApiCtrl {
             }
 
             return ethicsLiveCourseTaskDetailDao.getTaskDetails(task);
-        }
-        catch (PersonnelTaskNotFoundEx ex) {
+        } catch (PersonnelTaskNotFoundEx ex) {
             throw invalidTaskIdEx;
         }
     }

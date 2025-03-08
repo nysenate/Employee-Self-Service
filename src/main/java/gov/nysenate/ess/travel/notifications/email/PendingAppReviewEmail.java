@@ -18,17 +18,17 @@ import java.util.Map;
 @Service
 public class PendingAppReviewEmail {
 
-    private SendMailService sendMailService;
-    private Configuration freemarkerCfg;
     private static final String template = "travel_pending_app_review_notice.ftlh";
     private static String domainUrl;
+    private final SendMailService sendMailService;
+    private final Configuration freemarkerCfg;
 
     @Autowired
     public PendingAppReviewEmail(SendMailService sendMailService, Configuration freemarkerCfg,
                                  @Value("${domain.url}") final String domainUrl) {
         this.sendMailService = sendMailService;
         this.freemarkerCfg = freemarkerCfg;
-        this.domainUrl = domainUrl;
+        PendingAppReviewEmail.domainUrl = domainUrl;
     }
 
     public MimeMessage createEmail(TravelAppEmailView view, Employee recipient) {

@@ -1,7 +1,6 @@
 package gov.nysenate.ess.core.model.transaction;
 
-public class TransRecordException extends Exception
-{
+public class TransRecordException extends Exception {
     public TransRecordException() {
         super();
     }

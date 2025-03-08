@@ -16,8 +16,7 @@ import java.io.Serializable;
  * directly into this object.
  */
 @Entry(objectClasses = {"person", "top"})
-public final class SenateLdapPerson implements Serializable, SenatePerson
-{
+public final class SenateLdapPerson implements Serializable, SenatePerson {
     private static final long serialVersionUID = 3289890768256266928L;
 
     @Id
@@ -71,7 +70,8 @@ public final class SenateLdapPerson implements Serializable, SenatePerson
     @Attribute(name = "telephonenumber")
     private String phoneNumber;
 
-    public SenateLdapPerson() {}
+    public SenateLdapPerson() {
+    }
 
     public SenateLdapPerson(Attributes attrs) throws NamingException {
         if (attrs != null) {
@@ -117,11 +117,12 @@ public final class SenateLdapPerson implements Serializable, SenatePerson
 //    public String toString() {
 //        return uid;
 //    }
-
-
-
     public Integer getEmployeeId() {
         return Integer.parseInt(employeeId);
+    }
+
+    public void setEmployeeId(String employeeId) {
+        this.employeeId = employeeId;
     }
 
     @Override
@@ -154,10 +155,6 @@ public final class SenateLdapPerson implements Serializable, SenatePerson
 
     public void setOrganization(String organization) {
         this.organization = organization;
-    }
-
-    public void setEmployeeId(String employeeId) {
-        this.employeeId = employeeId;
     }
 
     public String getEmail() {

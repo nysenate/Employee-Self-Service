@@ -6,7 +6,7 @@ import gov.nysenate.ess.core.model.pec.video.VideoTaskCode;
 /**
  * View representation of {@link VideoTaskCode}
  * Also used for Ethics live course codes
- *
+ * <p>
  * The code value is not provided to thwart cheaters.
  */
 public class PECCodeView implements ViewObject {

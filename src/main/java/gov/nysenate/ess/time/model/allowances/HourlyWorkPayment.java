@@ -15,18 +15,18 @@ import java.util.Optional;
 public class HourlyWorkPayment {
 
     /** Indicates the start of the work period that this payment is compensating for */
-    private LocalDate effectDate;
+    private final LocalDate effectDate;
     /** The last day of the work period that this payment is compensating for */
-    private LocalDate endDate;
-    private LocalDateTime auditDate;
+    private final LocalDate endDate;
+    private final LocalDateTime auditDate;
 
-    private BigDecimal hoursPaid;
+    private final BigDecimal hoursPaid;
 
     /** Total money paid */
-    private BigDecimal moneyPaid;
+    private final BigDecimal moneyPaid;
 
     /** Money paid for the year prior to the year of endDate */
-    private BigDecimal prevYearMoneyPaid;
+    private final BigDecimal prevYearMoneyPaid;
 
     public HourlyWorkPayment(LocalDateTime auditDate, LocalDate effectDate, LocalDate endDate,
                              BigDecimal hoursPaid, BigDecimal moneyPaid, BigDecimal prevYearMoneyPaid) {
@@ -63,7 +63,7 @@ public class HourlyWorkPayment {
         return BigDecimal.ZERO;
     }
 
-    /** Return the range of work dates that this payment is compensating for.*/
+    /** Return the range of work dates that this payment is compensating for. */
     public Range<LocalDate> getWorkingRange() {
         return Range.closedOpen(effectDate, endDate.plusDays(1));
     }

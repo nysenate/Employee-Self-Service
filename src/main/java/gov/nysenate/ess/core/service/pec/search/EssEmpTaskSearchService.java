@@ -6,7 +6,6 @@ import com.google.common.collect.Range;
 import gov.nysenate.ess.core.dao.pec.assignment.PTAQueryBuilder;
 import gov.nysenate.ess.core.dao.pec.assignment.PTAQueryCompletionStatus;
 import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
-import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.ActiveEmployeeIdService;
@@ -19,7 +18,6 @@ import gov.nysenate.ess.core.util.SortOrder;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -45,6 +43,26 @@ public class EssEmpTaskSearchService implements EmpTaskSearchService {
         this.employeeInfoService = employeeInfoService;
         this.patDao = patDao;
         this.activeEmployeeIdService = activeEmployeeIdService;
+    }
+
+    private static @NotNull List<Integer> getToBeAssigned(List<Integer> activeTasks, EmployeeTaskSearchResult result, List<Integer> selected) {
+        List<Integer> toBeAssigned = new ArrayList<>();
+        List<Integer> assignedTasks = new ArrayList<>();
+        for (PersonnelTaskAssignment task : result.getTasks()) {
+            assignedTasks.add(task.getTaskId());
+        }
+        for (Integer taskId : activeTasks) {
+            if (!selected.isEmpty()) {
+                if (selected.contains(taskId) && !assignedTasks.contains(taskId)) {
+                    toBeAssigned.add(taskId);
+                }
+            } else {
+                if (!assignedTasks.contains(taskId)) {
+                    toBeAssigned.add(taskId);
+                }
+            }
+        }
+        return toBeAssigned;
     }
 
     @Override
@@ -256,26 +274,6 @@ public class EssEmpTaskSearchService implements EmpTaskSearchService {
             }
         }
         return newResultList;
-    }
-
-    private static @NotNull List<Integer> getToBeAssigned(List<Integer> activeTasks, EmployeeTaskSearchResult result, List<Integer> selected) {
-        List<Integer> toBeAssigned = new ArrayList<>();
-        List<Integer> assignedTasks = new ArrayList<>();
-        for (PersonnelTaskAssignment task : result.getTasks()) {
-            assignedTasks.add(task.getTaskId());
-        }
-        for (Integer taskId : activeTasks) {
-            if (!selected.isEmpty()) {
-                if (selected.contains(taskId) && !assignedTasks.contains(taskId)) {
-                    toBeAssigned.add(taskId);
-                }
-            } else {
-                if (!assignedTasks.contains(taskId)) {
-                    toBeAssigned.add(taskId);
-                }
-            }
-        }
-        return toBeAssigned;
     }
 
     private List<EmployeeTaskSearchResult> buildResultList(ImmutableListMultimap<Integer, PersonnelTaskAssignment> empTaskMap) {

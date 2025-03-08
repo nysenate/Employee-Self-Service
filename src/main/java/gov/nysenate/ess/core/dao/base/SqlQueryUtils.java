@@ -14,8 +14,7 @@ import java.util.Map;
 /**
  * Common utility methods to be used by enums/classes that store sql queries.
  */
-public abstract class SqlQueryUtils
-{
+public abstract class SqlQueryUtils {
     static final Integer ORACLE_MAX_ROW_LIMIT = 100000;
 
     /**
@@ -29,9 +28,9 @@ public abstract class SqlQueryUtils
      * Wraps the input sql query with a limit offset clause. The returned query will have the
      * proper syntax according to the supplied 'vendor'.
      *
-     * @param sql String - The original sql query
+     * @param sql         String - The original sql query
      * @param limitOffset LimitOffset - Limit/offset values should be set here
-     * @param vendor DbVendor - Used for determining the syntax of the limit clause.
+     * @param vendor      DbVendor - Used for determining the syntax of the limit clause.
      * @return String
      */
     public static String withLimitOffsetClause(String sql, LimitOffset limitOffset, DbVendor vendor) {
@@ -53,8 +52,8 @@ public abstract class SqlQueryUtils
                 Integer start = (limitOffset.hasOffset()) ? limitOffset.getOffsetStart() : 1;
                 Integer end = (limitOffset.hasLimit()) ? start + limitOffset.getLimit() - 1 : ORACLE_MAX_ROW_LIMIT;
                 return String.format(
-                    "SELECT * FROM (SELECT ROWNUM AS rn, q.* FROM (%s) q)\n" +
-                    "WHERE rn >= %s AND rn <= %s", sql, start, end);
+                        "SELECT * FROM (SELECT ROWNUM AS rn, q.* FROM (%s) q)\n" +
+                                "WHERE rn >= %s AND rn <= %s", sql, start, end);
             }
         }
         return sql;
@@ -64,7 +63,7 @@ public abstract class SqlQueryUtils
      * Wraps the input sql query with an ORDER BY clause that is generated via the given 'orderBy' instance.
      * Ordering of multiple column names is also supported.
      *
-     * @param sql String - The original sql query
+     * @param sql     String - The original sql query
      * @param orderBy OrderBy - Order by columns and sort orders should be set here.
      * @return String
      */

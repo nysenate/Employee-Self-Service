@@ -3,7 +3,7 @@ package gov.nysenate.ess.core.service.notification.base.header.eventType;
 import gov.nysenate.ess.core.service.notification.base.header.base.Header;
 
 /**
- *  delay header is used to represent the message will be sent after a time interval.
+ * delay header is used to represent the message will be sent after a time interval.
  * Created by Chenguang He  on 6/15/2016.
  */
 public interface Delay extends Header {

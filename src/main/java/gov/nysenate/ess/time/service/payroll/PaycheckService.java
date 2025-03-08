@@ -7,13 +7,12 @@ import java.util.List;
 /**
  * Service for retrieving employee paycheck data
  */
-public interface PaycheckService
-{
+public interface PaycheckService {
     /**
      * Gets all paychecks for the given employee for the given year
      *
      * @param empId int - employee id
-     * @param year int - year
+     * @param year  int - year
      * @return List<Paycheck>
      */
     List<Paycheck> getEmployeePaychecksForYear(int empId, int year);

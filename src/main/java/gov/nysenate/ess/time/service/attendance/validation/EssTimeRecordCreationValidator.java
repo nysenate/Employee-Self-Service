@@ -89,12 +89,13 @@ public class EssTimeRecordCreationValidator implements TimeRecordCreationValidat
                 .findAny()
                 .ifPresent(timeRecordStatus -> {
                     throw new TimeRecordCreationNotPermittedEx(empId, period,
-                            "Unsubmitted records exist");});
+                            "Unsubmitted records exist");
+                });
     }
 
     /**
      * Ensure that the given pay period is not already covered by existing records
-     *  and that there was an existing record in the previous period
+     * and that there was an existing record in the previous period
      */
     private void checkForExistingRecord(int empId, PayPeriod period) throws TimeRecordCreationNotPermittedEx {
         List<AttendanceRecord> attendanceRecords = attendanceDao.getAttendanceRecords(empId, period.getDateRange());

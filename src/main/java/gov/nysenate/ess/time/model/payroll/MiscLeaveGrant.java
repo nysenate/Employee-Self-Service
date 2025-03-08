@@ -47,8 +47,7 @@ public class MiscLeaveGrant {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof MiscLeaveGrant)) return false;
-        MiscLeaveGrant that = (MiscLeaveGrant) o;
+        if (!(o instanceof MiscLeaveGrant that)) return false;
         return empId() == that.empId() &&
                 miscLeaveType() == that.miscLeaveType() &&
                 Objects.equal(beginDate, that.beginDate) &&

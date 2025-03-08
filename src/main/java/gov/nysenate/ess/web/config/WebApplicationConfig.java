@@ -36,13 +36,16 @@ import java.util.List;
 @ComponentScan("gov.nysenate.ess.web")
 @Profile({"test", "dev", "prod"})
 @Import({CoreConfig.class, SecurityConfig.class})
-public class WebApplicationConfig implements WebMvcConfigurer
-{
+public class WebApplicationConfig implements WebMvcConfigurer {
     private static final Logger logger = LoggerFactory.getLogger(WebApplicationConfig.class);
 
-    private ObjectMapper jsonObjectMapper;
-    private ObjectMapper xmlObjectMapper;
-
+    private final ObjectMapper jsonObjectMapper;
+    private final ObjectMapper xmlObjectMapper;
+    @Value("${resource.path}") private String resourcePath;
+    @Value("${resource.location}") private String resourceLocation;
+    @Value("${data.dir}") private String dataDir;
+    @Value("${data.ackdoc_subdir}") private String ackDocSubdir;
+    @Value("${data.pecvid_subdir}") private String pecVidSubdir;
     @Autowired
     public WebApplicationConfig(ObjectMapper jsonObjectMapper, ObjectMapper xmlObjectMapper) {
         this.jsonObjectMapper = jsonObjectMapper;
@@ -53,13 +56,6 @@ public class WebApplicationConfig implements WebMvcConfigurer
     public void init() {
         logger.info("{}", AsciiArt.TS_LOGO.getText().replace("DATE", LocalDateTime.now().toString()));
     }
-
-    @Value("${resource.path}") private String resourcePath;
-    @Value("${resource.location}") private String resourceLocation;
-
-    @Value("${data.dir}") private String dataDir;
-    @Value("${data.ackdoc_subdir}") private String ackDocSubdir;
-    @Value("${data.pecvid_subdir}") private String pecVidSubdir;
 
     /** Sets paths that should not be intercepted by a controller (e.g css/ js/). */
     @Override

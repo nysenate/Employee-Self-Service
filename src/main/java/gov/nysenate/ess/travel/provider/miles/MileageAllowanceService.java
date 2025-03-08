@@ -1,10 +1,10 @@
 package gov.nysenate.ess.travel.provider.miles;
 
 import com.google.maps.errors.ApiException;
-import gov.nysenate.ess.travel.request.address.TravelAddress;
 import gov.nysenate.ess.core.service.notification.slack.service.SlackChatService;
 import gov.nysenate.ess.core.util.HttpUtils;
 import gov.nysenate.ess.travel.provider.ProviderException;
+import gov.nysenate.ess.travel.request.address.TravelAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

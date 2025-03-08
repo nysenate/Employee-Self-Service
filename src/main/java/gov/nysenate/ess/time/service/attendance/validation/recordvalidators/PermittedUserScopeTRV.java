@@ -23,8 +23,7 @@ import java.util.Optional;
  * E.g. A supervisor cannot save a record in employee scope and vice versa.
  */
 @Service
-public class PermittedUserScopeTRV implements TimeRecordValidator
-{
+public class PermittedUserScopeTRV implements TimeRecordValidator {
 
     private static final Logger logger = LoggerFactory.getLogger(PermittedUserScopeTRV.class);
 
@@ -39,9 +38,9 @@ public class PermittedUserScopeTRV implements TimeRecordValidator
     /**
      * Ensures that the authenticated user is permitted to modify this time record
      *
-     * @param record {@link TimeRecord} - A posted time record in the process of validation
+     * @param record        {@link TimeRecord} - A posted time record in the process of validation
      * @param previousState {@link Optional<TimeRecord>} - The most recently saved version of the posted time record
-     * @param action {@link TimeRecordAction} - The requested action to be performed on the time record
+     * @param action        {@link TimeRecordAction} - The requested action to be performed on the time record
      * @throws TimeRecordErrorException if the user is not in the appropriate scope
      */
     @Override
@@ -75,8 +74,9 @@ public class PermittedUserScopeTRV implements TimeRecordValidator
 
     /**
      * Test the given record to ensure that it belongs to the employee with the given emp id
+     *
      * @param prevRecord {@link TimeRecord}
-     * @param empId int
+     * @param empId      int
      * @throws TimeRecordErrorException if the employee is not the owner of the given record
      */
     private void testEmployeeScope(TimeRecord prevRecord, int empId) throws TimeRecordErrorException {
@@ -88,8 +88,9 @@ public class PermittedUserScopeTRV implements TimeRecordValidator
 
     /**
      * Test the given record to ensure that it is supervised the employee with the given emp id
+     *
      * @param prevRecord {@link TimeRecord}
-     * @param empId int
+     * @param empId      int
      * @throws TimeRecordErrorException if the employee is not the supervisor of the given record
      */
     private void testSupervisorScope(TimeRecord prevRecord, int empId) {
@@ -104,15 +105,17 @@ public class PermittedUserScopeTRV implements TimeRecordValidator
             if (supervisorEmpGroup.hasExtEmployeeDuringRange(prevRecord.getEmployeeId(), prevRecord.getDateRange())) {
                 return;
             }
-        } catch (SupervisorException ignored) {}
+        } catch (SupervisorException ignored) {
+        }
 
         throw new TimeRecordErrorException(TimeRecordErrorCode.INVALID_TIME_RECORD_SCOPE);
     }
 
     /**
      * Throw an exception as personnel scope is not currently supported
+     *
      * @param prevRecord {@link TimeRecord}
-     * @param empId int
+     * @param empId      int
      * @throws TimeRecordErrorException if the employee is not the owner of the given record
      */
     private void testPersonnelScope(TimeRecord prevRecord, int empId) {

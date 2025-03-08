@@ -21,8 +21,8 @@ public class DraftService {
 
     private static final Logger logger = LoggerFactory.getLogger(DraftService.class);
 
-    private DraftDao draftDao;
-    private TravelEmployeeService travelEmployeeService;
+    private final DraftDao draftDao;
+    private final TravelEmployeeService travelEmployeeService;
 
     @Autowired
     public DraftService(DraftDao draftDao, TravelEmployeeService travelEmployeeService) {

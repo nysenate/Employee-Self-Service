@@ -4,8 +4,10 @@ import gov.nysenate.ess.supply.item.model.SupplyItem;
 
 import java.util.Objects;
 
-/** A Line item represents an item in an order.
- * It contains the an item id and the quantity ordered. */
+/**
+ * A Line item represents an item in an order.
+ * It contains the an item id and the quantity ordered.
+ */
 public final class LineItem {
 
     private final SupplyItem item;
@@ -27,9 +29,9 @@ public final class LineItem {
     @Override
     public String toString() {
         return "LineItem{" +
-               "item=" + item +
-               ", quantity=" + quantity +
-               '}';
+                "item=" + item +
+                ", quantity=" + quantity +
+                '}';
     }
 
     @Override

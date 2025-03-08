@@ -11,13 +11,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @XmlRootElement(name = "timeRecord")
-public class TimeRecordView extends SimpleTimeRecordView
-{
+public class TimeRecordView extends SimpleTimeRecordView {
     protected EmployeeView employee;
     protected EmployeeView supervisor;
     protected List<TimeEntryView> timeEntries;
 
-    protected TimeRecordView() {}
+    protected TimeRecordView() {
+    }
 
 
     public TimeRecordView(TimeRecord record, Employee emp) {
@@ -30,8 +30,8 @@ public class TimeRecordView extends SimpleTimeRecordView
             this.employee = new EmployeeView(emp);
             this.supervisor = new EmployeeView(sup);
             this.timeEntries = record.getTimeEntries().stream()
-                .map(TimeEntryView::new)
-                .collect(Collectors.toList());
+                    .map(TimeEntryView::new)
+                    .collect(Collectors.toList());
         }
     }
 
@@ -40,8 +40,8 @@ public class TimeRecordView extends SimpleTimeRecordView
     public TimeRecord toTimeRecord() {
         TimeRecord record = super.toTimeRecord();
         record.addTimeEntries(timeEntries.stream()
-            .map(TimeEntryView::toTimeEntry)
-            .collect(Collectors.toList()));
+                .map(TimeEntryView::toTimeEntry)
+                .collect(Collectors.toList()));
         return record;
     }
 

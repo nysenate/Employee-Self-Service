@@ -6,8 +6,7 @@ import gov.nysenate.ess.core.util.LimitOffset;
 
 import java.io.IOException;
 
-public abstract class PaginationResponse extends BaseResponse
-{
+public abstract class PaginationResponse extends BaseResponse {
     protected int total;
     protected int offsetStart;
     protected int offsetEnd;

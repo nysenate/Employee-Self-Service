@@ -5,8 +5,7 @@ import gov.nysenate.ess.core.model.auth.AuthenticationStatus;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class AuthenticationResponse
-{
+public class AuthenticationResponse {
     protected AuthenticationStatus status;
     protected String user;
     protected int employeeId;

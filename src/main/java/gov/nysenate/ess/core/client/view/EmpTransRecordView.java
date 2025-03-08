@@ -1,6 +1,5 @@
 package gov.nysenate.ess.core.client.view;
 
-import com.ctc.wstx.util.StringUtil;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.core.model.transaction.TransactionColumn;
 import gov.nysenate.ess.core.model.transaction.TransactionRecord;
@@ -15,8 +14,7 @@ import java.util.Objects;
 import java.util.TreeMap;
 
 @XmlRootElement
-public class EmpTransRecordView implements ViewObject
-{
+public class EmpTransRecordView implements ViewObject {
     protected int employeeId;
     protected boolean active;
     protected String transCode;
@@ -38,11 +36,11 @@ public class EmpTransRecordView implements ViewObject
             this.values = new TreeMap<>();
             record.getValueMap().entrySet().stream()
                     .filter(entry -> !restrictValues ||
-                                    record.getTransCode().getDbColumnList().contains(entry.getKey()))
+                            record.getTransCode().getDbColumnList().contains(entry.getKey()))
                     .filter(entry -> TransactionColumn.isValidColumn(entry.getKey()))
                     .filter(entry -> StringUtils.isNotBlank(entry.getValue()))
                     .forEach(entry -> this.values.put(entry.getKey(),
-                                    new EmpTransItemView(entry.getKey(), entry.getValue())));
+                            new EmpTransItemView(entry.getKey(), entry.getValue())));
             this.effectDate = record.getEffectDate();
             this.originalDate = record.getOriginalDate();
             this.updateDate = record.getUpdateDate();

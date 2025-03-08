@@ -13,7 +13,8 @@ public class MoodleEmployeeRecord {
     private String confirmed;
     private String completed;
 
-    public MoodleEmployeeRecord(){}
+    public MoodleEmployeeRecord() {
+    }
 
     public MoodleEmployeeRecord(int userid, String firstname, String lastname, String email,
                                 String organization, String confirmed, String completed) {
@@ -74,12 +75,12 @@ public class MoodleEmployeeRecord {
         return confirmed;
     }
 
-    public void setConfirmed(String confirmed) {
-        this.confirmed = confirmed;
-    }
-
     public String getConfirmed() {
         return confirmed;
+    }
+
+    public void setConfirmed(String confirmed) {
+        this.confirmed = confirmed;
     }
 
     public String getCompleted() {

@@ -8,8 +8,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
 @RequestMapping("/")
-public class DefaultPageCtrl
-{
+public class DefaultPageCtrl {
     private static final Logger logger = LoggerFactory.getLogger(DefaultPageCtrl.class);
 
     @RequestMapping(method = {RequestMethod.GET, RequestMethod.HEAD})

@@ -6,19 +6,19 @@ import gov.nysenate.ess.core.dao.base.DbVendor;
 public enum PersonnelTaskAssignmentQuery implements BasicSqlQuery {
 
     SELECT_TASK_ASSIGNMENTS("""
-            SELECT *
-            FROM ${essSchema}.personnel_task_assignment
-            WHERE emp_id = :empId
-            ORDER BY task_id ASC
-            """
+                            SELECT *
+                            FROM ${essSchema}.personnel_task_assignment
+                            WHERE emp_id = :empId
+                            ORDER BY task_id ASC
+                            """
     ),
 
     SELECT_SPECIFIC_TASK_ASSIGNMENT("""
-            SELECT *
-            FROM ${essSchema}.personnel_task_assignment
-            WHERE emp_id = :empId
-              AND task_id = :taskId
-            """
+                                    SELECT *
+                                    FROM ${essSchema}.personnel_task_assignment
+                                    WHERE emp_id = :empId
+                                      AND task_id = :taskId
+                                    """
     ),
 
     SELECT_NOTIFIABLE_ASSIGNMENTS(
@@ -29,26 +29,25 @@ public enum PersonnelTaskAssignmentQuery implements BasicSqlQuery {
     ),
 
     SELECT_TASKS_QUERY("""
-            SELECT *
-            FROM ${essSchema}.personnel_task_assignment ta
-            JOIN ${essSchema}.personnel_task t USING (task_id)
-            WHERE (:active::boolean IS NULL OR ta.active = :active::boolean)
-              AND (:empId::int IS NULL OR emp_id = :empId)
-              AND (:taskType::ess.personnel_task_type IS NULL OR t.task_type = :taskType::ess.personnel_task_type)
-              AND (:completed::boolean IS NULL OR completed = :completed::boolean)
-              AND (:completed::boolean IS NULL OR :completed::boolean = FALSE OR
-                    (:completedFrom::TIMESTAMP WITHOUT TIME ZONE IS NULL OR
-                      timestamp >= :completedFrom::TIMESTAMP WITHOUT TIME ZONE)
-                    AND
-                    (:completedTo::TIMESTAMP WITHOUT TIME ZONE IS NULL OR
-                      timestamp <= :completedTo::TIMESTAMP WITHOUT TIME ZONE)
-              )
-              AND (:taskIdsPresent OR ta.task_id IN (:taskIds))
-            """
+                       SELECT *
+                       FROM ${essSchema}.personnel_task_assignment ta
+                       JOIN ${essSchema}.personnel_task t USING (task_id)
+                       WHERE (:active::boolean IS NULL OR ta.active = :active::boolean)
+                         AND (:empId::int IS NULL OR emp_id = :empId)
+                         AND (:taskType::ess.personnel_task_type IS NULL OR t.task_type = :taskType::ess.personnel_task_type)
+                         AND (:completed::boolean IS NULL OR completed = :completed::boolean)
+                         AND (:completed::boolean IS NULL OR :completed::boolean = FALSE OR
+                               (:completedFrom::TIMESTAMP WITHOUT TIME ZONE IS NULL OR
+                                 timestamp >= :completedFrom::TIMESTAMP WITHOUT TIME ZONE)
+                               AND
+                               (:completedTo::TIMESTAMP WITHOUT TIME ZONE IS NULL OR
+                                 timestamp <= :completedTo::TIMESTAMP WITHOUT TIME ZONE)
+                         )
+                         AND (:taskIdsPresent OR ta.task_id IN (:taskIds))
+                       """
     ),
 
-    SELECT_NOT_IN_TASKS_QUERY("" +
-            "SELECT t.task_id, t.task_type, t.title, t.effective_date_time, t.active, ta.completed,\n" +
+    SELECT_NOT_IN_TASKS_QUERY("SELECT t.task_id, t.task_type, t.title, t.effective_date_time, t.active, ta.completed,\n" +
             "       ta.emp_id, ta.assignment_date, ta.due_date, ta.update_user_id, ta.timestamp, ta.manual_override\n" +
             "FROM ${essSchema}.personnel_task_assignment ta\n" +
             "JOIN ${essSchema}.personnel_task t USING (task_id)\n" +
@@ -57,48 +56,40 @@ public enum PersonnelTaskAssignmentQuery implements BasicSqlQuery {
             "  AND (:taskType::ess.personnel_task_type IS NULL OR t.task_type = :taskType::ess.personnel_task_type)"
     ),
 
-    SELECT_ACTIVE_TASKS(""+
-            "SELECT task_id FROM ${essSchema}.personnel_task\n" +
+    SELECT_ACTIVE_TASKS("SELECT task_id FROM ${essSchema}.personnel_task\n" +
             "WHERE active = :active"
 
     ),
 
-    INSERT_TASK("" +
-            "INSERT INTO ${essSchema}.personnel_task_assignment\n" +
+    INSERT_TASK("INSERT INTO ${essSchema}.personnel_task_assignment\n" +
             "        (emp_id, task_id, timestamp, update_user_id, completed, active, manual_override, assignment_date, due_date)\n" +
             "VALUES (:empId, :taskId, :timestamp, :updateUserId, :completed, :active, :manualOverride, :assignmentDate, :dueDate)"
     ),
 
-    UPDATE_TASK("" +
-            "UPDATE ${essSchema}.personnel_task_assignment\n" +
+    UPDATE_TASK("UPDATE ${essSchema}.personnel_task_assignment\n" +
             "SET timestamp = :timestamp, update_user_id = :updateUserId, completed = :completed, active = :active\n" +
             "WHERE emp_id = :empId AND task_id = :taskId"
     ),
 
-    UPDATE_TASK_DATES("" +
-            "UPDATE ${essSchema}.personnel_task_assignment\n" +
+    UPDATE_TASK_DATES("UPDATE ${essSchema}.personnel_task_assignment\n" +
             "SET assignment_date = :assignmentDate, due_date = :dueDate\n" +
             "WHERE emp_id = :empId AND task_id = :taskId"
     ),
 
-    GET_MANUAL_OVERRIDE_STATUS("" +
-            "SELECT manual_override from ${essSchema}.personnel_task_assignment\n" +
+    GET_MANUAL_OVERRIDE_STATUS("SELECT manual_override from ${essSchema}.personnel_task_assignment\n" +
             "WHERE emp_id = :empId AND task_id = :taskId"),
 
-    INSERT_COMPLETE_TASK("" +
-            "INSERT INTO ${essSchema}.personnel_task_assignment\n" +
+    INSERT_COMPLETE_TASK("INSERT INTO ${essSchema}.personnel_task_assignment\n" +
             "        (emp_id, task_id, timestamp, update_user_id, completed, active, manual_override)\n" +
             "VALUES (:empId, :taskId, now(), :updateUserId, TRUE, TRUE, FALSE)"
     ),
 
-    UPDATE_COMPLETE_TASK("" +
-            "UPDATE ${essSchema}.personnel_task_assignment\n" +
+    UPDATE_COMPLETE_TASK("UPDATE ${essSchema}.personnel_task_assignment\n" +
             "SET timestamp = now(), update_user_id = :updateUserId, completed = TRUE, active = TRUE\n" +
             "WHERE emp_id = :empId AND task_id = :taskId"
     ),
 
-    DEACTIVATE_TASK("" +
-            "UPDATE ${essSchema}.personnel_task_assignment\n" +
+    DEACTIVATE_TASK("UPDATE ${essSchema}.personnel_task_assignment\n" +
             "SET active = FALSE\n" +
             "WHERE emp_id = :empId AND task_id = :taskId"
     ),

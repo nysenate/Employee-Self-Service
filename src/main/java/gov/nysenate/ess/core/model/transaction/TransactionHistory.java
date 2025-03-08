@@ -31,11 +31,11 @@ import static gov.nysenate.ess.core.model.transaction.TransactionType.PER;
  * The TransactionHistory maintains an ordered collection of TransactionRecords. This class is intended to be
  * used in methods that need to know about the history of a specific TransactionCode for an employee.
  */
-public class TransactionHistory
-{
+public class TransactionHistory {
     private static final Logger logger = LoggerFactory.getLogger(TransactionHistory.class);
 
-    /** A string assigned to the transactions that are used to create an initial snapshot for employees
+    /**
+     * A string assigned to the transactions that are used to create an initial snapshot for employees
      * appointed before the SFMS system was put in place (employees without APP or RPT transactions.)
      * This is not an official document identifier, it is only used in this context
      */
@@ -100,18 +100,19 @@ public class TransactionHistory
 
     public TreeMap<LocalDate, Integer> getEffectiveSupervisorIds(Range<LocalDate> dateRange) {
         TreeMap<LocalDate, Integer> supIds = new TreeMap<>();
-        getEffectiveEntriesDuring("NUXREFSV", dateRange, true).forEach((k,v) -> supIds.put(k, Integer.parseInt(v)));
+        getEffectiveEntriesDuring("NUXREFSV", dateRange, true).forEach((k, v) -> supIds.put(k, Integer.parseInt(v)));
         return supIds;
     }
 
     public TreeMap<LocalDate, PayType> getEffectivePayTypes(Range<LocalDate> dateRange) {
         TreeMap<LocalDate, PayType> payTypes = new TreeMap<>();
-        getEffectiveEntriesDuring("CDPAYTYPE", dateRange, true).forEach((k,v) -> payTypes.put(k, PayType.valueOf(v)));
+        getEffectiveEntriesDuring("CDPAYTYPE", dateRange, true).forEach((k, v) -> payTypes.put(k, PayType.valueOf(v)));
         return payTypes;
     }
 
     /**
      * Get a set of dates where the employee's pay type satisfies the given predicate
+     *
      * @param payTypePredicate Predicate<PayType>
      * @return RangeSet<LocalDate>
      */
@@ -126,6 +127,7 @@ public class TransactionHistory
 
     /**
      * Get a set containing dates where the employee was a senator
+     *
      * @return RangeSet<LocalDate>
      */
     public RangeSet<LocalDate> getSenatorDates() {
@@ -137,16 +139,16 @@ public class TransactionHistory
         TreeMap<LocalDate, Boolean> empStatuses = new TreeMap<>();
         getUniqueEntriesDuring(Sets.newHashSet("CDEMPSTATUS", "CDSTATPER"), dateRange, true)
                 .rowMap().forEach((date, vals) -> {
-            if (StringUtils.equals(vals.get("CDEMPSTATUS"), "A")) {
-                empStatuses.put(date, true);
-            } else if (StringUtils.equals(vals.get("CDEMPSTATUS"), "I")) {
-                if (StringUtils.equals(vals.get("CDSTATPER"), "RETD")) {
-                    empStatuses.put(date, false);
-                } else {
-                    empStatuses.put(date.plusDays(1), false);
-                }
-            }
-        });
+                    if (StringUtils.equals(vals.get("CDEMPSTATUS"), "A")) {
+                        empStatuses.put(date, true);
+                    } else if (StringUtils.equals(vals.get("CDEMPSTATUS"), "I")) {
+                        if (StringUtils.equals(vals.get("CDSTATPER"), "RETD")) {
+                            empStatuses.put(date, false);
+                        } else {
+                            empStatuses.put(date.plusDays(1), false);
+                        }
+                    }
+                });
         return empStatuses;
     }
 
@@ -160,7 +162,7 @@ public class TransactionHistory
 
     public TreeMap<LocalDate, BigDecimal> getEffectiveMinHours(Range<LocalDate> dateRange) {
         TreeMap<LocalDate, BigDecimal> minHrs = new TreeMap<>();
-        getEffectiveEntriesDuring("NUMINTOTHRS", dateRange, true).forEach((k,v) -> minHrs.put(k, new BigDecimal(v)));
+        getEffectiveEntriesDuring("NUMINTOTHRS", dateRange, true).forEach((k, v) -> minHrs.put(k, new BigDecimal(v)));
         return minHrs;
     }
 
@@ -172,6 +174,7 @@ public class TransactionHistory
 
     /**
      * Get a set of dates where the employee is permitted to accrue time
+     *
      * @return RangeSet<LocalDate>
      */
     public RangeSet<LocalDate> getAccrualDates() {
@@ -216,6 +219,7 @@ public class TransactionHistory
 
     /**
      * Get the effective personnel status for the employee over the given date range
+     *
      * @param dateRange Range<LocalDate>
      * @return TreeMap<LocalDate, PersonnelStatus>
      */
@@ -232,6 +236,7 @@ public class TransactionHistory
 
     /**
      * Get a range set of dates where the employee's {@link PersonnelStatus} matches the given predicate
+     *
      * @param perStatPredicate Predicate<PersonnelStatus>
      * @return RangeSet<LocalDate>
      */
@@ -242,7 +247,7 @@ public class TransactionHistory
 
     /**
      * @return true if the employee is not in the middle of an appoint transaction
-     *      ie. they have received a PER and a PAY transaction for the last appointment
+     * ie. they have received a PER and a PAY transaction for the last appointment
      */
     public boolean isFullyAppointed() {
         String latestAppointDoc = null;
@@ -283,10 +288,10 @@ public class TransactionHistory
     /**
      * See overloaded method.
      *
-     * @see #getTransRecords(Range, Set, SortOrder)
-     * @param code TransactionCode
+     * @param code     TransactionCode
      * @param dateSort SortOrder
      * @return LinkedList<TransactionRecord>
+     * @see #getTransRecords(Range, Set, SortOrder)
      */
     public LinkedList<TransactionRecord> getTransRecords(TransactionCode code, SortOrder dateSort) {
         return getTransRecords(Range.all(), Sets.newHashSet(code), dateSort);
@@ -297,15 +302,15 @@ public class TransactionHistory
      * you need a subset of the transaction records to be ordered into a single collection.
      *
      * @param transCodes Set<TransactionCode> - The set of transaction codes to return in the list.
-     * @param dateSort SortOrder - Sort order based on the effective date
+     * @param dateSort   SortOrder - Sort order based on the effective date
      * @return LinkedList<TransactionRecord>
      */
     public LinkedList<TransactionRecord> getTransRecords(Range<LocalDate> effectDateRange,
                                                          Set<TransactionCode> transCodes, SortOrder dateSort) {
         LinkedList<TransactionRecord> sortedRecList = new LinkedList<>();
         getRecordsByCode().values().stream()
-            .filter(r -> transCodes.contains(r.getTransCode()) && effectDateRange.contains(r.getEffectDate()))
-            .forEach(sortedRecList::add);
+                .filter(r -> transCodes.contains(r.getTransCode()) && effectDateRange.contains(r.getEffectDate()))
+                .forEach(sortedRecList::add);
         sortedRecList.sort((dateSort.equals(SortOrder.ASC)) ? new TransDateAscending() : new TransDateDescending());
         return sortedRecList;
     }
@@ -313,9 +318,9 @@ public class TransactionHistory
     /**
      * Shorthand method to retrieve every available transaction record.
      *
-     * @see #getTransRecords(Range, Set, SortOrder)
      * @param dateOrder SortOrder - Sort order based on the effective date
      * @return LinkedList<TransactionRecord>
+     * @see #getTransRecords(Range, Set, SortOrder)
      */
     public LinkedList<TransactionRecord> getAllTransRecords(SortOrder dateOrder) {
         return getTransRecords(Range.all(), recordsByCode.keySet(), dateOrder);
@@ -323,7 +328,8 @@ public class TransactionHistory
 
     /**
      * Gets the effective values for a set of columns on each date that one of the columns changed
-     * @param keys Set<String> - a set of column names
+     *
+     * @param keys      Set<String> - a set of column names
      * @param dateRange Range<LocalDate> - range of dates in which effective values will be queried
      * @param skipNulls boolean - will only include value sets where all values are non-null if set to true
      * @return TreeBasedTable<LocalDate, String, String> - Effective date -> Column name -> Column value on date
@@ -361,7 +367,7 @@ public class TransactionHistory
      * date range. For example given the key 'NUXREFSV', a map will be returned containing the value of that field
      * before/on the start of the date range, and any modifications of that value up until the end of the date range.
      *
-     * @param key String - The audit record column name
+     * @param key       String - The audit record column name
      * @param dateRange LocalDate - The date range for the values to be effective during.
      * @param skipNulls boolean - If true, null values will be excluded from the map.
      * @return TreeMap<LocalDate, String>
@@ -380,7 +386,7 @@ public class TransactionHistory
             return values;
         }
         NavigableMap<LocalDate, Map<String, String>> subMap =
-            recordSnapshots.subMap(DateUtils.startOfDateRange(dateRange), false, DateUtils.endOfDateRange(dateRange), true);
+                recordSnapshots.subMap(DateUtils.startOfDateRange(dateRange), false, DateUtils.endOfDateRange(dateRange), true);
         for (Map.Entry<LocalDate, Map<String, String>> entry : subMap.entrySet()) {
             String currValue = entry.getValue().get(key);
             if ((!skipNulls || currValue != null) && !StringUtils.equals(lastValue, currValue)) {
@@ -393,10 +399,10 @@ public class TransactionHistory
 
     public Optional<ImmutablePair<LocalDate, String>> getLatestEntryOf(String key, LocalDate latestDate, boolean skipNulls) {
         return this.recordSnapshots.headMap(latestDate, true)
-            .descendingMap().entrySet().stream()
-            .filter(e -> (!skipNulls || e.getValue().get(key) != null))       // Skip null values if requested
-            .map(e -> new ImmutablePair<>(e.getKey(), e.getValue().get(key)))
-            .findFirst();                                                     // Return most recent one
+                .descendingMap().entrySet().stream()
+                .filter(e -> (!skipNulls || e.getValue().get(key) != null))       // Skip null values if requested
+                .map(e -> new ImmutablePair<>(e.getKey(), e.getValue().get(key)))
+                .findFirst();                                                     // Return most recent one
     }
 
     /**
@@ -405,9 +411,9 @@ public class TransactionHistory
      * the same latest effective date, the value belonging to the most recent record with that effective date
      * will be used.
      *
-     * @param key String - A key from the values map (e.g. 'NALAST')
+     * @param key        String - A key from the values map (e.g. 'NALAST')
      * @param latestDate LocalDate - The latest date to search until.
-     * @param skipNulls boolean - Set to true if you want to find the latest non-null value.
+     * @param skipNulls  boolean - Set to true if you want to find the latest non-null value.
      * @return Optional<String> - If the value is found, it will be set, otherwise an empty Optional is returned.
      */
     public Optional<String> latestValueOf(String key, LocalDate latestDate, boolean skipNulls) {
@@ -426,6 +432,7 @@ public class TransactionHistory
 
     /**
      * Get a chronologically ordered immutable list containing all records with the given code in the transaction history
+     *
      * @param code TransactionCode
      * @return ImmutableList<TransactionRecord>
      */
@@ -437,7 +444,7 @@ public class TransactionHistory
     /**
      * Get an immutable copy of the record snapshot map stored in this transaction history.
      *
-     * @return ImmutableMap<LocalDate, Map<String, String>>
+     * @return ImmutableMap<LocalDate, Map < String, String>>
      */
     public ImmutableSortedMap<LocalDate, Map<String, String>> getRecordSnapshots() {
         return ImmutableSortedMap.copyOf(recordSnapshots);
@@ -511,7 +518,8 @@ public class TransactionHistory
 
     /**
      * Get the document numbers of any initializing transactions (APP, RTP) in the given list
-     *   and add them to the appoint records map
+     * and add them to the appoint records map
+     *
      * @param recordsList List<TransactionRecord>
      */
     private void getInitDocIds(List<TransactionRecord> recordsList) {
@@ -523,8 +531,7 @@ public class TransactionHistory
     /* --- Local classes --- */
 
     /** Sort by earliest (effective date, origin date) first. */
-    protected static class TransDateAscending implements Comparator<TransactionRecord>
-    {
+    protected static class TransDateAscending implements Comparator<TransactionRecord> {
         @Override
         public int compare(TransactionRecord o1, TransactionRecord o2) {
             return ComparisonChain.start()
@@ -536,8 +543,7 @@ public class TransactionHistory
     }
 
     /** Sort by most recent (effective date, origin date) first. */
-    protected static class TransDateDescending implements Comparator<TransactionRecord>
-    {
+    protected static class TransDateDescending implements Comparator<TransactionRecord> {
         @Override
         public int compare(TransactionRecord o1, TransactionRecord o2) {
             return ComparisonChain.start()

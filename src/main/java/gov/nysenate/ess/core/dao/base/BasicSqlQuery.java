@@ -5,8 +5,7 @@ import gov.nysenate.ess.core.util.OrderBy;
 
 import java.util.Map;
 
-public interface BasicSqlQuery
-{
+public interface BasicSqlQuery {
     /**
      * Return the sql query as defined..
      */

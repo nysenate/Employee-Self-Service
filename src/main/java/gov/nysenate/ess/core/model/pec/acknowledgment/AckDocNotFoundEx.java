@@ -5,7 +5,7 @@ package gov.nysenate.ess.core.model.pec.acknowledgment;
  */
 public class AckDocNotFoundEx extends RuntimeException {
 
-    private int ackDocid;
+    private final int ackDocid;
 
     public AckDocNotFoundEx(int ackDocid) {
         super("Could not find acknowledged document with id: " + ackDocid);

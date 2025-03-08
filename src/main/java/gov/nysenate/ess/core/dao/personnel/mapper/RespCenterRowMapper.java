@@ -6,12 +6,11 @@ import gov.nysenate.ess.core.model.personnel.ResponsibilityCenter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class RespCenterRowMapper extends BaseRowMapper<ResponsibilityCenter>
-{
-    private String pfx;
+public class RespCenterRowMapper extends BaseRowMapper<ResponsibilityCenter> {
+    private final String pfx;
 
-    private RespHeadRowMapper respHeadMapper;
-    private AgencyRowMapper agencyRowMapper;
+    private final RespHeadRowMapper respHeadMapper;
+    private final AgencyRowMapper agencyRowMapper;
 
     public RespCenterRowMapper(String pfx, String rctrHdPfx, String agcyPfx) {
         this.pfx = pfx;

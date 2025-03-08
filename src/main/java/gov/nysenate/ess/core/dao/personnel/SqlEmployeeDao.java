@@ -50,8 +50,7 @@ public class SqlEmployeeDao extends SqlBaseDao implements EmployeeDao {
                 throw new DataRetrievalFailureException("No matching employee found.");
             }
             return employeeList.get(0);
-        }
-        catch (DataRetrievalFailureException ex) {
+        } catch (DataRetrievalFailureException ex) {
             logger.warn("Retrieve employee {} error: {}", empId, ex.getMessage());
             throw new EmployeeNotFoundEx("No matching employee record for employee id: " + empId);
         }
@@ -72,8 +71,7 @@ public class SqlEmployeeDao extends SqlBaseDao implements EmployeeDao {
         params.addValue("email", email);
         try {
             return remoteNamedJdbc.queryForObject(SqlEmployeeQuery.GET_ACTIVE_EMP_BY_EMAIL_SQL.getSql(schemaMap()), params, getEmployeeRowMapper());
-        }
-        catch (DataRetrievalFailureException ex) {
+        } catch (DataRetrievalFailureException ex) {
             throw new EmployeeNotFoundEx("No matching employee record for email: " + email);
         }
     }
@@ -126,7 +124,7 @@ public class SqlEmployeeDao extends SqlBaseDao implements EmployeeDao {
 
     /** {@inheritDoc} */
     @Override
-    public Set<Integer> getActiveEmployeeIds(){
+    public Set<Integer> getActiveEmployeeIds() {
         return new HashSet<>(remoteNamedJdbc.query(SqlEmployeeQuery.GET_ACTIVE_EMP_IDS.getSql(schemaMap()),
                 (rs, rowNum) -> rs.getInt("NUXREFEM")));
     }
@@ -142,7 +140,8 @@ public class SqlEmployeeDao extends SqlBaseDao implements EmployeeDao {
                         String col = null;
                         try {
                             col = rs.getString(colName);
-                        } catch (SQLException ignored) {}
+                        } catch (SQLException ignored) {
+                        }
                         employeeColumns.put(colName, col);
                     }
                     return employeeColumns;
@@ -158,8 +157,7 @@ public class SqlEmployeeDao extends SqlBaseDao implements EmployeeDao {
 
         if (timestamps.isEmpty()) {
             return null;
-        }
-        else {
+        } else {
             return timestamps.get(0);
         }
     }
@@ -172,7 +170,7 @@ public class SqlEmployeeDao extends SqlBaseDao implements EmployeeDao {
 
     @Override
     public List<Employee> getInactivatedEmployeesSinceDate(LocalDateTime since) {
-        DateTimeFormatter formatter= new DateTimeFormatterBuilder().parseCaseSensitive()
+        DateTimeFormatter formatter = new DateTimeFormatterBuilder().parseCaseSensitive()
                 .appendPattern("dd-MMM-yyyy").toFormatter();
         String formattedDate = since.format(formatter).toUpperCase();
         return remoteNamedJdbc.query(SqlEmployeeQuery.GET_INACTIVE_EMPLOYEES_SINCE_DATE.getSql(schemaMap()),
@@ -207,7 +205,8 @@ public class SqlEmployeeDao extends SqlBaseDao implements EmployeeDao {
 
     /**
      * Helper method to create employee id -> Employee object mappings.
-     * @param sql String - The sql query to execute
+     *
+     * @param sql    String - The sql query to execute
      * @param params MapSqlParameterSource - The parameters to supply to the sql query.
      * @return Map(Integer, Employee)
      */

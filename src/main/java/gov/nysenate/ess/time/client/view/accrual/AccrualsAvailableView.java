@@ -2,27 +2,24 @@ package gov.nysenate.ess.time.client.view.accrual;
 
 import gov.nysenate.ess.core.client.view.PayPeriodView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
-import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.time.model.accrual.AccrualsAvailable;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.math.BigDecimal;
 
 @XmlRootElement(name = "AccrualsAvailable")
-public class AccrualsAvailableView implements ViewObject
-{
-    private int empId;
-    private PayPeriodView payPeriod;
+public class AccrualsAvailableView implements ViewObject {
+    private final int empId;
+    private final PayPeriodView payPeriod;
 
-    private BigDecimal personalAvailable;
-    private BigDecimal vacationAvailable;
-    private BigDecimal sickAvailable;
+    private final BigDecimal personalAvailable;
+    private final BigDecimal vacationAvailable;
+    private final BigDecimal sickAvailable;
 
-    private BigDecimal serviceYtdExpected;
-    private BigDecimal serviceYtd;
-    private BigDecimal biWeekHrsExpected;
+    private final BigDecimal serviceYtdExpected;
+    private final BigDecimal serviceYtd;
+    private final BigDecimal biWeekHrsExpected;
 
     public AccrualsAvailableView(AccrualsAvailable accrualsAvailable) {
         this.empId = accrualsAvailable.getEmpId();

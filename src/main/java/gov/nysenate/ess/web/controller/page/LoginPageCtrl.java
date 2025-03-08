@@ -11,8 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 @Controller
 @RequestMapping("/login")
-public class LoginPageCtrl
-{
+public class LoginPageCtrl {
     private static final Logger logger = LoggerFactory.getLogger(LoginPageCtrl.class);
 
     @RequestMapping(method = {RequestMethod.GET, RequestMethod.HEAD})

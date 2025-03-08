@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.sql.ResultSet;
@@ -37,7 +36,7 @@ public class SqlLodgingPerDiemsDao extends SqlBaseDao {
         return handler.getResult();
     }
 
-//    @Transactional(value = "localTxManager")
+    //    @Transactional(value = "localTxManager")
     public void updateLodgingPerDiems(LodgingPerDiems lpds, int appId) {
         deleteLodgingPerDiems(appId);
         insertLodgingPerDiems(lpds, appId);
@@ -94,36 +93,36 @@ public class SqlLodgingPerDiemsDao extends SqlBaseDao {
 
     private enum SqlLodgingPerDiemsQuery implements BasicSqlQuery {
         SELECT_LODGING_PER_DIEMS("""
-                SELECT lpd.app_lodging_per_diem_id, lpd.address_id, lpd.date, lpd.rate, lpd.is_reimbursement_requested,
-                  addr.street_1, addr.city, addr.state, addr.zip_5, addr.county, addr.country, addr.place_id, addr.name,
-                  override_rate
-                FROM ${travelSchema}.app_lodging_per_diem lpd
-                LEFT JOIN ${travelSchema}.app_lodging_per_diem_override USING (app_id)
-                INNER JOIN ${travelSchema}.address addr USING (address_id)
-                WHERE lpd.app_id = :appId;
-                """
+                                 SELECT lpd.app_lodging_per_diem_id, lpd.address_id, lpd.date, lpd.rate, lpd.is_reimbursement_requested,
+                                   addr.street_1, addr.city, addr.state, addr.zip_5, addr.county, addr.country, addr.place_id, addr.name,
+                                   override_rate
+                                 FROM ${travelSchema}.app_lodging_per_diem lpd
+                                 LEFT JOIN ${travelSchema}.app_lodging_per_diem_override USING (app_id)
+                                 INNER JOIN ${travelSchema}.address addr USING (address_id)
+                                 WHERE lpd.app_id = :appId;
+                                 """
         ),
         DELETE_LODGING_PER_DIEMS("""
-                DELETE FROM ${travelSchema}.app_lodging_per_diem
-                WHERE app_id = :appId
-                """
+                                 DELETE FROM ${travelSchema}.app_lodging_per_diem
+                                 WHERE app_id = :appId
+                                 """
         ),
         INSERT_LODGING_PER_DIEM("""
-                INSERT INTO ${travelSchema}.app_lodging_per_diem
-                  (address_id, date, rate, is_reimbursement_requested, app_id)
-                VALUES (:addressId, :date, :rate, :isReimbursementRequested, :appId)
-                """
+                                INSERT INTO ${travelSchema}.app_lodging_per_diem
+                                  (address_id, date, rate, is_reimbursement_requested, app_id)
+                                VALUES (:addressId, :date, :rate, :isReimbursementRequested, :appId)
+                                """
         ),
         DELETE_LODGING_OVERRIDE_RATE("""
-                DELETE FROM ${travelSchema}.app_lodging_per_diem_override
-                WHERE app_id = :appId
-                """
+                                     DELETE FROM ${travelSchema}.app_lodging_per_diem_override
+                                     WHERE app_id = :appId
+                                     """
         ),
         INSERT_LODGING_OVERRIDE_RATE("""
-                INSERT INTO ${travelSchema}.app_lodging_per_diem_override
-                  (app_id, override_rate)
-                VALUES (:appId, :overrideRate)
-                """
+                                     INSERT INTO ${travelSchema}.app_lodging_per_diem_override
+                                       (app_id, override_rate)
+                                     VALUES (:appId, :overrideRate)
+                                     """
         );
 
         private final String sql;
@@ -146,8 +145,8 @@ public class SqlLodgingPerDiemsDao extends SqlBaseDao {
     public static class LodgingPerDiemsHandler extends BaseHandler {
 
         private Dollars overrideRate;
-        private Set<LodgingPerDiem> lodgingPerDiems;
-        private TravelAddressRowMapper addressRowMapper = new TravelAddressRowMapper();
+        private final Set<LodgingPerDiem> lodgingPerDiems;
+        private final TravelAddressRowMapper addressRowMapper = new TravelAddressRowMapper();
 
         public LodgingPerDiemsHandler() {
             this.lodgingPerDiems = new HashSet<>();

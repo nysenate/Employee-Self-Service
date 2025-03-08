@@ -9,8 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class EventBusConfig
-{
+public class EventBusConfig {
     private static final Logger logger = LoggerFactory.getLogger(EventBusConfig.class);
 
     /** --- Guava Event Bus Configuration --- */
@@ -19,7 +18,7 @@ public class EventBusConfig
     public EventBus eventBus() {
         SubscriberExceptionHandler errorHandler = (exception, context) ->
                 logger.error("Exception thrown during event handling within {}: {}, {}", context.getSubscriberMethod(),
-                exception, ExceptionUtils.getStackTrace(exception));
+                        exception, ExceptionUtils.getStackTrace(exception));
         return new EventBus(errorHandler);
     }
 }

@@ -55,6 +55,43 @@ public class EssAllowanceService implements AllowanceService {
         this.payPeriodService = payPeriodService;
     }
 
+    /**
+     * Get a list of hourly work payments that are applicable to work performed in the given year
+     *
+     * @param year int
+     * @return List<HourlyWorkPayment>
+     */
+    private static List<HourlyWorkPayment> getHourlyPayments(int year, TransactionHistory transHistory) {
+        LocalDate prevYearStart = LocalDate.of(year - 1, 1, 1);
+        LocalDate nextYearEnd = LocalDate.of(year + 1, 12, 31);
+        Range<LocalDate> auditDateRange = Range.closed(prevYearStart, nextYearEnd);
+        Range<LocalDate> yearRange = DateUtils.yearDateRange(year);
+
+        List<TransactionRecord> effectiveRecords = transHistory.getRecords(TransactionCode.HWT).stream()
+                // Filter out records more than a year before or after the requested year
+                .filter(record -> auditDateRange.contains(record.getAuditDate().toLocalDate())).toList();
+
+        Map<LocalDate, TransactionRecord> priorYearPayments = transHistory.getRecords(TransactionCode.PYA).stream()
+                .collect(Collectors.toMap(TransactionRecord::getEffectDate, Function.identity()));
+
+        // Parse the transactions into HourlyWorkPayment records
+        // Return the HourlyWorkPayments with work date ranges that overlap with the requested year
+        return effectiveRecords.stream()
+                .map(record -> new HourlyWorkPayment(
+                        record.getAuditDate(),
+                        record.getEffectDate(),
+                        record.getLocalDateValue("DTENDTE"),
+                        record.getBigDecimalValue("NUHRHRSPD"),
+                        new BigDecimal(transHistory.latestValueOf("MOTOTHRSPD", record.getEffectDate(), false).orElse("0")),
+                        priorYearPayments.containsKey(record.getEffectDate())
+                                ? priorYearPayments.get(record.getEffectDate()).getBigDecimalValue("MOPRIORYRTE")
+                                : ZERO
+                ))
+                .filter(payment -> RangeUtils.intersects(yearRange, payment.getWorkingRange()))
+                .sorted(Comparator.comparing(HourlyWorkPayment::getEffectDate))
+                .collect(toList());
+    }
+
     /** {@inheritDoc} */
     @Override
     public SortedSet<Integer> getAllowanceYears(int empId) {
@@ -79,6 +116,8 @@ public class EssAllowanceService implements AllowanceService {
         return getAllowanceUsage(empId, DateUtils.yearToDate(date));
     }
 
+    /* --- Internal Methods --- */
+
     /** {@inheritDoc} */
     @Override
     public List<PeriodAllowanceUsage> getPeriodAllowanceUsage(int empId, int year) {
@@ -102,8 +141,6 @@ public class EssAllowanceService implements AllowanceService {
         }
         return periodAllowanceUsages;
     }
-
-    /* --- Internal Methods --- */
 
     private int getAllowanceYear(Range<LocalDate> dateRange) {
         LocalDate beginDate = DateUtils.startOfDateRange(dateRange);
@@ -135,7 +172,7 @@ public class EssAllowanceService implements AllowanceService {
         );
 
         // Set Allowance usage, getting dates not covered by hourly work payments
-        unpaidDates = calculatePaidAllowanceUsage(allowanceUsage, transHistory, unpaidDates,  attendRecs, tRecs);
+        unpaidDates = calculatePaidAllowanceUsage(allowanceUsage, transHistory, unpaidDates, attendRecs, tRecs);
         // If some dates are still not accounted for, see if there are any applicable time records
         if (!unpaidDates.isEmpty()) {
             unpaidDates = calculateTimesheetAllowanceUsage(allowanceUsage, unpaidDates, tRecs);
@@ -169,8 +206,8 @@ public class EssAllowanceService implements AllowanceService {
     }
 
     /**
-     *  Calculate the number of hours and amount of money paid out for the given year, adding it to the allowance usage
-     *  Returns a set of pay periods in the year for which the employee has not received pay
+     * Calculate the number of hours and amount of money paid out for the given year, adding it to the allowance usage
+     * Returns a set of pay periods in the year for which the employee has not received pay
      */
     private RangeSet<LocalDate> calculatePaidAllowanceUsage(AllowanceUsage allowanceUsage,
                                                             TransactionHistory transHistory,
@@ -316,14 +353,13 @@ public class EssAllowanceService implements AllowanceService {
      * Get hours and money used by the given time records to the given allowance usage object.
      *
      * @param allowanceUsage {@link AllowanceUsage}
-     * @param timeRecords {@link Collection<TimeRecord>}
-     * @param validDates {@link RangeSet<LocalDate>}
-     *
+     * @param timeRecords    {@link Collection<TimeRecord>}
+     * @param validDates     {@link RangeSet<LocalDate>}
      * @return Pair<BigDecimal, BigDecimal> tuple containing used hours and money respectively
      */
     private Pair<BigDecimal, BigDecimal> getTimeRecordAllowanceUsage(AllowanceUsage allowanceUsage,
-                                                            Collection<TimeRecord> timeRecords,
-                                                            RangeSet<LocalDate> validDates) {
+                                                                     Collection<TimeRecord> timeRecords,
+                                                                     RangeSet<LocalDate> validDates) {
 
         // Get non empty time entries falling within the set of valid dates
         Collection<TimeEntry> timeEntries = timeRecords.stream()
@@ -352,11 +388,11 @@ public class EssAllowanceService implements AllowanceService {
      * Calculate the number of hours used in attendance records for the given unpaid dates
      * These hours / moneys are added to the allowance usage as record hours / money
      * It is preferred to use electronic timesheet records for this purpose since they are broken down by day
-     * @see #calculateTimesheetAllowanceUsage(AllowanceUsage, RangeSet, List)
-     * This is necessary to handle those pesky paper timesheets that are only recorded as attendance records
      *
      * @param allowanceUsage AllowanceUsage
-     * @param unpaidDates RangeSet<LocalDate>
+     * @param unpaidDates    RangeSet<LocalDate>
+     * @see #calculateTimesheetAllowanceUsage(AllowanceUsage, RangeSet, List)
+     * This is necessary to handle those pesky paper timesheets that are only recorded as attendance records
      */
     private void calculateAttendRecordAllowanceUsage(AllowanceUsage allowanceUsage,
                                                      RangeSet<LocalDate> unpaidDates,
@@ -369,7 +405,7 @@ public class EssAllowanceService implements AllowanceService {
     /**
      * Applies hours from an attendance record to the given allowance usage
      *
-     * @param attendRecord {@link AttendanceRecord}
+     * @param attendRecord   {@link AttendanceRecord}
      * @param allowanceUsage {@link AllowanceUsage}
      */
     private void applyAttendRecordAllowanceUsage(AttendanceRecord attendRecord, AllowanceUsage allowanceUsage) {
@@ -381,8 +417,9 @@ public class EssAllowanceService implements AllowanceService {
     /**
      * Get estimated hours and money used by the given attendance record
      * Add estimated hours/money to the given allowance usage
+     *
      * @param allowanceUsage AllowanceUsage
-     * @param record AttendanceRecord
+     * @param record         AttendanceRecord
      * @return Pair<BigDecimal, BigDecimal> tuple containing used hours and money respectively
      */
     private Pair<BigDecimal, BigDecimal> getAttendRecordAllowanceUsage(AllowanceUsage allowanceUsage,
@@ -399,42 +436,6 @@ public class EssAllowanceService implements AllowanceService {
         BigDecimal attendRecordMoney = attendRecordHours.multiply(appliedRate);
 
         return Pair.of(attendRecordHours, attendRecordMoney);
-    }
-
-    /**
-     * Get a list of hourly work payments that are applicable to work performed in the given year
-     * @param year int
-     * @return List<HourlyWorkPayment>
-     */
-    private static List<HourlyWorkPayment> getHourlyPayments(int year, TransactionHistory transHistory) {
-        LocalDate prevYearStart = LocalDate.of(year - 1, 1, 1);
-        LocalDate nextYearEnd = LocalDate.of(year + 1, 12, 31);
-        Range<LocalDate> auditDateRange = Range.closed(prevYearStart, nextYearEnd);
-        Range<LocalDate> yearRange = DateUtils.yearDateRange(year);
-
-        List<TransactionRecord> effectiveRecords = transHistory.getRecords(TransactionCode.HWT).stream()
-                // Filter out records more than a year before or after the requested year
-                .filter(record -> auditDateRange.contains(record.getAuditDate().toLocalDate())).toList();
-
-        Map<LocalDate, TransactionRecord> priorYearPayments = transHistory.getRecords(TransactionCode.PYA).stream()
-                .collect(Collectors.toMap(TransactionRecord::getEffectDate, Function.identity()));
-
-        // Parse the transactions into HourlyWorkPayment records
-        // Return the HourlyWorkPayments with work date ranges that overlap with the requested year
-        return effectiveRecords.stream()
-                .map(record -> new HourlyWorkPayment(
-                        record.getAuditDate(),
-                        record.getEffectDate(),
-                        record.getLocalDateValue("DTENDTE"),
-                        record.getBigDecimalValue("NUHRHRSPD"),
-                        new BigDecimal(transHistory.latestValueOf("MOTOTHRSPD", record.getEffectDate(), false).orElse("0")),
-                        priorYearPayments.containsKey(record.getEffectDate())
-                                ? priorYearPayments.get(record.getEffectDate()).getBigDecimalValue("MOPRIORYRTE")
-                                : ZERO
-                ))
-                .filter(payment -> RangeUtils.intersects(yearRange, payment.getWorkingRange()))
-                .sorted(Comparator.comparing(HourlyWorkPayment::getEffectDate))
-                .collect(toList());
     }
 
     /**
@@ -456,7 +457,7 @@ public class EssAllowanceService implements AllowanceService {
      * Excludes future dates.
      *
      * @param empId int
-     * @param year int
+     * @param year  int
      * @return {@link SortedSet<PayPeriod>}
      */
     private SortedSet<PayPeriod> getTempPeriods(int empId, int year) {
@@ -494,7 +495,7 @@ public class EssAllowanceService implements AllowanceService {
 
     // TODO: Yes this function is in CachedTimeRecordService too, it's here to avoid a circular dependency.
     private List<TimeRecord> getTimeRecords(Set<Integer> empIds, Range<LocalDate> dateRange,
-                                           Set<TimeRecordStatus> statuses) {
+                                            Set<TimeRecordStatus> statuses) {
         TreeMultimap<PayPeriod, TimeRecord> records = TreeMultimap.create();
         timeRecordDao.getRecordsDuring(empIds, dateRange).values()
                 .forEach(rec -> records.put(rec.getPayPeriod(), rec));

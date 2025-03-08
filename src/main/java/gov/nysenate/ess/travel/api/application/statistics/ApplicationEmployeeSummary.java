@@ -1,21 +1,32 @@
 package gov.nysenate.ess.travel.api.application.statistics;
 
+import gov.nysenate.ess.core.client.view.EmployeeView;
 import gov.nysenate.ess.travel.api.application.TravelApplicationView;
 
 import java.util.List;
 
-public class StatusSummary {
+public class ApplicationEmployeeSummary {
 
-    private String status;
+    private int empId;
     private int count;
     private String totalExpenses;
+    private EmployeeView employeeView;
     private List<TravelApplicationView> travelApplications;
 
-    public StatusSummary(String status, int count, String totalExpenses, List<TravelApplicationView> travelApplications) {
-        this.status = status;
+    public ApplicationEmployeeSummary(int empId, int count, String totalExpenses, EmployeeView employeeView, List<TravelApplicationView> travelApplications) {
+        this.empId = empId;
         this.count = count;
+        this.employeeView = employeeView;
         this.totalExpenses = totalExpenses;
         this.travelApplications = travelApplications;
+    }
+
+    public EmployeeView getEmployeeView() {
+        return employeeView;
+    }
+
+    public void setEmployeeView(EmployeeView employeeView) {
+        this.employeeView = employeeView;
     }
 
     public int getCount() {
@@ -26,12 +37,12 @@ public class StatusSummary {
         this.count = count;
     }
 
-    public String getStatus() {
-        return status;
+    public int getEmplId() {
+        return empId;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setEmplId(int empId) {
+        this.empId = empId;
     }
 
     public String getTotalExpenses() {

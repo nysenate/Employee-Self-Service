@@ -9,11 +9,11 @@ public enum EventType {
     FORUM("Forum", true, false),
     OTHER("Other", false, true);
 
-    private String displayName;
+    private final String displayName;
     // Is the user required to provide the name of this event.
-    private boolean requiresName;
+    private final boolean requiresName;
     // Is the user required to provide an additional purpose description of this event.
-    private boolean requiresAdditionalPurpose;
+    private final boolean requiresAdditionalPurpose;
 
     EventType(String displayName, boolean requiresName, boolean requiresAdditionalPurpose) {
         this.displayName = displayName;

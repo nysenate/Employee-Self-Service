@@ -16,12 +16,12 @@ public class Reconciler {
     /**
      * Performs a reconciliation of two inventories. Verifies that the quantities for each item in
      * {@code inventory} are the same as in the quantities in the {@code expected}.
-     *
+     * <p>
      * This does NOT verify that both inventories are exactly equal, only that the quantities in
      * {@code inventory} are in {@code expected}. Expected may have additional items which are not in {@code inventory}.
      *
      * @param inventory An Inventory with item quantities entered by the user.
-     * @param expected An Inventory with item quantities retrieved from sfms.
+     * @param expected  An Inventory with item quantities retrieved from sfms.
      * @return {@link ReconciliationResults}
      */
     public ReconciliationResults reconcile(Inventory inventory, Inventory expected) {

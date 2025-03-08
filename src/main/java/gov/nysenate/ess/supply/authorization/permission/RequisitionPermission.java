@@ -12,6 +12,7 @@ public class RequisitionPermission {
 
     /**
      * Creates a permission for requisitions with the given customer id and action.
+     *
      * @param customerId
      * @param action
      * @return
@@ -22,7 +23,8 @@ public class RequisitionPermission {
 
     /**
      * Creates a permission for requisitions with the given destination id and action.
-     * @param locId The String representation of a locationId. i.e. A403-W
+     *
+     * @param locId  The String representation of a locationId. i.e. A403-W
      * @param action
      * @return
      */
@@ -32,6 +34,7 @@ public class RequisitionPermission {
 
     /**
      * Grants the given action on all requisitions.
+     *
      * @param action
      * @return
      */

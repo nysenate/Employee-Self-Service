@@ -4,7 +4,7 @@ import gov.nysenate.ess.travel.authorization.role.TravelRole;
 
 import java.util.List;
 
-import static gov.nysenate.ess.travel.authorization.role.TravelRole.*;
+import static gov.nysenate.ess.travel.authorization.role.TravelRole.NONE;
 
 /**
  * Reviewer strategies define the chain of approval necessary for a particular type of traveler.

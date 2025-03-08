@@ -9,8 +9,7 @@ import java.util.Optional;
 /**
  * Service layer interface to retrieve holidays.
  */
-public interface HolidayService
-{
+public interface HolidayService {
     /**
      * Returns a holiday if it exists for the given date, is active, and is non-questionable
      *

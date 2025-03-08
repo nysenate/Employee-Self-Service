@@ -5,9 +5,9 @@ package gov.nysenate.ess.core.model.alert;
  */
 public class InvalidAlertInfoEx extends RuntimeException {
 
-    private AlertInfo alertInfo;
-    private AlertInfoErrorCode errorCode;
-    private String errorData;
+    private final AlertInfo alertInfo;
+    private final AlertInfoErrorCode errorCode;
+    private final String errorData;
 
     public InvalidAlertInfoEx(AlertInfoErrorCode errorCode, String errorData, AlertInfo alertInfo) {
         super("Invalid alert for employee " + alertInfo.getEmpId() + ": " + errorCode.getDesc() + " " + errorData);

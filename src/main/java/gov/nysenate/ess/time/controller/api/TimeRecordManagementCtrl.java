@@ -8,7 +8,6 @@ import gov.nysenate.ess.time.client.response.TimeRecordManagerResponse;
 import gov.nysenate.ess.time.model.auth.SimpleTimePermission;
 import gov.nysenate.ess.time.service.attendance.TimeRecordManager;
 import org.apache.shiro.authz.Permission;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,7 +20,7 @@ import static gov.nysenate.ess.core.controller.api.BaseRestApiCtrl.ADMIN_REST_PA
 @RequestMapping(ADMIN_REST_PATH + "/time/timerecords")
 public class TimeRecordManagementCtrl extends BaseRestApiCtrl {
 
-    private static Permission timeRecordManagerPermission = SimpleTimePermission.TIME_RECORD_MANAGEMENT.getPermission();
+    private static final Permission timeRecordManagerPermission = SimpleTimePermission.TIME_RECORD_MANAGEMENT.getPermission();
 
     @Autowired TimeRecordManager timeRecordManager;
     @Autowired AsyncRunner runner;

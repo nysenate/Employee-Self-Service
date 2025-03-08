@@ -10,13 +10,12 @@ import gov.nysenate.ess.core.model.unit.LocationId;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class LocationRowMapper extends BaseRowMapper<Location>
-{
-    private String pfx;
+public class LocationRowMapper extends BaseRowMapper<Location> {
+    private final String pfx;
 
-    private LocationIdRowMapper locationIdRowMapper;
-    private RespHeadRowMapper respHeadRowMapper;
-    private SqlLocationCountyDao locationCountyDao;
+    private final LocationIdRowMapper locationIdRowMapper;
+    private final RespHeadRowMapper respHeadRowMapper;
+    private final SqlLocationCountyDao locationCountyDao;
 
     public LocationRowMapper(String locPfx, String rctrhdPfx, SqlLocationCountyDao locationCountyDao) {
         this.pfx = locPfx;

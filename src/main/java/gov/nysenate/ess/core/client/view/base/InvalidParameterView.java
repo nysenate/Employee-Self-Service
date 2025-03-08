@@ -2,8 +2,7 @@ package gov.nysenate.ess.core.client.view.base;
 
 import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 
-public class InvalidParameterView implements ViewObject
-{
+public class InvalidParameterView implements ViewObject {
 
     protected ConstrainedParameterView parameterConstraint;
     protected Object receivedValue;

@@ -6,11 +6,9 @@ import java.util.List;
 
 public class EverfiAssignmentAndProgress {
 
-    private String id;
-
     @JsonProperty("user")
     public EverfiAssignmentUser user;
-
+    private String id;
     @JsonProperty("past_due")
     private String pastDue;
 

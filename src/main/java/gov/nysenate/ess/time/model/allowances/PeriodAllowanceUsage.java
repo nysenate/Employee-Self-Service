@@ -8,12 +8,12 @@ import static java.math.BigDecimal.ZERO;
 
 /**
  * @author Sam Stouffer
- *
+ * <p>
  * Represents {@link AllowanceUsage} for a specific pay period
  */
 public class PeriodAllowanceUsage extends AllowanceUsage {
 
-    private PayPeriod payPeriod;
+    private final PayPeriod payPeriod;
 
     private BigDecimal periodHoursUsed = ZERO;
     private BigDecimal periodMoneyUsed = ZERO;

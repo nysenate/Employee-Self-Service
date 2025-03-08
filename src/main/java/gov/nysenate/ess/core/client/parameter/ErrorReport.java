@@ -9,7 +9,8 @@ public final class ErrorReport {
     private String url;
     private Object details;
 
-    private ErrorReport() {}
+    private ErrorReport() {
+    }
 
     public Integer getUser() {
         return user;

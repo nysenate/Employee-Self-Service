@@ -21,10 +21,10 @@ import java.util.function.Supplier;
 public abstract class RefreshedCachedData<K, V> extends CachingService {
     private static final Logger logger = LoggerFactory.getLogger(RefreshedCachedData.class);
     private static final String defaultCron = "0 0 0 * * *";
-    @Autowired
-    private ThreadPoolTaskScheduler cronScheduler;
     private final CronTrigger cronTrigger;
     private final Supplier<Map<K, V>> mapSupplier;
+    @Autowired
+    private ThreadPoolTaskScheduler cronScheduler;
     private ImmutableMap<K, V> dataMap = null;
 
     protected RefreshedCachedData(Supplier<Map<K, V>> mapSupplier) {
@@ -53,6 +53,7 @@ public abstract class RefreshedCachedData<K, V> extends CachingService {
     /**
      * Access to the internal map is only allowed through this method,
      * ensuring the map always exists, though it need not be created on start-up.
+     *
      * @return the current data.
      */
     protected Map<K, V> dataMap() {

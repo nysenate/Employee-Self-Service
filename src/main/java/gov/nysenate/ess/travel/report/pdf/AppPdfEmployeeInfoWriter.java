@@ -26,6 +26,7 @@ public class AppPdfEmployeeInfoWriter implements AppPdfWriter {
 
     /**
      * Writes Employee data to the PDPageContentStream.
+     *
      * @return The last Y position written to.
      * @throws IOException
      */
@@ -77,6 +78,7 @@ public class AppPdfEmployeeInfoWriter implements AppPdfWriter {
 
     /**
      * Get the employees name and title, return N/A for any parts that encounter nulls.
+     *
      * @param emp
      * @return
      */
@@ -88,6 +90,7 @@ public class AppPdfEmployeeInfoWriter implements AppPdfWriter {
 
     /**
      * Get the employees office, returns N/A if any null values are encountered.
+     *
      * @param emp
      * @return
      */
@@ -101,6 +104,7 @@ public class AppPdfEmployeeInfoWriter implements AppPdfWriter {
 
     /**
      * Get the employees agency, returns N/A if any null values are encountered.
+     *
      * @param emp
      * @return
      */
@@ -114,6 +118,7 @@ public class AppPdfEmployeeInfoWriter implements AppPdfWriter {
 
     /**
      * Get the employees office address, returns N/A if any null values are encountered.
+     *
      * @param emp
      * @return
      */

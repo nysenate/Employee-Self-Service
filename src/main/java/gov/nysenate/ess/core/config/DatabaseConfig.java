@@ -27,6 +27,23 @@ public class DatabaseConfig {
 
     private final DataSource localDataSource;
     private final DataSource remoteDataSource;
+    /** The main production schema. Intended for read access only. */
+    @Value("${master.schema}")
+    protected String MASTER_SCHEMA;
+    /** The time/attendance buffer schema. Permits writes. */
+    @Value("${ts.schema}")
+    protected String TS_SCHEMA;
+    /** The shared Ess schema */
+    @Value("${ess.schema}")
+    protected String ESS_SCHEMA;
+    /** The schema for the Supply app. */
+    @Value("${supply.schema}")
+    protected String SUPPLY_SCHEMA;
+    /** The schema for the Travel app. */
+    @Value("${travel.schema}")
+    protected String TRAVEL_SCHEMA;
+    @Value("${base.sfms.schema}")
+    protected String BASE_SFMS_SCHEMA;
 
     @Autowired
     public DatabaseConfig(DataSource localDataSource, DataSource remoteDataSource) {
@@ -66,6 +83,7 @@ public class DatabaseConfig {
 
     /**
      * Configures the string substitution map for setting the configured schema names.
+     *
      * @return Map<String, String>
      */
     @Bean(name = "schemaMap")
@@ -75,29 +93,6 @@ public class DatabaseConfig {
                 "essSchema", ESS_SCHEMA, "supplySchema", SUPPLY_SCHEMA,
                 "travelSchema", TRAVEL_SCHEMA, "baseSfmsSchema", BASE_SFMS_SCHEMA);
     }
-
-    /** The main production schema. Intended for read access only. */
-    @Value("${master.schema}")
-    protected String MASTER_SCHEMA;
-
-    /** The time/attendance buffer schema. Permits writes. */
-    @Value("${ts.schema}")
-    protected String TS_SCHEMA;
-
-    /** The shared Ess schema */
-    @Value("${ess.schema}")
-    protected String ESS_SCHEMA;
-
-    /** The schema for the Supply app. */
-    @Value("${supply.schema}")
-    protected String SUPPLY_SCHEMA;
-
-    /** The schema for the Travel app. */
-    @Value("${travel.schema}")
-    protected String TRAVEL_SCHEMA;
-
-    @Value("${base.sfms.schema}")
-    protected String BASE_SFMS_SCHEMA;
 
     /** Configures the supply sync procedure name prefixed with the correct schema. */
     @Bean(name = "supplySyncProcedureName")

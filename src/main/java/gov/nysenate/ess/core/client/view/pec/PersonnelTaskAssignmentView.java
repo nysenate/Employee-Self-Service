@@ -7,17 +7,17 @@ import java.time.LocalDateTime;
 
 public class PersonnelTaskAssignmentView implements ViewObject {
 
-    private int empId;
-    private int taskId;
-    private LocalDateTime timestamp;
-    private Integer updateUserId;
-    private boolean completed;
-    private boolean active;
+    private final int empId;
+    private final int taskId;
+    private final LocalDateTime timestamp;
+    private final Integer updateUserId;
+    private final boolean completed;
+    private final boolean active;
 
-    private boolean manual_override;
+    private final boolean manual_override;
 
-    private LocalDateTime assignmentDate;
-    private LocalDateTime dueDate;
+    private final LocalDateTime assignmentDate;
+    private final LocalDateTime dueDate;
 
     public PersonnelTaskAssignmentView(int empId,
                                        int taskId,

@@ -14,10 +14,12 @@ import java.io.IOException;
 public final class HttpUtils {
     private static final Logger logger = LoggerFactory.getLogger(HttpUtils.class);
 
-    private HttpUtils() {}
+    private HttpUtils() {
+    }
 
     /**
      * Makes a GET request to the given URL and returns the response content as a String.
+     *
      * @throws UnsuccessfulHttpReqException if status code is unsuccessful (not 2xx).
      */
     public static String urlToString(String url) throws IOException {

@@ -6,12 +6,10 @@ import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.LimitOffset;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class DateRangeListViewResponse<ViewType> extends ListViewResponse<ViewType>
-{
+public class DateRangeListViewResponse<ViewType> extends ListViewResponse<ViewType> {
     protected LocalDateTime fromDateTime = DateUtils.LONG_AGO.atStartOfDay();
     protected LocalDateTime toDateTime = DateUtils.THE_FUTURE.atStartOfDay();
 
@@ -23,7 +21,7 @@ public class DateRangeListViewResponse<ViewType> extends ListViewResponse<ViewTy
     }
 
     public static <ViewType extends ViewObject> DateRangeListViewResponse<ViewType> of(
-        List<ViewType> items, Range<LocalDateTime> dateTimeRange, int total, LimitOffset limitOffset) {
+            List<ViewType> items, Range<LocalDateTime> dateTimeRange, int total, LimitOffset limitOffset) {
         return new DateRangeListViewResponse<>(ListView.of(items), dateTimeRange, total, limitOffset);
     }
 

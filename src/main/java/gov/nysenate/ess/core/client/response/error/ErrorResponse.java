@@ -2,8 +2,7 @@ package gov.nysenate.ess.core.client.response.error;
 
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
 
-public class ErrorResponse extends BaseResponse
-{
+public class ErrorResponse extends BaseResponse {
     protected ErrorCode errorCode;
 
     public ErrorResponse(ErrorCode errorCode) {

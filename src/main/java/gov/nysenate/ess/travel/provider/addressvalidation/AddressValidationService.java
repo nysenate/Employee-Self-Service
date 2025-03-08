@@ -12,8 +12,8 @@ import java.io.IOException;
 @Service
 public class AddressValidationService {
 
-    private String sageBaseUrl;
-    private ObjectMapper jsonObjectMapper;
+    private final String sageBaseUrl;
+    private final ObjectMapper jsonObjectMapper;
 
     @Autowired
     public AddressValidationService(@Value("${sage.api.url}") String sageBaseUrl, ObjectMapper jsonObjectMapper) {
@@ -25,7 +25,7 @@ public class AddressValidationService {
         RestTemplate restTemplate = new RestTemplate();
         String url = sageBaseUrl + "/address/validate?" +
                 "addr1=" + addr + "&" +
-                "city="  + city + "&" +
+                "city=" + city + "&" +
                 "state=" + state;
         String resp = restTemplate.getForObject(url, String.class);
         SageResponse sageResponse = null;
@@ -38,6 +38,6 @@ public class AddressValidationService {
     }
 
     public SageResponse validateAddress(Address address) {
-       return validateAddress(address.getAddr1(), address.getCity(), address.getState());
+        return validateAddress(address.getAddr1(), address.getCity(), address.getState());
     }
 }

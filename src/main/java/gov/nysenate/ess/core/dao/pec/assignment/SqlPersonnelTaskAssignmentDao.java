@@ -23,6 +23,33 @@ import static gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentQu
 public class SqlPersonnelTaskAssignmentDao extends SqlBaseDao implements PersonnelTaskAssignmentDao {
 
     private static final Logger logger = LoggerFactory.getLogger(SqlPersonnelTaskAssignmentDao.class);
+    private static final RowMapper<PersonnelTaskAssignment> patRowMapper = (rs, rowNum) ->
+            new PersonnelTaskAssignment(
+                    rs.getInt("task_id"),
+                    rs.getInt("emp_id"),
+                    getNullableInt(rs, "update_user_id"),
+                    getLocalDateTime(rs, "timestamp"),
+                    rs.getBoolean("completed"),
+                    rs.getBoolean("active"),
+                    rs.getBoolean("manual_override"),
+                    getLocalDateTime(rs, "assignment_date"),
+                    getLocalDateTime(rs, "due_date")
+            );
+    private static final RowMapper<PersonnelTask> taskRowMapper = (rs, rowNum) ->
+            new PersonnelTask(
+                    rs.getInt("task_id"),
+                    PersonnelTaskType.valueOf(rs.getString("task_type")),
+                    PersonnelTaskAssignmentGroup.valueOf(rs.getString("assignment_group")),
+                    rs.getString("title"),
+                    getLocalDateTime(rs, "effective_date_time"),
+                    getLocalDateTime(rs, "end_date_time"),
+                    rs.getBoolean("active"),
+                    rs.getBoolean("notifiable"),
+                    rs.getString("url"),
+                    rs.getString("resource")
+            );
+    private static final RowMapper<AssignmentWithTask> assignTaskMapper = (rs, rowNum) ->
+            new AssignmentWithTask(patRowMapper.mapRow(rs, rowNum), taskRowMapper.mapRow(rs, rowNum));
 
     @Override
     public List<PersonnelTaskAssignment> getAssignmentsForEmp(int empId) {
@@ -146,36 +173,6 @@ public class SqlPersonnelTaskAssignmentDao extends SqlBaseDao implements Personn
             logger.warn("empId={}, taskId={}, update_count={}", empId, taskId, updated);
         }
     }
-
-    private static final RowMapper<PersonnelTaskAssignment> patRowMapper = (rs, rowNum) ->
-            new PersonnelTaskAssignment(
-                    rs.getInt("task_id"),
-                    rs.getInt("emp_id"),
-                    getNullableInt(rs, "update_user_id"),
-                    getLocalDateTime(rs, "timestamp"),
-                    rs.getBoolean("completed"),
-                    rs.getBoolean("active"),
-                    rs.getBoolean("manual_override"),
-                    getLocalDateTime(rs, "assignment_date"),
-                    getLocalDateTime(rs, "due_date")
-            );
-
-    private static final RowMapper<PersonnelTask> taskRowMapper = (rs, rowNum) ->
-            new PersonnelTask(
-                    rs.getInt("task_id"),
-                    PersonnelTaskType.valueOf(rs.getString("task_type")),
-                    PersonnelTaskAssignmentGroup.valueOf(rs.getString("assignment_group")),
-                    rs.getString("title"),
-                    getLocalDateTime(rs, "effective_date_time"),
-                    getLocalDateTime(rs, "end_date_time"),
-                    rs.getBoolean("active"),
-                    rs.getBoolean("notifiable"),
-                    rs.getString("url"),
-                    rs.getString("resource")
-            );
-
-    private static final RowMapper<AssignmentWithTask> assignTaskMapper = (rs, rowNum) ->
-            new AssignmentWithTask(patRowMapper.mapRow(rs, rowNum), taskRowMapper.mapRow(rs, rowNum));
 
     private MapSqlParameterSource getEmpIdParams(int empId) {
         return new MapSqlParameterSource("empId", empId);

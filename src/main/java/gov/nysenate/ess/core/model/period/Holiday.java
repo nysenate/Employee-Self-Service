@@ -6,8 +6,7 @@ import java.time.LocalDate;
 /**
  * A simple model for storing holiday details.
  */
-public class Holiday
-{
+public class Holiday {
     protected LocalDate date;
     protected String name;
     protected boolean active;
@@ -16,7 +15,8 @@ public class Holiday
     /** Questionable holidays are declared at the discretion of the senate. */
     protected boolean questionable;
 
-    public Holiday() {}
+    public Holiday() {
+    }
 
     /** --- Basic Getters/Setters --- */
 

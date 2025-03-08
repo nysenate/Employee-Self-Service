@@ -9,10 +9,10 @@ import java.sql.SQLException;
  * This row mapper doesn't implement the RowMapper interface but rather provides a static
  * method to map all the summary columns for a subclass of AccrualUsage.
  */
-public class AccrualUsageRowMapper
-{
+public class AccrualUsageRowMapper {
     /**
      * Sets accrual usage columns on the supplied AccrualUsage object.
+     *
      * @throws java.sql.SQLException
      */
     public static void mapRow(ResultSet rs, AccrualUsage accUsage, String pfx) throws SQLException {
@@ -32,6 +32,7 @@ public class AccrualUsageRowMapper
 
     /**
      * Sets accrual usage columns on the supplied AccrualUsage object.
+     *
      * @throws java.sql.SQLException
      */
     public static void mapRow(ResultSet rs, AccrualUsage accrualUsage) throws SQLException {

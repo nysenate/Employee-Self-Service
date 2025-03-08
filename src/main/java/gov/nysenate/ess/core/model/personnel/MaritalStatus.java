@@ -3,8 +3,7 @@ package gov.nysenate.ess.core.model.personnel;
 /**
  * Enumerates all possible codes for martial status
  */
-public enum MaritalStatus
-{
+public enum MaritalStatus {
     SINGLE("S", "Single"),
     DIVORCED("D", "Divorced"),
     MARRIED("M", "Married"),

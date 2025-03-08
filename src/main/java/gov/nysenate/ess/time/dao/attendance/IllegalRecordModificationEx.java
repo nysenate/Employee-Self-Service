@@ -7,7 +7,7 @@ import java.math.BigInteger;
  */
 public class IllegalRecordModificationEx extends RuntimeException {
 
-    private BigInteger recordId;
+    private final BigInteger recordId;
 
     public IllegalRecordModificationEx(BigInteger recordId, String reason) {
         super("Cannot modify time record " + recordId + ": " + reason);

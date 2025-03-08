@@ -2,8 +2,7 @@ package gov.nysenate.ess.core.service.base;
 
 import java.time.LocalDateTime;
 
-public class BaseEvent
-{
+public class BaseEvent {
     protected LocalDateTime createdDateTime;
 
     public BaseEvent() {

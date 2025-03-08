@@ -45,6 +45,10 @@ public class SlackField {
         return shorten;
     }
 
+    public void setShorten(boolean shorten) {
+        this.shorten = shorten;
+    }
+
     private JsonArray prepareMarkdown() {
         JsonArray data = new JsonArray();
         for (String item : this.allowMarkdown) {
@@ -58,10 +62,6 @@ public class SlackField {
         if (allowMarkdown != null) {
             this.allowMarkdown = allowMarkdown;
         }
-    }
-
-    public void setShorten(boolean shorten) {
-        this.shorten = shorten;
     }
 
     public void setTitle(String title) {

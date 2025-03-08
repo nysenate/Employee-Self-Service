@@ -18,15 +18,13 @@ import java.util.List;
 public class EverfiAddUserRequest {
 
     private static final String ADD_USER_END_POINT = "/v1/admin/registration_sets";
+    private static final Logger logger = LoggerFactory.getLogger(EverfiAddUserRequest.class);
     private final EverfiApiClient everfiClient;
-
     private final int employeeId;
     private final String firstName;
     private final String lastName;
     private final String email;
     private final List<EverfiCategoryLabel> categoryLabels;
-
-    private static final Logger logger = LoggerFactory.getLogger(EverfiAddUserRequest.class);
 
     public EverfiAddUserRequest(EverfiApiClient everfiClient, int employeeId, String firstName, String lastName,
                                 String email, List<EverfiCategoryLabel> categoryLabels) {
@@ -40,16 +38,17 @@ public class EverfiAddUserRequest {
 
     /**
      * Adds a user represented by the fields in this class.
+     *
      * @return The added user returned from Everfi or null if an error occurred.
      * @throws IOException
      */
     public EverfiUser addUser() throws IOException {
         String entity = generateJsonEntity();
-        if (this.email == null || this.email.isEmpty() ) {
+        if (this.email == null || this.email.isEmpty()) {
             logger.warn("Could not add user to Everfi with EmpID " + employeeId + ". They do not have an email");
             return null;
         }
-        
+
         String data = everfiClient.post(ADD_USER_END_POINT, entity);
         if (data == null) {
             return null;

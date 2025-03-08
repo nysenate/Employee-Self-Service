@@ -7,8 +7,7 @@ import javax.servlet.http.HttpSession;
  * Interface definition for implementing functionality to mitigate cross-site request forgery attacks.
  * For Reference: http://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)_Prevention_Cheat_Sheet
  */
-public interface XsrfValidator
-{
+public interface XsrfValidator {
     /** The key used to store the xsrf token in the session */
     String XSRF_TOKEN_SESSION_KEY = "__xsrfSessionToken__";
 

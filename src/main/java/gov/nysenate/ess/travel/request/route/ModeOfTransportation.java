@@ -10,31 +10,27 @@ import java.util.Objects;
  */
 public class ModeOfTransportation {
 
-    private final MethodOfTravel methodOfTravel;
-    private final String description;
-
     /**
      * Static instances, Use one of these unless MethodOfTravel is OTHER.
      */
     public static final ModeOfTransportation PERSONAL_AUTO =
             new ModeOfTransportation(MethodOfTravel.PERSONAL_AUTO, MethodOfTravel.PERSONAL_AUTO.getDisplayName());
-
     public static final ModeOfTransportation SENATE_VEHICLE =
             new ModeOfTransportation(MethodOfTravel.SENATE_VEHICLE, MethodOfTravel.SENATE_VEHICLE.getDisplayName());
-
     public static final ModeOfTransportation CARPOOL =
             new ModeOfTransportation(MethodOfTravel.CARPOOL, MethodOfTravel.CARPOOL.getDisplayName());
-
     public static final ModeOfTransportation TRAIN =
             new ModeOfTransportation(MethodOfTravel.TRAIN, MethodOfTravel.TRAIN.getDisplayName());
-
     public static final ModeOfTransportation AIRPLANE =
             new ModeOfTransportation(MethodOfTravel.AIRPLANE, MethodOfTravel.AIRPLANE.getDisplayName());
+    private final MethodOfTravel methodOfTravel;
+    private final String description;
 
     /**
      * Should use static instances above whenever possible.
      * This constructor is useful when MethodOfTravel = OTHER
      * and when instanciating from a view.
+     *
      * @param methodOfTravel
      * @param description
      */
@@ -53,8 +49,7 @@ public class ModeOfTransportation {
         // Only use description if OTHER, otherwise default to the MethodOfTravel's display name.
         if (MethodOfTravel.of(methodOfTravelString) == MethodOfTravel.OTHER) {
             this.description = description;
-        }
-        else {
+        } else {
             this.description = MethodOfTravel.of(methodOfTravelString).getDisplayName();
         }
     }

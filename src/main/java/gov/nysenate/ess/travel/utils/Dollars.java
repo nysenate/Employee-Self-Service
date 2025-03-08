@@ -9,10 +9,9 @@ import java.util.Objects;
  * Auto scales and rounds to two digits.
  */
 public final class Dollars implements Comparable<Dollars> {
+    public static final Dollars ZERO = new Dollars(0);
     private static final int SCALE = 2;
     private static final RoundingMode ROUNDING_MODE = RoundingMode.HALF_UP;
-    public static final Dollars ZERO = new Dollars(0);
-
     private final BigDecimal dollars;
 
     public Dollars(BigDecimal dollars) {

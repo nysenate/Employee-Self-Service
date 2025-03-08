@@ -18,16 +18,16 @@ public interface DepartmentalWhitelistService {
     boolean isAllowed(Employee employee);
 
     /**
-     * @see #isAllowed(Employee)
-     * An overload of {@link #isAllowed(Employee)} that will retrieve the employee from the given employee id
-     *
      * @param empId {@link Integer} employee id
      * @return {@link Boolean} true iff the employee is permitted via the departmental whitelist
+     * @see #isAllowed(Employee)
+     * An overload of {@link #isAllowed(Employee)} that will retrieve the employee from the given employee id
      */
     boolean isAllowed(int empId);
 
     /**
      * Get the set of departments that are on the whitelist
+     *
      * @return {@link ImmutableSet<String>} set of department names
      */
     ImmutableSet<String> getWhitelist();

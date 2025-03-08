@@ -9,15 +9,19 @@ import gov.nysenate.ess.core.client.response.error.ErrorResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
-import gov.nysenate.ess.travel.api.application.*;
+import gov.nysenate.ess.travel.api.application.AttachmentView;
+import gov.nysenate.ess.travel.api.application.TravelApplicationView;
 import gov.nysenate.ess.travel.department.DepartmentNotFoundEx;
 import gov.nysenate.ess.travel.employee.TravelEmployee;
 import gov.nysenate.ess.travel.employee.TravelEmployeeService;
-import gov.nysenate.ess.travel.request.app.*;
+import gov.nysenate.ess.travel.provider.ProviderException;
+import gov.nysenate.ess.travel.request.app.TravelAppUpdateService;
+import gov.nysenate.ess.travel.request.app.TravelApplication;
 import gov.nysenate.ess.travel.request.attachment.Attachment;
 import gov.nysenate.ess.travel.request.draft.*;
-import gov.nysenate.ess.travel.request.route.*;
-import gov.nysenate.ess.travel.provider.ProviderException;
+import gov.nysenate.ess.travel.request.route.InvalidTravelDatesException;
+import gov.nysenate.ess.travel.request.route.RouteView;
+import gov.nysenate.ess.travel.request.route.RouteViewValidator;
 import gov.nysenate.ess.travel.utils.AttachmentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +32,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController

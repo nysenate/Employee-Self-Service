@@ -13,19 +13,8 @@ import java.util.Collection;
 
 @XmlRootElement
 @JsonSerialize(using = ListView.ListViewJsonSerializer.class)
-public class ListView<ViewType> implements ViewObject
-{
+public class ListView<ViewType> implements ViewObject {
     @XmlElement public final ImmutableList<ViewType> items;
-
-    public static <ViewType extends ViewObject> ListView<ViewType> of(Collection<ViewType> items) {
-        return new ListView<>(items);
-    }
-    public static ListView<String> ofStringList(Collection<String> items) {
-        return new ListView<>(items);
-    }
-    public static ListView<Integer> ofIntList(Collection<Integer> items) {
-        return new ListView<>(items);
-    }
 
     private ListView(Collection<ViewType> items) {
         this.items = items != null ? ImmutableList.copyOf(items) : ImmutableList.of();
@@ -35,14 +24,25 @@ public class ListView<ViewType> implements ViewObject
         items = ImmutableList.of();
     }
 
+    public static <ViewType extends ViewObject> ListView<ViewType> of(Collection<ViewType> items) {
+        return new ListView<>(items);
+    }
+
+    public static ListView<String> ofStringList(Collection<String> items) {
+        return new ListView<>(items);
+    }
+
+    public static ListView<Integer> ofIntList(Collection<Integer> items) {
+        return new ListView<>(items);
+    }
+
     @Override
     public String getViewType() {
-        String listContentType = items.size()>0 ? ViewObject.getViewTypeOf(items.get(0)) : "empty";
+        String listContentType = items.size() > 0 ? ViewObject.getViewTypeOf(items.get(0)) : "empty";
         return listContentType + " list";
     }
 
-    public static class ListViewJsonSerializer extends JsonSerializer<ListView>
-    {
+    public static class ListViewJsonSerializer extends JsonSerializer<ListView> {
         @Override
         public void serialize(ListView listView, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
             jsonGenerator.writeStartArray(listView.items.size());

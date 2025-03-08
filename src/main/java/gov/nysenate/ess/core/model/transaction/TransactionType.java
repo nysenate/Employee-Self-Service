@@ -3,8 +3,7 @@ package gov.nysenate.ess.core.model.transaction;
 /**
  * Simple enumeration of the different types of transactions.
  */
-public enum TransactionType
-{
+public enum TransactionType {
     PER("Personnel"),
     PAY("Payroll");
 

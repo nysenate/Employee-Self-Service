@@ -23,11 +23,11 @@ import java.util.Map;
 @Service
 public class NewRequisitionEmail {
 
-    private SendMailService sendMailService;
-    private Configuration freemarkerCfg;
     private static final String template = "new_requisition_notification.ftlh";
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yy h:mm a");
     private static String domainUrl;
+    private final SendMailService sendMailService;
+    private final Configuration freemarkerCfg;
 
     @Autowired
     public NewRequisitionEmail(SendMailService sendMailService, Configuration freemarkerCfg,

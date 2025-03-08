@@ -1,16 +1,15 @@
-
 package gov.nysenate.ess.core.client.view.alert;
 
+import gov.nysenate.ess.core.client.view.alert.ContactBatch.BatchContactList;
 import gov.nysenate.ess.core.client.view.alert.ContactBatch.BatchContactList.Contact;
 import gov.nysenate.ess.core.client.view.alert.ContactBatch.BatchContactList.Contact.ContactField;
 import gov.nysenate.ess.core.client.view.alert.ContactBatch.BatchContactList.Contact.ContactPointList;
 import gov.nysenate.ess.core.client.view.alert.ContactBatch.BatchContactList.Contact.ContactPointList.ContactPoint;
 import gov.nysenate.ess.core.client.view.alert.ContactBatch.BatchContactList.Contact.ContactPointList.ContactPoint.ContactPointField;
-import gov.nysenate.ess.core.model.alert.AlertInfo;
-import gov.nysenate.ess.core.model.personnel.Employee;
-import gov.nysenate.ess.core.client.view.alert.ContactBatch.BatchContactList;
 import gov.nysenate.ess.core.client.view.alert.ContactBatch.BatchProcessingDirectives;
 import gov.nysenate.ess.core.client.view.alert.ContactBatch.BatchProcessingDirectives.BatchProcessingOption;
+import gov.nysenate.ess.core.model.alert.AlertInfo;
+import gov.nysenate.ess.core.model.personnel.Employee;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -25,7 +24,8 @@ public class ContactBatchFactory {
 
     /**
      * Creates a ContactBatch containing contact information for all given employees.
-     * @param employees Employees to be included. Generally should be all active senate employees.
+     *
+     * @param employees    Employees to be included. Generally should be all active senate employees.
      * @param alertInfoMap A Mapping of employeeId to their AlertInfo for all employees given in {@code employees}.
      */
     public static ContactBatch create(Set<Employee> employees, Map<Integer, AlertInfo> alertInfoMap) {
@@ -67,7 +67,7 @@ public class ContactBatchFactory {
 
     private static BatchContactList createBatchContactList(Set<Employee> employees, Map<Integer, AlertInfo> alertInfoMap) {
         BatchContactList contactList = new BatchContactList();
-        for (Employee emp: employees) {
+        for (Employee emp : employees) {
             if (isEmployeeInitialized(emp)) {
                 contactList.addContact(createContact(emp, alertInfoMap.get(emp.getEmployeeId())));
             }
@@ -158,7 +158,7 @@ public class ContactBatchFactory {
 
     private static ContactPoint voiceContactPoint(String label, String val) {
         ContactPoint cp = new ContactPoint("Voice");
-        cp.addContactPointField(new ContactPointField("Label", label+" Phone"));
+        cp.addContactPointField(new ContactPointField("Label", label + " Phone"));
         cp.addContactPointField(new ContactPointField("CountryCode", "1"));
         cp.addContactPointField(new ContactPointField("Number", val));
         return cp;
@@ -169,13 +169,13 @@ public class ContactBatchFactory {
         cp.addContactPointField(new ContactPointField("Label", "SMS"));
         cp.addContactPointField(new ContactPointField("Carrier", "SWN Global SMS"));
         // For SMS, need to include country code in phone number.
-        cp.addContactPointField(new ContactPointField("Number", "1"+val));
+        cp.addContactPointField(new ContactPointField("Number", "1" + val));
         return cp;
     }
 
     private static ContactPoint emailContactPoint(String label, String val) {
         ContactPoint cp = new ContactPoint("Email");
-        cp.addContactPointField(new ContactPointField("Label", label+" Email"));
+        cp.addContactPointField(new ContactPointField("Label", label + " Email"));
         cp.addContactPointField(new ContactPointField("Address", val));
         return cp;
     }

@@ -11,4 +11,5 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Service
 @Inherited
-public @interface InheritedService {}
+public @interface InheritedService {
+}

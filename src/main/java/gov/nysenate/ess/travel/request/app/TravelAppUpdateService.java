@@ -4,14 +4,13 @@ import com.google.common.eventbus.EventBus;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
 import gov.nysenate.ess.travel.authorization.role.TravelRoleFactory;
-import gov.nysenate.ess.travel.authorization.role.TravelRoles;
 import gov.nysenate.ess.travel.employee.TravelEmployee;
+import gov.nysenate.ess.travel.notifications.email.TravelEmailService;
 import gov.nysenate.ess.travel.notifications.email.events.TravelAppEditedEmailEvent;
 import gov.nysenate.ess.travel.notifications.email.events.TravelPendingReviewEmailEvent;
 import gov.nysenate.ess.travel.provider.gsa.GsaAllowanceService;
 import gov.nysenate.ess.travel.provider.miles.MileageAllowanceService;
 import gov.nysenate.ess.travel.request.allowances.PerDiem;
-import gov.nysenate.ess.travel.request.allowances.lodging.LodgingPerDiem;
 import gov.nysenate.ess.travel.request.allowances.lodging.LodgingPerDiemService;
 import gov.nysenate.ess.travel.request.allowances.lodging.LodgingPerDiems;
 import gov.nysenate.ess.travel.request.allowances.meal.MealPerDiems;
@@ -22,8 +21,6 @@ import gov.nysenate.ess.travel.request.draft.Draft;
 import gov.nysenate.ess.travel.request.route.Leg;
 import gov.nysenate.ess.travel.request.route.Route;
 import gov.nysenate.ess.travel.request.route.RouteService;
-import gov.nysenate.ess.travel.request.route.destination.Destination;
-import gov.nysenate.ess.travel.notifications.email.TravelEmailService;
 import gov.nysenate.ess.travel.review.ApplicationReview;
 import gov.nysenate.ess.travel.review.ApplicationReviewService;
 import gov.nysenate.ess.travel.review.strategy.ReviewerStrategy;
@@ -34,9 +31,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class TravelAppUpdateService {

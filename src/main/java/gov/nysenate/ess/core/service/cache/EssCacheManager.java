@@ -12,7 +12,6 @@ import org.ehcache.core.spi.service.StatisticsService;
 import org.ehcache.core.statistics.CacheStatistics;
 import org.ehcache.expiry.ExpiryPolicy;
 
-import java.lang.reflect.ParameterizedType;
 import java.util.EnumMap;
 import java.util.Set;
 
@@ -52,14 +51,15 @@ public final class EssCacheManager {
         for (var cachingService : types.stream().map(cacheTypeMap::get).toList()) {
             try {
                 cachingService.clearCache(warmCaches);
-            } catch (UnsupportedOperationException ignored) {}
+            } catch (UnsupportedOperationException ignored) {
+            }
         }
     }
 
     static <K, V> Cache<K, V> createCache(Class<K> keyClass, Class<V> valueClass, CachingService service, int size) {
         var type = service.cacheType();
 
-        size = (int) ((Math.floor(size * 1.1/FOR_ROUNDING) + 1) * FOR_ROUNDING);
+        size = (int) ((Math.floor(size * 1.1 / FOR_ROUNDING) + 1) * FOR_ROUNDING);
         cacheCapacityMap.put(type, size);
         var config = CacheConfigurationBuilder
                 .newCacheConfigurationBuilder(keyClass, valueClass,

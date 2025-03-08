@@ -1,6 +1,9 @@
 package gov.nysenate.ess.time.model.attendance;
 
-import com.google.common.collect.*;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSetMultimap;
+import com.google.common.collect.ImmutableTable;
+import com.google.common.collect.Multimaps;
 
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -12,22 +15,44 @@ import static gov.nysenate.ess.time.model.attendance.TimeRecordScope.*;
 /**
  * The TimeRecordStatus enum represents the possible states that a time record can be in.
  */
-public enum TimeRecordStatus
-{
+public enum TimeRecordStatus {
     SUBMITTED("S", "Submitted", SUPERVISOR),
-    NOT_SUBMITTED("W","Not Submitted", EMPLOYEE),
-    APPROVED("A","Approved by Supervisor", PERSONNEL),
-    DISAPPROVED("D","Disapproved by Supervisor", EMPLOYEE),
-    SUBMITTED_PERSONNEL("SP","Submitted to Personnel", PERSONNEL),
-    APPROVED_PERSONNEL("AP","Approved by Personnel", PERSONNEL),
-    DISAPPROVED_PERSONNEL("DP","Disapproved by Personnel", EMPLOYEE),
+    NOT_SUBMITTED("W", "Not Submitted", EMPLOYEE),
+    APPROVED("A", "Approved by Supervisor", PERSONNEL),
+    DISAPPROVED("D", "Disapproved by Supervisor", EMPLOYEE),
+    SUBMITTED_PERSONNEL("SP", "Submitted to Personnel", PERSONNEL),
+    APPROVED_PERSONNEL("AP", "Approved by Personnel", PERSONNEL),
+    DISAPPROVED_PERSONNEL("DP", "Disapproved by Personnel", EMPLOYEE),
     ;
 
+    /**
+     * Mapping of unlockedFor values (E,S,P) to a set of corresponding time record statuses.
+     */
+    private static final ImmutableSetMultimap<TimeRecordScope, TimeRecordStatus> unlockedForMap =
+            ImmutableSetMultimap.<TimeRecordScope, TimeRecordStatus>builder()
+                    .putAll(Multimaps.index(Arrays.asList(TimeRecordStatus.values()), TimeRecordStatus::getScope))
+                    .build();
+    /**
+     * A table that describes how a time record can change statuses within this app
+     * Each row is a time record scope (that encompasses several time record statuses)
+     * Each column is an action that can be taken on a time record scope row
+     * Each value is the resulting status when the action is applied
+     */
+    private static final ImmutableTable<TimeRecordScope, TimeRecordAction, TimeRecordStatus> stateTable =
+            ImmutableTable.<TimeRecordScope, TimeRecordAction, TimeRecordStatus>builder()
+                    .put(EMPLOYEE, SAVE, NOT_SUBMITTED)
+                    .put(EMPLOYEE, SUBMIT, SUBMITTED)
+                    .put(SUPERVISOR, SUBMIT, APPROVED)
+                    .put(SUPERVISOR, REJECT, DISAPPROVED)
+                    .build();
+    /** Set of Statuses that are "in progress" i.e. not finalized */
+    private static final EnumSet<TimeRecordStatus> inProgress =
+            EnumSet.of(SUBMITTED, NOT_SUBMITTED, APPROVED, DISAPPROVED, SUBMITTED_PERSONNEL, DISAPPROVED_PERSONNEL);
     private final String code;
     private final String name;
-
-    /** The scope indicates who can perform an action on the time record at that given stage.
-     *  For example when the status is 'Submitted' the supervisor scope 'S' can only take action (i.e approve/disapprove).
+    /**
+     * The scope indicates who can perform an action on the time record at that given stage.
+     * For example when the status is 'Submitted' the supervisor scope 'S' can only take action (i.e approve/disapprove).
      */
     private final TimeRecordScope scope;
 
@@ -35,6 +60,37 @@ public enum TimeRecordStatus
         this.code = code;
         this.name = name;
         this.scope = scope;
+    }
+
+    /** --- Static Methods --- */
+
+    public static TimeRecordStatus valueOfCode(String code) {
+        for (TimeRecordStatus status : TimeRecordStatus.values()) {
+            if (status.code.equals(code)) return status;
+        }
+        return null;
+    }
+
+    public static Set<TimeRecordStatus> getAll() {
+        return EnumSet.allOf(TimeRecordStatus.class);
+    }
+
+    public static Set<TimeRecordStatus> unlockedForEmployee() {
+        return unlockedForMap.get(TimeRecordScope.EMPLOYEE);
+    }
+
+    public static Set<TimeRecordStatus> unlockedForSupervisor() {
+        return unlockedForMap.get(TimeRecordScope.SUPERVISOR);
+    }
+
+    public static Set<TimeRecordStatus> unlockedForPersonnel() {
+        return unlockedForMap.get(TimeRecordScope.PERSONNEL);
+    }
+
+    /** --- Static Variables --- */
+
+    public static Set<TimeRecordStatus> inProgress() {
+        return inProgress;
     }
 
     /** --- Functional Getters --- */
@@ -53,6 +109,7 @@ public enum TimeRecordStatus
 
     /**
      * Get the resulting status when the given action is applied to this status
+     *
      * @param action TimeRecordAction - an action applied to this status
      * @return TimeRecordStatus - the resulting status
      * @throws InvalidTimeRecordActionEx if the given action cannot apply to this status
@@ -83,62 +140,5 @@ public enum TimeRecordStatus
 
     public TimeRecordScope getScope() {
         return scope;
-    }
-
-    /** --- Static Variables --- */
-
-    /**
-     * Mapping of unlockedFor values (E,S,P) to a set of corresponding time record statuses.
-     */
-    private static final ImmutableSetMultimap<TimeRecordScope, TimeRecordStatus> unlockedForMap =
-            ImmutableSetMultimap.<TimeRecordScope, TimeRecordStatus>builder()
-                    .putAll(Multimaps.index(Arrays.asList(TimeRecordStatus.values()), TimeRecordStatus::getScope))
-                    .build();
-
-    /**
-     * A table that describes how a time record can change statuses within this app
-     * Each row is a time record scope (that encompasses several time record statuses)
-     * Each column is an action that can be taken on a time record scope row
-     * Each value is the resulting status when the action is applied
-     */
-    private static final ImmutableTable<TimeRecordScope, TimeRecordAction, TimeRecordStatus> stateTable =
-            ImmutableTable.<TimeRecordScope, TimeRecordAction, TimeRecordStatus>builder()
-                    .put(EMPLOYEE,      SAVE,   NOT_SUBMITTED)
-                    .put(EMPLOYEE,      SUBMIT, SUBMITTED)
-                    .put(SUPERVISOR,    SUBMIT, APPROVED)
-                    .put(SUPERVISOR,    REJECT, DISAPPROVED)
-                    .build();
-
-    /** Set of Statuses that are "in progress" i.e. not finalized*/
-    private static final EnumSet<TimeRecordStatus> inProgress =
-            EnumSet.of(SUBMITTED, NOT_SUBMITTED, APPROVED, DISAPPROVED, SUBMITTED_PERSONNEL, DISAPPROVED_PERSONNEL);
-
-    /** --- Static Methods --- */
-
-    public static TimeRecordStatus valueOfCode(String code){
-        for (TimeRecordStatus status : TimeRecordStatus.values()) {
-            if (status.code.equals(code)) return status;
-        }
-        return null;
-    }
-
-    public static Set<TimeRecordStatus> getAll() {
-        return EnumSet.allOf(TimeRecordStatus.class);
-    }
-
-    public static Set<TimeRecordStatus> unlockedForEmployee() {
-        return unlockedForMap.get(TimeRecordScope.EMPLOYEE);
-    }
-
-    public static Set<TimeRecordStatus> unlockedForSupervisor() {
-        return unlockedForMap.get(TimeRecordScope.SUPERVISOR);
-    }
-
-    public static Set<TimeRecordStatus> unlockedForPersonnel() {
-        return unlockedForMap.get(TimeRecordScope.PERSONNEL);
-    }
-
-    public static Set<TimeRecordStatus> inProgress() {
-        return inProgress;
     }
 }

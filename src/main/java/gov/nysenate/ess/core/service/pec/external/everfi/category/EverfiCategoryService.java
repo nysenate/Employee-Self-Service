@@ -26,14 +26,12 @@ public class EverfiCategoryService {
 
     private static final String UPLOAD_LIST = "Upload List"; // Upload List category name
     private static final DateTimeFormatter FORMAT = DateTimeFormatter.ofPattern("MMM d yyyy");
+    private static final Logger logger = LoggerFactory.getLogger(EverfiCategoryService.class);
     private final EverfiApiClient client;
-    // Im memory storage of categories.
-    private List<EverfiCategory> categories;
     private final ResponsibilityHeadDao respHeadDao;
     private final EmployeeInfoService employeeInfoService;
-
-    private static final Logger logger = LoggerFactory.getLogger(EverfiCategoryService.class);
-
+    // Im memory storage of categories.
+    private List<EverfiCategory> categories;
     @Value("${scheduler.everfi.sync.enabled:false}")
     private boolean everfiSyncEnabled;
 
@@ -98,18 +96,18 @@ public class EverfiCategoryService {
 
                 Set<Employee> emps = employeeInfoService.getAllEmployees(true);
                 Set<String> respHeadCodes = emps.stream().map(Employee::getRespCenterHeadCode).collect(Collectors.toSet());
-                while (respHeadCodes.remove(null)) { }
+                while (respHeadCodes.remove(null)) {
+                }
 
                 for (String respHeadCode : respHeadCodes) {
-                    if ( !departmentLabels.contains(respHeadCode) && !respHeadCode.equals("null")) {
+                    if (!departmentLabels.contains(respHeadCode) && !respHeadCode.equals("null")) {
                         logger.warn("Everfi is missing RespCenterHeadCode " + respHeadCode);
                         createDepartmentLabel(respHeadCode);
                         logger.info("Created Department label " + respHeadCode);
                     }
                 }
 
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 logger.warn("Error updating department category label " + e);
             }
             logger.info("Beginning Everfi department category label update");
@@ -119,6 +117,7 @@ public class EverfiCategoryService {
 
     /**
      * Creates a new department label with the given name.
+     *
      * @param name
      * @return
      */
@@ -163,23 +162,22 @@ public class EverfiCategoryService {
         }
         ArrayList<EverfiCategoryLabel> normalizedLabels = new ArrayList<>();
         for (EverfiCategoryLabel userCatLabel : originalLabels) {
-            EverfiCategoryLabel everfiCategoryLabel = findLabelInCategories( userCatLabel.getLabelId() );
+            EverfiCategoryLabel everfiCategoryLabel = findLabelInCategories(userCatLabel.getLabelId());
             if (everfiCategoryLabel != null) {
                 userCatLabel.setCategoryId(everfiCategoryLabel.getCategoryId());
                 userCatLabel.setCategoryName(everfiCategoryLabel.getCategoryName());
                 userCatLabel.setLabelName(everfiCategoryLabel.getLabelName());
-                normalizedLabels.add( userCatLabel );
+                normalizedLabels.add(userCatLabel);
             }
         }
 
         if (normalizedLabels.isEmpty()) {
             return null;
-        }
-        else {
+        } else {
             return normalizedLabels;
         }
     }
-    
+
     public EverfiCategoryLabel findLabelInCategories(int labelID) throws IOException {
         if (this.categories == null) {
             loadCategories();

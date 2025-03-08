@@ -8,9 +8,10 @@ import java.lang.annotation.RetentionPolicy;
  * implemented and/or operational.
  */
 @Retention(RetentionPolicy.SOURCE)
-public @interface WorkInProgress
-{
+public @interface WorkInProgress {
     String author() default "";
+
     String since() default "";
+
     String desc() default "";
 }

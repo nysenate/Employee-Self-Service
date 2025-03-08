@@ -29,8 +29,7 @@ import javax.servlet.Filter;
  * The security framework used is Apache Shiro (<a href="https://shiro.apache.org/">...</a>).
  */
 @Configuration
-public class SecurityConfig
-{
+public class SecurityConfig {
 
     private final String loginUrl;
     private final String loginSuccessUrl;
@@ -82,6 +81,7 @@ public class SecurityConfig
 
     /**
      * Configures session manager.
+     *
      * @return {@link WebSessionManager}
      */
     @Bean(name = "sessionManager")
@@ -96,6 +96,7 @@ public class SecurityConfig
 
     /**
      * This is needed for Shiro annotations to work
+     *
      * @return
      */
     @Bean
@@ -111,7 +112,7 @@ public class SecurityConfig
      * the bean name.
      */
     @Bean(name = "essAuthc")
-    public Filter essAuthenticationFilter (EssLdapAuthenticationFilter essLdapAuthenticationFilter) {
+    public Filter essAuthenticationFilter(EssLdapAuthenticationFilter essLdapAuthenticationFilter) {
         return new EssAuthenticationFilter(userAgentDao, essLdapAuthenticationFilter);
     }
 
@@ -119,10 +120,11 @@ public class SecurityConfig
      * An access control filter for session timeouts.
      * If the user's session is timed out, they will be logged out and redirected to login.
      * This filter should only be used for pages.  Api session timeouts are baked into the api authc filter.
+     *
      * @return
      */
     @Bean(name = "sessionTimeoutFilter")
-    public Filter sesssionTimeoutFilter () {
+    public Filter sesssionTimeoutFilter() {
         return new SessionTimeoutFilter(sessionTimeoutDao);
     }
 

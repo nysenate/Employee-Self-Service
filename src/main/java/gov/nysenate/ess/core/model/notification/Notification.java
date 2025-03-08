@@ -1,12 +1,12 @@
 package gov.nysenate.ess.core.model.notification;
 
-public class Notification
-{
+public class Notification {
     protected NotificationLevel level;
     protected String message;
     protected String origin;
 
-    public Notification() {}
+    public Notification() {
+    }
 
     public NotificationLevel getLevel() {
         return level;

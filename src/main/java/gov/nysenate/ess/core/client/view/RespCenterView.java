@@ -8,8 +8,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.time.LocalDate;
 
 @XmlRootElement
-public class RespCenterView implements ViewObject
-{
+public class RespCenterView implements ViewObject {
     protected boolean active;
     protected int code;
     protected String name;
@@ -20,7 +19,8 @@ public class RespCenterView implements ViewObject
     protected AgencyView agency;
     protected RespCenterHeadView respCenterHead;
 
-    public RespCenterView() {}
+    public RespCenterView() {
+    }
 
     public RespCenterView(ResponsibilityCenter respCtr) {
         if (respCtr != null) {

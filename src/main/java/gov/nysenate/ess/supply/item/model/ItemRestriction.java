@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableSet;
 import gov.nysenate.ess.core.model.unit.LocationId;
 
 import java.util.Collection;
-import java.util.Set;
 
 public class ItemRestriction {
 

@@ -7,12 +7,11 @@ import java.util.Objects;
  * Any deduction that can be applied to a pay check.
  * e.g. Federal taxes, Health insurance, etc.
  */
-public class Deduction implements Comparable<Deduction>
-{
-    private Integer order;
-    private Integer code;
-    private String description;
-    private BigDecimal amount;
+public class Deduction implements Comparable<Deduction> {
+    private final Integer order;
+    private final Integer code;
+    private final String description;
+    private final BigDecimal amount;
 
     public Deduction(String code, int order, String description, BigDecimal amount) {
         this(Integer.valueOf(code), order, description, amount);

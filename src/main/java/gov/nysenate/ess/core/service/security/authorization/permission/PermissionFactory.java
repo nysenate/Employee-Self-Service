@@ -17,7 +17,7 @@ public interface PermissionFactory {
      * this list will only include a subset of the employee's permissions
      *
      * @param employee {@link Employee} - an employee object for the authenticated user
-     * @param roles {@link ImmutableSet<EssRole>} - a set of roles assigned to the authenticated user
+     * @param roles    {@link ImmutableSet<EssRole>} - a set of roles assigned to the authenticated user
      * @return {@link ImmutableList<Permission>} - a list of permissions granted
      */
     ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum<?>> roles);

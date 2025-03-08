@@ -10,12 +10,12 @@ import java.util.Map;
 
 public class InventoryRowHandler implements RowCallbackHandler {
 
-    private Map<Integer, Integer> inventory = new HashMap<>();
+    private final Map<Integer, Integer> inventory = new HashMap<>();
 
     @Override
     public void processRow(ResultSet rs) throws SQLException {
         // Divide the unit quantity by the unit size to get the normal item quantity used in reconciliation.
-        int quantity = rs.getInt("AMQTYOHSTD")/rs.getInt("AmStdUnit");
+        int quantity = rs.getInt("AMQTYOHSTD") / rs.getInt("AmStdUnit");
         inventory.put(rs.getInt("NUXREFCO"), quantity);
     }
 

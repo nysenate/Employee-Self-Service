@@ -1,7 +1,6 @@
 package gov.nysenate.ess.time.model.accrual;
 
-public class AccrualException extends RuntimeException
-{
+public class AccrualException extends RuntimeException {
     protected int empId;
     protected AccrualExceptionType errorType;
 

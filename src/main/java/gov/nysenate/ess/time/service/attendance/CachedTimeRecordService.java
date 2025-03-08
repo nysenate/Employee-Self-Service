@@ -54,6 +54,7 @@ public class CachedTimeRecordService
     private final EventBus eventBus;
     @Value("${ts.schema}")
     protected String TS_SCHEMA;
+    private LocalDateTime lastUpdateTime;
 
     @Autowired
     public CachedTimeRecordService(TimeRecordDao timeRecordDao, TimeRecordAuditDao auditDao,
@@ -68,8 +69,6 @@ public class CachedTimeRecordService
         this.employeeIdService = employeeIdService;
         this.eventBus = eventBus;
     }
-
-    private LocalDateTime lastUpdateTime;
 
     @PostConstruct
     public void init() {
@@ -96,8 +95,9 @@ public class CachedTimeRecordService
         return timeRecordDao.getTimeRecordYears(empId, yearOrder);
     }
 
-    /** {@inheritDoc}
-     *
+    /**
+     * {@inheritDoc}
+     * <p>
      * The active time records for an employee will be cached.
      */
     @Override
@@ -210,7 +210,8 @@ public class CachedTimeRecordService
         if (newRecord.getTimeRecordId() != null) {
             try {
                 currRecord = getTimeRecord(newRecord.getTimeRecordId());
-            } catch (TimeRecordNotFoundException ignored) {}
+            } catch (TimeRecordNotFoundException ignored) {
+            }
         }
 
         trValidationService.validateTimeRecord(currRecord, newRecord, action);
@@ -295,6 +296,7 @@ public class CachedTimeRecordService
     /**
      * Updates the active time record cache with the given record
      * If the record is active and in progress, it is added/updated, otherwise it is removed
+     *
      * @param record TimeRecord
      */
     private void updateCache(TimeRecord record) {
@@ -312,9 +314,9 @@ public class CachedTimeRecordService
 
     /**
      * Deactivates all active records that meet the following criteria:
-     *  - The record ends before the given record
-     *  - The record is in the employee scope
-     *  - The record contains ONLY temporary pay entries
+     * - The record ends before the given record
+     * - The record is in the employee scope
+     * - The record contains ONLY temporary pay entries
      *
      * @param record {@link TimeRecord}
      */

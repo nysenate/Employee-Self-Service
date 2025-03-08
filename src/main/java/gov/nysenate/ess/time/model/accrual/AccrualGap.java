@@ -12,8 +12,7 @@ import java.util.Optional;
  * This class is intended to be used within the accrual dao layer. It's purpose is to hold relevant data
  * when computing accruals for a time period in which summary records in the database don't exist.
  */
-public class AccrualGap
-{
+public class AccrualGap {
     protected int empId;
     protected LocalDate startDate;
     protected LocalDate endDate;
@@ -41,13 +40,13 @@ public class AccrualGap
         LinkedList<TransactionRecord> recs = new LinkedList<>();
         for (TransactionRecord rec : recordsDuringGap) {
             /** FIXME 09/12
-            if (rec.getEffectDate().compareTo(payPeriod.getStartDate()) >= 0 &&
-                    rec.getEffectDate().compareTo(payPeriod.getEndDate()) <= 0) {
-                recs.addUsage(rec);
-            }
-            else {
-                break;
-            }               */
+             if (rec.getEffectDate().compareTo(payPeriod.getStartDate()) >= 0 &&
+             rec.getEffectDate().compareTo(payPeriod.getEndDate()) <= 0) {
+             recs.addUsage(rec);
+             }
+             else {
+             break;
+             }               */
         }
         return recs;
     }

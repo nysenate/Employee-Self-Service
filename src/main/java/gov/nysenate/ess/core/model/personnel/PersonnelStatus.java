@@ -10,23 +10,24 @@ public enum PersonnelStatus {
 
     /**
      * The enum name of the status is also its sfms code as seen in PL21EMPSTAT
-     *                                  Employed    Time Entry  Effect Offset   CDENCLV*/
-    SLHP("SICK LEAVE WITH HALF PAY",    true,       true,       0,              true),
-    TRNO("TRANSFER OUT",                false,      true,       1,              false),
-    ACTV("ACTIVE",                      true,       true,       0,              false),
-    NONE("NONE",                        false,      true,       0,              true),
-    RSGN("RESIGNED",                    false,      true,       1,              false),
-    TERM("TERMINATED",                  false,      true,       1,              false),
-    CHLD("CHILD CARE LEAVE",            true,       true,       0,              false),
-    MILT("MILITARY LEAVE",              true,       true,       0,              false),
-    RETD("RETIRED",                     false,      true,       0,              false),
-    EXTS("EXTRA SERVICE",               true,       true,       0,              false),
-    STUD("STUDENT",                     true,       true,       0,              false),
-    DSBL("DISABLED",                    true,       true,       0,              false),
-    DECD("DECEASED",                    false,      true,       1,              false),
-    LWOP("LEAVE WITHOUT PAY",           true,       false,      0,              true),
-    WCMP("WORKERS' COMPENSATION",       true,       true,       0,              true),
-    TRNW("TRANSFER WITHIN",             true,       true,       0,              true);
+     * Employed    Time Entry  Effect Offset   CDENCLV
+     */
+    SLHP("SICK LEAVE WITH HALF PAY", true, true, 0, true),
+    TRNO("TRANSFER OUT", false, true, 1, false),
+    ACTV("ACTIVE", true, true, 0, false),
+    NONE("NONE", false, true, 0, true),
+    RSGN("RESIGNED", false, true, 1, false),
+    TERM("TERMINATED", false, true, 1, false),
+    CHLD("CHILD CARE LEAVE", true, true, 0, false),
+    MILT("MILITARY LEAVE", true, true, 0, false),
+    RETD("RETIRED", false, true, 0, false),
+    EXTS("EXTRA SERVICE", true, true, 0, false),
+    STUD("STUDENT", true, true, 0, false),
+    DSBL("DISABLED", true, true, 0, false),
+    DECD("DECEASED", false, true, 1, false),
+    LWOP("LEAVE WITHOUT PAY", true, false, 0, true),
+    WCMP("WORKERS' COMPENSATION", true, true, 0, true),
+    TRNW("TRANSFER WITHIN", true, true, 0, true);
 
     /** TODO: this field is present in the database but I'm not sure what it means */
     private final boolean CDENCLV;

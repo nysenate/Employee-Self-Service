@@ -16,7 +16,8 @@ public class PersonnelStatusView implements ViewObject {
     private boolean timeEntryRequired;
     private int effectDateOffset;
 
-    public PersonnelStatusView() {}
+    public PersonnelStatusView() {
+    }
 
     public PersonnelStatusView(PersonnelStatus ps) {
         this.name = ps.name();

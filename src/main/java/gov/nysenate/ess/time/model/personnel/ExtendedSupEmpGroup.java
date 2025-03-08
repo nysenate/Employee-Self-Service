@@ -20,6 +20,7 @@ public class ExtendedSupEmpGroup extends SupervisorEmpGroup {
 
     /**
      * Initialize based on a supervisor emp group
+     *
      * @param empGroup {@link SupervisorEmpGroup}
      */
     public ExtendedSupEmpGroup(SupervisorEmpGroup empGroup) {
@@ -42,6 +43,7 @@ public class ExtendedSupEmpGroup extends SupervisorEmpGroup {
 
     /**
      * Get {@link EmployeeSupInfo}s for all direct and indirect employees
+     *
      * @return {@link Set<EmployeeSupInfo>}
      */
     public ImmutableSet<EmployeeSupInfo> getExtendedEmployeeSupInfos() {
@@ -57,7 +59,7 @@ public class ExtendedSupEmpGroup extends SupervisorEmpGroup {
      * Tests whether an employee was a direct or 1 level indirect employee of this supervisor,
      * during the given date range
      *
-     * @param empId int - employee id
+     * @param empId     int - employee id
      * @param dateRange Range<LocalDate> - date range
      * @return boolean
      */

@@ -21,10 +21,10 @@ import java.util.stream.Collectors;
  */
 public class TravelPermissionBuilder {
 
-    private Stack<Integer> empIds = new Stack<>();
+    private final Stack<Integer> empIds = new Stack<>();
     private boolean isForAllEmps = false;
-    private Stack<TravelPermissionObject> objects = new Stack<>();
-    private Stack<RequestMethod> actions = new Stack<>();
+    private final Stack<TravelPermissionObject> objects = new Stack<>();
+    private final Stack<RequestMethod> actions = new Stack<>();
 
     /**
      * Adds an employeeId to this permission.

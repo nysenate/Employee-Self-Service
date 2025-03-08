@@ -1,7 +1,7 @@
 package gov.nysenate.ess.travel.provider.gsa;
 
-import gov.nysenate.ess.travel.request.address.TravelAddress;
 import gov.nysenate.ess.travel.provider.ProviderException;
+import gov.nysenate.ess.travel.request.address.TravelAddress;
 import gov.nysenate.ess.travel.utils.Dollars;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -16,7 +16,7 @@ public class GsaAllowanceService {
 
     private static final Logger logger = LoggerFactory.getLogger(GsaAllowanceService.class);
 
-    private GsaApi gsaApi;
+    private final GsaApi gsaApi;
 
     @Autowired
     public GsaAllowanceService(GsaApi gsaApi) {

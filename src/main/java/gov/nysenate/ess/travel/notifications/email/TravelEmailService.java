@@ -18,13 +18,13 @@ import java.util.Set;
 @Service
 public class TravelEmailService {
 
-    private SendMailService sendMailService;
-    private TravelAppDisapprovalEmail disapprovalEmail;
-    private TravelAppApprovalEmail approvalEmail;
-    private TravelAppEditEmail editEmail;
-    private PendingAppReviewEmail pendingAppReviewEmail;
-    private TravelEmailRecipients emailRecipients;
-    private EventBus eventBus;
+    private final SendMailService sendMailService;
+    private final TravelAppDisapprovalEmail disapprovalEmail;
+    private final TravelAppApprovalEmail approvalEmail;
+    private final TravelAppEditEmail editEmail;
+    private final PendingAppReviewEmail pendingAppReviewEmail;
+    private final TravelEmailRecipients emailRecipients;
+    private final EventBus eventBus;
 
     @Autowired
     public TravelEmailService(SendMailService sendMailService,

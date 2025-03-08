@@ -32,7 +32,7 @@ public class ScopeActionTRV implements TimeRecordValidator {
     /**
      * Checks action of submitted time record to ensure that it is valid for the time record's current status
      *
-     * @param record TimeRecord - A posted time record in the process of validation
+     * @param record    TimeRecord - A posted time record in the process of validation
      * @param prevState Optional<TimeRecord> - The most recently saved version of the posted time record
      * @throws TimeRecordErrorException If the submitted action is invalid
      */
@@ -48,8 +48,8 @@ public class ScopeActionTRV implements TimeRecordValidator {
         } catch (InvalidTimeRecordActionEx ex) {
             throw new TimeRecordErrorException(TimeRecordErrorCode.INVALID_SCOPE_ACTION,
                     new InvalidParameterView("action", "TimeRecordAction",
-                    "action should be valid for current time record status: " +
-                            timeRecordStatus + ". Valid actions include: " + timeRecordStatus.getValidActions(),
+                            "action should be valid for current time record status: " +
+                                    timeRecordStatus + ". Valid actions include: " + timeRecordStatus.getValidActions(),
                             action));
         }
     }

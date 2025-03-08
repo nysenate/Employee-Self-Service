@@ -13,16 +13,15 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping(TravelTemplateCtrl.TRAVEL_TMPL_BASE_URL)
 public class TravelTemplateCtrl extends BaseTemplateCtrl {
 
-    private static final Logger logger = LoggerFactory.getLogger(TimeTemplateCtrl.class);
-
     static final String TRAVEL_TMPL_BASE_URL = TMPL_BASE_URL + "/travel";
     static final String NOT_AUTHORIZED_PAGE = TRAVEL_TMPL_BASE_URL + "/common/error/unauthorized";
+    private static final Logger logger = LoggerFactory.getLogger(TimeTemplateCtrl.class);
 
     /**
      * Generic mapping to handle all requests that don't require permission.
      * Assumes the request URI equals the location in the WEB_INF/view directory.
      */
-    @RequestMapping(value="/**")
+    @RequestMapping(value = "/**")
     public String travelTemplate(HttpServletRequest request) {
         return request.getRequestURI();
     }
@@ -45,7 +44,7 @@ public class TravelTemplateCtrl extends BaseTemplateCtrl {
 
     @RequestMapping(value = "/component/delegation/delegation")
     public String assignDelegates(HttpServletRequest request) {
-         if (SecurityUtils.getSubject().isPermitted(SimpleTravelPermission.TRAVEL_ASSIGN_DELEGATES.getPermission())) {
+        if (SecurityUtils.getSubject().isPermitted(SimpleTravelPermission.TRAVEL_ASSIGN_DELEGATES.getPermission())) {
             return request.getRequestURI();
         }
         return NOT_AUTHORIZED_PAGE;

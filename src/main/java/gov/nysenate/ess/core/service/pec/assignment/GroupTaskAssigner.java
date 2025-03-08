@@ -19,7 +19,8 @@ public interface GroupTaskAssigner {
 
     /**
      * Check and assign {@link PersonnelTask}s of the target {@link PersonnelTaskAssignmentGroup} for the given employee.
-     * @param empId int - emp id
+     *
+     * @param empId    int - emp id
      * @param updateDb - if the database should be updated
      * @return the tasks that were, or could be, assigned
      */

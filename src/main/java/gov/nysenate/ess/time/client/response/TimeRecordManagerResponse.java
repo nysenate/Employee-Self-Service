@@ -4,7 +4,7 @@ import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 
 public class TimeRecordManagerResponse extends SimpleResponse {
 
-    private int recordsSaved;
+    private final int recordsSaved;
 
     public TimeRecordManagerResponse(int empId, int recordsSaved) {
         super(true, "Ran time record manager for " + empId, "time-record-manager-run-success");

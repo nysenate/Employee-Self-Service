@@ -6,7 +6,6 @@ import gov.nysenate.ess.travel.employee.TravelEmployee;
 import gov.nysenate.ess.travel.provider.gsa.GsaAllowanceService;
 import gov.nysenate.ess.travel.provider.senate.SenateMie;
 import gov.nysenate.ess.travel.provider.senate.SqlSenateMieDao;
-import gov.nysenate.ess.travel.request.allowances.PerDiem;
 import gov.nysenate.ess.travel.request.route.Route;
 import gov.nysenate.ess.travel.request.route.destination.Destination;
 import gov.nysenate.ess.travel.utils.Dollars;

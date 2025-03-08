@@ -7,8 +7,8 @@ import java.time.LocalDate;
 
 public class TimeRecordNotFoundData implements ViewObject {
 
-    private Integer empId;
-    private LocalDate beginDate;
+    private final Integer empId;
+    private final LocalDate beginDate;
 
     public TimeRecordNotFoundData(Integer empId, LocalDate beginDate) {
         this.empId = empId;

@@ -11,15 +11,14 @@ import gov.nysenate.ess.core.client.view.alert.ContactBatch;
 import gov.nysenate.ess.core.client.view.alert.ContactBatchFactory;
 import gov.nysenate.ess.core.client.view.alert.SendWordNowCsv;
 import gov.nysenate.ess.core.dao.alert.AlertInfoDao;
-import gov.nysenate.ess.core.model.auth.CorePermission;
-import gov.nysenate.ess.core.model.auth.CorePermissionObject;
 import gov.nysenate.ess.core.model.alert.AlertInfo;
 import gov.nysenate.ess.core.model.alert.AlertInfoNotFound;
+import gov.nysenate.ess.core.model.alert.InvalidAlertInfoEx;
+import gov.nysenate.ess.core.model.auth.CorePermission;
+import gov.nysenate.ess.core.model.auth.CorePermissionObject;
 import gov.nysenate.ess.core.model.auth.SimpleEssPermission;
-import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.personnel.EmployeeNotFoundEx;
-import gov.nysenate.ess.core.model.alert.InvalidAlertInfoEx;
 import gov.nysenate.ess.core.service.alert.AlertInfoValidation;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.util.HttpResponseUtils;
@@ -28,7 +27,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.WebRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -39,9 +37,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.HEAD;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
+import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 /**
  * API controller responsible for viewing and saving alert contact info
@@ -118,7 +114,7 @@ public class AlertInfoCtrl extends BaseRestApiCtrl {
      * (GET) /api/v1/alert-info/contact-dump
      * <p>
      * Headers:
-     *
+     * <p>
      * Accept: If an Accept header that is compatible with XML is set, this will respond with the XML format, otherwise
      * it will respond with the CSV format.
      */
@@ -137,8 +133,7 @@ public class AlertInfoCtrl extends BaseRestApiCtrl {
             response.setContentType("text/xml");
             response.getWriter().print(OutputUtils.toXml(batch));
             response.setStatus(200);
-        }
-        else {
+        } else {
             response.setContentType("text/plain");
             SendWordNowCsv csv = new SendWordNowCsv();
             csv.createCsv(response, employees, alertInfoMap);

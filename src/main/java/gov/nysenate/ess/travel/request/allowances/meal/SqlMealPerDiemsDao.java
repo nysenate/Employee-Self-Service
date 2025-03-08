@@ -4,11 +4,11 @@ import gov.nysenate.ess.core.dao.base.BaseHandler;
 import gov.nysenate.ess.core.dao.base.BasicSqlQuery;
 import gov.nysenate.ess.core.dao.base.DbVendor;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
+import gov.nysenate.ess.travel.provider.senate.SenateMie;
+import gov.nysenate.ess.travel.provider.senate.SenateMieRowMapper;
 import gov.nysenate.ess.travel.request.address.SqlTravelAddressDao;
 import gov.nysenate.ess.travel.request.address.TravelAddress;
 import gov.nysenate.ess.travel.request.address.TravelAddressRowMapper;
-import gov.nysenate.ess.travel.provider.senate.SenateMie;
-import gov.nysenate.ess.travel.provider.senate.SenateMieRowMapper;
 import gov.nysenate.ess.travel.utils.Dollars;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -18,7 +18,10 @@ import org.springframework.stereotype.Repository;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Repository
 public class SqlMealPerDiemsDao extends SqlBaseDao {
@@ -161,9 +164,9 @@ public class SqlMealPerDiemsDao extends SqlBaseDao {
     public static class MealPerDiemsHandler extends BaseHandler {
 
         private MealPerDiemAdjustments adjustments;
-        private Set<MealPerDiem> mealPerDiems;
-        private TravelAddressRowMapper addressRowMapper = new TravelAddressRowMapper();
-        private SenateMieRowMapper senateMieRowMapper = new SenateMieRowMapper();
+        private final Set<MealPerDiem> mealPerDiems;
+        private final TravelAddressRowMapper addressRowMapper = new TravelAddressRowMapper();
+        private final SenateMieRowMapper senateMieRowMapper = new SenateMieRowMapper();
 
         public MealPerDiemsHandler() {
             this.mealPerDiems = new HashSet<>();

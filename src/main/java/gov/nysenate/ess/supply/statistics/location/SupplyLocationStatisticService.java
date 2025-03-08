@@ -1,6 +1,5 @@
 package gov.nysenate.ess.supply.statistics.location;
 
-import com.google.common.collect.Range;
 import com.google.common.collect.Sets;
 import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.core.util.LimitOffset;
@@ -12,7 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,13 +23,13 @@ public class SupplyLocationStatisticService {
 
     /**
      * For each location, get the quantities of each item ordered in the given {@code year} and {@code month}.
-     *
+     * <p>
      * Included in the calculated totals are all items/locations from non rejected requisitions ordered in the
      * given month plus requisitions ordered in previous months which have not yet been approved. These additional
      * requisitions will likely be approved this month, and therefore their item counts should be included in
      * this months totals.
      *
-     * @param year a 4 digit int representing the year to get quantities for.
+     * @param year  a 4 digit int representing the year to get quantities for.
      * @param month a integer from 1 - 12 representing the month to get quantities for.
      * @return A list of {@code LocationStatistic}'s.
      */
@@ -46,8 +47,8 @@ public class SupplyLocationStatisticService {
 
         Set<Location> locations = distinctDestinations(monthlyRequisitions);
         return locations.stream()
-                        .map(loc -> new LocationStatistic(loc, monthlyRequisitions))
-                        .collect(Collectors.toList());
+                .map(loc -> new LocationStatistic(loc, monthlyRequisitions))
+                .collect(Collectors.toList());
     }
 
     /**

@@ -14,8 +14,8 @@ public class TravelAppEmailView {
 
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("M/d/yyyy");
 
-    private String appId;
-    private String travelerFullName;
+    private final String appId;
+    private final String travelerFullName;
     private String datesOfTravel;
     private String disapproverFullName;
     private String disapprovalReason;
@@ -37,7 +37,8 @@ public class TravelAppEmailView {
                 disapproverFullName = appReview.lastAction().user().getFullName();
                 disapprovalReason = appReview.lastAction().notes();
             }
-        } catch (NoSuchElementException ignored) {}
+        } catch (NoSuchElementException ignored) {
+        }
 
     }
 

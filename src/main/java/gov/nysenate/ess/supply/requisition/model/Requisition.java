@@ -7,7 +7,6 @@ import gov.nysenate.ess.supply.item.LineItem;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -103,55 +102,8 @@ public final class Requisition {
         return state.reject(this, rejectedDateTime);
     }
 
-    public Requisition setRequisitionId(int requisitionId) {
-        return copy().withRequisitionId(requisitionId).build();
-    }
-
-    public Requisition setRevisionId(int revisionId) {
-        return copy().withRevisionId(revisionId).build();
-    }
-
-    public Requisition setCustomer(Employee customer) {
-        return copy().withCustomer(customer).build();
-    }
-
-    public Requisition setDestination(Location destination) {
-        return copy().withDestination(destination).build();
-    }
-
-    public Requisition setLineItems(Set<LineItem> lineItems) {
-        return copy().withLineItems(lineItems).build();
-    }
-
-    public Requisition setIssuer(Employee issuer) {
-        return copy().withIssuer(issuer).build();
-    }
-
-    public Requisition setNote(String note) {
-        return copy().withNote(note).build();
-    }
-
-    public Requisition setModifiedBy(Employee modifiedBy) {
-        return copy().withModifiedBy(modifiedBy).build();
-    }
-
-    /** Modified date time should only be set by the dao layer before saving.
-     * It is used in optimistic locking to ensure multiple updates are not done at once. */
-    public Requisition setModifiedDateTime(LocalDateTime modifiedDateTime) {
-        return copy().withModifiedDateTime(modifiedDateTime).build();
-    }
-
-    public Requisition setOrderedDateTime(LocalDateTime orderedDateTime) {
-        return copy().withOrderedDateTime(orderedDateTime).build();
-    }
-
     public Requisition setLastSfmsSyncDateTimeDateTime(LocalDateTime lastSfmsSyncDateTime) {
         return copy().withLastSfmsSyncDateTimeDateTime(lastSfmsSyncDateTime).build();
-    }
-
-
-    public Requisition setSavedInSfms(boolean savedInSfms) {
-        return copy().withSavedInSfms(savedInSfms).build();
     }
 
     public Requisition setReconiled(boolean reconciled) {
@@ -162,16 +114,32 @@ public final class Requisition {
         return requisitionId;
     }
 
+    public Requisition setRequisitionId(int requisitionId) {
+        return copy().withRequisitionId(requisitionId).build();
+    }
+
     public int getRevisionId() {
         return revisionId;
+    }
+
+    public Requisition setRevisionId(int revisionId) {
+        return copy().withRevisionId(revisionId).build();
     }
 
     public Employee getCustomer() {
         return this.customer;
     }
 
+    public Requisition setCustomer(Employee customer) {
+        return copy().withCustomer(customer).build();
+    }
+
     public Location getDestination() {
         return destination;
+    }
+
+    public Requisition setDestination(Location destination) {
+        return copy().withDestination(destination).build();
     }
 
     public DeliveryMethod getDeliveryMethod() {
@@ -180,6 +148,10 @@ public final class Requisition {
 
     public ImmutableSet<LineItem> getLineItems() {
         return lineItems;
+    }
+
+    public Requisition setLineItems(Set<LineItem> lineItems) {
+        return copy().withLineItems(lineItems).build();
     }
 
     public Optional<String> getSpecialInstructions() {
@@ -194,36 +166,76 @@ public final class Requisition {
         return Optional.ofNullable(issuer);
     }
 
+    public Requisition setIssuer(Employee issuer) {
+        return copy().withIssuer(issuer).build();
+    }
+
     public Optional<String> getNote() {
         return Optional.ofNullable(note);
+    }
+
+    public Requisition setNote(String note) {
+        return copy().withNote(note).build();
     }
 
     public Employee getModifiedBy() {
         return modifiedBy;
     }
 
+    public Requisition setModifiedBy(Employee modifiedBy) {
+        return copy().withModifiedBy(modifiedBy).build();
+    }
+
     public Optional<LocalDateTime> getModifiedDateTime() {
         return Optional.ofNullable(modifiedDateTime);
+    }
+
+    /**
+     * Modified date time should only be set by the dao layer before saving.
+     * It is used in optimistic locking to ensure multiple updates are not done at once.
+     */
+    public Requisition setModifiedDateTime(LocalDateTime modifiedDateTime) {
+        return copy().withModifiedDateTime(modifiedDateTime).build();
     }
 
     public LocalDateTime getOrderedDateTime() {
         return orderedDateTime;
     }
 
+    public Requisition setOrderedDateTime(LocalDateTime orderedDateTime) {
+        return copy().withOrderedDateTime(orderedDateTime).build();
+    }
+
     public Optional<LocalDateTime> getProcessedDateTime() {
         return Optional.ofNullable(processedDateTime);
+    }
+
+    Requisition setProcessedDateTime(LocalDateTime processedDateTime) {
+        return copy().withProcessedDateTime(processedDateTime).build();
     }
 
     public Optional<LocalDateTime> getCompletedDateTime() {
         return Optional.ofNullable(completedDateTime);
     }
 
+    Requisition setCompletedDateTime(LocalDateTime completedDateTime) {
+        return copy().withCompletedDateTime(completedDateTime).build();
+    }
+
     public Optional<LocalDateTime> getApprovedDateTime() {
         return Optional.ofNullable(approvedDateTime);
     }
 
+    Requisition setApprovedDateTime(LocalDateTime approvedDateTime) {
+        return copy().withApprovedDateTime(approvedDateTime).build();
+    }
+
     public Optional<LocalDateTime> getRejectedDateTime() {
         return Optional.ofNullable(rejectedDateTime);
+    }
+
+    Requisition setRejectedDateTime(LocalDateTime rejectedDateTime) {
+        return copy().withRejectedDateTime(rejectedDateTime).build();
     }
 
     public Optional<LocalDateTime> getLastSfmsSyncDateTime() {
@@ -234,6 +246,10 @@ public final class Requisition {
         return savedInSfms;
     }
 
+    public Requisition setSavedInSfms(boolean savedInSfms) {
+        return copy().withSavedInSfms(savedInSfms).build();
+    }
+
     public boolean getReconciled() {
         return reconciled;
     }
@@ -242,24 +258,8 @@ public final class Requisition {
      * Protected methods should only be used by implementations of the RequisitionState interface via the process/reject methods.
      */
 
-    protected Requisition setState(RequisitionState state) {
+    Requisition setState(RequisitionState state) {
         return copy().withState(state).build();
-    }
-
-    protected Requisition setProcessedDateTime(LocalDateTime processedDateTime) {
-        return copy().withProcessedDateTime(processedDateTime).build();
-    }
-
-    protected Requisition setCompletedDateTime(LocalDateTime completedDateTime) {
-        return copy().withCompletedDateTime(completedDateTime).build();
-    }
-
-    protected Requisition setApprovedDateTime(LocalDateTime approvedDateTime) {
-        return copy().withApprovedDateTime(approvedDateTime).build();
-    }
-
-    protected Requisition setRejectedDateTime(LocalDateTime rejectedDateTime) {
-        return copy().withRejectedDateTime(rejectedDateTime).build();
     }
 
     @Override
@@ -445,7 +445,7 @@ public final class Requisition {
             return this;
         }
 
-        public Builder withReconciled(boolean reconciled){
+        public Builder withReconciled(boolean reconciled) {
             this.reconciled = reconciled;
             return this;
         }

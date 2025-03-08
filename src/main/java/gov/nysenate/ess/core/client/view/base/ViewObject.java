@@ -4,16 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * An interface that designates that its implementer is a view object
- * */
-public interface ViewObject
-{
-    /**
-     * Returns a string indicating the type of the content that the view object encapsulates
-     * @return String
-     */
-    @JsonIgnore
-    String getViewType();
-
+ */
+public interface ViewObject {
     /**
      * Infers the view type of any object
      * This allows for the identification of strings and integers
@@ -24,15 +16,20 @@ public interface ViewObject
     static String getViewTypeOf(Object obj) {
         if (obj instanceof ViewObject) {
             return ((ViewObject) obj).getViewType();
-        }
-        else if (obj instanceof String) {
+        } else if (obj instanceof String) {
             return "string";
-        }
-        else if (obj instanceof Integer) {
+        } else if (obj instanceof Integer) {
             return "integer";
-        }
-        else {
+        } else {
             return "unspecified";
         }
     }
+
+    /**
+     * Returns a string indicating the type of the content that the view object encapsulates
+     *
+     * @return String
+     */
+    @JsonIgnore
+    String getViewType();
 }

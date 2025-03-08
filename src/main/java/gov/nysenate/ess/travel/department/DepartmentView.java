@@ -33,12 +33,12 @@ public class DepartmentView implements ViewObject {
         return head;
     }
 
-    public Set<EmployeeView> getSubordinates() {
-        return subordinates;
-    }
-
     public void setHead(EmployeeView head) {
         this.head = head;
+    }
+
+    public Set<EmployeeView> getSubordinates() {
+        return subordinates;
     }
 
     public void setSubordinates(Set<EmployeeView> subordinates) {

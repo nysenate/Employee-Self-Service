@@ -10,7 +10,7 @@ import java.util.List;
 
 /**
  * This repository retrieves the county of Senate work addresses which is very important to travel applications.
- *
+ * <p>
  * Senate work addresses are stored in SFMS but the county of the address is not included.
  * Since work addresses are not valid addresses its often not possible to get the county via geocoding or other means.
  * Therefore, we created the 'work_location_county' table in postgres to store manually entered county data.
@@ -29,13 +29,11 @@ public class SqlLocationCountyDao extends SqlBaseDao {
             List<String> counties = localNamedJdbc.query(sql, params, (rs, rowNum) -> rs.getString("county"));
             if (counties.isEmpty()) {
                 county = "";
-            }
-            else {
+            } else {
                 county = counties.get(0);
             }
 
-        }
-        catch(IncorrectResultSizeDataAccessException ex) {
+        } catch (IncorrectResultSizeDataAccessException ex) {
             // If no county has been entered for this location return an empty string.
             county = "";
         }

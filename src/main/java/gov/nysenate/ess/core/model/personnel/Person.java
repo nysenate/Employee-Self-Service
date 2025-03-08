@@ -2,7 +2,6 @@ package gov.nysenate.ess.core.model.personnel;
 
 import gov.nysenate.ess.core.model.unit.Address;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.WordUtils;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -24,7 +23,8 @@ public class Person {
     protected MaritalStatus maritalStatus;
     protected Address homeAddress;
 
-    public Person() {}
+    public Person() {
+    }
 
     public Person(Person other) {
         this.title = other.title;
@@ -45,6 +45,7 @@ public class Person {
 
     /**
      * Returns the age of the person in years based on dateOfBirth.
+     *
      * @return int - age
      * @throws IllegalStateException if date of birth is not set.
      */

@@ -9,10 +9,9 @@ import java.util.List;
  * The LimitOffset class is intended to be used for limiting the number of results
  * returned by query methods.
  */
-public class LimitOffset
-{
+public class LimitOffset {
     /** Use this reference when no limit is desired. */
-    public static final LimitOffset ALL = new LimitOffset(0,0);
+    public static final LimitOffset ALL = new LimitOffset(0, 0);
 
     /** Some references for convenience. */
     public static final LimitOffset ONE = new LimitOffset(1);
@@ -25,8 +24,10 @@ public class LimitOffset
     /** Number of elements to limit the result set to. */
     private final int limit;
 
-    /** The offset position used in conjunction with the limit. The offset starts from 1
-     *  which is the same as not offsetting the results. */
+    /**
+     * The offset position used in conjunction with the limit. The offset starts from 1
+     * which is the same as not offsetting the results.
+     */
     private final int offset;
 
     /** --- Constructors --- */
@@ -46,7 +47,7 @@ public class LimitOffset
     /**
      * If the 'limitOffset' is valid, return a new sub-list according to the given 'limitOffset'.
      *
-     * @param list List<T> - The original list.
+     * @param list   List<T> - The original list.
      * @param limOff LimitOffset - The limit/offset to trim the list to.
      * @return List<T> - The trimmed list.
      */
@@ -93,11 +94,9 @@ public class LimitOffset
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof LimitOffset)) return false;
-        LimitOffset that = (LimitOffset) o;
+        if (!(o instanceof LimitOffset that)) return false;
         if (limit != that.limit) return false;
-        if (offset != that.offset) return false;
-        return true;
+        return offset == that.offset;
     }
 
     @Override

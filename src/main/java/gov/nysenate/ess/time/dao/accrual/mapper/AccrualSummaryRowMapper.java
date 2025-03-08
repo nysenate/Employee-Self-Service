@@ -10,10 +10,10 @@ import java.sql.SQLException;
  * This row mapper doesn't implement the RowMapper interface but rather provides a static
  * method to map all the summary columns for a subclass of AccrualSummary.
  */
-public class AccrualSummaryRowMapper
-{
+public class AccrualSummaryRowMapper {
     /**
      * Sets accrual summary columns on the supplied AccrualSummary object.
+     *
      * @throws SQLException
      */
     public static void mapRow(ResultSet rs, AccrualSummary accSummary) throws SQLException {

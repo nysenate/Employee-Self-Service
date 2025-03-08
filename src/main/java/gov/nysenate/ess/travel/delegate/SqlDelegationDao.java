@@ -22,7 +22,7 @@ import java.util.List;
 @Repository
 public class SqlDelegationDao extends SqlBaseDao implements DelegationDao {
 
-    private EmployeeInfoService employeeInfoService;
+    private final EmployeeInfoService employeeInfoService;
 
     @Autowired
     public SqlDelegationDao(EmployeeInfoService employeeInfoService) {
@@ -64,6 +64,7 @@ public class SqlDelegationDao extends SqlBaseDao implements DelegationDao {
 
     /**
      * Finds delegations that have been granted to an employee.
+     *
      * @param delegateEmpId
      * @return A list of delegates which have been granted to this employee. This returns all delegates every assigned
      * to this employee so you may want to check its active before using.
@@ -134,7 +135,7 @@ public class SqlDelegationDao extends SqlBaseDao implements DelegationDao {
 
     private static class DelegateRowMapper extends BaseRowMapper<Delegation> {
 
-        private EmployeeInfoService employeeInfoService;
+        private final EmployeeInfoService employeeInfoService;
 
         public DelegateRowMapper(EmployeeInfoService employeeInfoService) {
             this.employeeInfoService = employeeInfoService;

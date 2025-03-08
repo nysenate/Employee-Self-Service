@@ -1,6 +1,5 @@
 package gov.nysenate.ess.supply.synchronization.service;
 
-import com.google.common.collect.Range;
 import gov.nysenate.ess.core.service.notification.slack.service.SlackChatService;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.OutputUtils;
@@ -51,13 +50,13 @@ public class SfmsSynchronizationService {
      * Line items of 0 quantity and items not tracked in SFMS are filtered out so they do not get synced.
      * If after filtering, a requisiton has no other line items, it will be marked as synced in supply but will not be synced with SFMS.
      * <p>
-     *     Checks all requisitions, so any errors in previous runs will be
-     *     automatically attempted again in the next run.
+     * Checks all requisitions, so any errors in previous runs will be
+     * automatically attempted again in the next run.
      * </p>
      * <p>
-     *     app.properties configuration:
-     *          - 'scheduler.supply.sfms_synchronization.enabled': boolean, determines if the synchronization process should run.
-     *          - 'scheduler.supply.sfms_synchronization.cron': Spring cron string specifying when the synchronization should run.
+     * app.properties configuration:
+     * - 'scheduler.supply.sfms_synchronization.enabled': boolean, determines if the synchronization process should run.
+     * - 'scheduler.supply.sfms_synchronization.cron': Spring cron string specifying when the synchronization should run.
      * </p>
      */
     @Scheduled(cron = "${scheduler.supply.sfms_synchronization.cron}")
@@ -85,8 +84,7 @@ public class SfmsSynchronizationService {
                 logger.error(msg);
                 sendMessageToSlack(msg);
             }
-        }
-        else {
+        } else {
             logger.info("Requisition {} can skip SFMS sync.", requisition.getRequisitionId());
             setAsSynced(requisition);
         }
@@ -102,6 +100,7 @@ public class SfmsSynchronizationService {
 
     /**
      * Gets all requisitions which have not yet been synced with SFMS.
+     *
      * @return
      */
     private List<Requisition> requisitionsToBeSynced() {
@@ -136,6 +135,7 @@ public class SfmsSynchronizationService {
 
     /**
      * Send error message to slack channel
+     *
      * @param s msg
      */
     private void sendMessageToSlack(String s) {

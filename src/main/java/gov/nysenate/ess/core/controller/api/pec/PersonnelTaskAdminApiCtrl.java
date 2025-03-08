@@ -49,6 +49,7 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
      * Determine personnel tasks for all employees and send emails to remind employees to complete them
      * Usage:
      * (POST)   /api/v1/admin/personnel/task/notify
+     *
      * @return {@link SimpleResponse}
      */
     @RequestMapping(value = "/notify", method = POST)
@@ -63,9 +64,9 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
     /**
      * PEC Assignment & Due Dates For Moodle & Ethics Live
      * ---------------------------------------------------
-     *
+     * <p>
      * This Api call will generate the assignment date and due dates for moodle and ethics live course for employees
-     *
+     * <p>
      * Usage:
      * (POST)   /api/v1/admin/personnel/task/generate/taskdates/{overrideExistingDueDates}
      *
@@ -83,9 +84,9 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
     /**
      * Assign Personnel Tasks API
      * --------------------------
-     *
+     * <p>
      * Determine personnel tasks for all employees and assign those that are missing.
-     *
+     * <p>
      * Usage:
      * (POST)   /api/v1/admin/personnel/task/assign
      *
@@ -106,6 +107,7 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
      * Determine personnel tasks for all employees and assign those that are missing.
      * Usage:
      * (GET)   /api/v1/admin/personnel/task/scheduledInviteEmails
+     *
      * @return {@link ListViewResponse<EmployeeEmailView>}
      */
     @RequestMapping(value = "/scheduledInviteEmails", method = GET)
@@ -123,11 +125,12 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
      * Usage:
      * (GET)   /api/v1/admin/personnel/task/scheduledReminderEmails
      * (GET)   /api/v1/admin/personnel/task/scheduledReminderEmails?allNotifs=true
+     *
      * @return {@link ListViewResponse<EmployeeEmailView>}
      */
     @RequestMapping(value = "/scheduledReminderEmails", method = GET)
     public ListViewResponse<EmployeeEmailView> getScheduledReminderEmails(
-            @RequestParam(name="allNotifs", required = false, defaultValue = "false") boolean allNotifs) {
+            @RequestParam(name = "allNotifs", required = false, defaultValue = "false") boolean allNotifs) {
         checkHasPermission(COMPLIANCE_REPORT_GENERATION.getPermission(), ADMIN.getPermission());
         return ListViewResponse.of(pecNotificationService.getReminderEmails(false, allNotifs)
                 .stream().map(EmployeeEmailView::new).collect(Collectors.toList()));
@@ -136,15 +139,15 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
     /**
      * Assign Personnel Tasks for Emp API
      * ----------------------------------
-     *
+     * <p>
      * Determine personnel tasks for a single employee and assign those that are missing.
-     *
+     * <p>
      * Usage:
      * (POST)   /api/v1/admin/personnel/task/assign/{empId}
-     *
+     * <p>
      * Path params:
-     * @param empId int - employee id (must be active)
      *
+     * @param empId int - employee id (must be active)
      * @return {@link SimpleResponse}
      */
     @RequestMapping(value = "/assign/{empId:\\d+}", method = POST)
@@ -160,12 +163,12 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
     /**
      * Parse Out Personnel Tasks for PEC Videos
      * ----------------------------------
-     *
+     * <p>
      * Process personnel task records from csv files
-     *
+     * <p>
      * Usage:
      * (POST)   /api/v1/admin/personnel/task/csv
-     *
+     * <p>
      * Path params:
      *
      * @return {@link SimpleResponse}
@@ -182,12 +185,12 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
     /**
      * Personnel Task Assignment Completion Override API
      * ------------------------------------
-     *
+     * <p>
      * Updates the Completion status of a task for an employee
-     *
+     * <p>
      * Usage:
      * (GET)   /api/v1/admin/personnel/task/overrride/{updateEmpID}/{taskID}/{completed}/{empID}
-     *
+     * <p>
      * Path params:
      *
      * @return {@link SimpleResponse}
@@ -201,8 +204,8 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
 
         boolean isAdmin = subject.hasRole("ADMIN");
         boolean isPecManager = subject.hasRole("PERSONNEL_COMPLIANCE_MANAGER");
-        if ( isPecManager || isAdmin ) {
-            taskAssigner.updateAssignedTaskCompletion(empID,updateEmpID,completed,taskID);
+        if (isPecManager || isAdmin) {
+            taskAssigner.updateAssignedTaskCompletion(empID, updateEmpID, completed, taskID);
             return new SimpleResponse(true,
                     "Task assignment " + taskID + " was updated for Employee " + empID +
                             " by employee " + updateEmpID + ". Its completion status is " + completed,
@@ -216,12 +219,12 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
     /**
      * Personnel Task Assignment Completion Override API
      * ------------------------------------
-     *
+     * <p>
      * Updates the Completion status of a task for an employee
-     *
+     * <p>
      * Usage:
      * (GET)   /api/v1/admin/personnel/task/overrride/{updateEmpID}/{taskID}/{completed}/{empID}
-     *
+     * <p>
      * Path params:
      *
      * @return {@link SimpleResponse}
@@ -234,8 +237,8 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
 
         boolean isAdmin = subject.hasRole("ADMIN");
         boolean isPecManager = subject.hasRole("PERSONNEL_COMPLIANCE_MANAGER");
-        if ( isPecManager || isAdmin ) {
-            taskAssigner.insertAssignedTask(empID,updateEmpID,taskID);
+        if (isPecManager || isAdmin) {
+            taskAssigner.insertAssignedTask(empID, updateEmpID, taskID);
             return new SimpleResponse(true,
                     "Task assignment " + taskID + " was assigned for Employee " + empID +
                             " by employee " + updateEmpID,
@@ -249,12 +252,12 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
     /**
      * Personnel Task Assignment activation Override API
      * ------------------------------------
-     *
+     * <p>
      * Updates the activation status of a task for an employee
-     *
+     * <p>
      * Usage:
      * (GET)   /api/v1/admin/personnel/task/overrride/activation/{updateEmpID}/{taskID}/{activeStatus}/{empID}
-     *
+     * <p>
      * Path params:
      *
      * @return {@link SimpleResponse}
@@ -268,8 +271,8 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
 
         boolean isAdmin = subject.hasRole("ADMIN");
         boolean isPecManager = subject.hasRole("PERSONNEL_COMPLIANCE_MANAGER");
-        if ( isPecManager || isAdmin ) {
-            taskAssigner.updateAssignedTaskActiveStatus(empID,updateEmpID,activeStatus,taskID);
+        if (isPecManager || isAdmin) {
+            taskAssigner.updateAssignedTaskActiveStatus(empID, updateEmpID, activeStatus, taskID);
             return new SimpleResponse(true,
                     "Task assignment " + taskID + " was updated for Employee " + empID +
                             " by employee " + updateEmpID + ". Its active status is " + activeStatus,
@@ -284,12 +287,12 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
     /**
      * Update Personnel Task Assignment API
      * ------------------------------------
-     *
+     * <p>
      * This api call updates the assigned task of a given employee. It can assign or unassign a task
-     *
+     * <p>
      * Usage:
      * (GET)   /api/v1/admin/personnel/task/overrride/assign/{updateEmpID}/{taskID}/{assigned}/{empID}
-     *
+     * <p>
      * Path params:
      *
      * @return {@link SimpleResponse}
@@ -300,7 +303,7 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
                                                  @PathVariable boolean completed,
                                                  @PathVariable int empID) throws AuthorizationException {
         Subject subject = SecurityUtils.getSubject();
-        if (subject.hasRole("ADMIN") || subject.hasRole("PERSONNEL_COMPLIANCE_MANAGER") ) {
+        if (subject.hasRole("ADMIN") || subject.hasRole("PERSONNEL_COMPLIANCE_MANAGER")) {
             taskAssigner.updateAssignedTaskAssignment(empID, updateEmpID, completed, taskID);
             return new SimpleResponse(true,
                     "Task assignment " + taskID + " was updated for Employee " + empID +
@@ -315,12 +318,12 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
     /**
      * Update Personnel Task Assignment API
      * ------------------------------------
-     *
+     * <p>
      * This api call updates assigned tasks for multiple employees based off of a csv file
-     *
+     * <p>
      * Usage:
      * (POST)   /api/v1/admin/personnel/task/override/csv/assign/{sts}
-     *
+     * <p>
      * Path params:
      *
      * @return {@link SimpleResponse}
@@ -328,12 +331,11 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/override/csv/assign/{sts}", method = POST)
     public SimpleResponse overrideTaskAssignmentFromCSV(@PathVariable boolean sts) throws AuthorizationException, IOException {
         Subject subject = SecurityUtils.getSubject();
-        if (subject.hasRole("ADMIN") || subject.hasRole("PERSONNEL_COMPLIANCE_MANAGER") ) {
+        if (subject.hasRole("ADMIN") || subject.hasRole("PERSONNEL_COMPLIANCE_MANAGER")) {
 
             if (sts) {
                 csvTaskAssigner.processCSVForSTSManualAssignments();
-            }
-            else {
+            } else {
                 csvTaskAssigner.processCSVForPersonnelManualAssignments();
             }
 

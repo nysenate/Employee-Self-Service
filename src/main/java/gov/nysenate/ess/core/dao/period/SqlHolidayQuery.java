@@ -3,21 +3,20 @@ package gov.nysenate.ess.core.dao.period;
 import gov.nysenate.ess.core.dao.base.BasicSqlQuery;
 import gov.nysenate.ess.core.dao.base.DbVendor;
 
-public enum SqlHolidayQuery implements BasicSqlQuery
-{
+public enum SqlHolidayQuery implements BasicSqlQuery {
     GET_HOLIDAY_BASE(
-        "SELECT *\n" +
-        "FROM ${masterSchema}.SASSHD17691\n" +
-        "WHERE CDSTATUS = 'A'"
+            "SELECT *\n" +
+                    "FROM ${masterSchema}.SASSHD17691\n" +
+                    "WHERE CDSTATUS = 'A'"
     ),
     GET_SINGLE_HOLIDAY_SQL(
-        GET_HOLIDAY_BASE.getSql() + " AND DTHOLIDAY = :date"
+            GET_HOLIDAY_BASE.getSql() + " AND DTHOLIDAY = :date"
     ),
     GET_HOLIDAYS_SQL(
-        GET_HOLIDAY_BASE.getSql() + " AND DTHOLIDAY BETWEEN :startDate AND :endDate"
+            GET_HOLIDAY_BASE.getSql() + " AND DTHOLIDAY BETWEEN :startDate AND :endDate"
     ),
     GET_NON_QUESTIONABLE_HOLIDAYS_SQL(
-        GET_HOLIDAYS_SQL.getSql() + " AND cdquest = 'N'"
+            GET_HOLIDAYS_SQL.getSql() + " AND cdquest = 'N'"
     );
 
     private final String sql;

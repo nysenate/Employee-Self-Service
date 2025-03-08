@@ -14,14 +14,13 @@ import java.util.stream.Stream;
 public class Route {
 
     public static final Route EMPTY_ROUTE = new Route(ImmutableList.of(), ImmutableList.of(), true, true);
-
-    private int id;
     private final ImmutableList<Leg> outboundLegs;
     private final ImmutableList<Leg> returnLegs;
     // First leg qualifies if they are departing before 7am.
     private final boolean firstLegQualifiesForBreakfast;
     // Last leg qualifies if they are arriving after 7pm.
     private final boolean lastLegQualifiesForDinner;
+    private int id;
 
     public Route(List<Leg> outboundLegs, List<Leg> returnLegs,
                  boolean firstLegQualifiesForBreakfast, boolean lastLegQualifiesForDinner) {

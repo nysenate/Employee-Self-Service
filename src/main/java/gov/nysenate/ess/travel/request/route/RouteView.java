@@ -3,7 +3,6 @@ package gov.nysenate.ess.travel.request.route;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.travel.request.address.TravelAddressView;
-import gov.nysenate.ess.travel.request.allowances.mileage.MileagePerDiemsView;
 import gov.nysenate.ess.travel.request.route.destination.DestinationView;
 
 import java.util.List;

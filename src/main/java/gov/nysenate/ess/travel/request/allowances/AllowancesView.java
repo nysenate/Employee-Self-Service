@@ -10,7 +10,8 @@ public class AllowancesView implements ViewObject {
     double alternateTransportation;
     double registration;
 
-    public AllowancesView() {}
+    public AllowancesView() {
+    }
 
     public AllowancesView(Allowances allowances) {
         this.tolls = allowances.tolls().toDouble();

@@ -6,7 +6,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public final class CollectionUtils {
-    private CollectionUtils() {}
+    private CollectionUtils() {
+    }
 
     public static <K, V> Map<K, V> keysToMap(Collection<K> keys, Function<K, V> keyToValueFunction) {
         return keys.stream().collect(Collectors.toMap(Function.identity(), keyToValueFunction));

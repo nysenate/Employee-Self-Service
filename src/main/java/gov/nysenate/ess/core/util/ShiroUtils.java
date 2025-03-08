@@ -12,6 +12,7 @@ public abstract class ShiroUtils {
 
     /**
      * Gets the currently logged in user
+     *
      * @return {@link SenatePerson} the currently logged in person
      */
     public static SenatePerson getAuthenticatedUser() {
@@ -24,11 +25,14 @@ public abstract class ShiroUtils {
 
     /**
      * Get the employee id of the currently logged in user
+     *
      * @return int - the employee id of the currently logged in user
      */
     public static int getAuthenticatedEmpId() {
         return getAuthenticatedUser().getEmployeeId();
     }
 
-    public static String getAuthenticatedUid(){return getAuthenticatedUser().getUid();}
+    public static String getAuthenticatedUid() {
+        return getAuthenticatedUser().getUid();
+    }
 }

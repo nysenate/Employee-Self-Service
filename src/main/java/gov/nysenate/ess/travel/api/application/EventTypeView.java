@@ -13,7 +13,7 @@ public class EventTypeView implements ViewObject {
     public EventTypeView() {
     }
 
-    public EventTypeView(EventType eventType){
+    public EventTypeView(EventType eventType) {
         this.name = eventType.name();
         this.displayName = eventType.displayName();
         this.requiresName = eventType.requiresName();

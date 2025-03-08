@@ -15,8 +15,7 @@ import java.util.Set;
 /**
  * Data access layer for retrieving employee information.
  */
-public interface EmployeeDao extends BaseDao
-{
+public interface EmployeeDao extends BaseDao {
     /**
      * Retrieve an Employee object based on the employee id.
      *
@@ -58,9 +57,9 @@ public interface EmployeeDao extends BaseDao
      * Search for employees by their full name.
      * Results are paginated and ordered in alphabetical order.
      *
-     * @param term String - search term
-     * @param activeOnly boolean - return only active employees if true
-     *@param limitOffset {@link LimitOffset} - result window  @return {@link PaginatedList<Employee>}
+     * @param term        String - search term
+     * @param activeOnly  boolean - return only active employees if true
+     * @param limitOffset {@link LimitOffset} - result window  @return {@link PaginatedList<Employee>}
      */
     PaginatedList<Employee> searchEmployees(String term, boolean activeOnly, LimitOffset limitOffset);
 
@@ -68,7 +67,7 @@ public interface EmployeeDao extends BaseDao
      * Search for employees based on the given query object.
      *
      * @param employeeSearchBuilder {@link EmployeeSearchBuilder}
-     * @param limitOffset {@link LimitOffset}
+     * @param limitOffset           {@link LimitOffset}
      * @return {@link PaginatedList}
      */
     PaginatedList<Employee> searchEmployees(EmployeeSearchBuilder employeeSearchBuilder, LimitOffset limitOffset);
@@ -81,10 +80,10 @@ public interface EmployeeDao extends BaseDao
     /**
      * Get raw column data from the employee table.
      * This data will contain the most recent data for all columns that are set by Transactions
-     * @see gov.nysenate.ess.core.model.transaction.TransactionCode
      *
      * @param empId int - employee id
      * @return ImmutableMap<String, String>
+     * @see gov.nysenate.ess.core.model.transaction.TransactionCode
      */
     Map<String, String> getRawEmployeeColumns(int empId);
 
@@ -95,6 +94,7 @@ public interface EmployeeDao extends BaseDao
 
     /**
      * Get all employees with fields that were updated after the given date time
+     *
      * @param fromDateTime LocalDateTime
      * @return List<Employee>
      */
@@ -102,12 +102,14 @@ public interface EmployeeDao extends BaseDao
 
     /**
      * Get all new employees over the last few days
+     *
      * @return List<Employee>
      */
     List<Employee> getNewEmployees();
 
     /**
      * Get all employees that have been inactivated since a date specified
+     *
      * @param since
      * @return
      */

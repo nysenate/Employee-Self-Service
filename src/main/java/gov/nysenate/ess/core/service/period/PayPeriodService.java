@@ -8,8 +8,7 @@ import gov.nysenate.ess.core.util.SortOrder;
 import java.time.LocalDate;
 import java.util.List;
 
-public interface PayPeriodService
-{
+public interface PayPeriodService {
     PayPeriod getPayPeriod(PayPeriodType type, LocalDate date);
 
     List<PayPeriod> getPayPeriods(PayPeriodType type, Range<LocalDate> dateRange, SortOrder dateOrder);

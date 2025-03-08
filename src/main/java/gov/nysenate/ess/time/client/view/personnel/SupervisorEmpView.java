@@ -10,8 +10,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.time.LocalDate;
 
 @XmlRootElement
-public class SupervisorEmpView implements ViewObject
-{
+public class SupervisorEmpView implements ViewObject {
     protected int empId;
     protected int supId;
     protected String empLastName;

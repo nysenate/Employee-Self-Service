@@ -1,7 +1,6 @@
 package gov.nysenate.ess.core.model.transaction;
 
-public class TransRecordNotFoundEx extends TransRecordException
-{
+public class TransRecordNotFoundEx extends TransRecordException {
     public TransRecordNotFoundEx() {
         super();
     }

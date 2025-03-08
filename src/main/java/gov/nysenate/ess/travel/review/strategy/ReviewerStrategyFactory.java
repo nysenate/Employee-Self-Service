@@ -12,8 +12,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class ReviewerStrategyFactory {
 
-    private TravelRoleFactory travelRoleFactory;
-    private EmployeeInfoService employeeInfoService;
+    private final TravelRoleFactory travelRoleFactory;
+    private final EmployeeInfoService employeeInfoService;
 
     @Autowired
     public ReviewerStrategyFactory(TravelRoleFactory travelRoleFactory, EmployeeInfoService employeeInfoService) {

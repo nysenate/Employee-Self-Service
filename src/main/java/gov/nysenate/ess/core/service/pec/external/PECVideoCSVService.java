@@ -42,42 +42,30 @@ import java.util.stream.Collectors;
 public class PECVideoCSVService {
 
     private static final Logger logger = LoggerFactory.getLogger(PECVideoCSVService.class);
-
+    private static final Pattern csvEthics2018ReportPattern =
+            Pattern.compile("ExportDocsEthics2018_V(\\d)");
+    private static final Pattern csvHarrassment2019ReportPattern =
+            Pattern.compile("ExportDocsHarassment2018_V(\\d)");
+    private static final Pattern csvLiveTrainingDHPReportPattern =
+            Pattern.compile("LiveTrainingDHP(\\d{4})");
+    private static final Pattern csvEthics2020ReportPattern =
+            Pattern.compile("2020LegEthicsTraining_V(\\d)");
+    private static final Pattern csvEthics2021ReportPattern =
+            Pattern.compile("2021LegEthicsTraining_V(\\d)");
+    private static final Pattern csvLiveEthics2021ReportPattern =
+            Pattern.compile("2021LiveEthicsTraining_V(\\d)");
+    private static final DateTimeFormatter liveDTF = DateTimeFormatter.ofPattern("M/dd/yyyy HH:mm");
+    private static final DateTimeFormatter liveDTFAlt = DateTimeFormatter.ofPattern("M/d/yyyy HH:mm");
     private final EmployeeDao employeeDao;
     private final PersonnelTaskAssignmentDao personnelTaskAssignmentDao;
     private final EmployeeInfoService employeeInfoService;
     private final EmpTransactionService transactionService;
     private final ResponsibilityHeadDao rchDao;
-
     private final String csvFileDir;
-
-    private static final Pattern csvEthics2018ReportPattern =
-            Pattern.compile("ExportDocsEthics2018_V(\\d)");
-
-    private static final Pattern csvHarrassment2019ReportPattern =
-            Pattern.compile("ExportDocsHarassment2018_V(\\d)");
-
-    private static final Pattern csvLiveTrainingDHPReportPattern =
-            Pattern.compile("LiveTrainingDHP(\\d{4})");
-
-    private static final Pattern csvEthics2020ReportPattern =
-            Pattern.compile("2020LegEthicsTraining_V(\\d)");
-
-    private static final Pattern csvEthics2021ReportPattern =
-            Pattern.compile("2021LegEthicsTraining_V(\\d)");
-
-    private static final Pattern csvLiveEthics2021ReportPattern =
-            Pattern.compile("2021LiveEthicsTraining_V(\\d)");
-
-
-
     private final int ETHICS_VID_2018_ID_NUM;
     private final int HARASSMENT_VID_2019_ID_NUM;
     private final int ETHICS_VID_2020_ID_NUM;
     private final int ETHICS_VID_2021_ID_NUM;
-
-    private static final DateTimeFormatter liveDTF = DateTimeFormatter.ofPattern("M/dd/yyyy HH:mm");
-    private static final DateTimeFormatter liveDTFAlt = DateTimeFormatter.ofPattern("M/d/yyyy HH:mm");
 
 
     @Autowired
@@ -136,8 +124,7 @@ public class PECVideoCSVService {
             } else if (liveEthics2021Matcher.matches()) {
                 logger.info("Processing Live Ethics 2021 CSV report: " + fileName);
                 handle2021LiveTrainingReportCSV(file);
-            }
-            else {
+            } else {
                 logger.info("Unable to match and process: " + fileName);
             }
 
@@ -162,7 +149,7 @@ public class PECVideoCSVService {
             //8 EC1
             //9 EC2
             //10 Date 02/21/2018 11:27:18 EST
-            if (csvRecord.get(0).trim().equals("Name") || csvRecord.get(0).trim().equals("User") ) {
+            if (csvRecord.get(0).trim().equals("Name") || csvRecord.get(0).trim().equals("User")) {
                 continue;
             }
 
@@ -177,11 +164,9 @@ public class PECVideoCSVService {
                 Employee employee = employeeDao.getEmployeeById(fileEmpId);
 
                 updateDB(employee, dateTime, id);
-            }
-            catch (EmployeeNotFoundEx e) {
+            } catch (EmployeeNotFoundEx e) {
                 logger.warn("Could not find employee in ESS.  empId: {}\trecord: {}", e.getEmpId(), csvRecord);
-            }
-            catch (NumberFormatException e) {
+            } catch (NumberFormatException e) {
                 logger.warn("CSV report has problematic data in the EmpID field in record: {}", csvRecord);
             }
         }
@@ -211,8 +196,7 @@ public class PECVideoCSVService {
                 LocalDateTime dateTime = LocalDateTime.parse(dateFromFile, formatter);
 
                 updateDB(employee, dateTime, this.ETHICS_VID_2021_ID_NUM);
-            }
-            catch (EmployeeNotFoundEx ex) {
+            } catch (EmployeeNotFoundEx ex) {
                 logger.warn("COULD NOT MATCH EMAIL in 2021 live ethics record" + ex);
                 logger.warn(csvRecord.toString());
             }
@@ -244,7 +228,7 @@ public class PECVideoCSVService {
             LocalDateTime trainingDateTime = parseLiveTrainingDateTime(trainingDateTimeStr);
 
             EmployeeSearchBuilder employeeSearchBuilder = new EmployeeSearchBuilder();
-            employeeSearchBuilder.setName(name.replaceAll("," , ""));
+            employeeSearchBuilder.setName(name.replaceAll(",", ""));
             List<Employee> potentialEmployees = employeeInfoService.searchEmployees(employeeSearchBuilder, LimitOffset.ALL).getResults();
 
             List<ResponsibilityHead> rchMatches = rchs.stream()
@@ -307,14 +291,12 @@ public class PECVideoCSVService {
             if (potentialEmployees.size() == 1) {
                 //Singular employee, insert the update to the db
                 updateDB(potentialEmployees.get(0), trainingDateTime, HARASSMENT_VID_2019_ID_NUM);
-            }
-            else if (potentialEmployees.size() == 0) {
+            } else if (potentialEmployees.size() == 0) {
                 //WARN of an employee that does not exist / could not be found
                 logger.warn("NO employees were found for the name \"{}\" in record: {}", name, csvRecord);
                 failedToMatchCount++;
                 noMatchEmps.add(name);
-            }
-            else {
+            } else {
                 //Multiple potential employees were found.
                 logger.warn("Multiple employees were found for the name \"{}\" in record: {}", name, csvRecord);
                 failedToMatchCount++;
@@ -356,8 +338,7 @@ public class PECVideoCSVService {
     private LocalDateTime parseLiveTrainingDateTime(String dateString) {
         try {
             return LocalDateTime.parse(dateString, liveDTF);
-        }
-        catch (DateTimeParseException e) {
+        } catch (DateTimeParseException e) {
             //This probably means the date is a single digit day. Throw exceptions from here
             return LocalDateTime.parse(dateString, liveDTFAlt);
         }
@@ -385,7 +366,7 @@ public class PECVideoCSVService {
         // Get rch codes for the training day.
         Set<String> rchCodes = new HashSet<>(
                 transHistory.getEffectiveEntriesDuring(
-                        "CDRESPCTRHD", Range.singleton(dateTime.toLocalDate()), true)
+                                "CDRESPCTRHD", Range.singleton(dateTime.toLocalDate()), true)
                         .values()
         );
 

@@ -26,13 +26,12 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/personnel/task/moodle/")
 public class MoodleApiCtrl extends BaseRestApiCtrl {
 
-    private MoodleRecordService moodleRecordService;
-    private PersonnelTaskAssignmentDao personnelTaskAssignmentDao;
-    final LocalDateTime jan1970 = LocalDateTime.of(1970,1,1,0,0);
-    final LocalDateTime jan2023 = LocalDateTime.of(2023,1,1,0,0);
-    final LocalDateTime tomorrow = LocalDateTime.now().plusDays(1);
-
     private static final Logger logger = LoggerFactory.getLogger(MoodleApiCtrl.class);
+    final LocalDateTime jan1970 = LocalDateTime.of(1970, 1, 1, 0, 0);
+    final LocalDateTime jan2023 = LocalDateTime.of(2023, 1, 1, 0, 0);
+    final LocalDateTime tomorrow = LocalDateTime.now().plusDays(1);
+    private final MoodleRecordService moodleRecordService;
+    private final PersonnelTaskAssignmentDao personnelTaskAssignmentDao;
 
     @Autowired
     public MoodleApiCtrl(MoodleRecordService moodleRecordService,
@@ -44,27 +43,24 @@ public class MoodleApiCtrl extends BaseRestApiCtrl {
     /**
      * Personnel Employee Task - Moodle Import
      * ---------------------------------------
-     *
+     * <p>
      * ESS contacts moodle for course data
-     *
+     * <p>
      * Usage:
      * (POST)    /api/v1/personnel/task/moodle/generate
      *
+     * @return String
      * @Param from, the beginning of the date range needed for the records
      * @Param to, the end of the date range needed for the records
-     *
      * @Param Organization, is always senate
-     *
-     *
-     * @return String
-     * */
+     */
     @RequestMapping(value = "/generate", method = POST)
     @ResponseStatus(value = HttpStatus.OK)
     public SimpleResponse runMoodleImport(HttpServletRequest request,
-                                        HttpServletResponse response ,
-                                        @RequestParam(required = false, defaultValue = "1970") String from,
-                                        @RequestParam(required = false, defaultValue = "tomorrow") String to,
-                                        @RequestParam(required = false, defaultValue = "senate") String organization)  {
+                                          HttpServletResponse response,
+                                          @RequestParam(required = false, defaultValue = "1970") String from,
+                                          @RequestParam(required = false, defaultValue = "tomorrow") String to,
+                                          @RequestParam(required = false, defaultValue = "senate") String organization) {
         checkPermission(ADMIN.getPermission());
 
         LocalDateTime ldtFrom;
@@ -73,19 +69,16 @@ public class MoodleApiCtrl extends BaseRestApiCtrl {
         //Set From
         if (from.equals("1970")) {
             ldtFrom = jan1970;
-        }
-        else if (from.equals("2023")) {
+        } else if (from.equals("2023")) {
             ldtFrom = jan2023;
-        }
-        else {
+        } else {
             ldtFrom = stringToLocalDateTime(from);
         }
 
         //Set To
         if (to.equals("tomorrow")) {
             ldtTo = tomorrow;
-        }
-        else {
+        } else {
             ldtTo = stringToLocalDateTime(to);
         }
 
@@ -93,8 +86,7 @@ public class MoodleApiCtrl extends BaseRestApiCtrl {
         try {
             JsonNode json = moodleRecordService.contactMoodleForRecords(ldtFrom, ldtTo, organization);
             moodleRecordService.processMoodleEmployeeRecords(moodleRecordService.getMoodleRecordsFromJson(json.toString()));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             logger.info("Error contacting moodle for records", e);
             return new SimpleResponse(false, "Moode Report Generation", e.getMessage());
         }

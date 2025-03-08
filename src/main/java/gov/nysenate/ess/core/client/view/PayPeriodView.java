@@ -10,8 +10,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.time.LocalDate;
 
 @XmlRootElement(name = "payPeriod")
-public class PayPeriodView implements ViewObject
-{
+public class PayPeriodView implements ViewObject {
     protected String payPeriodNum;
     protected LocalDate startDate;
     protected LocalDate endDate;
@@ -23,7 +22,8 @@ public class PayPeriodView implements ViewObject
     protected boolean active;
     protected boolean current;
 
-    public PayPeriodView() {}
+    public PayPeriodView() {
+    }
 
     public PayPeriodView(PayPeriod payPeriod) {
         if (payPeriod != null) {

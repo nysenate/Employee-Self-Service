@@ -42,11 +42,11 @@ public class SqlRoleDao extends SqlBaseDao implements RoleDao {
     protected enum SqlRoleQuery implements BasicSqlQuery {
         GET_EMPLOYEE_ROLES(
                 "SELECT * FROM ${essSchema}.user_roles \n" +
-                "WHERE employee_id = :employeeId"
+                        "WHERE employee_id = :employeeId"
         ),
         GET_EMPLOYEES_BY_ROLE(
                 "SELECT employee_id FROM ${essSchema}.user_roles \n" +
-                "WHERE role = :role::${essSchema}.ess_role"
+                        "WHERE role = :role::${essSchema}.ess_role"
         );
 
         private final String sql;
@@ -68,7 +68,7 @@ public class SqlRoleDao extends SqlBaseDao implements RoleDao {
 
     private static class EmployeeRoleMapper implements RowMapper<Employee> {
 
-        private EmployeeInfoService employeeInfoService;
+        private final EmployeeInfoService employeeInfoService;
 
         protected EmployeeRoleMapper(EmployeeInfoService employeeInfoService) {
             this.employeeInfoService = employeeInfoService;

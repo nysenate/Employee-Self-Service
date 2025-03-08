@@ -2,12 +2,12 @@ package gov.nysenate.ess.time.model.accrual;
 
 import gov.nysenate.ess.core.model.period.PayPeriod;
 
-public class PeriodAccUsage extends AccrualUsage
-{
+public class PeriodAccUsage extends AccrualUsage {
     int year;
     PayPeriod payPeriod;
 
-    public PeriodAccUsage() {}
+    public PeriodAccUsage() {
+    }
 
     public int getYear() {
         return year;

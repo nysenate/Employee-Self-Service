@@ -6,7 +6,6 @@ import java.util.Objects;
 
 public class TravelAddress {
 
-    private int id;
     private final String placeId;
     private final String name;
     private final String addr1;
@@ -15,6 +14,7 @@ public class TravelAddress {
     private final String county;
     private final String state;
     private final String country;
+    private int id;
 
     private TravelAddress(Builder builder) {
         Preconditions.checkNotNull(builder);

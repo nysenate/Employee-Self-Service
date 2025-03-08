@@ -13,10 +13,12 @@ public final class AccrualUtils {
 
     private static final MathContext FOUR_DIGITS_MAX = new MathContext(4);
 
-    private AccrualUtils() {}
+    private AccrualUtils() {
+    }
 
     /**
      * Get a prorate percentage based on the minimum total hours worked in a year
+     *
      * @param minTotalHours BigDecimal
      * @return BigDecimal
      */
@@ -29,6 +31,7 @@ public final class AccrualUtils {
 
     /**
      * Get a prorate percentage based on the minimum total hours worked in a year
+     *
      * @param minTotalHours BigDecimal
      * @return BigDecimal
      */
@@ -67,6 +70,7 @@ public final class AccrualUtils {
 
     /**
      * Round a sick or vacation accrual value
+     *
      * @param hours BigDecimal - sick/vacation hours or rate
      * @return BigDecimal - rounded value
      */
@@ -76,6 +80,7 @@ public final class AccrualUtils {
 
     /**
      * Round a personal accrual value
+     *
      * @param hours BigDecimal - sick/vacation hours or rate
      * @return BigDecimal - rounded value
      */
@@ -85,6 +90,7 @@ public final class AccrualUtils {
 
     /**
      * Round an expected hours value
+     *
      * @param hours BigDecimal - sick/vacation hours or rate
      * @return BigDecimal - rounded value
      */
@@ -99,7 +105,8 @@ public final class AccrualUtils {
 
     /**
      * Helper method for rounding various accrual values
-     * @param value BigDecimal
+     *
+     * @param value     BigDecimal
      * @param increment BigDecimal
      * @return BigDecimal
      */

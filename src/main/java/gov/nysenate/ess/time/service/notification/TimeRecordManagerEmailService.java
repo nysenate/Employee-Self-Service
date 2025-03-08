@@ -14,8 +14,8 @@ public interface TimeRecordManagerEmailService {
     /**
      * Sends an email, notifying the administrator of an error that occurred
      * within the {@link TimeRecordManager}
-     *  @param exceptions Throwable
      *
+     * @param exceptions Throwable
      */
     void sendTrmErrorNotification(Collection<TimeRecordManagerError> exceptions);
 }

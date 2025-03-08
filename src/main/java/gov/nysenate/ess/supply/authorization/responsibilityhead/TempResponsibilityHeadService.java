@@ -15,8 +15,8 @@ import java.util.stream.Collectors;
 @Service
 public class TempResponsibilityHeadService {
 
-    private ResponsibilityHeadDao rchDao;
-    private SqlTempResponsibilityHeadDao tempRchDao;
+    private final ResponsibilityHeadDao rchDao;
+    private final SqlTempResponsibilityHeadDao tempRchDao;
 
     @Autowired
     public TempResponsibilityHeadService(ResponsibilityHeadDao rchDao, SqlTempResponsibilityHeadDao tempRchDao) {

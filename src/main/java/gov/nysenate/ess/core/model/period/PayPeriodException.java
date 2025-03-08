@@ -1,7 +1,6 @@
 package gov.nysenate.ess.core.model.period;
 
-public class PayPeriodException extends RuntimeException
-{
+public class PayPeriodException extends RuntimeException {
     public PayPeriodException() {
     }
 

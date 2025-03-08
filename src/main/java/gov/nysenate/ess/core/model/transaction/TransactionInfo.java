@@ -2,11 +2,11 @@ package gov.nysenate.ess.core.model.transaction;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 /**
  * Contains metadata for a single employee payroll/personnel transaction.
  * Does not contain any of the modified data
+ *
  * @see TransactionRecord
  */
 public class TransactionInfo {
@@ -23,9 +23,11 @@ public class TransactionInfo {
     /** The transaction code indicates the kinds of changes made. */
     protected TransactionCode transCode;
 
-    /** Document Id for the transaction
-     *  For temporary employees, this corresponds to a pay period and is prefixed with 'T'
-     *  For annual employees, this uniquely identifies a group of transactions */
+    /**
+     * Document Id for the transaction
+     * For temporary employees, this corresponds to a pay period and is prefixed with 'T'
+     * For annual employees, this uniquely identifies a group of transactions
+     */
     protected String documentId;
 
     /** The date in which this transaction is effective. */
@@ -39,7 +41,8 @@ public class TransactionInfo {
 
     /** --- Constructors --- */
 
-    public TransactionInfo() {}
+    public TransactionInfo() {
+    }
 
     public TransactionInfo(TransactionInfo other) {
         this.employeeId = other.employeeId;

@@ -11,6 +11,13 @@ public enum MethodOfTravel {
     AIRPLANE("Airplane", false),
     OTHER("Other", false);
 
+    private static final Map<String, MethodOfTravel> map = new HashMap<>(values().length, 1);
+
+    static {
+        for (MethodOfTravel mot : values())
+            map.put(mot.displayName, mot);
+    }
+
     private final String displayName;
     private final boolean isMileageReimbursable;
 
@@ -35,15 +42,7 @@ public enum MethodOfTravel {
         return isMileageReimbursable;
     }
 
-
     public String getDisplayName() {
         return displayName;
-    }
-
-    private static final Map<String, MethodOfTravel> map = new HashMap<>(values().length, 1);
-
-    static {
-        for (MethodOfTravel mot: values())
-            map.put(mot.displayName, mot);
     }
 }

@@ -11,7 +11,8 @@ public class SageResponse {
     private int statusCode;
     private String description;
 
-    public SageResponse() {}
+    public SageResponse() {
+    }
 
     public SageResponse(String status, String source, String[] messages,
                         Address address, boolean validated,
@@ -30,52 +31,52 @@ public class SageResponse {
         return status;
     }
 
-    public String getSource() {
-        return source;
-    }
-
-    public String[] getMessages() {
-        return messages;
-    }
-
-    public Address getAddress() {
-        return address;
-    }
-
-    public boolean isValidated() {
-        return validated;
-    }
-
-    public int getStatusCode() {
-        return statusCode;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getSource() {
+        return source;
     }
 
     public void setSource(String source) {
         this.source = source;
     }
 
+    public String[] getMessages() {
+        return messages;
+    }
+
     public void setMessages(String[] messages) {
         this.messages = messages;
+    }
+
+    public Address getAddress() {
+        return address;
     }
 
     public void setAddress(Address address) {
         this.address = address;
     }
 
+    public boolean isValidated() {
+        return validated;
+    }
+
     public void setValidated(boolean validated) {
         this.validated = validated;
     }
 
+    public int getStatusCode() {
+        return statusCode;
+    }
+
     public void setStatusCode(int statusCode) {
         this.statusCode = statusCode;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public void setDescription(String description) {

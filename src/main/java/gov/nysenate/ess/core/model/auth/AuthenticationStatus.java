@@ -3,8 +3,7 @@ package gov.nysenate.ess.core.model.auth;
 /**
  * Represents the authentication state just after a login attempt.
  */
-public enum AuthenticationStatus
-{
+public enum AuthenticationStatus {
     AUTHENTICATED(true, "Authenticated successfully."),
     INCORRECT_CREDENTIALS(false, "The username or password is invalid."),
     LDAP_MISMATCH(false, "LDAP information does not match SFMS"),

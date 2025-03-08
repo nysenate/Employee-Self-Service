@@ -6,6 +6,7 @@ package gov.nysenate.ess.core.service.notification.base.message.base;
 public interface Text extends Component {
     /**
      * get the content of text
+     *
      * @return the content
      */
     String getContent();

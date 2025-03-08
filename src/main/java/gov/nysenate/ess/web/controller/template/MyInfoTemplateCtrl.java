@@ -16,14 +16,14 @@ import javax.servlet.http.HttpServletRequest;
  */
 @Controller
 @RequestMapping(MyInfoTemplateCtrl.MYINFO_TMPL_BASE_URL)
-public class MyInfoTemplateCtrl extends BaseTemplateCtrl
-{
-    private static final Logger logger = LoggerFactory.getLogger(MyInfoTemplateCtrl.class);
+public class MyInfoTemplateCtrl extends BaseTemplateCtrl {
     static final String MYINFO_TMPL_BASE_URL = TMPL_BASE_URL + "/myinfo";
+    private static final Logger logger = LoggerFactory.getLogger(MyInfoTemplateCtrl.class);
 
     /**
      * Just return the corresponding template...
      * Unless the template uri is caught by one of the methods below.
+     *
      * @param request HttpServletRequest
      * @return String - passed in uri
      */
@@ -34,9 +34,10 @@ public class MyInfoTemplateCtrl extends BaseTemplateCtrl
 
     /**
      * Acknowledgment Report Pages
-     *
+     * <p>
      * Returns the given page if the currently authenticated user is permitted to view ack. report pages.
      * Otherwise return an error page indicating that the user does not have required permission.
+     *
      * @param request HttpServletRequest - the request (used to extract page uri)
      * @return String - passed in uri or error page depending on permissions
      */

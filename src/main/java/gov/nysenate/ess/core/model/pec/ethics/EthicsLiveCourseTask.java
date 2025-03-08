@@ -21,7 +21,7 @@ public class EthicsLiveCourseTask extends PersonnelTask {
     //Reusing Video codes because nothing would be changed other than naming for this kind of task
     private final ImmutableList<VideoTaskCode> codes;
 
-    public EthicsLiveCourseTask(PersonnelTask task, Collection<VideoTaskCode>codes) {
+    public EthicsLiveCourseTask(PersonnelTask task, Collection<VideoTaskCode> codes) {
         super(task);
 
         try {

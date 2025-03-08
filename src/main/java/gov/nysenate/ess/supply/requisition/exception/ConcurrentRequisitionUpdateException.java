@@ -8,18 +8,18 @@ import java.time.LocalDateTime;
  */
 public class ConcurrentRequisitionUpdateException extends RuntimeException {
 
-    private int requisitionId;
-    private LocalDateTime lastModified;
-    private LocalDateTime persistedLastModified;
+    private final int requisitionId;
+    private final LocalDateTime lastModified;
+    private final LocalDateTime persistedLastModified;
 
     /**
-     * @param requisitionId The id of the requisition being updated.
-     * @param lastModified The last modified date time according to the requisition that is being saved.
+     * @param requisitionId         The id of the requisition being updated.
+     * @param lastModified          The last modified date time according to the requisition that is being saved.
      * @param persistedLastModified The last modified date time according to the requisition in the database.
      */
     public ConcurrentRequisitionUpdateException(int requisitionId, LocalDateTime lastModified, LocalDateTime persistedLastModified) {
         super("Error saving requisition with id: " + requisitionId + ". Update has a last modified date time of " +
-             lastModified.toString() + ". But last modified date time is actually " + persistedLastModified.toString() + ".");
+                lastModified.toString() + ". But last modified date time is actually " + persistedLastModified.toString() + ".");
         this.requisitionId = requisitionId;
         this.lastModified = lastModified;
         this.persistedLastModified = persistedLastModified;

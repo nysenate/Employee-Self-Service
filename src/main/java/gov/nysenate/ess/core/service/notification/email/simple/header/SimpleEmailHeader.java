@@ -8,7 +8,7 @@ import gov.nysenate.ess.core.service.notification.base.header.notificationType.N
 import java.util.Map;
 
 /**
- *  Simple mail is an unicast simple normal message
+ * Simple mail is an unicast simple normal message
  * Created by Chenguang He on 6/14/2016.
  */
 public class SimpleEmailHeader implements Unicast, Simple, Normal {

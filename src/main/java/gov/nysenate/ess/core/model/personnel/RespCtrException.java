@@ -1,7 +1,6 @@
 package gov.nysenate.ess.core.model.personnel;
 
-public class RespCtrException extends Exception
-{
+public class RespCtrException extends Exception {
     public RespCtrException() {
     }
 

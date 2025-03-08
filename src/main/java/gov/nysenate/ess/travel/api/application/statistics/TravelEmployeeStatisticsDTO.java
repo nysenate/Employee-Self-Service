@@ -6,29 +6,29 @@ import java.util.List;
 
 public class TravelEmployeeStatisticsDTO {
 
-    private Integer emplId;
+    private Integer empId;
     private EmployeeView employeeView;
     private int count;
     private String totalExpenses;
-    private List<StatusSummary> statusSummaryList;
+    private List<ApplicationStatusSummary> applicationStatusSummaryList;
 
 
     // Constructor
-    public TravelEmployeeStatisticsDTO(Integer emplId, EmployeeView employeeView, int count, String totalExpenses, List<StatusSummary> statusSummaryList) {
-        this.emplId = emplId;
+    public TravelEmployeeStatisticsDTO(Integer empId, EmployeeView employeeView, int count, String totalExpenses, List<ApplicationStatusSummary> applicationStatusSummaryList) {
+        this.empId = empId;
         this.count = count;
         this.employeeView = employeeView;
         this.totalExpenses = totalExpenses;
-        this.statusSummaryList = statusSummaryList;
+        this.applicationStatusSummaryList = applicationStatusSummaryList;
     }
 
     // Getters and Setters
     public Integer getEmplId() {
-        return emplId;
+        return empId;
     }
 
-    public void setEmplId(Integer emplId) {
-        this.emplId = emplId;
+    public void setEmplId(Integer empId) {
+        this.empId = empId;
     }
 
     public int getCount() {
@@ -47,14 +47,19 @@ public class TravelEmployeeStatisticsDTO {
         this.employeeView = employeeView;
     }
 
-    public String getTotalExpenses() { return totalExpenses; }
+    public String getTotalExpenses() {
+        return totalExpenses;
+    }
 
     public void setTotalExpenses(String totalExpenses) {
         this.totalExpenses = totalExpenses;
     }
-    public List<StatusSummary> getStatusSummaryList() { return statusSummaryList; }
 
-    public void setStatusSummaryList(List<StatusSummary> statusSummaryList) {
-        this.statusSummaryList = statusSummaryList;
+    public List<ApplicationStatusSummary> getStatusSummaryList() {
+        return applicationStatusSummaryList;
+    }
+
+    public void setStatusSummaryList(List<ApplicationStatusSummary> applicationStatusSummaryList) {
+        this.applicationStatusSummaryList = applicationStatusSummaryList;
     }
 }

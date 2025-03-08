@@ -19,8 +19,7 @@ import java.io.IOException;
  * by jsp templates.
  */
 @Component("commonAttributeFilter")
-public class CommonAttributeFilter implements Filter
-{
+public class CommonAttributeFilter implements Filter {
 
     private static final Logger logger = LoggerFactory.getLogger(CommonAttributeFilter.class);
 
@@ -62,6 +61,14 @@ public class CommonAttributeFilter implements Filter
         this.helplinePhoneNumber = helplinePhoneNumber;
     }
 
+    private static void setContextPathAttribute(HttpServletRequest httpServletRequest) {
+        httpServletRequest.setAttribute(CONTEXT_PATH_ATTRIBUTE, httpServletRequest.getContextPath());
+    }
+
+    private static void setMiscLeaveAttribute(HttpServletRequest request) {
+        request.setAttribute(MISC_LEAVE_ATTRIBUTE, MiscLeaveType.getJsonLabels());
+    }
+
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
@@ -82,10 +89,6 @@ public class CommonAttributeFilter implements Filter
         chain.doFilter(request, response);
     }
 
-    private static void setContextPathAttribute(HttpServletRequest httpServletRequest) {
-        httpServletRequest.setAttribute(CONTEXT_PATH_ATTRIBUTE, httpServletRequest.getContextPath());
-    }
-
     private void setRuntimeLevelAttribute(ServletRequest request) {
         request.setAttribute(RUNTIME_LEVEL_ATTRIBUTE, runtimeLevel.name().toLowerCase());
     }
@@ -98,14 +101,9 @@ public class CommonAttributeFilter implements Filter
         request.setAttribute(IMAGE_URL_ATTRIBUTE, imageUrl);
     }
 
-
     private void setXsrfTokenAttribute(HttpServletRequest httpServletRequest) {
         HttpSession session = httpServletRequest.getSession();
         xsrfValidator.saveXsrfToken(httpServletRequest, session);
-    }
-
-    private static void setMiscLeaveAttribute(HttpServletRequest request) {
-        request.setAttribute(MISC_LEAVE_ATTRIBUTE, MiscLeaveType.getJsonLabels());
     }
 
     private void setReleaseVersionAttribute(HttpServletRequest request) {
@@ -122,9 +120,11 @@ public class CommonAttributeFilter implements Filter
 
     /** Life-cycle is maintained by Spring. The init method is not used. */
     @Override
-    public void init(FilterConfig filterConfig) {}
+    public void init(FilterConfig filterConfig) {
+    }
 
     /** Life-cycle is maintained by Spring. The destroy method is not used. */
     @Override
-    public void destroy() {}
+    public void destroy() {
+    }
 }

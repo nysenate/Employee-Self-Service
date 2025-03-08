@@ -12,7 +12,8 @@ public class SageResponseView implements ViewObject {
     private int statusCode;
     private String description;
 
-    public SageResponseView() {}
+    public SageResponseView() {
+    }
 
     public SageResponseView(SageResponse sageResponse) {
         this.status = sageResponse.getStatus();

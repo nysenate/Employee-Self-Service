@@ -14,8 +14,7 @@ import java.util.Set;
 
 import static gov.nysenate.ess.core.dao.base.BaseMapper.getLocalDateTimeFromRs;
 
-public class TransRecordRowMapper implements RowMapper<TransactionRecord>
-{
+public class TransRecordRowMapper implements RowMapper<TransactionRecord> {
     /** Prefix for the columns */
     protected String pfx = "";
 

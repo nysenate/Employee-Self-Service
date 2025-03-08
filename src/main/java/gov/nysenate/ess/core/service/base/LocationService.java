@@ -23,6 +23,7 @@ public class LocationService extends RefreshedCachedData<LocationId, Location> {
 
     /**
      * Retrieves the location with the provided {@link LocationId}.
+     *
      * @return The location for the given {@link LocationId} or {@code null} if no location can be found with that LocationId.
      */
     public Location getLocation(LocationId locId) {
@@ -42,6 +43,7 @@ public class LocationService extends RefreshedCachedData<LocationId, Location> {
 
     /**
      * Searches for locations where code matches {@code term}.
+     *
      * @return A list of matching locations
      */
     public List<Location> searchLocations(String term) {

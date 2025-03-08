@@ -37,24 +37,23 @@ public class EthicsLiveGroupTaskAssigner extends BaseGroupTaskAssigner {
                 .filter(PersonnelTaskAssignment::isCompleted)
                 .max(Comparator.comparing(PersonnelTaskAssignment::getUpdateTime));
 
-        LocalDateTime beginningOfCalendarYear = LocalDateTime.of(LocalDate.now().getYear(), 1,1,0,0,0);
+        LocalDateTime beginningOfCalendarYear = LocalDateTime.of(LocalDate.now().getYear(), 1, 1, 0, 0, 0);
         final Set<Integer> requiredTaskIds = new HashSet<>();
 
         if (latestCompletedOpt.isPresent()) {
             PersonnelTaskAssignment latestCompletedTask = latestCompletedOpt.get();
 
-            if (latestEthicsLiveTaskOpt.isPresent() ) {
+            if (latestEthicsLiveTaskOpt.isPresent()) {
                 PersonnelTask latestTask = latestEthicsLiveTaskOpt.get();
 
                 // Require the latest task if it was mandated after the last ethics assignment was completed
                 // AND they didnt complete the previous ethics live course in the current calendar year
-                if ( latestTask.getEffectiveDateTime().isAfter(latestCompletedTask.getUpdateTime())
-                        && latestCompletedTask.getUpdateTime().isBefore(beginningOfCalendarYear) ) {
+                if (latestTask.getEffectiveDateTime().isAfter(latestCompletedTask.getUpdateTime())
+                        && latestCompletedTask.getUpdateTime().isBefore(beginningOfCalendarYear)) {
                     requiredTaskIds.add(latestTask.getTaskId());
                 }
             }
-        }
-        else {
+        } else {
             //its possible for people to have a deactivated ethics live.
             // so we need to check if it was assigned but deactivated
             Set<Integer> assignedEthicsLiveTasks = super.getAssignedIds(empId);
@@ -64,10 +63,9 @@ public class EthicsLiveGroupTaskAssigner extends BaseGroupTaskAssigner {
                 latestEthicsLiveTaskOpt
                         .map(PersonnelTask::getTaskId)
                         .ifPresent(requiredTaskIds::add);
-            }
-            else {
+            } else {
                 Map<Integer, PersonnelTaskAssignment> assignmentMap = super.getAssignmentMap(empId);
-                for(Integer taskID: assignedEthicsLiveTasks) {
+                for (Integer taskID : assignedEthicsLiveTasks) {
                     PersonnelTaskAssignment taskAssignment = assignmentMap.get(taskID);
                     if (taskID != latestEthicsLiveTaskOpt.get().getTaskId() || taskAssignment.isActive()) {
                         latestEthicsLiveTaskOpt

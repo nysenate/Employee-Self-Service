@@ -31,6 +31,7 @@ public class ItemRestrictionDao extends SqlBaseDao {
 
     /**
      * Get all item restrictions.
+     *
      * @return A map of item id's to its ItemRestriction.
      */
     public Map<Integer, ItemRestriction> getItemRestrictions() {
@@ -48,14 +49,14 @@ public class ItemRestrictionDao extends SqlBaseDao {
 
         GET_ALL_ITEM_RESTRICTIONS(
                 "SELECT item_id, location_id \n" +
-                "FROM ${supplySchema}.location_specific_items \n"
+                        "FROM ${supplySchema}.location_specific_items \n"
         );
+
+        private final String sql;
 
         ItemRestrictionQuery(String sql) {
             this.sql = sql;
         }
-
-        private final String sql;
 
         @Override
         public String getSql() {

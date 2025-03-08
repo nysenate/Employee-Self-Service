@@ -9,12 +9,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class TransactionHistoryUpdateEvent extends UpdateEvent
-{
-    private List<TransactionRecord> transRecs;
-    private LocalDateTime updatedDateTime;
-    private Set<Integer> affectedEmps = new HashSet<>();
-    private Set<TransactionCode> affectedTransCodes = new HashSet<>();
+public class TransactionHistoryUpdateEvent extends UpdateEvent {
+    private final List<TransactionRecord> transRecs;
+    private final LocalDateTime updatedDateTime;
+    private final Set<Integer> affectedEmps = new HashSet<>();
+    private final Set<TransactionCode> affectedTransCodes = new HashSet<>();
 
     public TransactionHistoryUpdateEvent(List<TransactionRecord> transRecs, LocalDateTime updatedDateTime) {
         this.transRecs = transRecs;

@@ -14,7 +14,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Array;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -29,7 +28,7 @@ public class SqlActionDao extends SqlBaseDao {
 
     /**
      * Save the actions from an application review.
-     *
+     * <p>
      * Only saves new actions, old actions should never be updated.
      *
      * @param actions
@@ -61,6 +60,7 @@ public class SqlActionDao extends SqlBaseDao {
 
     /**
      * Select all actions for a given application review id.
+     *
      * @param appReviewId
      * @return
      */
@@ -70,7 +70,7 @@ public class SqlActionDao extends SqlBaseDao {
         String sql = SqlActionQuery.SELECT_ACTIONS_BY_REVIEW_ID.getSql(schemaMap());
         var views = localNamedJdbc.query(sql, params, new ActionRowMapper());
         var actions = new ArrayList<Action>();
-        for (var view: views) {
+        for (var view : views) {
             var emp = employeeInfoService.getEmployee(view.userEmpId);
             actions.add(new Action(view.actionId, emp, view.role, view.type, view.notes, view.dateTime));
         }

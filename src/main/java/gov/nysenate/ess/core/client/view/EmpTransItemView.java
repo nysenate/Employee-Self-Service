@@ -3,8 +3,7 @@ package gov.nysenate.ess.core.client.view;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.core.model.transaction.TransactionColumn;
 
-public class EmpTransItemView implements ViewObject
-{
+public class EmpTransItemView implements ViewObject {
     protected String desc;
     protected String value;
 

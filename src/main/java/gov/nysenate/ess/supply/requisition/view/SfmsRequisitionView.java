@@ -7,7 +7,6 @@ import gov.nysenate.ess.supply.requisition.model.Requisition;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -71,15 +70,15 @@ public class SfmsRequisitionView {
      * A view of LineItem formatted specifically for the synchronization process.
      */
     public static class SfmsLineItemView {
-       protected int itemId;
-       protected int quantity;
-       protected String issueUnit;
+        protected int itemId;
+        protected int quantity;
+        protected String issueUnit;
 
-       public SfmsLineItemView(LineItem li) {
-           this.itemId = li.getItem().getId();
-           this.quantity = li.getQuantity();
-           this.issueUnit = li.getItem().getUnitDescription();
-       }
+        public SfmsLineItemView(LineItem li) {
+            this.itemId = li.getItem().getId();
+            this.quantity = li.getQuantity();
+            this.issueUnit = li.getItem().getUnitDescription();
+        }
 
         public int getItemId() {
             return itemId;

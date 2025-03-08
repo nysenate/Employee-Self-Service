@@ -16,6 +16,7 @@ public interface Ordered extends EventType {
 
     /**
      * set the order
+     *
      * @param order the order
      */
     void setOrder(Order order);

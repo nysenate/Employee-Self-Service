@@ -26,8 +26,7 @@ public class SqlSenateMieDao extends SqlBaseDao {
         List<SenateMie> senateMiles = localNamedJdbc.query(sql, params, new SenateMieRowMapper());
         if (senateMiles.isEmpty() || senateMiles == null) {
             throw new IncorrectResultSizeDataAccessException(0);
-        }
-        else {
+        } else {
             return senateMiles.get(0);
         }
     }
@@ -40,8 +39,7 @@ public class SqlSenateMieDao extends SqlBaseDao {
         List<SenateMie> senateMiles = localNamedJdbc.query(sql, params, new SenateMieRowMapper());
         if (senateMiles.isEmpty() || senateMiles == null) {
             throw new IncorrectResultSizeDataAccessException(0);
-        }
-        else {
+        } else {
             return senateMiles.get(0);
         }
     }

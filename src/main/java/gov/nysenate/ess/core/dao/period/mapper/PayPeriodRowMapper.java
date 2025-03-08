@@ -7,8 +7,7 @@ import gov.nysenate.ess.core.model.period.PayPeriodType;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class PayPeriodRowMapper extends BaseRowMapper<PayPeriod>
-{
+public class PayPeriodRowMapper extends BaseRowMapper<PayPeriod> {
     protected String pfx;
 
     public PayPeriodRowMapper(String pfx) {

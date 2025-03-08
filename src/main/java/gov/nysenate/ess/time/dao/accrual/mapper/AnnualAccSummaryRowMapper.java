@@ -9,8 +9,7 @@ import java.sql.SQLException;
 /**
  * RowMapper implementation for AnnualAccSummary.
  */
-public class AnnualAccSummaryRowMapper extends BaseRowMapper<AnnualAccSummary>
-{
+public class AnnualAccSummaryRowMapper extends BaseRowMapper<AnnualAccSummary> {
     @Override
     public AnnualAccSummary mapRow(ResultSet rs, int rowNum) throws SQLException {
         AnnualAccSummary annAccRec = new AnnualAccSummary();

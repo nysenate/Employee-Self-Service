@@ -103,38 +103,38 @@ public class SqlRouteDao extends SqlBaseDao implements RouteDao {
 
     private enum SqlRouteQuery implements BasicSqlQuery {
         DELETE_ROUTE("""
-                DELETE FROM ${travelSchema}.app_route
-                WHERE app_id = :appId
-                """
+                     DELETE FROM ${travelSchema}.app_route
+                     WHERE app_id = :appId
+                     """
         ),
         DELETE_LEG("""
-                DELETE FROM ${travelSchema}.app_route_leg
-                WHERE app_route_leg_id = :legId
-                """
+                   DELETE FROM ${travelSchema}.app_route_leg
+                   WHERE app_route_leg_id = :legId
+                   """
         ),
         INSERT_LEG("""
-                INSERT INTO ${travelSchema}.app_route_leg(app_route_id, from_destination_id, to_destination_id,
-                  travel_date, method_of_travel, method_of_travel_description, is_outbound, sequence_no)
-                VALUES(:routeId, :fromDestinationId, :toDestinationId, :travelDate,
-                  :methodOfTravel, :methodOfTravelDescription, :isOutbound, :sequenceNo)
-                """
+                   INSERT INTO ${travelSchema}.app_route_leg(app_route_id, from_destination_id, to_destination_id,
+                     travel_date, method_of_travel, method_of_travel_description, is_outbound, sequence_no)
+                   VALUES(:routeId, :fromDestinationId, :toDestinationId, :travelDate,
+                     :methodOfTravel, :methodOfTravelDescription, :isOutbound, :sequenceNo)
+                   """
         ),
         INSERT_JOIN_TABLE("""
-                INSERT INTO ${travelSchema}.app_route(app_id, first_leg_qualifies_for_breakfast, last_leg_qualifies_for_dinner)
-                VALUES(:appId, :firstLegQualifiesForBreakfast, :lastLegQualifiesForDinner)
-                """
+                          INSERT INTO ${travelSchema}.app_route(app_id, first_leg_qualifies_for_breakfast, last_leg_qualifies_for_dinner)
+                          VALUES(:appId, :firstLegQualifiesForBreakfast, :lastLegQualifiesForDinner)
+                          """
         ),
         SELECT_ROUTE("""
-                SELECT app_route.app_route_id, first_leg_qualifies_for_breakfast, last_leg_qualifies_for_dinner,
-                    app_route_leg.app_route_leg_id, app_route_leg.from_destination_id, app_route_leg.to_destination_id,
-                    app_route_leg.travel_date, app_route_leg.method_of_travel,
-                    app_route_leg.method_of_travel_description, app_route_leg.is_outbound
-                FROM ${travelSchema}.app_route
-                    INNER JOIN ${travelSchema}.app_route_leg
-                    USING (app_route_id)
-                WHERE app_id = :appId
-                ORDER BY sequence_no ASC
-                """
+                     SELECT app_route.app_route_id, first_leg_qualifies_for_breakfast, last_leg_qualifies_for_dinner,
+                         app_route_leg.app_route_leg_id, app_route_leg.from_destination_id, app_route_leg.to_destination_id,
+                         app_route_leg.travel_date, app_route_leg.method_of_travel,
+                         app_route_leg.method_of_travel_description, app_route_leg.is_outbound
+                     FROM ${travelSchema}.app_route
+                         INNER JOIN ${travelSchema}.app_route_leg
+                         USING (app_route_id)
+                     WHERE app_id = :appId
+                     ORDER BY sequence_no ASC
+                     """
         );
 
         private final String sql;
@@ -154,11 +154,25 @@ public class SqlRouteDao extends SqlBaseDao implements RouteDao {
         }
     }
 
+    private static class LegMapper extends BaseRowMapper<Leg> {
+
+        @Override
+        public Leg mapRow(ResultSet rs, int rowNum) throws SQLException {
+            return new Leg(
+                    rs.getInt("app_route_leg_id"),
+                    new Destination(rs.getInt("from_destination_id")),
+                    new Destination(rs.getInt("to_destination_id")),
+                    new ModeOfTransportation(MethodOfTravel.of(rs.getString("method_of_travel")), rs.getString("method_of_travel_description")),
+                    rs.getBoolean("is_outbound"),
+                    getLocalDate(rs, "travel_date"));
+        }
+    }
+
     private class RouteHandler extends BaseHandler {
 
-        private LegMapper legMapper = new LegMapper();
-        private List<Leg> outboundLegs = new ArrayList<>();
-        private List<Leg> returnLegs = new ArrayList<>();
+        private final LegMapper legMapper = new LegMapper();
+        private final List<Leg> outboundLegs = new ArrayList<>();
+        private final List<Leg> returnLegs = new ArrayList<>();
         private int routeId;
         private Boolean firstLegQualifiesForBreakfast;
         private Boolean lastLegQualifiesForDinner;
@@ -184,20 +198,6 @@ public class SqlRouteDao extends SqlBaseDao implements RouteDao {
             Route route = new Route(outboundLegs, returnLegs, firstLegQualifiesForBreakfast, lastLegQualifiesForDinner);
             route.setId(routeId);
             return route;
-        }
-    }
-
-    private static class LegMapper extends BaseRowMapper<Leg> {
-
-        @Override
-        public Leg mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return new Leg(
-                    rs.getInt("app_route_leg_id"),
-                    new Destination(rs.getInt("from_destination_id")),
-                    new Destination(rs.getInt("to_destination_id")),
-                    new ModeOfTransportation(MethodOfTravel.of(rs.getString("method_of_travel")), rs.getString("method_of_travel_description")),
-                    rs.getBoolean("is_outbound"),
-                    getLocalDate(rs, "travel_date"));
         }
     }
 }

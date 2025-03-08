@@ -1,10 +1,10 @@
 package gov.nysenate.ess.core.dao.transaction;
 
 public enum EmpTransDaoOption {
-    NONE                (false, false),
-    INITIALIZE          (true, false),
-    SET_AS_APP          (false, true),
-    INITIALIZE_AS_APP   (true, true);
+    NONE(false, false),
+    INITIALIZE(true, false),
+    SET_AS_APP(false, true),
+    INITIALIZE_AS_APP(true, true);
 
     private final boolean shouldInitialize, shouldSetToApp;
 

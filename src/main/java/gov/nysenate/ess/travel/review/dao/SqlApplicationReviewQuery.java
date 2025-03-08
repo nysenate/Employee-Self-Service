@@ -15,23 +15,23 @@ enum SqlApplicationReviewQuery implements BasicSqlQuery {
                     " WHERE app_review_id = :appReviewId"
     ),
     PENDING_REVIEWS_FOR_ROLE("""
-            SELECT app_review.app_review_id, app_review.app_id, app_review.traveler_role,
-                   app_review.next_reviewer_role, is_shared
-            FROM ${travelSchema}.app_review
-              JOIN ${travelSchema}.app ON app_review.app_id = app.app_id
-            WHERE app.status IN ('DEPARTMENT_HEAD', 'TRAVEL_UNIT')
-            AND app_review.next_reviewer_role = :role
-            """
+                             SELECT app_review.app_review_id, app_review.app_id, app_review.traveler_role,
+                                    app_review.next_reviewer_role, is_shared
+                             FROM ${travelSchema}.app_review
+                               JOIN ${travelSchema}.app ON app_review.app_id = app.app_id
+                             WHERE app.status IN ('DEPARTMENT_HEAD', 'TRAVEL_UNIT')
+                             AND app_review.next_reviewer_role = :role
+                             """
     ),
     PENDING_REVIEWS_FOR_DEPT_HD("""
-            SELECT app_review.app_review_id, app_review.app_id, app_review.traveler_role,
-              app_review.next_reviewer_role, is_shared
-            FROM ${travelSchema}.app_review
-              JOIN ${travelSchema}.app ON app_review.app_id = app.app_id
-            WHERE app.status IN ('DEPARTMENT_HEAD', 'TRAVEL_UNIT')
-              AND app_review.next_reviewer_role = 'DEPARTMENT_HEAD'
-              AND app.traveler_dept_head_emp_id IN (:empIds)
-            """
+                                SELECT app_review.app_review_id, app_review.app_id, app_review.traveler_role,
+                                  app_review.next_reviewer_role, is_shared
+                                FROM ${travelSchema}.app_review
+                                  JOIN ${travelSchema}.app ON app_review.app_id = app.app_id
+                                WHERE app.status IN ('DEPARTMENT_HEAD', 'TRAVEL_UNIT')
+                                  AND app_review.next_reviewer_role = 'DEPARTMENT_HEAD'
+                                  AND app.traveler_dept_head_emp_id IN (:empIds)
+                                """
     ),
     APP_REVIEW_SELECT(
             "SELECT app_review.app_review_id, app_review.app_id, app_review.traveler_role,\n" +
@@ -79,24 +79,24 @@ enum SqlApplicationReviewQuery implements BasicSqlQuery {
     ),
     SELECT_APP_REVIEWS_FOR_RECONCILIATION(
             APP_REVIEW_SELECT.getSql() + """
-                    FROM ${travelSchema}.app_review
-                             JOIN ${travelSchema}.app ON app.app_id = app_review.app_id
-                             JOIN (SELECT app_id, max(amendment_id) as active_amendment_id
-                                   FROM ${travelSchema}.amendment
-                                   GROUP BY app_id) active_amendment
-                                  ON active_amendment.app_id = app.app_id
-                             JOIN (SELECT amendment_id, min(leg_id) as first_leg_id
-                                   FROM ${travelSchema}.amendment_legs
-                                   GROUP BY amendment_id) first_leg
-                                  ON first_leg.amendment_id = active_amendment.active_amendment_id
-                             JOIN ${travelSchema}.leg ON leg.leg_id = first_leg.first_leg_id
-                    WHERE app.status = 'APPROVED'
-                      AND leg.travel_date >= :from
-                      AND leg.travel_date <= :to
-                    """
+                                         FROM ${travelSchema}.app_review
+                                                  JOIN ${travelSchema}.app ON app.app_id = app_review.app_id
+                                                  JOIN (SELECT app_id, max(amendment_id) as active_amendment_id
+                                                        FROM ${travelSchema}.amendment
+                                                        GROUP BY app_id) active_amendment
+                                                       ON active_amendment.app_id = app.app_id
+                                                  JOIN (SELECT amendment_id, min(leg_id) as first_leg_id
+                                                        FROM ${travelSchema}.amendment_legs
+                                                        GROUP BY amendment_id) first_leg
+                                                       ON first_leg.amendment_id = active_amendment.active_amendment_id
+                                                  JOIN ${travelSchema}.leg ON leg.leg_id = first_leg.first_leg_id
+                                         WHERE app.status = 'APPROVED'
+                                           AND leg.travel_date >= :from
+                                           AND leg.travel_date <= :to
+                                         """
     );
 
-    private String sql;
+    private final String sql;
 
     SqlApplicationReviewQuery(String sql) {
         this.sql = sql;

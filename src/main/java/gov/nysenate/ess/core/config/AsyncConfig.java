@@ -63,8 +63,7 @@ public class AsyncConfig implements SchedulingConfigurer, AsyncConfigurer {
                 try {
                     logger.info("De-registering JDBC driver {}", driver);
                     DriverManager.deregisterDriver(driver);
-                }
-                catch (SQLException ex) {
+                } catch (SQLException ex) {
                     logger.error("Error de-registering JDBC driver {}", driver, ex);
                 }
             } else

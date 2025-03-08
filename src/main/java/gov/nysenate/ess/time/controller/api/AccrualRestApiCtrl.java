@@ -36,8 +36,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 @RestController
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/accruals")
-public class AccrualRestApiCtrl extends BaseRestApiCtrl
-{
+public class AccrualRestApiCtrl extends BaseRestApiCtrl {
     private static final Logger logger = LoggerFactory.getLogger(AccrualRestApiCtrl.class);
 
     @Autowired private DonationService donationService;
@@ -55,7 +54,7 @@ public class AccrualRestApiCtrl extends BaseRestApiCtrl
     @RequestMapping("")
     public BaseResponse getAccruals(@RequestParam int empId, @RequestParam String beforeDate) {
         LocalDate beforeLocalDate = parseISODate(beforeDate, "pay period");
-        checkPermission(new EssTimePermission( empId, ACCRUAL, GET, Range.singleton(beforeLocalDate)));
+        checkPermission(new EssTimePermission(empId, ACCRUAL, GET, Range.singleton(beforeLocalDate)));
 
         PayPeriod payPeriod = payPeriodService.getPayPeriod(PayPeriodType.AF, beforeLocalDate);
         AccrualsAvailable accrualsAvailable = accrualComputeService.getAccrualsAvailable(empId, payPeriod);

@@ -22,18 +22,18 @@ import java.util.Map;
 @Service
 public class EssTimeRecordManagerEmailService implements TimeRecordManagerEmailService {
 
+    private static final String reminderEmailSubject = "Time Record Manager Errors: ";
     @Autowired private SendMailService sendMailService;
     @Autowired private Configuration freemarkerCfg;
-
     @Value("${report.email}") private String reportEmail;
-
     @Value("${freemarker.time.templates.trm_error:trm_error.ftlh}")
     private String errorEmailTemplateName;
 
-    private static final String reminderEmailSubject = "Time Record Manager Errors: ";
-
-    /** {@inheritDoc}
-     * @param exceptions*/
+    /**
+     * {@inheritDoc}
+     *
+     * @param exceptions
+     */
     @Override
     public void sendTrmErrorNotification(Collection<TimeRecordManagerError> exceptions) {
 

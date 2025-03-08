@@ -7,7 +7,7 @@ public class SlackChannelNotFoundException extends SlackApiException {
 
     private static final long serialVersionUID = 8178877670168732120L;
 
-    private String channelName;
+    private final String channelName;
 
     public SlackChannelNotFoundException(String channelName, String message) {
         super("Could not post a slack message to channel: " + channelName);

@@ -18,16 +18,16 @@ import gov.nysenate.ess.core.service.pec.task.PersonnelTaskNotFoundEx;
 import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
 import gov.nysenate.ess.core.service.pec.task.TaskPDFSignatureService;
 import gov.nysenate.ess.core.util.ShiroUtils;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
-import javax.servlet.http.HttpServletRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -49,15 +49,12 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
 
     /** The uri path where ack docs are requested */
     private final String ackDocResPath;
-
-    @Value("${data.dir}") String dataDir;
-    @Value("${data.ackdoc_subdir}") String ackDocSubDir;
-
     private final PersonnelTaskService taskService;
     private final PersonnelTaskAssignmentDao assignmentDao;
     private final TaskPDFSignatureService signatureService;
-
     private final PECNotificationService pecNotificationService;
+    @Value("${data.dir}") String dataDir;
+    @Value("${data.ackdoc_subdir}") String ackDocSubDir;
 
     @Autowired
     public AcknowledgmentApiCtrl(PersonnelTaskService taskService,
@@ -79,18 +76,18 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
     /**
      * Acknowledge Api
      * ---------------
-     *
+     * <p>
      * Records an acknowledgment from an employee
-     *
+     * <p>
      * Usage:
      * (POST)    /api/v1/personnel/task/acknowledgment
-     *
+     * <p>
      * RequestParams
-     * @param empId int - the employee id of the employee completing an acknowledgement
-     * @param taskId int - the ack doc id that the employee is acknowledging
      *
+     * @param empId  int - the employee id of the employee completing an acknowledgement
+     * @param taskId int - the ack doc id that the employee is acknowledging
      * @return SimpleResponse
-     * */
+     */
     @RequestMapping(value = "", method = POST)
     public SimpleResponse acknowledgeDocument(@RequestParam int empId,
                                               @RequestParam int taskId) {
@@ -109,7 +106,8 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
             if (assignment.isCompleted()) {
                 throw new DuplicateAckEx(taskId);
             }
-        } catch (PersonnelTaskAssignmentNotFoundEx ignored) {}
+        } catch (PersonnelTaskAssignmentNotFoundEx ignored) {
+        }
 
         // Mark the acknowledgment task as completed
         assignmentDao.setTaskComplete(empId, taskId, authedEmpId);
@@ -119,18 +117,17 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
 
     /**
      * Signed PDF download api
-     *
+     * <p>
      * Usage:
-     *      * (GET)    /api/v1/personnel/task/acknowledgment/download/
-     *
+     * * (GET)    /api/v1/personnel/task/acknowledgment/download/
+     * <p>
      * Employees and Personnel should be able to download a signed copy of their completed acknowledgments.
-     *
      *
      * @return
      */
     @RequestMapping(value = "/download", method = GET)
     public ResponseEntity<Resource> downloadAcknowledgedDocument(HttpServletRequest request, @RequestParam int empId, @RequestParam int taskId) throws IOException {
-        File signatureFile =  signatureService.createEmployeeSignatureForTask(empId,taskId);
+        File signatureFile = signatureService.createEmployeeSignatureForTask(empId, taskId);
         // Try to determine file's content type
 
         Resource resource = loadFileAsResource(signatureFile);
@@ -139,7 +136,7 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
         contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
 
         // Fallback to the default content type if type could not be determined
-        if(contentType == null) {
+        if (contentType == null) {
             contentType = "application/octet-stream";
         }
 
@@ -182,7 +179,7 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
         try {
             Path filePath = file.toPath().toAbsolutePath().normalize();
             Resource resource = new UrlResource(filePath.toUri());
-            if(resource.exists()) {
+            if (resource.exists()) {
                 return resource;
             } else {
                 throw new IOException("File not found " + fileName);

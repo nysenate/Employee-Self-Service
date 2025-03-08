@@ -23,14 +23,13 @@ import java.io.IOException;
 public class EverfiApiClient {
 
     private static final Logger logger = LoggerFactory.getLogger(EverfiApiClient.class);
-
-    private final String HOST;
-    private static String accessToken = "";
     private static final int SUCCESS = 200;
     private static final int CREATED = 201;
     private static final int EXPIRED_TOKEN_CODE = 401;
     private static final int RATE_LIMIT_EXCEEDED = 429;
     private static final int MAX_RETRIES = 10;
+    private static String accessToken = "";
+    private final String HOST;
     private final String clientId;
     private final String clientSecret;
 
@@ -92,8 +91,7 @@ public class EverfiApiClient {
 
         if (req instanceof HttpPost) {
             ((HttpPost) req).setEntity(new StringEntity(entity));
-        }
-        else if (req instanceof  HttpPatch) {
+        } else if (req instanceof HttpPatch) {
             ((HttpPatch) req).setEntity(new StringEntity(entity));
         }
 
@@ -117,7 +115,7 @@ public class EverfiApiClient {
                         logger.error("Unable to make get request to Everfi. Error authenticating.");
                         retry = false;
                     }
-                } else if (statusCode == RATE_LIMIT_EXCEEDED){
+                } else if (statusCode == RATE_LIMIT_EXCEEDED) {
                     // Increment the retry count and sleep.
                     retryCount++;
                     Thread.sleep(getWaitTimeExp(retryCount));

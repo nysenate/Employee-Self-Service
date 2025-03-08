@@ -2,11 +2,8 @@ package gov.nysenate.ess.travel.request.route.destination;
 
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.travel.request.address.TravelAddressView;
-import gov.nysenate.ess.travel.request.allowances.PerDiemView;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static java.time.format.DateTimeFormatter.ISO_DATE;
 

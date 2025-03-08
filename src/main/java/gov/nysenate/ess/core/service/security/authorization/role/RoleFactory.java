@@ -12,6 +12,7 @@ public interface RoleFactory {
     /**
      * Returns the roles for a given employee.
      * Roles should be an Enum. For example, {@link EssRole}.
+     *
      * @param employee
      * @return
      */

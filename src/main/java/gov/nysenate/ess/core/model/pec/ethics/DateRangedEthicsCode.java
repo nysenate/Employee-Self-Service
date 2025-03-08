@@ -1,7 +1,5 @@
 package gov.nysenate.ess.core.model.pec.ethics;
 
-import gov.nysenate.ess.core.util.DateUtils;
-
 import java.time.LocalDateTime;
 
 public class DateRangedEthicsCode implements Comparable<DateRangedEthicsCode> {
@@ -50,8 +48,7 @@ public class DateRangedEthicsCode implements Comparable<DateRangedEthicsCode> {
     public int compareTo(DateRangedEthicsCode o) {
         if (o.getId() < id) {
             return 1;
-        }
-        else {
+        } else {
             return -1;
         }
     }

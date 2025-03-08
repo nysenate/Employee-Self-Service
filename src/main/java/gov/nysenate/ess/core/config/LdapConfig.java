@@ -7,11 +7,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.ldap.core.LdapTemplate;
-import org.springframework.ldap.core.support.*;
+import org.springframework.ldap.core.support.LdapContextSource;
 
 @Configuration
-public class LdapConfig
-{
+public class LdapConfig {
     private static final Logger logger = LoggerFactory.getLogger(LdapConfig.class);
 
     @Value("${ldap.url}") private String ldapUrl;

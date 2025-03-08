@@ -17,6 +17,7 @@ public interface ApplicationReviewDao {
     /**
      * Retrieve AppReviews which are pending review by the given role.
      * role should be a primary non DepartmentHead role.
+     *
      * @param role A non department head primary role.
      * @return
      */
@@ -24,6 +25,7 @@ public interface ApplicationReviewDao {
 
     /**
      * Retrieve AppReviews which are pending review by a Department head with one of the given emp ids.
+     *
      * @param empIds
      * @return
      */
@@ -58,6 +60,7 @@ public interface ApplicationReviewDao {
     /**
      * Get all ApplicationReview's which are approved and have an amendment with
      * a start date between from and to inclusive.
+     *
      * @param from
      * @param to
      * @return

@@ -30,7 +30,8 @@ public class MileagePerDiemView implements ViewObject {
     private String maximumPerDiem;
     private boolean qualifiesForReimbursement;
 
-    public MileagePerDiemView() {}
+    public MileagePerDiemView() {
+    }
 
     public MileagePerDiemView(MileagePerDiem mpd) {
         this.id = mpd.getId();

@@ -36,5 +36,5 @@ public class TimePageCtrl {
             modelMap.addAllAttributes(pageCtrlUtils.commonPageData());
             return "time";
         }
-	}
+    }
 }

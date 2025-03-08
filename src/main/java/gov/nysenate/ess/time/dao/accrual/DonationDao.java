@@ -21,6 +21,7 @@ public interface DonationDao {
     /**
      * Maps effective dates to a list of hours donated for a given year and employee.
      * Must be a multimap in case multiple donations are on the same day.
+     *
      * @return The result map, which may be empty if no donations were made that year.
      */
     default Multimap<LocalDate, BigDecimal> getDonatedTime(int empId, int year) {

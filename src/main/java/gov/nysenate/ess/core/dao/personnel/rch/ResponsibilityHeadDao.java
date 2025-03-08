@@ -30,9 +30,9 @@ public interface ResponsibilityHeadDao {
     /**
      * Search for resp ctr heads whose name or code matches the given term.
      *
-     * @param term String
+     * @param term        String
      * @param limitOffset {@link LimitOffset}
-     * @param order {@link SortOrder}
+     * @param order       {@link SortOrder}
      * @return {@link PaginatedList<ResponsibilityHead>}
      */
     PaginatedList<ResponsibilityHead> rchSearch(String term, LimitOffset limitOffset, SortOrder order);

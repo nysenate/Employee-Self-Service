@@ -56,8 +56,7 @@ public class EverfiAssignmentProgress {
     public ZonedDateTime getCompletedAt() {
         try {
             return ZonedDateTime.parse(completedAt);
-        }
-        catch (NullPointerException e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }

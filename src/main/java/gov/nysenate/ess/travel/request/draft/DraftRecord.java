@@ -1,7 +1,6 @@
 package gov.nysenate.ess.travel.request.draft;
 
 import gov.nysenate.ess.core.util.OutputUtils;
-import gov.nysenate.ess.travel.api.application.AmendmentView;
 import gov.nysenate.ess.travel.api.application.TravelApplicationView;
 
 import java.time.LocalDateTime;

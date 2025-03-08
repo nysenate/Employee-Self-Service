@@ -11,7 +11,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class RequisitionStompService {
 
-    private EventBus eventBus;
+    private final EventBus eventBus;
+    @Autowired private AsyncRequisitionStomper requisitionStomper;
 
     @Autowired
     public RequisitionStompService(EventBus eventBus) {
@@ -19,23 +20,21 @@ public class RequisitionStompService {
         this.eventBus.register(this);
     }
 
+    @Subscribe
+    public void handleRequisitionUpdateEvent(RequisitionUpdateEvent updateEvent) {
+        requisitionStomper.broadcast(updateEvent.getRequisitionView());
+    }
+
     @Service
     public static class AsyncRequisitionStomper {
         @Autowired private SimpMessagingTemplate messagingTemplate;
 
-        private String brokerName = "/event/requisition";
+        private final String brokerName = "/event/requisition";
 
         @Async
         public void broadcast(RequisitionView requisition) {
             messagingTemplate.convertAndSend(brokerName, requisition);
         }
-    }
-
-    @Autowired private AsyncRequisitionStomper requisitionStomper;
-
-    @Subscribe
-    public void handleRequisitionUpdateEvent(RequisitionUpdateEvent updateEvent) {
-        requisitionStomper.broadcast(updateEvent.getRequisitionView());
     }
 
 }

@@ -18,7 +18,7 @@ import java.util.Set;
 @Repository
 public class SupplyItemDao extends SqlBaseDao {
 
-    private ItemRestrictionDao itemRestrictionDao;
+    private final ItemRestrictionDao itemRestrictionDao;
 
     @Autowired
     public SupplyItemDao(ItemRestrictionDao itemRestrictionDao) {
@@ -53,8 +53,7 @@ public class SupplyItemDao extends SqlBaseDao {
         List<SupplyItem> itemList = remoteNamedJdbc.query(sql, params, new SupplyItemRowMapper());
         if (itemList.isEmpty() || itemList == null) {
             throw new IncorrectResultSizeDataAccessException(0);
-        }
-        else {
+        } else {
             return setItemRestriction(itemList.get(0));
         }
     }

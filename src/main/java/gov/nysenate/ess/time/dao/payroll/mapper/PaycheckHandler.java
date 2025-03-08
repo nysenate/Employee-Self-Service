@@ -12,8 +12,25 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class PaycheckHandler extends BaseHandler
-{
+public class PaycheckHandler extends BaseHandler {
+    private static final RowMapper<Paycheck> paycheckRowMapper = ((rs, rowNum) ->
+            new Paycheck(
+                    rs.getString("NUPERIOD"),
+                    getLocalDateFromRs(rs, "DTCHECK"),
+                    rs.getBigDecimal("MOGROSS"),
+                    rs.getBigDecimal("MONET"),
+                    rs.getBigDecimal("MOADVICEAMT"),
+                    rs.getBigDecimal("MOCHECKAMT")
+            )
+    );
+    private static final RowMapper<Deduction> deductionRowMapper = ((rs, rowNum) ->
+            new Deduction(
+                    rs.getString("CDDEDUCTION"),
+                    rs.getInt("CDORDER"),
+                    rs.getString("DEDEDUCTIONF"),
+                    rs.getBigDecimal("MODEDUCTION")
+            )
+    );
     private HashMap<LocalDate, Paycheck> dateToPaycheck = new HashMap<>();
 
     public PaycheckHandler() {
@@ -35,24 +52,4 @@ public class PaycheckHandler extends BaseHandler
     public List<Paycheck> getPaychecks() {
         return new ArrayList<>(dateToPaycheck.values());
     }
-
-    private static final RowMapper<Paycheck> paycheckRowMapper = ((rs, rowNum) ->
-            new Paycheck(
-                    rs.getString("NUPERIOD"),
-                    getLocalDateFromRs(rs, "DTCHECK"),
-                    rs.getBigDecimal("MOGROSS"),
-                    rs.getBigDecimal("MONET"),
-                    rs.getBigDecimal("MOADVICEAMT"),
-                    rs.getBigDecimal("MOCHECKAMT")
-            )
-    );
-
-    private static final RowMapper<Deduction> deductionRowMapper = ((rs, rowNum) ->
-            new Deduction(
-                    rs.getString("CDDEDUCTION"),
-                    rs.getInt("CDORDER"),
-                    rs.getString("DEDEDUCTIONF"),
-                    rs.getBigDecimal("MODEDUCTION")
-            )
-    );
 }

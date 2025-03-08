@@ -8,36 +8,36 @@ import java.util.List;
 
 public class TravelEmployeeStatisticsView implements ViewObject {
 
-    private Integer emplId;
+    private Integer empId;
     private int count;
     private EmployeeView employeeView;
     private String totalExpenses;
-    private List<StatusSummary> statusSummaryList;
+    private List<ApplicationStatusSummary> applicationStatusSummaryList;
 
     // Constructor
-    public TravelEmployeeStatisticsView(Integer emplId, EmployeeView employeeView, int count, String totalExpenses, List<StatusSummary> statusSummaryList) {
-        this.emplId = emplId;
+    public TravelEmployeeStatisticsView(Integer empId, EmployeeView employeeView, int count, String totalExpenses, List<ApplicationStatusSummary> applicationStatusSummaryList) {
+        this.empId = empId;
         this.count = count;
         this.employeeView = employeeView;
         this.totalExpenses = totalExpenses;
-        this.statusSummaryList = statusSummaryList;
+        this.applicationStatusSummaryList = applicationStatusSummaryList;
     }
 
     public TravelEmployeeStatisticsView(TravelEmployeeStatisticsDTO travelEmployeeStatisticsDTO) {
-        emplId = travelEmployeeStatisticsDTO.getEmplId();
+        empId = travelEmployeeStatisticsDTO.getEmplId();
         count = travelEmployeeStatisticsDTO.getCount();
         employeeView = travelEmployeeStatisticsDTO.getEmployeeView();
         totalExpenses = travelEmployeeStatisticsDTO.getTotalExpenses();
-        statusSummaryList = travelEmployeeStatisticsDTO.getStatusSummaryList();
+        applicationStatusSummaryList = travelEmployeeStatisticsDTO.getStatusSummaryList();
     }
 
     // Getters and Setters
     public Integer getEmplId() {
-        return emplId;
+        return empId;
     }
 
-    public void setEmplId(Integer emplId) {
-        this.emplId = emplId;
+    public void setEmplId(Integer empId) {
+        this.empId = empId;
     }
 
     public int getCount() {
@@ -56,10 +56,12 @@ public class TravelEmployeeStatisticsView implements ViewObject {
         this.totalExpenses = totalExpenses;
     }
 
-    public List<StatusSummary> getStatusSummaryList() { return statusSummaryList; }
+    public List<ApplicationStatusSummary> getStatusSummaryList() {
+        return applicationStatusSummaryList;
+    }
 
-    public void setStatusSummaryList(List<StatusSummary> statusSummaryList) {
-        this.statusSummaryList = statusSummaryList;
+    public void setStatusSummaryList(List<ApplicationStatusSummary> applicationStatusSummaryList) {
+        this.applicationStatusSummaryList = applicationStatusSummaryList;
     }
 
     public EmployeeView getEmployeeView() {
@@ -72,6 +74,6 @@ public class TravelEmployeeStatisticsView implements ViewObject {
 
     @Override
     public String getViewType() {
-        return "travel-status-count";
+        return "travel_employee_statistics";
     }
 }

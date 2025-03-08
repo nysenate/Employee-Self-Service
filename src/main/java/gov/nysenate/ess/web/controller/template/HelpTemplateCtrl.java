@@ -10,14 +10,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
  */
 @Controller
 @RequestMapping(HelpTemplateCtrl.HELP_TMPL_BASE_URL)
-public class HelpTemplateCtrl extends BaseTemplateCtrl
-{
-    private static final Logger logger = LoggerFactory.getLogger(HelpTemplateCtrl.class);
+public class HelpTemplateCtrl extends BaseTemplateCtrl {
     protected static final String HELP_TMPL_BASE_URL = TMPL_BASE_URL + "/help";
+    private static final Logger logger = LoggerFactory.getLogger(HelpTemplateCtrl.class);
 
     /** --- T&A --- */
 
-    @RequestMapping(value="/ta/plan")
+    @RequestMapping(value = "/ta/plan")
     public String taPlan() {
         return HELP_TMPL_BASE_URL + "/ta/plan";
     }

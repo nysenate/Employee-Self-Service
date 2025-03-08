@@ -22,8 +22,7 @@ import static gov.nysenate.ess.time.model.EssTimeConstants.ANNUAL_PER_HOURS;
  * needed to compute accruals for a given pay period and provides methods to transfer data to/from other
  * accrual related classes.
  */
-public class AccrualState extends AccrualSummary
-{
+public class AccrualState extends AccrualSummary {
 
     protected LocalDate beginDate;
     protected LocalDate endDate;
@@ -41,12 +40,10 @@ public class AccrualState extends AccrualSummary
     protected BigDecimal ytdHoursExpected;
 
     protected int latestYear;
-
-    /** Tracks usage for each period */
-    private Map<PayPeriod, PeriodAccUsage> periodAccUsageMap = new HashMap<>();
-
     /** Range set of expected dates for the current pay period */
     protected RangeSet<LocalDate> expectedDates = TreeRangeSet.create();
+    /** Tracks usage for each period */
+    private final Map<PayPeriod, PeriodAccUsage> periodAccUsageMap = new HashMap<>();
 
     public AccrualState(AnnualAccSummary annualAccSummary) {
         super(annualAccSummary);
@@ -161,6 +158,7 @@ public class AccrualState extends AccrualSummary
 
     /**
      * Get the number of expected work days in this period
+     *
      * @return long
      */
     private long getNumWorkDays() {
@@ -187,8 +185,7 @@ public class AccrualState extends AccrualSummary
                         AccrualUtils.roundPersonalHours(
                                 ANNUAL_PER_HOURS.multiply(getSpecialAnnualProratePercentage())));
             }
-        }
-        else {
+        } else {
             this.setPerHoursAccrued(BigDecimal.ZERO);
         }
 
@@ -248,9 +245,17 @@ public class AccrualState extends AccrualSummary
         return empAccruing ? sickRate : BigDecimal.ZERO;
     }
 
+    public void setSickRate(BigDecimal sickRate) {
+        this.sickRate = sickRate;
+    }
+
     /** Return 0 for vacation rate if employee has accruals turned off */
     public BigDecimal getVacRate() {
         return empAccruing ? vacRate : BigDecimal.ZERO;
+    }
+
+    public void setVacRate(BigDecimal vacRate) {
+        this.vacRate = vacRate;
     }
 
     /** --- Basic Getters/Setters --- */
@@ -311,14 +316,6 @@ public class AccrualState extends AccrualSummary
         this.minHoursToEnd = minHoursToEnd;
     }
 
-    public void setSickRate(BigDecimal sickRate) {
-        this.sickRate = sickRate;
-    }
-
-    public void setVacRate(BigDecimal vacRate) {
-        this.vacRate = vacRate;
-    }
-
     public int getPayPeriodCount() {
         return payPeriodCount;
     }
@@ -351,7 +348,12 @@ public class AccrualState extends AccrualSummary
         this.expectedDates = expectedDates;
     }
 
-    public int getLatestYear() {return this.latestYear;};
+    public int getLatestYear() {
+        return this.latestYear;
+    }
 
-    public void setLatestYear(int latestYear) {this.latestYear = latestYear;};
+    public void setLatestYear(int latestYear) {
+        this.latestYear = latestYear;
+    }
+
 }

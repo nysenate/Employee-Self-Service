@@ -32,25 +32,24 @@ import java.util.stream.Collectors;
 /**
  * Realm implementation for providing authentication via the Senate's LDAP server and authorization via
  * personnel data stored in SFMS.
- *
+ * <p>
  * This is similar to {@link org.apache.shiro.realm.ldap.AbstractLdapRealm AbstractLdapRealm} but since
  * we're using Spring LDAP to handle low level LDAP operations it wasn't necessary to extend that class.
  */
 @Component
-public class EssLdapDbAuthzRealm extends AuthorizingRealm
-{
+public class EssLdapDbAuthzRealm extends AuthorizingRealm {
     private static final Logger logger = LoggerFactory.getLogger(EssLdapDbAuthzRealm.class);
 
     // If 'authEnabled' is set to false, any user can be authenticated using the master password below.
     @Value("${auth.enabled:true}") private boolean authEnabled;
     @Value("${auth.master.pass}") private String masterPass;
 
-    private LdapAuthService essLdapAuthService;
-    private EmployeeInfoService employeeInfoService;
-    private EmployeeDao employeeDao;
-    private EssRoleService essRoleService;
-    private EssPermissionService essPermissionService;
-    private SlackChatService slackChatService;
+    private final LdapAuthService essLdapAuthService;
+    private final EmployeeInfoService employeeInfoService;
+    private final EmployeeDao employeeDao;
+    private final EssRoleService essRoleService;
+    private final EssPermissionService essPermissionService;
+    private final SlackChatService slackChatService;
 
     @Autowired
     public EssLdapDbAuthzRealm(LdapAuthService essLdapAuthService, EmployeeInfoService employeeInfoService,
@@ -71,7 +70,7 @@ public class EssLdapDbAuthzRealm extends AuthorizingRealm
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * Performs LDAP authentication using the supplied authentication token.
      */
     @Override
@@ -80,7 +79,7 @@ public class EssLdapDbAuthzRealm extends AuthorizingRealm
             String username = userPassToken.getUsername();
             String password = new String(userPassToken.getPassword());
             logger.info("Authenticating user {} through the Senate LDAP.{}",
-                    username, authEnabled ? "" : " (Master Pass Enabled)" );
+                    username, authEnabled ? "" : " (Master Pass Enabled)");
 
             LdapAuthResult authResult =
                     (authEnabled) ? essLdapAuthService.authenticateUserByUid(username, password)
@@ -104,7 +103,7 @@ public class EssLdapDbAuthzRealm extends AuthorizingRealm
         if (authResult.isAuthenticated()) {
             return new SimpleAuthenticationInfo(authResult.getPerson(), token.getPassword(), getName());
         }
-        switch(authResult.getAuthStatus()) {
+        switch (authResult.getAuthStatus()) {
             case EMPTY_USERNAME:
                 throw new UnknownAccountException("The username supplied was empty.");
             case NAME_NOT_FOUND_EXCEPTION:
@@ -132,13 +131,11 @@ public class EssLdapDbAuthzRealm extends AuthorizingRealm
         try {
             user = (SenatePerson) principals.getPrimaryPrincipal();
             empId = user.getEmployeeId();
-        }
-        catch(ClassCastException castEx) {
+        } catch (ClassCastException castEx) {
             logger.debug("Ess LDAP realm could not retrieve principal for authorization. " +
                     "This is expected when accessing the api via a whitelisted ip without logging in.");
             return authInfo;
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             logger.error("An error occured during LDAP Authorization.");
             return authInfo;
         }

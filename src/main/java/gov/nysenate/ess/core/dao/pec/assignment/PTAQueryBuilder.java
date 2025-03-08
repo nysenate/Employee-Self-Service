@@ -12,7 +12,7 @@ import java.util.StringJoiner;
 
 /**
  * Object that holds values to pass into a query for {@link PersonnelTaskAssignment}s.
- *
+ * <p>
  * Unset/null fields will be ignored in the query.
  */
 public class PTAQueryBuilder {
@@ -46,14 +46,17 @@ public class PTAQueryBuilder {
 
     /* --- Builder-style setters --- */
 
+    public Integer getEmpId() {
+        return empId;
+    }
+
     public PTAQueryBuilder setEmpId(Integer empId) {
         this.empId = empId;
         return this;
     }
 
-    public PTAQueryBuilder setActive(Boolean active) {
-        this.active = active;
-        return this;
+    public PersonnelTaskType getTaskType() {
+        return taskType;
     }
 
     public PTAQueryBuilder setTaskType(PersonnelTaskType taskType) {
@@ -61,9 +64,17 @@ public class PTAQueryBuilder {
         return this;
     }
 
+    public Boolean getCompleted() {
+        return completed;
+    }
+
     public PTAQueryBuilder setCompleted(Boolean completed) {
         this.completed = completed;
         return this;
+    }
+
+    public Set<Integer> getTaskIds() {
+        return taskIds;
     }
 
     public PTAQueryBuilder setTaskIds(Collection<Integer> taskIds) {
@@ -73,9 +84,28 @@ public class PTAQueryBuilder {
         return this;
     }
 
+    /* --- Getters --- */
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public PTAQueryBuilder setActive(Boolean active) {
+        this.active = active;
+        return this;
+    }
+
+    public LocalDateTime getCompletedFrom() {
+        return completedFrom;
+    }
+
     public PTAQueryBuilder setCompletedFrom(LocalDateTime completedFrom) {
         this.completedFrom = completedFrom;
         return this;
+    }
+
+    public LocalDateTime getCompletedTo() {
+        return completedTo;
     }
 
     public PTAQueryBuilder setCompletedTo(LocalDateTime completedTo) {
@@ -83,42 +113,12 @@ public class PTAQueryBuilder {
         return this;
     }
 
+    public PTAQueryCompletionStatus getTotalCompletionStatus() {
+        return totalCompletionStatus;
+    }
+
     public PTAQueryBuilder setTotalCompletionStatus(PTAQueryCompletionStatus totalCompletionStatus) {
         this.totalCompletionStatus = totalCompletionStatus;
         return this;
-    }
-
-    /* --- Getters --- */
-
-    public Integer getEmpId() {
-        return empId;
-    }
-
-    public PersonnelTaskType getTaskType() {
-        return taskType;
-    }
-
-    public Boolean getCompleted() {
-        return completed;
-    }
-
-    public Set<Integer> getTaskIds() {
-        return taskIds;
-    }
-
-    public Boolean getActive() {
-        return active;
-    }
-
-    public LocalDateTime getCompletedFrom() {
-        return completedFrom;
-    }
-
-    public LocalDateTime getCompletedTo() {
-        return completedTo;
-    }
-
-    public PTAQueryCompletionStatus getTotalCompletionStatus() {
-        return totalCompletionStatus;
     }
 }

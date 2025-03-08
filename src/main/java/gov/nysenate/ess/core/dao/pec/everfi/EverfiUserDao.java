@@ -8,6 +8,7 @@ public interface EverfiUserDao {
 
     /**
      * Get an {@Link EverfiUserIDs} for a given empID
+     *
      * @param empID
      * @return
      */
@@ -15,6 +16,7 @@ public interface EverfiUserDao {
 
     /**
      * Get an {@Link EverfiUserIDs} for a given everfiUUID
+     *
      * @param everfiUUID
      * @return
      */
@@ -22,6 +24,7 @@ public interface EverfiUserDao {
 
     /**
      * Insert an everfi UUID - emp ID pair
+     *
      * @param everfiUUID
      * @param empID
      * @return
@@ -30,18 +33,21 @@ public interface EverfiUserDao {
 
     /**
      * Returns a list of everfi ids that we want to ignore
+     *
      * @return
      */
     List<EverfiUserIDs> getIgnoredEverfiUserIDs();
 
     /**
      * Returns a count of all ID's in the DB. Useful for correction logic
+     *
      * @return
      */
     int everfiUserIDCount();
 
     /**
      * Insert a UUID into the ignored everfi uuid table
+     *
      * @param everfiUUID
      * @param empID
      */
@@ -49,6 +55,7 @@ public interface EverfiUserDao {
 
     /**
      * Remove a UUID from the ignored everfi uuid table
+     *
      * @param everfiUUID
      */
     void removeIgnoredID(String everfiUUID);

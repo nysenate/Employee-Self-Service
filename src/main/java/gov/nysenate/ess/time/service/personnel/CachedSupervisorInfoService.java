@@ -66,8 +66,7 @@ public class CachedSupervisorInfoService extends EmployeeEhCache<PrimarySupEmpGr
     public boolean isSupervisorDuring(int empId, Range<LocalDate> dateRange) {
         try {
             return getSupervisorEmpGroup(empId, dateRange).hasEmployees();
-        }
-        catch (SupervisorException e) {
+        } catch (SupervisorException e) {
             return false;
         }
     }
@@ -81,7 +80,7 @@ public class CachedSupervisorInfoService extends EmployeeEhCache<PrimarySupEmpGr
     public int getSupervisorIdForEmp(int empId, LocalDate date) throws SupervisorException {
         TransactionHistory transHistory = empTransService.getTransHistory(empId);
         TreeMap<LocalDate, Integer> effectiveSupervisorIds =
-            transHistory.getEffectiveSupervisorIds(Range.upTo(date, BoundType.CLOSED));
+                transHistory.getEffectiveSupervisorIds(Range.upTo(date, BoundType.CLOSED));
         if (!effectiveSupervisorIds.isEmpty()) {
             return effectiveSupervisorIds.lastEntry().getValue();
         }
@@ -157,8 +156,7 @@ public class CachedSupervisorInfoService extends EmployeeEhCache<PrimarySupEmpGr
                 supChain.addSupervisorToChain(currSupId);
                 currEmpId = currSupId;
                 currDepth++;
-            }
-            else {
+            } else {
                 break;
             }
         }
@@ -180,7 +178,7 @@ public class CachedSupervisorInfoService extends EmployeeEhCache<PrimarySupEmpGr
     @Override
     public void updateSupervisorOverride(SupervisorOverride override) throws SupervisorException {
         if (isSupervisorDuring(override.getGranteeEmpId(), Range.all()) &&
-            isSupervisorDuring(override.getGranterEmpId(), Range.all())) {
+                isSupervisorDuring(override.getGranterEmpId(), Range.all())) {
             // If the override is set to inactive, only apply the override if there is an existing grant
             // with the given granter -> grantee pair. There's no reason to create it if there isn't one.
             if (!override.isActive()) {
@@ -194,8 +192,7 @@ public class CachedSupervisorInfoService extends EmployeeEhCache<PrimarySupEmpGr
                     override.isActive(), override.getStartDate().orElse(null), override.getEndDate().orElse(null));
             cachePrimarySupEmpGroup(override.getGranteeEmpId());
             eventBus.post(new SupervisorGrantUpdateEvent(override));
-        }
-        else {
+        } else {
             throw new SupervisorException("Grantee/Granter for override must both have been a supervisor.");
         }
     }
@@ -213,8 +210,8 @@ public class CachedSupervisorInfoService extends EmployeeEhCache<PrimarySupEmpGr
         for (var empId : employeeIdService.getActiveEmployeeIds()) {
             try {
                 cachePrimarySupEmpGroup(empId);
+            } catch (SupervisorException ignored) {
             }
-            catch (SupervisorException ignored) {}
         }
     }
 
@@ -223,6 +220,7 @@ public class CachedSupervisorInfoService extends EmployeeEhCache<PrimarySupEmpGr
     /**
      * Construct a {@link SupervisorEmpGroup} for the given supId
      * Uses {@link PrimarySupEmpGroup} and/or {@link SupervisorOverride}s
+     *
      * @param supId int
      * @return {@link SupervisorEmpGroup}
      * @throws SupervisorException if the employee ref'd by supId has no primary employees or overrides
@@ -280,8 +278,8 @@ public class CachedSupervisorInfoService extends EmployeeEhCache<PrimarySupEmpGr
     /**
      * Generates {@link EmployeeSupInfo}s for the given employee supervisor override.
      * Uses the employee's {@link TransactionHistory} to filter out non-employed dates
-     *   and possibly split into multiple {@link EmployeeSupInfo}s if the employee had multiple supervisors
-     *   during the override.
+     * and possibly split into multiple {@link EmployeeSupInfo}s if the employee had multiple supervisors
+     * during the override.
      * Must be called for {@link SupOverrideType#EMPLOYEE} overrides
      *
      * @param override {@link SupervisorOverride}
@@ -327,17 +325,17 @@ public class CachedSupervisorInfoService extends EmployeeEhCache<PrimarySupEmpGr
      * Get a {@link PrimarySupEmpGroup} for the given employee
      * The group will be retrieved from the cache if it exists there
      * Or pulled from the database (and into the cache) if not
-     * @see #cachePrimarySupEmpGroup(int)
+     *
      * @param supId int - supervisor id
      * @return {@link PrimarySupEmpGroup}
      * @throws SupervisorException if the employee has no direct employees
+     * @see #cachePrimarySupEmpGroup(int)
      */
     private PrimarySupEmpGroup getPrimarySupEmpGroup(int supId) throws SupervisorException {
         var result = cache.get(supId);
         if (result == null) {
             result = cachePrimarySupEmpGroup(supId);
-        }
-        else if (result.getSupervisorId() == invalidGroup.getSupervisorId()) {
+        } else if (result.getSupervisorId() == invalidGroup.getSupervisorId()) {
             throw new SupervisorMissingEmpsEx(supId);
         }
         // Return a copy to prevent unintentional modification to the cached value
@@ -347,6 +345,7 @@ public class CachedSupervisorInfoService extends EmployeeEhCache<PrimarySupEmpGr
     /**
      * Get a {@link PrimarySupEmpGroup} and save it to the cache
      * Register the employee in the cache as a non-supervisor if no {@link PrimarySupEmpGroup} can be retrieved
+     *
      * @param supId int - supervisor id
      * @return {@link PrimarySupEmpGroup}
      * @throws SupervisorException if the employee is not a supervisor
@@ -364,6 +363,7 @@ public class CachedSupervisorInfoService extends EmployeeEhCache<PrimarySupEmpGr
 
     /**
      * Get all employee and supervisor overrides for the given employee
+     *
      * @param supId int
      * @return {@link List<SupervisorOverride>}
      */
@@ -373,7 +373,8 @@ public class CachedSupervisorInfoService extends EmployeeEhCache<PrimarySupEmpGr
 
     /**
      * If any new transactions are posted that affect supervisor employee groups,
-     *  recache the affected supervisor's groups
+     * recache the affected supervisor's groups
+     *
      * @param transUpdateEvent TransactionHistoryUpdateEvent
      */
     @Subscribe
@@ -411,6 +412,7 @@ public class CachedSupervisorInfoService extends EmployeeEhCache<PrimarySupEmpGr
      * This will detect instances when a supervisor is no longer in an employee's transaction history,
      * but the employee is still in the supervisors cached emp group,
      * which is not doable using transaction history alone.
+     *
      * @see #getAffectedSupIdsFromTrans(Map), to get affected supervisors not necessarily covered by this method.
      */
     private Set<Integer> getAffectedSupIdsInCache(Map<Integer, RangeSet<LocalDate>> affectedEmpDates) {
@@ -436,6 +438,7 @@ public class CachedSupervisorInfoService extends EmployeeEhCache<PrimarySupEmpGr
      * Get sup ids of supervisors for the given emps at given dates according to current transaction history.
      * This will pick up new supervisors added to an employee's transaction history,
      * something not doable using the cache.
+     *
      * @see #getAffectedSupIdsInCache(Map), to get affected supervisors not necessarily covered by this method.
      */
     private Set<Integer> getAffectedSupIdsFromTrans(Map<Integer, RangeSet<LocalDate>> affectedEmpDates) {

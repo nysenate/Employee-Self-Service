@@ -7,13 +7,13 @@ public final class ItemStatus {
 
     /**
      * Is this item made by the senate.
-     *
+     * <p>
      * If true, this item does not need to be synchronized. Inventory counts are not tracked
      * for items made by the senate.
      * If false, this item needs to by synchronized.
-     *
+     * <p>
      * Examples: Commodity codes: PML, PM, SL
-     *
+     * <p>
      * This is determined by the column "cdsensuppieditem" in SFMS.
      */
     private final boolean isMadeBySenate;

@@ -19,23 +19,18 @@ import java.util.stream.Stream;
 public class PotentialEmployeeRejectionService {
 
     private static final Logger logger = LoggerFactory.getLogger(PotentialEmployeeRejectionService.class);
-
-    private MimeSendMailService mimeSendMailService;
-
     private final String techInternEmail;
     private final String dateDir;
     private final String internSubdir;
-
     private final String internRejectionTitlePartOne = "NYS STS ";
     private final String internRejectionTitlePartTwo = " Internship";
-
     private final String internRejectionBodyPartOne = "Hello ";
     private final String internRejectionBodyPartTwo = "\n\n" +
             "Unfortunately, we will not be advancing you in our hiring process for our ";
     private final String internRejectionBodyPartThree =
             " internship.\nThank you for taking the time to apply to our internship! Best of luck finding your next position!";
-
     private final String internRejectionConclusion = "\n\nThanks again!";
+    private final MimeSendMailService mimeSendMailService;
 
 
     @Autowired
@@ -75,7 +70,6 @@ public class PotentialEmployeeRejectionService {
         File directory = new File(directoryPath);
 
         if (directory.exists()) {
-            return;
         } else {
             directory.mkdirs();
         }

@@ -21,7 +21,7 @@ public class EverfiAssignmentsAndProgressRequest {
     private EverfiAssignmentsAndProgressResponse response;
 
     private EverfiAssignmentsAndProgressRequest(String fullEndpoint, EverfiApiClient httpClient, String scrollId,
-                                               String since, int limit) {
+                                                String since, int limit) {
         this.fullEndpoint = fullEndpoint;
         this.httpClient = httpClient;
         this.scrollId = scrollId;
@@ -35,10 +35,11 @@ public class EverfiAssignmentsAndProgressRequest {
 
     /**
      * Static Factory Constructor - constructs a request for getting all user assignments and progress.
+     *
      * @param everfiClient
-     * @param since Optional, ISO date time string representing where we left off querying last time. Can be
-     *              used to prevent importing duplicate records.
-     * @param limit How many results to get in each request.
+     * @param since        Optional, ISO date time string representing where we left off querying last time. Can be
+     *                     used to prevent importing duplicate records.
+     * @param limit        How many results to get in each request.
      * @return
      */
     public static EverfiAssignmentsAndProgressRequest allUserAssignments(EverfiApiClient everfiClient,
@@ -52,11 +53,12 @@ public class EverfiAssignmentsAndProgressRequest {
 
     /**
      * Static Factory Constructor - constructs a request for getting a single user's assignments and progress.
+     *
      * @param everfiClient
-     * @param userUuid The everfi user uuid.
-     * @param since Optional, ISO date time string representing where we left off querying last time. Can be
-     *              used to prevent importing duplicate records.
-     * @param limit How many results to get in each request.
+     * @param userUuid     The everfi user uuid.
+     * @param since        Optional, ISO date time string representing where we left off querying last time. Can be
+     *                     used to prevent importing duplicate records.
+     * @param limit        How many results to get in each request.
      * @return
      */
     public static EverfiAssignmentsAndProgressRequest userAssignments(EverfiApiClient everfiClient, String userUuid,
@@ -67,6 +69,7 @@ public class EverfiAssignmentsAndProgressRequest {
 
     /**
      * Get a page of results for this request
+     *
      * @return A list of {@link EverfiAssignmentAndProgress} or an empty list if there are no more results.
      * @throws IOException
      */
@@ -78,7 +81,7 @@ public class EverfiAssignmentsAndProgressRequest {
 
     /**
      * @return a new {@code EverfiAssignmentsAndProgressRequest} that can fetch the next page of results,
-     *         or null if there are no more pages to fetch.
+     * or null if there are no more pages to fetch.
      * @throws IllegalStateException if this method is called before a successful call to {@code fetch()}.
      */
     public EverfiAssignmentsAndProgressRequest next() {

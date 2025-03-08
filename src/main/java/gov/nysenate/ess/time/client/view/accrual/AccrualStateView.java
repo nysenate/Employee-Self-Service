@@ -8,8 +8,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.math.BigDecimal;
 
 @XmlRootElement(name = "AccrualState")
-public class AccrualStateView implements ViewObject
-{
+public class AccrualStateView implements ViewObject {
     protected String payType;
     protected boolean employeeAccruing;
     protected int payPeriodCount;

@@ -7,8 +7,8 @@ public enum SqlUserAgentQuery implements BasicSqlQuery {
 
     INSERT_USER_AGENT_INFO(
             "INSERT INTO ${essSchema}.user_agent\n" +
-            "       ( emp_id, login_time, user_agent)\n" +
-            "VALUES (:empId, :loginTime, :userAgent)"
+                    "       ( emp_id, login_time, user_agent)\n" +
+                    "VALUES (:empId, :loginTime, :userAgent)"
     );
 
     private final String sql;

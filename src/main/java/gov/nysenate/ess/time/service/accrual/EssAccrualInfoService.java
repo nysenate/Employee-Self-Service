@@ -58,7 +58,7 @@ public class EssAccrualInfoService implements AccrualInfoService {
                 .findFirst();
         if (openYear.isPresent()) {
             return payPeriodService.getPayPeriods(
-                PayPeriodType.AF, Range.closed(LocalDate.of(openYear.get(), 1, 1), endDate), dateOrder);
+                    PayPeriodType.AF, Range.closed(LocalDate.of(openYear.get(), 1, 1), endDate), dateOrder);
         }
         return new ArrayList<>();
     }

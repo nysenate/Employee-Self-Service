@@ -53,12 +53,12 @@ public class ReportRestApiCtrl extends BaseRestApiCtrl {
     /**
      * Get Accrual Report API
      * -------------------------
-     *
+     * <p>
      * Generates a PDF accrual report for the given employee on the pay period of the given date.
      * (GET) /api/v1/accrual/report
-     *
+     * <p>
      * Request Parameters: empId - int - required - The employee for the report
-     *                     date - Date - required - Determines pay period of the report
+     * date - Date - required - Determines pay period of the report
      */
     @GetMapping(value = "/accrual/report", produces = APPLICATION_PDF_VALUE)
     public ResponseEntity<InputStreamResource> getAccrualReport(
@@ -72,10 +72,10 @@ public class ReportRestApiCtrl extends BaseRestApiCtrl {
     /**
      * Get Attendance Report API
      * -------------------------
-     *
+     * <p>
      * Generates a pdf attendance report for the given employee on the pay period of the given date.
      * (GET) /api/v1/attendance/report
-     *
+     * <p>
      * Request Parameters: timeRecordId - BigInteger - required - The time record ID for the report
      */
     @GetMapping(value = "/attendance/report", produces = APPLICATION_PDF_VALUE)
@@ -88,6 +88,7 @@ public class ReportRestApiCtrl extends BaseRestApiCtrl {
 
     /**
      * Helper method to produce a PDF.
+     *
      * @return the properly named PDF.
      */
     private ResponseEntity<InputStreamResource> getPdfReport(int empId, PayPeriod payPeriod, URL url,
@@ -99,7 +100,7 @@ public class ReportRestApiCtrl extends BaseRestApiCtrl {
         Employee employee = empInfoService.getEmployee(empId);
 
         String uid = Optional.ofNullable(employee.getUid()).orElse(Integer.toString(empId));
-        String filename =  uid + "_" + reportType + "_" + payPeriod.getEndDate() + ".pdf";
+        String filename = uid + "_" + reportType + "_" + payPeriod.getEndDate() + ".pdf";
         return ResponseEntity.ok()
                 .header("Content-Disposition", "inline; filename=\"" + filename + "\"")
                 .header("Content-Type", APPLICATION_PDF_VALUE + "; name=\"" + filename + "\"")

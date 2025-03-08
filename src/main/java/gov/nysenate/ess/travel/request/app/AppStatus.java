@@ -8,10 +8,9 @@ public enum AppStatus {
     TRAVEL_UNIT("Travel Unit"),
     APPROVED("Approved"),
     DISAPPROVED("Disapproved"),
-    CANCELED("Canceled")
-    ;
+    CANCELED("Canceled");
 
-    private String label;
+    private final String label;
 
     AppStatus(String label) {
         this.label = label;

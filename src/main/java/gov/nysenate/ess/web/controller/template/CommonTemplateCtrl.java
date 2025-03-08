@@ -7,8 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 
 @Controller
 @RequestMapping(BaseTemplateCtrl.TMPL_BASE_URL)
-public class CommonTemplateCtrl extends BaseTemplateCtrl
-{
+public class CommonTemplateCtrl extends BaseTemplateCtrl {
 
     @RequestMapping("/404")
     public String pageNotFound() {

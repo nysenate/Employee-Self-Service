@@ -5,17 +5,18 @@ import java.util.Objects;
 /**
  * Represents a Responsibility Center Head. Various responsibility centers can
  * share a common organizational head.
+ *
  * @see ResponsibilityCenter
  */
-public class ResponsibilityHead
-{
+public class ResponsibilityHead {
     protected boolean active;
     protected String code;
     protected String shortName;
     protected String name;
     protected String affiliateCode;
 
-    public ResponsibilityHead() {}
+    public ResponsibilityHead() {
+    }
 
     public ResponsibilityHead(ResponsibilityHead other) {
         this.active = other.active;
@@ -68,12 +69,12 @@ public class ResponsibilityHead
     @Override
     public String toString() {
         return "ResponsibilityHead{" +
-               "active=" + active +
-               ", code='" + code + '\'' +
-               ", shortName='" + shortName + '\'' +
-               ", name='" + name + '\'' +
-               ", affiliateCode='" + affiliateCode + '\'' +
-               '}';
+                "active=" + active +
+                ", code='" + code + '\'' +
+                ", shortName='" + shortName + '\'' +
+                ", name='" + name + '\'' +
+                ", affiliateCode='" + affiliateCode + '\'' +
+                '}';
     }
 
     @Override

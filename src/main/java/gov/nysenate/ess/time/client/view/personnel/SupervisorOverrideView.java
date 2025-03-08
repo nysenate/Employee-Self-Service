@@ -7,8 +7,7 @@ import gov.nysenate.ess.time.model.personnel.SupervisorOverride;
 
 import java.time.LocalDate;
 
-public class SupervisorOverrideView implements ViewObject
-{
+public class SupervisorOverrideView implements ViewObject {
     protected int supervisorId;
     protected boolean active;
     protected int overrideSupervisorId;

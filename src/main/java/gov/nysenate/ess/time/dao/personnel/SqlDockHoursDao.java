@@ -15,14 +15,12 @@ import java.util.List;
 
 
 /**
- * @author  Brian Heitner
- *
+ * @author Brian Heitner
+ * <p>
  * This will handle docked hours for a specified employee and date range.
- *
  **/
 @Repository
-public class SqlDockHoursDao extends SqlBaseDao implements DockHoursDao
-{
+public class SqlDockHoursDao extends SqlBaseDao implements DockHoursDao {
     private static final Logger logger = LoggerFactory.getLogger(SqlDockHoursDao.class);
 
     /** {@inheritDoc} */
@@ -32,7 +30,7 @@ public class SqlDockHoursDao extends SqlBaseDao implements DockHoursDao
                 .addValue("startDate", toDate(DateUtils.startOfDateRange(dates)))
                 .addValue("endDate", toDate(DateUtils.endOfDateRange(dates)));
         return remoteNamedJdbc.query(SqlDockHoursQuery.GET_PERIOD_DOCK_HOURS.getSql(
-                schemaMap()),
+                        schemaMap()),
                 params, new DockHoursRecordRowMapper());
     }
 }

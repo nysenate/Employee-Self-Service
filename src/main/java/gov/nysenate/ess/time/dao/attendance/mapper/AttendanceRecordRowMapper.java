@@ -1,7 +1,7 @@
 package gov.nysenate.ess.time.dao.attendance.mapper;
 
-import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.dao.base.BaseRowMapper;
+import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.time.model.attendance.AttendanceRecord;
 import org.apache.commons.lang3.StringUtils;
 
@@ -14,8 +14,7 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class AttendanceRecordRowMapper extends BaseRowMapper<AttendanceRecord>
-{
+public class AttendanceRecordRowMapper extends BaseRowMapper<AttendanceRecord> {
     @Override
     public AttendanceRecord mapRow(ResultSet rs, int rowNum) throws SQLException {
         AttendanceRecord record = new AttendanceRecord();

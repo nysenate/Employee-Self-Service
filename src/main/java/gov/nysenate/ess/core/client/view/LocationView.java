@@ -15,7 +15,8 @@ public class LocationView implements ViewObject {
     protected String locationDescription;
     protected boolean isActive;
 
-    public LocationView() {}
+    public LocationView() {
+    }
 
     public LocationView(Location loc) {
         this.locId = loc.toString();

@@ -1,7 +1,6 @@
 package gov.nysenate.ess.time.model.accrual;
 
-public enum AccrualType
-{
+public enum AccrualType {
     SICK,
     PERSONAL,
     VACATION,

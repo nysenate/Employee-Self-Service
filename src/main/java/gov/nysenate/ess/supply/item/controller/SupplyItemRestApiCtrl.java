@@ -67,8 +67,7 @@ public class SupplyItemRestApiCtrl extends BaseRestApiCtrl {
         if (getSubject().isPermitted(SupplyPermission.SUPPLY_EMPLOYEE.getPermission())) {
             // Supply staff are allowed to order all items at any location.
             return sortedItemViews(items);
-        }
-        else {
+        } else {
             return sortedItemViews(OrderableItems.forItemsAndLoc(items, locationId));
         }
     }

@@ -24,7 +24,8 @@ public class AlertInfoView implements ViewObject {
     private String personalEmail;
     private String alternateEmail;
 
-    private AlertInfoView() {}
+    private AlertInfoView() {
+    }
 
     public AlertInfoView(AlertInfo alertInfo, Employee employee) {
         this.empId = alertInfo.getEmpId();

@@ -2,7 +2,6 @@ package gov.nysenate.ess.travel.review.controller;
 
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
-import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.client.view.base.ListView;
 import gov.nysenate.ess.core.client.view.base.MapView;
@@ -15,8 +14,8 @@ import gov.nysenate.ess.travel.authorization.permission.TravelPermissionObject;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
 import gov.nysenate.ess.travel.authorization.role.TravelRoleView;
 import gov.nysenate.ess.travel.review.ApplicationReview;
-import gov.nysenate.ess.travel.review.dao.ApplicationReviewDao;
 import gov.nysenate.ess.travel.review.ApplicationReviewService;
+import gov.nysenate.ess.travel.review.dao.ApplicationReviewDao;
 import gov.nysenate.ess.travel.review.view.ActionBodyView;
 import gov.nysenate.ess.travel.review.view.ApplicationReviewView;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +36,7 @@ public class ApplicationReviewCtrl extends BaseRestApiCtrl {
 
     /**
      * Get ApplicationReviews which have completed the review process.
+     *
      * @return
      */
     @RequestMapping(value = "/reconcile", method = RequestMethod.GET)

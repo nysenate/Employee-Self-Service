@@ -29,14 +29,11 @@ import java.util.*;
 public class EssRecordReminderEmailService implements RecordReminderEmailService {
 
     private static final Logger logger = LoggerFactory.getLogger(EssRecordReminderEmailService.class);
-
+    private static final String reminderEmailSubject = "Time and Attendance records need to be submitted";
     @Autowired private SendMailService sendMailService;
     @Autowired private Configuration freemarkerCfg;
-
     @Value("${freemarker.time.templates.time_record_reminder:time_record_reminder.ftlh}")
     private String emailTemplateName;
-
-    private static final String reminderEmailSubject = "Time and Attendance records need to be submitted";
 
     /**
      * {@inheritDoc}

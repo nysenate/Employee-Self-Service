@@ -25,6 +25,7 @@ public class FreemarkerConfig {
 
     /**
      * Configures a {@link Configuration Freemarker configuration object} that can be used for templating
+     *
      * @return {@link Configuration} - a Freemarker configuration object
      * @throws IOException If the template directory is poorly configured
      */

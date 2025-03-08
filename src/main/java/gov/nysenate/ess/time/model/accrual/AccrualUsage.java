@@ -9,8 +9,7 @@ import java.util.Optional;
 /**
  * Helper class to store accrual usage numbers.
  */
-public class AccrualUsage
-{
+public class AccrualUsage {
 
     private static final Logger logger = LoggerFactory.getLogger(AccrualUsage.class);
 
@@ -25,7 +24,8 @@ public class AccrualUsage
     private BigDecimal miscHoursUsed = BigDecimal.ZERO;
     private BigDecimal misc2HoursUsed = BigDecimal.ZERO;
 
-    public AccrualUsage() {}
+    public AccrualUsage() {
+    }
 
     public AccrualUsage(AccrualUsage lhs) {
         if (lhs != null) {
@@ -46,6 +46,7 @@ public class AccrualUsage
 
     /**
      * Adds the hours of one accrual usage to this usage. The usages must be for the same employee.
+     *
      * @param usage AccrualUsage
      */
     public void addUsage(AccrualUsage usage) {
@@ -101,44 +102,6 @@ public class AccrualUsage
                 .add(this.getFamHoursUsed());
     }
 
-    public void setWorkHours(BigDecimal workHours) {
-        this.workHours = Optional.ofNullable(workHours).orElse(BigDecimal.ZERO);
-    }
-
-    public void setTravelHoursUsed(BigDecimal travelHoursUsed) {
-        this.travelHoursUsed = Optional.ofNullable(travelHoursUsed).orElse(BigDecimal.ZERO);
-    }
-
-    public void setVacHoursUsed(BigDecimal vacHoursUsed) {
-        this.vacHoursUsed = Optional.ofNullable(vacHoursUsed).orElse(BigDecimal.ZERO);
-    }
-
-    public void setPerHoursUsed(BigDecimal perHoursUsed) {
-        this.perHoursUsed = Optional.ofNullable(perHoursUsed).orElse(BigDecimal.ZERO);
-    }
-
-    public void setEmpHoursUsed(BigDecimal empHoursUsed) {
-        this.empHoursUsed = Optional.ofNullable(empHoursUsed).orElse(BigDecimal.ZERO);
-    }
-
-    public void setFamHoursUsed(BigDecimal famHoursUsed) {
-        this.famHoursUsed = Optional.ofNullable(famHoursUsed).orElse(BigDecimal.ZERO);
-    }
-
-    public void setHolHoursUsed(BigDecimal holHoursUsed) {
-        this.holHoursUsed = Optional.ofNullable(holHoursUsed).orElse(BigDecimal.ZERO);
-    }
-
-    public void setMiscHoursUsed(BigDecimal miscHoursUsed) {
-        this.miscHoursUsed = Optional.ofNullable(miscHoursUsed).orElse(BigDecimal.ZERO);
-    }
-
-    public void setMisc2HoursUsed(BigDecimal misc2HoursUsed) {
-        this.misc2HoursUsed = Optional.ofNullable(misc2HoursUsed).orElse(BigDecimal.ZERO);
-    }
-
-    /* --- Basic Getters/Setters --- */
-
     public int getEmpId() {
         return empId;
     }
@@ -151,35 +114,73 @@ public class AccrualUsage
         return workHours;
     }
 
+    public void setWorkHours(BigDecimal workHours) {
+        this.workHours = Optional.ofNullable(workHours).orElse(BigDecimal.ZERO);
+    }
+
     public BigDecimal getTravelHoursUsed() {
         return travelHoursUsed;
+    }
+
+    public void setTravelHoursUsed(BigDecimal travelHoursUsed) {
+        this.travelHoursUsed = Optional.ofNullable(travelHoursUsed).orElse(BigDecimal.ZERO);
     }
 
     public BigDecimal getVacHoursUsed() {
         return vacHoursUsed;
     }
 
+    public void setVacHoursUsed(BigDecimal vacHoursUsed) {
+        this.vacHoursUsed = Optional.ofNullable(vacHoursUsed).orElse(BigDecimal.ZERO);
+    }
+
     public BigDecimal getPerHoursUsed() {
         return perHoursUsed;
+    }
+
+    /* --- Basic Getters/Setters --- */
+
+    public void setPerHoursUsed(BigDecimal perHoursUsed) {
+        this.perHoursUsed = Optional.ofNullable(perHoursUsed).orElse(BigDecimal.ZERO);
     }
 
     public BigDecimal getEmpHoursUsed() {
         return empHoursUsed;
     }
 
+    public void setEmpHoursUsed(BigDecimal empHoursUsed) {
+        this.empHoursUsed = Optional.ofNullable(empHoursUsed).orElse(BigDecimal.ZERO);
+    }
+
     public BigDecimal getFamHoursUsed() {
         return famHoursUsed;
+    }
+
+    public void setFamHoursUsed(BigDecimal famHoursUsed) {
+        this.famHoursUsed = Optional.ofNullable(famHoursUsed).orElse(BigDecimal.ZERO);
     }
 
     public BigDecimal getHolHoursUsed() {
         return holHoursUsed;
     }
 
+    public void setHolHoursUsed(BigDecimal holHoursUsed) {
+        this.holHoursUsed = Optional.ofNullable(holHoursUsed).orElse(BigDecimal.ZERO);
+    }
+
     public BigDecimal getMiscHoursUsed() {
         return miscHoursUsed;
     }
 
+    public void setMiscHoursUsed(BigDecimal miscHoursUsed) {
+        this.miscHoursUsed = Optional.ofNullable(miscHoursUsed).orElse(BigDecimal.ZERO);
+    }
+
     public BigDecimal getMisc2HoursUsed() {
         return misc2HoursUsed;
+    }
+
+    public void setMisc2HoursUsed(BigDecimal misc2HoursUsed) {
+        this.misc2HoursUsed = Optional.ofNullable(misc2HoursUsed).orElse(BigDecimal.ZERO);
     }
 }

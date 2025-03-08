@@ -20,7 +20,8 @@ public class AttendanceHoursView implements ViewObject {
     protected BigDecimal misc2Hours;
     protected BigDecimal totalHours;
 
-    protected AttendanceHoursView() {}
+    protected AttendanceHoursView() {
+    }
 
     public AttendanceHoursView(AttendanceHours hours) {
         if (hours != null) {

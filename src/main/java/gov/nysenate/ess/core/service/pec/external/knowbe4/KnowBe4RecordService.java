@@ -20,22 +20,18 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 
 @Service
 public class KnowBe4RecordService {
 
-    private KnowBe4ApiClient apiClient;
-    private EmployeeDao employeeDao;
-    private PersonnelTaskAssignmentDao personnelTaskAssignmentDao;
-    private PersonnelTaskService personnelTaskService;
-    private PersonnelTaskDao personnelTaskDao;
-
-    private List<KnowBe4AssignmentID> knowBe4AssignmentIDList;
-
     private static final Logger logger = LoggerFactory.getLogger(KnowBe4RecordService.class);
-
+    private final KnowBe4ApiClient apiClient;
+    private final EmployeeDao employeeDao;
+    private final PersonnelTaskAssignmentDao personnelTaskAssignmentDao;
+    private final PersonnelTaskService personnelTaskService;
+    private final PersonnelTaskDao personnelTaskDao;
+    private List<KnowBe4AssignmentID> knowBe4AssignmentIDList;
     @Value("${scheduler.knowbe4.sync.enabled:false}")
     private boolean knowBe4SyncEnabled;
 
@@ -67,7 +63,7 @@ public class KnowBe4RecordService {
     public void contactKnowBe4ForRecords() throws IOException {
         logger.info("Contacting KnowBe4 for assignment records");
 
-        for (KnowBe4AssignmentID knowBe4AssignmentID : this.knowBe4AssignmentIDList ) {
+        for (KnowBe4AssignmentID knowBe4AssignmentID : this.knowBe4AssignmentIDList) {
             PersonnelTask task = personnelTaskDao.getPersonnelTask(knowBe4AssignmentID.getTaskID());
             if (task.isActive()) {
 
@@ -83,7 +79,7 @@ public class KnowBe4RecordService {
                     logger.info("Currently Processing KB4 response Page: " + response.getPage());
 
                     if (assignmentAndProgressList.isEmpty()) {
-                        logger.error("No KnowBe4 assignment records found for: {}", knowBe4AssignmentID );
+                        logger.error("No KnowBe4 assignment records found for: {}", knowBe4AssignmentID);
                         continue;
                     }
 
@@ -95,8 +91,7 @@ public class KnowBe4RecordService {
 
                     if (response != null) {
                         assignmentAndProgressList = response.getAssignmentsAndProgress();
-                    }
-                    else {
+                    } else {
                         assignmentAndProgressList = null;
                     }
 
@@ -108,31 +103,25 @@ public class KnowBe4RecordService {
 
     private void processRecords(List<KnowBe4AssignmentAndProgress> assignmentAndProgressList) {
         for (KnowBe4AssignmentAndProgress assignmentAndProgress : assignmentAndProgressList) {
-            int knowBe4UserEmpId = resolveEmailToEmployeeId( assignmentAndProgress.getUser().getEmail() );
-            if ( knowBe4UserEmpId != -1 ) {
+            int knowBe4UserEmpId = resolveEmailToEmployeeId(assignmentAndProgress.getUser().getEmail());
+            if (knowBe4UserEmpId != -1) {
 
                 Integer knowBe4TaskID = getKnowbe4TaskID(assignmentAndProgress.getCampaign_id());
-                boolean completed = false;
-
-                if (assignmentAndProgress.getStatus().equalsIgnoreCase("passed")) {
-                    completed = true;
-                }
+                boolean completed = assignmentAndProgress.getStatus().equalsIgnoreCase("passed");
 
                 LocalDateTime completedAt = assignmentAndProgress.getCompletionDate();
 
                 try {
                     PersonnelTaskAssignment currentTaskAssignment =
-                            personnelTaskAssignmentDao.getTaskForEmp(knowBe4UserEmpId,knowBe4TaskID);
+                            personnelTaskAssignmentDao.getTaskForEmp(knowBe4UserEmpId, knowBe4TaskID);
 
-                    if ( currentTaskAssignment.isCompleted() || currentTaskAssignment.wasManuallyOverridden()) {
+                    if (currentTaskAssignment.isCompleted() || currentTaskAssignment.wasManuallyOverridden()) {
+                        continue;
+                    } else if (currentTaskAssignment.getUpdateEmpId() != null &&
+                            currentTaskAssignment.getEmpId() != currentTaskAssignment.getUpdateEmpId()) {
                         continue;
                     }
-                    else if ( currentTaskAssignment.getUpdateEmpId() != null &&
-                            currentTaskAssignment.getEmpId() != currentTaskAssignment.getUpdateEmpId() ) {
-                        continue;
-                    }
-                }
-                catch (PersonnelTaskAssignmentNotFoundEx ex) {
+                } catch (PersonnelTaskAssignmentNotFoundEx ex) {
                     //This means they dont have a task to insert so we dont need to do anything
                 }
 
@@ -149,8 +138,7 @@ public class KnowBe4RecordService {
                 personnelTaskAssignmentDao.updateAssignment(taskToInsert);
 
 
-            }
-            else {
+            } else {
                 logger.warn("Error importing KB4 Records! Could not find employee with email: " + assignmentAndProgress.getUser().getEmail());
             }
         }

@@ -13,7 +13,8 @@ public class LocationStatisticView implements ViewObject {
     protected LocationView location;
     protected Map<String, Integer> itemQuantities;
 
-    public LocationStatisticView() {}
+    public LocationStatisticView() {
+    }
 
     public LocationStatisticView(LocationStatistic locationStatistic) {
         location = new LocationView(locationStatistic.getLocation());

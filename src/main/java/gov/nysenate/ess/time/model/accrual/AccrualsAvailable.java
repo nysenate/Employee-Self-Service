@@ -9,16 +9,16 @@ import java.math.BigDecimal;
  */
 public class AccrualsAvailable {
 
-    private int empId;
-    private PayPeriod payPeriod;
+    private final int empId;
+    private final PayPeriod payPeriod;
 
-    private BigDecimal personalAvailable;
-    private BigDecimal vacationAvailable;
-    private BigDecimal sickAvailable;
+    private final BigDecimal personalAvailable;
+    private final BigDecimal vacationAvailable;
+    private final BigDecimal sickAvailable;
 
-    private BigDecimal serviceYtdExpected;
-    private BigDecimal serviceYtd;
-    private BigDecimal biWeekHrsExpected;
+    private final BigDecimal serviceYtdExpected;
+    private final BigDecimal serviceYtd;
+    private final BigDecimal biWeekHrsExpected;
 
     public AccrualsAvailable(AccrualSummary summary, PayPeriod period,
                              BigDecimal serviceYtdExpected, BigDecimal biWeekHrsExpected,

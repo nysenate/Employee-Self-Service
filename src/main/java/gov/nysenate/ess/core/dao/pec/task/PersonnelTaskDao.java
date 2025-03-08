@@ -5,10 +5,9 @@ import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.ethics.DateRangedEthicsCode;
 import gov.nysenate.ess.core.model.pec.knowbe4.KnowBe4AssignmentID;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 /**
  * DAO for retrieving {@link PersonnelTask}s
@@ -17,12 +16,14 @@ public interface PersonnelTaskDao extends BaseDao {
 
     /**
      * Get all {@link PersonnelTask}s
+     *
      * @return {@link List<PersonnelTask>}
      */
     List<PersonnelTask> getAllTasks();
 
     /**
      * Get a task by its id.
+     *
      * @param taskId int
      * @return {@link PersonnelTask}
      */
@@ -55,9 +56,10 @@ public interface PersonnelTaskDao extends BaseDao {
 
     /**
      * Get a hash map of Knowbe4s Assignment ID's to personnel task ids
+     *
      * @return
      */
-    public List<KnowBe4AssignmentID> getKnowBe4AssignmentIDs();
+    List<KnowBe4AssignmentID> getKnowBe4AssignmentIDs();
 
     /**
      * Update the ethics live codes table in the database with new codes

@@ -7,9 +7,9 @@ import java.time.LocalDateTime;
  */
 public class UserAgentInfo {
 
-    private int empId;
-    private String userAgent;
-    private LocalDateTime loginTime;
+    private final int empId;
+    private final String userAgent;
+    private final LocalDateTime loginTime;
 
     public UserAgentInfo(int empId, String userAgent, LocalDateTime loginTime) {
         this.empId = empId;

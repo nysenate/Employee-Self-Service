@@ -3,8 +3,7 @@ package gov.nysenate.ess.core.model.auth;
 /**
  * Represents the conditions that can result after an LDAP authentication attempt.
  */
-public enum LdapAuthStatus
-{
+public enum LdapAuthStatus {
     AUTHENTICATED(true, "The LDAP user has been authenticated successfully."),
     PROCEED(true, "The LDAP user can continue to log in"),
     INCORRECT_CREDENTIALS(false, "The LDAP user could not be authenticated due to incorrect credentials."),

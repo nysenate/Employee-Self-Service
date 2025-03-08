@@ -23,8 +23,12 @@ public class AlertInfo {
     private String alternateEmail;
 
 
-    private AlertInfo() {}
+    private AlertInfo() {
+    }
 
+    public static Builder builder() {
+        return new Builder();
+    }
 
     /**
      * Returns the alternate number with country code if texting is desired, an empty string otherwise.
@@ -36,6 +40,8 @@ public class AlertInfo {
         return "";
     }
 
+    /* --- Overrides --- */
+
     /**
      * Returns the mobile number with country code if texting is desired, an empty string otherwise.
      */
@@ -45,8 +51,6 @@ public class AlertInfo {
         }
         return "";
     }
-
-    /* --- Overrides --- */
 
     @Override
     public boolean equals(Object o) {
@@ -62,23 +66,83 @@ public class AlertInfo {
                 Objects.equal(alternateEmail, that.alternateEmail);
     }
 
+    /* --- Builder --- */
+
     @Override
     public int hashCode() {
         return Objects.hashCode(empId, homePhone, mobilePhone, alternatePhone,
                 mobileOptions, alternateOptions, personalEmail, alternateEmail);
     }
 
-    /* --- Builder --- */
+    public int getEmpId() {
+        return empId;
+    }
 
-    public static Builder builder() {
-        return new Builder();
+    /* --- Getters --- */
+
+    public String getHomePhone() {
+        return homePhone == null ? "" : homePhone;
+    }
+
+    public String getMobilePhone() {
+        return mobilePhone == null ? "" : mobilePhone;
+    }
+
+    public String getAlternatePhone() {
+        return alternatePhone == null ? "" : alternatePhone;
+    }
+
+    public ContactOptions getMobileOptions() {
+        return mobileOptions;
+    }
+
+    public ContactOptions getAlternateOptions() {
+        return alternateOptions;
+    }
+
+    public String getPersonalEmail() {
+        return personalEmail == null ? "" : personalEmail;
+    }
+
+    public String getAlternateEmail() {
+        return alternateEmail == null ? "" : alternateEmail;
     }
 
     public static class Builder {
 
         private final AlertInfo alertInfo = new AlertInfo();
 
-        private Builder() {}
+        private Builder() {
+        }
+
+        /**
+         * Format a phone number
+         *
+         * @param phoneNumber a phone number
+         * @return the {@code phoneNumber} with all non number characters removed or null if {@code phoneNumber} is null.
+         */
+        private static String formatPhoneNumber(String phoneNumber) {
+            String formattedPhoneNumber = Optional.ofNullable(phoneNumber)
+                    .map(phoneNo -> phoneNo.replaceAll("[^0-9]", ""))
+                    .orElse(null);
+            return StringUtils.isBlank(formattedPhoneNumber)
+                    ? null : formattedPhoneNumber;
+        }
+
+        /**
+         * Format email addresses
+         * Convert blank email addresses to null
+         * Trim surrounding space from address
+         *
+         * @param emailAddress String
+         * @return String
+         */
+        private static String formatEmailAddress(String emailAddress) {
+            if (StringUtils.isBlank(emailAddress)) {
+                return null;
+            }
+            return emailAddress.trim();
+        }
 
         public AlertInfo build() {
             return alertInfo;
@@ -124,66 +188,5 @@ public class AlertInfo {
             return this;
         }
 
-        /**
-         * Format a phone number
-         * @param phoneNumber a phone number
-         * @return the {@code phoneNumber} with all non number characters removed or null if {@code phoneNumber} is null.
-         */
-        private static String formatPhoneNumber(String phoneNumber) {
-            String formattedPhoneNumber = Optional.ofNullable(phoneNumber)
-                    .map(phoneNo -> phoneNo.replaceAll("[^0-9]", ""))
-                    .orElse(null);
-            return StringUtils.isBlank(formattedPhoneNumber)
-                    ? null : formattedPhoneNumber;
-        }
-
-        /**
-         * Format email addresses
-         * Convert blank email addresses to null
-         * Trim surrounding space from address
-         * @param emailAddress String
-         * @return String
-         */
-        private static String formatEmailAddress(String emailAddress) {
-            if (StringUtils.isBlank(emailAddress)) {
-                return null;
-            }
-            return emailAddress.trim();
-        }
-
-    }
-
-    /* --- Getters --- */
-
-    public int getEmpId() {
-        return empId;
-    }
-
-    public String getHomePhone() {
-        return homePhone == null ? "" : homePhone;
-    }
-
-    public String getMobilePhone() {
-        return mobilePhone == null ? "" : mobilePhone;
-    }
-
-    public String getAlternatePhone() {
-        return alternatePhone == null ? "" : alternatePhone;
-    }
-
-    public ContactOptions getMobileOptions() {
-        return mobileOptions;
-    }
-
-    public ContactOptions getAlternateOptions() {
-        return alternateOptions;
-    }
-
-    public String getPersonalEmail() {
-        return personalEmail == null ? "" : personalEmail;
-    }
-
-    public String getAlternateEmail() {
-        return alternateEmail == null ? "" : alternateEmail;
     }
 }

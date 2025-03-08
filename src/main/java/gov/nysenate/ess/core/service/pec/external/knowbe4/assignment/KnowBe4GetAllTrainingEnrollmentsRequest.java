@@ -5,7 +5,6 @@ import gov.nysenate.ess.core.util.OutputUtils;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
 
 public class KnowBe4GetAllTrainingEnrollmentsRequest {
 
@@ -33,14 +32,14 @@ public class KnowBe4GetAllTrainingEnrollmentsRequest {
         KnowBe4AssignmentAndProgress[] knowBe4AssignmentAndProgressResponses =
                 OutputUtils.jsonToObject(data, KnowBe4AssignmentAndProgress[].class);
 
-        this.response = new KnowBe4AssignmentAndProgressResponse( Arrays.asList(knowBe4AssignmentAndProgressResponses) );
+        this.response = new KnowBe4AssignmentAndProgressResponse(Arrays.asList(knowBe4AssignmentAndProgressResponses));
         this.response.setPage(this.pageNumber);
 
         return response;
     }
 
     public KnowBe4GetAllTrainingEnrollmentsRequest next(KnowBe4AssignmentAndProgressResponse response) throws IOException {
-        if ( response == null ) {
+        if (response == null) {
             throw new IllegalStateException("'next()' can only be called after a successful call to 'fetch()'");
         }
         return new KnowBe4GetAllTrainingEnrollmentsRequest(campaignID, httpClient, response.getPage() + 1);
@@ -55,12 +54,11 @@ public class KnowBe4GetAllTrainingEnrollmentsRequest {
     }
 
     private String endpoint() {
-        StringBuilder builder = new StringBuilder(BASE_ENDPOINT);
-        builder.append(campaignID);
-        builder.append(additionalParams);
-        builder.append(page);
-        builder.append(pageNumber);
-        return builder.toString();
+        String builder = BASE_ENDPOINT + campaignID +
+                additionalParams +
+                page +
+                pageNumber;
+        return builder;
     }
 
 }

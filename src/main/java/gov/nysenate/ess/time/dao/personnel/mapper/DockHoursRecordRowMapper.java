@@ -9,18 +9,17 @@ import java.sql.SQLException;
 
 /**
  * @author Brian Heitner
- *
+ * <p>
  * This will map the results from the docked hours sql query.
- *
  */
- public class DockHoursRecordRowMapper extends BaseRowMapper<DockHoursRecord> {
-        @Override
-        public DockHoursRecord mapRow(ResultSet rs, int rowNum) throws SQLException {
-            DockHoursRecord record = new DockHoursRecord();
-            record.setEmployeeId(rs.getInt("NUXREFEM"));
-            record.setBeginDate(DateUtils.getLocalDate(rs.getDate("DTBEGIN")));
-            record.setEndDate(DateUtils.getLocalDate(rs.getDate("DTEND")));
-            record.setDockHours(rs.getBigDecimal("DOCKED_HOURS"));
-            return record;
-        }
+public class DockHoursRecordRowMapper extends BaseRowMapper<DockHoursRecord> {
+    @Override
+    public DockHoursRecord mapRow(ResultSet rs, int rowNum) throws SQLException {
+        DockHoursRecord record = new DockHoursRecord();
+        record.setEmployeeId(rs.getInt("NUXREFEM"));
+        record.setBeginDate(DateUtils.getLocalDate(rs.getDate("DTBEGIN")));
+        record.setEndDate(DateUtils.getLocalDate(rs.getDate("DTEND")));
+        record.setDockHours(rs.getBigDecimal("DOCKED_HOURS"));
+        return record;
+    }
 }

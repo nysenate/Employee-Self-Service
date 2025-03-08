@@ -2,51 +2,29 @@ package gov.nysenate.ess.travel.api.application.statistics;
 
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 
-import java.util.List;
-
 public class TravelApplicationStatisticsView implements ViewObject {
+    TravelApplicationStatisticsByStatusView travelStatusStatisticsView;
+    TravelApplicationStatisticsByEmployeeView travelEmployeeStatisticsView;
 
-    private int count;
-    private String totalExpenses;
-    private List<TravelEmployeeStatisticsView> appStatuses;
-
-    public TravelApplicationStatisticsView(int count, String totalExpenses, List<TravelEmployeeStatisticsView> appStatuses) {
-        this.totalExpenses = totalExpenses;
-        this.appStatuses = appStatuses;
-        this.count = count;
+    public TravelApplicationStatisticsView(TravelApplicationStatisticsByStatusView travelStatusStatisticsView, TravelApplicationStatisticsByEmployeeView travelEmployeeStatisticsView) {
+        this.travelStatusStatisticsView = travelStatusStatisticsView;
+        this.travelEmployeeStatisticsView = travelEmployeeStatisticsView;
     }
 
-    @Override
-    public String toString() {
-        return "TravelApplicationStatisticsView{" +
-                "count=" + count +
-                ", totalExpenses=" + totalExpenses +
-                ", appStatuses=" + appStatuses +
-                '}';
+    public TravelApplicationStatisticsByStatusView getTravelStatusStatisticsView() {
+        return travelStatusStatisticsView;
     }
 
-    public String getTotalExpenses() {
-        return totalExpenses;
+    public void setTravelStatusStatisticsView(TravelApplicationStatisticsByStatusView travelStatusStatisticsView) {
+        this.travelStatusStatisticsView = travelStatusStatisticsView;
     }
 
-    public void setTotalExpenses(String totalExpenses) {
-        this.totalExpenses = totalExpenses;
+    public TravelApplicationStatisticsByEmployeeView getTravelEmployeeStatisticsView() {
+        return travelEmployeeStatisticsView;
     }
 
-    public List<TravelEmployeeStatisticsView> getAppStatuses() {
-        return appStatuses;
-    }
-
-    public void setAppStatuses(List<TravelEmployeeStatisticsView> appStatuses) {
-        this.appStatuses = appStatuses;
-    }
-
-    public int getCount() {
-        return count;
-    }
-
-    public void setCount(int count) {
-        this.count = count;
+    public void setTravelEmployeeStatisticsView(TravelApplicationStatisticsByEmployeeView travelEmployeeStatisticsView) {
+        this.travelEmployeeStatisticsView = travelEmployeeStatisticsView;
     }
 
     @Override

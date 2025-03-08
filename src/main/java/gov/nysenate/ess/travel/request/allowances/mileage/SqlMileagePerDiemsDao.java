@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.sql.ResultSet;
@@ -35,7 +34,7 @@ public class SqlMileagePerDiemsDao extends SqlBaseDao {
         return handler.getResults();
     }
 
-//    @Transactional(value = "localTxManager")
+    //    @Transactional(value = "localTxManager")
     public void updateMileagePerDiems(MileagePerDiems mpds, int appId) {
         deleteMileagePerDiems(appId);
         insertMileagePerDiems(mpds, appId);
@@ -99,50 +98,50 @@ public class SqlMileagePerDiemsDao extends SqlBaseDao {
 
     private enum SqlMileagePerDiemQuery implements BasicSqlQuery {
         SELECT_MILEAGE_PER_DIEMS("""
-                SELECT mpd.app_mileage_per_diem_id, mpd.travel_date, mpd.method_of_travel, mpd.method_of_travel_description, 
-                  mpd.miles, mpd.mileage_rate, mpd.is_outbound, mpd.is_reimbursement_requested,
-                  from_addr.address_id as from_address_id, from_addr.street_1 as from_street_1, from_addr.city as from_city,
-                  from_addr.state as from_state, from_addr.zip_5 as from_zip_5, from_addr.county as from_county,
-                  from_addr.country as from_country, from_addr.place_id as from_place_id, from_addr.name as from_name,
-                  to_addr.address_id as to_address_id, to_addr.street_1 as to_street_1, to_addr.city as to_city,
-                  to_addr.state as to_state, to_addr.zip_5 as to_zip_5, to_addr.county as to_county,
-                  to_addr.country as to_country, to_addr.place_id as to_place_id, to_addr.name as to_name,
-                  override_rate
-                FROM ${travelSchema}.app_mileage_per_diem mpd
-                LEFT JOIN ${travelSchema}.app_mileage_per_diem_override USING(app_id)
-                INNER JOIN ${travelSchema}.address from_addr
-                  ON mpd.from_address_id = from_addr.address_id
-                INNER JOIN ${travelSchema}.address to_addr
-                  ON mpd.to_address_id = to_addr.address_id
-                WHERE mpd.app_id = :appId
-                ORDER BY sequence_no ASC
-                """
+                                 SELECT mpd.app_mileage_per_diem_id, mpd.travel_date, mpd.method_of_travel, mpd.method_of_travel_description, 
+                                   mpd.miles, mpd.mileage_rate, mpd.is_outbound, mpd.is_reimbursement_requested,
+                                   from_addr.address_id as from_address_id, from_addr.street_1 as from_street_1, from_addr.city as from_city,
+                                   from_addr.state as from_state, from_addr.zip_5 as from_zip_5, from_addr.county as from_county,
+                                   from_addr.country as from_country, from_addr.place_id as from_place_id, from_addr.name as from_name,
+                                   to_addr.address_id as to_address_id, to_addr.street_1 as to_street_1, to_addr.city as to_city,
+                                   to_addr.state as to_state, to_addr.zip_5 as to_zip_5, to_addr.county as to_county,
+                                   to_addr.country as to_country, to_addr.place_id as to_place_id, to_addr.name as to_name,
+                                   override_rate
+                                 FROM ${travelSchema}.app_mileage_per_diem mpd
+                                 LEFT JOIN ${travelSchema}.app_mileage_per_diem_override USING(app_id)
+                                 INNER JOIN ${travelSchema}.address from_addr
+                                   ON mpd.from_address_id = from_addr.address_id
+                                 INNER JOIN ${travelSchema}.address to_addr
+                                   ON mpd.to_address_id = to_addr.address_id
+                                 WHERE mpd.app_id = :appId
+                                 ORDER BY sequence_no ASC
+                                 """
         ),
         DELETE_MILEAGE_PER_DIEMS("""
-                DELETE FROM ${travelSchema}.app_mileage_per_diem
-                WHERE app_id = :appId
-                """
+                                 DELETE FROM ${travelSchema}.app_mileage_per_diem
+                                 WHERE app_id = :appId
+                                 """
         ),
         INSERT_MILEAGE_PER_DIEM("""
-                INSERT INTO ${travelSchema}.app_mileage_per_diem
-                  (app_id, sequence_no, travel_date, from_address_id, to_address_id, method_of_travel,
-                  method_of_travel_description, miles, mileage_rate, is_outbound, is_reimbursement_requested)
-                VALUES (:appId, :sequenceNo, :travelDate, :fromAddressId, :toAddressId, :methodOfTravel,
-                  :methodOfTravelDescription, :miles, :mileageRate, :isOutbound, :isReimbursementRequested)
-                """
+                                INSERT INTO ${travelSchema}.app_mileage_per_diem
+                                  (app_id, sequence_no, travel_date, from_address_id, to_address_id, method_of_travel,
+                                  method_of_travel_description, miles, mileage_rate, is_outbound, is_reimbursement_requested)
+                                VALUES (:appId, :sequenceNo, :travelDate, :fromAddressId, :toAddressId, :methodOfTravel,
+                                  :methodOfTravelDescription, :miles, :mileageRate, :isOutbound, :isReimbursementRequested)
+                                """
         ),
         DELETE_OVERRIDE_RATE("""
-                DELETE FROM ${travelSchema}.app_mileage_per_diem_override
-                WHERE app_id = :appId
-                """
+                             DELETE FROM ${travelSchema}.app_mileage_per_diem_override
+                             WHERE app_id = :appId
+                             """
         ),
         INSERT_OVERRIDE_RATE("""
-                INSERT INTO ${travelSchema}.app_mileage_per_diem_override(app_id, override_rate)
-                VALUES (:appId, :overrideRate)
-                """
+                             INSERT INTO ${travelSchema}.app_mileage_per_diem_override(app_id, override_rate)
+                             VALUES (:appId, :overrideRate)
+                             """
         );
 
-        private String sql;
+        private final String sql;
 
         SqlMileagePerDiemQuery(String sql) {
             this.sql = sql;
@@ -161,9 +160,9 @@ public class SqlMileagePerDiemsDao extends SqlBaseDao {
 
     private class MileagePerDiemsHandler extends BaseHandler {
 
-        private TravelAddressRowMapper addressRowMapper = new TravelAddressRowMapper();
+        private final TravelAddressRowMapper addressRowMapper = new TravelAddressRowMapper();
         private Dollars overrideRate;
-        private List<MileagePerDiem> mileagePerDiemList = new ArrayList();
+        private final List<MileagePerDiem> mileagePerDiemList = new ArrayList();
 
         @Override
         public void processRow(ResultSet rs) throws SQLException {

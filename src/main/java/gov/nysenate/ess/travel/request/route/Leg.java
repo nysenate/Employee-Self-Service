@@ -1,22 +1,19 @@
 package gov.nysenate.ess.travel.request.route;
 
 import gov.nysenate.ess.travel.request.address.TravelAddress;
-import gov.nysenate.ess.travel.request.allowances.PerDiem;
 import gov.nysenate.ess.travel.request.route.destination.Destination;
-import gov.nysenate.ess.travel.utils.Dollars;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Objects;
 
 public class Leg {
 
+    private final ModeOfTransportation modeOfTransportation;
+    private final boolean isOutbound;
     private int id;
     private Destination from;
     private Destination to;
-    private final ModeOfTransportation modeOfTransportation;
-    private LocalDate travelDate;
-    private final boolean isOutbound;
+    private final LocalDate travelDate;
 
 
     public Leg(int id, Destination from, Destination to, ModeOfTransportation modeOfTransportation,
@@ -39,6 +36,10 @@ public class Leg {
 
     public int getId() {
         return id;
+    }
+
+    void setId(int id) {
+        this.id = id;
     }
 
     public TravelAddress fromAddress() {
@@ -79,10 +80,6 @@ public class Leg {
 
     public boolean isOutbound() {
         return isOutbound;
-    }
-
-    void setId(int id) {
-        this.id = id;
     }
 
     @Override

@@ -10,8 +10,8 @@ public class InvalidTimeRecordException extends RuntimeException implements Seri
 
     private static final long serialVersionUID = -9191905661476035241L;
 
-    private TimeRecord timeRecord;
-    private Map<TimeRecordErrorCode, ViewObject> detectedErrors;
+    private final TimeRecord timeRecord;
+    private final Map<TimeRecordErrorCode, ViewObject> detectedErrors;
 
     public InvalidTimeRecordException(TimeRecord timeRecord, Map<TimeRecordErrorCode, ViewObject> detectedErrors) {
         super("Errors detected in time record. " +

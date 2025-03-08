@@ -10,8 +10,7 @@ import java.util.Optional;
  * The ResponsibilityCenter is primarily defined by the agency and resp center head codes and
  * therefore contains those objects as well.
  */
-public class ResponsibilityCenter
-{
+public class ResponsibilityCenter {
     protected boolean active;
     protected int code;
     protected String name;
@@ -20,7 +19,8 @@ public class ResponsibilityCenter
     protected Agency agency;
     protected ResponsibilityHead head;
 
-    public ResponsibilityCenter() {}
+    public ResponsibilityCenter() {
+    }
 
     public ResponsibilityCenter(ResponsibilityCenter other) {
         this.active = other.active;
@@ -46,8 +46,7 @@ public class ResponsibilityCenter
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof ResponsibilityCenter)) return false;
-        ResponsibilityCenter that = (ResponsibilityCenter) o;
+        if (!(o instanceof ResponsibilityCenter that)) return false;
         return active == that.active &&
                 code == that.code &&
                 Objects.equal(name, that.name) &&

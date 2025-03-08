@@ -6,9 +6,8 @@ import gov.nysenate.ess.core.model.personnel.Agency;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class AgencyRowMapper extends BaseRowMapper<Agency>
-{
-    private String pfx;
+public class AgencyRowMapper extends BaseRowMapper<Agency> {
+    private final String pfx;
 
     public AgencyRowMapper(String pfx) {
         this.pfx = pfx;

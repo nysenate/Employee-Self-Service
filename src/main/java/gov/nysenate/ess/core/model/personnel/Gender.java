@@ -3,8 +3,7 @@ package gov.nysenate.ess.core.model.personnel;
 /**
  * Gender enumeration
  */
-public enum Gender
-{
+public enum Gender {
     M("Male"),
     F("Female");
 

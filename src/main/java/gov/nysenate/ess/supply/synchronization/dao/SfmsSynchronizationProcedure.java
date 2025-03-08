@@ -41,7 +41,7 @@ public class SfmsSynchronizationProcedure extends StoredProcedure {
      *                       when serializing the requisition view.
      */
     public void synchronizeRequisition(String requisitionXml) {
-        Map<String,String> parameterMap = new HashMap<>();
+        Map<String, String> parameterMap = new HashMap<>();
         parameterMap.put(PARAMETER, requisitionXml);
         execute(parameterMap);
     }

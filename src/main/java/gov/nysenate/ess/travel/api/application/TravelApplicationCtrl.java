@@ -4,10 +4,7 @@ import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
-import gov.nysenate.ess.travel.api.application.statistics.TravelApplicationStatisticsUtil;
-import gov.nysenate.ess.travel.api.application.statistics.TravelApplicationStatisticsView;
-import gov.nysenate.ess.travel.api.application.statistics.TravelEmployeeStatisticsDTO;
-import gov.nysenate.ess.travel.api.application.statistics.TravelEmployeeStatisticsView;
+import gov.nysenate.ess.travel.api.application.statistics.*;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
 import gov.nysenate.ess.travel.report.pdf.TravelAppPdfGenerator;
 import gov.nysenate.ess.travel.request.app.TravelApplication;
@@ -89,19 +86,32 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
         List<TravelApplication> apps = appService.selectTravelApplicationsBetweenFromAndToDates(fromLocalDateTime, toLocalDateTime);
 
         List<TravelApplicationView> appViews = apps.stream()
-                                                    .map(TravelApplicationView::new)
-                                                    .collect(Collectors.toList());
+                .map(TravelApplicationView::new)
+                .collect(Collectors.toList());
 
-        List<TravelEmployeeStatisticsDTO> appStatistics = TravelApplicationStatisticsUtil.getTravelStatusCount(appViews);
+        List<TravelEmployeeStatisticsDTO> travelStatisticsByEmployee = TravelStatisticsByEmployeeUtil.getTravelStatisticsByEmployee(appViews);
+        List<TravelStatusStatisticsDTO> travelStatisticsByStatus = TravelStatisticsByStatusUtil.getTravelStatisticsByStatus(appViews);
 
-        List<TravelEmployeeStatisticsView> appStatisticsViews = appStatistics.stream()
-                                                            .map(TravelEmployeeStatisticsView::new)
-                                                            .collect(Collectors.toList());
+        List<TravelEmployeeStatisticsView> travelEmployeeStatisticsViews = travelStatisticsByEmployee.stream()
+                .map(TravelEmployeeStatisticsView::new)
+                .collect(Collectors.toList());
+        List<TravelStatusStatisticsView> travelStatusStatisticsViews = travelStatisticsByStatus.stream()
+                .map(TravelStatusStatisticsView::new)
+                .collect(Collectors.toList());
+
+
+        TravelApplicationStatisticsByEmployeeView travelApplicationStatisticsByEmployeeView =
+                TravelStatisticsByEmployeeUtil.buildTravelApplicationStatisticsByEmployeeView(travelEmployeeStatisticsViews);
+
+        TravelApplicationStatisticsByStatusView travelApplicationStatisticsByStatusView =
+                TravelStatisticsByStatusUtil.buildTravelApplicationStatisticsByStatusView(travelStatusStatisticsViews);
 
         TravelApplicationStatisticsView travelApplicationStatisticsView =
-                TravelApplicationStatisticsUtil.buildTravelApplicationStatisticsView(appStatisticsViews);
+                new TravelApplicationStatisticsView(travelApplicationStatisticsByStatusView, travelApplicationStatisticsByEmployeeView);
+
         return new ViewObjectResponse<>(travelApplicationStatisticsView);
     }
+
     @RequestMapping(value = "/applications")
     public BaseResponse getActiveTravelApps() {
         List<TravelApplication> apps = appService.selectTravelApplications(getSubjectEmployeeId());

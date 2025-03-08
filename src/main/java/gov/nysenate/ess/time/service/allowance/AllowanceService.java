@@ -9,11 +9,10 @@ import java.util.SortedSet;
 
 /**
  * @author Sam Stouffer
- *
+ * <p>
  * Defines a service that provides allowance usage data for an employee.
  */
-public interface AllowanceService
-{
+public interface AllowanceService {
 
     /**
      * Gets a set of years for which the employee is an active temp employee with an allowance.
@@ -27,7 +26,7 @@ public interface AllowanceService
      * Gets the allowance usage for a single employee over a given year.
      *
      * @param empId int
-     * @param year int
+     * @param year  int
      * @return AllowanceUsage
      */
     AllowanceUsage getAllowanceUsage(int empId, int year);
@@ -36,7 +35,7 @@ public interface AllowanceService
      * Get annual allowance usage before the given date.
      *
      * @param empId int
-     * @param date LocalDate
+     * @param date  LocalDate
      * @return {@link AllowanceUsage}
      */
     AllowanceUsage getAllowanceUsage(int empId, LocalDate date);

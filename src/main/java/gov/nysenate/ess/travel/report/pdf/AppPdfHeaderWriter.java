@@ -24,6 +24,7 @@ public class AppPdfHeaderWriter implements AppPdfWriter {
 
     /**
      * Writes the headers to the PDPageContentStream.
+     *
      * @return Current y position after all writing.
      * @throws IOException
      */

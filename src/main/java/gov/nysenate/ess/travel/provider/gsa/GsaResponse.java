@@ -10,7 +10,7 @@ public class GsaResponse {
 
     /** Contains the fiscal year and zip code this response is for. */
     private final GsaResponseId id;
-    /** Map of {@link Month} to the lodging rate for that month.*/
+    /** Map of {@link Month} to the lodging rate for that month. */
     private final Map<Month, BigDecimal> lodgingRates;
     /** The meal and incidental expense tier/row to use for meal rates. */
     private final String mealTier;

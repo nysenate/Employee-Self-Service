@@ -45,15 +45,14 @@ public class SqlEmpTransactionDao extends SqlBaseDao implements EmpTransactionDa
 
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("empId", empId)
-              .addValue("dateStart", DateUtils.toDate(DateUtils.startOfDateRange(dateRange)))
-              .addValue("dateEnd", DateUtils.toDate(DateUtils.endOfDateRange(dateRange)));
+                .addValue("dateStart", DateUtils.toDate(DateUtils.startOfDateRange(dateRange)))
+                .addValue("dateEnd", DateUtils.toDate(DateUtils.endOfDateRange(dateRange)));
 
         String sql;
         // We don't filter by transaction codes if the earliest record needs to be the initial state or if we want all codes.
         if (codes.size() == TransactionCode.values().length || options.shouldInitialize()) {
             sql = SqlEmpTransactionQuery.GET_TRANS_HISTORY_SQL.getSql(schemaMap());
-        }
-        else {
+        } else {
             params.addValue("transCodes", getTransCodesFromSet(codes));
             sql = SqlEmpTransactionQuery.GET_TRANS_HISTORY_SQL_FILTER_BY_CODE.getSql(schemaMap());
         }
@@ -68,15 +67,13 @@ public class SqlEmpTransactionDao extends SqlBaseDao implements EmpTransactionDa
         List<String> timestamps = remoteJdbc.query(SqlEmpTransactionQuery.GET_MAX_UPDATE_DATE_TIME_SQL.getSql(schemaMap()), (rs, rowNum) -> rs.getString("MAX_DTTXNUPDATE"));
         if (timestamps.isEmpty()) {
             throw new IncorrectResultSizeDataAccessException(0);
-        }
-        else {
+        } else {
             try {
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
                 Date parsedDate = dateFormat.parse(timestamps.get(0));
                 Timestamp timestamp = new java.sql.Timestamp(parsedDate.getTime());
-                return DateUtils.getLocalDateTime( timestamp );
-            }
-            catch ( ParseException e ) {
+                return DateUtils.getLocalDateTime(timestamp);
+            } catch (ParseException e) {
                 return null;
             }
         }
@@ -96,14 +93,14 @@ public class SqlEmpTransactionDao extends SqlBaseDao implements EmpTransactionDa
     /**
      * Helper method to addUsage audit columns to the select sql statement. This is done because the columns need to be
      * explicitly added to prevent name clashes and we don't want to manually write them out.
-     *
+     * <p>
      * Note: The replacement string cannot be the first entry in the select clause due to commas.
      *
-     * @param selectSql String - The sql with a select statement to addUsage the audit columns to.
-     * @param replaceKey String - The key used for replacement. e.g ${auditCols} where 'auditCols' is the key.
-     * @param pfx String - A prefix to apply to each column name. Leave empty if you just want the column name as is.
+     * @param selectSql   String - The sql with a select statement to addUsage the audit columns to.
+     * @param replaceKey  String - The key used for replacement. e.g ${auditCols} where 'auditCols' is the key.
+     * @param pfx         String - A prefix to apply to each column name. Leave empty if you just want the column name as is.
      * @param restrictSet Set<TransactionCode> - Only the columns for the desired codes will be added. If null then
-     *                                           all the columns for every transaction code will be added.
+     *                    all the columns for every transaction code will be added.
      * @return String - sql statement with audit columns applied
      */
     private String applyAuditColsToSql(String selectSql, String replaceKey, String pfx, Set<TransactionCode> restrictSet,
@@ -116,8 +113,7 @@ public class SqlEmpTransactionDao extends SqlBaseDao implements EmpTransactionDa
         if (!options.shouldInitialize() && restrictSet != null && !restrictSet.isEmpty() &&
                 restrictSet.stream().noneMatch(TransactionCode::isAppointType)) {
             restrictSet.forEach(t -> auditColList.addAll(t.getDbColumnList()));
-        }
-        else {
+        } else {
             auditColList.addAll(TransactionCode.getAllDbColumnsList());
         }
         // Apply the prefix to the names if requested */

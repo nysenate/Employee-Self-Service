@@ -13,8 +13,7 @@ import java.util.stream.Collectors;
  * The dbColumns stored for each code refer to the set of columns in the SFMS audit
  * table where the relevant changes are stored.
  */
-public enum TransactionCode
-{
+public enum TransactionCode {
     ACC(TransactionType.PER, "CDACCRUE", "ACCRUE"),
     ACT(TransactionType.PER, "DTAPPOINTFRM, DTAPPOINTTO", "ACCRUAL DATES"),
     ADT(TransactionType.PER, "DTPEREMPFRM, DTPEREMPTO", "EMPLOYMENT DATES"),
@@ -60,7 +59,8 @@ public enum TransactionCode
     PRS(TransactionType.PER, "", "PRESS LIST"),
     PYA(TransactionType.PAY, "MOPRIORYRTE", "TE PRIOR YEAR AMOUNT"),
     RHD(TransactionType.PER, "DTCONTSERV", "REHIRE DATE"),
-    RSH(TransactionType.PAY, "CDRESPCTRHD, CDRESPCTR", "RESP. CENTER HEAD CODE"),   /** TODO: Fix this.. */
+    RSH(TransactionType.PAY, "CDRESPCTRHD, CDRESPCTR", "RESP. CENTER HEAD CODE"),
+    /** TODO: Fix this.. */
     RTP(TransactionType.PER, "", "RE-APPOINTMENT"),
     SAL(TransactionType.PAY, "MOSALBIWKLY", "BIWEEKLY/HOURLY RATE"),
     SAT(TransactionType.PAY, "MOADDSTATTAX", "ADDITIONAL STATE WITHHELD"),
@@ -104,27 +104,6 @@ public enum TransactionCode
         return EnumSet.allOf(TransactionCode.class);
     }
 
-    /** --- Methods --- */
-
-    public boolean isAppointType() {
-        return this.equals(APP) || this.equals(RTP);
-    }
-
-    public boolean usesAllColumns() {
-        return this.isAppointType();
-    }
-
-    /** --- Functional Getters/Setters --- */
-
-
-    public Set<String> getDbColumnList() {
-        return (this.isAppointType())
-                ? getTypeDbColumnsList(type)
-                : Arrays.stream(StringUtils.split(dbColumns, ","))
-                        .map(String::trim)
-                        .collect(Collectors.toSet());
-    }
-
     public static Set<String> getAllDbColumnsList() {
         Set<String> columns = new HashSet<>();
         for (TransactionCode t : TransactionCode.values()) {
@@ -145,6 +124,27 @@ public enum TransactionCode
     public static Set<TransactionCode> getTransactionsOfType(TransactionType type) {
         return Arrays.stream(TransactionCode.values())
                 .filter(code -> code.type == type)
+                .collect(Collectors.toSet());
+    }
+
+    /** --- Methods --- */
+
+    public boolean isAppointType() {
+        return this.equals(APP) || this.equals(RTP);
+    }
+
+    public boolean usesAllColumns() {
+        return this.isAppointType();
+    }
+
+    /** --- Functional Getters/Setters --- */
+
+
+    public Set<String> getDbColumnList() {
+        return (this.isAppointType())
+                ? getTypeDbColumnsList(type)
+                : Arrays.stream(StringUtils.split(dbColumns, ","))
+                .map(String::trim)
                 .collect(Collectors.toSet());
     }
 

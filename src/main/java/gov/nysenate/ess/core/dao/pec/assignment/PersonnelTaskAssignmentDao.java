@@ -21,7 +21,7 @@ public interface PersonnelTaskAssignmentDao {
     /**
      * Get a specific task assigned to the given employee.
      *
-     * @param empId int
+     * @param empId  int
      * @param taskId int
      * @return {@link PersonnelTaskAssignment}
      * @throws PersonnelTaskAssignmentNotFoundEx if no such task exists.
@@ -30,6 +30,7 @@ public interface PersonnelTaskAssignmentDao {
 
     /**
      * Get all assignment-task pairs that may require notification.
+     *
      * @return the relevant AssignmentWithTasks.
      */
     List<AssignmentWithTask> getNotifiableAssignmentsWithTasks();
@@ -61,6 +62,7 @@ public interface PersonnelTaskAssignmentDao {
 
     /**
      * Only updates assignment dates and due dates for task assignments that are already in the database
+     *
      * @param task
      */
     void updateAssignmentDates(PersonnelTaskAssignment task);
@@ -68,8 +70,8 @@ public interface PersonnelTaskAssignmentDao {
     /**
      * Mark a task as completed for the given employee.
      *
-     * @param empId int
-     * @param taskId int
+     * @param empId       int
+     * @param taskId      int
      * @param updateEmpId int - user performing the update
      */
     void setTaskComplete(int empId, int taskId, int updateEmpId);
@@ -77,7 +79,7 @@ public interface PersonnelTaskAssignmentDao {
     /**
      * Deactivates the task assignment.
      *
-     * @param empId int
+     * @param empId  int
      * @param taskId int
      */
     void deactivatePersonnelTaskAssignment(int empId, int taskId);
@@ -92,6 +94,7 @@ public interface PersonnelTaskAssignmentDao {
 
     /**
      * Determine if a task has been manually overridden
+     *
      * @param empId
      * @param taskId
      * @return boolean. True if the task has been manually overridden

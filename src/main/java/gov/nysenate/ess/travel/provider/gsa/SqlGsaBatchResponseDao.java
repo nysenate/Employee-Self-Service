@@ -23,13 +23,12 @@ import java.util.Map;
 @Repository
 public class SqlGsaBatchResponseDao extends SqlBaseDao implements GsaBatchResponseDao {
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public void handleNewData(GsaResponse gsaResponse) throws JsonProcessingException, NullPointerException, DataAccessException {
         try {
             insertGsaData(gsaResponse);
-        }
-        catch (DuplicateKeyException e) {
+        } catch (DuplicateKeyException e) {
             updateGsaData(gsaResponse);
         }
     }
@@ -39,7 +38,7 @@ public class SqlGsaBatchResponseDao extends SqlBaseDao implements GsaBatchRespon
                 .addValue("fiscalYear", gsaResponse.getId().getFiscalYear())
                 .addValue("zipcode", gsaResponse.getId().getZipcode())
                 .addValue("mealTier", gsaResponse.getMealTier())
-                .addValue("lodgingRates", objectMapper.writeValueAsString(gsaResponse.getLodgingRates()) )
+                .addValue("lodgingRates", objectMapper.writeValueAsString(gsaResponse.getLodgingRates()))
                 .addValue("city", gsaResponse.getCity())
                 .addValue("county", gsaResponse.getCounty());
         localNamedJdbc.update(SqlGsaBatchResponseQuery.INSERT_GSA_DATA.getSql(), params);
@@ -47,10 +46,10 @@ public class SqlGsaBatchResponseDao extends SqlBaseDao implements GsaBatchRespon
 
     private void updateGsaData(GsaResponse gsaResponse) throws JsonProcessingException {
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("mealTier", gsaResponse.getMealTier() )
-                .addValue("lodgingRates", objectMapper.writeValueAsString(gsaResponse.getLodgingRates() ))
-                .addValue("fiscalYear",gsaResponse.getId().getFiscalYear())
-                .addValue("zipcode",gsaResponse.getId().getZipcode());
+                .addValue("mealTier", gsaResponse.getMealTier())
+                .addValue("lodgingRates", objectMapper.writeValueAsString(gsaResponse.getLodgingRates()))
+                .addValue("fiscalYear", gsaResponse.getId().getFiscalYear())
+                .addValue("zipcode", gsaResponse.getId().getZipcode());
         localNamedJdbc.update(SqlGsaBatchResponseQuery.UPDATE_GSA_DATA.getSql(), params);
     }
 
@@ -62,15 +61,14 @@ public class SqlGsaBatchResponseDao extends SqlBaseDao implements GsaBatchRespon
                 new GsaInfoRowMapper());
         if (gsaResponseList.isEmpty() || gsaResponseList == null) {
             throw new IncorrectResultSizeDataAccessException(0);
-        }
-        else {
+        } else {
             return gsaResponseList.get(0);
         }
     }
 
     private enum SqlGsaBatchResponseQuery implements BasicSqlQuery {
 
-        INSERT_GSA_DATA ("insert into travel.gsa_data (fiscalYear, zipcode, mealTier, lodgingRates, city, county)\n" +
+        INSERT_GSA_DATA("insert into travel.gsa_data (fiscalYear, zipcode, mealTier, lodgingRates, city, county)\n" +
                 "    values (:fiscalYear, :zipcode, :mealTier, :lodgingRates, :city, :county);"),
 
         UPDATE_GSA_DATA("update travel.gsa_data\n" +
@@ -105,13 +103,13 @@ public class SqlGsaBatchResponseDao extends SqlBaseDao implements GsaBatchRespon
             String mealTier = rs.getString("mealTier");
             try {
                 Map<Month, BigDecimal> lodgingRates =
-                        objectMapper.readValue( rs.getString("lodgingRates"),
-                                new TypeReference<>() {});
+                        objectMapper.readValue(rs.getString("lodgingRates"),
+                                new TypeReference<>() {
+                                });
                 gsaResponse = new GsaResponse(new GsaResponseId(fiscalYear, zipcode), lodgingRates, mealTier);
                 gsaResponse.setCity(rs.getString("city"));
                 gsaResponse.setCounty(rs.getString("county"));
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 throw new SQLException(e);
             }
             return gsaResponse;

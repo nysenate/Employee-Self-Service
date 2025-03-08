@@ -45,7 +45,8 @@ public class RequisitionView implements ViewObject {
 
     protected boolean savedInSfms;
 
-    public RequisitionView() {}
+    public RequisitionView() {
+    }
 
     public RequisitionView(Requisition requisition) {
         this.requisitionId = requisition.getRequisitionId();
@@ -54,8 +55,8 @@ public class RequisitionView implements ViewObject {
         this.destination = new LocationView(requisition.getDestination());
         this.deliveryMethod = requisition.getDeliveryMethod().name();
         this.lineItems = requisition.getLineItems().stream()
-                                    .map(LineItemView::new)
-                                    .collect(Collectors.toSet());
+                .map(LineItemView::new)
+                .collect(Collectors.toSet());
         this.specialInstructions = requisition.getSpecialInstructions().orElse(null);
         this.status = requisition.getStatus().toString();
         this.issuer = requisition.getIssuer().map(EmployeeView::new).orElse(null);

@@ -1,9 +1,9 @@
 package gov.nysenate.ess.travel.review;
 
 import com.google.common.base.Preconditions;
-import gov.nysenate.ess.travel.request.app.TravelApplication;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
-import gov.nysenate.ess.travel.review.strategy.*;
+import gov.nysenate.ess.travel.request.app.TravelApplication;
+import gov.nysenate.ess.travel.review.strategy.ReviewerStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,10 +18,10 @@ public class ApplicationReview {
     private final static Comparator<Action> actionComparator = Comparator.comparing(Action::dateTime);
 
     private int appReviewId;
-    private TravelApplication application;
-    private TravelRole travelerRole;
-    private SortedSet<Action> actions;
-    private ReviewerStrategy reviewerStrategy;
+    private final TravelApplication application;
+    private final TravelRole travelerRole;
+    private final SortedSet<Action> actions;
+    private final ReviewerStrategy reviewerStrategy;
     private boolean isShared;
 
     public ApplicationReview(int appReviewId, TravelApplication application, TravelRole travelerRole,

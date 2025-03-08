@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 /**
  * @author Brian Heitner
- *
+ * <p>
  * Defines a service that can provide information about an employee's expected hours.
  */
 public interface DockHoursService {
@@ -15,10 +15,10 @@ public interface DockHoursService {
     /**
      * Get the Docked Hours within a given Date Range
      *
-     * @param empId int - employee id
+     * @param empId     int - employee id
      * @param dateRange Range<LocalDate> - Date range used to find Total Docked Hours
      * @return BigDecimal - Total Docked Hours within the date range
      */
-    BigDecimal getDockHours(int empId,Range<LocalDate> dateRange);
+    BigDecimal getDockHours(int empId, Range<LocalDate> dateRange);
 
 }

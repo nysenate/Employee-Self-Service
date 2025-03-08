@@ -1,7 +1,6 @@
 package gov.nysenate.ess.core.model.transaction;
 
-public class TransactionHistoryMissingEx extends RuntimeException
-{
+public class TransactionHistoryMissingEx extends RuntimeException {
     int empId;
 
     public TransactionHistoryMissingEx(int empId) {

@@ -29,20 +29,20 @@ public class ExpectedHoursRestApiCtrl extends BaseRestApiCtrl {
     /**
      * Get Expected Hours API
      * -------------------
-     *
+     * <p>
      * Get expected work hours for the given time period,
      * in addition to the expected hours for the year to the begin date,
      * and the overall expected hours for the current year.
-     *
+     * <p>
      * (GET) /api/v1/expectedhrs
-     *
+     * <p>
      * Request Parameters:
-     * @param empId - Integer - required - Expected Hours will be retrieved for this employee id
+     *
+     * @param empId     - Integer - required - Expected Hours will be retrieved for this employee id
      * @param beginDate - String (ISO 8601 Date) - required - begin date of the time period
      *                  must be the same year as the end date
-     * @param endDate - String (ISO 8601 Date) - required - end date of the time period
-     *                must be the same year as the begin date
-     *
+     * @param endDate   - String (ISO 8601 Date) - required - end date of the time period
+     *                  must be the same year as the begin date
      */
     @RequestMapping(value = "", method = {GET, HEAD})
     public ViewObjectResponse<ExpectedHoursView> getExpectedHours(@RequestParam int empId,

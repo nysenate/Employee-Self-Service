@@ -8,7 +8,8 @@ public class KnowBe4AssignmentAndProgressResponse {
 
     private List<KnowBe4AssignmentAndProgress> assignments;
 
-    public KnowBe4AssignmentAndProgressResponse() {}
+    public KnowBe4AssignmentAndProgressResponse() {
+    }
 
     public KnowBe4AssignmentAndProgressResponse(List<KnowBe4AssignmentAndProgress> assignments) {
         this.assignments = assignments;

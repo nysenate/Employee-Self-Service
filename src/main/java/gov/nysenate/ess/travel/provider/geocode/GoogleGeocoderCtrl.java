@@ -43,9 +43,10 @@ public class GoogleGeocoderCtrl extends BaseRestApiCtrl {
     /**
      * Geocodes an address, returning the response from google's api.
      * <p>
-     *     (GET) /api/v1/travel/geocode
+     * (GET) /api/v1/travel/geocode
      * <p>
-     *     Request Param: address (string) - The address to geocode. e.g 100 State Street Albany NY 12207
+     * Request Param: address (string) - The address to geocode. e.g 100 State Street Albany NY 12207
+     *
      * @param address
      * @return
      */

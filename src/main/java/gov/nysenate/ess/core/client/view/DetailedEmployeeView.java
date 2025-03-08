@@ -10,12 +10,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.time.LocalDate;
 
 @XmlRootElement
-public class DetailedEmployeeView extends EmployeeView
-{
-    // Keep the private fields to store some data from the Employee model in case we need to recreate it.
-    @JsonIgnore private PayType empPayType;
-    @JsonIgnore private ResponsibilityCenter empRespCtr;
-
+public class DetailedEmployeeView extends EmployeeView {
     protected String nid;
     protected int supervisorId;
     protected String jobTitle;
@@ -26,8 +21,12 @@ public class DetailedEmployeeView extends EmployeeView
     protected AddressView workAddress;
     protected LocationView empWorkLocation;
     protected PersonnelStatusView personnelStatus;
+    // Keep the private fields to store some data from the Employee model in case we need to recreate it.
+    @JsonIgnore private PayType empPayType;
+    @JsonIgnore private ResponsibilityCenter empRespCtr;
 
-    public DetailedEmployeeView() {}
+    public DetailedEmployeeView() {
+    }
 
     public DetailedEmployeeView(Employee employee) {
         super(employee);

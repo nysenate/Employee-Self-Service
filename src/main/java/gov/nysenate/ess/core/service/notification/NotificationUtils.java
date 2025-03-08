@@ -26,6 +26,7 @@ public class NotificationUtils {
 
     /**
      * get a name from class path
+     *
      * @param path class path
      * @return name in string
      */
@@ -35,43 +36,44 @@ public class NotificationUtils {
     }
 
     /**
-     *  get header names
-     * @param castType cast type string
-     * @param eventType event type string
+     * get header names
+     *
+     * @param castType         cast type string
+     * @param eventType        event type string
      * @param notificationType notification type string
      * @return header name
      */
     public static String getHeaderName(StringBuilder castType, StringBuilder eventType, StringBuilder notificationType) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(NotificationUtils.getName(castType.toString()));
-        sb.append("#");
-        sb.append(NotificationUtils.getName(eventType.toString()));
-        sb.append("#");
-        sb.append(NotificationUtils.getName(notificationType.toString()));
-        return sb.toString();
+        String sb = NotificationUtils.getName(castType.toString()) +
+                "#" +
+                NotificationUtils.getName(eventType.toString()) +
+                "#" +
+                NotificationUtils.getName(notificationType.toString());
+        return sb;
     }
 
     /**
-     *  get header value
-     * @param castType cast type string
-     * @param eventType event type string
+     * get header value
+     *
+     * @param castType         cast type string
+     * @param eventType        event type string
      * @param notificationType notification type string
      * @return header value
      */
     public static String getHeaderValue(StringBuilder castType, StringBuilder eventType, StringBuilder notificationType) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(NotificationUtils.getValue(castType.toString()));
-        sb.append("#");
-        sb.append(NotificationUtils.getValue(eventType.toString()));
-        sb.append("#");
-        sb.append(NotificationUtils.getValue(notificationType.toString()));
-        return sb.toString();
+        String sb = NotificationUtils.getValue(castType.toString()) +
+                "#" +
+                NotificationUtils.getValue(eventType.toString()) +
+                "#" +
+                NotificationUtils.getValue(notificationType.toString());
+        return sb;
     }
 
     /**
-     *  get header maps
-     * @param castType cast type string
-     * @param eventType event type string
+     * get header maps
+     *
+     * @param castType         cast type string
+     * @param eventType        event type string
      * @param notificationType notification type string
      * @return header maps
      */
@@ -90,9 +92,10 @@ public class NotificationUtils {
     }
 
     /**
-     *  cast component to its specific class
+     * cast component to its specific class
+     *
      * @param cla class
-     * @param c component
+     * @param c   component
      * @return the object of class
      */
     public static Object deCompoent(Class<?> cla, Component c) {

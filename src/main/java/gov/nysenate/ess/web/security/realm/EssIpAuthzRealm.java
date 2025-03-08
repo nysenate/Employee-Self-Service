@@ -20,19 +20,18 @@ import org.springframework.stereotype.Component;
  * Authenticates ESS subjects by IP Address.
  * Subjects with an ip address matching {@code ipWhitelist}
  * are authenticated without needing to log in.
- *
+ * <p>
  * This works with {@link gov.nysenate.ess.web.security.filter.EssApiAuthenticationFilter}
  * to allow scripts from trusted networks to access the ESS API.
- *
+ * <p>
  * Subjects authenticated in this manner are given admin permissions.
  */
 @Component
 public class EssIpAuthzRealm extends AuthorizingRealm {
 
     private static final Logger logger = LoggerFactory.getLogger(EssIpAuthzRealm.class);
-
-    @Value("${auth.api.ip.whitelist:^$}") private String ipWhitelist;
     private static final EssRole ROLE = EssRole.ADMIN;
+    @Value("${auth.api.ip.whitelist:^$}") private String ipWhitelist;
     @Autowired private AdminPermissionFactory adminPermissionFactory;
 
     @Override
@@ -48,8 +47,7 @@ public class EssIpAuthzRealm extends AuthorizingRealm {
         IpAuthenticationToken ipToken = (IpAuthenticationToken) token;
         if (isIpWhitelisted(ipToken.getIpAddress())) {
             return new SimpleAuthenticationInfo(token.getPrincipal(), token.getCredentials(), getName());
-        }
-        else {
+        } else {
             throw new UnknownAccountException("Client is not allowed access.");
         }
     }
@@ -66,12 +64,10 @@ public class EssIpAuthzRealm extends AuthorizingRealm {
                 authInfo.addRole(ROLE.name());
                 authInfo.addObjectPermissions(adminPermissionFactory.getPermissions(null, ImmutableSet.of(ROLE)));
             }
-        }
-        catch(ClassCastException castEx) {
+        } catch (ClassCastException castEx) {
             logger.debug("Ess IP realm could not retrieve principal for authorization. " +
                     "This is expected when logging in through the UI.");
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             logger.error("An error occurred during Ip Authorization.");
         }
         return authInfo;

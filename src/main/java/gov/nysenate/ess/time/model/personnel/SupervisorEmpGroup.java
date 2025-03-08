@@ -12,8 +12,7 @@ import java.util.stream.Collectors;
  * Note: The group of employees are for T&A purposes only and do not necessarily reflect
  * organizational hierarchy.
  */
-public class SupervisorEmpGroup extends PrimarySupEmpGroup
-{
+public class SupervisorEmpGroup extends PrimarySupEmpGroup {
 
     /** Collection of employee overrides */
     private Multimap<Integer, EmployeeSupInfo> overrideEmployees = HashMultimap.create();
@@ -40,6 +39,7 @@ public class SupervisorEmpGroup extends PrimarySupEmpGroup
 
     /**
      * Get all employee sup info's for which the supervisor is responsible for
+     *
      * @return {@link Set<EmployeeSupInfo>}
      */
     public ImmutableSet<EmployeeSupInfo> getDirectEmployeeSupInfos() {
@@ -52,6 +52,7 @@ public class SupervisorEmpGroup extends PrimarySupEmpGroup
 
     /**
      * Get all employee ids for which the supervisor is responsible for
+     *
      * @return {@link Set<Integer>}
      */
     public ImmutableSet<Integer> getDirectEmpIds() {
@@ -64,6 +65,11 @@ public class SupervisorEmpGroup extends PrimarySupEmpGroup
 
     public ImmutableCollection<EmployeeSupInfo> getOverrideEmployees() {
         return ImmutableList.copyOf(overrideEmployees.values());
+    }
+
+    public void setOverrideEmployees(Collection<EmployeeSupInfo> overrideEmployees) {
+        this.overrideEmployees = HashMultimap.create();
+        overrideEmployees.forEach(this::addOverrideEmployee);
     }
 
     public ImmutableCollection<EmployeeSupInfo> getSupOverrideInfos() {
@@ -82,11 +88,6 @@ public class SupervisorEmpGroup extends PrimarySupEmpGroup
             return;
         }
         supOverrideEmployees.put(empSupInfo.getEmpId(), empSupInfo);
-    }
-
-    public void setOverrideEmployees(Collection<EmployeeSupInfo> overrideEmployees) {
-        this.overrideEmployees = HashMultimap.create();
-        overrideEmployees.forEach(this::addOverrideEmployee);
     }
 
     public void addOverrideEmployee(EmployeeSupInfo employeeSupInfo) {

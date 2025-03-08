@@ -9,8 +9,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @XmlRootElement
-public class SalaryRecView implements ViewObject
-{
+public class SalaryRecView implements ViewObject {
 
     protected BigDecimal salaryRate;
     protected String payType;

@@ -2,22 +2,19 @@ package gov.nysenate.ess.time.model.payroll;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.TreeSet;
 
-public class Paycheck implements Comparable<Paycheck>
-{
+public class Paycheck implements Comparable<Paycheck> {
     private final String payPeriod;
     private final LocalDate checkDate;
     private final BigDecimal grossIncome;
     private final BigDecimal netIncome;
-    private TreeSet<Deduction> deductions;
     /** Amount payed via Direct Deposit. */
     private final BigDecimal directDepositAmount;
     /** Amount payed via check. */
     private final BigDecimal checkAmount;
+    private final TreeSet<Deduction> deductions;
 
     public Paycheck(String payPeriod, LocalDate checkDate, BigDecimal grossIncome, BigDecimal netIncome,
                     BigDecimal directDepositAmount, BigDecimal checkAmount) {
@@ -42,6 +39,7 @@ public class Paycheck implements Comparable<Paycheck>
 
     /**
      * Returns the deduction from the paycheck with the given code, or null if no deduction matches.
+     *
      * @param code
      * @return
      */

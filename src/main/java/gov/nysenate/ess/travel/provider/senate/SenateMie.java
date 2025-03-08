@@ -26,6 +26,7 @@ public class SenateMie {
 
     /**
      * The Senate's breakfast rate.
+     *
      * @return
      */
     public Dollars breakfast() {
@@ -34,6 +35,7 @@ public class SenateMie {
 
     /**
      * The Senate's dinner rate.
+     *
      * @return
      */
     public Dollars dinner() {
@@ -42,6 +44,7 @@ public class SenateMie {
 
     /**
      * The Senate's daily total meal reimbursement
+     *
      * @return
      */
     public Dollars total() {

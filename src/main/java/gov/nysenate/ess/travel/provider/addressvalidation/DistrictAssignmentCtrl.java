@@ -26,14 +26,14 @@ public class DistrictAssignmentCtrl extends BaseRestApiCtrl {
                                        @RequestParam String state,
                                        @RequestParam String zip5) {
         return new ViewObjectResponse<>(new DistrictResponseView(
-                districtAssignmentService.assignDistrict (new Address(addr1, city, state, zip5))
+                districtAssignmentService.assignDistrict(new Address(addr1, city, state, zip5))
         ));
     }
 
     @RequestMapping(value = "/unparsed")
     public BaseResponse assignDistrict(@RequestParam String addr1) {
         return new ViewObjectResponse<>(new DistrictResponseView(
-                districtAssignmentService.assignDistrict (new Address(addr1, "", "", ""))
+                districtAssignmentService.assignDistrict(new Address(addr1, "", "", ""))
         ));
     }
 }

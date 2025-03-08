@@ -5,7 +5,7 @@ import com.google.common.base.Objects;
 /**
  * A verification code for a {@link VideoTask}
  */
-public class VideoTaskCode implements Comparable<VideoTaskCode>{
+public class VideoTaskCode implements Comparable<VideoTaskCode> {
 
     /** Video this code belongs to */
     private final int videoId;
@@ -33,8 +33,7 @@ public class VideoTaskCode implements Comparable<VideoTaskCode>{
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof VideoTaskCode)) return false;
-        VideoTaskCode that = (VideoTaskCode) o;
+        if (!(o instanceof VideoTaskCode that)) return false;
         return sequenceNo == that.sequenceNo &&
                 Objects.equal(label, that.label) &&
                 Objects.equal(code, that.code);

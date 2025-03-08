@@ -6,8 +6,7 @@ import gov.nysenate.ess.core.model.period.Holiday;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class HolidayRowMapper extends BaseRowMapper<Holiday>
-{
+public class HolidayRowMapper extends BaseRowMapper<Holiday> {
     protected String pfx;
 
     public HolidayRowMapper(String pfx) {

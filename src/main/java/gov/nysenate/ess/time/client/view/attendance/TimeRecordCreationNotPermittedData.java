@@ -6,9 +6,9 @@ import gov.nysenate.ess.time.service.attendance.validation.TimeRecordCreationNot
 
 public class TimeRecordCreationNotPermittedData implements ViewObject {
 
-    private int empId;
-    private PayPeriodView payPeriod;
-    private String reason;
+    private final int empId;
+    private final PayPeriodView payPeriod;
+    private final String reason;
 
     public TimeRecordCreationNotPermittedData(TimeRecordCreationNotPermittedEx ex) {
         this.empId = ex.getEmpId();

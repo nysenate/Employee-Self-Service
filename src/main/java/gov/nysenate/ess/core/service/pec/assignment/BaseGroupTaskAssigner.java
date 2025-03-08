@@ -39,6 +39,14 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
         this.personnelTaskDao = personnelTaskDao;
     }
 
+    private static Map<Integer, PersonnelTask> buildPersonnelTaskMap(List<PersonnelTask> allPersonnelTasks) {
+        HashMap<Integer, PersonnelTask> personnelTaskMap = new HashMap<>();
+        for (PersonnelTask task : allPersonnelTasks) {
+            personnelTaskMap.put(task.getTaskId(), task);
+        }
+        return personnelTaskMap;
+    }
+
     @Override
     public List<AssignmentWithTask> assignGroupTasks(int empId, boolean updateDb) {
         return assignTasks(empId, getRequiredTaskIds(empId), updateDb);
@@ -57,7 +65,7 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
         existingTaskIds = removeManualOverrides(existingTaskIds, empId);
         boolean hasCompletedAnEthicsLiveTraining = false;
 
-        for (PersonnelTask task: personnelTaskDao.getAllTasks()) {
+        for (PersonnelTask task : personnelTaskDao.getAllTasks()) {
             if (task.getTaskType() == PersonnelTaskType.ETHICS_LIVE_COURSE && assignmentMap.containsKey(task.getTaskId())) {
                 PersonnelTaskAssignment assignment = assignmentMap.get(task.getTaskId());
                 if (assignment.isCompleted()) {
@@ -127,19 +135,10 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
         taskIds.removeIf(taskId -> {
             try {
                 return assignmentDao.getManualOverrideStatus(empId, taskId);
-            }
-            catch (EmptyResultDataAccessException e) {
+            } catch (EmptyResultDataAccessException e) {
                 return false;
             }
         });
         return taskIds;
-    }
-
-    private static Map<Integer, PersonnelTask> buildPersonnelTaskMap(List<PersonnelTask> allPersonnelTasks) {
-        HashMap<Integer, PersonnelTask> personnelTaskMap = new HashMap<>();
-        for (PersonnelTask task: allPersonnelTasks) {
-            personnelTaskMap.put(task.getTaskId(), task);
-        }
-        return personnelTaskMap;
     }
 }

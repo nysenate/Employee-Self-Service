@@ -11,6 +11,8 @@ public class KnowBe4TaskViewFactory implements PersonnelTaskViewFactory<KnowBe4C
     }
 
     @Override
-    public Class<KnowBe4CourseTask> getTaskClass() { return KnowBe4CourseTask.class; }
+    public Class<KnowBe4CourseTask> getTaskClass() {
+        return KnowBe4CourseTask.class;
+    }
 
 }

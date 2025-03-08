@@ -10,18 +10,21 @@ public interface AppPdfWriter {
 
     /**
      * Write content to the pdf.
+     *
      * @return The last Y position written to. Used to know where to start the next part of the pdf.
      */
     float write() throws IOException;
 
     /**
      * Get the current PDPageContentStream. Used by default draw methods.
+     *
      * @return
      */
     PDPageContentStream getContentStream();
 
     /**
      * Writes the given text starting at position x,y with the given font and font size.
+     *
      * @throws IOException
      */
     default void drawText(float x, float y, PDFont font, float fontSize, String text) throws IOException {
@@ -35,6 +38,7 @@ public interface AppPdfWriter {
 
     /**
      * Writes text centered between leftX and rightX at y height.
+     *
      * @throws IOException
      */
     default void drawCenteredText(float leftX, float rightX, float y, PDFont font, float fontSize, String text) throws IOException {
@@ -67,6 +71,7 @@ public interface AppPdfWriter {
 
     /**
      * Draw a checkbox, optionally checked or not.
+     *
      * @param x
      * @param y
      * @param width

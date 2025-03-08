@@ -8,13 +8,14 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-public class SupervisorOverride
-{
+public class SupervisorOverride {
     /** The supervisor that's getting permission to view and approve additional employees. */
     private int granteeEmpId;
 
-    /** The supervisor that's granting permissions to the grantee supervisor to manage their records.
-     *  OR the single employee that is being granted if this is an employee override*/
+    /**
+     * The supervisor that's granting permissions to the grantee supervisor to manage their records.
+     * OR the single employee that is being granted if this is an employee override
+     */
     private int granterEmpId;
 
     /** Specifies whether this override is granting all employees under a supervisor or a single employee */
@@ -35,7 +36,8 @@ public class SupervisorOverride
 
     /* --- Constructors --- */
 
-    public SupervisorOverride() {}
+    public SupervisorOverride() {
+    }
 
     /* --- Functional Getters / Setters --- */
 
@@ -43,20 +45,28 @@ public class SupervisorOverride
         return Optional.ofNullable(startDate);
     }
 
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
+
     public Optional<LocalDate> getEndDate() {
         return Optional.ofNullable(endDate);
     }
 
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
+    }
+
+    /* --- Overrides --- */
+
     public Range<LocalDate> getEffectiveDateRange() {
         Range<LocalDate> effectiveRange;
         if (startDate == null && endDate == null) {
-            effectiveRange =  Range.all();
-        }
-        else if (endDate == null) {
+            effectiveRange = Range.all();
+        } else if (endDate == null) {
             effectiveRange = Range.atLeast(startDate);
-        }
-        else if (startDate == null) {
-            effectiveRange =  Range.atMost(endDate);
+        } else if (startDate == null) {
+            effectiveRange = Range.atMost(endDate);
         } else {
             effectiveRange = Range.closed(startDate, endDate);
         }
@@ -64,11 +74,11 @@ public class SupervisorOverride
         return effectiveRange.canonical(DateUtils.getLocalDateDiscreteDomain());
     }
 
+    /* --- Basic Getters/Setters --- */
+
     public boolean isInEffect() {
         return isActive() && getEffectiveDateRange().contains(LocalDate.now());
     }
-
-    /* --- Overrides --- */
 
     @Override
     public String toString() {
@@ -83,8 +93,6 @@ public class SupervisorOverride
                 .append("updateDate", updateDate)
                 .toString();
     }
-
-    /* --- Basic Getters/Setters --- */
 
     public int getGranteeEmpId() {
         return granteeEmpId;
@@ -108,14 +116,6 @@ public class SupervisorOverride
 
     public void setGranterEmpId(int granterEmpId) {
         this.granterEmpId = granterEmpId;
-    }
-
-    public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate;
-    }
-
-    public void setEndDate(LocalDate endDate) {
-        this.endDate = endDate;
     }
 
     public LocalDateTime getOriginDate() {

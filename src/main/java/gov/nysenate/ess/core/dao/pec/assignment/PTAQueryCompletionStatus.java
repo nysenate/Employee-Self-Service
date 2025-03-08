@@ -11,15 +11,14 @@ public enum PTAQueryCompletionStatus {
     SOME_COMPLETE(false, true),
     ALL_COMPLETE(true, true);
 
-    PTAQueryCompletionStatus(boolean all, boolean completed) {
-        this.all = all;
-        this.completed = completed;
-    }
-
     /** Requires match for all results if true, at least one match if false */
     private final boolean all;
     /** Match complete tasks if true, incomplete otherwise */
     private final boolean completed;
+    PTAQueryCompletionStatus(boolean all, boolean completed) {
+        this.all = all;
+        this.completed = completed;
+    }
 
     public boolean isAll() {
         return all;

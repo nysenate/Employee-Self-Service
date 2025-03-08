@@ -68,22 +68,22 @@ public class SqlAllowancesDao extends SqlBaseDao {
 
     private enum SqlAllowancesQuery implements BasicSqlQuery {
         UPDATE_ALLOWANCE("""
-                UPDATE ${travelSchema}.app_allowance
-                SET value = :value
-                WHERE app_id = :appId
-                  AND type = :type
-                """
+                         UPDATE ${travelSchema}.app_allowance
+                         SET value = :value
+                         WHERE app_id = :appId
+                           AND type = :type
+                         """
         ),
         INSERT_ALLOWANCE("""
-                INSERT INTO ${travelSchema}.app_allowance(type, value, app_id)
-                VALUES(:type, :value, :appId)
-                """
+                         INSERT INTO ${travelSchema}.app_allowance(type, value, app_id)
+                         VALUES(:type, :value, :appId)
+                         """
         ),
         SELECT_ALLOWANCES("""
-                SELECT *
-                FROM ${travelSchema}.app_allowance
-                WHERE app_id = :appId
-                """
+                          SELECT *
+                          FROM ${travelSchema}.app_allowance
+                          WHERE app_id = :appId
+                          """
         ),
         ;
 
@@ -106,7 +106,7 @@ public class SqlAllowancesDao extends SqlBaseDao {
 
     private static class AllowanceHandler extends BaseHandler {
 
-        private Allowances allowances;
+        private final Allowances allowances;
 
         AllowanceHandler() {
             this.allowances = new Allowances();

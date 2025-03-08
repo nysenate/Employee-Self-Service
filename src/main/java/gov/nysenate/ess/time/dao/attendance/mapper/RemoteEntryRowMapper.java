@@ -1,18 +1,18 @@
 package gov.nysenate.ess.time.dao.attendance.mapper;
 
 import gov.nysenate.ess.core.dao.base.BaseRowMapper;
+import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.time.model.attendance.TimeEntry;
 import gov.nysenate.ess.time.model.payroll.MiscLeaveType;
-import gov.nysenate.ess.core.model.payroll.PayType;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class RemoteEntryRowMapper extends BaseRowMapper<TimeEntry>
-{
+public class RemoteEntryRowMapper extends BaseRowMapper<TimeEntry> {
     private String pfx = "";
 
-    public RemoteEntryRowMapper() {}
+    public RemoteEntryRowMapper() {
+    }
 
     public RemoteEntryRowMapper(String pfx) {
         this.pfx = pfx;

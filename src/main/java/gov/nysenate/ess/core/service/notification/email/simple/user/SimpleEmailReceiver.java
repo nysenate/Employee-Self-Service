@@ -4,7 +4,7 @@ import gov.nysenate.ess.core.model.personnel.Person;
 import gov.nysenate.ess.core.service.notification.base.header.userType.Receiver;
 
 /**
- *  Simple email receiver
+ * Simple email receiver
  * Created by Chenguang He on 6/14/2016.
  */
 public class SimpleEmailReceiver implements Receiver {

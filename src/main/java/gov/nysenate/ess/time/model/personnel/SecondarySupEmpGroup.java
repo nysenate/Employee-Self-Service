@@ -2,7 +2,7 @@ package gov.nysenate.ess.time.model.personnel;
 
 /**
  * A sup emp group that contains the supervisor's supervisor id.
- *
+ * <p>
  * Used in the context of {@link ExtendedSupEmpGroup}
  */
 public class SecondarySupEmpGroup extends PrimarySupEmpGroup {

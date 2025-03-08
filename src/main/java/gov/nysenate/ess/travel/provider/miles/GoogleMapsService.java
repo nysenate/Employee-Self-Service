@@ -27,13 +27,14 @@ public class GoogleMapsService implements MapService {
 
     /**
      * Calculates the driving distance in miles from one address to another.
+     *
      * @param from The starting address.
-     * @param to The ending address.
+     * @param to   The ending address.
      */
     @Override
     public double drivingDistance(TravelAddress from, TravelAddress to) throws InterruptedException, ApiException, IOException {
-        String[] origins = new String[] {getGoolgeAddressParam(from)};
-        String[] destinations = new String[] {getGoolgeAddressParam(to)};
+        String[] origins = new String[]{getGoolgeAddressParam(from)};
+        String[] destinations = new String[]{getGoolgeAddressParam(to)};
         DistanceMatrix request = DistanceMatrixApi.getDistanceMatrix(context, origins, destinations)
                 .mode(TravelMode.DRIVING)
                 .departureTime(java.time.Instant.ofEpochMilli(DateTime.now().toInstant().getMillis()))
@@ -50,14 +51,14 @@ public class GoogleMapsService implements MapService {
     /**
      * Get the address param to be passed into google distance matrix.
      * Use the place_id if it exists, otherwise use the address string.
+     *
      * @param address
      * @return
      */
     private String getGoolgeAddressParam(TravelAddress address) {
         if (address.getPlaceId().isEmpty()) {
             return address.toString();
-        }
-        else {
+        } else {
             return "place_id:" + address.getPlaceId();
         }
     }

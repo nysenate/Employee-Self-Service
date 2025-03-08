@@ -30,18 +30,16 @@ import static gov.nysenate.ess.core.model.pec.PersonnelTaskType.EVERFI_COURSE;
 
 @Service
 public class EverfiRecordService implements ESSEverfiRecordService {
-    
-    private EverfiApiClient everfiApiClient;
-    private EmployeeDao employeeDao;
-    private PersonnelTaskAssignmentDao personnelTaskAssignmentDao;
-    private PersonnelTaskService taskService;
-    private PersonnelTaskDao personnelTaskDao;
-    private EverfiUserService everfiUserService;
-    private HashMap<Integer, Integer> everfiAssignmentIDMap;
-    private HashMap<Integer, String> everfiContentIDMap;
 
     private static final Logger logger = LoggerFactory.getLogger(EverfiRecordService.class);
-
+    private final EverfiApiClient everfiApiClient;
+    private final EmployeeDao employeeDao;
+    private final PersonnelTaskAssignmentDao personnelTaskAssignmentDao;
+    private final PersonnelTaskService taskService;
+    private final PersonnelTaskDao personnelTaskDao;
+    private final EverfiUserService everfiUserService;
+    private HashMap<Integer, Integer> everfiAssignmentIDMap;
+    private HashMap<Integer, String> everfiContentIDMap;
     @Value("${scheduler.everfi.sync.enabled:false}")
     private boolean everfiSyncEnabled;
 
@@ -121,7 +119,7 @@ public class EverfiRecordService implements ESSEverfiRecordService {
                 logger.error("Problem with Everfi email : " + e.getMessage());
             }
         } else {
-            throw new EmployeeNotFoundEx("Everfi user record cannot be matched" + everfiAssignmentUser.toString());
+            throw new EmployeeNotFoundEx("Everfi user record cannot be matched" + everfiAssignmentUser);
         }
         return empid;
     }
@@ -129,6 +127,7 @@ public class EverfiRecordService implements ESSEverfiRecordService {
     /**
      * Goes through assignment records and inserts personnel tasks into the database for the proper employees
      * on the certain tasks that we care about from everfi
+     *
      * @param assignmentAndProgresses
      */
     private void handleRecords(List<EverfiAssignmentAndProgress> assignmentAndProgresses) {
@@ -143,7 +142,7 @@ public class EverfiRecordService implements ESSEverfiRecordService {
                 continue;
             }
 
-            if ( !everfiUserService.isEverfiIdIgnored( user.getUuid() ) ) {
+            if (!everfiUserService.isEverfiIdIgnored(user.getUuid())) {
 
                 try {
                     int empID = getEmployeeId(user);
@@ -161,8 +160,7 @@ public class EverfiRecordService implements ESSEverfiRecordService {
 
                             //Each progress has a content id which should suggest a certain task.
                             // We check here that the progress and the assignment both correspond to the same task
-                            if (everfiTaskID != null && everfiApiContentID != null && databaseRetrievedContentID != null
-                            && everfiApiContentID.equalsIgnoreCase(databaseRetrievedContentID)) {
+                            if (everfiTaskID != null && everfiApiContentID != null && everfiApiContentID.equalsIgnoreCase(databaseRetrievedContentID)) {
 
                                 LocalDateTime completedAt = null; //not completed by default
                                 boolean active = true; //true by default
@@ -188,20 +186,17 @@ public class EverfiRecordService implements ESSEverfiRecordService {
                                 //prevent completed=true & any records where emp_id != update_user_id0
                                 try {
                                     PersonnelTaskAssignment currentTaskAssignment =
-                                            personnelTaskAssignmentDao.getTaskForEmp(empID,everfiTaskID);
+                                            personnelTaskAssignmentDao.getTaskForEmp(empID, everfiTaskID);
 
-                                    if ( currentTaskAssignment.isCompleted() ) {
+                                    if (currentTaskAssignment.isCompleted()) {
+                                        continue;
+                                    } else if (currentTaskAssignment.getUpdateEmpId() != null &&
+                                            currentTaskAssignment.getEmpId() != currentTaskAssignment.getUpdateEmpId()) {
+                                        continue;
+                                    } else if (currentTaskAssignment.wasManuallyOverridden()) {
                                         continue;
                                     }
-                                    else if ( currentTaskAssignment.getUpdateEmpId() != null &&
-                                            currentTaskAssignment.getEmpId() != currentTaskAssignment.getUpdateEmpId() ) {
-                                        continue;
-                                    }
-                                    else if (currentTaskAssignment.wasManuallyOverridden()) {
-                                        continue;
-                                    }
-                                }
-                                catch (PersonnelTaskAssignmentNotFoundEx ex) {
+                                } catch (PersonnelTaskAssignmentNotFoundEx ex) {
                                     //This means they dont have a task to insert so we dont need to do anything
                                 }
 
@@ -234,7 +229,7 @@ public class EverfiRecordService implements ESSEverfiRecordService {
                         }
                     }
                 } catch (Exception e) {
-                    logger.error("Could not pull in Everfi Record for an employee "  + user.toString());
+                    logger.error("Could not pull in Everfi Record for an employee " + user);
                 }
 
             }
@@ -243,6 +238,7 @@ public class EverfiRecordService implements ESSEverfiRecordService {
 
     /**
      * Gets the id of the personnel task that corresponds with the right assignment ID
+     *
      * @param assignmentID
      * @return
      */
@@ -252,6 +248,7 @@ public class EverfiRecordService implements ESSEverfiRecordService {
 
     /**
      * Gets all personnel tasks with the everfi course enum
+     *
      * @return
      */
     private List<PersonnelTask> getEverfiPersonnelTasks() {

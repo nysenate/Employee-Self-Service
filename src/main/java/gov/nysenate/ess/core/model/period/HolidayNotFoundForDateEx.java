@@ -2,8 +2,7 @@ package gov.nysenate.ess.core.model.period;
 
 import java.time.LocalDate;
 
-public class HolidayNotFoundForDateEx extends HolidayException
-{
+public class HolidayNotFoundForDateEx extends HolidayException {
     private static final long serialVersionUID = 7100960898017208118L;
 
     protected LocalDate requestedDate;

@@ -9,10 +9,10 @@ import java.util.Objects;
 
 public final class LodgingPerDiem {
 
-    private int id;
     private final TravelAddress address;
+    private int id;
     private PerDiem perDiem;
-    private boolean isReimbursementRequested;
+    private final boolean isReimbursementRequested;
 
     public LodgingPerDiem(TravelAddress address, LocalDate date, Dollars rate) {
         this(0, address, new PerDiem(date, rate), true);

@@ -9,8 +9,7 @@ import java.time.LocalDateTime;
 
 @Controller
 @RequestMapping("/error")
-public class ErrorPageCtrl
-{
+public class ErrorPageCtrl {
     private static final String errorTemplateName = "error";
 
     @RequestMapping(value = "/404", method = {RequestMethod.GET, RequestMethod.HEAD})
@@ -32,7 +31,7 @@ public class ErrorPageCtrl
         modelMap.addAttribute("title", "Authorization Error")
                 .addAttribute("message",
                         "An error occurred during ESS user authorization at " + LocalDateTime.now() + "<br>" +
-                         "Please report this to the STS Help Line at Senate x2011");
+                                "Please report this to the STS Help Line at Senate x2011");
         return errorPage(modelMap);
     }
 

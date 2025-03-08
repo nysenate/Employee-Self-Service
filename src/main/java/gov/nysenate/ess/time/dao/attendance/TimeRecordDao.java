@@ -2,8 +2,8 @@ package gov.nysenate.ess.time.dao.attendance;
 
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Range;
-import gov.nysenate.ess.core.util.SortOrder;
 import gov.nysenate.ess.core.dao.base.BaseDao;
+import gov.nysenate.ess.core.util.SortOrder;
 import gov.nysenate.ess.time.model.attendance.TimeRecord;
 import gov.nysenate.ess.time.model.attendance.TimeRecordStatus;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -15,12 +15,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-public interface TimeRecordDao extends BaseDao
-{
+public interface TimeRecordDao extends BaseDao {
     /** --- Retrieval methods --- */
 
     /**
      * Retrieves the time record with the given time record id
+     *
      * @param timeRecordId BigInteger
      * @return Time Record
      * @throws EmptyResultDataAccessException if no time record exists with the given id
@@ -29,15 +29,17 @@ public interface TimeRecordDao extends BaseDao
 
     /**
      * Retrieves a list of time records for the employees in the given list during a time range.
-     * @param empIds List<Integer> - List of employee ids
+     *
+     * @param empIds    List<Integer> - List of employee ids
      * @param dateRange Range<LocalDate> - date range for which to  retrieve records
-     *@param statuses Set<TimeRecordStatus> - The set of statuses to filter by  @return ListMultimap<Integer, TimeRecord>
+     * @param statuses  Set<TimeRecordStatus> - The set of statuses to filter by  @return ListMultimap<Integer, TimeRecord>
      */
     ListMultimap<Integer, TimeRecord> getRecordsDuring(Set<Integer> empIds, Range<LocalDate> dateRange,
                                                        Set<TimeRecordStatus> statuses);
 
     /**
      * Get all records from the given employee's currently active attendance periods
+     *
      * @param empId Integer - employee id
      * @return List<TimeRecord>
      */
@@ -45,7 +47,8 @@ public interface TimeRecordDao extends BaseDao
 
     /**
      * Gets the distinct years that an employee has at least one time or attendance record for.
-     * @param empId Integer - employee id
+     *
+     * @param empId     Integer - employee id
      * @param yearOrder - SortOrder - order the returned years
      * @return List<Integer>
      */
@@ -77,12 +80,14 @@ public interface TimeRecordDao extends BaseDao
 
     /**
      * Get a timestamp of the latest time record update
+     *
      * @return LocalDateTime
      */
     LocalDateTime getLatestUpdateTime();
 
     /**
      * Get a list of time records that that were updated in the given datetime range
+     *
      * @param dateTimeRange Range<LocalDateTime> range encompassing update window
      * @return List<TimeRecord>
      */
@@ -90,6 +95,7 @@ public interface TimeRecordDao extends BaseDao
 
     /**
      * Returns true if the given employee has an in progress time record under their superviion
+     *
      * @param supId int - supervisor id
      * @return boolean
      */
@@ -99,6 +105,7 @@ public interface TimeRecordDao extends BaseDao
 
     /**
      * Update TimeRecord to the Timesheet Table
+     *
      * @param record - TimeRecord class object containing data to be updated into the table
      * @return Boolean value, true if data successfully updated else false.
      */

@@ -35,30 +35,30 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 @RestController
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/empTransactions")
-public class EmpTransactionRestApiCtrl extends BaseRestApiCtrl
-{
+public class EmpTransactionRestApiCtrl extends BaseRestApiCtrl {
     private static final Logger logger = LoggerFactory.getLogger(EmpTransactionRestApiCtrl.class);
-
+    private static final EnumSet<TransactionCode> timelineCodes =
+            EnumSet.of(APP, RTP, TYP, PHO, SAL, SUP, MAR, LEG, LOC, EMP);
     @Autowired private EmpTransactionService transactionService;
     @Autowired private EmployeeDao employeeDao;
 
     /**
      * Transactions for employee API
      * -----------------------------
-     *
+     * <p>
      * Returns a list of transactions within the given date range for a specific employee.
      *
-     * @param empId int - Employee id
-     * @param fromDate String - from date (inclusive)
-     * @param toDate String - to date (inclusive)
-     * @param codes String - comma separated list of tx codes
-     * @param type String - Get only transaction codes of a specific type
-     *             (PAY or PER for payroll or personnel) (overrides 'codes' param)
+     * @param empId          int - Employee id
+     * @param fromDate       String - from date (inclusive)
+     * @param toDate         String - to date (inclusive)
+     * @param codes          String - comma separated list of tx codes
+     * @param type           String - Get only transaction codes of a specific type
+     *                       (PAY or PER for payroll or personnel) (overrides 'codes' param)
      * @param restrictValues boolean - restrict returned values for each transaction record
      *                       to only the values explicitly set by the transaction
      *                       as determined by the transactions code. (default false)
-     *                       @see TransactionCode
      * @return ListViewResponse of EmpTransRecordViews
+     * @see TransactionCode
      */
     @RequestMapping("")
     public BaseResponse getTransactionsByEmpId(@RequestParam Integer empId,
@@ -74,13 +74,13 @@ public class EmpTransactionRestApiCtrl extends BaseRestApiCtrl
         Range<LocalDate> range = Range.closed(fromLocalDate, toLocalDate);
         Set<TransactionCode> codeSet = type != null
                 ? TransactionCode.getTransactionsOfType(
-                        getEnumParameter("type", type, TransactionType.class))
+                getEnumParameter("type", type, TransactionType.class))
                 : getTransCodesFromString(codes);
         return ListViewResponse.of(
-            transactionService.getTransHistory(empId)
-                .getTransRecords(range, codeSet, SortOrder.ASC).stream()
-                .map(record -> new EmpTransRecordView(record, restrictValues))
-                .collect(toList()), "transactions");
+                transactionService.getTransHistory(empId)
+                        .getTransRecords(range, codeSet, SortOrder.ASC).stream()
+                        .map(record -> new EmpTransRecordView(record, restrictValues))
+                        .collect(toList()), "transactions");
     }
 
     @RequestMapping("/snapshot")
@@ -99,7 +99,7 @@ public class EmpTransactionRestApiCtrl extends BaseRestApiCtrl
     /**
      * Retrieves a snapshot of the current state of an employees data.
      * This method should be used when looking at current data as it is more accurate
-     *  than reconstructing data from the transaction audit trail.
+     * than reconstructing data from the transaction audit trail.
      *
      * @param empId Integer - employee id
      */
@@ -117,9 +117,6 @@ public class EmpTransactionRestApiCtrl extends BaseRestApiCtrl
         );
     }
 
-    private static EnumSet<TransactionCode> timelineCodes =
-        EnumSet.of(APP, RTP, TYP, PHO, SAL, SUP, MAR, LEG, LOC, EMP);
-
     /**
      * The timeline API returns a subset of the transaction records that can be used to display
      * the updates that general end users will care about.
@@ -132,11 +129,11 @@ public class EmpTransactionRestApiCtrl extends BaseRestApiCtrl
         checkPermission(new CorePermission(empId, TRANSACTION_HISTORY, GET));
 
         return ListViewResponse.of(
-            transactionService.getTransHistory(empId)
-                .getTransRecords(DateUtils.ALL_DATES, timelineCodes, SortOrder.ASC)
-                .stream()
-                .map(EmpTransRecordView::new)
-                .collect(toList()), "transactions");
+                transactionService.getTransHistory(empId)
+                        .getTransRecords(DateUtils.ALL_DATES, timelineCodes, SortOrder.ASC)
+                        .stream()
+                        .map(EmpTransRecordView::new)
+                        .collect(toList()), "transactions");
     }
 
     /** --- Internal --- */
@@ -144,16 +141,15 @@ public class EmpTransactionRestApiCtrl extends BaseRestApiCtrl
     private Set<TransactionCode> getTransCodesFromString(String codes) {
         if (StringUtils.isNotBlank(codes)) {
             List<String> codeStrList = Splitter.on(",")
-                .omitEmptyStrings()
-                .trimResults()
-                .splitToList(codes.toUpperCase());
+                    .omitEmptyStrings()
+                    .trimResults()
+                    .splitToList(codes.toUpperCase());
 
             Set<TransactionCode> codeSet = new HashSet<>();
             for (String code : codeStrList) {
                 try {
                     codeSet.add(TransactionCode.valueOf(code));
-                }
-                catch (IllegalArgumentException ex) {
+                } catch (IllegalArgumentException ex) {
                     throw new InvalidRequestParamEx(codes, "codes", "String",
                             "comma separated transaction codes: " + code + " is not a valid transaction code.");
                 }

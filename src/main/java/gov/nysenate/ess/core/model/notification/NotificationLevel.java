@@ -1,7 +1,6 @@
 package gov.nysenate.ess.core.model.notification;
 
-public enum NotificationLevel
-{
+public enum NotificationLevel {
     INFO,
     WARN,
     PROMPT,

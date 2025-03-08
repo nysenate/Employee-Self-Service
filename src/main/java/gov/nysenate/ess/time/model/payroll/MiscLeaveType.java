@@ -10,10 +10,9 @@ import java.util.stream.Collectors;
  * Miscellaneous leave time must be accompanied by a code representing the type of leave.
  * This is an enumeration of all those various codes with condensed and full descriptions.
  */
-public enum MiscLeaveType
-{
+public enum MiscLeaveType {
     ADMINISTRATIVE_LEAVE("A", "Administrative Leave", "Administrative Leave", true, new BigInteger("307455737086830401923262932905351643162")),
-    BEREAVEMENT_LEAVE("B","Bereavement Leave", "Bereavement Leave", false, new BigInteger("191601132010624858613098950383796367496")),
+    BEREAVEMENT_LEAVE("B", "Bereavement Leave", "Bereavement Leave", false, new BigInteger("191601132010624858613098950383796367496")),
     BLOOD_DONATION("D", "Blood Donation", "Blood Donation Leave", false, new BigInteger("191601132010628485390557794271320486024")),
     BRST_PROST_CANCER_SCREENING("C", "Cancer Screening", "Breast and Prostate Cancer Screening Leave", false, new BigInteger("191601132010620022909820491867097542792")),
     EXTENDED_SICK_LEAVE("X", "Extended Sick Leave", "Extended Sick Leave", false, new BigInteger("191601132010617605058181262608748130440")),
@@ -54,44 +53,13 @@ public enum MiscLeaveType
         return null;
     }
 
-    public static MiscLeaveType valueOfId(BigInteger miscLeaveId){
+    public static MiscLeaveType valueOfId(BigInteger miscLeaveId) {
         for (MiscLeaveType leaveType : MiscLeaveType.values()) {
             if (leaveType.miscLeaveId.equals(miscLeaveId)) {
                 return leaveType;
             }
         }
         return null;
-    }
-
-    private static class MiscLeaveTypeView
-    {
-        private MiscLeaveType type;
-        private String shortName;
-        private String fullName;
-        private boolean restricted;
-
-        MiscLeaveTypeView(MiscLeaveType type) {
-            this.type = type;
-            this.shortName = type.getShortName();
-            this.fullName = type.getFullName();
-            this.restricted = type.isRestricted();
-        }
-
-        public MiscLeaveType getType() {
-            return type;
-        }
-
-        public String getShortName() {
-            return shortName;
-        }
-
-        public String getFullName() {
-            return fullName;
-        }
-
-        public boolean isRestricted() {
-            return restricted;
-        }
     }
 
     public static String getJsonLabels() {
@@ -119,5 +87,35 @@ public enum MiscLeaveType
 
     public BigInteger getMiscLeaveId() {
         return miscLeaveId;
+    }
+
+    private static class MiscLeaveTypeView {
+        private final MiscLeaveType type;
+        private final String shortName;
+        private final String fullName;
+        private final boolean restricted;
+
+        MiscLeaveTypeView(MiscLeaveType type) {
+            this.type = type;
+            this.shortName = type.getShortName();
+            this.fullName = type.getFullName();
+            this.restricted = type.isRestricted();
+        }
+
+        public MiscLeaveType getType() {
+            return type;
+        }
+
+        public String getShortName() {
+            return shortName;
+        }
+
+        public String getFullName() {
+            return fullName;
+        }
+
+        public boolean isRestricted() {
+            return restricted;
+        }
     }
 }

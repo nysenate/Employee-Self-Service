@@ -7,8 +7,7 @@ import java.math.BigDecimal;
 /**
  * An immutable representation of an employee's state in relation to computing accruals.
  */
-public class EmpAccrualState
-{
+public class EmpAccrualState {
     protected int payPeriodCount;
     protected boolean employeeAccruing;
     protected PayType payType;

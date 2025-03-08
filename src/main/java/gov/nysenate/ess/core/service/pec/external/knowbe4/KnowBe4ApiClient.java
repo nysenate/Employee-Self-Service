@@ -1,6 +1,8 @@
 package gov.nysenate.ess.core.service.pec.external.knowbe4;
 
-import org.apache.http.client.methods.*;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
@@ -15,9 +17,6 @@ import java.io.IOException;
 public class KnowBe4ApiClient {
 
     private static final Logger logger = LoggerFactory.getLogger(KnowBe4ApiClient.class);
-
-    private final String HOST;
-    private final String KnowBe4ApiKey;
     private static final int SUCCESS = 200;
     private static final int UNAUTHORIZED = 401;
     private static final int FORBIDDEN = 403;
@@ -27,6 +26,8 @@ public class KnowBe4ApiClient {
     private static final int INTERNAL_SERVER_ERROR = 500;
     private static final int SERVICE_UNAVAILABLE = 503;
     private static final int MAX_RETRIES = 10;
+    private final String HOST;
+    private final String KnowBe4ApiKey;
 
     public KnowBe4ApiClient(@Value("${pec.KnowBe4Host}") String host,
                             @Value("${pec.KnowBe4ApiKey:}") String KnowBe4ApiKey) {
@@ -64,43 +65,35 @@ public class KnowBe4ApiClient {
                 if (statusCode == SUCCESS) {
                     retry = false;
                     data = EntityUtils.toString(response.getEntity());
-                }
-                else if (statusCode == TOO_MANY_REQUESTS) {
+                } else if (statusCode == TOO_MANY_REQUESTS) {
                     // Increment the retry count and sleep.
                     retryCount++;
                     Thread.sleep(getWaitTimeExp(retryCount));
-                }
-                else if (statusCode == UNAUTHORIZED) {
+                } else if (statusCode == UNAUTHORIZED) {
                     logger.error("Received UNAUTHORIZED response from KnowBe4: '{} {}'",
                             statusCode, EntityUtils.toString(response.getEntity()));
                     retry = false;
-                }
-                else if (statusCode == FORBIDDEN) {
+                } else if (statusCode == FORBIDDEN) {
                     logger.error("Received FORBIDDEN response from KnowBe4: '{} {}'",
                             statusCode, EntityUtils.toString(response.getEntity()));
                     retry = false;
-                }
-                else if (statusCode == NOT_FOUND) {
+                } else if (statusCode == NOT_FOUND) {
                     logger.error("Received NOT_FOUND response from KnowBe4: '{} {}'",
                             statusCode, EntityUtils.toString(response.getEntity()));
                     retry = false;
-                }
-                else if (statusCode == INCORRECT_RESPONSE_FORMAT) {
+                } else if (statusCode == INCORRECT_RESPONSE_FORMAT) {
                     logger.error("Received INCORRECT_RESPONSE_FORMAT response from KnowBe4: '{} {}'",
                             statusCode, EntityUtils.toString(response.getEntity()));
                     retry = false;
-                }
-                else if (statusCode == INTERNAL_SERVER_ERROR) {
+                } else if (statusCode == INTERNAL_SERVER_ERROR) {
                     logger.error("Received INTERNAL_SERVER_ERROR response from KnowBe4: '{} {}'",
                             statusCode, EntityUtils.toString(response.getEntity()));
                     retry = false;
-                }
-                else if (statusCode == SERVICE_UNAVAILABLE) {
+                } else if (statusCode == SERVICE_UNAVAILABLE) {
                     logger.error("Received SERVICE_UNAVAILABLE response from KnowBe4: '{} {}'",
                             statusCode, EntityUtils.toString(response.getEntity()));
                     retry = false;
-                }
-                else {
+                } else {
                     logger.error(String.format("Received unknown response from KnowBe4: '%s %s'",
                             statusCode, EntityUtils.toString(response.getEntity())));
                     retry = false;

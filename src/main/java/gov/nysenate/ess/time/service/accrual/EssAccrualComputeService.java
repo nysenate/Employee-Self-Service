@@ -27,7 +27,6 @@ import gov.nysenate.ess.time.util.AccrualUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -44,8 +43,8 @@ import static gov.nysenate.ess.time.model.EssTimeConstants.ANNUAL_PER_HOURS;
 import static gov.nysenate.ess.time.model.EssTimeConstants.MAX_DAYS_PER_YEAR;
 import static gov.nysenate.ess.time.util.AccrualUtils.getProratePercentage;
 import static gov.nysenate.ess.time.util.AccrualUtils.roundPersonalHours;
-import static java.time.temporal.TemporalAdjusters.lastDayOfYear;
 import static java.time.temporal.TemporalAdjusters.firstDayOfYear;
+import static java.time.temporal.TemporalAdjusters.lastDayOfYear;
 
 /**
  * Service layer for computing accrual information for an employee based on processed accrual
@@ -270,10 +269,7 @@ public class EssAccrualComputeService implements AccrualComputeService {
         // Compute accruals for each gap period
         for (PayPeriod period : gapPeriods) {
 
-            boolean countRemainingPeriod = false;
-            if (remainingPeriods.contains(period)) {
-                countRemainingPeriod = true;
-            }
+            boolean countRemainingPeriod = remainingPeriods.contains(period);
 
             /**
              *  Pass the last Annual Accrual Summary Record since we need
@@ -282,7 +278,7 @@ public class EssAccrualComputeService implements AccrualComputeService {
              *  Accrual Summary instead of passing in its year so that it would
              *  be easier to obtain other information from it if needed.
              */
-            computeGapPeriodAccruals(period, accrualState, empTrans,  lastAnnualAccSummary,
+            computeGapPeriodAccruals(period, accrualState, empTrans, lastAnnualAccSummary,
                     timeRecords, periodUsages, accrualAllowedDates, expectedHourDates, countRemainingPeriod);
 
             if (countRemainingPeriod) {
@@ -472,9 +468,8 @@ public class EssAccrualComputeService implements AccrualComputeService {
         BigDecimal minTotalHours = BigDecimal.ZERO;
         if (!transHistory.getEffectiveMinHours(initialRange).isEmpty()) {
             minTotalHours = transHistory.getEffectiveMinHours(initialRange).firstEntry().getValue();
-        }
-        else if (!transHistory.getEffectiveMinHours( transHistory.getActiveDates().span() ).isEmpty()){
-            minTotalHours = transHistory.getEffectiveMinHours( transHistory.getActiveDates().span() ).lastEntry().getValue(); //NUMINTOTHRS apt rtp
+        } else if (!transHistory.getEffectiveMinHours(transHistory.getActiveDates().span()).isEmpty()) {
+            minTotalHours = transHistory.getEffectiveMinHours(transHistory.getActiveDates().span()).lastEntry().getValue(); //NUMINTOTHRS apt rtp
         }
 
         accrualState.setNumintotend(accrualDao.getBasisForSAPersonalTime(transHistory.getEmployeeId()));
@@ -548,8 +543,7 @@ public class EssAccrualComputeService implements AccrualComputeService {
              */
             if (lastAnnualAccSummary.getYear() < gapPeriod.getYear()) {
                 accrualState.setPriorYearDonations(donationService.getHoursDonated(transHistory.getEmployeeId(), gapPeriod.getYear() - 1));
-            }
-            else {
+            } else {
                 /** Pass a zero value for prior year donations if current
                  * Annual Master Record exists so it's effectively not used
                  * */

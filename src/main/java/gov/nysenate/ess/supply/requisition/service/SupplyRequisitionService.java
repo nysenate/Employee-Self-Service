@@ -1,14 +1,12 @@
 package gov.nysenate.ess.supply.requisition.service;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.supply.notification.SupplyEmailService;
-import gov.nysenate.ess.supply.requisition.model.Requisition;
-import gov.nysenate.ess.supply.requisition.model.RequisitionQuery;
 import gov.nysenate.ess.supply.requisition.dao.RequisitionDao;
 import gov.nysenate.ess.supply.requisition.exception.ConcurrentRequisitionUpdateException;
+import gov.nysenate.ess.supply.requisition.model.Requisition;
+import gov.nysenate.ess.supply.requisition.model.RequisitionQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -62,6 +60,7 @@ public class SupplyRequisitionService implements RequisitionService {
      * Gets the matching requisition from the database, and compares its modified date time
      * with that of the new {@code requisition}. If they do not match then the requisition
      * has been updated by someone else and we should not save it.
+     *
      * @param requisition
      */
     private void checkPessimisticLocking(Requisition requisition) {
@@ -70,8 +69,8 @@ public class SupplyRequisitionService implements RequisitionService {
         if (previousRevision.isPresent()) {
             if (!previousRevision.get().getModifiedDateTime().equals(requisition.getModifiedDateTime())) {
                 throw new ConcurrentRequisitionUpdateException(requisition.getRequisitionId(),
-                                                               requisition.getModifiedDateTime().orElse(null),
-                                                               previousRevision.get().getModifiedDateTime().orElse(null));
+                        requisition.getModifiedDateTime().orElse(null),
+                        previousRevision.get().getModifiedDateTime().orElse(null));
             }
         }
     }

@@ -15,8 +15,8 @@ import java.util.UUID;
 @Service
 public class AttachmentService {
 
-    private File uploadDir;
-    private SqlAttachmentDao attachmentDao;
+    private final File uploadDir;
+    private final SqlAttachmentDao attachmentDao;
 
     @Autowired
     public AttachmentService(@Value("${data.dir}") String dataDir,
@@ -30,6 +30,7 @@ public class AttachmentService {
     /**
      * Saves an uploaded file to disk and the database.
      * Saved with filename = to the attachment's UUID in the 'data.travel.attachments.dir' directory.
+     *
      * @param upload
      * @return A {@link Attachment} containing metadata about the file.
      */
@@ -50,6 +51,7 @@ public class AttachmentService {
 
     /**
      * Returns a File representing this attachment on disk.
+     *
      * @param attachmentId The UUID of the attachment.
      */
     public File getAttachmentFile(String attachmentId) {
@@ -59,8 +61,7 @@ public class AttachmentService {
     private String getUploadPath() {
         if (getUploadDir().getPath().endsWith("/")) {
             return getUploadDir().getPath();
-        }
-        else {
+        } else {
             return getUploadDir().getPath() + "/";
         }
     }

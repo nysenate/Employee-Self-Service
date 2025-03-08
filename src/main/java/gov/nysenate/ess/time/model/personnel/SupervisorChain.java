@@ -7,12 +7,12 @@ import java.util.LinkedHashSet;
  * is useful for determining who can be granted a supervisor override if the employee is a
  * supervisor.
  */
-public class SupervisorChain
-{
+public class SupervisorChain {
     protected int employeeId;
-    private LinkedHashSet<Integer> chain = new LinkedHashSet<>();
+    private final LinkedHashSet<Integer> chain = new LinkedHashSet<>();
 
-    public SupervisorChain() {}
+    public SupervisorChain() {
+    }
 
     public SupervisorChain(int empId) {
         this.employeeId = empId;

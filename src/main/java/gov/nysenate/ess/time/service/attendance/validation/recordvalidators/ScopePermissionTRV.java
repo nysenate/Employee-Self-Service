@@ -35,7 +35,7 @@ public class ScopePermissionTRV implements TimeRecordValidator {
      * Ensures that the submitted record is exactly the same as the previous record
      * With the exception of the 'remarks' field.
      *
-     * @param record TimeRecord - A posted time record in the process of validation
+     * @param record    TimeRecord - A posted time record in the process of validation
      * @param prevState Optional<TimeRecord> - The most recently saved version of the posted time record
      * @throws TimeRecordErrorException - if the submitted record differs from the previous record
      */

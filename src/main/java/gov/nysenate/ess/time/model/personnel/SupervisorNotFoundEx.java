@@ -1,8 +1,8 @@
 package gov.nysenate.ess.time.model.personnel;
 
-public class SupervisorNotFoundEx extends SupervisorException
-{
-    public SupervisorNotFoundEx() {}
+public class SupervisorNotFoundEx extends SupervisorException {
+    public SupervisorNotFoundEx() {
+    }
 
     public SupervisorNotFoundEx(String message) {
         super(message);

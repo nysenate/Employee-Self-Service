@@ -21,8 +21,7 @@ import java.util.stream.Collectors;
  * A Time Record is the biweekly collection of daily time entries. The time record
  * is typically created in accordance with the attendance pay periods.
  */
-public class TimeRecord implements Comparable<TimeRecord>
-{
+public class TimeRecord implements Comparable<TimeRecord> {
     protected BigInteger timeRecordId;
     protected Integer employeeId;
     protected Integer supervisorId;
@@ -45,7 +44,8 @@ public class TimeRecord implements Comparable<TimeRecord>
 
     /** --- Constructors --- */
 
-    public TimeRecord() {}
+    public TimeRecord() {
+    }
 
     public TimeRecord(Employee employee, Range<LocalDate> dateRange, PayPeriod payPeriod) {
         setEmpInfo(employee);
@@ -87,8 +87,7 @@ public class TimeRecord implements Comparable<TimeRecord>
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof TimeRecord)) return false;
-        TimeRecord that = (TimeRecord) o;
+        if (!(o instanceof TimeRecord that)) return false;
         return active == that.active &&
                 Objects.equals(timeRecordId, that.timeRecordId) &&
                 Objects.equals(employeeId, that.employeeId) &&
@@ -188,6 +187,7 @@ public class TimeRecord implements Comparable<TimeRecord>
 
     /**
      * Constructs and returns a PeriodAccUsage by summing the values from the time entries.
+     *
      * @return PeriodAccUsage
      */
     public PeriodAccUsage getPeriodAccUsage() {
@@ -213,14 +213,6 @@ public class TimeRecord implements Comparable<TimeRecord>
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    /**
-     * Sets time record id for all entries as well as for the time record
-     */
-    public void setTimeRecordId(BigInteger timeRecordId) {
-        this.timeRecordId = timeRecordId;
-        timeEntryMap.forEach(((date, entry) -> entry.setTimeRecordId(timeRecordId)));
-    }
-
     /** Return true if this record contains no entered data */
     public boolean isEmpty() {
         return recordStatus == TimeRecordStatus.NOT_SUBMITTED &&
@@ -240,6 +232,7 @@ public class TimeRecord implements Comparable<TimeRecord>
 
     /**
      * Get the greatest update between the record and all of its entries
+     *
      * @return LocalDateTime
      */
     public LocalDateTime getOverallUpdateDate() {
@@ -253,6 +246,7 @@ public class TimeRecord implements Comparable<TimeRecord>
 
     /**
      * Set all update user fields for this time record and its entries to the given user id
+     *
      * @param updateUser String - user id
      */
     public void setOverallUpdateUser(String updateUser) {
@@ -290,6 +284,14 @@ public class TimeRecord implements Comparable<TimeRecord>
 
     public BigInteger getTimeRecordId() {
         return timeRecordId;
+    }
+
+    /**
+     * Sets time record id for all entries as well as for the time record
+     */
+    public void setTimeRecordId(BigInteger timeRecordId) {
+        this.timeRecordId = timeRecordId;
+        timeEntryMap.forEach(((date, entry) -> entry.setTimeRecordId(timeRecordId)));
     }
 
     public Integer getEmployeeId() {
@@ -420,11 +422,11 @@ public class TimeRecord implements Comparable<TimeRecord>
         this.respHeadCode = respHeadCode;
     }
 
-    public void setApprovalEmpId(Integer approvalEmpId) {
-        this.approvalEmpId = approvalEmpId;
-    }
-
     public Integer getApprovalEmpId() {
         return approvalEmpId;
+    }
+
+    public void setApprovalEmpId(Integer approvalEmpId) {
+        this.approvalEmpId = approvalEmpId;
     }
 }

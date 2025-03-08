@@ -10,7 +10,7 @@ public interface EmpTaskSearchService {
     /**
      * Search for employees and tasks that match the given query criteria.
      *
-     * @param query {@link EmpPTAQuery} query parameters
+     * @param query       {@link EmpPTAQuery} query parameters
      * @param limitOffset {@link LimitOffset}
      * @return {@link PaginatedList<EmpTaskSearchService>}
      */
@@ -19,7 +19,7 @@ public interface EmpTaskSearchService {
     /**
      * Search for employees and tasks that match the given query criteria.
      *
-     * @param query {@link EmpPTAQuery} query parameters
+     * @param query       {@link EmpPTAQuery} query parameters
      * @param limitOffset {@link LimitOffset}
      * @return {@link PaginatedList<EmpTaskSearchService>}
      */

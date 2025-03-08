@@ -13,12 +13,12 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- *  @author Brian Heitner
- *
- *  Get the Docked Hours for the given employee and date range.
+ * @author Brian Heitner
+ * <p>
+ * Get the Docked Hours for the given employee and date range.
  */
 @Service
-public class TxDockHoursService  implements DockHoursService {
+public class TxDockHoursService implements DockHoursService {
 
     private final DockHoursDao dockHoursDao;
 
@@ -34,7 +34,7 @@ public class TxDockHoursService  implements DockHoursService {
      * end date because SFMS may not have processed records up to the end date. Docked
      * Hours will only  be in processed records.
      *
-     * @param empId Integer - Employee Id
+     * @param empId     Integer - Employee Id
      * @param dateRange Range<LocalDate> - Looks for changes after this date
      * @return BigDecimal  - Total Docked Hours
      */

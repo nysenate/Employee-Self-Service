@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *  message interface
+ * message interface
  * Created by Chenguang He  on 6/15/2016.
  */
 public interface Message {
@@ -49,14 +49,16 @@ public interface Message {
     void setComponent(Component components);
 
     /**
-     * set headers
-     * @param headers headers
-     */
-    void setHeader(Header... headers);
-
-    /**
      * get map of headers
+     *
      * @return the map
      */
     Map<String, String> getHeader();
+
+    /**
+     * set headers
+     *
+     * @param headers headers
+     */
+    void setHeader(Header... headers);
 }

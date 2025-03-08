@@ -14,8 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class TransHistoryHandler extends BaseHandler
-{
+public class TransHistoryHandler extends BaseHandler {
     private static final Logger logger = LoggerFactory.getLogger(TransHistoryHandler.class);
 
     /** Keep a reference of the emp id since it's needed to create a TransactionHistory */

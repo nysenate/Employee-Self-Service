@@ -10,16 +10,15 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.SortedSet;
 
-public interface AccrualInfoService
-{
+public interface AccrualInfoService {
     /**
      * Returns a map of Annual Accrual Summaries (PM23ATTEND) keyed by the year.
      *
-     * @param empId int - Employee id
+     * @param empId   int - Employee id
      * @param endYear int - The most recent year to fetch up to
      * @return TreeMap<Integer, AnnualAccSummary>
      */
-     ImmutableSortedMap<Integer, AnnualAccSummary> getAnnualAccruals(int empId, int endYear);
+    ImmutableSortedMap<Integer, AnnualAccSummary> getAnnualAccruals(int empId, int endYear);
 
     /**
      * Attendance years are closed out and finalized at some point after the year has ended. The pay periods
@@ -27,8 +26,8 @@ public interface AccrualInfoService
      * for them. The date at which a year closes out is specific to an employee and therefore the empId is
      * required.
      *
-     * @param empId int - Employee id
-     * @param endDate LocalDate - The retrieved pay periods will have a range before or during this date.
+     * @param empId     int - Employee id
+     * @param endDate   LocalDate - The retrieved pay periods will have a range before or during this date.
      * @param dateOrder SortOrder - Order by the start date of the pay period
      * @return List<PayPeriod>
      */

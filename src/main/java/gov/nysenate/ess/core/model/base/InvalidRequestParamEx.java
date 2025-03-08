@@ -1,7 +1,6 @@
 package gov.nysenate.ess.core.model.base;
 
-public class InvalidRequestParamEx extends RuntimeException
-{
+public class InvalidRequestParamEx extends RuntimeException {
     private static final long serialVersionUID = -4090577171105617540L;
 
     protected String parameterName;

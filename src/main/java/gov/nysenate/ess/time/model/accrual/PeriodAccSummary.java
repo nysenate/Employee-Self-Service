@@ -12,11 +12,10 @@ import java.time.LocalDate;
  * Helper class to store accrual summary information per pay period.
  * Also contains the accrual rates and expected hours, which are not
  * included in the AnnualAccSummary.
- *
+ * <p>
  * Holds PD23ACCUSAGE data.
  */
-public class PeriodAccSummary extends AccrualSummary
-{
+public class PeriodAccSummary extends AccrualSummary {
     private static final Logger logger = LoggerFactory.getLogger(PeriodAccSummary.class);
 
     /** If true, this summary record was computed. */
@@ -45,7 +44,8 @@ public class PeriodAccSummary extends AccrualSummary
 
     /** --- Constructors --- */
 
-    public PeriodAccSummary() {}
+    public PeriodAccSummary() {
+    }
 
     public PeriodAccSummary(AccrualSummary summary) {
         super(summary);

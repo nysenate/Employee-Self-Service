@@ -10,10 +10,10 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.SortedSet;
 
-public interface AttendanceDao
-{
+public interface AttendanceDao {
     /**
      * Get a set of attendance years for which an employee can enter time
+     *
      * @param empId
      * @return
      */
@@ -21,6 +21,7 @@ public interface AttendanceDao
 
     /**
      * Get a range set of dates encompassing non-closed attendance years for the given employee.
+     *
      * @param empId Integer
      * @return RangeSet<LocalDate>
      */
@@ -28,6 +29,7 @@ public interface AttendanceDao
 
     /**
      * Get a set of years for which the employee has attendance records
+     *
      * @param empId Integer - employee id
      * @return SortedSet<Integer>
      */
@@ -35,12 +37,14 @@ public interface AttendanceDao
 
     /**
      * Get attendance records for all employees for any open attendance years
+     *
      * @return ListMultimap<Integer, AttendanceRecord>
      */
     ListMultimap<Integer, AttendanceRecord> getOpenAttendanceRecords();
 
     /**
      * Get attendance records for the specified employees for their open attendance years
+     *
      * @param empId Integer - employee id
      * @return List<AttendanceRecord>
      */
@@ -48,7 +52,8 @@ public interface AttendanceDao
 
     /**
      * Attempt to get an attendance record for the given employee / pay period.
-     * @param empId int
+     *
+     * @param empId  int
      * @param period {@link PayPeriod}
      * @return {@link AttendanceRecord}
      * @throws AttendanceRecordNotFoundEx if the requested record is not found
@@ -60,7 +65,7 @@ public interface AttendanceDao
      * Records are ordered by date in ascending order
      *
      * @param empId Integer
-     * @param year Integer
+     * @param year  Integer
      * @return List<AttendanceRecord>
      */
     List<AttendanceRecord> getAttendanceRecords(Integer empId, Integer year);

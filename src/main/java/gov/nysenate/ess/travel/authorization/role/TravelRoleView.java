@@ -8,7 +8,8 @@ public class TravelRoleView implements ViewObject {
     private String displayName;
     private boolean canViewShared;
 
-    public TravelRoleView() {}
+    public TravelRoleView() {
+    }
 
     public TravelRoleView(TravelRole role) {
         this.name = role.name();
@@ -35,6 +36,7 @@ public class TravelRoleView implements ViewObject {
 
     /**
      * This is called when used as a key in a MapView. In this situation, just use the name string.
+     *
      * @return
      */
     @Override

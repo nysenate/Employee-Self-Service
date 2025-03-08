@@ -3,8 +3,7 @@ package gov.nysenate.ess.web.security.xsrf;
 /**
  * Indicates the status of a validation attempt on a XSRF Token.
  */
-public enum XsrfTokenStatus
-{
+public enum XsrfTokenStatus {
     VALIDATED(true),
     EMPTY_XSRF_TOKEN(false),
     EMPTY_SESSION(false),

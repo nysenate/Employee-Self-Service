@@ -11,8 +11,7 @@ import java.util.List;
 
 import static java.util.stream.Collectors.*;
 
-public class SupervisorEmpGroupView extends PrimarySupEmpGroupView
-{
+public class SupervisorEmpGroupView extends PrimarySupEmpGroupView {
     protected MapView<Integer, ListView<SupervisorEmpView>> supOverrideEmployees;
     protected ListView<SupervisorEmpView> empOverrideEmployees;
 
@@ -26,7 +25,7 @@ public class SupervisorEmpGroupView extends PrimarySupEmpGroupView
                     .map(entry -> Pair.of(entry.getKey(), ListView.of(entry.getValue())))
                     .collect(collectingAndThen(toMap(Pair::getKey, Pair::getValue), MapView::of));
             this.empOverrideEmployees = ListView.of(
-                seg.getOverrideEmployees().stream().map(SupervisorEmpView::new).collect(toList()));
+                    seg.getOverrideEmployees().stream().map(SupervisorEmpView::new).collect(toList()));
         }
     }
 

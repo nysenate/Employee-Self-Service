@@ -17,8 +17,7 @@ import java.util.Set;
 
 import static java.util.stream.Collectors.toList;
 
-public interface TimeRecordService
-{
+public interface TimeRecordService {
     /**
      * Get the time record with the given id
      *
@@ -30,7 +29,8 @@ public interface TimeRecordService
 
     /**
      * Gets the distinct years that an employee has at least one time record for.
-     * @param empId Integer - employee id
+     *
+     * @param empId     Integer - employee id
      * @param yearOrder - SortOrder - order the returned years
      * @return List<Integer>
      */
@@ -47,9 +47,9 @@ public interface TimeRecordService
     /**
      * Get time records for one or more employees, matching certain time record statuses, over a specified date range.
      *
-     * @param empIds Set<Integer> - employee ids
+     * @param empIds    Set<Integer> - employee ids
      * @param dateRange Range<LocalDate> - interval to check for
-     * @param statuses Set<TimeRecordStatus> - time record statuses to retrieve
+     * @param statuses  Set<TimeRecordStatus> - time record statuses to retrieve
      * @return List<TimeRecord>
      */
     List<TimeRecord> getTimeRecords(Set<Integer> empIds, Range<LocalDate> dateRange, Set<TimeRecordStatus> statuses);
@@ -57,13 +57,13 @@ public interface TimeRecordService
     /**
      * Get time records for one or more employees, matching certain time record statuses, for the specified pay periods
      *
-     * @param empIds Set<Integer> - employee ids
+     * @param empIds     Set<Integer> - employee ids
      * @param payPeriods Collection<PayPeriod> - pay periods
-     * @param statuses Set<TimeRecordStatus> - time record statuses to retrieve
+     * @param statuses   Set<TimeRecordStatus> - time record statuses to retrieve
      * @return List<TimeRecord>
      */
     default List<TimeRecord> getTimeRecords(Set<Integer> empIds,
-                                    Collection<PayPeriod> payPeriods, Set<TimeRecordStatus> statuses) {
+                                            Collection<PayPeriod> payPeriods, Set<TimeRecordStatus> statuses) {
         RangeSet<LocalDate> dateRanges = TreeRangeSet.create();
         payPeriods.forEach(period -> dateRanges.add(period.getDateRange()));
         if (dateRanges.isEmpty()) {
@@ -77,10 +77,11 @@ public interface TimeRecordService
     /**
      * Given a map of employee ids to record begin dates,
      * return a map of employee ids to time records that correspond to those begin dates
+     *
      * @param empIdBeginDateMap {@link Multimap} - mapping of employee id -> record begin dates
      * @return {@link Multimap} - Mapping of employee id -> {@link TimeRecord} corresponding to passed in begin dates
      * @throws TimeRecordNotFoundEidBeginDateEx - if one of the mappings of empId -> beginDate
-     *                                does not correspond to an existing time record
+     *                                          does not correspond to an existing time record
      */
     Multimap<Integer, TimeRecord> getTimeRecords(Multimap<Integer, LocalDate> empIdBeginDateMap)
             throws TimeRecordNotFoundEidBeginDateEx;
@@ -99,9 +100,10 @@ public interface TimeRecordService
 
     /**
      * Retrieve time records for which the given supervisor id is the supervisor or supervisor override
-     * @param supId int - employee id
+     *
+     * @param supId     int - employee id
      * @param dateRange Range<LocalDate> - date range to query over
-     * @param statuses Set<TimeRecordStatus> - time record statuses to retrieve
+     * @param statuses  Set<TimeRecordStatus> - time record statuses to retrieve
      * @return ListMultimap<Integer, TimeRecord> - Mapping of original supervisor id -> time records under that supervisor
      */
     ListMultimap<Integer, TimeRecord> getActiveSupervisorRecords(int supId, Range<LocalDate> dateRange,
@@ -118,6 +120,7 @@ public interface TimeRecordService
 
     /**
      * Returns true if the given employee has an in progress time record under their superviion
+     *
      * @param supId int - supervisor id
      * @return boolean
      */
@@ -126,26 +129,28 @@ public interface TimeRecordService
     /**
      * Saves the given record
      * This method is intended for internal use, when saving records from user input:
-     * @see #saveRecord(TimeRecord, TimeRecordAction)
      *
      * @param record TimeRecord - the time record to be saved
      * @return boolean - true if data successfully updated else false.
+     * @see #saveRecord(TimeRecord, TimeRecordAction)
      */
     boolean saveRecord(TimeRecord record);
 
     /**
      * Saves the given time record after applying the given action
      * This potentially changes the status according to the given time record action
+     *
+     * @param newRecord TimeRecord - the time record to be submitted
+     * @return boolean - true iff record successfully submitted
      * @see TimeRecordStatus
      * @see TimeRecordAction
      * The record is then saved and a snapshot is recorded as an audit if specific actions are taken
-     * @param newRecord TimeRecord - the time record to be submitted
-     * @return boolean - true iff record successfully submitted
      */
     boolean saveRecord(TimeRecord newRecord, TimeRecordAction action);
 
     /**
      * Evict an employee's data from the cache.
+     *
      * @param empId
      */
     void evictEmployee(int empId);

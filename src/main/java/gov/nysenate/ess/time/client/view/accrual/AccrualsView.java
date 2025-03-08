@@ -11,8 +11,7 @@ import java.math.BigDecimal;
 import java.util.Optional;
 
 @XmlRootElement(name = "Accruals")
-public class AccrualsView implements ViewObject
-{
+public class AccrualsView implements ViewObject {
     protected PayPeriodView payPeriod;
     protected boolean computed;
     protected boolean submitted;
@@ -87,8 +86,8 @@ public class AccrualsView implements ViewObject
             this.misc2Used = pac.getMisc2HoursUsed();
             this.vacationRate = pac.getVacRate();
             this.sickRate = pac.getSickRate();
-            this.prevTotalHoursYtd =  pac.getPrevTotalHoursYtd();
-            this.totalHoursYtd =  pac.getTotalHoursYtd();
+            this.prevTotalHoursYtd = pac.getPrevTotalHoursYtd();
+            this.totalHoursYtd = pac.getTotalHoursYtd();
 
             PeriodAccUsage accUsage = pac.getPeriodAccUsage();
             this.biweekSickFamUsed = accUsage.getFamHoursUsed();

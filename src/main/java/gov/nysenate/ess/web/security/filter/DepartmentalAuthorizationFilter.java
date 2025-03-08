@@ -17,6 +17,7 @@ import java.io.IOException;
  * Will only allow users with the {@link SimpleEssPermission#DEPARTMENT_ACCESS} permission.
  * Users without {@link SimpleEssPermission#DEPARTMENT_ACCESS} will be redirected to
  * an error page.
+ *
  * @see DepartmentalWhitelistService
  */
 @Component("deptAuthz")
@@ -24,7 +25,7 @@ public class DepartmentalAuthorizationFilter extends PermissionsAuthorizationFil
 
     /** The departmental access permission */
     private static final String[] deptAccessPermissionStrings =
-            new String[] {SimpleEssPermission.DEPARTMENT_ACCESS.getPermissionString()};
+            new String[]{SimpleEssPermission.DEPARTMENT_ACCESS.getPermissionString()};
 
     /** Relative url to the 'access restricted' page */
     private static final String deptAccessDeniedUrl = "/error/restricted";

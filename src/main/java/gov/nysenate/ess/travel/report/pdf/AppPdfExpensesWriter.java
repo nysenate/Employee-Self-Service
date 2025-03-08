@@ -41,7 +41,7 @@ public class AppPdfExpensesWriter implements AppPdfWriter {
 
         // Transportation
         drawEstimatedTravelCostsRow(cs, boxTextStartX, boxRightAlignEndX, currentY,
-                "Transportation (" + String.valueOf(app.getMileagePerDiems().totalMileage()) + " Miles)",
+                "Transportation (" + app.getMileagePerDiems().totalMileage() + " Miles)",
                 app.transportationAllowance().toString());
         currentY -= leading;
 

@@ -8,7 +8,8 @@ import java.net.URL;
 public interface ReportUrlService {
     /**
      * Gets a URL that will provide the accrual report for the given employee on the given pay period.
-     * @param empId int
+     *
+     * @param empId     int
      * @param payPeriod {@link PayPeriod}
      * @return URI - accrual report URL.
      */
@@ -16,6 +17,7 @@ public interface ReportUrlService {
 
     /**
      * Will provide the attendance report on the given time record.
+     *
      * @param timeRecordId to retrieve.
      * @return URI - attendance report URL.
      */

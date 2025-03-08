@@ -15,8 +15,8 @@ import java.util.stream.Collectors;
 @Service
 public class AllowedTravelersService {
 
-    private SqlUserOrderableRchDao userOrderableRchDao;
-    private EmployeeInfoService employeeInfoService;
+    private final SqlUserOrderableRchDao userOrderableRchDao;
+    private final EmployeeInfoService employeeInfoService;
 
     @Autowired
     public AllowedTravelersService(SqlUserOrderableRchDao userOrderableRchDao, EmployeeInfoService employeeInfoService) {

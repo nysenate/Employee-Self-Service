@@ -22,12 +22,12 @@ public class SupplyEmailService {
 
     private static final Logger logger = LoggerFactory.getLogger(SupplyEmailService.class);
 
-    private SendMailService sendMailService;
-    private CustomerConfirmationEmail confirmationEmail;
-    private NewRequisitionEmail newRequisitionEmail;
-    private RejectRequisitionEmail rejectRequisitionEmail;
-    /** A collection of email addresses to notify of new requisition orders.*/
-    private ImmutableSet<String> newReqEmailList;
+    private final SendMailService sendMailService;
+    private final CustomerConfirmationEmail confirmationEmail;
+    private final NewRequisitionEmail newRequisitionEmail;
+    private final RejectRequisitionEmail rejectRequisitionEmail;
+    /** A collection of email addresses to notify of new requisition orders. */
+    private final ImmutableSet<String> newReqEmailList;
 
     @Autowired
     public SupplyEmailService(SendMailService sendMailService, CustomerConfirmationEmail confirmationEmail,
@@ -44,6 +44,7 @@ public class SupplyEmailService {
 
     /**
      * Send the user a notification email if their requisition gets rejected.
+     *
      * @param requisition The rejected requisition.
      */
     @Async
@@ -56,6 +57,7 @@ public class SupplyEmailService {
 
     /**
      * Send all notifications for a new requisition order event.
+     *
      * @param requisition The new requisition.
      */
     @Async

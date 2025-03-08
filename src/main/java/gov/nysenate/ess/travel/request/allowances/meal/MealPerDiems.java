@@ -3,7 +3,9 @@ package gov.nysenate.ess.travel.request.allowances.meal;
 import com.google.common.collect.ImmutableSortedSet;
 import gov.nysenate.ess.travel.utils.Dollars;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Objects;
 
 /**
  * A collection of MealPerDiem's for a Travel Application Amendment.
@@ -16,7 +18,7 @@ public class MealPerDiems {
     private final static Comparator<MealPerDiem> dateComparator = Comparator.comparing(MealPerDiem::date);
 
     private final ImmutableSortedSet<MealPerDiem> mealPerDiems;
-    private MealPerDiemAdjustments adjustments;
+    private final MealPerDiemAdjustments adjustments;
 
     public MealPerDiems(Collection<MealPerDiem> mealPerDiems) {
         this(mealPerDiems, new MealPerDiemAdjustments.Builder().build());

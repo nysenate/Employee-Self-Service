@@ -6,8 +6,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class AuthorizationStatusView
-{
+public class AuthorizationStatusView {
     protected boolean authorized = false;
     protected String code;
     protected String message;

@@ -18,7 +18,7 @@ import java.util.Set;
 @Repository
 public class SupplyEmployeeDao extends SqlBaseDao {
 
-    private EmployeeInfoService employeeInfoService;
+    private final EmployeeInfoService employeeInfoService;
 
     @Autowired
     public SupplyEmployeeDao(EmployeeInfoService employeeInfoService) {
@@ -27,6 +27,7 @@ public class SupplyEmployeeDao extends SqlBaseDao {
 
     /**
      * Get all employees who have ever issued a requisition in the electronic supply app.
+     *
      * @return
      */
     public Set<Employee> getDistinctIssuers() {
@@ -39,9 +40,9 @@ public class SupplyEmployeeDao extends SqlBaseDao {
     private enum SqlSupplyEmployeeQuery implements BasicSqlQuery {
         GET_DISTINCT_ISSUERS(
                 "SELECT DISTINCT(issuing_emp_id)\n" +
-                "FROM ${supplySchema}.requisition_content rc\n" +
-                "  JOIN ${supplySchema}.requisition r ON r.current_revision_id = rc.revision_id\n" +
-                "WHERE issuing_emp_id is not NULL"
+                        "FROM ${supplySchema}.requisition_content rc\n" +
+                        "  JOIN ${supplySchema}.requisition r ON r.current_revision_id = rc.revision_id\n" +
+                        "WHERE issuing_emp_id is not NULL"
         );
 
         private final String sql;
@@ -63,8 +64,8 @@ public class SupplyEmployeeDao extends SqlBaseDao {
 
     private static class SupplyEmployeeHandler extends BaseHandler {
 
-        private Set<Integer> empIds;
-        private EmployeeInfoService employeeInfoService;
+        private final Set<Integer> empIds;
+        private final EmployeeInfoService employeeInfoService;
 
         public SupplyEmployeeHandler(EmployeeInfoService employeeInfoService) {
             this.employeeInfoService = employeeInfoService;

@@ -1,8 +1,8 @@
 package gov.nysenate.ess.time.client.view.allowances;
 
+import gov.nysenate.ess.core.client.view.base.ListView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.time.model.allowances.AllowanceUsage;
-import gov.nysenate.ess.core.client.view.base.ListView;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -10,8 +10,7 @@ import java.math.BigDecimal;
 import java.util.stream.Collectors;
 
 @XmlRootElement
-public class AllowanceUsageView implements ViewObject
-{
+public class AllowanceUsageView implements ViewObject {
 
     protected int empId;
     protected int year;

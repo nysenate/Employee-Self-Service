@@ -29,6 +29,14 @@ public class EssPayPeriodService
                 type -> getPeriodMap(type, payPeriodDao)));
     }
 
+    private static RangeMap<LocalDate, PayPeriod> getPeriodMap(PayPeriodType type, PayPeriodDao periodDao) {
+        final RangeMap<LocalDate, PayPeriod> rangeMap = TreeRangeMap.create();
+        Range<LocalDate> cacheRange = Range.upTo(LocalDate.now().plusYears(2), BoundType.CLOSED);
+        periodDao.getPayPeriods(type, cacheRange, SortOrder.ASC)
+                .forEach(p -> rangeMap.put(Range.closed(p.getStartDate(), p.getEndDate()), p));
+        return rangeMap;
+    }
+
     /** --- Pay Period Service Implemented Methods --- */
 
     @Override
@@ -46,14 +54,6 @@ public class EssPayPeriodService
         Map<Range<LocalDate>, PayPeriod> normalMap = dateOrder == SortOrder.DESC ?
                 subMap.asDescendingMapOfRanges() : subMap.asMapOfRanges();
         return new ArrayList<>(normalMap.values());
-    }
-
-    private static RangeMap<LocalDate, PayPeriod> getPeriodMap(PayPeriodType type, PayPeriodDao periodDao) {
-        final RangeMap<LocalDate, PayPeriod> rangeMap = TreeRangeMap.create();
-        Range<LocalDate> cacheRange = Range.upTo(LocalDate.now().plusYears(2), BoundType.CLOSED);
-        periodDao.getPayPeriods(type, cacheRange, SortOrder.ASC)
-                .forEach(p -> rangeMap.put(Range.closed(p.getStartDate(), p.getEndDate()), p));
-        return rangeMap;
     }
 
     @Override

@@ -19,7 +19,7 @@ public class VerifyAuthorizationFilter extends PermissionsAuthorizationFilter {
 
     /** Permission that should be present for all authorized users */
     private static final String[] authTestPermissionStrings =
-            new String[] {SimpleEssPermission.SENATE_EMPLOYEE.getPermissionString()};
+            new String[]{SimpleEssPermission.SENATE_EMPLOYEE.getPermissionString()};
 
     /** Relative url to the 'authorization error' page */
     private static final String authzErrorUrl = "/error/authz";

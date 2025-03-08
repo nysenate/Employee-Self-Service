@@ -1,7 +1,7 @@
 package gov.nysenate.ess.time.dao.attendance.mapper;
 
-import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.dao.base.BaseRowMapper;
+import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.time.model.attendance.TimeRecord;
 import gov.nysenate.ess.time.model.attendance.TimeRecordStatus;
 import org.springframework.stereotype.Service;
@@ -10,11 +10,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 @Service
-public class RemoteRecordRowMapper extends BaseRowMapper<TimeRecord>
-{
+public class RemoteRecordRowMapper extends BaseRowMapper<TimeRecord> {
     private String pfx = "";
 
-    public RemoteRecordRowMapper() {}
+    public RemoteRecordRowMapper() {
+    }
 
     public RemoteRecordRowMapper(String pfx) {
         this.pfx = pfx;

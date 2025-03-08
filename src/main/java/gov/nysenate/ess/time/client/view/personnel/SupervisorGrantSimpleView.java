@@ -5,8 +5,7 @@ import gov.nysenate.ess.time.model.personnel.SupervisorOverride;
 
 import java.time.LocalDate;
 
-public class SupervisorGrantSimpleView implements ViewObject
-{
+public class SupervisorGrantSimpleView implements ViewObject {
     protected int granterSupervisorId;
     protected int granteeSupervisorId;
     protected boolean active;
@@ -15,7 +14,8 @@ public class SupervisorGrantSimpleView implements ViewObject
 
     /** --- Constructors --- */
 
-    public SupervisorGrantSimpleView() {}
+    public SupervisorGrantSimpleView() {
+    }
 
     public SupervisorGrantSimpleView(SupervisorOverride ovr) {
         if (ovr != null) {

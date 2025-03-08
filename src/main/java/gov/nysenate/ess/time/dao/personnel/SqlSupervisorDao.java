@@ -27,11 +27,29 @@ import java.util.*;
 import static gov.nysenate.ess.core.model.transaction.TransactionCode.EMP;
 
 @Repository
-public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
-{
+public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao {
     private static final Logger logger = LoggerFactory.getLogger(SqlSupervisorDao.class);
 
-    /**{@inheritDoc} */
+    /**
+     * Adds a {@link EmployeeSupInfo} to the employee map.
+     * Looks for {@link EmployeeSupInfo} that are equal with intersecting dates and merges them.
+     */
+    private static void addSupEmpGroup(HashMultimap<Integer, EmployeeSupInfo> map, EmployeeSupInfo employeeSupInfo) {
+        // If there are existing emp sup infos, see if they can be merged
+        if (map.containsKey(employeeSupInfo.getEmpId())) {
+            Set<EmployeeSupInfo> employeeSupInfos = map.get(employeeSupInfo.getEmpId());
+            for (Iterator<EmployeeSupInfo> itr = employeeSupInfos.iterator(); itr.hasNext(); ) {
+                EmployeeSupInfo existingEsi = itr.next();
+                if (employeeSupInfo.isConnected(existingEsi)) {
+                    employeeSupInfo = employeeSupInfo.merge(existingEsi);
+                    itr.remove();
+                }
+            }
+        }
+        map.put(employeeSupInfo.getEmpId(), employeeSupInfo);
+    }
+
+    /** {@inheritDoc} */
     @Override
     public boolean isSupervisor(int empId) {
         MapSqlParameterSource params = new MapSqlParameterSource("empId", empId);
@@ -41,8 +59,7 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
 
             if (booleans.isEmpty()) {
                 return false;
-            }
-            else {
+            } else {
                 // TODO: "booleans" is really a list of Strings, so this fails. Note that the Strings are not just "false" or "true".
                 return (Boolean) booleans.get(0);
             }
@@ -51,21 +68,20 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
         }
     }
 
-    /**{@inheritDoc} */
+    /** {@inheritDoc} */
     @Override
     public SupervisorChainAlteration getSupervisorChainAlterations(int empId) {
         SqlParameterSource params = new MapSqlParameterSource("empId", empId);
         Set<Integer> inclusions = new HashSet<>();
         Set<Integer> exclusions = new HashSet<>();
         List<Map<String, Object>> res = remoteNamedJdbc.query(
-            SqlSupervisorQuery.GET_SUP_CHAIN_EXCEPTIONS.getSql(schemaMap()), params, new ColumnMapRowMapper());
+                SqlSupervisorQuery.GET_SUP_CHAIN_EXCEPTIONS.getSql(schemaMap()), params, new ColumnMapRowMapper());
         if (!res.isEmpty()) {
             for (Map<String, Object> row : res) {
                 int supId = Integer.parseInt(row.get("NUXREFSV").toString());
                 if (row.get("CDTYPE").equals("I")) {
                     inclusions.add(supId);
-                }
-                else {
+                } else {
                     exclusions.add(supId);
                 }
             }
@@ -73,7 +89,7 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
         return new SupervisorChainAlteration(inclusions, exclusions);
     }
 
-    /**{@inheritDoc} */
+    /** {@inheritDoc} */
     @Override
     public PrimarySupEmpGroup getPrimarySupEmpGroup(int supId) throws SupervisorException {
         MapSqlParameterSource params = new MapSqlParameterSource();
@@ -81,8 +97,7 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
         List<Map<String, Object>> res;
         try {
             res = remoteNamedJdbc.query(SqlSupervisorQuery.GET_SUP_EMP_TRANS_SQL.getSql(schemaMap()), params, new ColumnMapRowMapper());
-        }
-        catch (DataRetrievalFailureException ex) {
+        } catch (DataRetrievalFailureException ex) {
             throw new SupervisorException("Failed to retrieve matching employees for supId: " + supId, ex);
         }
 
@@ -98,7 +113,7 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
 
         Map<Integer, LocalDate> possiblePrimaryEmps = new HashMap<>();
 
-        for (Map<String,Object> colMap : res) {
+        for (Map<String, Object> colMap : res) {
 
             EmployeeSupInfo empSupInfo;
             try {
@@ -128,8 +143,7 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
                 // Offset the effect date depending on the personnel status
                 effectDate = effectDate.plusDays(perStatus.getEffectDateOffset());
                 empSupInfo.setSupEndDate(effectDate);
-            }
-            else {
+            } else {
                 empSupInfo.setSupStartDate(effectDate);
             }
 
@@ -148,8 +162,7 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
                     addSupEmpGroup(primaryEmps, empSupInfo);
                 }
                 possiblePrimaryEmps.put(empId, effectDate);
-            }
-            else {
+            } else {
                 /*
                  * Process the records of employees that had a supervisor change during the date range.
                  * If a supervisor match is found to occur on/before the 'start' date, we add them to their
@@ -184,7 +197,7 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
         return empGroup;
     }
 
-    /**{@inheritDoc} */
+    /** {@inheritDoc} */
     @Override
     public List<SupervisorOverride> getAllOverrides(int supId) throws SupervisorException {
         SqlParameterSource params = new MapSqlParameterSource("empId", supId);
@@ -192,7 +205,7 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
         return remoteNamedJdbc.query(sql, params, new SupervisorOverrideRowMapper());
     }
 
-    /**{@inheritDoc} */
+    /** {@inheritDoc} */
     @Override
     public List<SupervisorOverride> getSupervisorOverrides(int supId) throws SupervisorException {
         SqlParameterSource params = new MapSqlParameterSource("empId", supId);
@@ -200,7 +213,7 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
         return remoteNamedJdbc.query(sql, params, new SupervisorOverrideRowMapper());
     }
 
-    /**{@inheritDoc} */
+    /** {@inheritDoc} */
     @Override
     public List<SupervisorOverride> getSupervisorGrants(int supId) throws SupervisorException {
         SqlParameterSource params = new MapSqlParameterSource("empId", supId);
@@ -208,7 +221,7 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
         return remoteNamedJdbc.query(sql, params, new SupervisorOverrideRowMapper());
     }
 
-    /**{@inheritDoc} */
+    /** {@inheritDoc} */
     @Override
     public void setSupervisorOverride(int granterSupId, int granteeSupId, boolean active, LocalDate startDate, LocalDate endDate) {
         MapSqlParameterSource params = new MapSqlParameterSource();
@@ -236,6 +249,8 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
                 params, new SupervisorOverrideRowMapper());
     }
 
+    /* --- Internal Methods --- */
+
     @Override
     public LocalDateTime getLastSupUpdateDate() {
         List<Object> timestamps = remoteNamedJdbc.query(SqlSupervisorQuery.GET_LATEST_SUP_UPDATE_DATE.getSql(schemaMap()),
@@ -243,13 +258,10 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
 
         if (timestamps.isEmpty()) {
             return null;
-        }
-        else {
+        } else {
             return (LocalDateTime) timestamps.get(0);
         }
     }
-
-    /* --- Internal Methods --- */
 
     private LocalDate getDateCol(Map<String, Object> colMap, String colName) {
         return Optional.ofNullable(colMap.get(colName))
@@ -257,25 +269,6 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
                 .map(DateUtils.SFMS_DATE_TIME_FMT::parse)
                 .map(LocalDate::from)
                 .orElse(null);
-    }
-
-    /**
-     * Adds a {@link EmployeeSupInfo} to the employee map.
-     * Looks for {@link EmployeeSupInfo} that are equal with intersecting dates and merges them.
-     */
-    private static void addSupEmpGroup(HashMultimap<Integer, EmployeeSupInfo> map, EmployeeSupInfo employeeSupInfo) {
-        // If there are existing emp sup infos, see if they can be merged
-        if (map.containsKey(employeeSupInfo.getEmpId())) {
-            Set<EmployeeSupInfo> employeeSupInfos = map.get(employeeSupInfo.getEmpId());
-            for (Iterator<EmployeeSupInfo> itr = employeeSupInfos.iterator(); itr.hasNext(); ) {
-                EmployeeSupInfo existingEsi = itr.next();
-                if (employeeSupInfo.isConnected(existingEsi)) {
-                    employeeSupInfo = employeeSupInfo.merge(existingEsi);
-                    itr.remove();
-                }
-            }
-        }
-        map.put(employeeSupInfo.getEmpId(), employeeSupInfo);
     }
 
     /**

@@ -12,8 +12,7 @@ import java.util.Optional;
 /**
  * Associates a supervisor to an employee during a specific time period.
  */
-public class EmployeeSupInfo
-{
+public class EmployeeSupInfo {
     protected int empId;
     protected int supId;
     protected String empLastName;
@@ -34,7 +33,8 @@ public class EmployeeSupInfo
 
     /** --- Constructors --- */
 
-    public EmployeeSupInfo() {}
+    public EmployeeSupInfo() {
+    }
 
     public EmployeeSupInfo(int empId, int supId) {
         this.empId = empId;
@@ -79,6 +79,7 @@ public class EmployeeSupInfo
      * and the restriction date range.
      * The restriction date range will generally enclose the supervisor date range,
      * unless this {@link EmployeeSupInfo} is for an override
+     *
      * @return {@link Range<LocalDate>}
      */
     public Range<LocalDate> getEffectiveDateRange() {
@@ -117,6 +118,7 @@ public class EmployeeSupInfo
      * This means that they have intersecting effective date ranges,
      * and are equivalent for all non-date fields.
      * If they are overlapping, then they can be effectively {@link #merge(EmployeeSupInfo) merged}.
+     *
      * @param other {@link EmployeeSupInfo}
      * @return boolean - true if the other {@link EmployeeSupInfo} connects with this one
      */
@@ -164,8 +166,7 @@ public class EmployeeSupInfo
 
         if (supEndDateCur.isBefore(supEndDateOther)) {
             result.supEndDate = other.supEndDate;
-        }
-        else {
+        } else {
             result.supEndDate = this.supEndDate;
         }
 
@@ -177,8 +178,7 @@ public class EmployeeSupInfo
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof EmployeeSupInfo)) return false;
-        EmployeeSupInfo that = (EmployeeSupInfo) o;
+        if (!(o instanceof EmployeeSupInfo that)) return false;
         return Objects.equals(empId, that.empId) &&
                 Objects.equals(supId, that.supId) &&
                 Objects.equals(empFirstName, that.empFirstName) &&

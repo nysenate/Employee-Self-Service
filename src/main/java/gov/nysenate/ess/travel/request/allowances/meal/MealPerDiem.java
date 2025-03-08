@@ -1,7 +1,7 @@
 package gov.nysenate.ess.travel.request.allowances.meal;
 
-import gov.nysenate.ess.travel.request.address.TravelAddress;
 import gov.nysenate.ess.travel.provider.senate.SenateMie;
+import gov.nysenate.ess.travel.request.address.TravelAddress;
 import gov.nysenate.ess.travel.utils.Dollars;
 import org.jetbrains.annotations.NotNull;
 
@@ -10,7 +10,6 @@ import java.util.Objects;
 
 public final class MealPerDiem {
 
-    private int id;
     private final TravelAddress address;
     private final LocalDate date;
     /**
@@ -20,8 +19,9 @@ public final class MealPerDiem {
      */
     private final Dollars rate;
     private final SenateMie mie;
-    private boolean isBreakfastRequested;
-    private boolean isDinnerRequested;
+    private int id;
+    private final boolean isBreakfastRequested;
+    private final boolean isDinnerRequested;
     private boolean qualifiesForBreakfast;
     private boolean qualifiesForDinner;
 

@@ -1,7 +1,9 @@
 package gov.nysenate.ess.travel.notifications.email;
 
 import com.google.common.collect.ImmutableMap;
-import freemarker.template.*;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.mail.SendMailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +18,10 @@ import java.util.Map;
 @Service
 public class TravelAppDisapprovalEmail {
 
-    private SendMailService sendMailService;
-    private Configuration freemarkerCfg;
     private static final String template = "travel_app_disapproval_notice.ftlh";
-    private String domainUrl;
+    private final SendMailService sendMailService;
+    private final Configuration freemarkerCfg;
+    private final String domainUrl;
 
     @Autowired
     public TravelAppDisapprovalEmail(SendMailService sendMailService, Configuration freemarkerCfg,

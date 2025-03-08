@@ -110,6 +110,7 @@ public class AttendanceRecordView extends AttendanceHoursView {
     public boolean isPaperTimesheet() {
         return paperTimesheet;
     }
+
     @XmlElement
     public Integer getExpectedDays() {
         return expectedDays;

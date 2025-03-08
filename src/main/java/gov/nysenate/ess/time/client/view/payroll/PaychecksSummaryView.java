@@ -10,13 +10,13 @@ import java.util.stream.Collectors;
 
 public class PaychecksSummaryView implements ViewObject {
 
-    private List<PaycheckView> paychecks;
-    private List<DeductionView> deductions;
-    private Map<Integer, BigDecimal> deductionTotals;
-    private BigDecimal grossIncomeTotal;
-    private BigDecimal netIncomeTotal;
-    private BigDecimal directDepositTotal;
-    private BigDecimal checkAmountTotal;
+    private final List<PaycheckView> paychecks;
+    private final List<DeductionView> deductions;
+    private final Map<Integer, BigDecimal> deductionTotals;
+    private final BigDecimal grossIncomeTotal;
+    private final BigDecimal netIncomeTotal;
+    private final BigDecimal directDepositTotal;
+    private final BigDecimal checkAmountTotal;
 
     public PaychecksSummaryView(PaychecksSummary summary) {
         this.paychecks = summary.paychecks().stream()

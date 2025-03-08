@@ -23,7 +23,7 @@ public class DraftDao extends SqlBaseDao {
     private static final Logger logger = LoggerFactory.getLogger(DraftDao.class);
 
     /**
-     * @param draftId The id of the draft.
+     * @param draftId    The id of the draft.
      * @param employeeId The employee id of the logged-in user. This ensures users can only fetch their own drafts.
      */
     protected DraftRecord find(int draftId, int employeeId) {
@@ -99,42 +99,41 @@ public class DraftDao extends SqlBaseDao {
 
     private enum SqlDraftQuery implements BasicSqlQuery {
         FIND_BY_DRAFT_ID("""
-                SELECT draft_id, user_emp_id, app_json, traveler_emp_id, updated_date_time
-                FROM ${travelSchema}.draft
-                WHERE draft_id = :draftId
-                  AND user_emp_id = :userEmpId
-                """
+                         SELECT draft_id, user_emp_id, app_json, traveler_emp_id, updated_date_time
+                         FROM ${travelSchema}.draft
+                         WHERE draft_id = :draftId
+                           AND user_emp_id = :userEmpId
+                         """
         ),
         FIND_BY_USER_ID("""
-                SELECT draft_id, user_emp_id, app_json, traveler_emp_id, updated_date_time
-                FROM ${travelSchema}.draft
-                WHERE user_emp_id = :userEmpId
-                ORDER BY updated_date_time desc
-                """
+                        SELECT draft_id, user_emp_id, app_json, traveler_emp_id, updated_date_time
+                        FROM ${travelSchema}.draft
+                        WHERE user_emp_id = :userEmpId
+                        ORDER BY updated_date_time desc
+                        """
         ),
         UPDATE("""
-                UPDATE ${travelSchema}.draft
-                SET user_emp_id = :userEmpId,
-                traveler_emp_id = :travelerEmpId,
-                app_json = :appJson,
-                updated_date_time = :updatedDateTime
-                WHERE draft_id = :draftId;
-                """
+               UPDATE ${travelSchema}.draft
+               SET user_emp_id = :userEmpId,
+               traveler_emp_id = :travelerEmpId,
+               app_json = :appJson,
+               updated_date_time = :updatedDateTime
+               WHERE draft_id = :draftId;
+               """
         ),
         INSERT("""
-                INSERT INTO ${travelSchema}.draft(user_emp_id, traveler_emp_id, app_json, updated_date_time)
-                VALUES(:userEmpId, :travelerEmpId, :appJson, :updatedDateTime)
-                """
+               INSERT INTO ${travelSchema}.draft(user_emp_id, traveler_emp_id, app_json, updated_date_time)
+               VALUES(:userEmpId, :travelerEmpId, :appJson, :updatedDateTime)
+               """
         ),
         DELETE("""
-                DELETE FROM ${travelSchema}.draft
-                WHERE draft_id = :draftId
-                  AND user_emp_id = :userEmpId
-                """
-        )
-        ;
+               DELETE FROM ${travelSchema}.draft
+               WHERE draft_id = :draftId
+                 AND user_emp_id = :userEmpId
+               """
+        );
 
-        private String sql;
+        private final String sql;
 
         SqlDraftQuery(String sql) {
             this.sql = sql;
@@ -153,8 +152,8 @@ public class DraftDao extends SqlBaseDao {
 
     private class DraftRecordHandler implements RowCallbackHandler {
 
-        private DraftMapper draftMapper = new DraftMapper();
-        private List<DraftRecord> draftRecords = new ArrayList<>();
+        private final DraftMapper draftMapper = new DraftMapper();
+        private final List<DraftRecord> draftRecords = new ArrayList<>();
 
         @Override
         public void processRow(ResultSet rs) throws SQLException {

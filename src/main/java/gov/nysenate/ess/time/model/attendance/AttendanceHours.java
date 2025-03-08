@@ -21,7 +21,8 @@ public abstract class AttendanceHours {
     protected BigDecimal miscHours;
     protected BigDecimal misc2Hours;
 
-    public AttendanceHours() {}
+    public AttendanceHours() {
+    }
 
     public AttendanceHours(AttendanceHours other) {
         this.workHours = other.workHours;
@@ -54,36 +55,74 @@ public abstract class AttendanceHours {
         return Optional.ofNullable(workHours);
     }
 
+    /** --- Setters --- */
+
+    public void setWorkHours(BigDecimal workHours) {
+        this.workHours = workHours;
+    }
+
     public Optional<BigDecimal> getTravelHours() {
         return Optional.ofNullable(travelHours);
+    }
+
+    public void setTravelHours(BigDecimal travelHours) {
+        this.travelHours = travelHours;
     }
 
     public Optional<BigDecimal> getHolidayHours() {
         return Optional.ofNullable(holidayHours);
     }
 
+    public void setHolidayHours(BigDecimal holidayHours) {
+        this.holidayHours = holidayHours;
+    }
+
     public Optional<BigDecimal> getVacationHours() {
         return Optional.ofNullable(vacationHours);
+    }
+
+    public void setVacationHours(BigDecimal vacationHours) {
+        this.vacationHours = vacationHours;
     }
 
     public Optional<BigDecimal> getPersonalHours() {
         return Optional.ofNullable(personalHours);
     }
 
+    public void setPersonalHours(BigDecimal personalHours) {
+        this.personalHours = personalHours;
+    }
+
     public Optional<BigDecimal> getSickEmpHours() {
         return Optional.ofNullable(sickEmpHours);
+    }
+
+    public void setSickEmpHours(BigDecimal sickEmpHours) {
+        this.sickEmpHours = sickEmpHours;
     }
 
     public Optional<BigDecimal> getSickFamHours() {
         return Optional.ofNullable(sickFamHours);
     }
 
+    public void setSickFamHours(BigDecimal sickFamHours) {
+        this.sickFamHours = sickFamHours;
+    }
+
     public Optional<BigDecimal> getMiscHours() {
         return Optional.ofNullable(miscHours);
     }
 
+    public void setMiscHours(BigDecimal miscHours) {
+        this.miscHours = miscHours;
+    }
+
     public Optional<BigDecimal> getMisc2Hours() {
         return Optional.ofNullable(misc2Hours);
+    }
+
+    public void setMisc2Hours(BigDecimal miscHours2) {
+        this.misc2Hours = miscHours2;
     }
 
     public boolean isEmpty() {
@@ -118,43 +157,5 @@ public abstract class AttendanceHours {
     @Override
     public int hashCode() {
         return Objects.hashCode(workHours, travelHours, holidayHours, vacationHours, personalHours, sickEmpHours, sickFamHours, miscHours, misc2Hours);
-    }
-
-    /** --- Setters --- */
-
-    public void setWorkHours(BigDecimal workHours) {
-        this.workHours = workHours;
-    }
-
-    public void setTravelHours(BigDecimal travelHours) {
-        this.travelHours = travelHours;
-    }
-
-    public void setHolidayHours(BigDecimal holidayHours) {
-        this.holidayHours = holidayHours;
-    }
-
-    public void setVacationHours(BigDecimal vacationHours) {
-        this.vacationHours = vacationHours;
-    }
-
-    public void setPersonalHours(BigDecimal personalHours) {
-        this.personalHours = personalHours;
-    }
-
-    public void setSickEmpHours(BigDecimal sickEmpHours) {
-        this.sickEmpHours = sickEmpHours;
-    }
-
-    public void setSickFamHours(BigDecimal sickFamHours) {
-        this.sickFamHours = sickFamHours;
-    }
-
-    public void setMiscHours(BigDecimal miscHours) {
-        this.miscHours = miscHours;
-    }
-
-    public void setMisc2Hours(BigDecimal miscHours2) {
-        this.misc2Hours = miscHours2;
     }
 }

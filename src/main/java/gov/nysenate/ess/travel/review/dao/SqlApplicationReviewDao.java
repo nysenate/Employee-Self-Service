@@ -2,8 +2,8 @@ package gov.nysenate.ess.travel.review.dao;
 
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.model.personnel.Employee;
-import gov.nysenate.ess.travel.request.app.dao.TravelApplicationDao;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
+import gov.nysenate.ess.travel.request.app.dao.TravelApplicationDao;
 import gov.nysenate.ess.travel.review.ApplicationReview;
 import gov.nysenate.ess.travel.review.strategy.ReviewerStrategyFactory;
 import gov.nysenate.ess.travel.review.view.ActionType;

@@ -30,8 +30,7 @@ public class SqlResponsibilityHeadDao extends SqlBaseDao implements Responsibili
         List<ResponsibilityHead> responsibilityHeads = remoteNamedJdbc.query(sql, params, new RespHeadRowMapper(""));
         if (responsibilityHeads.isEmpty() || responsibilityHeads == null) {
             throw new EmptyResultDataAccessException("Unable to retrieve the rch code" + code, 404);
-        }
-        else {
+        } else {
             return responsibilityHeads.get(0);
         }
     }

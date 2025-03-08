@@ -6,8 +6,12 @@ import gov.nysenate.ess.core.model.pec.ethics.EthicsLiveCourseTask;
 public class EthicsLiveCourseViewFactory implements PersonnelTaskViewFactory<EthicsLiveCourseTask> {
 
     @Override
-    public EthicsLiveCourseTaskView getView(EthicsLiveCourseTask task) {return new EthicsLiveCourseTaskView(task);}
+    public EthicsLiveCourseTaskView getView(EthicsLiveCourseTask task) {
+        return new EthicsLiveCourseTaskView(task);
+    }
 
     @Override
-    public Class<EthicsLiveCourseTask> getTaskClass() {return EthicsLiveCourseTask.class;}
+    public Class<EthicsLiveCourseTask> getTaskClass() {
+        return EthicsLiveCourseTask.class;
+    }
 }

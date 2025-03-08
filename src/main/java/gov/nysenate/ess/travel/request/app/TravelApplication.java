@@ -12,7 +12,10 @@ import gov.nysenate.ess.travel.utils.Dollars;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
 
 public class TravelApplication {
     protected int appId;
@@ -135,40 +138,48 @@ public class TravelApplication {
         return appId;
     }
 
-    public Employee getTraveler() {
-        return traveler;
+    public void setAppId(int id) {
+        appId = id;
     }
 
-    public void setTravelerDeptHeadEmpId(int travelerDeptHeadEmpId) {
-        this.travelerDeptHeadEmpId = travelerDeptHeadEmpId;
+    public Employee getTraveler() {
+        return traveler;
     }
 
     public int getTravelerDeptHeadEmpId() {
         return travelerDeptHeadEmpId;
     }
 
-    public LocalDateTime getSubmittedDateTime() {
-        return createdDateTime;
+    public void setTravelerDeptHeadEmpId(int travelerDeptHeadEmpId) {
+        this.travelerDeptHeadEmpId = travelerDeptHeadEmpId;
     }
 
-    public void setCreatedBy(Employee createdBy) {
-        this.createdBy = createdBy;
+    public LocalDateTime getSubmittedDateTime() {
+        return createdDateTime;
     }
 
     public Employee getCreatedBy() {
         return createdBy;
     }
 
+    public void setCreatedBy(Employee createdBy) {
+        this.createdBy = createdBy;
+    }
+
     public LocalDateTime getModifiedDateTime() {
         return modifiedDateTime;
+    }
+
+    public void setModifiedDateTime(LocalDateTime modifiedDateTime) {
+        this.modifiedDateTime = modifiedDateTime;
     }
 
     public Employee getModifiedBy() {
         return modifiedBy;
     }
 
-    public void setAppId(int id) {
-        appId = id;
+    public void setModifiedBy(Employee modifiedBy) {
+        this.modifiedBy = modifiedBy;
     }
 
     public TravelApplicationStatus getStatus() {
@@ -243,14 +254,6 @@ public class TravelApplication {
         this.mileagePerDiems = mileagePerDiems;
     }
 
-    public void setModifiedBy(Employee modifiedBy) {
-        this.modifiedBy = modifiedBy;
-    }
-
-    public void setModifiedDateTime(LocalDateTime modifiedDateTime) {
-        this.modifiedDateTime = modifiedDateTime;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -280,9 +283,9 @@ public class TravelApplication {
     }
 
     public static class Builder {
-        private int appId = 0;
         private final Employee traveler;
         private final int travelerDeptHeadEmpId;
+        private int appId = 0;
         private PurposeOfTravel purposeOfTravel;
         private Route route = Route.EMPTY_ROUTE;
         private Allowances allowances = new Allowances();

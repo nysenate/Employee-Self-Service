@@ -6,9 +6,9 @@ import gov.nysenate.ess.core.dao.security.authorization.RoleDao;
 import gov.nysenate.ess.core.model.auth.EssRole;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
-import gov.nysenate.ess.travel.request.app.TravelApplication;
 import gov.nysenate.ess.travel.delegate.Delegation;
 import gov.nysenate.ess.travel.delegate.DelegationDao;
+import gov.nysenate.ess.travel.request.app.TravelApplication;
 import gov.nysenate.ess.travel.review.ApplicationReview;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,9 +21,9 @@ import java.util.stream.Collectors;
 @Service
 public class TravelEmailRecipients {
 
-    private EmployeeInfoService employeeInfoService;
-    private DelegationDao delegationDao;
-    private RoleDao roleDao;
+    private final EmployeeInfoService employeeInfoService;
+    private final DelegationDao delegationDao;
+    private final RoleDao roleDao;
 
     @Autowired
     public TravelEmailRecipients(EmployeeInfoService employeeInfoService,

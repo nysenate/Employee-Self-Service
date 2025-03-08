@@ -8,8 +8,7 @@ import org.springframework.jdbc.core.RowMapper;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class SupervisorOverrideRowMapper implements RowMapper<SupervisorOverride>
-{
+public class SupervisorOverrideRowMapper implements RowMapper<SupervisorOverride> {
     @Override
     public SupervisorOverride mapRow(ResultSet rs, int i) throws SQLException {
         SupervisorOverride supOvr = new SupervisorOverride();
@@ -26,8 +25,7 @@ public class SupervisorOverrideRowMapper implements RowMapper<SupervisorOverride
         else if (ovrSupId == 0 && ovrEmpId > 0) {
             supOvr.setGranterEmpId(ovrEmpId);
             supOvr.setSupOverrideType(SupOverrideType.EMPLOYEE);
-        }
-        else {
+        } else {
             throw new IllegalStateException("Illegal state of supervisor override record - " +
                     "supId: " + ovrSupId + "\tempId: " + ovrEmpId);
         }

@@ -6,8 +6,7 @@ import gov.nysenate.ess.core.model.unit.Address;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class AddressRowMapper extends BaseRowMapper<Address>
-{
+public class AddressRowMapper extends BaseRowMapper<Address> {
     private String pfx = "";
 
     public AddressRowMapper(String pfx) {

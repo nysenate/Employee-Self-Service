@@ -6,8 +6,7 @@ import javax.naming.Name;
  * This class is used to represent the outcome of an LDAP authentication request. It
  * stores the status as well as the validated Name if authentication succeeded.
  */
-public class LdapAuthResult
-{
+public class LdapAuthResult {
     private final LdapAuthStatus authStatus;
     private final String uid;
     private final Name name;

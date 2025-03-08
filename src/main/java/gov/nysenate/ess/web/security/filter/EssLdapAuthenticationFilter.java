@@ -19,9 +19,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class EssLdapAuthenticationFilter {
 
-    private LdapDao ldapDao;
-    private EmployeeDao employeeDao;
-    private SlackChatService slackChatService;
+    private static final Logger logger = LoggerFactory.getLogger(EssAuthenticationFilter.class);
+    private final LdapDao ldapDao;
+    private final EmployeeDao employeeDao;
+    private final SlackChatService slackChatService;
 
     @Autowired
     public EssLdapAuthenticationFilter(LdapDao ldapDao, EmployeeDao employeeDao, SlackChatService chatService) {
@@ -30,14 +31,12 @@ public class EssLdapAuthenticationFilter {
         this.slackChatService = chatService;
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(EssAuthenticationFilter.class);
-
     public LdapAuthStatus verifyUserInfo(AuthenticationToken token) throws UnsupportedTokenException {
 
         String username = "";
         try {
             if (token instanceof UsernamePasswordToken userPassToken) {
-               username = userPassToken.getUsername();
+                username = userPassToken.getUsername();
 
                 //THROWS NAMING EX WHEN FAILS
                 SenateLdapPerson ldapPerson = this.ldapDao.getPersonByUid(username);
@@ -52,26 +51,22 @@ public class EssLdapAuthenticationFilter {
                         logger.warn(warning);
                         slackChatService.sendMessage(warning);
                         return LdapAuthStatus.PROCEED;
-                    }
-                    else if (!ldapEmployee.getEmail().equals(ldapPerson.getEmail())) {
+                    } else if (!ldapEmployee.getEmail().equals(ldapPerson.getEmail())) {
                         //EMAIL MISMATCH, SO REJECT LOGIN
                         String error = "THERE IS A MISMATCH IN CREDENTIAL INFO FOR SFMS EMP ID: " +
                                 ldapEmployee.getEmployeeId() + ", AND LDAP INFO: " + ldapPerson.getEmployeeId() + ", " + ldapPerson.getEmail();
                         logger.error(error);
                         slackChatService.sendMessage(error);
                         return LdapAuthStatus.LDAP_MISMATCH_EXCEPTION;
-                    }
-                    else {
+                    } else {
                         return LdapAuthStatus.PROCEED;
                     }
-                }
-                catch (EmployeeException e) {
+                } catch (EmployeeException e) {
                     String error = "THIS LDAP EMPLOYEE ID COULD NOT BE MATCHED IN SFMS: " + ldapPerson.getEmployeeId() + ", " + ldapPerson.getEmail();
                     logger.error(error);
                     slackChatService.sendMessage(error);
                     return LdapAuthStatus.LDAP_MISMATCH_EXCEPTION;
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     String error = "AN ERROR OCCURRED WHILE VERIFYING THE FOLLOWING LDAP INFO IN SFMS: "
                             + ldapPerson.getEmployeeId() + "," + ldapPerson.getEmail();
                     logger.error(error);
@@ -80,19 +75,16 @@ public class EssLdapAuthenticationFilter {
                 }
             }
             throw new UnsupportedTokenException("Senate LDAP Realm only supports UsernamePasswordToken");
-        }
-        catch (IndexOutOfBoundsException e) {
-            String error = "THE USERNAME PROVIDED DOES NOT MATCH ANYTHING IN LDAP "  + username;
+        } catch (IndexOutOfBoundsException e) {
+            String error = "THE USERNAME PROVIDED DOES NOT MATCH ANYTHING IN LDAP " + username;
             logger.error(error);
             return LdapAuthStatus.INCORRECT_CREDENTIALS;
-        }
-        catch (NamingException e) {
+        } catch (NamingException e) {
             String error = "COULD NOT FIND UID IN LDAP: " + username;
             logger.error(error);
             slackChatService.sendMessage(error);
             return LdapAuthStatus.NAME_NOT_FOUND_EXCEPTION;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             String error = "UNKNOWN AN ERROR OCCURRED WHILE ATTEMPTING TO LOGIN TO ESS";
             logger.error(error);
             slackChatService.sendMessage(error);

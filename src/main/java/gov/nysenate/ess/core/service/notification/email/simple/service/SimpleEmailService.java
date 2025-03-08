@@ -17,7 +17,7 @@ import java.util.Map;
 
 
 /**
- *  Simple email service handles the message get from the handler
+ * Simple email service handles the message get from the handler
  * Created by Chenguang He on 6/16/2016.
  */
 

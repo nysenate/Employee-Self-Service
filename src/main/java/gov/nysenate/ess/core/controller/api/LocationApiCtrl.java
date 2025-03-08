@@ -33,8 +33,8 @@ public class LocationApiCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/search")
     public BaseResponse searchLocations(@RequestParam String term) {
         return ListViewResponse.of(locationService.searchLocations(term)
-                                              .stream()
-                                              .map(LocationView::new)
-                                              .collect(Collectors.toList()));
+                .stream()
+                .map(LocationView::new)
+                .collect(Collectors.toList()));
     }
 }

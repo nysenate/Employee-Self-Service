@@ -29,6 +29,7 @@ public class EssTimeRecordInitializer implements TimeRecordInitializer {
 
     /**
      * Ensures that the given time record contains entries for each day covered.
+     *
      * @param timeRecord - TimeRecord
      */
     @Override
@@ -54,8 +55,7 @@ public class EssTimeRecordInitializer implements TimeRecordInitializer {
                 if (holiday.isPresent()) {
                     if (entry.getPayType() == PayType.RA) {
                         entry.setHolidayHours(holiday.get().getHours());
-                    }
-                    else if (entry.getHolidayHours().isEmpty()) {
+                    } else if (entry.getHolidayHours().isEmpty()) {
                         entry.setHolidayHours(BigDecimal.ZERO);
                     }
                 }

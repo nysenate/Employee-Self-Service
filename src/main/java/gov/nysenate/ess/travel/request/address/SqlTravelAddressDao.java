@@ -9,8 +9,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
 @Repository
 public class SqlTravelAddressDao extends SqlBaseDao {
 
@@ -89,7 +87,7 @@ public class SqlTravelAddressDao extends SqlBaseDao {
                         "AND place_id = :placeId"
         );
 
-        private String sql;
+        private final String sql;
 
         SqlTravelAddressQuery(String sql) {
             this.sql = sql;

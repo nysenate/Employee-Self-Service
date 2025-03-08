@@ -7,7 +7,7 @@ import gov.nysenate.ess.core.model.pec.PersonnelTask;
  */
 public class AckDoc extends PersonnelTask {
 
-    private String filename;
+    private final String filename;
 
     public AckDoc(PersonnelTask task) {
         super(task);

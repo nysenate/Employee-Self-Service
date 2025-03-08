@@ -18,7 +18,7 @@ import java.util.Set;
 public class DynamicGroupTaskAssigner extends BaseGroupTaskAssigner {
 
     public DynamicGroupTaskAssigner(PersonnelTaskAssignmentDao assignmentDao,
-                                   PersonnelTaskService taskService,
+                                    PersonnelTaskService taskService,
                                     EmployeeInfoService employeeInfoService,
                                     PersonnelTaskDao personnelTaskDao) {
         super(assignmentDao, taskService, employeeInfoService, personnelTaskDao);

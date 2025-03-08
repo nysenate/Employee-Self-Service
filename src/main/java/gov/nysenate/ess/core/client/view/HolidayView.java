@@ -9,8 +9,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @XmlRootElement(name = "holiday")
-public class HolidayView implements ViewObject
-{
+public class HolidayView implements ViewObject {
     protected LocalDate date;
     protected String name;
     protected BigDecimal hours;

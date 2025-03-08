@@ -63,6 +63,11 @@ public class DonationCtrl extends BaseRestApiCtrl {
         this.payPeriodService = payPeriodService;
     }
 
+    private static String donationString(LocalDate date, Collection<BigDecimal> hours) {
+        var stringHours = hours.stream().map(BigDecimal::toString).collect(Collectors.joining(", "));
+        return date.getMonthValue() + "/" + date.getDayOfMonth() + ": " + stringHours;
+    }
+
     @GetMapping("/info")
     public BaseResponse getDonationInfo(@RequestParam int empId) {
         checkPermission(new EssTimePermission(empId, ACCRUAL, GET, Range.singleton(LocalDate.now())));
@@ -127,10 +132,5 @@ public class DonationCtrl extends BaseRestApiCtrl {
         BigDecimal minTotalHours = transHistory.getEffectiveMinHours(Range.singleton(LocalDate.now()))
                 .lastEntry().getValue();
         return AccrualUtils.getProratePercentage(minTotalHours);
-    }
-
-    private static String donationString(LocalDate date, Collection<BigDecimal> hours) {
-        var stringHours = hours.stream().map(BigDecimal::toString).collect(Collectors.joining(", "));
-        return date.getMonthValue() + "/" + date.getDayOfMonth() + ": " + stringHours;
     }
 }

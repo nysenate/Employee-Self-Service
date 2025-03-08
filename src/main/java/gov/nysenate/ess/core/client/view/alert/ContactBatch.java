@@ -1,17 +1,10 @@
-
 package gov.nysenate.ess.core.client.view.alert;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.XmlValue;
 
 
 /**
@@ -37,7 +30,8 @@ public class ContactBatch {
     @XmlAttribute(name = "version", required = true)
     protected String version;
 
-    public ContactBatch() {}
+    public ContactBatch() {
+    }
 
     public ContactBatch(String version) {
         this.version = version;
@@ -112,7 +106,8 @@ public class ContactBatch {
             @XmlAttribute(name = "action", required = true)
             protected String action;
 
-            public Contact() {}
+            public Contact() {
+            }
 
             public Contact(String action, String contactID) {
                 this.action = action;
@@ -173,7 +168,8 @@ public class ContactBatch {
                 @XmlAttribute(name = "customName")
                 protected String customName;
 
-                public ContactField() {}
+                public ContactField() {
+                }
 
                 public ContactField(String name, String customeName, String value) {
                     this.name = name;
@@ -257,6 +253,7 @@ public class ContactBatch {
                     public void addContactPointField(ContactPointField field) {
                         this.contactPointField.add(field);
                     }
+
                     public List<ContactBatch.BatchContactList.Contact.ContactPointList.ContactPoint.ContactPointField> getContactPointField() {
                         return this.contactPointField;
                     }
@@ -287,7 +284,8 @@ public class ContactBatch {
                         @XmlAttribute(name = "name", required = true)
                         protected String name;
 
-                        public ContactPointField() {}
+                        public ContactPointField() {
+                        }
 
                         public ContactPointField(String name, String value) {
                             this.name = name;
@@ -516,7 +514,8 @@ public class ContactBatch {
             @XmlAttribute(name = "value", required = true)
             protected String value;
 
-            public BatchProcessingOption() {}
+            public BatchProcessingOption() {
+            }
 
             public BatchProcessingOption(String name, String value) {
                 this.name = name;

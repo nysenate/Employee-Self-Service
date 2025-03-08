@@ -15,35 +15,33 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-public class OutputUtils
-{
-    private static final Logger logger = LoggerFactory.getLogger(OutputUtils.class);
+public class OutputUtils {
     public static final ObjectMapper jsonMapper = new ObjectMapper();
     public static final XmlMapper xmlMapper = XmlMapper.builder().defaultUseWrapper(false).build();
-
-    private OutputUtils() {}
+    private static final Logger logger = LoggerFactory.getLogger(OutputUtils.class);
 
     static {
         configureMapper(jsonMapper);
         configureMapper(xmlMapper);
     }
 
+    private OutputUtils() {
+    }
+
     /**
      * Given an object, this method will attempt to serialize it into JSON.
+     *
      * @param object Object
      * @return String - Json or empty string if failed.
      */
     public static String toJson(Object object) {
         try {
             return jsonMapper.writeValueAsString(object);
-        }
-        catch(JsonGenerationException ex){
+        } catch (JsonGenerationException ex) {
             logger.error("Failed to generate json: " + ex.getMessage());
-        }
-        catch(JsonMappingException ex){
+        } catch (JsonMappingException ex) {
             logger.error("Failed to map json: " + ex.getMessage());
-        }
-        catch(Exception ex){
+        } catch (Exception ex) {
             logger.error("ObjectMapper exception: " + ex.getMessage());
         }
         return "";
@@ -51,17 +49,16 @@ public class OutputUtils
 
     /**
      * Given an object, this method will attempt to serialize it into XML.
+     *
      * @param object Object
      * @return String - Xml or empty string if failed.
      */
     public static String toXml(Object object) {
         try {
             return xmlMapper.writeValueAsString(object);
-        }
-        catch (JsonProcessingException ex) {
+        } catch (JsonProcessingException ex) {
             logger.error("Failed to generate xml: " + ex.getMessage());
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             logger.error("ObjectMapper exception: " + ex.getMessage());
         }
         return "";
@@ -69,6 +66,7 @@ public class OutputUtils
 
     /**
      * Deserialize a json string into the given class.
+     *
      * @param json
      * @param clazz
      * @param <T>

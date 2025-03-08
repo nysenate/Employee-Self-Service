@@ -61,6 +61,7 @@ public class EssDisapprovalEmailService implements DisapprovalEmailService {
 
     /**
      * Detect and notify disapprovals through time record action events.
+     *
      * @param event {@link TimeRecordActionEvent}
      */
     @Subscribe

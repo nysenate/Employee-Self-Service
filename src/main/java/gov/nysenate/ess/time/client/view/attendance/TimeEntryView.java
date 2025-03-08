@@ -1,10 +1,9 @@
 package gov.nysenate.ess.time.client.view.attendance;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import gov.nysenate.ess.time.client.view.attendance.AttendanceHoursView;
+import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.time.model.attendance.TimeEntry;
 import gov.nysenate.ess.time.model.payroll.MiscLeaveType;
-import gov.nysenate.ess.core.model.payroll.PayType;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -13,8 +12,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @XmlRootElement
-public class TimeEntryView extends AttendanceHoursView
-{
+public class TimeEntryView extends AttendanceHoursView {
 
     protected String entryId;
     protected String timeRecordId;
@@ -31,7 +29,8 @@ public class TimeEntryView extends AttendanceHoursView
     protected LocalDateTime txOriginalDate;
     protected LocalDateTime txUpdateDate;
 
-    protected TimeEntryView() {}
+    protected TimeEntryView() {
+    }
 
     public TimeEntryView(TimeEntry entry) {
         super(entry);

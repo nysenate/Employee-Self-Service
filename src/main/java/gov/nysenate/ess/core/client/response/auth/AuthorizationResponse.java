@@ -8,8 +8,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class AuthorizationResponse
-{
+public class AuthorizationResponse {
     @XmlElement protected AuthorizationStatusView status;
     @XmlElement protected String user;
     @XmlElement protected String url;

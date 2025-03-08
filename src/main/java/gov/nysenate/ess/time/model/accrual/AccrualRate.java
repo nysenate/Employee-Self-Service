@@ -14,8 +14,7 @@ import static gov.nysenate.ess.time.util.AccrualUtils.roundSickVacHours;
  * Provides accrual rates for vacation and sick time based on number of biweekly pay periods.
  * These rates apply only to regular annual employees.
  */
-public enum AccrualRate
-{
+public enum AccrualRate {
     /**
      * Vacation rates increase as you work longer until you reach 5.5
      */
@@ -42,8 +41,8 @@ public enum AccrualRate
     ),
     ;
 
-    private ImmutableRangeMap<Integer, BigDecimal> accRateMap;
-    private BigDecimal maxHoursBanked;
+    private final ImmutableRangeMap<Integer, BigDecimal> accRateMap;
+    private final BigDecimal maxHoursBanked;
 
     AccrualRate(RangeMap<Integer, BigDecimal> accRateMap, BigDecimal maxHoursBanked) {
         this.accRateMap = ImmutableRangeMap.copyOf(accRateMap);
@@ -68,7 +67,7 @@ public enum AccrualRate
      * work 1820 hours and accrue at a rate proportional to the number of hours
      * they are expected to work in a year).
      *
-     * @param payPeriods int
+     * @param payPeriods        int
      * @param proratePercentage BigDecimal (percentage e.g 0.5)
      * @return BigDecimal with prorated accrual rate to the nearest .25.
      */
@@ -78,6 +77,7 @@ public enum AccrualRate
 
     /**
      * Returns the maximum number of hours that can be rolled over to the next year.
+     *
      * @return BigDecimal
      */
     public BigDecimal getMaxHoursBanked() {

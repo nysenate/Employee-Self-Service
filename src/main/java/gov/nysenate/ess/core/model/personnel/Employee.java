@@ -11,8 +11,7 @@ import java.util.Optional;
 /**
  * Represents information that identifies an employee in the NYS Senate
  */
-public class Employee extends Person
-{
+public class Employee extends Person {
 
     protected int employeeId;
     protected int supervisorId;
@@ -27,7 +26,8 @@ public class Employee extends Person
     protected LocalDateTime updateDateTime;
     protected LocalDate senateContServiceDate;
 
-    public Employee() {}
+    public Employee() {
+    }
 
     public Employee(Person person) {
         super(person);
@@ -67,8 +67,7 @@ public class Employee extends Person
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Employee)) return false;
-        Employee employee = (Employee) o;
+        if (!(o instanceof Employee employee)) return false;
         return employeeId == employee.employeeId &&
                 supervisorId == employee.supervisorId &&
                 active == employee.active &&

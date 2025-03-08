@@ -4,16 +4,16 @@ import com.google.common.collect.ImmutableMap;
 
 import java.util.Map;
 
-public class OrderBy
-{
-    private static OrderBy NO_ORDER = new OrderBy();
+public class OrderBy {
+    private static final OrderBy NO_ORDER = new OrderBy();
 
     /** An immutable mapping of column names to sort order. */
     private ImmutableMap<String, SortOrder> sortColumns = ImmutableMap.of();
 
     /** --- Constructors --- */
 
-    public OrderBy() {}
+    public OrderBy() {
+    }
 
     public OrderBy(Map<String, SortOrder> sortColumns) {
         this.sortColumns = ImmutableMap.copyOf(sortColumns);

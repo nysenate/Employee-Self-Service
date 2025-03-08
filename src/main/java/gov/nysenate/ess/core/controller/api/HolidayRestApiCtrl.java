@@ -18,8 +18,7 @@ import static java.util.stream.Collectors.toList;
 
 @RestController
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/holidays")
-public class HolidayRestApiCtrl extends BaseRestApiCtrl
-{
+public class HolidayRestApiCtrl extends BaseRestApiCtrl {
     @Autowired private HolidayService holidayService;
 
     @RequestMapping(value = "", params = "year")

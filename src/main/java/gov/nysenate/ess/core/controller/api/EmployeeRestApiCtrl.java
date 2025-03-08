@@ -38,8 +38,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.HEAD;
 
 @RestController
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/employees")
-public class EmployeeRestApiCtrl extends BaseRestApiCtrl
-{
+public class EmployeeRestApiCtrl extends BaseRestApiCtrl {
     private static final Logger logger = LoggerFactory.getLogger(EmployeeRestApiCtrl.class);
 
     @Autowired protected EmployeeDao employeeDao;
@@ -49,11 +48,12 @@ public class EmployeeRestApiCtrl extends BaseRestApiCtrl
      * Get Employee Info API
      * ---------------------
      * Get current personnel and payroll data for the requested employee
-     *
+     * <p>
      * Usage:       (GET) /api/v1/employees
-     *
+     * <p>
      * Request Params:
-     * @param empId Integer - required - the employee id of the requested employee
+     *
+     * @param empId  Integer - required - the employee id of the requested employee
      * @param detail boolean - will return more information if true
      * @return {@link EmployeeView} or {@link DetailedEmployeeView} depending on value of <code>detail</code>
      * @throws EmployeeException if something gets messed up
@@ -66,15 +66,15 @@ public class EmployeeRestApiCtrl extends BaseRestApiCtrl
                 .forEach(this::checkPermission);
 
         return getEmployeeResponse(
-            Arrays.asList(empId).stream().map(empInfoService::getEmployee).collect(toList()), detail);
+                Arrays.asList(empId).stream().map(empInfoService::getEmployee).collect(toList()), detail);
     }
 
     /**
      * Get Active Employee API
      * -----------------------
-     *
+     * <p>
      * Get a list of all currently active employees
-     *
+     * <p>
      * Usage:       (GET) /api/v1/employees/active
      *
      * @return {@link ListViewResponse<EmployeeSearchView>}
@@ -95,13 +95,14 @@ public class EmployeeRestApiCtrl extends BaseRestApiCtrl
     /**
      * Employee Search API
      * -----------------------
-     *
+     * <p>
      * Search active employees by their full name.
-     *
+     * <p>
      * Usage:       (GET) /api/v1/employees/search
-     *
+     * <p>
      * Request Params:
-     * @param term String - The search term. Matched against employee full names.
+     *
+     * @param term  String - The search term. Matched against employee full names.
      * @param empId int - default 0 - an optional param that overrides term and will return an employee
      *              with the given employee id, if one exists
      * @return {@link ListViewResponse<EmployeeSearchView>}
@@ -122,7 +123,8 @@ public class EmployeeRestApiCtrl extends BaseRestApiCtrl
             try {
                 Employee employee = empInfoService.getEmployee(empId);
                 employeeList.add(employee);
-            } catch (EmployeeNotFoundEx ignored) {}
+            } catch (EmployeeNotFoundEx ignored) {
+            }
             empSearchResults = new PaginatedList<>(employeeList.size(), LimitOffset.ALL, employeeList);
         } else {
             empSearchResults = empInfoService.searchEmployees(term, activeOnly, limitOffset);
@@ -140,10 +142,11 @@ public class EmployeeRestApiCtrl extends BaseRestApiCtrl
      * Get Employee Active Years API
      * -----------------------------
      * Get a list of years that the employee was active
-     *
+     * <p>
      * Usage:       (GET) /api/v1/employees/activeYears
-     *
+     * <p>
      * Request Params:
+     *
      * @param empId Integer - required - the employee id of the requested employee
      * @return {@link ListViewResponse} of integers containing active years
      */
@@ -159,10 +162,11 @@ public class EmployeeRestApiCtrl extends BaseRestApiCtrl
      * Get Employee Active Dates API
      * -----------------------------
      * Get a list of dates that the employee was active
-     *
+     * <p>
      * Usage:       (GET) /api/v1/employees/activeDates
-     *
+     * <p>
      * Request Params:
+     *
      * @param empId Integer - required - the employee id of the requested employee
      * @return {@link ViewObjectResponse} containing an {@link EmployeeActiveDatesView}
      */
@@ -180,12 +184,11 @@ public class EmployeeRestApiCtrl extends BaseRestApiCtrl
     private BaseResponse getEmployeeResponse(List<Employee> employeeList, boolean detail) {
         if (employeeList.size() == 1) {
             return new ViewObjectResponse<>((detail) ? new DetailedEmployeeView(employeeList.get(0))
-                                                     : new EmployeeView(employeeList.get(0)), "employee");
-        }
-        else {
+                    : new EmployeeView(employeeList.get(0)), "employee");
+        } else {
             return ListViewResponse.of(
-                employeeList.stream().map((detail) ? DetailedEmployeeView::new : EmployeeView::new).collect(toList()),
-                "employees");
+                    employeeList.stream().map((detail) ? DetailedEmployeeView::new : EmployeeView::new).collect(toList()),
+                    "employees");
         }
     }
 }

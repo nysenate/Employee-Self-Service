@@ -35,7 +35,7 @@ public class TravelApplicationView implements ViewObject {
         lastModifiedBy = app.getModifiedBy() == null ? null : new DetailedEmployeeView(app.getModifiedBy());
         status = new TravelApplicationStatusView(app.getStatus());
         activeAmendment = new AmendmentView(app);
-        amendments = Arrays.asList(activeAmendment);
+        amendments = List.of(activeAmendment);
         this.travelStartDate = app.startDate() == null ? null : app.startDate().format(ISO_DATE);
     }
 

@@ -12,8 +12,7 @@ import java.util.List;
 /**
  * Data access layer for retrieving holiday dates.
  */
-public interface HolidayDao extends BaseDao
-{
+public interface HolidayDao extends BaseDao {
     /**
      * Returns a holiday if it exists for the given date. Throws exception otherwise.
      *
@@ -36,9 +35,9 @@ public interface HolidayDao extends BaseDao
      * Retrieves a list of all the holidays that occur between the given dates inclusively in order
      * of earliest first.
      *
-     * @param dateRange Range<LocalDate> - The date range to search.
+     * @param dateRange           Range<LocalDate> - The date range to search.
      * @param includeQuestionable boolean - Include questionable holidays
-     * @param dateOrder SortOrder - Order the results by date.
+     * @param dateOrder           SortOrder - Order the results by date.
      * @return List<Holiday>
      */
     List<Holiday> getHolidays(Range<LocalDate> dateRange, boolean includeQuestionable, SortOrder dateOrder);

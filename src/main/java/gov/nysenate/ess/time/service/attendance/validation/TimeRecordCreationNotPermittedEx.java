@@ -7,9 +7,9 @@ import gov.nysenate.ess.core.model.period.PayPeriod;
  */
 public class TimeRecordCreationNotPermittedEx extends RuntimeException {
 
-    private int empId;
-    private PayPeriod payPeriod;
-    private String reason;
+    private final int empId;
+    private final PayPeriod payPeriod;
+    private final String reason;
 
     public TimeRecordCreationNotPermittedEx(int empId, PayPeriod payPeriod, String reason) {
         super("Cannot create new time record for employee #" + empId + " on period " + payPeriod + ".  Reason: " + reason);

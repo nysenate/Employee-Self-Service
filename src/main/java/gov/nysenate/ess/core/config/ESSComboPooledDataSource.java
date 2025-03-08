@@ -10,13 +10,12 @@ import java.util.Optional;
  * This class is copied nearly exactly from ComboPooledDataSource, except with an overridden close method.
  */
 public class ESSComboPooledDataSource extends AbstractComboPooledDataSource implements Serializable, Referenceable {
-    public ESSComboPooledDataSource() {
-        super();
-    }
-
     @Serial
     private static final long serialVersionUID = 1;
     private static final short VERSION = 0x0002;
+    public ESSComboPooledDataSource() {
+        super();
+    }
 
     @Serial
     private void writeObject(ObjectOutputStream oos) throws IOException {
@@ -44,8 +43,8 @@ public class ESSComboPooledDataSource extends AbstractComboPooledDataSource impl
         if (problemThread.isPresent()) {
             try {
                 problemThread.get().join();
+            } catch (InterruptedException ignored) {
             }
-            catch (InterruptedException ignored) {}
         }
     }
 }

@@ -13,8 +13,7 @@ import java.util.List;
 /**
  * Data access layer for providing basic pay period information.
  */
-public interface PayPeriodDao extends BaseDao
-{
+public interface PayPeriodDao extends BaseDao {
     /**
      * Retrieve the pay period of the given type that overlaps on the given 'date'.
      *
@@ -29,7 +28,7 @@ public interface PayPeriodDao extends BaseDao
      * Retrieves the pay periods of the given type within the given dateRange. The returned pay periods
      * will either be contained within or overlap with the dateRange.
      *
-     * @param type PayPeriodType - The type of pay period.
+     * @param type      PayPeriodType - The type of pay period.
      * @param dateRange Range<LocalDate> - The start and end date range.
      * @param dateOrder SortOrder - Order by the start date of the pay period
      * @return List<PayPeriod>

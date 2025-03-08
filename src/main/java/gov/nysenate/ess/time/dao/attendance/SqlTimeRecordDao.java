@@ -41,18 +41,62 @@ import static gov.nysenate.ess.time.dao.attendance.SqlTimeRecordQuery.*;
 import static gov.nysenate.ess.time.model.attendance.TimeRecordStatus.APPROVED_PERSONNEL;
 
 @Repository
-public class SqlTimeRecordDao extends SqlBaseDao implements TimeRecordDao
-{
+public class SqlTimeRecordDao extends SqlBaseDao implements TimeRecordDao {
     private static final Logger logger = LoggerFactory.getLogger(SqlTimeRecordDao.class);
-
-    private final TimeEntryDao timeEntryDao;
-
     private static final OrderBy timeRecordOrder =
             new OrderBy("rec.NUXREFEM", SortOrder.ASC, "rec.DTBEGIN", SortOrder.ASC, "ent.DTDAY", SortOrder.ASC);
+    private final TimeEntryDao timeEntryDao;
 
     @Autowired
     public SqlTimeRecordDao(TimeEntryDao timeEntryDao) {
         this.timeEntryDao = timeEntryDao;
+    }
+
+    private static MapSqlParameterSource getTimeRecordParams(TimeRecord timeRecord) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("timesheetId", timeRecord.getTimeRecordId() != null ?
+                new BigDecimal(timeRecord.getTimeRecordId()) : null);
+        params.addValue("empId", timeRecord.getEmployeeId());
+        params.addValue("lastUser", timeRecord.getLastUser());
+        params.addValue("tOriginalUserId", timeRecord.getOriginalUserId());
+        params.addValue("tUpdateUserId", timeRecord.getUpdateUserId());
+        params.addValue("tOriginalDate", SqlBaseDao.toDate(timeRecord.getCreatedDate()));
+        params.addValue("tUpdateDate", SqlBaseDao.toDate(timeRecord.getUpdateDate()));
+        params.addValue("status", timeRecord.isActive() ? "A" : "I");
+        params.addValue("tSStatusId", timeRecord.getRecordStatus().getCode());
+        params.addValue("beginDate", SqlBaseDao.toDate(timeRecord.getBeginDate()));
+        params.addValue("endDate", SqlBaseDao.toDate(timeRecord.getEndDate()));
+        params.addValue("remarks", timeRecord.getRemarks());
+        params.addValue("supervisorId", timeRecord.getSupervisorId());
+        params.addValue("excDetails", timeRecord.getExceptionDetails());
+        params.addValue("procDate", SqlBaseDao.toDate(timeRecord.getProcessedDate()));
+        params.addValue("respCtr", timeRecord.getRespHeadCode());
+        params.addValue("approvalEmpId", timeRecord.getApprovalEmpId());
+
+        return params;
+    }
+
+    /**
+     * @param entry          TimeEntry - the time entry to insert
+     * @param savedRecordOpt TimeRecord - a record containing the last saved entry set
+     * @return true if the entry is fundamentally different than the equivalent entry in oldRecord
+     */
+    private static boolean shouldUpdate(TimeEntry entry, Optional<TimeRecord> savedRecordOpt) {
+        Optional<TimeEntry> savedEntryOpt = savedRecordOpt.map(rec -> rec.getEntry(entry.getDate()));
+        return savedEntryOpt
+                // If entry already exists, update it if the new entry is different
+                .map(oldEnt -> !oldEnt.equals(entry))
+                // If the entry doesn't exist, insert the new entry if it is non-empty
+                .orElse(!entry.isEmpty());
+    }
+
+    /**
+     * Ensure that the time record id matches the id of the saved entry on the same date, if it exists
+     */
+    private static void ensureId(TimeEntry entry, Optional<TimeRecord> oldRecord) {
+        oldRecord.map(rec -> rec.getEntry(entry.getDate()))
+                .map(TimeEntry::getEntryId)
+                .ifPresent(entry::setEntryId);
     }
 
     /** {@inheritDoc} */
@@ -94,15 +138,13 @@ public class SqlTimeRecordDao extends SqlBaseDao implements TimeRecordDao
 
         if (timestamps.isEmpty()) {
             throw new IncorrectResultSizeDataAccessException(0);
-        }
-        else {
+        } else {
             try {
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
-                Date parsedDate = dateFormat.parse( (String) timestamps.get(0));
+                Date parsedDate = dateFormat.parse((String) timestamps.get(0));
                 Timestamp timestamp = new java.sql.Timestamp(parsedDate.getTime());
-                return DateUtils.getLocalDateTime( timestamp );
-            }
-            catch ( ParseException e ) {
+                return DateUtils.getLocalDateTime(timestamp);
+            } catch (ParseException e) {
                 return null;
             }
         }
@@ -138,6 +180,8 @@ public class SqlTimeRecordDao extends SqlBaseDao implements TimeRecordDao
         return remoteNamedJdbc.query(SqlTimeRecordQuery.GET_TREC_DISTINCT_YEARS.getSql(schemaMap(), orderBy), params,
                 (rs, rowNum) -> rs.getInt("year"));
     }
+
+    /* --- Helper Classes --- */
 
     /** {@inheritDoc} */
     @Override
@@ -215,6 +259,8 @@ public class SqlTimeRecordDao extends SqlBaseDao implements TimeRecordDao
         return false;
     }
 
+    /* --- Internal Methods --- */
+
     /** {@inheritDoc} */
     @Override
     public boolean hasActiveEmployeeRecord(int supId) {
@@ -223,22 +269,44 @@ public class SqlTimeRecordDao extends SqlBaseDao implements TimeRecordDao
         List<Integer> activeRecordCounts = remoteNamedJdbc.query(SqlTimeRecordQuery.GET_SUP_TREC_COUNT.getSql(schemaMap()), params, (rs, rowNum) -> rs.getInt("record_count"));
         if (activeRecordCounts.isEmpty() || activeRecordCounts == null) {
 
-        }
-        else {
+        } else {
             activeRecordCount = activeRecordCounts.get(0);
         }
         return activeRecordCount > 0;
     }
 
-    /* --- Helper Classes --- */
+    /**
+     * Try to find a time record id for a time record with an overlapping date range
+     * that can be updated.
+     *
+     * @param record {@link TimeRecord}
+     * @return BigInteger
+     */
+    private BigInteger getExistingTimeRecordIdForUpdate(TimeRecord record) {
+        MapSqlParameterSource params = getTimeRecordParams(record);
+        // Attempt to find existing record for employee with matching begin date
+        // If that record exists, use that record id
+        TimeRecordIDRowCallbackHandler timeRecordIDRowCallbackHandler = new TimeRecordIDRowCallbackHandler();
+        try {
+            remoteNamedJdbc.query(GET_EXISTING_TREC_ID.getSql(schemaMap()), params, timeRecordIDRowCallbackHandler);
+            Map<String, Object> resultMap = timeRecordIDRowCallbackHandler.getResultMap();
+            TimeRecordStatus status = TimeRecordStatus.valueOfCode(String.valueOf(resultMap.get("CDTSSTAT")));
+            BigInteger id = ((BigDecimal) resultMap.get("NUXRTIMESHEET")).toBigInteger();
+            if (status == APPROVED_PERSONNEL) {
+                throw new IllegalRecordModificationEx(id, "Existing record is approved by personnel");
+            }
+            return id;
+        } catch (EmptyResultDataAccessException | NullPointerException ex) {
+            return null;
+        }
+    }
 
-    private static class TimeRecordRowCallbackHandler implements RowCallbackHandler
-    {
-        private RemoteRecordRowMapper remoteRecordRowMapper = new RemoteRecordRowMapper();
-        private RemoteEntryRowMapper remoteEntryRowMapper = new RemoteEntryRowMapper("ENT_");
-        private PayPeriodRowMapper periodRowMapper = new PayPeriodRowMapper("PER_");
-        private Map<BigDecimal, TimeRecord> recordMap = new HashMap<>();
-        private List<TimeRecord> recordList = new ArrayList<>();
+    private static class TimeRecordRowCallbackHandler implements RowCallbackHandler {
+        private final RemoteRecordRowMapper remoteRecordRowMapper = new RemoteRecordRowMapper();
+        private final RemoteEntryRowMapper remoteEntryRowMapper = new RemoteEntryRowMapper("ENT_");
+        private final PayPeriodRowMapper periodRowMapper = new PayPeriodRowMapper("PER_");
+        private final Map<BigDecimal, TimeRecord> recordMap = new HashMap<>();
+        private final List<TimeRecord> recordList = new ArrayList<>();
 
         @Override
         public void processRow(ResultSet rs) throws SQLException {
@@ -249,8 +317,7 @@ public class SqlTimeRecordDao extends SqlBaseDao implements TimeRecordDao
                 record.setPayPeriod(periodRowMapper.mapRow(rs, 0));
                 recordMap.put(recordId, record);
                 recordList.add(record);
-            }
-            else {
+            } else {
                 record = recordMap.get(recordId);
             }
             rs.getDate("ENT_DTDAY");
@@ -272,62 +339,10 @@ public class SqlTimeRecordDao extends SqlBaseDao implements TimeRecordDao
         }
     }
 
-    private static MapSqlParameterSource getTimeRecordParams(TimeRecord timeRecord) {
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("timesheetId", timeRecord.getTimeRecordId() != null ?
-                new BigDecimal(timeRecord.getTimeRecordId()) : null);
-        params.addValue("empId", timeRecord.getEmployeeId());
-        params.addValue("lastUser", timeRecord.getLastUser());
-        params.addValue("tOriginalUserId", timeRecord.getOriginalUserId());
-        params.addValue("tUpdateUserId", timeRecord.getUpdateUserId());
-        params.addValue("tOriginalDate", SqlBaseDao.toDate(timeRecord.getCreatedDate()));
-        params.addValue("tUpdateDate", SqlBaseDao.toDate(timeRecord.getUpdateDate()));
-        params.addValue("status", timeRecord.isActive() ? "A" : "I");
-        params.addValue("tSStatusId", timeRecord.getRecordStatus().getCode());
-        params.addValue("beginDate", SqlBaseDao.toDate(timeRecord.getBeginDate()));
-        params.addValue("endDate", SqlBaseDao.toDate(timeRecord.getEndDate()));
-        params.addValue("remarks", timeRecord.getRemarks());
-        params.addValue("supervisorId", timeRecord.getSupervisorId());
-        params.addValue("excDetails", timeRecord.getExceptionDetails());
-        params.addValue("procDate", SqlBaseDao.toDate(timeRecord.getProcessedDate()));
-        params.addValue("respCtr", timeRecord.getRespHeadCode());
-        params.addValue("approvalEmpId", timeRecord.getApprovalEmpId());
-
-        return params;
-    }
-
-    /* --- Internal Methods --- */
-
-    /**
-     * Try to find a time record id for a time record with an overlapping date range
-     * that can be updated.
-     *
-     * @param record {@link TimeRecord}
-     * @return BigInteger
-     */
-    private BigInteger getExistingTimeRecordIdForUpdate(TimeRecord record) {
-        MapSqlParameterSource params = getTimeRecordParams(record);
-        // Attempt to find existing record for employee with matching begin date
-        // If that record exists, use that record id
-        TimeRecordIDRowCallbackHandler timeRecordIDRowCallbackHandler = new TimeRecordIDRowCallbackHandler();
-        try {
-            remoteNamedJdbc.query(GET_EXISTING_TREC_ID.getSql(schemaMap()), params, timeRecordIDRowCallbackHandler);
-            Map<String, Object> resultMap = timeRecordIDRowCallbackHandler.getResultMap();
-            TimeRecordStatus status = TimeRecordStatus.valueOfCode(String.valueOf(resultMap.get("CDTSSTAT")));
-            BigInteger id = ( (BigDecimal) resultMap.get("NUXRTIMESHEET")).toBigInteger();
-            if (status == APPROVED_PERSONNEL) {
-                throw new IllegalRecordModificationEx(id, "Existing record is approved by personnel");
-            }
-            return id;
-        } catch (EmptyResultDataAccessException | NullPointerException ex) {
-            return null;
-        }
-    }
-
     private static class TimeRecordIDRowCallbackHandler implements RowCallbackHandler {
-        private RemoteRecordRowMapper remoteRecordRowMapper = new RemoteRecordRowMapper();
-        private RemoteEntryRowMapper remoteEntryRowMapper = new RemoteEntryRowMapper("ENT_");
         Map<String, Object> resultMap = new HashMap<>();
+        private final RemoteRecordRowMapper remoteRecordRowMapper = new RemoteRecordRowMapper();
+        private final RemoteEntryRowMapper remoteEntryRowMapper = new RemoteEntryRowMapper("ENT_");
 
         @Override
         public void processRow(ResultSet rs) throws SQLException {
@@ -340,29 +355,6 @@ public class SqlTimeRecordDao extends SqlBaseDao implements TimeRecordDao
         public Map<String, Object> getResultMap() {
             return resultMap;
         }
-    }
-
-    /**
-     * @param entry TimeEntry - the time entry to insert
-     * @param savedRecordOpt TimeRecord - a record containing the last saved entry set
-     * @return true if the entry is fundamentally different than the equivalent entry in oldRecord
-     */
-    private static boolean shouldUpdate(TimeEntry entry, Optional<TimeRecord> savedRecordOpt) {
-        Optional<TimeEntry> savedEntryOpt = savedRecordOpt.map(rec -> rec.getEntry(entry.getDate()));
-        return savedEntryOpt
-                // If entry already exists, update it if the new entry is different
-                .map(oldEnt -> !oldEnt.equals(entry))
-                // If the entry doesn't exist, insert the new entry if it is non-empty
-                .orElse(!entry.isEmpty());
-    }
-
-    /**
-     * Ensure that the time record id matches the id of the saved entry on the same date, if it exists
-     */
-    private static void ensureId(TimeEntry entry, Optional<TimeRecord> oldRecord) {
-        oldRecord.map(rec -> rec.getEntry(entry.getDate()))
-                .map(TimeEntry::getEntryId)
-                .ifPresent(entry::setEntryId);
     }
 }
 

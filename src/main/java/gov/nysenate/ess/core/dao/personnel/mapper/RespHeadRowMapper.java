@@ -6,9 +6,8 @@ import gov.nysenate.ess.core.model.personnel.ResponsibilityHead;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class RespHeadRowMapper extends BaseRowMapper<ResponsibilityHead>
-{
-    private String pfx;
+public class RespHeadRowMapper extends BaseRowMapper<ResponsibilityHead> {
+    private final String pfx;
 
     public RespHeadRowMapper(String pfx) {
         this.pfx = pfx;

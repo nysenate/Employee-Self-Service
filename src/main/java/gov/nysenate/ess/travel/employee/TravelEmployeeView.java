@@ -49,12 +49,12 @@ public class TravelEmployeeView extends EmployeeView implements ViewObject {
         return isDepartmentHead;
     }
 
-    public DepartmentView getDepartment() {
-        return department;
-    }
-
     public void setDepartmentHead(boolean departmentHead) {
         isDepartmentHead = departmentHead;
+    }
+
+    public DepartmentView getDepartment() {
+        return department;
     }
 
     public void setDepartment(DepartmentView department) {

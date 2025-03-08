@@ -7,8 +7,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class AddressView implements ViewObject
-{
+public class AddressView implements ViewObject {
     protected String addr1 = "";
     protected String addr2 = "";
     protected String city = "";
@@ -19,7 +18,8 @@ public class AddressView implements ViewObject
     protected String zip4 = "";
     protected String formattedAddressWithCounty = "";
 
-    public AddressView() {}
+    public AddressView() {
+    }
 
     public AddressView(Address address) {
         this.addr1 = address.getAddr1();

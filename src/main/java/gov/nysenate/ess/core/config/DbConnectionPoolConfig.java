@@ -9,8 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import java.beans.PropertyVetoException;
 
 @Configuration
-public class DbConnectionPoolConfig
-{
+public class DbConnectionPoolConfig {
     private static final Logger logger = LoggerFactory.getLogger(DbConnectionPoolConfig.class);
 
     /** Local Database Configuration */
@@ -31,6 +30,7 @@ public class DbConnectionPoolConfig
 
     /**
      * Configures and returns the local data source.
+     *
      * @return ComboPooledDataSource
      */
     @Bean(destroyMethod = "close", name = "localDataSource")
@@ -49,6 +49,7 @@ public class DbConnectionPoolConfig
 
     /**
      * Configures and returns the remote data source.
+     *
      * @return ComboPooledDataSource
      */
     @Bean(destroyMethod = "close", name = "remoteDataSource")
@@ -73,22 +74,21 @@ public class DbConnectionPoolConfig
     /**
      * Creates a basic pooled DataSource.
      *
-     * @param type Database type
-     * @param host Database host address
-     * @param name Database name
+     * @param type   Database type
+     * @param host   Database host address
+     * @param name   Database name
      * @param driver Database driver string
-     * @param user Database user
-     * @param pass Database password
+     * @param user   Database user
+     * @param pass   Database password
      * @return PoolProperties
      */
     private ESSComboPooledDataSource getComboPooledDataSource(String type, String host, String name, String driver,
-                                                           String user, String pass) {
+                                                              String user, String pass) {
         final String jdbcUrlTemplate = "jdbc:%s//%s/%s";
         var pool = new ESSComboPooledDataSource();
         try {
             pool.setDriverClass(driver);
-        }
-        catch (PropertyVetoException ex) {
+        } catch (PropertyVetoException ex) {
             logger.error("Error when setting the database driver {}{}", driver, ex.getMessage());
         }
         final String jdbcUrl = String.format(jdbcUrlTemplate, type, host, name);

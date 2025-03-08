@@ -65,6 +65,7 @@ public class PaychecksSummary {
 
     /**
      * Get a Map of deduction code to deduction total for all paychecks.
+     *
      * @return
      */
     public Map<Integer, BigDecimal> deductionTotals() {

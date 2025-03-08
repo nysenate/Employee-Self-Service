@@ -7,20 +7,19 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-public class SalaryRec implements Comparable<SalaryRec>
-{
+public class SalaryRec implements Comparable<SalaryRec> {
     /** The amount paid to the employee per pay period/hour/year */
-    private BigDecimal salaryRate;
+    private final BigDecimal salaryRate;
 
     /** Specifies the time unit that this salary is tracked by e.g. biweekly/hourly/yearly */
-    private PayType payType;
+    private final PayType payType;
 
     /** The start and end points for the range of dates for which this salary is in effect */
-    private LocalDate effectDate;
+    private final LocalDate effectDate;
     private LocalDate endDate = DateUtils.THE_FUTURE;
 
     /** The date this record was created */
-    private LocalDateTime auditDate;
+    private final LocalDateTime auditDate;
 
     public SalaryRec(BigDecimal salaryRate, PayType payType, LocalDate effectDate, LocalDateTime auditDate) {
         this.salaryRate = salaryRate;

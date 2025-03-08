@@ -1,7 +1,6 @@
 package gov.nysenate.ess.core.model.transaction;
 
-public enum TransactionColumn
-{
+public enum TransactionColumn {
     ADCITY("City"),
     ADCITYC("City Code"),
     ADCOUNTY("County"),
@@ -91,24 +90,23 @@ public enum TransactionColumn
     NUVACHRSPD("Vacation Hours Paid"),
     NUXREFSV("Supervisor Id"),
     NUYONTAXEX("");
-    
+
     private final String desc;
 
     TransactionColumn(String desc) {
         this.desc = desc;
     }
 
-    public String getDesc() {
-        return desc;
-    }
-
     public static boolean isValidColumn(String column) {
         try {
             TransactionColumn.valueOf(column);
             return true;
-        }
-        catch (IllegalArgumentException ex) {
+        } catch (IllegalArgumentException ex) {
             return false;
         }
+    }
+
+    public String getDesc() {
+        return desc;
     }
 }

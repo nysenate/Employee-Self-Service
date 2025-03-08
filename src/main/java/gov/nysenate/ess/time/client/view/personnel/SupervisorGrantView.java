@@ -8,8 +8,7 @@ import gov.nysenate.ess.time.model.personnel.SupervisorOverride;
 /**
  * Similar to SupervisorOverrideView, just reversed.
  */
-public class SupervisorGrantView extends SupervisorGrantSimpleView implements ViewObject
-{
+public class SupervisorGrantView extends SupervisorGrantSimpleView implements ViewObject {
     protected EmployeeView granteeSupervisor;
 
     /** --- Constructors --- */

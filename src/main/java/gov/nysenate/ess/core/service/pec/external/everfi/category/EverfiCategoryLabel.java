@@ -25,32 +25,32 @@ public class EverfiCategoryLabel {
         return labelId;
     }
 
+    public void setLabelId(int labelId) {
+        this.labelId = labelId;
+    }
+
     public String getLabelName() {
         return labelName;
+    }
+
+    public void setLabelName(String labelName) {
+        this.labelName = labelName;
     }
 
     public int getCategoryId() {
         return categoryId;
     }
 
-    public String getCategoryName() {
-        return categoryName;
-    }
-
     public void setCategoryId(int categoryId) {
         this.categoryId = categoryId;
     }
 
+    public String getCategoryName() {
+        return categoryName;
+    }
+
     public void setCategoryName(String categoryName) {
         this.categoryName = categoryName;
-    }
-
-    public void setLabelId(int labelId) {
-        this.labelId = labelId;
-    }
-
-    public void setLabelName(String labelName) {
-        this.labelName = labelName;
     }
 
     @Override
@@ -65,6 +65,7 @@ public class EverfiCategoryLabel {
 
     /**
      * Manually extract 'attributes.name' from the json to the name field.
+     *
      * @param attributes
      */
     @JsonProperty("attributes")

@@ -19,7 +19,7 @@ public enum SimpleEssPermission {
     /** Granted to users who should not time out when using the front end application */
     TIMEOUT_EXEMPT("core:timeout-exempt"),
 
-    /**Granted to users who should be able to generate out acknowledgment reports */
+    /** Granted to users who should be able to generate out acknowledgment reports */
     COMPLIANCE_REPORT_GENERATION("core:pec-report-generation"),
 
     /** Allows user to manually run personnel task assigner */

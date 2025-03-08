@@ -9,12 +9,12 @@ import java.util.Objects;
 
 public class Action {
 
-    protected int actionId;
     protected final Employee user;
     protected final TravelRole role;
     protected final ActionType type;
     protected final String notes;
     protected final LocalDateTime dateTime;
+    protected int actionId;
 
     public Action(int actionId, Employee user, TravelRole role, ActionType type,
                   String notes, LocalDateTime dateTime) {

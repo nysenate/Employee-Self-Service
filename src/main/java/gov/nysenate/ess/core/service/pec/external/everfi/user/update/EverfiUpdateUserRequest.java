@@ -15,15 +15,14 @@ import java.util.List;
 public class EverfiUpdateUserRequest {
 
     private static final String UPDATE_USER_END_POINT = "/v1/admin/registration_sets/%s";
+    private static final int LOCATION_ID = 9820; // We put everyone in the same location.
     private final EverfiApiClient everfiClient;
-
     private final String empUuid;
     private final String firstName; // Required, even if not changing.
     private final String lastName; // Required, even if not changing.
     private final String email; // Required, even if not changing.
     private final String ssoId;
     private final int employeeId;
-    private static final int LOCATION_ID = 9820; // We put everyone in the same location.
     private final List<EverfiCategoryLabel> categoryLabels;
     private final boolean isActive;
 
@@ -42,6 +41,7 @@ public class EverfiUpdateUserRequest {
 
     /**
      * Updates the user represented by the feilds in this class.
+     *
      * @return The updated user from Everfi or null if an error occurred.
      * @throws IOException
      */

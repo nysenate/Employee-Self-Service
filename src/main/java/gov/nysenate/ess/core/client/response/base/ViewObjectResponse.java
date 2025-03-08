@@ -12,12 +12,12 @@ import java.io.IOException;
 
 @XmlRootElement
 @JsonSerialize(using = ViewObjectResponse.ViewObjectResponseJsonSerializer.class)
-public final class ViewObjectResponse<ViewType extends ViewObject> extends BaseResponse
-{
+public final class ViewObjectResponse<ViewType extends ViewObject> extends BaseResponse {
     @XmlElement public ViewType result;
     private String resultFieldName;
 
-    public ViewObjectResponse() {}
+    public ViewObjectResponse() {
+    }
 
     public ViewObjectResponse(ViewType result) {
         this(result, "result", "");
@@ -37,8 +37,7 @@ public final class ViewObjectResponse<ViewType extends ViewObject> extends BaseR
         this.message = message;
     }
 
-    public static class ViewObjectResponseJsonSerializer extends JsonSerializer<ViewObjectResponse<?>>
-    {
+    public static class ViewObjectResponseJsonSerializer extends JsonSerializer<ViewObjectResponse<?>> {
         @Override
         public void serialize(ViewObjectResponse vor, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
             jsonGenerator.writeStartObject();

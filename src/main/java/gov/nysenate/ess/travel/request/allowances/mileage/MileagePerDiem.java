@@ -10,13 +10,13 @@ import java.time.LocalDate;
 
 public class MileagePerDiem {
     private int id;
-    private TravelAddress from;
-    private TravelAddress to;
-    private ModeOfTransportation modeOfTransportation;
-    private double miles;
-    private PerDiem mileagePerDiem;
-    private boolean isOutbound;
-    private boolean isReimbursementRequested;
+    private final TravelAddress from;
+    private final TravelAddress to;
+    private final ModeOfTransportation modeOfTransportation;
+    private final double miles;
+    private final PerDiem mileagePerDiem;
+    private final boolean isOutbound;
+    private final boolean isReimbursementRequested;
 
     public MileagePerDiem(int id, TravelAddress from, TravelAddress to, ModeOfTransportation modeOfTransportation,
                           double miles, PerDiem mileagePerDiem, boolean isOutbound, boolean isReimbursementRequested) {
@@ -41,6 +41,7 @@ public class MileagePerDiem {
 
     /**
      * The standard mileage reimbursement value for this per diem.
+     *
      * @return
      */
     protected Dollars perDiemValue() {
@@ -77,6 +78,10 @@ public class MileagePerDiem {
         return id;
     }
 
+    protected void setId(int id) {
+        this.id = id;
+    }
+
     public TravelAddress getFrom() {
         return from;
     }
@@ -87,9 +92,5 @@ public class MileagePerDiem {
 
     protected ModeOfTransportation getModeOfTransportation() {
         return modeOfTransportation;
-    }
-
-    protected void setId(int id) {
-        this.id = id;
     }
 }

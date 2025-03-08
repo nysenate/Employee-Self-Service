@@ -1,8 +1,7 @@
 package gov.nysenate.ess.core.client.view.base;
 
-public class ModelView<T> implements ViewObject
-{
-    private T item;
+public class ModelView<T> implements ViewObject {
+    private final T item;
 
     public ModelView(T item) {
         this.item = item;

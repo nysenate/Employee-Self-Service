@@ -39,16 +39,16 @@ public class EssDepartmentalWhitelistService implements DepartmentalWhitelistSer
     public void init() {
         String whiteListCsv = Optional.ofNullable(whitelistProp).orElse("");
         this.whitelist = Arrays.stream(
-                StringUtils.split(whiteListCsv, ","))
-                        .map(this::formatRCHString)
-                        .collect(Collectors.collectingAndThen(
-                                Collectors.toSet(),
-                                ImmutableSet::copyOf
-                        ));
+                        StringUtils.split(whiteListCsv, ","))
+                .map(this::formatRCHString)
+                .collect(Collectors.collectingAndThen(
+                        Collectors.toSet(),
+                        ImmutableSet::copyOf
+                ));
         if (restrictionEnabled) {
             logger.info("   ***   DEPARTMENTAL RESTRICTIONS ARE IN EFFECT   ***");
             logger.info("Employees in the following departments may log in and are included in all ESS services:");
-            whitelist.forEach(deptName ->  logger.info("\t{}", deptName));
+            whitelist.forEach(deptName -> logger.info("\t{}", deptName));
         }
     }
 

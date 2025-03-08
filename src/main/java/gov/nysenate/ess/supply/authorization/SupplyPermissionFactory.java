@@ -43,19 +43,16 @@ public class SupplyPermissionFactory implements PermissionFactory {
             } else {
                 permissions.add(RequisitionPermission.forDestination(employee.getWorkLocation().getLocId().toString(), RequestMethod.GET));
             }
-        }
-        else if (role.equals(EssRole.SUPPLY_EMPLOYEE)) {
+        } else if (role.equals(EssRole.SUPPLY_EMPLOYEE)) {
             permissions.add(SupplyPermission.SUPPLY_UI_NAV_MANAGE.getPermission());
             permissions.add(SupplyPermission.SUPPLY_UI_MANAGE.getPermission());
             permissions.add(SUPPLY_EMPLOYEE.getPermission());
             permissions.add(SupplyPermission.SUPPLY_STAFF_VIEW.getPermission());
             permissions.add(RequisitionPermission.forAll(RequestMethod.GET));
             permissions.add(RequisitionPermission.forAll(RequestMethod.POST));
-        }
-        else if (role.equals(EssRole.SUPPLY_MANAGER)) {
+        } else if (role.equals(EssRole.SUPPLY_MANAGER)) {
             permissions.add(SupplyPermission.SUPPLY_REQUISITION_APPROVE.getPermission());
-        }
-        else if (role.equals(EssRole.SUPPLY_REPORTER)) {
+        } else if (role.equals(EssRole.SUPPLY_REPORTER)) {
             permissions.add(RequisitionPermission.forAll(RequestMethod.GET));
             permissions.add(SupplyPermission.SUPPLY_STAFF_VIEW.getPermission());
             permissions.add(SupplyPermission.SUPPLY_UI_NAV_MANAGE.getPermission());

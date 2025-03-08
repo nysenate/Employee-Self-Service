@@ -11,12 +11,12 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Component("restApiFilter")
-public class RestApiFilter implements Filter
-{
+public class RestApiFilter implements Filter {
     private static final Logger logger = LoggerFactory.getLogger(RestApiFilter.class);
 
     @Override
-    public void init(FilterConfig filterConfig) {}
+    public void init(FilterConfig filterConfig) {
+    }
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
@@ -28,7 +28,8 @@ public class RestApiFilter implements Filter
     }
 
     @Override
-    public void destroy() {}
+    public void destroy() {
+    }
 
     /**
      * REST API responses should disable browser caching (mostly affects IE) since the data is subject to

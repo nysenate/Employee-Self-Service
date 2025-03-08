@@ -7,7 +7,7 @@ import java.util.Set;
 
 /**
  * Represents a query to search for employees.
- *
+ * <p>
  * Currently only contains parameters useful for PEC training search.
  * TODO: Add more parameters as needed.
  */
@@ -23,9 +23,17 @@ public class EmployeeSearchBuilder {
 
     /* --- Builder Style Setters --- */
 
+    public String getName() {
+        return name;
+    }
+
     public EmployeeSearchBuilder setName(String name) {
         this.name = name;
         return this;
+    }
+
+    public Boolean getActive() {
+        return active;
     }
 
     public EmployeeSearchBuilder setActive(Boolean active) {
@@ -33,9 +41,19 @@ public class EmployeeSearchBuilder {
         return this;
     }
 
+    public Boolean getIsSenator() {
+        return isSenator;
+    }
+
     public EmployeeSearchBuilder setIsSenator(Boolean isSenator) {
         this.isSenator = isSenator;
         return this;
+    }
+
+    /* --- Getters --- */
+
+    public Set<String> getRespCtrHeadCodes() {
+        return respCtrHeadCodes;
     }
 
     public EmployeeSearchBuilder setRespCtrHeadCodes(Collection<String> respCtrHeadCodes) {
@@ -43,39 +61,21 @@ public class EmployeeSearchBuilder {
         return this;
     }
 
+    public LocalDate getContinuousServiceFrom() {
+        return continuousServiceFrom;
+    }
+
     public EmployeeSearchBuilder setContinuousServiceFrom(LocalDate continuousServiceFrom) {
         this.continuousServiceFrom = continuousServiceFrom;
         return this;
     }
 
+    public LocalDate getContinuousServiceTo() {
+        return continuousServiceTo;
+    }
+
     public EmployeeSearchBuilder setContinuousServiceTo(LocalDate continuousServiceTo) {
         this.continuousServiceTo = continuousServiceTo;
         return this;
-    }
-
-    /* --- Getters --- */
-
-    public String getName() {
-        return name;
-    }
-
-    public Boolean getActive() {
-        return active;
-    }
-
-    public Boolean getIsSenator() {
-        return isSenator;
-    }
-
-    public Set<String> getRespCtrHeadCodes() {
-        return respCtrHeadCodes;
-    }
-
-    public LocalDate getContinuousServiceFrom() {
-        return continuousServiceFrom;
-    }
-
-    public LocalDate getContinuousServiceTo() {
-        return continuousServiceTo;
     }
 }

@@ -1,6 +1,12 @@
 package gov.nysenate.ess.time.controller.api;
 
 import com.google.common.collect.Range;
+import gov.nysenate.ess.core.client.response.base.BaseResponse;
+import gov.nysenate.ess.core.client.response.base.ListViewResponse;
+import gov.nysenate.ess.core.client.response.base.SimpleResponse;
+import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
+import gov.nysenate.ess.core.client.response.error.ErrorCode;
+import gov.nysenate.ess.core.client.response.error.ErrorResponse;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.personnel.Employee;
@@ -13,12 +19,6 @@ import gov.nysenate.ess.time.model.personnel.SupervisorChain;
 import gov.nysenate.ess.time.model.personnel.SupervisorMissingEmpsEx;
 import gov.nysenate.ess.time.model.personnel.SupervisorOverride;
 import gov.nysenate.ess.time.service.personnel.SupervisorInfoService;
-import gov.nysenate.ess.core.client.response.base.BaseResponse;
-import gov.nysenate.ess.core.client.response.base.ListViewResponse;
-import gov.nysenate.ess.core.client.response.base.SimpleResponse;
-import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
-import gov.nysenate.ess.core.client.response.error.ErrorCode;
-import gov.nysenate.ess.core.client.response.error.ErrorResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,14 +32,11 @@ import java.util.stream.Collectors;
 
 import static gov.nysenate.ess.time.model.auth.TimePermissionObject.*;
 import static java.util.stream.Collectors.toList;
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.HEAD;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
+import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 @RestController
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/supervisor")
-public class SupervisorRestApiCtrl extends BaseRestApiCtrl
-{
+public class SupervisorRestApiCtrl extends BaseRestApiCtrl {
     private static final Logger logger = LoggerFactory.getLogger(SupervisorRestApiCtrl.class);
 
     @Autowired private EmployeeInfoService empInfoService;
@@ -82,7 +79,7 @@ public class SupervisorRestApiCtrl extends BaseRestApiCtrl
                 .map(empInfoService::getEmployee)
                 .collect(Collectors.toMap(Employee::getEmployeeId, Function.identity()));
         return new ViewObjectResponse<>(
-            new SupervisorChainView(supervisorChain, empMap)
+                new SupervisorChainView(supervisorChain, empMap)
         );
     }
 

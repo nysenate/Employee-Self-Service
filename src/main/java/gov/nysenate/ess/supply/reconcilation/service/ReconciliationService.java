@@ -26,10 +26,10 @@ public class ReconciliationService {
 
     private static final LocationId SUPPLY_LOCATION_ID = new LocationId("LC100S", 'P');
 
-    private Reconciler reconciler;
-    private OracleInventoryDao oracleInventoryDao;
-    private RequisitionService requisitionService;
-    private HashSet<String> itemIgnoreList;
+    private final Reconciler reconciler;
+    private final OracleInventoryDao oracleInventoryDao;
+    private final RequisitionService requisitionService;
+    private final HashSet<String> itemIgnoreList;
 
     @Autowired
     public ReconciliationService(Reconciler reconciler,
@@ -71,11 +71,11 @@ public class ReconciliationService {
 
     /**
      * Verifies all items needed to reconcile the outstanding requisitions are included in the Inventory.
-     *
+     * <p>
      * An item needs to be reconciled if it requires synchronization.
      *
      * @param inventory User entered inventory.
-     * @param reqs Requisitions needing to be reconciled.
+     * @param reqs      Requisitions needing to be reconciled.
      * @return
      */
     private boolean isFullInventory(Inventory inventory, List<Requisition> reqs) {
@@ -86,8 +86,9 @@ public class ReconciliationService {
     /**
      * Given all requisitions which require reconciliation this returns
      * a Set of all items which need to be reconciled.
-     *
+     * <p>
      * Items that do not require synchronization do not need to be reconciled.
+     *
      * @param reqs
      * @return
      */

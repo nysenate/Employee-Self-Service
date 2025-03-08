@@ -15,15 +15,19 @@ public class PrimarySupEmpGroup {
     /** The employee id of the supervisor this group is associated with. */
     protected int supervisorId;
 
-    /** Employees were under this supervisor on/after this date.
-     * Used to restrict scope of emp group.*/
+    /**
+     * Employees were under this supervisor on/after this date.
+     * Used to restrict scope of emp group.
+     */
     protected LocalDate startDate = DateUtils.LONG_AGO;
 
     /** Employees were under this supervisor before this date. */
     protected LocalDate endDate = DateUtils.THE_FUTURE;
 
-    /** Primary employees that directly assigned to this supervisor.
-     *  Mapping of empId -> EmployeeSupInfo */
+    /**
+     * Primary employees that directly assigned to this supervisor.
+     * Mapping of empId -> EmployeeSupInfo
+     */
     protected Multimap<Integer, EmployeeSupInfo> primaryEmployees = HashMultimap.create();
 
     /** --- Constructors --- */
@@ -61,6 +65,7 @@ public class PrimarySupEmpGroup {
     /**
      * Change the active dates of this emp group, filtering out any {@link SupervisorEmpGroup}s
      * that do are not intersecting with the new new date range
+     *
      * @param dateRange Range<LocalDate>
      */
     public void setActiveDates(Range<LocalDate> dateRange) {
@@ -95,7 +100,8 @@ public class PrimarySupEmpGroup {
 
     /**
      * Determines if an EmployeeSupInfo is contained within the given date range.
-     * @param supInfo EmployeeSupInfo
+     *
+     * @param supInfo   EmployeeSupInfo
      * @param dateRange Range<LocalDate>
      * @return boolean
      */
@@ -112,6 +118,7 @@ public class PrimarySupEmpGroup {
 
     /**
      * Restrict and filter the given {@link EmployeeSupInfo}s by the given date range
+     *
      * @param empSupInfos {@link Collection<EmployeeSupInfo>}
      * @return {@link List<EmployeeSupInfo>}
      */
@@ -129,12 +136,12 @@ public class PrimarySupEmpGroup {
         return ImmutableMultimap.copyOf(primaryEmployees);
     }
 
-    public ImmutableSet<EmployeeSupInfo> getPrimaryEmpSupInfos() {
-        return ImmutableSet.copyOf(primaryEmployees.values());
-    }
-
     public void setPrimaryEmployees(Multimap<Integer, EmployeeSupInfo> primaryEmployees) {
         this.primaryEmployees = HashMultimap.create(primaryEmployees);
+    }
+
+    public ImmutableSet<EmployeeSupInfo> getPrimaryEmpSupInfos() {
+        return ImmutableSet.copyOf(primaryEmployees.values());
     }
 
     public Range<LocalDate> getActiveDateRange() {

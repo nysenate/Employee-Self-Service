@@ -8,9 +8,9 @@ import java.util.Set;
 public class Department {
 
     // The head of the Department.
-    private Employee head;
+    private final Employee head;
     // All employees in the department besides the department head.
-    private Set<Employee> subordinates;
+    private final Set<Employee> subordinates;
 
     public Department(Employee head, Set<Employee> subordinates) {
         this.head = head;

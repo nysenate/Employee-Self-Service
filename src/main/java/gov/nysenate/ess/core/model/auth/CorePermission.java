@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 /**
  * Extension of {@link WildcardPermission} that constructs permissions in a standardized format
  * The format for employee data permissions are as follows:
- *      core:employee-{employee id}:{affected object}:{restful action}
+ * core:employee-{employee id}:{affected object}:{restful action}
  */
 public class CorePermission extends WildcardPermission {
 
@@ -15,6 +15,7 @@ public class CorePermission extends WildcardPermission {
 
     /**
      * Grants all permissions relating to the given employee
+     *
      * @param empId int employee id
      */
     public CorePermission(int empId) {
@@ -23,7 +24,8 @@ public class CorePermission extends WildcardPermission {
 
     /**
      * Grants permissions to perform an action on a specific object belonging to the given employee
-     * @param empId int - employee id
+     *
+     * @param empId  int - employee id
      * @param object CorePermissionObject - object
      * @param action RequestMethod - action
      */

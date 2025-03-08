@@ -4,9 +4,9 @@ import gov.nysenate.ess.core.dao.base.BaseHandler;
 import gov.nysenate.ess.core.dao.base.BasicSqlQuery;
 import gov.nysenate.ess.core.dao.base.DbVendor;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
+import gov.nysenate.ess.travel.request.address.SqlTravelAddressDao;
 import gov.nysenate.ess.travel.request.address.TravelAddress;
 import gov.nysenate.ess.travel.request.address.TravelAddressRowMapper;
-import gov.nysenate.ess.travel.request.address.SqlTravelAddressDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -21,7 +21,7 @@ import java.util.Collection;
 @Repository
 public class SqlDestinationDao extends SqlBaseDao implements DestinationDao {
 
-    private SqlTravelAddressDao travelAddressDao;
+    private final SqlTravelAddressDao travelAddressDao;
 
     @Autowired
     public SqlDestinationDao(SqlTravelAddressDao travelAddressDao) {
@@ -99,7 +99,7 @@ public class SqlDestinationDao extends SqlBaseDao implements DestinationDao {
         private LocalDate arrivalDate;
         private LocalDate departureDate;
         private TravelAddress address;
-        private TravelAddressRowMapper addressRowMapper;
+        private final TravelAddressRowMapper addressRowMapper;
 
         DestinationHandler(TravelAddressRowMapper addressRowMapper) {
             this.addressRowMapper = addressRowMapper;

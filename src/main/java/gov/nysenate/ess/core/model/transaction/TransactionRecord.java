@@ -11,16 +11,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * A TransactionRecord represents a single unit of change that was made to an
  * employee's personnel or payroll data and is identified by a TransactionCode.
  * A map of the values affected in the database are stored in this record.
  */
-public class TransactionRecord extends TransactionInfo implements Comparable<TransactionRecord>
-{
+public class TransactionRecord extends TransactionInfo implements Comparable<TransactionRecord> {
     private static final Logger logger = LoggerFactory.getLogger(TransactionRecord.class);
 
     private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -39,7 +36,8 @@ public class TransactionRecord extends TransactionInfo implements Comparable<Tra
 
     /** --- Constructors --- */
 
-    public TransactionRecord() {}
+    public TransactionRecord() {
+    }
 
     public TransactionRecord(TransactionInfo info) {
         super(info);
@@ -53,9 +51,10 @@ public class TransactionRecord extends TransactionInfo implements Comparable<Tra
 
     /**
      * Delegate to retrieve the value associated with the given column name.
+     *
      * @param colName String
      * @return String if value exists, null if it doesn't or is set as null,
-     *         or throws IllegalStateException if the value map was not initialized.
+     * or throws IllegalStateException if the value map was not initialized.
      */
     public String getValue(String colName) {
         if (valueMap != null) {
@@ -66,6 +65,7 @@ public class TransactionRecord extends TransactionInfo implements Comparable<Tra
 
     /**
      * Checks if the map has a non null value for the given column name.
+     *
      * @param colName String
      * @return boolean
      */
@@ -78,6 +78,7 @@ public class TransactionRecord extends TransactionInfo implements Comparable<Tra
 
     /**
      * Returns the value of the given column name, parsed into a LocalDate
+     *
      * @param colName String
      * @return LocalDate
      * @throws java.time.format.DateTimeParseException if the column value cannot be parsed into a date
@@ -89,7 +90,8 @@ public class TransactionRecord extends TransactionInfo implements Comparable<Tra
 
     /**
      * Returns the value of the given column name, parsed into a big decimal
-     * @param colName String
+     *
+     * @param colName    String
      * @param returnZero boolean - if this is true, 0 will be returned when the column value is null, otherwise null
      * @return BigDecimal
      * @throws NumberFormatException if the value of the column cannot be parsed into a BigDecimal
@@ -101,6 +103,7 @@ public class TransactionRecord extends TransactionInfo implements Comparable<Tra
         }
         return new BigDecimal(numString);
     }
+
     public BigDecimal getBigDecimalValue(String colName) {
         return getBigDecimalValue(colName, true);
     }
@@ -114,6 +117,7 @@ public class TransactionRecord extends TransactionInfo implements Comparable<Tra
 
     /**
      * Get a map of column names -> values for the given column names
+     *
      * @param colNames Collection<String>
      * @return Map<String, String>
      */

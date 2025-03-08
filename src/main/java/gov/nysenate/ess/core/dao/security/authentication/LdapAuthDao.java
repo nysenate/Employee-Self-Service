@@ -25,10 +25,11 @@ import static org.springframework.ldap.query.LdapQueryBuilder.query;
  * objects that represent LDAP records.
  */
 @Repository
-public class LdapAuthDao implements LdapDao
-{
-    private LdapName baseDn;
+public class LdapAuthDao implements LdapDao {
+    private static final AuthenticatedLdapEntryContextMapper<LdapName> contextMapper =
+            (ctx, ldapEntryIdentification) -> ldapEntryIdentification.getAbsoluteName();
     protected LdapTemplate ldapTemplate;
+    private final LdapName baseDn;
 
     @Autowired
     public LdapAuthDao(LdapTemplate ldapTemplate,
@@ -40,7 +41,7 @@ public class LdapAuthDao implements LdapDao
     /** {@inheritDoc} */
     @Override
     public LdapName authenticateByUid(String uid, String credentials) throws NamingException,
-                                                                         IncorrectResultSizeDataAccessException {
+            IncorrectResultSizeDataAccessException {
         return ldapTemplate.authenticate(getAuthQuery(uid), credentials, contextMapper);
     }
 
@@ -72,8 +73,7 @@ public class LdapAuthDao implements LdapDao
         if (nameList != null) {
             if (nameList.size() == 1) {
                 return nameList.get(0);
-            }
-            else if (nameList.size() > 1) {
+            } else if (nameList.size() > 1) {
                 throw new IncorrectResultSizeDataAccessException("Failed to retrieve match based on uid. Multiple results", 1);
             }
         }
@@ -82,6 +82,7 @@ public class LdapAuthDao implements LdapDao
 
     /**
      * Return an {@link LdapQuery} that will authenticate the user with the given uid
+     *
      * @param uid String - User's uid
      * @return {@link LdapQuery}
      */
@@ -94,6 +95,7 @@ public class LdapAuthDao implements LdapDao
 
     /**
      * Get the given name relative to the base dn
+     *
      * @param dn Name
      * @return LdapName
      */
@@ -103,7 +105,4 @@ public class LdapAuthDao implements LdapDao
         }
         return (LdapName) dn.getSuffix(baseDn.size());
     }
-
-    private static final AuthenticatedLdapEntryContextMapper<LdapName> contextMapper =
-            (ctx, ldapEntryIdentification) -> ldapEntryIdentification.getAbsoluteName();
 }

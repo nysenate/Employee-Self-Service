@@ -6,8 +6,8 @@ public class AttendanceRecordNotFoundEx extends RuntimeException {
 
     private static final long serialVersionUID = 3658825255348853642L;
 
-    private int empId;
-    private PayPeriod payPeriod;
+    private final int empId;
+    private final PayPeriod payPeriod;
 
     public AttendanceRecordNotFoundEx(int empId, PayPeriod payPeriod) {
         super("Could not find attendance record for emp: " + empId + " period: " + payPeriod);

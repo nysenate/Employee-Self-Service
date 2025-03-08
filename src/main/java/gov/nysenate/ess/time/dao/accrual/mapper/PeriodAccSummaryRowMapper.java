@@ -7,8 +7,7 @@ import gov.nysenate.ess.time.model.accrual.PeriodAccSummary;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class PeriodAccSummaryRowMapper extends BaseRowMapper<PeriodAccSummary>
-{
+public class PeriodAccSummaryRowMapper extends BaseRowMapper<PeriodAccSummary> {
     protected String pfx = "";
     protected PeriodAccUsageRowMapper periodAccUsageRowMapper;
     protected PayPeriodRowMapper payPeriodRowMapper;

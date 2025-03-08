@@ -11,13 +11,13 @@ import java.time.LocalDateTime;
 public class TimeRecordManagerError {
 
     /** The employee whose records were being managed when the ex. occurred */
-    private Employee employee;
+    private final Employee employee;
 
     /** The time that the exception occurred */
-    private LocalDateTime timestamp;
+    private final LocalDateTime timestamp;
 
     /** The exception */
-    private String stackTrace;
+    private final String stackTrace;
 
     public TimeRecordManagerError(Employee employee, LocalDateTime timestamp, Throwable ex) {
         this.employee = employee;

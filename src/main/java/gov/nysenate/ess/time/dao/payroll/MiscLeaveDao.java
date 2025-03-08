@@ -8,6 +8,7 @@ public interface MiscLeaveDao {
 
     /**
      * Get a list of misc leave grants that are active for the given employee
+     *
      * @param empId int - employee id
      * @return List<MiscLeaveGrant>
      */

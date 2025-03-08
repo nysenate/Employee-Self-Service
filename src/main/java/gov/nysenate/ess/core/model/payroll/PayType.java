@@ -5,8 +5,7 @@ package gov.nysenate.ess.core.model.payroll;
  * Refer to the Senate's Time and Attendance Plan for more information about
  * the details for each pay type.
  */
-public enum PayType
-{
+public enum PayType {
     RA("Regular Annual", 1820, true),
     SA("Special Annual", 0, true),
     SE("Session", 910, true),

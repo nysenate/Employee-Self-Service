@@ -9,8 +9,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class EmployeeView extends SimpleEmployeeView implements ViewObject
-{
+public class EmployeeView extends SimpleEmployeeView implements ViewObject {
     protected String title;
     protected String initial;
     protected String suffix;
@@ -18,7 +17,8 @@ public class EmployeeView extends SimpleEmployeeView implements ViewObject
     protected String homePhone;
     protected String gender;
 
-    public EmployeeView() {}
+    public EmployeeView() {
+    }
 
     public EmployeeView(Employee employee) {
         super(employee);

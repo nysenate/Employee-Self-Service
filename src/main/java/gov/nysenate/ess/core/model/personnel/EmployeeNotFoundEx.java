@@ -1,7 +1,6 @@
 package gov.nysenate.ess.core.model.personnel;
 
-public class EmployeeNotFoundEx extends EmployeeException
-{
+public class EmployeeNotFoundEx extends EmployeeException {
     private static final long serialVersionUID = -2457054505468931008L;
 
     int empId;

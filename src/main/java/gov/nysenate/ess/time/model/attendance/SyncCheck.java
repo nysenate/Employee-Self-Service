@@ -7,8 +7,7 @@ import java.sql.Timestamp;
 /**
  * Created by riken on 4/8/14.
  */
-public class SyncCheck
-{
+public class SyncCheck {
     protected BigInteger checkId;
     protected String dataType;
     protected BigDecimal dataId;

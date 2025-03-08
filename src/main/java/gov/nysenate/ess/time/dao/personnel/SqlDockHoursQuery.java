@@ -3,11 +3,10 @@ package gov.nysenate.ess.time.dao.personnel;
 import gov.nysenate.ess.core.dao.base.BasicSqlQuery;
 import gov.nysenate.ess.core.dao.base.DbVendor;
 
-public enum SqlDockHoursQuery implements BasicSqlQuery
-{
+public enum SqlDockHoursQuery implements BasicSqlQuery {
     /**
-     * @author  Brian Heitner
-     *
+     * @author Brian Heitner
+     * <p>
      * This query returns a listing of all Docked Hours for an employee given a specified date range.
      */
 

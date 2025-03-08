@@ -7,7 +7,7 @@ public class TimeRecordNotFoundException extends RuntimeException implements Ser
 
     private static final long serialVersionUID = -6647639428891147275L;
 
-    private BigInteger timeRecordId;
+    private final BigInteger timeRecordId;
 
     public TimeRecordNotFoundException(BigInteger timeRecordId) {
         super("No time record could be retrieved with a time record id of " + timeRecordId);

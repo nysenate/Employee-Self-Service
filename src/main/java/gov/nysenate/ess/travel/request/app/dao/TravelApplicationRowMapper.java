@@ -17,7 +17,7 @@ public class TravelApplicationRowMapper extends BaseRowMapper<TravelAppRepositor
         view.travelerDeptHeadEmpId = rs.getInt("traveler_dept_head_emp_id");
         view.createdByEmpId = rs.getInt("submitted_by_id");
         view.status = new TravelApplicationStatus(rs.getString("status"), rs.getString("status_note"));
-        view.pot =  new PurposeOfTravel(
+        view.pot = new PurposeOfTravel(
                 EventType.valueOf(rs.getString("event_type")),
                 rs.getString("event_name"),
                 rs.getString("additional_purpose"));

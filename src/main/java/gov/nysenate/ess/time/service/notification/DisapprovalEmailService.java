@@ -9,6 +9,7 @@ public interface DisapprovalEmailService {
 
     /**
      * Send an email to the employee of the given record notifying them of its rejection
+     *
      * @param rejectedRecord {@link TimeRecord} - rejected time record
      * @param rejectorId
      */

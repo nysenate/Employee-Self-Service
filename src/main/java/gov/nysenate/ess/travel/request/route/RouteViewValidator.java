@@ -14,7 +14,7 @@ public class RouteViewValidator {
 
     /**
      * Validates a new application route's travel dates.
-     *
+     * <p>
      * Dates must be valid and in chronological order.
      *
      * @throws InvalidTravelDatesException if there are any issues with the dates.

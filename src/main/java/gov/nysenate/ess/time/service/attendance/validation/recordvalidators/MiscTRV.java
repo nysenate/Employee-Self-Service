@@ -36,7 +36,7 @@ public class MiscTRV implements TimeRecordValidator {
     /**
      * Check misc leave / type entries for time record
      *
-     * @param record TimeRecord - A posted time record in the process of validation
+     * @param record        TimeRecord - A posted time record in the process of validation
      * @param previousState TimeRecord - The most recently saved version of the posted time record
      * @throws TimeRecordErrorException if the record contains any errors relating to misc hours
      */
@@ -51,7 +51,7 @@ public class MiscTRV implements TimeRecordValidator {
      * @param entry {@link TimeEntry}
      * @throws TimeRecordErrorException if misc type doesn't accompany misc hours and vice versa
      */
-    private void checkMisc(TimeEntry entry)  throws TimeRecordErrorException {
+    private void checkMisc(TimeEntry entry) throws TimeRecordErrorException {
 
         //MISC 1
         // True if misc hours are not null and greater than 0

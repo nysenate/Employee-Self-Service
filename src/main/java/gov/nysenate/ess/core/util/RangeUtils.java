@@ -10,15 +10,15 @@ import java.util.stream.Collectors;
 import static gov.nysenate.ess.core.util.DateUtils.getLocalDateDiscreteDomain;
 import static java.util.Map.Entry;
 
-public class RangeUtils
-{
+public class RangeUtils {
     /**
      * Creates a range map out of a map with comparable keys
      * This essentially transforms each key into a range of [current key, next highest key)
      * The value with the highest key will be assigned a range of [highest key, end key] with end key being provided as an arg
-     * @param map SortedMap<K, V>
-     * @param endKey K - Set as the closed right bound for the range of the highest key
-     * @param <Key> K
+     *
+     * @param map     SortedMap<K, V>
+     * @param endKey  K - Set as the closed right bound for the range of the highest key
+     * @param <Key>   K
      * @param <Value> V
      * @return RangeMap<K, V>
      */
@@ -35,8 +35,7 @@ public class RangeUtils
         if (lastEntry != null) {
             if (endKey == null) {
                 rangeMap.put(Range.atLeast(lastEntry.getKey()), lastEntry.getValue());
-            }
-            else {
+            } else {
                 rangeMap.put(Range.closed(lastEntry.getKey(), endKey), lastEntry.getValue());
             }
         }
@@ -45,6 +44,7 @@ public class RangeUtils
 
     /**
      * Overload with no end date (infinity).
+     *
      * @see #toRangeMap(SortedMap, Comparable)
      */
     public static <K extends Comparable<? super K>, V> RangeMap<K, V> toRangeMap(SortedMap<K, V> map) {
@@ -54,10 +54,11 @@ public class RangeUtils
     /**
      * Splits a range into several smaller ranges on each value of splitValues
      * e.g. [1, 5) would be split into [1,2), [2,4), and [4,5) for split values 2, 4
-     * @param range Range<K>
+     *
+     * @param range       Range<K>
      * @param splitValues Collection<K>
      * @param <K>
-     * @return TreeSet<Range<K>>
+     * @return TreeSet<Range < K>>
      */
     public static <K extends Comparable<? super K>> List<Range<K>> splitRange(Range<K> range, Collection<K> splitValues) {
         TreeSet<K> validSplitValues = splitValues.stream()
@@ -101,9 +102,10 @@ public class RangeUtils
      * This essentially transforms each element into a range of [current ele, next highest ele)
      * The value with the highest element will be assigned a range of [highest ele, end ele) or [highest ele, end ele]
      * with end key and bound type provided as an argument
-     * @param set SortedSet<E>
+     *
+     * @param set        SortedSet<E>
      * @param endElement E
-     * @param <E> E
+     * @param <E>        E
      * @return TreeSet<E>
      */
     public static <E extends Comparable<? super E>> List<Range<E>> toRanges(SortedSet<E> set, E endElement, BoundType upperBoundType) {
@@ -126,8 +128,9 @@ public class RangeUtils
 
     /**
      * Generates a range set from the keys of the given range map
+     *
      * @param rangeMap RangeMap
-     * @param <K> Class
+     * @param <K>      Class
      * @return RangeSet<K>
      */
     public static <K extends Comparable<? super K>> RangeSet<K> getRangeSet(RangeMap<K, ?> rangeMap) {
@@ -140,10 +143,10 @@ public class RangeUtils
      * Given a tree map that maps effective values to keys and a predicate for the value type,
      * return a range set containing all keys with effective values that satisfy the given predicate
      *
-     * @param valMap TreeMap<K, V>
+     * @param valMap    TreeMap<K, V>
      * @param valTester Predicate<V>
-     * @param <K> Key - must be Comparable
-     * @param <V> Value
+     * @param <K>       Key - must be Comparable
+     * @param <V>       Value
      * @return RangeSet<K>
      */
     public static <K extends Comparable<? super K>, V> RangeSet<K> getEffectiveRanges(
@@ -160,6 +163,7 @@ public class RangeUtils
 
     /**
      * Get a range set that contains the intersection of the two given range sets
+     *
      * @param lhs RangeSet<T>
      * @param rhs RangeSet<T>
      * @param <T> Class<T>
@@ -175,6 +179,7 @@ public class RangeUtils
 
     /**
      * Get a range set that contains the intersection of all of the given range sets
+     *
      * @param rangeSets Collection<RangeSet<T>>
      * @param <T>
      * @return RangeSet<T>
@@ -189,6 +194,7 @@ public class RangeUtils
 
     /**
      * Returns true iff the two given ranges intersect
+     *
      * @param lhs Range<T>
      * @param rhs Range<T>
      * @param <T> Class<T>
@@ -200,9 +206,10 @@ public class RangeUtils
 
     /**
      * Returns an iterator that produces values of the specified discrete class that are in the given range, in default order
-     * @param range Range<T>
+     *
+     * @param range  Range<T>
      * @param domain DiscreteDomain<T> - a discrete domain implementation that supports the class of the range
-     * @param <T> Class<T>
+     * @param <T>    Class<T>
      * @return Iterator<T>
      */
     public static <T extends Comparable<? super T>> Iterator<T> getRangeIterator(Range<T> range, DiscreteDomain<T> domain) {
@@ -211,10 +218,11 @@ public class RangeUtils
 
     /**
      * An implementation of
-     * @see #getRangeIterator(Range, DiscreteDomain)
-     * that uses the LocalDate discrete domain
+     *
      * @param dateRange Range<LocalDate>
      * @return Iterator<LocalDate>
+     * @see #getRangeIterator(Range, DiscreteDomain)
+     * that uses the LocalDate discrete domain
      */
     public static Iterator<LocalDate> getDateRangeIterator(Range<LocalDate> dateRange) {
         return getRangeIterator(dateRange, getLocalDateDiscreteDomain());
@@ -222,10 +230,11 @@ public class RangeUtils
 
     /**
      * An implementation of
-     * @see #getRangeIterator(Range, DiscreteDomain)
-     * that uses the Integer discrete domain
+     *
      * @param intRange Range<Integer>
      * @return Iterator<Integer>
+     * @see #getRangeIterator(Range, DiscreteDomain)
+     * that uses the Integer discrete domain
      */
     public static Iterator<Integer> getCounter(Range<Integer> intRange) {
         return getRangeIterator(intRange, DiscreteDomain.integers());
@@ -233,9 +242,10 @@ public class RangeUtils
 
     /**
      * A default implementation of
+     *
+     * @return Iterator<Integer>
      * @see #getCounter(Range)
      * that iterates over all integers greater than 0
-     * @return Iterator<Integer>
      */
     public static Iterator<Integer> getCounter() {
         return getCounter(Range.greaterThan(0));

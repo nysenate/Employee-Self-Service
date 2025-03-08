@@ -7,9 +7,9 @@ import gov.nysenate.ess.core.model.personnel.Employee;
 
 public class InvalidAlertInfoView implements ViewObject {
 
-    private AlertInfoErrorCode alertErrorCode;
-    private String alertErrorData;
-    private AlertInfoView alertInfo;
+    private final AlertInfoErrorCode alertErrorCode;
+    private final String alertErrorData;
+    private final AlertInfoView alertInfo;
 
     public InvalidAlertInfoView(InvalidAlertInfoEx ex, Employee emp) {
         this.alertErrorCode = ex.getErrorCode();
