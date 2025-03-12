@@ -12,8 +12,6 @@ import ItemHistoryIndex from "app/views/supply/itemhistory/ItemHistoryIndex";
 import AppLayout from "app/components/AppLayout";
 import Navigation from "app/components/Navigation";
 import Card from "app/components/Card";
-import CategoryCard from "./requisition/CategoryCard";
-import styles from "./universalStyles.module.css";
 import { SupplyContextProvider } from "app/views/supply/requisition/useSupplyContext";
 
 export default function SupplyRouter() {
@@ -85,21 +83,6 @@ function SupplyLayout({ categories }) {
             </Navigation.Link>
           </Navigation.Section>
         </Card>
-        {location.pathname === "/supply/requisition-form" &&
-          categories.length !== 0 && (
-            // Big boy
-            <div
-              className={`${styles.marginTop20}`}
-              style={{
-                marginBottom: "100px",
-                minHeight: "0px",
-                minWidth: "0px",
-              }}
-            >
-              <Navigation.Title>Categories</Navigation.Title>
-              <CategoryCard categories={categories} />
-            </div>
-          )}
       </Navigation>
     </AppLayout>
   );

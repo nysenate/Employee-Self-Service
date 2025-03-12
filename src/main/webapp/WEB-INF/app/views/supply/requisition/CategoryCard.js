@@ -1,47 +1,27 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import styles from "../universalStyles.module.css";
+import { useCategories } from "app/views/supply/requisition/useCategories";
+import { useSupplyContext } from "app/views/supply/requisition/useSupplyContext";
+import {
+  clearCategories,
+  toggleCategory,
+} from "app/views/supply/requisition/itemFilterActions";
 
-const CategoryCard = ({ categories }) => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [selectedCategories, setSelectedCategories] = useState(() =>
-    searchParams.getAll("category"),
-  );
+export default function CategoryCard({ filterState, dispatch }) {
+  const { destination } = useSupplyContext();
+  const categoriesQuery = useCategories(destination.locId, filterState.term);
 
-  useEffect(() => {
-    setSelectedCategories(searchParams.getAll("category"));
-  }, [searchParams]);
-
-  const handleCategoryClick = (category) => {
-    const newSelectedCategories = selectedCategories.includes(category)
-      ? selectedCategories.filter((cat) => cat !== category)
-      : [...selectedCategories, category];
-
-    setSelectedCategories(newSelectedCategories);
-    const newParams = new URLSearchParams();
-    newSelectedCategories.forEach((cat) => newParams.append("category", cat));
-    setSearchParams(newParams);
-  };
-
-  const clearSections = () => {
-    const newParams = new URLSearchParams();
-    setSearchParams(newParams);
-  };
+  if (categoriesQuery.isPending) {
+    return <></>;
+  }
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        marginBottom: "100px",
-        height: "60vh",
-        backgroundColor: "white",
-      }}
-    >
+    <div className="flex flex-col h-[420px] bg-white">
       <div className={`${styles.flexHeader} ${styles.paddingX}`}>
         <a
           style={{ cursor: "pointer", paddingLeft: "10px" }}
-          onClick={clearSections}
+          onClick={() => dispatch(clearCategories())}
         >
           Clear All
         </a>
@@ -51,20 +31,24 @@ const CategoryCard = ({ categories }) => {
         style={{ overflowY: "auto", maxHeight: "900px" }}
       >
         <ul>
-          {categories.map((category) => (
-            <li key={category} onClick={() => handleCategoryClick(category)}>
+          {categoriesQuery.data.map((category) => (
+            <li key={category} className="flex gap-1">
               <input
+                id={category}
                 type="checkbox"
-                checked={selectedCategories.includes(category)}
-                readOnly
+                className="cursor-pointer"
+                checked={filterState.categories.includes(category)}
+                onChange={(e) =>
+                  dispatch(toggleCategory(e.target.checked, category))
+                }
               />
-              <label>{category}</label>
+              <label htmlFor={category} className="cursor-pointer">
+                {category}
+              </label>
             </li>
           ))}
         </ul>
       </div>
     </div>
   );
-};
-
-export default CategoryCard;
+}

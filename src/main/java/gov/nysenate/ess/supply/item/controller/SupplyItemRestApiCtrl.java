@@ -95,7 +95,7 @@ public class SupplyItemRestApiCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping("/categories")
     public BaseResponse getCategories(@RequestParam String locId,
-                                      @RequestParam String term) {
+                                      @RequestParam(defaultValue = "", required = false) String term) {
         LocationId locationId = LocationId.ofString(locId);
         if (locationService.getLocation(locationId) == null) {
             throw new InvalidRequestParamEx(locId, "locId", "String",
@@ -112,7 +112,7 @@ public class SupplyItemRestApiCtrl extends BaseRestApiCtrl {
         Set<String> categories = items.stream()
                 .map(i -> i.getCategory().getName())
                 .collect(Collectors.toCollection(TreeSet::new));
-        return ListViewResponse.ofStringList(categories, "category", categories.size(), LimitOffset.ALL);
+        return ListViewResponse.ofStringList(categories, "categories", categories.size(), LimitOffset.ALL);
     }
 
     /**

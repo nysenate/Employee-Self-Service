@@ -9,11 +9,15 @@ import ItemListing from "app/views/supply/requisition/ItemListing";
 import RequisitionFilters from "app/views/supply/requisition/RequisitionFilters";
 import Controls from "app/components/Controls";
 import {
+  CLEAR_CATEGORIES,
   RESET_FILTERS,
   SET_PAGE,
   SET_SORT,
   SET_TERM,
+  TOGGLE_CATEGORY,
 } from "app/views/supply/requisition/itemFilterActions";
+import CategoryCard from "app/views/supply/requisition/CategoryCard";
+import Navigation from "app/components/Navigation";
 
 const initFilterState = {
   term: "",
@@ -45,6 +49,22 @@ function itemFilterReducer(state, action) {
     case RESET_FILTERS:
       return {
         ...initFilterState,
+      };
+    case TOGGLE_CATEGORY:
+      let categories = state.categories;
+      if (action.payload.checked) {
+        categories.push(action.payload.category);
+      } else {
+        categories = categories.filter((c) => c !== action.payload.category);
+      }
+      return {
+        ...state,
+        categories: [...new Set(categories)], // Remove any duplicates.
+      };
+    case CLEAR_CATEGORIES:
+      return {
+        ...state,
+        categories: [],
       };
     default:
       return {
@@ -78,35 +98,43 @@ export default function RequisitionFormIndex({ setCategories }) {
 
   return (
     <div>
-      <div
-        className={styles.supplyOrderHero}
-        style={{ display: "inline-block", width: "100%" }}
-      >
-        <h2 className={styles.requisitionTitle}>Requisition Form</h2>
-        <a href={"/supply/cart"}>
-          <CartSummary cart={cart} />
-        </a>
+      <div>
+        <div
+          className={styles.supplyOrderHero}
+          style={{ display: "inline-block", width: "100%" }}
+        >
+          <h2 className={styles.requisitionTitle}>Requisition Form</h2>
+          <a href={"/supply/cart"}>
+            <CartSummary cart={cart} />
+          </a>
+        </div>
+        <div className="">
+          <Controls>
+            <RequisitionFilters filterState={filterState} dispatch={dispatch} />
+          </Controls>
+        </div>
+        <ItemListing
+          filterState={filterState}
+          dispatch={dispatch}
+          setCategories={setCategories}
+        />
+        {/*<OverOrderPopup*/}
+        {/*  isModalOpen={isOverOrderPopupOpen}*/}
+        {/*  closeModal={closeOverOrderPopup}*/}
+        {/*  onAction={handleOverOrderAction}*/}
+        {/*/>*/}
+        {/*<ChangeDestinationPopup*/}
+        {/*  isModalOpen={isChangeDestinationPopupOpen}*/}
+        {/*  closeModal={closeChangeDestinationPopup}*/}
+        {/*  onAction={handleChangeDestinationAction}*/}
+        {/*/>*/}
       </div>
-      <div className="">
-        <Controls>
-          <RequisitionFilters filterState={filterState} dispatch={dispatch} />
-        </Controls>
+      <div className="absolute left-0 top-[370px]">
+        <Navigation>
+          <Navigation.Title>Categories</Navigation.Title>
+          <CategoryCard filterState={filterState} dispatch={dispatch} />
+        </Navigation>
       </div>
-      <ItemListing
-        filterState={filterState}
-        dispatch={dispatch}
-        setCategories={setCategories}
-      />
-      {/*<OverOrderPopup*/}
-      {/*  isModalOpen={isOverOrderPopupOpen}*/}
-      {/*  closeModal={closeOverOrderPopup}*/}
-      {/*  onAction={handleOverOrderAction}*/}
-      {/*/>*/}
-      {/*<ChangeDestinationPopup*/}
-      {/*  isModalOpen={isChangeDestinationPopupOpen}*/}
-      {/*  closeModal={closeChangeDestinationPopup}*/}
-      {/*  onAction={handleChangeDestinationAction}*/}
-      {/*/>*/}
     </div>
   );
 }

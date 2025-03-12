@@ -32,7 +32,7 @@ export default function ItemListing({ filterState, dispatch }) {
         )}
         <div className="grid grid-cols-4">
           {itemsQuery.data.result.map((item) => (
-            <ItemCell item={item} />
+            <ItemCell item={item} key={item.id} />
           ))}
         </div>
         {itemsQuery.data.total > itemsQuery.data.result.length && (
