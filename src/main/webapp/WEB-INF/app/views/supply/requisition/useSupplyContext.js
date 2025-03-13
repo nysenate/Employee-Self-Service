@@ -14,6 +14,7 @@ const initialCartState = {
 const INCREMENT_ITEM = "INCREMENT";
 const DECREMENT_ITEM = "DECREMENT_ITEM";
 const UPDATE_QUANTITY = "UPDATE_QUANTITY";
+const CLEAR_CART = "CLEAR_CART";
 
 const cartReducer = (state, action) => {
   switch (action.type) {
@@ -59,6 +60,11 @@ const cartReducer = (state, action) => {
         ...state,
         items: newItems,
         totalItems: calculateTotalItems(newItems),
+      };
+    }
+    case CLEAR_CART: {
+      return {
+        ...initialCartState,
       };
     }
     default: {
@@ -107,6 +113,10 @@ export function SupplyContextProvider({ children }) {
     dispatch({ type: UPDATE_QUANTITY, payload: { itemId, quantity } });
   };
 
+  const clearCart = () => {
+    dispatch({ type: CLEAR_CART });
+  };
+
   const value = {
     destination,
     setDestination,
@@ -115,6 +125,7 @@ export function SupplyContextProvider({ children }) {
     incrementItem,
     decrementItem,
     updateQuantity,
+    clearCart,
   };
 
   return (

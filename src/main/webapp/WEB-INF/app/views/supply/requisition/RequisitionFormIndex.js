@@ -34,6 +34,8 @@ function itemFilterReducer(state, action) {
       return {
         ...state,
         term: action.payload.term,
+        page: 1,
+        offset: 1,
       };
     case SET_PAGE:
       return {
@@ -45,6 +47,8 @@ function itemFilterReducer(state, action) {
       return {
         ...state,
         sort: action.payload.sort,
+        page: 1,
+        offset: 1,
       };
     case RESET_FILTERS:
       return {
@@ -60,11 +64,15 @@ function itemFilterReducer(state, action) {
       return {
         ...state,
         categories: [...new Set(categories)], // Remove any duplicates.
+        page: 1,
+        offset: 1,
       };
     case CLEAR_CATEGORIES:
       return {
         ...state,
         categories: [],
+        page: 1,
+        offset: 1,
       };
     default:
       return {
@@ -75,7 +83,6 @@ function itemFilterReducer(state, action) {
 
 export default function RequisitionFormIndex({ setCategories }) {
   const { cart, destination, deleteDestination } = useSupplyContext();
-  const [items, setItems] = useState([]);
   const [filteredItems, setFilteredItems] = useState([]);
 
   const [filterState, dispatch] = useReducer(
@@ -118,16 +125,6 @@ export default function RequisitionFormIndex({ setCategories }) {
           dispatch={dispatch}
           setCategories={setCategories}
         />
-        {/*<OverOrderPopup*/}
-        {/*  isModalOpen={isOverOrderPopupOpen}*/}
-        {/*  closeModal={closeOverOrderPopup}*/}
-        {/*  onAction={handleOverOrderAction}*/}
-        {/*/>*/}
-        {/*<ChangeDestinationPopup*/}
-        {/*  isModalOpen={isChangeDestinationPopupOpen}*/}
-        {/*  closeModal={closeChangeDestinationPopup}*/}
-        {/*  onAction={handleChangeDestinationAction}*/}
-        {/*/>*/}
       </div>
       <div className="absolute left-0 top-[370px]">
         <Navigation>
