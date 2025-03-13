@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { ThemeContext, themes } from "app/contexts/ThemeContext";
 import RequisitionFormIndex from "app/views/supply/requisition/RequisitionFormIndex";
@@ -15,17 +15,12 @@ import Card from "app/components/Card";
 import { SupplyContextProvider } from "app/views/supply/requisition/useSupplyContext";
 
 export default function SupplyRouter() {
-  const [categories, setCategories] = useState([]);
-
   return (
     <ThemeContext.Provider value={themes.supply}>
       <SupplyContextProvider>
         <Routes>
-          <Route path="" element={<SupplyLayout categories={categories} />}>
-            <Route
-              path="requisition-form"
-              element={<RequisitionFormIndex setCategories={setCategories} />}
-            />
+          <Route path="" element={<SupplyLayout />}>
+            <Route path="requisition-form" element={<RequisitionFormIndex />} />
             <Route path="cart" element={<ShoppingCartIndex />} />
             <Route
               path="order-history/order/:orderId"
@@ -51,9 +46,7 @@ export default function SupplyRouter() {
   );
 }
 
-function SupplyLayout({ categories }) {
-  const location = useLocation();
-
+function SupplyLayout() {
   return (
     <AppLayout>
       <Navigation notWrapInCard={true}>

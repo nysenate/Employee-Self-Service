@@ -81,7 +81,7 @@ function itemFilterReducer(state, action) {
   }
 }
 
-export default function RequisitionFormIndex({ setCategories }) {
+export default function RequisitionFormIndex() {
   const { cart, destination, deleteDestination } = useSupplyContext();
   const [filteredItems, setFilteredItems] = useState([]);
 
@@ -120,11 +120,7 @@ export default function RequisitionFormIndex({ setCategories }) {
             <RequisitionFilters filterState={filterState} dispatch={dispatch} />
           </Controls>
         </div>
-        <ItemListing
-          filterState={filterState}
-          dispatch={dispatch}
-          setCategories={setCategories}
-        />
+        <ItemListing filterState={filterState} dispatch={dispatch} />
       </div>
       <div className="absolute left-0 top-[370px]">
         <Navigation>
