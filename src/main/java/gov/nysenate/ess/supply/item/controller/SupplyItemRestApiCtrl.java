@@ -55,8 +55,20 @@ public class SupplyItemRestApiCtrl extends BaseRestApiCtrl {
 
     /**
      * Supply Items API.
+     * Returns all supply items.
      */
-    @RequestMapping("")
+    @RequestMapping(value = "", params = "!locId")
+    public BaseResponse getAllSupplyItems() {
+        List<SupplyItem> items = supplyItemService.getAllItems();
+        var itemViews = items.stream().map(SupplyItemView::new).collect(Collectors.toList());
+        return ListViewResponse.of(itemViews);
+    }
+
+    /**
+     * Supply Item Search API.
+     * Returns supply items for the given locId which also match all provided filters.
+     */
+    @RequestMapping(value = "")
     public BaseResponse getSupplyItems(
             @RequestParam String locId,
             @RequestParam(defaultValue = "", required = false) String[] categories,

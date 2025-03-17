@@ -16,7 +16,7 @@ function getQueryKey(locId, categories, term, sort, limit, offset) {
   ];
 }
 
-export function useItems(locId, filterState) {
+export function useItemSearch(locId, filterState) {
   const params = {
     locId,
     ...filterState,

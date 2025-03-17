@@ -1,215 +1,149 @@
-import React, { useEffect, useState } from "react";
-import styles from "./ShoppingCartIndex.module.css";
-import { Button } from "../../../components/Button";
-import Hero from "../../../components/Hero";
-import {
-  CheckOutPopup,
-  EmptyCartPopup,
-  OverOrderPopup,
-  PostCheckOutPopup,
-} from "../../../components/Popups";
-import { clearCart, updateItemQuantity } from "../cartUtils";
-import { Link, useNavigate } from "react-router-dom";
-import { getItems } from "../helpers";
-import Destination from "./Destination";
-import ItemsGrid from "./ItemsGrid";
-import SpecialInstructions from "./SpecialInstructions";
-import { fetchApiJson } from "app/api/fetchJson";
+import React, { useState } from "react";
+import { useSupplyContext } from "app/views/supply/requisition/useSupplyContext";
+import EmptyCart from "app/views/supply/cart/EmptyCart";
+import Controls from "app/components/Controls";
+import Hero from "app/components/Hero";
+import Card from "app/components/Card";
+import { useItems } from "app/views/supply/useItems";
+import ItemQuantityControls from "app/views/supply/ItemQuantityControls";
+import { Button } from "app/components/Button";
+import EmptyCartConfirmation from "app/views/supply/cart/EmptyCartConfirmation";
+import { Link } from "react-router-dom";
+import DeliveryMethodModal from "app/views/supply/cart/DeliveryMethodModal";
+import { useCheckout } from "app/views/supply/cart/useCheckout";
+import useAuth from "app/contexts/Auth/useAuth";
+import LoadingIndicator from "app/components/LoadingIndicator";
+import CheckoutSummaryModal from "app/views/supply/cart/CheckoutSummaryModal";
 
-export default function ShoppingCart() {
-  const navigate = useNavigate();
-  const [cart, setCart] = useState(
-    () => JSON.parse(localStorage.getItem("cart")) || {},
-  );
-  const [items, setItems] = useState([]);
+export default function ShoppingCartIndex() {
+  const auth = useAuth();
+  const { cart, clearCart, destination } = useSupplyContext();
   const [instructions, setInstructions] = useState("");
-  useEffect(() => {
-    //Clean up pending if refresh occured before popup conclusion
-    localStorage.removeItem("pending");
-    localStorage.removeItem("pendingQuantity");
-    //Get Destination
-    let destination = JSON.parse(localStorage.getItem("destination"));
-    if (destination) {
-      const fetchItems = async () => {
-        const fetchedItems = await getItems(destination.locId);
-        setItems(fetchedItems);
-      };
-      fetchItems();
-    }
-  }, []);
-  const handleOverOrderAttempt = (itemId, newQuantity) => {
-    localStorage.setItem("pending", JSON.stringify(itemId));
-    localStorage.setItem("pendingQuantity", JSON.stringify(newQuantity));
-    setIsOverOrderPopupOpen(true);
-  };
-  const handleQuantityChange = (itemId, quantity) => {
-    updateItemQuantity(itemId, quantity);
-    setCart(JSON.parse(localStorage.getItem("cart")));
+  const itemsQuery = useItems();
+  const [isEmptyCartConfirmationOpen, setIsEmptyCartConfirmationOpen] =
+    useState(false);
+  const [isDeliveryMethodModalOpen, setIsDeliveryMethodModalOpen] =
+    useState(false);
+  const [isCheckoutSummaryOpen, setIsCheckoutSummaryOpen] = useState(false);
+  const checkoutApi = useCheckout();
+  const [checkoutRes, setCheckoutRes] = useState();
+
+  const onCheckout = (deliveryMethod) => {
+    const lineItems = Object.entries(cart.items).map(([itemId, qty]) => ({
+      item: itemsQuery.data.get(parseInt(itemId)),
+      quantity: parseInt(qty),
+    }));
+    checkoutApi
+      .mutateAsync({
+        customerId: auth.empId(),
+        deliveryMethod,
+        destinationId: destination.locId,
+        lineItems,
+        specialInstructions: instructions,
+      })
+      .then((r) => setCheckoutRes(r))
+      .then(() => clearCart())
+      .then(() => setIsCheckoutSummaryOpen(true));
   };
 
-  //POPUPS START:
-  const [isOverOrderPopupOpen, setIsOverOrderPopupOpen] = useState(false);
-  const [isCheckOutPopupOpen, setIsCheckOutPopupOpen] = useState(false);
-  const [isPostCheckOutPopupOpen, setIsPostCheckOutPopupOpen] = useState(false);
-  const [isEmptyCartPopupOpen, setEmptyCartPopupOpen] = useState(false);
+  if (cart.totalItems === 0) {
+    return (
+      <>
+        <EmptyCart />
+        <CheckoutSummaryModal
+          isOpen={isCheckoutSummaryOpen}
+          setIsOpen={setIsCheckoutSummaryOpen}
+          res={checkoutRes}
+        />
+      </>
+    );
+  }
 
-  const closeOverOrderPopup = () => {
-    setIsOverOrderPopupOpen(false);
-  };
-  const handleOverOrderAction = (decision) => {
-    if (decision) {
-      //retrieve pending:
-      let pending = JSON.parse(localStorage.getItem("pending"));
-      let pendingQuantity = JSON.parse(localStorage.getItem("pendingQuantity"));
-      handleQuantityChange(pending, pendingQuantity);
-    }
-    localStorage.removeItem("pending");
-    localStorage.removeItem("pendingQuantity");
-  };
-  const openCheckOutPopup = () => {
-    setIsCheckOutPopupOpen(true);
-  };
-  const closeCheckOutPopup = () => {
-    setIsCheckOutPopupOpen(false);
-  };
-
-  const handleCheckOutAction = (decision) => {
-    if (decision === "PICKUP" || decision === "DELIVERY") {
-      checkoutPost(decision);
-      setIsPostCheckOutPopupOpen(true);
-    } else {
-      console.error(
-        "Unexpected return: ",
-        decision,
-        ", should be either PICKUP or DELIVERY.",
-      );
-    }
-  };
-  const closePostCheckOutPopup = () => {
-    setIsPostCheckOutPopupOpen(false);
-  };
-  const handlePostCheckOutAction = (decision) => {
-    if (decision === "logout") {
-      navigate("/logout");
-    } else if (decision === "return") {
-      navigate("/supply/requisition-form");
-    } else {
-      console.error(
-        "Unexpected return: ",
-        decision,
-        ", should be either logout or return.",
-      );
-    }
-  };
-  const openEmptyCartPopup = () => {
-    setEmptyCartPopupOpen(true);
-  };
-  const closeEmptyCartPopup = () => {
-    setEmptyCartPopupOpen(false);
-  };
-  const handleEmptyCartAction = (decision) => {
-    if (decision) {
-      clearCart();
-      setCart({});
-    }
-  };
-
-  const checkoutPost = async (deliveryMeth, specialInst) => {
-    const customerId = JSON.parse(localStorage.getItem("ess.auth.empId"));
-    const deliveryMethod = deliveryMeth;
-    const destinationId = JSON.parse(localStorage.getItem("destination")).locId;
-    const lineItems = [];
-    items.forEach((item) => {
-      if (cart[item.id]) {
-        lineItems.push({
-          MAX_QTY: 9999,
-          item: item,
-          quantity: cart[item.id],
-        });
-      }
-    });
-    const specialInstructions = instructions;
-
-    const payload = {
-      customerId: customerId,
-      deliveryMethod: deliveryMethod,
-      destinationId: destinationId,
-      lineItems: lineItems,
-      specialInstructions: specialInstructions,
-    };
-    console.log(payload);
-
-    try {
-      const response = await fetchApiJson("/supply/requisitions", {
-        method: "POST",
-        payload: payload,
-      });
-      clearCart();
-      setCart({});
-      setInstructions("");
-    } catch (error) {
-      console.error("Fetch error:", error);
-    }
-  };
+  if (itemsQuery.isPending) {
+    return <LoadingIndicator />;
+  }
 
   return (
     <div>
       <Hero>Shopping Cart</Hero>
-      <div className="content-container content-controls">
-        {Object.keys(cart).length === 0 ? (
-          <div>
-            <div className={styles.emptyCartMessage}>Your cart is empty.</div>
-            <div className={styles.emptyCartContainer}>
-              <Link
-                to="/supply/shopping/order"
-                style={{ textDecoration: "none" }}
-              >
-                <Button style={{ backgroundColor: "grey" }}>
-                  Continue Browsing
-                </Button>
-              </Link>
-            </div>
+      <Controls className="p-4">
+        <span className="text-purple-700 font-semibold">Destination: </span>
+        {destination.locId} ({destination.locationDescription})
+      </Controls>
+
+      <Card className="my-5">
+        <Card.Header>
+          <span className="text-lg font-semibold">Cart Items</span>
+        </Card.Header>
+        {Object.keys(cart.items).map((itemId) => (
+          <div key={itemId}>
+            <CartItem item={itemsQuery.data.get(parseInt(itemId))} />
+            <hr />
           </div>
-        ) : (
-          <>
-            <Destination />
-            <ItemsGrid
-              items={items}
-              cart={cart}
-              handleQuantityChange={handleQuantityChange}
-              handleOverOrderAttempt={handleOverOrderAttempt}
+        ))}
+        <div className="bg-gray-50 p-3 flex items-center justify-between gap-2">
+          <div>
+            <label htmlFor="special-instructions" className="align-middle mr-2">
+              Special Instructions:
+            </label>
+            <textarea
+              id="special-instructsion"
+              className="align-middle border-1"
+              value={instructions}
+              onChange={(e) => setInstructions(e.target.value)}
+              rows="3"
+              cols="50"
             />
-            <div className={styles.cartCheckoutContainer}>
-              <SpecialInstructions
-                openEmptyCartPopup={openEmptyCartPopup}
-                openCheckOutPopup={openCheckOutPopup}
-                instructions={instructions}
-                setInstructions={setInstructions}
-              />
-            </div>
-          </>
-        )}
+          </div>
+          <Button
+            color="secondary"
+            onClick={() => setIsEmptyCartConfirmationOpen(true)}
+          >
+            Empty Cart
+          </Button>
+          <Link
+            to="/supply/requisition-form"
+            style={{ textDecoration: "none" }}
+          >
+            <Button color="secondary">Continue Browsing</Button>
+          </Link>
+          <Button onClick={() => setIsDeliveryMethodModalOpen(true)}>
+            Checkout
+          </Button>
+        </div>
+      </Card>
+      <EmptyCartConfirmation
+        isOpen={isEmptyCartConfirmationOpen}
+        setIsOpen={setIsEmptyCartConfirmationOpen}
+      />
+      <DeliveryMethodModal
+        isOpen={isDeliveryMethodModalOpen}
+        setIsOpen={setIsDeliveryMethodModalOpen}
+        onResolve={onCheckout}
+      />
+    </div>
+  );
+}
+
+function CartItem({ item }) {
+  return (
+    <div className="flex items-center px-3">
+      <div className="w-56">
+        <img
+          className="my-3 h-[120px]"
+          alt={item.description}
+          src={`/assets/supply_photos/${item.commodityCode}.jpg`}
+          onError={({ currentTarget }) => {
+            currentTarget.onerror = null; // prevents looping
+            currentTarget.src = "/assets/supply_photos/no_photo_available.png";
+          }}
+        />
       </div>
-      <OverOrderPopup
-        isModalOpen={isOverOrderPopupOpen}
-        closeModal={closeOverOrderPopup}
-        onAction={handleOverOrderAction}
-      />
-      <CheckOutPopup
-        isModalOpen={isCheckOutPopupOpen}
-        closeModal={closeCheckOutPopup}
-        onAction={handleCheckOutAction}
-      />
-      <PostCheckOutPopup
-        isModalOpen={isPostCheckOutPopupOpen}
-        closeModal={closePostCheckOutPopup}
-        onAction={handlePostCheckOutAction}
-      />
-      <EmptyCartPopup
-        isModalOpen={isEmptyCartPopupOpen}
-        closeModal={closeEmptyCartPopup}
-        onAction={handleEmptyCartAction}
-      />
+      <div className="text-xl font-semibold grow">{item.description}</div>
+      <div className="w-56">
+        <p className="">{item.unit}</p>
+        <ItemQuantityControls item={item} />
+      </div>
     </div>
   );
 }

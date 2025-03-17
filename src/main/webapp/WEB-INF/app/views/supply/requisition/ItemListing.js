@@ -2,14 +2,14 @@ import React, { useEffect, useRef, useState } from "react";
 import Pagination from "app/components/Pagination";
 import { useSupplyContext } from "app/views/supply/requisition/useSupplyContext";
 import LoadingIndicator from "app/components/LoadingIndicator";
-import { useItems } from "app/views/supply/requisition/useItems";
+import { useItemSearch } from "app/views/supply/requisition/useItemSearch";
 import Card from "app/components/Card";
 import { setPage } from "app/views/supply/requisition/itemFilterActions";
 import ItemCell from "app/views/supply/requisition/ItemCell";
 
 export default function ItemListing({ filterState, dispatch }) {
   const { cart, destination } = useSupplyContext();
-  const itemsQuery = useItems(destination.locId, filterState);
+  const itemsQuery = useItemSearch(destination.locId, filterState);
   const handlePageChange = (page) => {
     dispatch(setPage(page));
   };
