@@ -24,18 +24,20 @@ public class EverfiApiClient {
 
     private static final Logger logger = LoggerFactory.getLogger(EverfiApiClient.class);
 
-    private static final String HOST = "https://api.fifoundry.net";
+    private final String HOST;
     private static String accessToken = "";
     private static final int SUCCESS = 200;
     private static final int CREATED = 201;
     private static final int EXPIRED_TOKEN_CODE = 401;
     private static final int RATE_LIMIT_EXCEEDED = 429;
     private static final int MAX_RETRIES = 10;
-    private String clientId;
-    private String clientSecret;
+    private final String clientId;
+    private final String clientSecret;
 
-    public EverfiApiClient(@Value("${pec.everfi.client.id:}") String clientId,
+    public EverfiApiClient(@Value("${pec.everfi.host}") String host,
+                           @Value("${pec.everfi.client.id:}") String clientId,
                            @Value("${pec.everfi.client.secret:}") String clientSecret) {
+        this.HOST = host;
         this.clientId = clientId;
         this.clientSecret = clientSecret;
     }

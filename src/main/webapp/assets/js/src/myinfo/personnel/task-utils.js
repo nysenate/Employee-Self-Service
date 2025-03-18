@@ -10,6 +10,7 @@
         MoodleTask.prototype = new PersonnelTask();
         VideoCodeTask.prototype = new PersonnelTask();
         EthicsCourseTask.prototype = new PersonnelTask();
+        Knowbe4CourseTask.prototype = new PersonnelTask();
 
         return {
             getEmpAssignments: getEmpAssignments,
@@ -112,7 +113,7 @@
 
         }
 
-        function EverfiCourse(task) {
+        function EverfiCourseTask(task) {
             PersonnelTask.apply(this, arguments);
 
             this.getActionUrl = function () {
@@ -160,6 +161,22 @@
             }
         }
 
+        function Knowbe4CourseTask(task) {
+            PersonnelTask.apply(this, arguments);
+
+            this.getActionUrl = function () {
+                return appProps.ctxPath + "/myinfo/personnel/todo/knowbe4course/" + task.taskId;
+            };
+
+            this.getCourseUrl = function () {
+                return task.url;
+            };
+
+            this.getIconClass = function () {
+                return 'icon-graduation-cap';
+            }
+        }
+
         /**
          * Parse the task json into the appropriate PersonnelTask
          *
@@ -176,11 +193,14 @@
                 case 'VIDEO_CODE_ENTRY':
                     return new VideoCodeTask(task);
                 case 'EVERFI_COURSE':
-                    return new EverfiCourse(task);
+                    return new EverfiCourseTask(task);
                 case 'ETHICS_COURSE':
                     return new EthicsCourseTask(task);
                 case 'ETHICS_LIVE_COURSE':
                     return new EthicsCourseLiveTask(task);
+                case 'KNOWBE4_COURSE':
+                    return new Knowbe4CourseTask(task);
+
                 default:
                     console.error("Unknown task type '" + taskType + "'!");
                     return new PersonnelTask(task);

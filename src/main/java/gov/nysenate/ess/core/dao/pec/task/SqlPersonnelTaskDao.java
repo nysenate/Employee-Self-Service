@@ -7,6 +7,7 @@ import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
 import gov.nysenate.ess.core.model.pec.ethics.DateRangedEthicsCode;
 import gov.nysenate.ess.core.model.pec.everfi.EverfiAssignmentID;
 import gov.nysenate.ess.core.model.pec.everfi.EverfiContentID;
+import gov.nysenate.ess.core.model.pec.knowbe4.KnowBe4AssignmentID;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -100,6 +101,13 @@ public class SqlPersonnelTaskDao extends SqlBaseDao implements PersonnelTaskDao 
     }
 
     @Override
+    public List<KnowBe4AssignmentID> getKnowBe4AssignmentIDs() {
+        List<KnowBe4AssignmentID> knowbe4AssignmentIDList =
+                localJdbc.query(SELECT_KNOWBE4_ASSIGNMENT_IDS.getSql(schemaMap()), knowBe4AssignmentIDRowMapper);
+        return knowbe4AssignmentIDList;
+    }
+
+    @Override
     public void updateEthicsCode(String code, int taskId, int sequenceNo, String startDate, String endDate){
         MapSqlParameterSource updateParams = new MapSqlParameterSource();
         updateParams.addValue("code",code);
@@ -172,5 +180,11 @@ public class SqlPersonnelTaskDao extends SqlBaseDao implements PersonnelTaskDao 
             new EverfiAssignmentID(
                     rs.getInt("task_id"),
                     rs.getInt("everfi_assignment_id")
+            );
+
+    private static final RowMapper<KnowBe4AssignmentID> knowBe4AssignmentIDRowMapper = (rs, rowNum) ->
+            new KnowBe4AssignmentID(
+                    rs.getInt("task_id"),
+                    rs.getInt("knowbe4_assignment_id")
             );
 }

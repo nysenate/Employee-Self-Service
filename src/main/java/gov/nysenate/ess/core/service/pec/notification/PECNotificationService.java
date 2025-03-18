@@ -146,21 +146,24 @@ public class PECNotificationService {
         String logMessage = "Recipient: %sSubject: %s\n".formatted(address + spaces, emailInfo.subject());
         String html = emailInfo.html();
         if (emailInfo.type() != ADMIN_CODES && pecTestMode) {
-            address = reportEmails.get(0);
             html += "<br> Employee ID: #" + emailInfo.employee().getEmployeeId() +
                     "<br> Email: " + emailInfo.employee().getEmail();
+            sendMailService.sendHTMLMessageToReportEmails(emailInfo.subject(), html);
         }
-        MimeMessage message = sendMailService.newHtmlMessage(address, emailInfo.subject(), html);
-        try {
-            sendMailService.send(message);
-            Files.writeString(emailLogPath, logMessage, CREATE, WRITE, APPEND);
-            if (emailInfo.type() == INVITE) {
-                pecNotificationDao.markNotificationSent(
-                        emailInfo.employee().getEmployeeId(),
-                        emailInfo.first().getTaskId());
+        else {
+            MimeMessage message = sendMailService.newHtmlMessage(address, emailInfo.subject(), html);
+            try {
+                sendMailService.send(message);
+                Files.writeString(emailLogPath, logMessage, CREATE, WRITE, APPEND);
+                if (emailInfo.type() == INVITE) {
+                    pecNotificationDao.markNotificationSent(
+                            emailInfo.employee().getEmployeeId(),
+                            emailInfo.first().getTaskId());
+                }
+            } catch (Exception e) {
+                logger.error("There was an error trying to send the PEC notification email ", e);
             }
-        } catch (Exception e) {
-            logger.error("There was an error trying to send the PEC notification email ", e);
         }
+
     }
 }

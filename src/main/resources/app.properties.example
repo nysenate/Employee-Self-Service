@@ -17,9 +17,6 @@ data.travel.attachments.dir = travel_request_attachments/
 # Subdirectory where log files are stored (needs "tomcat" ownership)
 data.log_subdir = log/
 
-# Subdirectory where intern rejuection CSV files are stored (needs "tomcat" ownership)
-data.intern_subdir = intern/
-
 # --- Domain Configuration ----------------------------------------------------
 
 # The domain URL and context path that ESS is hosted on (used for generating
@@ -306,10 +303,14 @@ pec.import.ethics_2021_video_task_id =
 
 
 # --- PEC Everfi Config --------------------------------------------------
+pec.everfi.host =
 # The client id and client secret needed for accessing the Everfi API.
 pec.everfi.client.id =
 pec.everfi.client.secret =
 
+# --- PEC KnowBe4 Config --------------------------------------------------
+pec.KnowBe4Host =
+pec.KnowBe4ApiKey =
 
 # --- PEC Toggle Config --------------------------------------------------
 #If enabled, the cron will automatically update the DB with new ethics live codes and email the admins
@@ -330,6 +331,9 @@ scheduler.moodle.sync.enabled = false
 
 #Determines whether or not we automatically scrape from Everfi
 scheduler.everfi.sync.enabled = false
+
+#Determines whether or not we automatically pull in records from KnowBe4
+scheduler.knowbe4.sync.enabled = false
 
 # Determines if scheduled personnel task assignment is enabled.
 scheduler.personnel_task.assignment.enabled = false
@@ -364,5 +368,3 @@ everfi.report.email =
 
 #Supports comma-separated emails
 pec.code.admin.emails =
-
-internship.email =
