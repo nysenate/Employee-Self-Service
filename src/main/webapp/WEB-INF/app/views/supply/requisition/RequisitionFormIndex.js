@@ -55,15 +55,17 @@ function itemFilterReducer(state, action) {
         ...initFilterState,
       };
     case TOGGLE_CATEGORY:
-      let categories = state.categories;
+      let updatedCategories;
       if (action.payload.checked) {
-        categories.push(action.payload.category);
+        updatedCategories = [...state.categories, action.payload.category];
       } else {
-        categories = categories.filter((c) => c !== action.payload.category);
+        updatedCategories = state.categories.filter(
+          (c) => c !== action.payload.category,
+        );
       }
       return {
         ...state,
-        categories: [...new Set(categories)], // Remove any duplicates.
+        categories: [...new Set(updatedCategories)], // Remove any duplicates.
         page: 1,
         offset: 1,
       };
