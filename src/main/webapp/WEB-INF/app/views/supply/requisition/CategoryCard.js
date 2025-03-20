@@ -1,6 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import styles from "../universalStyles.module.css";
+import React from "react";
 import { useCategories } from "app/views/supply/requisition/useCategories";
 import { useSupplyContext } from "app/views/supply/requisition/useSupplyContext";
 import {
@@ -18,21 +16,21 @@ export default function CategoryCard({ filterState, dispatch }) {
 
   return (
     <div className="flex flex-col h-[420px] bg-white">
-      <div className={`${styles.flexHeader} ${styles.paddingX}`}>
+      <div className="mx-3 my-1">
         <a
-          style={{ cursor: "pointer", paddingLeft: "10px" }}
+          className="cursor-pointer"
           onClick={() => dispatch(clearCategories())}
         >
           Clear All
         </a>
       </div>
       <div
-        className={styles.flexContent}
+        className="mx-3 text-lg"
         style={{ overflowY: "auto", maxHeight: "900px" }}
       >
         <ul>
           {categoriesQuery.data.map((category) => (
-            <li key={category} className="flex gap-1">
+            <li key={category} className="flex gap-1 my-0.5">
               <input
                 id={category}
                 type="checkbox"

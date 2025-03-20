@@ -1,9 +1,9 @@
-import styles from "../universalStyles.module.css";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useSupplyContext } from "app/views/supply/requisition/useSupplyContext";
 import Modal from "app/components/Modal";
 import { Button } from "app/components/Button";
 import ItemQuantityControls from "app/views/supply/ItemQuantityControls";
+import Ribbon from "app/views/supply/requisition/Ribbon";
 
 export default function ItemCell({ item }) {
   const { cart, incrementItem } = useSupplyContext();
@@ -28,13 +28,9 @@ export default function ItemCell({ item }) {
     <div
       className={`w-[220px] p-3 border-1 relative ${item.specialRequest && "bg-red-100"}`}
     >
-      {item.specialRequest && (
-        <div className={styles.ribbon}>
-          <span>Special</span>
-        </div>
-      )}
+      {item.specialRequest && <Ribbon>Special</Ribbon>}
       <img
-        className={styles.supplyItemImage}
+        className="my-3 mx-auto h-[120px]"
         alt={item.description}
         src={`/assets/supply_photos/${item.commodityCode}.jpg`}
         onError={({ currentTarget }) => {
@@ -51,12 +47,10 @@ export default function ItemCell({ item }) {
       </p>
       <div>
         <div className="text-center">
-          <p className={styles.darkGray} style={{ margin: "0px" }}>
-            {item.unit}
-          </p>
+          <div className="">{item.unit}</div>
           {!itemQuantity ? (
             <input
-              className={styles.addToCartBtn}
+              className="w-40 m-2 h-[28px] bg-green-600 hover:bg-green-500 font-semibold rounded-sm text-white pointer transition"
               onClick={addToCart}
               type="button"
               value="Add to Cart"

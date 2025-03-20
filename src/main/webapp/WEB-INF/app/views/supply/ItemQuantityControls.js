@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import styles from "app/views/supply/universalStyles.module.css";
 import Modal from "app/components/Modal";
 import { Button } from "app/components/Button";
 import { useSupplyContext } from "app/views/supply/requisition/useSupplyContext";
+import { twMerge } from "tailwind-merge";
 
 export default function ItemQuantityControls({ item }) {
   const { cart, incrementItem, decrementItem, updateQuantity } =
@@ -33,13 +33,13 @@ export default function ItemQuantityControls({ item }) {
   return (
     <div>
       <input
-        className={styles.qtyAdjustButton}
+        className="m-2 w-[34px] h-[28px] bg-green-600 hover:bg-green-500 pointer text-white rounded-sm font-semibold text-2xl"
         onClick={() => decrementItem(item.id)}
         type="button"
         value="-"
       />
       <input
-        className={`${styles.qtyInput} [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+        className="w-[50px] h-[28px] text-center text-xl [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         style={{
           color: quantity > item.perOrderAllowance ? "red" : "",
         }}
@@ -58,7 +58,10 @@ export default function ItemQuantityControls({ item }) {
         }}
       />
       <input
-        className={`${styles.qtyAdjustButton} ${isMaxQuantity ? styles.darkWarn : ""}`}
+        className={twMerge(
+          "m-2 w-[34px] h-[28px] bg-green-600 hover:bg-green-500 pointer text-white rounded-sm font-semibold text-xl",
+          isMaxQuantity ? "bg-red-600 hover:bg-red-500" : "",
+        )}
         onClick={() => {
           if (dirtyQty === item.perOrderAllowance) {
             setIsQtyWarningOpen(true);

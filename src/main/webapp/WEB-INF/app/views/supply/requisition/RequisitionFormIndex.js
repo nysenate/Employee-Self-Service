@@ -1,6 +1,5 @@
 import React, { useEffect, useReducer, useState } from "react";
 import Hero from "app/components/Hero";
-import styles from "../universalStyles.module.css";
 import LoadingIndicator from "app/components/LoadingIndicator";
 import SelectDestination from "./SelectDestination";
 import CartSummary from "app/views/supply/requisition/CartSummary";
@@ -18,6 +17,7 @@ import {
 } from "app/views/supply/requisition/itemFilterActions";
 import CategoryCard from "app/views/supply/requisition/CategoryCard";
 import Navigation from "app/components/Navigation";
+import { Link } from "react-router-dom";
 
 const initFilterState = {
   term: "",
@@ -108,16 +108,13 @@ export default function RequisitionFormIndex() {
   return (
     <div>
       <div>
-        <div
-          className={styles.supplyOrderHero}
-          style={{ display: "inline-block", width: "100%" }}
-        >
-          <h2 className={styles.requisitionTitle}>Requisition Form</h2>
-          <a href={"/supply/cart"}>
+        <Hero>
+          Requisition Form
+          <Link to="/supply/cart" aria-label="Go to Shopping Cart">
             <CartSummary cart={cart} />
-          </a>
-        </div>
-        <div className="">
+          </Link>
+        </Hero>
+        <div>
           <Controls>
             <RequisitionFilters filterState={filterState} dispatch={dispatch} />
           </Controls>

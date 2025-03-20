@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React from "react";
 import Pagination from "app/components/Pagination";
 import { useSupplyContext } from "app/views/supply/requisition/useSupplyContext";
 import LoadingIndicator from "app/components/LoadingIndicator";
@@ -8,7 +8,7 @@ import { setPage } from "app/views/supply/requisition/itemFilterActions";
 import ItemCell from "app/views/supply/requisition/ItemCell";
 
 export default function ItemListing({ filterState, dispatch }) {
-  const { cart, destination } = useSupplyContext();
+  const { destination } = useSupplyContext();
   const itemsQuery = useItemSearch(destination.locId, filterState);
   const handlePageChange = (page) => {
     dispatch(setPage(page));

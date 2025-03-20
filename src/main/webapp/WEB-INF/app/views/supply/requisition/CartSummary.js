@@ -1,5 +1,4 @@
 import React from "react";
-import styles from "../universalStyles.module.css";
 
 const CartIcon = () => {
   return (
@@ -32,12 +31,12 @@ const CartIcon = () => {
 
 const CartSummary = ({ cart }) => {
   return (
-    <div className={styles.cartWidget}>
-      <div style={{ paddingTop: "13px", width: "100px" }}>
-        <div className={styles.col612}>
+    <div className="inline float-right">
+      <div className="flex items-center gap-2 mr-3">
+        <div className="">
           <CartIcon />
         </div>
-        <div className={styles.col612} style={{ color: "white" }}>
+        <div className="text-white font-semibold">
           {cart.totalItems} {cart.totalItems === 1 ? "item" : "items"}
         </div>
       </div>
