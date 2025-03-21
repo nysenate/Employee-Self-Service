@@ -127,8 +127,8 @@ export default function ShoppingCartIndex() {
 
 function CartItem({ item }) {
   return (
-    <div className="flex items-center px-3">
-      <div className="w-56">
+    <div className="grid grid-cols-12">
+      <div className="col-span-3 flex items-center justify-center">
         <img
           className="my-3 h-[120px]"
           alt={item.description}
@@ -139,9 +139,11 @@ function CartItem({ item }) {
           }}
         />
       </div>
-      <div className="text-xl font-semibold grow">{item.description}</div>
-      <div className="w-56">
-        <p className="">{item.unit}</p>
+      <div className="col-span-6 text-xl font-semibold mt-4">
+        {item.description}
+      </div>
+      <div className="col-span-3 flex flex-col items-center justify-center relative">
+        <p className="absolute top-9">{item.unit}</p>
         <ItemQuantityControls item={item} />
       </div>
     </div>

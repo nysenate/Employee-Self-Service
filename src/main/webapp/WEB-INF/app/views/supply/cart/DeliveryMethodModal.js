@@ -14,7 +14,7 @@ export default function DeliveryMethodModal({ isOpen, setIsOpen, onResolve }) {
   };
 
   return (
-    <Modal isOpen={isOpen}>
+    <Modal isOpen={isOpen} onSoftReject={() => setIsOpen(false)}>
       <Modal.Title>Choose Delivery Method</Modal.Title>
       <Modal.Body>
         <span className="font-semibold">

@@ -50,7 +50,7 @@ export default function ItemCell({ item }) {
           <div className="">{item.unit}</div>
           {!itemQuantity ? (
             <input
-              className="w-40 m-2 h-[28px] bg-green-600 hover:bg-green-500 font-semibold rounded-sm text-white pointer transition"
+              className="w-40 m-2 h-[28px] bg-green-600 hover:bg-green-500 font-semibold rounded-sm text-white cursor-pointer transition"
               onClick={addToCart}
               type="button"
               value="Add to Cart"

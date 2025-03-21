@@ -73,7 +73,7 @@ export default function RequisitionFilters({ filterState, dispatch }) {
               id="sort"
               name="sort"
               value={filterState.sort}
-              className="select mx-2"
+              className="select mx-2 cursor-pointer"
               onChange={(e) => dispatch(setSort(e.target.value))}
             >
               <option value="Name">Name</option>

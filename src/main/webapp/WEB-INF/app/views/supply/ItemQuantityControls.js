@@ -33,13 +33,13 @@ export default function ItemQuantityControls({ item }) {
   return (
     <div>
       <input
-        className="m-2 w-[34px] h-[28px] bg-green-600 hover:bg-green-500 pointer text-white rounded-sm font-semibold text-2xl"
+        className="m-2 w-[34px] h-[28px] bg-green-600 hover:bg-green-500 cursor-pointer text-white rounded-sm font-semibold text-2xl"
         onClick={() => decrementItem(item.id)}
         type="button"
         value="-"
       />
       <input
-        className="w-[50px] h-[28px] text-center text-xl [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        className="w-[50px] h-[28px] input text-center text-xl [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         style={{
           color: quantity > item.perOrderAllowance ? "red" : "",
         }}
@@ -59,7 +59,7 @@ export default function ItemQuantityControls({ item }) {
       />
       <input
         className={twMerge(
-          "m-2 w-[34px] h-[28px] bg-green-600 hover:bg-green-500 pointer text-white rounded-sm font-semibold text-xl",
+          "m-2 w-[34px] h-[28px] bg-green-600 hover:bg-green-500 cursor-pointer text-white rounded-sm font-semibold text-xl",
           isMaxQuantity ? "bg-red-600 hover:bg-red-500" : "",
         )}
         onClick={() => {

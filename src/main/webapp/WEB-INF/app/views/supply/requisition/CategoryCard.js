@@ -40,7 +40,7 @@ export default function CategoryCard({ filterState, dispatch }) {
                   dispatch(toggleCategory(e.target.checked, category))
                 }
               />
-              <label htmlFor={category} className="cursor-pointer">
+              <label htmlFor={category} className="font-light cursor-pointer">
                 {category}
               </label>
             </li>
