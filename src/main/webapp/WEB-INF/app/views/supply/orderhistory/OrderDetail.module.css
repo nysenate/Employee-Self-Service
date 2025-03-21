@@ -23,11 +23,6 @@
     padding: 10px;
 }
 
-/* Selected Version */
-label {
-    color: #111;
-    font-weight: 300;
-}
 
 .a1 {
     color: teal;
@@ -47,15 +42,6 @@ label {
     border: none;
 }
 
-/* Order Info */
-.grid {
-    width: 100%;
-    max-width: 1140px;
-    min-width: 755px;
-    margin: 0 auto;
-    overflow: hidden;
-}
-
 .col412, .col812 {
     width: 33.33%;
     float: left;
@@ -64,10 +50,6 @@ label {
 
 .col812 {
     width: 66.66%;
-}
-
-b, strong {
-    font-weight: 700;
 }
 
 /* Item Table */
@@ -79,41 +61,10 @@ table.essTable {
     padding-top: 0;
 }
 
-table {
-    border-collapse: collapse;
-    border-spacing: 0;
-}
-
-thead {
-    display: table-header-group;
-    vertical-align: middle;
-    unicode-bidi: isolate;
-    border-color: inherit;
-}
-
-table.essTable thead {
-    background: #fff;
-}
-
-tr {
-    display: table-row;
-    vertical-align: inherit;
-    unicode-bidi: isolate;
-    border-color: inherit;
-}
-
 table.essTable thead tr {
     color: #333;
     font-size: .9em;
     border-bottom: 1px solid #155c69;
-}
-
-th {
-    display: table-cell;
-    vertical-align: inherit;
-    font-weight: bold;
-    text-align: -internal-center;
-    unicode-bidi: isolate;
 }
 
 table.ess-table thead tr th {

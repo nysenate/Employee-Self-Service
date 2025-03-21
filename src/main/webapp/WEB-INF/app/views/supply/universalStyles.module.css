@@ -154,22 +154,6 @@
     padding: 0;
 }
 
-
-h2 {
-    display: block;
-    font-size: 1.5em;
-    margin-block-start: 0.83em;
-    margin-block-end: 0.83em;
-    margin-inline-start: 0px;
-    margin-inline-end: 0px;
-    font-weight: bold;
-    unicode-bidi: isolate;
-}
-
-h1, h2 {
-    font-weight: 400;
-}
-
 .specialUlContainer ul {
     display: block;
     list-style-type: disc;
@@ -179,11 +163,6 @@ h1, h2 {
     margin-inline-end: 0px;
     padding-inline-start: 40px;
     unicode-bidi: isolate;
-}
-
-a {
-    color: teal;
-    text-decoration: none;
 }
 
 /* Order Info */
@@ -236,10 +215,6 @@ a {
 
 .col14, .col312 {
     width: 25%;
-}
-
-b, strong {
-    font-weight: 700;
 }
 
 /* Supply Div Table */
@@ -377,58 +352,8 @@ b, strong {
 
 
 /* Item Table */
-table.essTable {
-    width: 100%;
-}
-
 .supplyListingTable {
     padding-top: 0;
-}
-
-table {
-    border-collapse: collapse;
-    border-spacing: 0;
-}
-
-thead {
-    display: table-header-group;
-    vertical-align: middle;
-    unicode-bidi: isolate;
-    border-color: inherit;
-}
-
-table.essTable thead {
-    background: #fff;
-}
-
-tr {
-    display: table-row;
-    vertical-align: inherit;
-    unicode-bidi: isolate;
-    border-color: inherit;
-}
-
-table.essTable thead tr {
-    color: #333;
-    font-size: .9em;
-    border-bottom: 1px solid #155c69;
-}
-
-th {
-    display: table-cell;
-    vertical-align: inherit;
-    font-weight: bold;
-    text-align: -internal-center;
-    unicode-bidi: isolate;
-}
-
-table.essTable thead tr th {
-    padding: 10px 5px;
-}
-
-table.essTable tbody tr {
-    border-top: 1px solid transparent;
-    border-bottom: 1px solid #bbb;
 }
 
 .supplyListingTable tbody tr {
@@ -444,10 +369,6 @@ table.essTable tbody tr {
 .supplyListingTable tbody tr.warn:nth-child(even) {
     background: rgba(255, 188, 188, .6);
     border-bottom: 0 solid rgba(255, 188, 188, .6) !important;
-}
-
-table.essTable tbody tr td {
-    text-align: left;
 }
 
 .supplyListingTable tbody tr td {
@@ -689,54 +610,6 @@ table.essTable tbody tr td {
 /*    display: flex;*/
 /*    justify-content: space-around;*/
 /*}*/
-input[type=button].neutralButton,
-input[type=submit].neutralButton,
-button.neutralButton {
-    padding: 5px 10px;
-    background: #8d8d8d;
-    color: #fff;
-    font-weight: 600;
-    border: 2px none #737373;
-    border-bottom-style: solid;
-}
-
-input[type=button].neutralButton:hover, input[type=submit].neutral-button:hover {
-    background: #a47676;
-}
-
-button, html input[type=button], input[type=reset], input[type=submit] {
-    -webkit-appearance: button;
-    cursor: pointer;
-}
-
-button, input, select, textarea {
-    font-family: inherit;
-    font-size: 100%;
-    margin: 0;
-}
-
-button, input {
-    line-height: normal;
-}
-
-button, select {
-    text-transform: none;
-}
-
-select {
-    padding: .3em .5em;
-    background: #fff;
-    border: 1px solid #999;
-}
-
-option {
-    font-weight: normal;
-    display: block;
-    min-height: 1.2em;
-    padding: 0px 2px 1px;
-    white-space: nowrap;
-}
-
 
 /* Print */
 /* Margins to use when printing */
@@ -853,10 +726,6 @@ option {
     background: #e64727;
 }
 
-essNotification h1, .essNotification h2, .essNotification h3, .essNotification h4, .essNotification li, .essNotification p, .essNotification span {
-    color: #fff;
-}
-
 
 /* Modal For reconcil*/
 .confirmModal .confirmationMessage {
@@ -876,23 +745,6 @@ essNotification h1, .essNotification h2, .essNotification h3, .essNotification h
 .confirmModal .inputContainer input:first-child {
     margin-left: 0;
 }
-
-input[type=button].approveButton {
-    padding: 5px 10px;
-    background: #6270bd;
-    color: #fff;
-    font-weight: 600;
-    border: 2px none #4655a6;
-    border-bottom-style: solid;
-}
-
-input[type=email], input[type=number], input[type=password], input[type=search], input[type=tel], input[type=text] {
-    border: 1px solid #ccc;
-    outline: 0;
-    background: #fafafa;
-    padding: .3em;
-}
-
 
 .supplyItemPrintHeaderRow {
     display: flex;

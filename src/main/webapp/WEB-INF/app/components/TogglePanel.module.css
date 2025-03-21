@@ -6,20 +6,20 @@
     box-shadow: 0 1px 2px #aaa;
     margin-top: 20px;
 }
+
 .togglePanel {
     cursor: pointer;
 }
+
 .togglePanel:hover {
     color: #006B80FF; /* Assuming @teal is teal */
 }
+
 .panelContent {
     display: none;
     padding: 10px;
 }
-h1 {
-    font-size: 2em;
-    margin: .67em 0;
-}
+
 .contentContainer h1 {
     font-size: 1.1em;
     margin: 0;
@@ -32,9 +32,11 @@ h1 {
     line-height: 40px;
     font-weight: 600;
 }
+
 .togglePanel .togglePanelLabel {
     color: inherit;
 }
+
 .togglePanel .togglePanelStatus {
     position: absolute;
     right: 0;
@@ -46,9 +48,11 @@ h1 {
     justify-content: center;
     align-items: center;
 }
+
 .togglePanel .togglePanelStatus i {
     font-size: 25px;
 }
+
 [class*=" icon-"], [class^=icon-] {
     font-family: icomoon;
     speak: none;
@@ -72,18 +76,22 @@ h1 {
     border-style: solid;
     border-width: 2px;
 }
+
 .iconChevronUp::before {
     border-color: transparent transparent white white;
     transform: rotate(135deg);
 }
+
 .iconChevronDown::before {
     border-color: white white transparent transparent;
     transform: rotate(135deg);
 }
+
 /*icons.less:*/
 .iconChevronUp:before {
     content: "\e62d";
 }
+
 .iconChevronDown:before {
     content: "\e622";
 }
