@@ -1,7 +1,7 @@
 import React from "react";
 import { Tooltip } from "react-tippy";
 import "react-tippy/dist/tippy.css";
-import styles from "./OrderDetail.module.css";
+import styles from "app/views/supply/order-detail/OrderDetail.module.css";
 
 const CustomPopover = ({ order }) => {
   const popoverContent = (

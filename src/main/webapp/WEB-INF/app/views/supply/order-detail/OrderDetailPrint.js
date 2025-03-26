@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import styles from "../universalStyles.module.css";
+import styles from "app/views/supply/universalStyles.module.css";
 import { alphabetizeLineItems, formatDate } from "app/views/supply/helpers";
 
 const OrderDetailPrint = ({ selectedVersion }) => {
@@ -23,22 +23,17 @@ const OrderDetailPrint = ({ selectedVersion }) => {
       </div>
 
       {/* General Information */}
-      <div
-        className={`${styles.contentContainer} ${styles.largePrintFontSize}`}
-      >
+      <div className={`${styles.contentContainer} ${styles.largePrintFontSize}`}>
         <div className={styles.contentInfo}>
           <div className={`${styles.grid} ${styles.paddingX}`}>
             <b>Requesting Office</b>
-            <span style={{ paddingLeft: "10px" }}>
-              {selectedVersion.destination.locId}
-            </span>
+            <span style={{ paddingLeft: "10px" }}>{selectedVersion.destination.locId}</span>
             <span style={{ paddingLeft: "10px" }}>
               {selectedVersion.destination.respCenterHead.shortName}
             </span>
             <span style={{ paddingLeft: "10px" }}>
               {selectedVersion.destination.address.addr1},{" "}
-              {selectedVersion.destination.address.city},
-              {selectedVersion.destination.address.state}{" "}
+              {selectedVersion.destination.address.city},{selectedVersion.destination.address.state}{" "}
               {selectedVersion.destination.address.zip5}
             </span>
           </div>
@@ -50,8 +45,7 @@ const OrderDetailPrint = ({ selectedVersion }) => {
               <b>Requested By:</b> {selectedVersion.customer.fullName}
             </div>
             <div className={styles.col412}>
-              <b>Requested Date:</b>{" "}
-              {formatDate(selectedVersion.orderedDateTime)}
+              <b>Requested Date:</b> {formatDate(selectedVersion.orderedDateTime)}
             </div>
             <div className={styles.col412}>
               <b>Status:</b> {selectedVersion.status}
@@ -62,8 +56,7 @@ const OrderDetailPrint = ({ selectedVersion }) => {
         <div className={styles.contentInfo}>
           <div className={`${styles.grid} ${styles.paddingV}`}>
             <div className={styles.col412}>
-              {selectedVersion.status === "PENDING" ||
-              selectedVersion.status === "PROCESSING" ? (
+              {selectedVersion.status === "PENDING" || selectedVersion.status === "PROCESSING" ? (
                 <b>Issuer: </b>
               ) : (
                 <b>Issued By: </b>
@@ -82,23 +75,17 @@ const OrderDetailPrint = ({ selectedVersion }) => {
 
       {/* Notes */}
       {(selectedVersion.note || selectedVersion.specialInstructions) && (
-        <div
-          className={`${styles.contentContainer} ${styles.largePrintFontSize}`}
-        >
+        <div className={`${styles.contentContainer} ${styles.largePrintFontSize}`}>
           <div className={styles.contentInfo}>
             {selectedVersion.note && (
               <div className={`${styles.grid} ${styles.paddingV}`}>
-                <div className={`${styles.col212} ${styles.bold}`}>
-                  Supply Note:
-                </div>
+                <div className={`${styles.col212} ${styles.bold}`}>Supply Note:</div>
                 <div className={styles.col1012}>{selectedVersion.note}</div>
               </div>
             )}
             {selectedVersion.specialInstructions && (
               <div className={`${styles.grid} ${styles.paddingV}`}>
-                <div className={`${styles.col412} ${styles.bold}`}>
-                  Special Instructions:
-                </div>
+                <div className={`${styles.col412} ${styles.bold}`}>Special Instructions:</div>
                 <div className={styles.col812} style={{ textAlign: "left" }}>
                   {selectedVersion.specialInstructions}
                 </div>
@@ -111,9 +98,7 @@ const OrderDetailPrint = ({ selectedVersion }) => {
       {/* Order Items */}
       <div className={`${styles.contentContainer} ${styles.closeTo}`}>
         <div className={styles.paddingV}>
-          <table
-            className={`${styles.essTable} ${styles.supplyListingTablePrintOnly}`}
-          >
+          <table className={`${styles.essTable} ${styles.supplyListingTablePrintOnly}`}>
             <thead>
               <tr style={{ pageBreakInside: "avoid" }}>
                 <th>Commodity Code</th>
@@ -134,12 +119,8 @@ const OrderDetailPrint = ({ selectedVersion }) => {
         </div>
       </div>
 
-      <div
-        className={styles.largePrintFontSize}
-        style={{ marginTop: "60px", padding: "20px" }}
-      >
-        Received By: _______________________________ Received Date:
-        ________________________________
+      <div className={styles.largePrintFontSize} style={{ marginTop: "60px", padding: "20px" }}>
+        Received By: _______________________________ Received Date: ________________________________
       </div>
     </div>
   );

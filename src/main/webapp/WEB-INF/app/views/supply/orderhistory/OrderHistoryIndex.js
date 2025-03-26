@@ -13,6 +13,7 @@ import {
   getOneMonthBeforeDate,
   getOrderHistory,
 } from "../helpers";
+import { add } from "date-fns";
 
 export default function OrderHistoryIndex() {
   const auth = useAuth();
@@ -21,14 +22,7 @@ export default function OrderHistoryIndex() {
   const [from, setFrom] = useState(getOneMonthBeforeDate());
   const [to, setTo] = useState(getCurrentDate());
   const [status, setStatus] = useState("ALL");
-  const statusOptions = [
-    "ALL",
-    "PENDING",
-    "PROCESSING",
-    "COMPLETED",
-    "APPROVED",
-    "REJECTED",
-  ];
+  const statusOptions = ["ALL", "PENDING", "PROCESSING", "COMPLETED", "APPROVED", "REJECTED"];
   const ordersPerPage = 12;
   const [currentPage, setCurrentPage] = useState(1);
   const [totalOrders, setTotalOrders] = useState(0);
@@ -52,7 +46,7 @@ export default function OrderHistoryIndex() {
           userData().employee.empWorkLocation.locId,
           1 + (currentPage - 1) * ordersPerPage,
           status,
-          formatDateForApi(new Date(to)),
+          formatDateForApi(add(new Date(to), { days: 1 })),
         );
         setTotalOrders(response.total);
         // Below fixes a bug persistent in dev. When one a page and change filter s.t. the page is no longer in bounds, no results will appear until refresh
@@ -83,10 +77,10 @@ export default function OrderHistoryIndex() {
         setStatus={setStatus}
         statusOptions={statusOptions}
       />
-      <div className={styles.contentContainer}>
-        {loading ? (
-          <LoadingIndicator />
-        ) : (
+      {loading ? (
+        <LoadingIndicator />
+      ) : (
+        <div className={styles.contentContainer}>
           <>
             {totalOrders > ordersPerPage && (
               <Pagination
@@ -104,8 +98,8 @@ export default function OrderHistoryIndex() {
               />
             )}
           </>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
