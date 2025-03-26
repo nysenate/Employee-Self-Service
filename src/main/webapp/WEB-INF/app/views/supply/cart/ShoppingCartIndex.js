@@ -20,10 +20,8 @@ export default function ShoppingCartIndex() {
   const { cart, clearCart, destination } = useSupplyContext();
   const [instructions, setInstructions] = useState("");
   const itemsQuery = useItems();
-  const [isEmptyCartConfirmationOpen, setIsEmptyCartConfirmationOpen] =
-    useState(false);
-  const [isDeliveryMethodModalOpen, setIsDeliveryMethodModalOpen] =
-    useState(false);
+  const [isEmptyCartConfirmationOpen, setIsEmptyCartConfirmationOpen] = useState(false);
+  const [isDeliveryMethodModalOpen, setIsDeliveryMethodModalOpen] = useState(false);
   const [isCheckoutSummaryOpen, setIsCheckoutSummaryOpen] = useState(false);
   const checkoutApi = useCheckout();
   const [checkoutRes, setCheckoutRes] = useState();
@@ -67,49 +65,39 @@ export default function ShoppingCartIndex() {
     <div>
       <Hero>Shopping Cart</Hero>
       <Controls className="p-4">
-        <span className="text-purple-700 font-semibold">Destination: </span>
+        <span className="font-semibold text-purple-700">Destination: </span>
         {destination.locId} ({destination.locationDescription})
       </Controls>
 
       <Card className="my-5">
-        <Card.Header>
-          <span className="text-lg font-semibold">Cart Items</span>
-        </Card.Header>
+        <Card.Header className="mb-0 text-lg font-semibold">Cart Items</Card.Header>
         {Object.keys(cart.items).map((itemId) => (
           <div key={itemId}>
             <CartItem item={itemsQuery.data.get(parseInt(itemId))} />
             <hr />
           </div>
         ))}
-        <div className="bg-gray-50 p-3 flex items-center justify-between gap-2">
+        <div className="flex items-center justify-between gap-2 bg-gray-50 p-3">
           <div>
-            <label htmlFor="special-instructions" className="align-middle mr-2">
+            <label htmlFor="special-instructions" className="mr-2 align-middle">
               Special Instructions:
             </label>
             <textarea
               id="special-instructsion"
-              className="align-middle border-1"
+              className="border-1 align-middle"
               value={instructions}
               onChange={(e) => setInstructions(e.target.value)}
               rows="3"
               cols="50"
             />
           </div>
-          <Button
-            color="secondary"
-            onClick={() => setIsEmptyCartConfirmationOpen(true)}
-          >
+          <Button color="secondary" onClick={() => setIsEmptyCartConfirmationOpen(true)}>
             Empty Cart
           </Button>
-          <Link
-            to="/supply/requisition-form"
-            style={{ textDecoration: "none" }}
-          >
+          <Link to="/supply/requisition-form" style={{ textDecoration: "none" }}>
             <Button color="secondary">Continue Browsing</Button>
           </Link>
-          <Button onClick={() => setIsDeliveryMethodModalOpen(true)}>
-            Checkout
-          </Button>
+          <Button onClick={() => setIsDeliveryMethodModalOpen(true)}>Checkout</Button>
         </div>
       </Card>
       <EmptyCartConfirmation
@@ -139,10 +127,8 @@ function CartItem({ item }) {
           }}
         />
       </div>
-      <div className="col-span-6 text-xl font-semibold mt-4">
-        {item.description}
-      </div>
-      <div className="col-span-3 flex flex-col items-center justify-center relative">
+      <div className="col-span-6 mt-4 text-xl font-semibold">{item.description}</div>
+      <div className="relative col-span-3 flex flex-col items-center justify-center">
         <p className="absolute top-9">{item.unit}</p>
         <ItemQuantityControls item={item} />
       </div>
