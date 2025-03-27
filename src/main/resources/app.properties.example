@@ -358,13 +358,16 @@ scheduler.everfi.user.update.cron = 0 0 23 * * *
 #Schedules when the Department category label is updated. Should be done before users are updated
 scheduler.everfi.category.update.cron = 0 0 22 * * *
 
+#Default of every hour on the top of the hour to pull KnowBe4 records
+scheduler.knowbe4.task.sync.cron = 0 0 * * * *
+
 #The schedule for personnel task assigment. (Default every day at 1AM)
 scheduler.personnel_task.assignment.cron = 0 0 3 * * *
 
 
 # --- Report Email Configuration -----------------------------------------------------
 #Supports comma-separated emails
-everfi.report.email =
+pec.admin.report.emails =
 
 #Supports comma-separated emails
 pec.code.admin.emails =

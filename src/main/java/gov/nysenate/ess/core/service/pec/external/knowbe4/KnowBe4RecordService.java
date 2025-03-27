@@ -56,7 +56,7 @@ public class KnowBe4RecordService {
         this.knowBe4AssignmentIDList = personnelTaskDao.getKnowBe4AssignmentIDs();
     }
 
-    @Scheduled(cron = "${scheduler.everfi.task.sync.cron}") //At the top of every hour every day
+    @Scheduled(cron = "${scheduler.knowbe4.task.sync.cron}") //At the top of every hour every day
     public void getUpdatesFromKnowBe4() throws IOException {
         if (knowBe4SyncEnabled) {
             refreshCaches();

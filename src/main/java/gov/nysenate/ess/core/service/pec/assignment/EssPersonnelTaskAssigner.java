@@ -19,7 +19,6 @@ import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.model.transaction.TransactionHistoryUpdateEvent;
 import gov.nysenate.ess.core.model.transaction.TransactionRecord;
 import gov.nysenate.ess.core.service.mail.SendMailService;
-import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUser;
 import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUserService;
 import gov.nysenate.ess.core.service.pec.notification.AssignmentWithTask;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
@@ -30,9 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.mail.internet.MimeMessage;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -57,7 +54,7 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
     private final EverfiUserDao everfiUserDao;
     private final EmployeeDao employeeDao;
     private final PersonnelTaskAssignmentDao assignmentDao;
-    private final List<String> everfiReportEmails;
+    private final List<String> pecAdminReportEmails;
 
     /** Classes which handle assignment for different {@link PersonnelTaskAssignmentGroup} */
     private final List<GroupTaskAssigner> groupTaskAssigners;
@@ -67,7 +64,7 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
                                     List<GroupTaskAssigner> groupTaskAssigners,
                                     PersonnelTaskDao personnelTaskDao,
                                     PersonnelTaskAssignmentDao assignmentDao,
-                                    EventBus eventBus, EverfiUserService everfiUserService, EmployeeDao employeeDao, @Value("${everfi.report.email}") String everfiReportEmailList) {
+                                    EventBus eventBus, EverfiUserService everfiUserService, EmployeeDao employeeDao, @Value("${pec.admin.report.emails}") String pecAdminReportEmails) {
         this.empInfoService = empInfoService;
         this.transactionService = transactionService;
         this.sendMailService = sendMailService;
@@ -77,7 +74,7 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
         this.assignmentDao = assignmentDao;
         this.everfiUserService = everfiUserService;
         this.employeeDao = employeeDao;
-        this.everfiReportEmails = Arrays.asList(everfiReportEmailList.replaceAll(" ", "").split(","));
+        this.pecAdminReportEmails = Arrays.asList(pecAdminReportEmails.replaceAll(" ", "").split(","));
         eventBus.register(this);
     }
 
@@ -194,18 +191,18 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
         //Check if email is null. Send Report
         if (employee.getEmail() == null || employee.getEmail().isEmpty()) {
             logger.warn("Employee: " + employee.getEmployeeId() + " is missing an email in SFMS and cannot be uploaded to Everfi");
-            sendEmailToEverfiReportEmails(subject, employee.getFullName() + " needs their email updated in SFMS and their account created in Everfi + task assigned to them");
+            sendEmailToPecAdminReportEmails(subject, employee.getFullName() + " needs their email updated in SFMS and their account created in Everfi + task assigned to them");
         }
         //check if they exist in Everfi.
         else if (everfiUserIDs == null) {
             logger.info("Employee: " + employee.getEmail() + " has an email but has not been uploaded to Everfi");
             everfiUserService.addEmployeesToEverfi(Arrays.asList(employee));
-            sendEmailToEverfiReportEmails(subject, "ESS has attempted to create an Everfi account for " + employee.getFullName() + ". The account will be under the email " + employee.getEmail());
+            sendEmailToPecAdminReportEmails(subject, "ESS has attempted to create an Everfi account for " + employee.getFullName() + ". The account will be under the email " + employee.getEmail());
         }
         //else they are registered but not assigned. send report to have that manually changed
         else {
             logger.info("Employee: " + employee.getEmail() + " is registered in Everfi but the task is not assigned.");
-            sendEmailToEverfiReportEmails(subject, employee.getFullName() + " is registered in Everfi but the task is not assigned. Please assign the task to this individual. The task will appear in ESS already.");
+            sendEmailToPecAdminReportEmails(subject, employee.getFullName() + " is registered in Everfi but the task is not assigned. Please assign the task to this individual. The task will appear in ESS already.");
         }
     }
 
@@ -215,13 +212,13 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
         String subject = "PERSONNEL MANUAL KNOWBE4 UPLOAD FOR " + employee.getFullName() + ", " + employee.getEmployeeId();
 
         logger.warn("Personnel attempted to add Employee: " + employee.getEmployeeId() + " to KnowBe4 but we do not have a process to upload users to KnowBe4!");
-        sendEmailToEverfiReportEmails(subject, "Personnel attempted to add Employee: " + employee.getEmployeeId() +
+        sendEmailToPecAdminReportEmails(subject, "Personnel attempted to add Employee: " + employee.getEmployeeId() +
                 " to KnowBe4 task: " + task.getTitle() + " but we do not have a process to upload users to KnowBe4!");
     }
 
 
-private void sendEmailToEverfiReportEmails(String subject, String html) {
-    for (String email : this.everfiReportEmails) {
+private void sendEmailToPecAdminReportEmails(String subject, String html) {
+    for (String email : this.pecAdminReportEmails) {
         sendEmail(email, subject, html);
     }
 }

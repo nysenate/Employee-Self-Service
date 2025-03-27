@@ -43,19 +43,19 @@ public class EverfiUserService {
     @Value("${scheduler.everfi.sync.enabled:false}")
     private boolean everfiSyncEnabled;
 
-    private final List<String> everfiReportEmails;
+    private final List<String> pecAdminReportEmails;
 
 
     @Autowired
     public EverfiUserService(EverfiApiClient everfiApiClient, EmployeeDao employeeDao, EverfiUserDao everfiUserDao,
-                             SendMailService sendMailService, EverfiCategoryService categoryService, @Value("${everfi.report.email}") String everfiReportEmailList) {
+                             SendMailService sendMailService, EverfiCategoryService categoryService, @Value("${pec.admin.report.email}") String pecAdminReportEmails) {
         this.everfiApiClient = everfiApiClient;
         this.employeeDao = employeeDao;
         this.everfiUserDao = everfiUserDao;
         this.sendMailService = sendMailService;
         this.categoryService = categoryService;
         this.ignoredEverfiUserIds = everfiUserDao.getIgnoredEverfiUserIDs();
-        this.everfiReportEmails = Arrays.asList(everfiReportEmailList.replaceAll(" ","").split(","));
+        this.pecAdminReportEmails = Arrays.asList(pecAdminReportEmails.replaceAll(" ","").split(","));
     }
 
     @Scheduled(cron = "${scheduler.everfi.user.update.cron}")
@@ -81,7 +81,7 @@ public class EverfiUserService {
             logger.info("Beginning Everfi deactivation process for inactive employees");
             List<Employee> inactiveEmployees = getRecentlyInactiveEmployees();
 
-            sendEmailToEverfiReportEmails("Employees to be Inactivated",
+            sendEmailToPecAdminReportEmails("Employees to be Inactivated",
                     generateEmployeeListString(inactiveEmployees) + "\n\n Some of these users above may have already been deactivated prior to this run");
 
             for (Employee employee : inactiveEmployees) {
@@ -283,8 +283,8 @@ public class EverfiUserService {
         }
     }
 
-    private void sendEmailToEverfiReportEmails(String subject, String html) {
-        for (String email : this.everfiReportEmails) {
+    private void sendEmailToPecAdminReportEmails(String subject, String html) {
+        for (String email : this.pecAdminReportEmails) {
             sendEmail(email, subject, html);
         }
     }
@@ -325,7 +325,7 @@ public class EverfiUserService {
         logger.info("Beginning Everfi add employee process");
 
         //send email to Everfi report email for new employees
-        sendEmailToEverfiReportEmails("New Users Added to Everfi", generateEmployeeListString(emps));
+        sendEmailToPecAdminReportEmails("New Users Added to Everfi", generateEmployeeListString(emps));
 
             for (Employee emp : emps) {
 
