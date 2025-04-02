@@ -24,6 +24,9 @@
         @apply text-teal-600 hover:text-teal-800 text-base;
     }
 
+    button {
+        @apply outline-none;
+    }
 }
 
 
@@ -33,7 +36,8 @@
     .input {
         @apply p-1 border-1 border-gray-300 bg-gray-50
         focus-visible:border-gray-600
-        disabled:bg-white disabled:border-none;
+        disabled:bg-white disabled:border-none
+        [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none
     }
 
     .input--invalid {
@@ -70,12 +74,20 @@
         @apply bg-gray-75;
     }
 
+    .table__body--striped .table__row--error:nth-child(odd) {
+        @apply bg-red-300/50;
+    }
+
     .table__body--highlight .table__row {
-        @apply hover:brightness-90 transition duration-75;
+        @apply hover:brightness-90 transition duration-75 cursor-pointer;
     }
 
     .table__row {
         @apply bg-gray-25;
+    }
+
+    .table__row--error {
+        @apply bg-red-300/30
     }
 
     .table__cell {

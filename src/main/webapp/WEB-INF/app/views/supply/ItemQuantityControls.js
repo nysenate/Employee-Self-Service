@@ -5,8 +5,7 @@ import { useSupplyContext } from "app/views/supply/requisition/useSupplyContext"
 import { twMerge } from "tailwind-merge";
 
 export default function ItemQuantityControls({ item }) {
-  const { cart, incrementItem, decrementItem, updateQuantity } =
-    useSupplyContext();
+  const { cart, incrementItem, decrementItem, updateQuantity } = useSupplyContext();
   const quantity = cart.items[item.id] || 0;
   const [dirtyQty, setDirtyQty] = useState(quantity);
   const isMaxQuantity = quantity >= item.perOrderAllowance;
@@ -33,13 +32,13 @@ export default function ItemQuantityControls({ item }) {
   return (
     <div>
       <input
-        className="m-2 w-[34px] h-[28px] bg-green-600 hover:bg-green-500 cursor-pointer text-white rounded-sm font-semibold text-2xl"
+        className="m-2 h-[28px] w-[34px] cursor-pointer rounded-sm bg-green-600 text-2xl font-semibold text-white hover:bg-green-500"
         onClick={() => decrementItem(item.id)}
         type="button"
         value="-"
       />
       <input
-        className="w-[50px] h-[28px] input text-center text-xl [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        className="input h-[28px] w-[50px] text-center text-xl"
         style={{
           color: quantity > item.perOrderAllowance ? "red" : "",
         }}
@@ -47,10 +46,7 @@ export default function ItemQuantityControls({ item }) {
         value={dirtyQty}
         onChange={(e) => setDirtyQty(parseInt(e.target.value) || 0)}
         onBlur={() => {
-          if (
-            dirtyQty > item.perOrderAllowance &&
-            quantity <= item.perOrderAllowance
-          ) {
+          if (dirtyQty > item.perOrderAllowance && quantity <= item.perOrderAllowance) {
             setIsQtyWarningOpen(true);
           } else {
             updateQuantity(item.id, dirtyQty);
@@ -59,7 +55,7 @@ export default function ItemQuantityControls({ item }) {
       />
       <input
         className={twMerge(
-          "m-2 w-[34px] h-[28px] bg-green-600 hover:bg-green-500 cursor-pointer text-white rounded-sm font-semibold text-xl",
+          "m-2 h-[28px] w-[34px] cursor-pointer rounded-sm bg-green-600 text-xl font-semibold text-white hover:bg-green-500",
           isMaxQuantity ? "bg-red-600 hover:bg-red-500" : "",
         )}
         onClick={() => {
@@ -86,8 +82,7 @@ function QtyWarningModal({ isOpen, onResolve, onReject }) {
     <Modal isOpen={isOpen}>
       <Modal.Title>Ordering over recommended quantity</Modal.Title>
       <Modal.Body>
-        You are trying to order over the recommended quantity. This requires
-        management approval.
+        You are trying to order over the recommended quantity. This requires management approval.
         <br />
         Would you like to continue?
       </Modal.Body>

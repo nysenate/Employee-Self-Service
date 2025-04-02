@@ -7,7 +7,17 @@ import { format, isValid, parseISO } from "date-fns";
  * @returns {string} isoDate in short form or an empty string if isoDate is invalid.
  */
 export function isoToShortDate(isoDate) {
-  return formatDate(isoDate, "MM/dd/yyyy")
+  return formatDate(isoDate, "MM/dd/yyyy");
+}
+
+/**
+ * Converts an ISO date string to a short date with time format
+ * i.e. 10/14/1983 02:31pm
+ * @param isoDatetime
+ * @returns {string|string}
+ */
+export function isoToShortDateTime(isoDatetime) {
+  return formatDate(isoDatetime, "MM/dd/yyyy h:mmaaa");
 }
 
 /**
@@ -17,7 +27,7 @@ export function isoToShortDate(isoDate) {
  * @returns {string} isoDate in medium form or an empty string if isoDate is invalid.
  */
 export function isoToMediumDate(isoDate) {
-  return formatDate(isoDate, "MMM d, yyyy")
+  return formatDate(isoDate, "MMM d, yyyy");
 }
 
 /**
@@ -27,17 +37,17 @@ export function isoToMediumDate(isoDate) {
  * @returns {string} isoDate in long form or an empty string if isoDate is invalid.
  */
 export function isoToLongDate(isoDate) {
-  return formatDate(isoDate, "MMMM d, yyyy")
+  return formatDate(isoDate, "MMMM d, yyyy");
 }
 
 function formatDate(isoDate, formatStr) {
   // Prevent type error from calling parseISO with a non string.
-  if (typeof isoDate !== 'string') {
+  if (typeof isoDate !== "string") {
     return "";
   }
-  const date = parseISO(isoDate)
+  const date = parseISO(isoDate);
   if (!isValid(date)) {
     return "";
   }
-  return format(date, formatStr)
+  return format(date, formatStr);
 }
