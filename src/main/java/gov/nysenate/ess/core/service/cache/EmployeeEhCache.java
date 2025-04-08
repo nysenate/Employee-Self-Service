@@ -6,7 +6,6 @@ import org.ehcache.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.lang.reflect.ParameterizedType;
@@ -17,7 +16,6 @@ import java.util.Set;
  *
  * @param <Value>
  */
-@Service
 public abstract class EmployeeEhCache<Value> extends CachingService {
     private static final Logger logger = LoggerFactory.getLogger(EmployeeEhCache.class);
 
@@ -26,6 +24,8 @@ public abstract class EmployeeEhCache<Value> extends CachingService {
     private AsyncRunner asyncRunner;
     @Autowired
     private ActiveEmployeeIdService empIdService;
+    @org.springframework.beans.factory.annotation.Value("${cache.cron.employee}:0 0 0 * * *")
+    private String empCron;
     @org.springframework.beans.factory.annotation.Value("${cache.warm.on.startup:true}")
     private boolean warmOnStartup;
 
@@ -58,6 +58,11 @@ public abstract class EmployeeEhCache<Value> extends CachingService {
             asyncRunner.run(this::warmCache);
         }
         logger.info("Done clearing cache.");
+    }
+
+    @Override
+    protected String getCron() {
+        return empCron;
     }
 
     protected abstract void warmCache();

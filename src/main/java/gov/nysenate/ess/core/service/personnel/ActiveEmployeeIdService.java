@@ -19,7 +19,7 @@ public class ActiveEmployeeIdService extends RefreshedCachedData<Integer, Object
     private static final Object PRESENT = new Object();
 
     @Autowired
-    public ActiveEmployeeIdService(EmployeeDao employeeDao, @Value("${cache.cron.empid:0 0 * * * *}") String cron) {
+    public ActiveEmployeeIdService(EmployeeDao employeeDao, @Value("${cache.cron.empId:0 0 * * * *}") String cron) {
         super(cron, () -> new TreeMap<>(CollectionUtils.keysToMap(employeeDao.getActiveEmployeeIds(), id -> PRESENT)));
     }
 
