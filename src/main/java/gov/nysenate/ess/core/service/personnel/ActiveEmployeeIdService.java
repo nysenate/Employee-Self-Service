@@ -6,6 +6,7 @@ import gov.nysenate.ess.core.service.RefreshedCachedData;
 import gov.nysenate.ess.core.util.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import java.util.Set;
 import java.util.TreeMap;
@@ -13,6 +14,7 @@ import java.util.TreeMap;
 /**
  * A collection of currently active employee ids.
  */
+@Service
 public class ActiveEmployeeIdService extends RefreshedCachedData<Integer, Object> {
     private static final Object PRESENT = new Object();
 
