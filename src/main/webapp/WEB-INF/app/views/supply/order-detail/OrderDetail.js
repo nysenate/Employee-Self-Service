@@ -1,38 +1,31 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useReactToPrint } from "react-to-print";
 import styles from "app/views/supply/universalStyles.module.css";
 import Hero from "app/components/Hero";
 import CustomerPopover from "app/views/supply/orderhistory/CustomPopover";
 import { alphabetizeLineItems, formatDate } from "app/views/supply/helpers";
-import { fetchApiJson } from "app/api/fetchJson";
 import OrderDetailPrint from "app/views/supply/order-detail/OrderDetailPrint";
 import Controls from "app/components/Controls";
 import Card from "app/components/Card";
+import { useRequisitionHistory } from "app/views/supply/useRequisition";
+import LoadingIndicator from "app/components/LoadingIndicator";
 
 export default function OrderDetail() {
   const printRef = useRef();
-  const location = useLocation();
-  const { order, print } = location.state || {};
+  let { orderId } = useParams();
+  const { data, isPending } = useRequisitionHistory(orderId);
   const [currentOrder, setCurrentOrder] = useState(null);
   const [orders, setOrders] = useState(null);
 
   useEffect(() => {
-    const fetchRequisitionHistory = async () => {
-      try {
-        const response = await fetchApiJson(`/supply/requisitions/history/${order.requisitionId}`);
-        setCurrentOrder(order);
-        setOrders(response);
-      } catch (err) {
-        console.error("Issue fetching order history: ", err);
-      }
-    };
-    fetchRequisitionHistory();
-  }, [order]);
+    setCurrentOrder(data?.result[0]);
+    setOrders(data?.result);
+  }, [data]);
 
   useEffect(() => {
     if (print && currentOrder) {
-      handlePrint();
+      // handlePrint();
     }
   }, [print, currentOrder]);
 
@@ -40,13 +33,13 @@ export default function OrderDetail() {
     content: () => printRef.current,
   });
 
-  if (!currentOrder) {
-    return <div>No requisition data available.</div>;
+  if (isPending) {
+    return <LoadingIndicator />;
   }
 
   return (
     <div>
-      <Hero>Requisition Order: {order.requisitionId}</Hero>
+      <Hero>Requisition Order: {currentOrder.requisitionId}</Hero>
       <Controls>
         <VersionFilter
           versions={orders}
@@ -69,17 +62,16 @@ export default function OrderDetail() {
 }
 
 const VersionFilter = ({ versions, setCurrentOrder, handlePrint }) => {
-  const [selectedIndex, setSelectedIndex] = useState(versions.result.length - 1); // Default to "Current"
-  console.log(versions);
+  const [selectedIndex, setSelectedIndex] = useState(versions.length - 1); // Default to "Current"
 
   useEffect(() => {
-    setCurrentOrder(versions.result[selectedIndex]);
-  }, [selectedIndex, setCurrentOrder, versions.result]);
+    setCurrentOrder(versions[selectedIndex]);
+  }, [selectedIndex, setCurrentOrder, versions]);
 
   const handleVersionSelect = (e) => {
     const index = parseInt(e.target.value, 10);
     setSelectedIndex(index);
-    setCurrentOrder(versions.result[index]);
+    setCurrentOrder(versions[index]);
   };
 
   return (
@@ -92,17 +84,15 @@ const VersionFilter = ({ versions, setCurrentOrder, handlePrint }) => {
           value={selectedIndex}
           className="input cursor-pointer"
         >
-          {versions.result.length > 1 && (
-            <option value={versions.result.length - 1}>Current</option>
-          )}
-          {versions.result
+          {versions.length > 1 && <option value={versions.length - 1}>Current</option>}
+          {versions
             .slice()
             .reverse()
             .map((order, reversedIndex) => {
-              const index = versions.result.length - 1 - reversedIndex;
+              const index = versions.length - 1 - reversedIndex;
               return (
                 index > 0 &&
-                index < versions.result.length - 1 && (
+                index < versions.length - 1 && (
                   <option value={index} key={index}>
                     {index + 1}
                   </option>
