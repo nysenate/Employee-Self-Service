@@ -4,7 +4,6 @@ import EmptyCart from "app/views/supply/cart/EmptyCart";
 import Controls from "app/components/Controls";
 import Hero from "app/components/Hero";
 import Card from "app/components/Card";
-import { useItems } from "app/views/supply/useItems";
 import ItemQuantityControls from "app/views/supply/ItemQuantityControls";
 import { Button } from "app/components/Button";
 import EmptyCartConfirmation from "app/views/supply/cart/EmptyCartConfirmation";
@@ -14,14 +13,17 @@ import { useCheckout } from "app/views/supply/cart/useCheckout";
 import useAuth from "app/contexts/Auth/useAuth";
 import LoadingIndicator from "app/components/LoadingIndicator";
 import CheckoutSummaryModal from "app/views/supply/cart/CheckoutSummaryModal";
+import { useItemsMap } from "app/views/supply/useItems";
 
 export default function ShoppingCartIndex() {
   const auth = useAuth();
   const { cart, clearCart, destination } = useSupplyContext();
   const [instructions, setInstructions] = useState("");
-  const itemsQuery = useItems();
-  const [isEmptyCartConfirmationOpen, setIsEmptyCartConfirmationOpen] = useState(false);
-  const [isDeliveryMethodModalOpen, setIsDeliveryMethodModalOpen] = useState(false);
+  const itemsQuery = useItemsMap();
+  const [isEmptyCartConfirmationOpen, setIsEmptyCartConfirmationOpen] =
+    useState(false);
+  const [isDeliveryMethodModalOpen, setIsDeliveryMethodModalOpen] =
+    useState(false);
   const [isCheckoutSummaryOpen, setIsCheckoutSummaryOpen] = useState(false);
   const checkoutApi = useCheckout();
   const [checkoutRes, setCheckoutRes] = useState();
@@ -70,7 +72,9 @@ export default function ShoppingCartIndex() {
       </Controls>
 
       <Card className="my-5">
-        <Card.Header className="mb-0 text-lg font-semibold">Cart Items</Card.Header>
+        <Card.Header className="mb-0 text-lg font-semibold">
+          Cart Items
+        </Card.Header>
         {Object.keys(cart.items).map((itemId) => (
           <div key={itemId}>
             <CartItem item={itemsQuery.data.get(parseInt(itemId))} />
@@ -91,13 +95,21 @@ export default function ShoppingCartIndex() {
               cols="50"
             />
           </div>
-          <Button color="secondary" onClick={() => setIsEmptyCartConfirmationOpen(true)}>
+          <Button
+            color="secondary"
+            onClick={() => setIsEmptyCartConfirmationOpen(true)}
+          >
             Empty Cart
           </Button>
-          <Link to="/supply/requisition-form" style={{ textDecoration: "none" }}>
+          <Link
+            to="/supply/requisition-form"
+            style={{ textDecoration: "none" }}
+          >
             <Button color="secondary">Continue Browsing</Button>
           </Link>
-          <Button onClick={() => setIsDeliveryMethodModalOpen(true)}>Checkout</Button>
+          <Button onClick={() => setIsDeliveryMethodModalOpen(true)}>
+            Checkout
+          </Button>
         </div>
       </Card>
       <EmptyCartConfirmation
@@ -127,7 +139,9 @@ function CartItem({ item }) {
           }}
         />
       </div>
-      <div className="col-span-6 mt-4 text-xl font-semibold">{item.description}</div>
+      <div className="col-span-6 mt-4 text-xl font-semibold">
+        {item.description}
+      </div>
       <div className="relative col-span-3 flex flex-col items-center justify-center">
         <p className="absolute top-9">{item.unit}</p>
         <ItemQuantityControls item={item} />

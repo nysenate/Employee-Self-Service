@@ -34,7 +34,7 @@
 @layer components {
 
     .input {
-        @apply p-1 border-1 border-gray-300 bg-gray-50
+        @apply p-1.5 border-1 border-gray-300 bg-gray-50
         focus-visible:border-gray-600
         disabled:bg-white disabled:border-none
         [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none
@@ -63,11 +63,19 @@
     }
 
     .table__head__cell {
-        @apply py-3 px-1 text-sm font-semibold;
+        @apply py-3 px-3 font-semibold tracking-wide;
+    }
+
+    .table__head__cell--text {
+        @apply text-left;
+    }
+
+    .table__head__cell--number {
+        @apply text-right;
     }
 
     .table__body {
-        @apply text-center border-b-1 border-gray-75;
+        @apply text-center;
     }
 
     .table__body--striped .table__row:nth-child(odd) {
@@ -91,7 +99,7 @@
     }
 
     .table__cell {
-        @apply p-1.5;
+        @apply py-1.5 px-3;
     }
 
     .table__cell--bold {
@@ -104,6 +112,14 @@
 
     .table__cell--left {
         @apply text-left;
+    }
+
+    .table__cell--text {
+        @apply table__cell--left;
+    }
+
+    .table__cell--number {
+        @apply table__cell--right font-mono;
     }
 
     .table__totals {

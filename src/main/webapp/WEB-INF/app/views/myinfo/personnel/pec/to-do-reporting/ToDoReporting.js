@@ -4,9 +4,13 @@ import TrainingFilters from "./TrainingFilters";
 import Card from "app/components/Card";
 import {
   CLEAR_TRAININGS,
-  COMPLETION_STATUS, SET_EMP_NAME, SET_OFFSET, SET_RESP_CTR_HEADS,
+  COMPLETION_STATUS,
+  SET_EMP_NAME,
+  SET_OFFSET,
+  SET_RESP_CTR_HEADS,
   TOGGLE_INACTIVE_TRAININGS,
-  TOGGLE_TRAINING, UPDATE_CONT_SERV_DATE,
+  TOGGLE_TRAINING,
+  UPDATE_CONT_SERV_DATE,
 } from "app/views/myinfo/personnel/pec/to-do-reporting/todoReportingActions";
 import EmployeeFilters from "app/views/myinfo/personnel/pec/to-do-reporting/EmployeeFilters";
 import { setEmpName } from "./todoReportingActions";
@@ -76,16 +80,16 @@ function filterReducer(state, action) {
         ...state,
         name: action.payload.name,
         offset: 1,
-      }
+      };
     case SET_OFFSET:
       return {
         ...state,
         offset: action.payload.offset,
-      }
+      };
     default:
       return {
-        ...state
-      }
+        ...state,
+      };
   }
 }
 
@@ -103,7 +107,6 @@ const initialState = {
   sort: ["NAME:ASC", "OFFICE:ASC"],
 };
 
-
 export default function ToDoReporting() {
   const [state, dispatch] = useReducer(filterReducer, initialState);
   const taskAssignmentsQuery = useSearchTaskAssignments(state);
@@ -114,13 +117,19 @@ export default function ToDoReporting() {
       <Card className="mt-3">
         <div className="grid grid-cols-5 gap-4 p-4">
           <div className="col-span-2">
-            <TrainingFilters state={state} dispatch={dispatch}/>
-            <EmployeeFilters state={state} dispatch={dispatch}/>
+            <TrainingFilters state={state} dispatch={dispatch} />
+            <EmployeeFilters state={state} dispatch={dispatch} />
           </div>
           <div className="col-span-3">
-            <InputDebounced label="Search by Employee Name"
-                            term={state.name}
-                            onChange={name => dispatch(setEmpName(name))}/>
+            <label htmlFor="empNameSearch" className="font-light">
+              Search by Employee Name
+            </label>
+            <InputDebounced
+              id="empNameSearch"
+              value={state.name}
+              onChange={(name) => dispatch(setEmpName(name))}
+              className="w-64"
+            />
             <AssignmentsSummary
               taskAssignmentQuery={taskAssignmentsQuery}
               state={state}

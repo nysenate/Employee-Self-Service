@@ -9,19 +9,20 @@
  */
 export async function fetchApiJson(path, opts) {
   const init = {
+    ...opts,
     method: opts?.method || "GET",
     headers: {
       "Content-Type": "application/json",
-      "Accept": "application/json",
+      Accept: "application/json",
     },
-    cache: 'no-store',
-  }
+    cache: "no-store",
+  };
 
   if (opts?.method === "POST") {
     init.body = JSON.stringify(opts.payload);
   }
 
-  return fetchJson(`/api/v1${path}`, init)
+  return fetchJson(`/api/v1${path}`, init);
 }
 
 export async function fetchJson(input, init) {
@@ -31,11 +32,11 @@ export async function fetchJson(input, init) {
   // response.ok is true when res.status is 2xx
   // https://developer.mozilla.org/en-US/docs/Web/API/Response/ok
   if (response.ok) {
-    return response.json()
+    return response.json();
   }
 
   // Unsuccessful response, throw error.
-  const data = await response.json()
+  const data = await response.json();
   throw new FetchError({
     message: response.statusText,
     response,
@@ -61,4 +62,3 @@ export class FetchError extends Error {
     this.data = data ?? { message: message };
   }
 }
-
