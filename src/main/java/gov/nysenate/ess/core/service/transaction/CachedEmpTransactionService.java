@@ -15,11 +15,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Stream;
 
+@Service
 public class CachedEmpTransactionService extends EmployeeEhCache<TransactionHistory>
         implements EmpTransactionService {
     private static final Logger logger = LoggerFactory.getLogger(CachedEmpTransactionService.class);
@@ -82,11 +84,10 @@ public class CachedEmpTransactionService extends EmployeeEhCache<TransactionHist
 
     @Scheduled(fixedDelayString = "${cache.poll.delay.transactions:60000}")
     private void syncTransHistory() {
-        logger.info("Checking for transaction updates since {}...", lastUpdateDateTime);
         List<TransactionRecord> transRecs = transactionDao.updatedRecordsSince(lastUpdateDateTime);
         LocalDateTime lastCheckTime = LocalDateTime.now();
-        logger.info("{} new transaction records have been found.", transRecs.size());
         if (!transRecs.isEmpty()) {
+            logger.info("{} new transaction records have been found.", transRecs.size());
             // Get the last updated record date/time
             lastUpdateDateTime = transRecs.stream()
                     .flatMap(tRec -> Stream.of(tRec.getAuditUpdateDate(), tRec.getUpdateDate()))

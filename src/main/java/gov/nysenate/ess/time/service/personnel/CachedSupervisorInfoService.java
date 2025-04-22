@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -31,6 +32,7 @@ import static gov.nysenate.ess.core.model.transaction.TransactionCode.*;
 import static gov.nysenate.ess.time.model.personnel.SupOverrideType.EMPLOYEE;
 import static gov.nysenate.ess.time.model.personnel.SupOverrideType.SUPERVISOR;
 
+@Service
 public class CachedSupervisorInfoService extends EmployeeEhCache<PrimarySupEmpGroup>
         implements SupervisorInfoService {
     private static final Logger logger = LoggerFactory.getLogger(CachedSupervisorInfoService.class);
@@ -457,10 +459,11 @@ public class CachedSupervisorInfoService extends EmployeeEhCache<PrimarySupEmpGr
     @WorkInProgress(author = "sam", since = "11/2/2015", desc = "insufficient live testing")
     @Scheduled(fixedDelayString = "${cache.poll.delay.supervisors:60000}")
     private void syncSupervisorCache() {
-        logger.info("Checking for supervisor override updates...");
         Set<Integer> modifiedSups = new HashSet<>(getOvrUpdatedSups());
         modifiedSups.forEach(this::cachePrimarySupEmpGroup);
-        logger.info("Refreshed {} supervisor emp groups", modifiedSups.size());
+        if (!modifiedSups.isEmpty()) {
+            logger.info("Refreshed {} supervisor emp groups", modifiedSups.size());
+        }
     }
 
     /**
