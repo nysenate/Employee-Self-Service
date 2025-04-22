@@ -281,7 +281,6 @@ public class CachedTimeRecordService
     @Scheduled(fixedDelayString = "${cache.poll.delay.timerecords:60000}")
     @Override
     public void syncTimeRecords() {
-        logger.info("Checking for time record updates since {}", lastUpdateTime);
         Range<LocalDateTime> updateRange = Range.openClosed(lastUpdateTime, LocalDateTime.now());
         List<TimeRecord> updatedTRecs = timeRecordDao.getUpdatedRecords(updateRange);
         lastUpdateTime = updatedTRecs.stream()
@@ -289,7 +288,9 @@ public class CachedTimeRecordService
                 .map(TimeRecord::getOverallUpdateDate)
                 .max(LocalDateTime::compareTo)
                 .orElse(lastUpdateTime);
-        logger.info("Refreshed cache with {} updated time records", updatedTRecs.size());
+        if (!updatedTRecs.isEmpty()) {
+            logger.info("Refreshed cache with {} updated time records", updatedTRecs.size());
+        }
     }
 
     /* --- Internal Methods --- */

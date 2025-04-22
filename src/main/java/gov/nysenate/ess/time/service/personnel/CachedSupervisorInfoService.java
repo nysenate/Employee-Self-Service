@@ -459,10 +459,11 @@ public class CachedSupervisorInfoService extends EmployeeEhCache<PrimarySupEmpGr
     @WorkInProgress(author = "sam", since = "11/2/2015", desc = "insufficient live testing")
     @Scheduled(fixedDelayString = "${cache.poll.delay.supervisors:60000}")
     private void syncSupervisorCache() {
-        logger.info("Checking for supervisor override updates...");
         Set<Integer> modifiedSups = new HashSet<>(getOvrUpdatedSups());
         modifiedSups.forEach(this::cachePrimarySupEmpGroup);
-        logger.info("Refreshed {} supervisor emp groups", modifiedSups.size());
+        if (!modifiedSups.isEmpty()) {
+            logger.info("Refreshed {} supervisor emp groups", modifiedSups.size());
+        }
     }
 
     /**

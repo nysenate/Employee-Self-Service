@@ -194,7 +194,7 @@ public class CachedEmployeeInfoService extends EmployeeEhCache<Employee>
         }
     }
 
-    @Scheduled(fixedDelayString = "${cache.poll.delay.employees:43200000}")
+    @Scheduled(fixedDelayString = "${cache.poll.delay.employees:60000}")
     @WorkInProgress(author = "sam", since = "10/30/2015", desc = "insufficient live testing")
     private void syncEmployeeCache() {
         // Get employees updated since the last check

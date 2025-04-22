@@ -68,7 +68,6 @@ class CachedAnnualAccrualService extends EmployeeEhCache<CachedAnnualAccrualServ
 
     @Scheduled(fixedDelayString = "${cache.poll.delay.accruals:60000}")
     private void updateAnnualAccCache() {
-        logger.info("Checking for annual accrual record updates since {}", lastUpdateDateTime);
         List<AnnualAccSummary> updatedAnnualAccs = accrualDao.getAnnualAccsUpdatedSince(lastUpdateDateTime);
         for (var summary : updatedAnnualAccs) {
             var tree = cache.get(summary.getEmpId());
@@ -78,6 +77,8 @@ class CachedAnnualAccrualService extends EmployeeEhCache<CachedAnnualAccrualServ
         }
         lastUpdateDateTime = updatedAnnualAccs.stream().map(AnnualAccSummary::getUpdateDate)
                 .max(LocalDateTime::compareTo).orElse(lastUpdateDateTime);
-        logger.info("Refreshed cache with {} updated annual accrual records", updatedAnnualAccs.size());
+        if (!updatedAnnualAccs.isEmpty()) {
+            logger.info("Refreshed cache with {} updated annual accrual records", updatedAnnualAccs.size());
+        }
     }
 }
