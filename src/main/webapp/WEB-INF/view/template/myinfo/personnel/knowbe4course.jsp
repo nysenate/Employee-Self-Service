@@ -27,8 +27,13 @@
         <div ng-hide="state.assignment.completed">
           <h2>Training Instructions</h2>
           <p>
-            All employees must complete an online cybersecurity training within the calendar year.
-            Go to the URL listed below or in your Senate email inbox to complete the course.
+            <b>All employees are required to complete online cybersecurity awareness training within the calendar year.
+              New employees have 30 days to complete, existing employees will be notified of their completion deadline.</b>
+            <br>
+            Assignment emails will be sent to employees' Senate mailboxes.
+            <br>
+            Follow the email instructions or visit the link below to complete the course.
+            If you need assistance, please contact the STS Helpline at 518-455-2313.
           </p>
           <a ng-href="{{state.assignment.task.getCourseUrl()}}" target="_blank">LINK TO COURSE URL</a>
 
