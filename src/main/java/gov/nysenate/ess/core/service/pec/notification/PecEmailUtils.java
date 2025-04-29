@@ -57,10 +57,18 @@ class PecEmailUtils {
                                          List<String> extraData) {
         var emails = new ArrayList<EmployeeEmail>();
         for (String address : addresses) {
-            Employee emp = employeeDao.getEmployeeByEmail(address);
-            var dataList = new ArrayList<AssignmentWithTask>();
-            taskOpt.ifPresent(task -> dataList.add(new AssignmentWithTask(emp.getEmployeeId(), task)));
-            emails.add(new EmployeeEmail(emp, type, dataList, extraData));
+            try {
+                Employee emp = employeeDao.getEmployeeByEmail(address);
+                var dataList = new ArrayList<AssignmentWithTask>();
+                taskOpt.ifPresent(task -> dataList.add(new AssignmentWithTask(emp.getEmployeeId(), task)));
+                emails.add(new EmployeeEmail(emp, type, dataList, extraData));
+            }
+            catch (EmployeeNotFoundEx ex) {
+                String error = "Could not send PEC Codes to employee with email address: " + address
+                        + ". The employee record was not found";
+                logger.error(error, ex);
+            }
+
         }
         return emails;
     }
