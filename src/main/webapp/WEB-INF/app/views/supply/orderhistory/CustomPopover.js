@@ -1,6 +1,4 @@
 import React from "react";
-import { Tooltip } from "react-tippy";
-import "react-tippy/dist/tippy.css";
 import styles from "app/views/supply/order-detail/OrderDetail.module.css";
 
 const CustomPopover = ({ order }) => {
@@ -21,18 +19,19 @@ const CustomPopover = ({ order }) => {
   );
 
   return (
-    <Tooltip
-      html={popoverContent}
-      position="bottom"
-      trigger="mouseenter"
-      arrow={true}
-      theme="light"
-      duration={200}
-    >
-      <div className={`${styles.col412}`}>
-        <b>Requested By:</b> {order.customer.fullName}
-      </div>
-    </Tooltip>
+    <>stub</>
+    // <Tooltip
+    //   html={popoverContent}
+    //   position="bottom"
+    //   trigger="mouseenter"
+    //   arrow={true}
+    //   theme="light"
+    //   duration={200}
+    // >
+    //   <div className={`${styles.col412}`}>
+    //     <b>Requested By:</b> {order.customer.fullName}
+    //   </div>
+    // </Tooltip>
   );
 };
 

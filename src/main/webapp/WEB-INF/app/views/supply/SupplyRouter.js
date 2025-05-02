@@ -49,33 +49,31 @@ export default function SupplyRouter() {
 function SupplyLayout() {
   return (
     <AppLayout>
-      <Navigation notWrapInCard={true}>
-        <Card className="pb-5">
-          <Navigation.Title>Supply Menu</Navigation.Title>
-          <Navigation.Section name="My Supply">
-            <Navigation.Link to="/supply/requisition-form">
-              Requisition Form
-            </Navigation.Link>
-            <Navigation.Link to="/supply/cart">Shopping Cart</Navigation.Link>
-            <Navigation.Link to="/supply/order-history">
-              Order History
-            </Navigation.Link>
-          </Navigation.Section>
-          <Navigation.Section name="Manage Supply">
-            <Navigation.Link to="/supply/fulfillment">
-              Fulfillment
-            </Navigation.Link>
-            <Navigation.Link to="/supply/reconciliation">
-              Reconciliation
-            </Navigation.Link>
-            <Navigation.Link to="/supply/requisition-history">
-              Requisition History
-            </Navigation.Link>
-            <Navigation.Link to="/supply/item-history">
-              Item History
-            </Navigation.Link>
-          </Navigation.Section>
-        </Card>
+      <Navigation>
+        <Navigation.Title>Supply Menu</Navigation.Title>
+        <Navigation.Section name="My Supply">
+          <Navigation.Link to="/supply/requisition-form">
+            Requisition Form
+          </Navigation.Link>
+          <Navigation.Link to="/supply/cart">Shopping Cart</Navigation.Link>
+          <Navigation.Link to="/supply/order-history">
+            Order History
+          </Navigation.Link>
+        </Navigation.Section>
+        <Navigation.Section name="Manage Supply">
+          <Navigation.Link to="/supply/fulfillment">
+            Fulfillment
+          </Navigation.Link>
+          <Navigation.Link to="/supply/reconciliation">
+            Reconciliation
+          </Navigation.Link>
+          <Navigation.Link to="/supply/requisition-history">
+            Requisition History
+          </Navigation.Link>
+          <Navigation.Link to="/supply/item-history">
+            Item History
+          </Navigation.Link>
+        </Navigation.Section>
       </Navigation>
     </AppLayout>
   );

@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import { useReactToPrint } from "react-to-print";
 import styles from "app/views/supply/universalStyles.module.css";
 import Hero from "app/components/Hero";
 import CustomerPopover from "app/views/supply/orderhistory/CustomPopover";
@@ -84,7 +83,9 @@ const VersionFilter = ({ versions, setCurrentOrder, handlePrint }) => {
           value={selectedIndex}
           className="input cursor-pointer"
         >
-          {versions.length > 1 && <option value={versions.length - 1}>Current</option>}
+          {versions.length > 1 && (
+            <option value={versions.length - 1}>Current</option>
+          )}
           {versions
             .slice()
             .reverse()
@@ -121,7 +122,8 @@ const OrderInfo = ({ order }) => {
           <b>Requested Office:</b> {order.destination.locId}
         </div>
         <div className={styles.col412}>
-          <b>Requested Date:</b> {new Date(order.orderedDateTime).toLocaleString()}
+          <b>Requested Date:</b>{" "}
+          {new Date(order.orderedDateTime).toLocaleString()}
         </div>
       </div>
       <div className={`${styles.grid} ${styles.paddingX}`}>
