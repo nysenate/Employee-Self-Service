@@ -1,16 +1,17 @@
-import React, { useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { loadAuth, saveAuth } from "app/contexts/Auth/authStorage";
 import { add, isAfter } from "date-fns";
-import { fetchJson } from "app/api/fetchJson";
+import { fetchApiJson, fetchJson } from "app/api/fetchJson";
 
 
 const AuthContext = React.createContext()
 
 function useProvideAuth() {
   const localStorageAuth = loadAuth()
-  const [isAuthed, setIsAuthed] = useState(localStorageAuth.isAuthed)
-  const [expiresTime, setExpiresTime] = useState(localStorageAuth.expiresTime)
-  const [empId, setEmpId] = useState(localStorageAuth.empId)
+  const [ isAuthed, setIsAuthed ] = useState(localStorageAuth.isAuthed)
+  const [ expiresTime, setExpiresTime ] = useState(localStorageAuth.expiresTime)
+  const [ empId, setEmpId ] = useState(localStorageAuth.empId)
+  const [userData, setUserData] = useState(localStorageAuth.userData);
 
   const isExpired = () => {
     return isAfter(new Date(), expiresTime)
@@ -19,8 +20,21 @@ function useProvideAuth() {
   React.useEffect(() => {
     // TODO will this overwrite local storage on initial load?
     // TODO save isAuthed = isAuthed()???? so once expires isAuthed = false
-    saveAuth(isAuthed, expiresTime, empId)
-  }, [isAuthed, expiresTime, empId])
+    saveAuth(isAuthed, expiresTime, empId, userData)
+  }, [ isAuthed, expiresTime, empId, userData ])
+
+  const fetchUserData = useCallback(async () => {
+    if (empId) {
+      const userResponse = await fetchApiJson(`/employees?detail=true&empId=${empId}`)
+      setUserData(userResponse)
+    }
+  }, [empId])
+
+  useEffect(() => {
+    if (isAuthed && !userData) {
+      fetchUserData();
+    }
+  }, [isAuthed, fetchUserData, userData]);
 
   return {
     isAuthed() {
@@ -29,12 +43,16 @@ function useProvideAuth() {
     empId() {
       return empId
     },
+    userData() {
+      return userData
+    },
     login(username, password) {
       return loginUser(username, password)
         .then((data) => {
           setIsAuthed(data.authenticated)
           setExpiresTime(add(new Date(), { minutes: 10 }))
           setEmpId(data.employeeId)
+          fetchUserData() // Fetch user data after login
         })
     },
     logout() {
@@ -42,6 +60,7 @@ function useProvideAuth() {
         .then(() => {
           setIsAuthed(false)
           setEmpId(null)
+          setUserData(null) // Clear user data on logout
         })
     }
   }

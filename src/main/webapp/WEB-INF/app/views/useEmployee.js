@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchApiJson } from "app/api/fetchJson";
 import { getEmployee } from "app/api/employee";
 
 

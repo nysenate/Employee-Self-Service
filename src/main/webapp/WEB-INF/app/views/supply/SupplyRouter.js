@@ -1,48 +1,80 @@
-import React from "react"
-import { Navigate, Route, Routes } from "react-router-dom";
+import React from "react";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { ThemeContext, themes } from "app/contexts/ThemeContext";
 import RequisitionFormIndex from "app/views/supply/requisition/RequisitionFormIndex";
-import OrderHistoryIndex from "app/views/supply/orderhistory/OrderHistoryIndex";
 import ShoppingCartIndex from "app/views/supply/cart/ShoppingCartIndex";
+import OrderHistoryIndex from "app/views/supply/orderhistory/OrderHistoryIndex";
+import OrderDetail from "app/views/supply/order-detail/OrderDetail";
+import FulfillmentIndex from "app/views/supply/fulfillment/FulfillmentIndex";
+import RequisitionHistoryIndex from "app/views/supply/requisitionhistory/RequisitionHistoryIndex";
 import AppLayout from "app/components/AppLayout";
 import Navigation from "app/components/Navigation";
-
+import Card from "app/components/Card";
+import { SupplyContextProvider } from "app/views/supply/requisition/useSupplyContext";
+import ReconciliationIndex from "app/views/supply/reconciliation/ReconciliationIndex";
+import ItemSummary from "app/views/supply/item-history/ItemSummary";
 
 export default function SupplyRouter() {
   return (
     <ThemeContext.Provider value={themes.supply}>
-      <Routes>
-        <Route path="" element={<SupplyLayout/>}>
-          <Route path="shopping/order" element={<RequisitionFormIndex/>}/>
-          <Route path="shopping/cart" element={<ShoppingCartIndex/>}/>
-          <Route path="order-history" element={<OrderHistoryIndex/>}/>
-          <Route path="" element={<Navigate to="shopping/order" replace/>}/>
-          <Route path="*" element={<div>404</div>}/>
-        </Route>
-      </Routes>
+      <SupplyContextProvider>
+        <Routes>
+          <Route path="" element={<SupplyLayout />}>
+            <Route path="requisition-form" element={<RequisitionFormIndex />} />
+            <Route path="cart" element={<ShoppingCartIndex />} />
+            <Route
+              path="order-history/order/:orderId"
+              element={<OrderDetail />}
+            />
+            <Route path="order-history" element={<OrderHistoryIndex />} />
+            <Route path="fulfillment" element={<FulfillmentIndex />} />
+            <Route path="reconciliation" element={<ReconciliationIndex />} />
+            <Route
+              path="requisition-history"
+              element={<RequisitionHistoryIndex />}
+            />
+            <Route path="item-history" element={<ItemSummary />} />
+            <Route
+              path=""
+              element={<Navigate to="requisition-form" replace />}
+            />
+            <Route path="*" element={<div>404</div>} />
+          </Route>
+        </Routes>
+      </SupplyContextProvider>
     </ThemeContext.Provider>
-  )
+  );
 }
 
 function SupplyLayout() {
   return (
     <AppLayout>
       <Navigation>
-        <Navigation.Title>
-          Supply Menu
-        </Navigation.Title>
+        <Navigation.Title>Supply Menu</Navigation.Title>
         <Navigation.Section name="My Supply">
-          <Navigation.Link to="/supply/shopping/order">
+          <Navigation.Link to="/supply/requisition-form">
             Requisition Form
           </Navigation.Link>
-          <Navigation.Link to="/supply/shopping/cart">
-            Shopping Cart
-          </Navigation.Link>
+          <Navigation.Link to="/supply/cart">Shopping Cart</Navigation.Link>
           <Navigation.Link to="/supply/order-history">
             Order History
           </Navigation.Link>
         </Navigation.Section>
+        <Navigation.Section name="Manage Supply">
+          <Navigation.Link to="/supply/fulfillment">
+            Fulfillment
+          </Navigation.Link>
+          <Navigation.Link to="/supply/reconciliation">
+            Reconciliation
+          </Navigation.Link>
+          <Navigation.Link to="/supply/requisition-history">
+            Requisition History
+          </Navigation.Link>
+          <Navigation.Link to="/supply/item-history">
+            Item History
+          </Navigation.Link>
+        </Navigation.Section>
       </Navigation>
     </AppLayout>
-  )
+  );
 }

@@ -1,5 +1,6 @@
 package gov.nysenate.ess.supply.item;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.supply.item.model.SupplyItem;
@@ -11,6 +12,7 @@ public class OrderableItems {
 
     /**
      * Returns a new set of SupplyItems with hidden and non expendable items removed.
+     *
      * @param items A collection of items to be filtered.
      * @return An ImmutableSet containing all visible and expendable items in the given <code>items</code> collection.
      * Returns an empty set if <code>items</code> is <code>null</code> or empty.
@@ -32,10 +34,10 @@ public class OrderableItems {
      * are allowed to be ordered from <code>locId</code> and were present in the <code>items</code> parameter.
      * Returns an empty set if <code>items</code> is <code>null</code> or empty.
      */
-    public static ImmutableSet<SupplyItem> forItemsAndLoc(Collection<SupplyItem> items, LocationId locId) {
+    public static ImmutableList<SupplyItem> forItemsAndLoc(Collection<SupplyItem> items, LocationId locId) {
         return forItems(items).stream()
                 .filter(i -> allowedToOrder(i, locId))
-                .collect(Collectors.collectingAndThen(Collectors.toList(), ImmutableSet::copyOf));
+                .collect(Collectors.collectingAndThen(Collectors.toList(), ImmutableList::copyOf));
     }
 
     private static boolean allowedToOrder(SupplyItem item, LocationId locId) {

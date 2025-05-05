@@ -1,25 +1,43 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
+import { twMerge } from "tailwind-merge";
 
-export default function InputDebounced({ label, initValue, onChange }) {
-  const [term, setTerm] = useState(initValue || '');
-  const [debouncedTerm] = useDebounce(term, 500);
+export default function InputDebounced({
+  id,
+  value,
+  type = "text",
+  placeholder = "",
+  onChange,
+  delay = 500,
+  className = "",
+  min, // optional, only used if type="date".
+  max, // optional, only used if type="date".
+}) {
+  const [term, setTerm] = useState(value || "");
+  const [debouncedTerm] = useDebounce(term, delay);
+  const classes = twMerge(className, "input");
 
-  React.useEffect(() => {
-    onChange(debouncedTerm)
-  }, [debouncedTerm])
+  useEffect(() => {
+    setTerm(value || "");
+  }, [value]);
+
+  useEffect(() => {
+    onChange(debouncedTerm);
+  }, [debouncedTerm]);
 
   return (
     <div>
-      <label className="flex font-light" htmlFor="name">{label}</label>
       <input
-        id="name"
-        type="text"
+        id={id}
+        name={id}
+        type={type}
         autoComplete="off"
         value={term}
-        onChange={e => setTerm(e.target.value)}
-        className="input w-64"
+        placeholder={placeholder}
+        onChange={(e) => setTerm(e.target.value)}
+        className={classes}
+        {...(type === "date" ? { min, max } : {})}
       />
     </div>
   );
-};
+}

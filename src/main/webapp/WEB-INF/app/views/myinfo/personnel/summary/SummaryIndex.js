@@ -7,7 +7,7 @@ import PayrollInfo from "app/views/myinfo/personnel/summary/PayrollInfo";
 import { FederalTax, NewYorkCityTax, StateTax, YonkersTax } from "app/views/myinfo/personnel/summary/TaxInfo";
 import useAuth from "app/contexts/Auth/useAuth";
 import LoadingIndicator from "app/components/LoadingIndicator";
-import { useEmployee } from "app/views/myinfo/personnel/summary/useEmployee";
+import { useEmployee } from "app/views/useEmployee";
 import { useEmployeeTransactions } from "app/views/myinfo/personnel/summary/useEmployeeTransactions";
 
 

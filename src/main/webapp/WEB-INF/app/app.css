@@ -24,6 +24,9 @@
         @apply text-teal-600 hover:text-teal-800 text-base;
     }
 
+    button {
+        @apply outline-none;
+    }
 }
 
 
@@ -31,9 +34,10 @@
 @layer components {
 
     .input {
-        @apply p-1 border-1 border-gray-300 bg-gray-50
+        @apply p-1.5 border-1 border-gray-300 bg-gray-50
         focus-visible:border-gray-600
-        disabled:bg-white disabled:border-none;
+        disabled:bg-white disabled:border-none
+        [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none
     }
 
     .input--invalid {
@@ -59,27 +63,43 @@
     }
 
     .table__head__cell {
-        @apply py-3 px-1 text-sm font-semibold;
+        @apply py-3 px-3 font-semibold tracking-wide;
+    }
+
+    .table__head__cell--text {
+        @apply text-left;
+    }
+
+    .table__head__cell--number {
+        @apply text-right;
     }
 
     .table__body {
-        @apply text-center border-b-1 border-gray-75;
+        @apply text-center;
     }
 
     .table__body--striped .table__row:nth-child(odd) {
         @apply bg-gray-75;
     }
 
+    .table__body--striped .table__row--error:nth-child(odd) {
+        @apply bg-red-300/50;
+    }
+
     .table__body--highlight .table__row {
-        @apply hover:brightness-90 transition duration-75;
+        @apply hover:brightness-90 transition duration-75 cursor-pointer;
     }
 
     .table__row {
         @apply bg-gray-25;
     }
 
+    .table__row--error {
+        @apply bg-red-300/30
+    }
+
     .table__cell {
-        @apply p-1.5;
+        @apply py-1.5 px-3;
     }
 
     .table__cell--bold {
@@ -92,6 +112,14 @@
 
     .table__cell--left {
         @apply text-left;
+    }
+
+    .table__cell--text {
+        @apply table__cell--left;
+    }
+
+    .table__cell--number {
+        @apply table__cell--right font-mono;
     }
 
     .table__totals {
