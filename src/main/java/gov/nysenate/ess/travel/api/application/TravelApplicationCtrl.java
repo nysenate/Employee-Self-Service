@@ -88,16 +88,17 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
         List<TravelApplication> apps = appService.selectAllTravelApplications(fromLocalDateTime, toLocalDateTime);
 
         List<TravelApplicationView> appViews = apps.stream()
-                                                    .map(TravelApplicationView::new)
-                                                    .collect(Collectors.toList());
+                .map(TravelApplicationView::new)
+                .collect(Collectors.toList());
 
         List<TravelStatusCountDTO> appStatuses = TravelApplicationStatisticsUtil.getTravelStatusCount(appViews);
 
         List<TravelStatusCountView> appStatsViews = appStatuses.stream()
-                                                            .map(TravelStatusCountView::new)
-                                                            .collect(Collectors.toList());
+                .map(TravelStatusCountView::new)
+                .collect(Collectors.toList());
         return ListViewResponse.of(appStatsViews);
     }
+
     @RequestMapping(value = "/applications")
     public BaseResponse getActiveTravelApps() {
         List<TravelApplication> apps = appService.selectTravelApplications(getSubjectEmployeeId());
@@ -106,7 +107,6 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
                 .collect(Collectors.toList());
         return ListViewResponse.of(appViews);
     }
-
 
     @RequestMapping(value = "/application/attachment/{uuid}", method = RequestMethod.GET)
     public ResponseEntity<byte[]> getAttachment(@PathVariable String uuid) throws IOException {

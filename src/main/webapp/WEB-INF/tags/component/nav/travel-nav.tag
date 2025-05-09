@@ -8,16 +8,15 @@
 <div class="left-nav-div flex-column-box">
   <section class="left-nav-content flex-header" ess-navigation>
 
-    <ess-component-nav:nav-header topicTitle="Travel Menu" colorClass="orange"/>
+    <ess-component-nav:nav-header topicTitle="Travel Menu" colorClass="orange" />
     <shiro:hasPermission name="<%= SimpleTravelPermission.TRAVEL_SUBMIT_APP.getPermissionString() %>">
-    <h3 class="main-topic">My Travel</h3>
-    <ul class="sub-topic-list">
-      <li class="sub-topic orange"><a href="${ctxPath}/travel/application/new">Submit Travel Application</a></li>
-      <li class="sub-topic orange"><a href="${ctxPath}/travel/applications">Travel History</a></li>
-      <li class="sub-topic orange"><a href="${ctxPath}/travel/drafts">Drafts</a></li>
-<%--      <li class="sub-topic orange"><a href="${ctxPath}/travel/application/all">Travel Statistics</a></li>--%>
-      <%--<li class="sub-topic"><a href="${ctxPath}/travel/config">User Configuration</a></li>--%>
-    </ul>
+      <h3 class="main-topic">My Travel</h3>
+      <ul class="sub-topic-list">
+        <li class="sub-topic orange"><a href="${ctxPath}/travel/application/new">Submit Travel Application</a></li>
+        <li class="sub-topic orange"><a href="${ctxPath}/travel/applications">Travel History</a></li>
+        <li class="sub-topic orange"><a href="${ctxPath}/travel/drafts">Drafts</a></li>
+          <%--<li class="sub-topic"><a href="${ctxPath}/travel/config">User Configuration</a></li>--%>
+      </ul>
     </shiro:hasPermission>
 
     <shiro:hasPermission name="<%= SimpleTravelPermission.TRAVEL_UI_MANAGE.getPermissionString() %>">
@@ -27,16 +26,16 @@
           <li class="sub-topic orange">
             <a href="${ctxPath}/travel/manage/review">Review Travel</a>
             <shiro:hasRole name="DEPARTMENT_HEAD">
-            <badge title="Applications pending department head review"
-                   badge-id="travelPendingDeptHdCount" hide-empty="false" color="orange"></badge>
+              <badge title="Applications pending department head review"
+                     badge-id="travelPendingDeptHdCount" hide-empty="false" color="orange"></badge>
             </shiro:hasRole>
             <shiro:hasRole name="TRAVEL_ADMIN">
-            <badge title="Applications pending travel admin review"
-                   badge-id="travelPendingAdminCount" hide-empty="false" color="teal"></badge>
+              <badge title="Applications pending travel admin review"
+                     badge-id="travelPendingAdminCount" hide-empty="false" color="teal"></badge>
             </shiro:hasRole>
             <shiro:hasRole name="SECRETARY_OF_THE_SENATE">
-            <badge title="Applications pending secretary review"
-                   badge-id="travelPendingSecretaryCount" hide-empty="false" color="green"></badge>
+              <badge title="Applications pending secretary review"
+                     badge-id="travelPendingSecretaryCount" hide-empty="false" color="green"></badge>
             </shiro:hasRole>
           </li>
         </shiro:hasPermission>
