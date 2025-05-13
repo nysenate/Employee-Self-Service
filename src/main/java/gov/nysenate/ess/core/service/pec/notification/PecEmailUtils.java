@@ -66,7 +66,7 @@ class PecEmailUtils {
             catch (EmployeeNotFoundEx ex) {
                 String error = "Could not send PEC Codes to employee with email address: " + address
                         + ". The employee record was not found";
-                logger.error(error, ex);
+                logger.error(error);
             }
 
         }

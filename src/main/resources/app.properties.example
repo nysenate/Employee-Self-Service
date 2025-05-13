@@ -293,14 +293,14 @@ legethics.url =
 legethics.api.path =
 legethics.key =
 
-pec.import.harassment_2019_video_task_id =
-pec.import.ethics_2018_video_task_id =
-pec.import.ethics_2020_video_task_id =
-pec.everfi.2020_harassment_task_id =
-pec.everfi.2021_harassment_task_id =
-pec.everfi.2022_new_user_task_id =
-pec.2020_sexual_harassment_ack_task_id =
-pec.import.ethics_2021_video_task_id =
+pec.import.harassment_2019_video_task_id = 0
+pec.import.ethics_2018_video_task_id = 0
+pec.import.ethics_2020_video_task_id = 0
+pec.everfi.2020_harassment_task_id = 0
+pec.everfi.2021_harassment_task_id = 0
+pec.everfi.2022_new_user_task_id = 0
+pec.2020_sexual_harassment_ack_task_id = 0
+pec.import.ethics_2021_video_task_id = 0
 
 
 # --- PEC Everfi Config --------------------------------------------------
