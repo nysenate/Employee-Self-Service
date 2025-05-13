@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import styles from "app/views/supply/universalStyles.module.css";
 import Hero from "app/components/Hero";
-import CustomerPopover from "app/views/supply/orderhistory/CustomPopover";
+import CustomerPopover from "app/views/supply/order-history/CustomPopover";
 import { alphabetizeLineItems, formatDate } from "app/views/supply/helpers";
 import OrderDetailPrint from "app/views/supply/order-detail/OrderDetailPrint";
 import Controls from "app/components/Controls";
