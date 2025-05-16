@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
@@ -107,9 +108,9 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                 .addValue("fromDate", toDate(query.getFromDateTime()))
                 .addValue("toDate", toDate(query.getToDateTime()))
                 .addValue("issuerId", query.getIssuerId())
-                .addValue("itemId", query.getItemId())
-                .addValue("savedInSfms", query.getSavedInSfms())
-                .addValue("isReconciled", query.getReconciled());
+                .addValue("itemId", query.getItemId() == null ? null : "%" + query.getItemId() + "%", Types.VARCHAR)
+                .addValue("savedInSfms", query.getSavedInSfms(), Types.BOOLEAN)
+                .addValue("isReconciled", query.getReconciled(), Types.BOOLEAN);
         String sql = generateSearchQuery(SqlRequisitionQuery.SEARCH_REQUISITIONS_PARTIAL,
                 query.getDateField(), query.getOrderBy(), query.getLimitOffset());
         PaginatedRowHandler<Requisition> paginatedRowHandler = new PaginatedRowHandler<>(query.getLimitOffset(),

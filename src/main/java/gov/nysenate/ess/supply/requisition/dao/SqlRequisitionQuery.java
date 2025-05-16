@@ -49,6 +49,18 @@ public enum SqlRequisitionQuery implements BasicSqlQuery {
             """
     ),
 
+    SEARCH_REQUISITIONS_GET_IDS(
+            """
+            SELECT DISTINCT r.requisition_id
+            FROM ${supplySchema}.requisition r
+            JOIN ${supplySchema}.requisition_content rc
+                ON r.current_revision_id = rc.revision_id
+            JOIN ${supplySchema}.line_item li
+                USING(revision_id)
+            WHERE rc.destination ILIKE :destination
+                AND 
+            """
+    ),
     /**
      * Must use {@link SqlRequisitionDao#generateSearchQuery(SqlRequisitionQuery, String, OrderBy, LimitOffset) generateSearchQuery}
      * to complete partial queries.
@@ -59,10 +71,14 @@ public enum SqlRequisitionQuery implements BasicSqlQuery {
             FROM ${supplySchema}.requisition as r
             INNER JOIN ${supplySchema}.requisition_content as c 
                 ON r.current_revision_id = c.revision_id
-            WHERE c.destination LIKE :destination AND Coalesce(c.customer_id::text, '') LIKE :customerId
+            WHERE c.destination LIKE :destination 
+                AND Coalesce(c.customer_id::text, '') LIKE :customerId
                 AND Coalesce(c.issuing_emp_id::text, '') LIKE :issuerId
                 AND c.revision_id IN (SELECT i.revision_id FROM ${supplySchema}.line_item i WHERE i.item_id::text LIKE :itemId)
-                AND c.status::text IN (:statuses) AND r.saved_in_sfms::text LIKE :savedInSfms AND c.is_reconciled::text LIKE :isReconciled AND r.
+                AND c.status::text IN (:statuses)
+                AND (:savedInSfms IS NULL OR r.saved_in_sfms = :savedInSfms)
+                AND (:isReconciled IS NULL OR c.is_reconciled = :isReconciled)
+                AND r.
             """
     ),
     ORDER_HISTORY_PARTIAL(

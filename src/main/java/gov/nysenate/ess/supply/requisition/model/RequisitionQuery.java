@@ -6,6 +6,7 @@ import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.OrderBy;
 import gov.nysenate.ess.core.util.SortOrder;
 import org.apache.commons.lang3.StringUtils;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.time.LocalDateTime;
 import java.util.EnumSet;
@@ -22,12 +23,12 @@ public class RequisitionQuery {
     private LocalDateTime fromDateTime;
     private LocalDateTime toDateTime;
     private String dateField;
-    private String savedInSfms;
     private String issuerId;
     private String itemId;
     private LimitOffset limitOffset;
     private OrderBy orderBy;
-    private String reconciled;
+    private Boolean savedInSfms;
+    private Boolean reconciled;
 
     public RequisitionQuery() {
         // Set default values
@@ -37,12 +38,12 @@ public class RequisitionQuery {
         this.fromDateTime = LocalDateTime.now().minusMonths(1);
         this.toDateTime = LocalDateTime.now();
         this.dateField = "ordered_date_time";
-        this.savedInSfms = WILDCARD;
+        this.savedInSfms = null;
         this.issuerId = WILDCARD;
-        this.itemId = WILDCARD;
+        this.itemId = null;
         this.limitOffset = LimitOffset.TEN;
         this.orderBy = new OrderBy(this.dateField, SortOrder.DESC);
-        this.reconciled = WILDCARD;
+        this.reconciled = null;
     }
 
     /**
@@ -104,12 +105,7 @@ public class RequisitionQuery {
         return this;
     }
 
-    public RequisitionQuery setSavedInSfms(boolean savedInSfms) {
-        this.savedInSfms = String.valueOf(savedInSfms);
-        return this;
-    }
-
-    public RequisitionQuery setSavedInSfms(String savedInSfms) {
+    public RequisitionQuery setSavedInSfms(Boolean savedInSfms) {
         this.savedInSfms = savedInSfms;
         return this;
     }
@@ -134,15 +130,8 @@ public class RequisitionQuery {
         return this;
     }
 
-    public RequisitionQuery setReconciled(String reconciled) {
-        if (reconciled != null) {
-            if (reconciled.equals("t") || StringUtils.equalsIgnoreCase(reconciled, "true")) {
-                this.reconciled = "true";
-            }
-            if (reconciled.equals("f") || StringUtils.equalsIgnoreCase(reconciled, "false")) {
-                this.reconciled = "false";
-            }
-        }
+    public RequisitionQuery setReconciled(@Nullable Boolean reconciled) {
+        this.reconciled = reconciled;
         return this;
     }
 
@@ -170,8 +159,8 @@ public class RequisitionQuery {
         return dateField;
     }
 
-    public String getSavedInSfms() {
-        return useWildcard(savedInSfms);
+    public Boolean getSavedInSfms() {
+        return savedInSfms;
     }
 
     public String getIssuerId() {
@@ -179,7 +168,7 @@ public class RequisitionQuery {
     }
 
     public String getItemId() {
-        return useWildcard(itemId);
+        return itemId;
     }
 
     public LimitOffset getLimitOffset() {
@@ -190,7 +179,7 @@ public class RequisitionQuery {
         return orderBy;
     }
 
-    public String getReconciled() {
+    public Boolean getReconciled() {
         return reconciled;
     }
 }

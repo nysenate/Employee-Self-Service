@@ -179,11 +179,16 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
                                            @RequestParam(required = false) String to,
                                            @RequestParam(defaultValue = "All", required = false) String issuerId,
                                            @RequestParam(required = false) String dateField,
-                                           @RequestParam(defaultValue = "All", required = false) String savedInSfms,
+                                           @RequestParam(required = false) Boolean savedInSfms,
                                            @RequestParam(defaultValue = "All", required = false) String itemId,
-                                           @RequestParam(required = false) String reconciled,
+                                           @RequestParam(required = false) Boolean reconciled,
                                            WebRequest webRequest) {
         checkPermission(RequisitionPermission.forAll(RequestMethod.GET));
+
+        // Convert All values to null.
+        if (itemId.equals("All")) {
+            itemId = null;
+        }
 
         dateField = dateField == null ? "ordered_date_time" : dateField;
         RequisitionQuery query = new RequisitionQuery()
