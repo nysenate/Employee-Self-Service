@@ -46,7 +46,7 @@
     }
 
     .select {
-        @apply p-1 border-1 border-gray-300 bg-gray-50;
+        @apply p-1.5 border-1 border-gray-300 bg-gray-50;
     }
 
     /* --- Table  Classes --- */

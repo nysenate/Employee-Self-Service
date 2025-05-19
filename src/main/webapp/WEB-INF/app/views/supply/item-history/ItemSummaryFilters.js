@@ -8,7 +8,7 @@ import InputDebounced from "app/views/myinfo/personnel/pec/InputDebounced";
 import { Button } from "app/components/Button";
 
 export default function ItemSummaryFilters({ filters, dispatch }) {
-  const labelClasses = "block font-semibold text-purple-700";
+  const labelClasses = "block font-semibold";
   return (
     <div className="grid grid-cols-[1fr_1fr_auto] items-end gap-4">
       <div>
