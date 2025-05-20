@@ -12,9 +12,9 @@ import { SET_DATE_RANGE } from "app/views/supply/item-history/itemSummaryActions
 const initialFilters = {
   fromDate: formatISO(subMonths(new Date(), 1), { representation: "date" }),
   toDate: formatISO(new Date(), { representation: "date" }),
-  destinationCode: null,
+  destination: null,
+  item: null,
   issuerId: null,
-  itemId: null,
   limit: 16,
   offset: 1,
 };
@@ -44,13 +44,14 @@ export default function RequisitionHistoryIndex() {
   const requisitionQuery = useRequisitionSearch({
     from: formatISO(startOfDay(filters.fromDate)),
     to: formatISO(endOfDay(filters.toDate)),
-    location: filters.destinationCode,
+    location: filters.destination?.locId,
+    itemId: filters.item?.id,
     issuerId: filters.issuerId,
-    itemId: filters.itemId,
     limit: filters.limit,
     offset: filters.offset,
   });
 
+  console.log(filters);
   // TODO
   // issuerQuery
   // locationQuery

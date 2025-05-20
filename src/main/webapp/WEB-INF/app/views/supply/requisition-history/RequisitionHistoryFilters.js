@@ -6,6 +6,7 @@ import {
   setFilter,
 } from "app/views/supply/requisition-history/RequisitionHistoryActions";
 import { useLocations } from "app/views/supply/useLocations";
+import InputAutocomplete from "app/components/InputAutocomplete";
 
 export default function RequisitionHistoryFilters({ filters, dispatch }) {
   const itemsQuery = useItems();
@@ -43,43 +44,35 @@ export default function RequisitionHistoryFilters({ filters, dispatch }) {
         <label htmlFor="destinationCode" className={labelClasses}>
           Destination Code
         </label>
-        <select
+        <InputAutocomplete
           id="destinationCode"
-          name="destinationCode"
-          className="select"
-          value={filters.destinationCode ?? ""}
-          onChange={(e) => {
-            dispatch(setFilter("destinationCode", e.target.value));
-          }}
-        >
-          <option value="All">All</option>
-          {locationQuery.data?.map((loc) => (
-            <option key={loc.locId} value={loc.locId}>
-              {loc.locId}
-            </option>
-          ))}
-        </select>
+          name="destinatioinCode"
+          value={filters.destination}
+          onChange={(value) => dispatch(setFilter("destination", value))}
+          options={locationQuery.data ?? []}
+          displayValue={(loc) => loc?.locId}
+          renderOption={(loc) => (
+            <div>
+              <div>{loc.locId}</div>
+              <div className="text-xs font-light">
+                {loc.locationDescription}
+              </div>
+            </div>
+          )}
+        />
       </div>
       <div>
-        <label htmlFor="itemId" className={labelClasses}>
+        <label htmlFor="commodityCode" className={labelClasses}>
           Commodity Code
         </label>
-        <select
-          id="itemId"
-          name="itemId"
-          className="select"
-          value={filters.itemId ?? ""}
-          onChange={(e) => {
-            dispatch(setFilter("itemId", e.target.value));
-          }}
-        >
-          <option value="All">All</option>
-          {itemsQuery.data?.map((item) => (
-            <option key={item.id} value={item.id}>
-              {item.commodityCode}
-            </option>
-          ))}
-        </select>
+        <InputAutocomplete
+          id="commodityCode"
+          name="commodityCode"
+          value={filters.item}
+          onChange={(value) => dispatch(setFilter("item", value))}
+          options={itemsQuery.data ?? []}
+          displayValue={(item) => item?.commodityCode}
+        />
       </div>
       <div>issuerId</div>
     </div>
