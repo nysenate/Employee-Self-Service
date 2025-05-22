@@ -1,5 +1,5 @@
 import React from "react";
-import InputDebounced from "app/views/myinfo/personnel/pec/InputDebounced";
+import InputDebounced from "app/components/InputDebounced";
 import { useItems } from "app/views/supply/useItems";
 import {
   setDateRange,
@@ -7,10 +7,13 @@ import {
 } from "app/views/supply/requisition-history/RequisitionHistoryActions";
 import { useLocations } from "app/views/supply/useLocations";
 import InputAutocomplete from "app/components/InputAutocomplete";
+import { useIssuers } from "app/views/supply/requisition-history/useIssuers";
 
 export default function RequisitionHistoryFilters({ filters, dispatch }) {
   const itemsQuery = useItems();
   const locationQuery = useLocations();
+  const issuersQuery = useIssuers();
+
   const labelClasses = "block font-semibold";
 
   return (
@@ -74,7 +77,25 @@ export default function RequisitionHistoryFilters({ filters, dispatch }) {
           displayValue={(item) => item?.commodityCode}
         />
       </div>
-      <div>issuerId</div>
+      <div>
+        <label htmlFor="issuer" className={labelClasses}>
+          Issuer
+        </label>
+        <select
+          id="issuer"
+          name="issuer"
+          className="select"
+          value={filters.issuerId ?? ""}
+          onChange={(e) => dispatch(setFilter("issuerId", e.target.value))}
+        >
+          <option>All</option>
+          {issuersQuery.data?.map((issuer) => (
+            <option key={issuer.employeeId} value={issuer.employeeId}>
+              {issuer.fullName}
+            </option>
+          ))}
+        </select>
+      </div>
     </div>
   );
 }

@@ -40,6 +40,17 @@ export function isoToLongDate(isoDate) {
   return formatDate(isoDate, "MMMM d, yyyy");
 }
 
+/**
+ * Returns true if dateString is a valid date.
+ * @param dateString
+ * @returns {boolean}
+ */
+export function isValidDateString(dateString) {
+  if (!dateString || typeof dateString !== "string") return false;
+  const date = new Date(dateString);
+  return !isNaN(date.getTime()) && dateString.length >= 10; // Basic ISO date length check
+}
+
 function formatDate(isoDate, formatStr) {
   // Prevent type error from calling parseISO with a non string.
   if (typeof isoDate !== "string") {

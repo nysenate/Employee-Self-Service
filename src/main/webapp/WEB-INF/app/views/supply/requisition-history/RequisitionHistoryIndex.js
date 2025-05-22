@@ -1,5 +1,5 @@
 import React, { useEffect, useReducer, useState } from "react";
-import { endOfDay, formatISO, startOfDay, subMonths } from "date-fns";
+import { endOfDay, formatISO, isValid, startOfDay, subMonths } from "date-fns";
 import Hero from "app/components/Hero";
 import Controls from "app/components/Controls";
 import RequisitionHistoryFilters from "app/views/supply/requisition-history/RequisitionHistoryFilters";
@@ -8,6 +8,7 @@ import { useRequisitionSearch } from "app/views/supply/useRequisitionSearch";
 import LoadingIndicator from "app/components/LoadingIndicator";
 import RequisitionHistoryResults from "app/views/supply/requisition-history/RequisitionHistoryResults";
 import { SET_DATE_RANGE } from "app/views/supply/item-history/itemSummaryActions";
+import { isValidDateString } from "app/utils/dateUtils";
 
 const initialFilters = {
   fromDate: formatISO(subMonths(new Date(), 1), { representation: "date" }),
@@ -28,6 +29,13 @@ function filtersReducer(state, action) {
         offset: 1,
       };
     case SET_DATE_RANGE:
+      // If dates are invalid, don't update the state
+      if (
+        !isValidDateString(action.fromDate) ||
+        !isValidDateString(action.toDate)
+      ) {
+        return state;
+      }
       return {
         ...state,
         fromDate: action.fromDate,
@@ -41,6 +49,7 @@ function filtersReducer(state, action) {
 
 export default function RequisitionHistoryIndex() {
   const [filters, dispatch] = useReducer(filtersReducer, initialFilters);
+  console.log(filters);
   const requisitionQuery = useRequisitionSearch({
     from: formatISO(startOfDay(filters.fromDate)),
     to: formatISO(endOfDay(filters.toDate)),
@@ -50,12 +59,6 @@ export default function RequisitionHistoryIndex() {
     limit: filters.limit,
     offset: filters.offset,
   });
-
-  console.log(filters);
-  // TODO
-  // issuerQuery
-  // locationQuery
-  // filters in QueryParams
 
   return (
     <div>
@@ -70,7 +73,7 @@ export default function RequisitionHistoryIndex() {
       ) : (
         <div className="mt-6">
           <RequisitionHistoryResults
-            data={requisitionQuery.data}
+            results={requisitionQuery.data.result}
             filters={filters}
             dispatch={dispatch}
           />

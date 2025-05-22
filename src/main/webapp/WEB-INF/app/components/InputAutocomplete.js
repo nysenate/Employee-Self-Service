@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Combobox } from "@headlessui/react";
 import { twMerge } from "tailwind-merge";
 import { useDebounce } from "use-debounce";
+import clsx from "clsx";
 
 export default function Autocomplete({
   id = "",
@@ -31,22 +32,35 @@ export default function Autocomplete({
   return (
     <div className={twMerge("w-72", `${className}`)}>
       <Combobox value={value} onChange={onChange}>
-        <Combobox.Input
-          id={id}
-          name={name}
-          className="input"
-          onChange={(e) => setQuery(e.target.value)}
-          displayValue={displayValue}
-          placeholder={placeholder}
-          autoComplete="off"
-        />
+        <div className="relative">
+          <Combobox.Input
+            id={id}
+            name={name}
+            className="input"
+            onChange={(e) => setQuery(e.target.value)}
+            displayValue={displayValue}
+            placeholder={placeholder}
+            autoComplete="off"
+          />
+        </div>
         {filteredOptions.length > 0 && (
-          <Combobox.Options className="z-10 mt-1 max-h-60 overflow-y-auto border border-gray-200 bg-white shadow-lg transition">
+          <Combobox.Options
+            anchor="bottom"
+            transition
+            className={clsx(
+              "max-h-60 overflow-y-auto border border-gray-200 bg-white p-1",
+              "[--anchor-gap:2px] [--anchor-max-height:20rem] empty:invisible",
+              "data-leave:data-closed:opacity-0 transition duration-100 ease-in",
+            )}
+          >
             {filteredOptions.map((option, index) => (
               <Combobox.Option
                 key={index}
                 value={option}
-                className="ui-active:bg-blue-500 ui-active:text-white cursor-pointer p-2 text-gray-900 hover:bg-blue-100"
+                className={clsx(
+                  "ui-active:bg-blue-500 ui-active:text-white",
+                  "cursor-pointer p-2 text-gray-900 hover:bg-blue-100",
+                )}
               >
                 {renderOption ? renderOption(option) : displayValue(option)}
               </Combobox.Option>

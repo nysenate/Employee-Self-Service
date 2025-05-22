@@ -4,7 +4,7 @@ import {
   setFilter,
 } from "app/views/supply/item-history/itemSummaryActions";
 import React from "react";
-import InputDebounced from "app/views/myinfo/personnel/pec/InputDebounced";
+import InputDebounced from "app/components/InputDebounced";
 import { Button } from "app/components/Button";
 
 export default function ItemSummaryFilters({ filters, dispatch }) {

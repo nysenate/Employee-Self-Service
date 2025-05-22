@@ -14,7 +14,7 @@ import {
 import { useSearchPotentialAssignments } from "../useTaskAssignment";
 import PotentialAssignmentsSummary from "./PotentialAssignmentsSummary";
 import EmployeeFilters from "./EmployeeFilters";
-import InputDebounced from "../InputDebounced";
+import InputDebounced from "app/components/InputDebounced";
 
 function filterReducer(state, action) {
   let taskIds = state.taskId;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useDebounce } from "use-debounce";
 import { twMerge } from "tailwind-merge";
 
@@ -15,7 +15,8 @@ export default function InputDebounced({
 }) {
   const [term, setTerm] = useState(value || "");
   const [debouncedTerm] = useDebounce(term, delay);
-  const classes = twMerge(className, "input");
+  const [isInvalid, setIsInvalid] = useState(false);
+  const inputRef = useRef(null);
 
   useEffect(() => {
     setTerm(value || "");
@@ -25,16 +26,33 @@ export default function InputDebounced({
     onChange(debouncedTerm);
   }, [debouncedTerm]);
 
+  // Check validity on every change
+  const handleInputChange = (e) => {
+    const newValue = e.target.value;
+    setTerm(newValue);
+
+    if (inputRef.current) {
+      setIsInvalid(!inputRef.current.checkValidity());
+    }
+  };
+
+  const classes = twMerge(
+    className,
+    "input",
+    isInvalid ? "input--invalid" : "",
+  );
+
   return (
     <div>
       <input
+        ref={inputRef}
         id={id}
         name={id}
         type={type}
         autoComplete="off"
         value={term}
         placeholder={placeholder}
-        onChange={(e) => setTerm(e.target.value)}
+        onChange={handleInputChange}
         className={classes}
         {...(type === "date" ? { min, max } : {})}
       />

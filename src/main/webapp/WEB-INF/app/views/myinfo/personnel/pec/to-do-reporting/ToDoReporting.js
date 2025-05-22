@@ -14,7 +14,7 @@ import {
 } from "app/views/myinfo/personnel/pec/to-do-reporting/todoReportingActions";
 import EmployeeFilters from "app/views/myinfo/personnel/pec/to-do-reporting/EmployeeFilters";
 import { setEmpName } from "./todoReportingActions";
-import InputDebounced from "../InputDebounced";
+import InputDebounced from "app/components/InputDebounced";
 import { TOGGLE_INACTIVE_EMPLOYEES } from "./todoReportingActions";
 import { useSearchTaskAssignments } from "../useTaskAssignment";
 import AssignmentsSummary from "./AssignmentsSummary";

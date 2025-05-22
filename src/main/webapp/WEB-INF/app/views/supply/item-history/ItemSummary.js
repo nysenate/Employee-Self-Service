@@ -12,6 +12,7 @@ import {
 } from "app/views/supply/item-history/itemSummaryActions";
 import ItemSummaryFilters from "app/views/supply/item-history/ItemSummaryFilters";
 import ItemSummaryResults from "app/views/supply/item-history/ItemSummaryResults";
+import { isValidDateString } from "app/utils/dateUtils";
 
 const initialFilters = {
   commodityCode: null,
@@ -31,6 +32,13 @@ function filtersReducer(state, action) {
         offset: 1,
       };
     case SET_DATE_RANGE:
+      // If dates are invalid, don't update the state
+      if (
+        !isValidDateString(action.fromDate) ||
+        !isValidDateString(action.toDate)
+      ) {
+        return state;
+      }
       return {
         ...state,
         fromDate: action.fromDate,

@@ -11,7 +11,7 @@ export function useItems() {
     queryFn: () => {
       return fetchApiJson(`/supply/items`).then((body) => body.result);
     },
-    staleTime: 60000,
+    staleTime: 1000 * 60 * 5,
     throwOnError: true,
   });
 }
@@ -28,7 +28,7 @@ export function useItemsMap() {
         acc[item.id] = item;
         return acc;
       }, {}),
-    staleTime: 60000,
+    staleTime: 1000 * 60 * 5,
     throwOnError: true,
   });
 }
