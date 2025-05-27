@@ -9,6 +9,7 @@ import LoadingIndicator from "app/components/LoadingIndicator";
 import RequisitionHistoryResults from "app/views/supply/requisition-history/RequisitionHistoryResults";
 import { SET_DATE_RANGE } from "app/views/supply/item-history/itemSummaryActions";
 import { isValidDateString } from "app/utils/dateUtils";
+import { UTCDate } from "@date-fns/utc";
 
 const initialFilters = {
   fromDate: formatISO(subMonths(new Date(), 1), { representation: "date" }),
@@ -49,15 +50,15 @@ function filtersReducer(state, action) {
 
 export default function RequisitionHistoryIndex() {
   const [filters, dispatch] = useReducer(filtersReducer, initialFilters);
-  console.log(filters);
   const requisitionQuery = useRequisitionSearch({
-    from: formatISO(startOfDay(filters.fromDate)),
-    to: formatISO(endOfDay(filters.toDate)),
+    from: formatISO(startOfDay(new UTCDate(filters.fromDate))),
+    to: formatISO(endOfDay(new UTCDate(filters.toDate))),
     location: filters.destination?.locId,
     itemId: filters.item?.id,
     issuerId: filters.issuerId,
     limit: filters.limit,
     offset: filters.offset,
+    status: ["APPROVED", "REJECTED"],
   });
 
   return (

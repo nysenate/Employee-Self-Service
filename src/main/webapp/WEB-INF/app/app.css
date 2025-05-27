@@ -63,7 +63,7 @@
     }
 
     .table__head__cell {
-        @apply py-3 px-3 font-semibold tracking-wide;
+        @apply py-3 px-5 font-semibold tracking-wide;
     }
 
     .table__head__cell--text {
@@ -99,7 +99,7 @@
     }
 
     .table__cell {
-        @apply py-1.5 px-3;
+        @apply py-1.5 px-5;
     }
 
     .table__cell--bold {

@@ -13,6 +13,7 @@ import {
 import ItemSummaryFilters from "app/views/supply/item-history/ItemSummaryFilters";
 import ItemSummaryResults from "app/views/supply/item-history/ItemSummaryResults";
 import { isValidDateString } from "app/utils/dateUtils";
+import { UTCDate } from "@date-fns/utc";
 
 const initialFilters = {
   commodityCode: null,
@@ -62,8 +63,8 @@ function filtersReducer(state, action) {
 export default function ItemSummary() {
   const [filters, dispatch] = useReducer(filtersReducer, initialFilters);
   const itemSummaryQuery = useItemSummary({
-    fromDateTime: formatISO(startOfDay(filters.fromDate)),
-    toDateTime: formatISO(endOfDay(filters.toDate)),
+    fromDateTime: formatISO(startOfDay(new UTCDate(filters.fromDate))),
+    toDateTime: formatISO(endOfDay(new UTCDate(filters.toDate))),
     locationCode: filters.locationCode,
     commodityCode: filters.commodityCode,
   });

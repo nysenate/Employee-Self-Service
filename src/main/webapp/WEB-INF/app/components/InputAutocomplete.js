@@ -48,7 +48,7 @@ export default function Autocomplete({
             anchor="bottom"
             transition
             className={clsx(
-              "max-h-60 overflow-y-auto border border-gray-200 bg-white p-1",
+              "z-20 max-h-60 overflow-y-auto border border-gray-200 bg-white p-1",
               "[--anchor-gap:2px] [--anchor-max-height:20rem] empty:invisible",
               "data-leave:data-closed:opacity-0 transition duration-100 ease-in",
             )}
