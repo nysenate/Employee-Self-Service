@@ -590,7 +590,8 @@ public class EssAccrualComputeService implements AccrualComputeService {
             accrualState.incrementAccrualsEarned();
         }
         // Adjust the year to date hours expected
-        accrualState.incrementYtdHoursExpected();
+        ExpectedHours expectedHours = expHoursService.getExpectedHours(transHistory.getEmployeeId(), gapPeriodRange);
+        accrualState.setYtdHoursExpected(expectedHours.getYtdHoursExpected().add( expectedHours.getPeriodHoursExpected()) );
     }
 
     /**
