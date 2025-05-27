@@ -1,6 +1,6 @@
 import React from "react";
 import InputDebounced from "app/components/InputDebounced";
-import { useItems } from "app/views/supply/useItems";
+import { useItemsMap } from "app/views/supply/useItems";
 import {
   setDateRange,
   setFilter,
@@ -10,11 +10,15 @@ import InputAutocomplete from "app/components/InputAutocomplete";
 import { useIssuers } from "app/views/supply/requisition-history/useIssuers";
 
 export default function RequisitionHistoryFilters({ filters, dispatch }) {
-  const itemsQuery = useItems();
+  const itemsQuery = useItemsMap();
   const locationQuery = useLocations();
   const issuersQuery = useIssuers();
 
   const labelClasses = "block font-semibold";
+
+  const selectedDestination =
+    locationQuery.data?.find((loc) => loc.locId === filters.destinationId) ??
+    null;
 
   return (
     <div className="grid grid-cols-3 gap-4">
@@ -44,14 +48,16 @@ export default function RequisitionHistoryFilters({ filters, dispatch }) {
       </div>
       <div></div>
       <div>
-        <label htmlFor="destinationCode" className={labelClasses}>
+        <label htmlFor="destinationId" className={labelClasses}>
           Destination Code
         </label>
         <InputAutocomplete
-          id="destinationCode"
-          name="destinatioinCode"
-          value={filters.destination}
-          onChange={(value) => dispatch(setFilter("destination", value))}
+          id="destinationId"
+          name="destinatioinId"
+          value={selectedDestination}
+          onChange={(value) =>
+            dispatch(setFilter("destinationId", value?.locId))
+          }
           options={locationQuery.data ?? []}
           displayValue={(loc) => loc?.locId}
           renderOption={(loc) => (
@@ -65,15 +71,15 @@ export default function RequisitionHistoryFilters({ filters, dispatch }) {
         />
       </div>
       <div>
-        <label htmlFor="commodityCode" className={labelClasses}>
+        <label htmlFor="itemId" className={labelClasses}>
           Commodity Code
         </label>
         <InputAutocomplete
-          id="commodityCode"
-          name="commodityCode"
-          value={filters.item}
-          onChange={(value) => dispatch(setFilter("item", value))}
-          options={itemsQuery.data ?? []}
+          id="itemId"
+          name="itemId"
+          value={itemsQuery.data?.get(filters.itemId) || null}
+          onChange={(value) => dispatch(setFilter("itemId", value?.id))}
+          options={Array.from(itemsQuery.data?.values() || [])}
           displayValue={(item) => item?.commodityCode}
         />
       </div>

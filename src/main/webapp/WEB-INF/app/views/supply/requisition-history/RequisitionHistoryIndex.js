@@ -3,19 +3,23 @@ import { endOfDay, formatISO, isValid, startOfDay, subMonths } from "date-fns";
 import Hero from "app/components/Hero";
 import Controls from "app/components/Controls";
 import RequisitionHistoryFilters from "app/views/supply/requisition-history/RequisitionHistoryFilters";
-import { SET_FILTER } from "app/views/supply/requisition-history/RequisitionHistoryActions";
+import {
+  SET_FILTER,
+  SET_OFFSET,
+} from "app/views/supply/requisition-history/RequisitionHistoryActions";
 import { useRequisitionSearch } from "app/views/supply/useRequisitionSearch";
 import LoadingIndicator from "app/components/LoadingIndicator";
 import RequisitionHistoryResults from "app/views/supply/requisition-history/RequisitionHistoryResults";
 import { SET_DATE_RANGE } from "app/views/supply/item-history/itemSummaryActions";
 import { isValidDateString } from "app/utils/dateUtils";
 import { UTCDate } from "@date-fns/utc";
+import { useSearchParams } from "react-router-dom";
 
 const initialFilters = {
   fromDate: formatISO(subMonths(new Date(), 1), { representation: "date" }),
   toDate: formatISO(new Date(), { representation: "date" }),
-  destination: null,
-  item: null,
+  destinationId: null,
+  itemId: null,
   issuerId: null,
   limit: 16,
   offset: 1,
@@ -43,23 +47,33 @@ function filtersReducer(state, action) {
         toDate: action.toDate,
         offset: 1,
       };
+    case SET_OFFSET:
+      return {
+        ...state,
+        offset: action.offset,
+      };
     default:
       return state;
   }
 }
 
 export default function RequisitionHistoryIndex() {
+  let [searchParams, setSearchParams] = useSearchParams();
   const [filters, dispatch] = useReducer(filtersReducer, initialFilters);
   const requisitionQuery = useRequisitionSearch({
     from: formatISO(startOfDay(new UTCDate(filters.fromDate))),
     to: formatISO(endOfDay(new UTCDate(filters.toDate))),
-    location: filters.destination?.locId,
-    itemId: filters.item?.id,
+    location: filters.destinationId,
+    itemId: filters.itemId,
     issuerId: filters.issuerId,
     limit: filters.limit,
     offset: filters.offset,
     status: ["APPROVED", "REJECTED"],
   });
+
+  useEffect(() => {
+    // setSearchParams(filters);
+  }, [filters]);
 
   return (
     <div>
@@ -74,7 +88,7 @@ export default function RequisitionHistoryIndex() {
       ) : (
         <div className="mt-6">
           <RequisitionHistoryResults
-            results={requisitionQuery.data.result}
+            data={requisitionQuery.data}
             filters={filters}
             dispatch={dispatch}
           />

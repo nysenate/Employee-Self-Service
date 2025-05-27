@@ -1,13 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchApiJson } from "app/api/fetchJson";
 
-function getQueryKey() {
-  return ["supply", "items", "list"];
-}
-
 export function useItems() {
   return useQuery({
-    queryKey: getQueryKey(),
+    queryKey: ["supply", "items", "list"],
     queryFn: () => {
       return fetchApiJson(`/supply/items`).then((body) => body.result);
     },
@@ -19,15 +15,15 @@ export function useItems() {
 // Returns a Map of itemId to item for all items
 export function useItemsMap() {
   return useQuery({
-    queryKey: getQueryKey(),
+    queryKey: ["supply", "items", "map"],
     queryFn: () => {
       return fetchApiJson(`/supply/items`).then((body) => body.result);
     },
-    select: (data) =>
-      data.reduce((acc, item) => {
-        acc[item.id] = item;
-        return acc;
-      }, {}),
+    select: (data) => {
+      const map = new Map();
+      data.forEach((item) => map.set(item.id, item));
+      return map;
+    },
     staleTime: 1000 * 60 * 5,
     throwOnError: true,
   });
