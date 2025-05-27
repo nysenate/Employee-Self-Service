@@ -1,13 +1,12 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.directive('essPerdiemOverridesEditForm', ['appProps', perDiemOverrideEditForm]);
+essTravel.directive('essPerdiemOverridesEditForm', ['appProps', 'TravelDraftsApi', perDiemOverrideEditForm]);
 
-function perDiemOverrideEditForm(appProps) {
+function perDiemOverrideEditForm(appProps, draftsApi) {
     return {
         restrict: 'E',
         scope: {
-            app: '<',               // The application being edited.
-            title: '@',             // The title
+            data: '<',         // The application being edited.
             positiveCallback: '&',  // Callback function called when continuing. Takes a travel app param named 'app'.
             neutralCallback: '&',   // Callback function called when moving back. Takes a travel app param named 'app'.
             negativeCallback: '&',  // Callback function called when canceling. Takes a travel app param named 'app'.
@@ -17,23 +16,48 @@ function perDiemOverrideEditForm(appProps) {
         templateUrl: appProps.ctxPath + '/template/travel/component/edit-application/perdiem-overrides-edit-form-directive',
         link: function (scope, elem, attrs) {
 
-            scope.dirtyApp = angular.copy(scope.app);
+            scope.dirtyDraft = angular.copy(scope.data.draft);
+            // scope.dirtyAmendment = angular.copy(scope.amendment);
 
-            // Convert overrides of 0 to undefined.
-            scope.dirtyApp.mileagePerDiems.overrideRate = zeroToUndefined(scope.dirtyApp.perDiemOverrides.mileageOverride);
-            scope.dirtyApp.mealPerDiems.overrideRate = zeroToUndefined(scope.dirtyApp.perDiemOverrides.mealsOverride);
-            scope.dirtyApp.lodgingPerDiems.overrideRate = zeroToUndefined(scope.dirtyApp.perDiemOverrides.lodgingOverride);
+            scope.perdiems = [
+                Object.assign(scope.dirtyDraft.amendment.mealPerDiems, {name: 'Meals'}),
+                Object.assign(scope.dirtyDraft.amendment.lodgingPerDiems, {name: 'Lodging'})
+            ]
+
+            console.log(scope.dirtyAmendment);
+
+            // Reset the override rate when unchecked since the backend does not actually check the
+            // isOverridden boolean, its derived from the overrideRate.
+            scope.onCheckboxChange = function(perdiem) {
+                if (!perdiem.isOverridden) {
+                    perdiem.overrideRate = 0;
+                }
+            }
 
             scope.next = function () {
-                scope.positiveCallback({app: scope.dirtyApp});
+                scope.openLoadingModal();
+                draftsApi.update(
+                    {
+                        options: ['ALLOWANCES', 'MEAL_PER_DIEMS', 'LODGING_PER_DIEMS', 'MILEAGE_PER_DIEMS'],
+                        draft: scope.dirtyDraft
+                    })
+                    .$promise
+                    .then(function (res) {
+                        scope.dirtyDraft = res.result;
+                        scope.positiveCallback({draft: scope.dirtyDraft});
+                    })
+                    .catch(function (error) {
+                        scope.handleErrorResponse(error);
+                    })
+                    .finally(scope.closeLoadingModal)
             };
 
             scope.back = function () {
-                scope.neutralCallback({app: scope.dirtyApp});
+                scope.neutralCallback({draft: scope.dirtyDraft});
             };
 
             scope.cancel = function () {
-                scope.negativeCallback({app: scope.dirtyApp});
+                scope.negativeCallback({draft: scope.dirtyDraft});
             };
 
             // Use undefined instead of 0 in the override input boxes so they are empty instead of 0 when not overridden.

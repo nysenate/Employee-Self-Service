@@ -8,7 +8,7 @@ public enum TransactionType
     PER("Personnel"),
     PAY("Payroll");
 
-    String desc;
+    private final String desc;
 
     TransactionType(String desc) {
         this.desc = desc;

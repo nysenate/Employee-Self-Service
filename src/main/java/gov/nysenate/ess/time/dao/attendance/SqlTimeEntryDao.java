@@ -30,7 +30,7 @@ public class SqlTimeEntryDao extends SqlBaseDao implements TimeEntryDao
     private static final Logger logger = LoggerFactory.getLogger(SqlTimeEntryDao.class);
 
     @Override
-    public TimeEntry getTimeEntryById(BigInteger timeEntryId) throws TimeEntryException {
+    public TimeEntry getTimeEntryById(BigInteger timeEntryId) {
         throw new NotImplementedException("getTimeEntryById not yet implemented");
     }
 
@@ -93,6 +93,9 @@ public class SqlTimeEntryDao extends SqlBaseDao implements TimeEntryDao
         param.addValue("miscHR", timeEntry.getMiscHours().orElse(null));
         param.addValue("miscTypeId", timeEntry.getMiscType() != null ?
                 new BigDecimal(timeEntry.getMiscType().getMiscLeaveId()) : new BigDecimal(BigInteger.ZERO));
+        param.addValue("misc2HR", timeEntry.getMisc2Hours().orElse(null));
+        param.addValue("miscType2Id", timeEntry.getMiscType2() != null ?
+                new BigDecimal(timeEntry.getMiscType2().getMiscLeaveId()) : new BigDecimal(BigInteger.ZERO));
         param.addValue("tOriginalUserId", timeEntry.getOriginalUserId());
         param.addValue("tUpdateUserId", timeEntry.getUpdateUserId());
         param.addValue("tOriginalDate", SqlBaseDao.toDate(timeEntry.getOriginalDate()));

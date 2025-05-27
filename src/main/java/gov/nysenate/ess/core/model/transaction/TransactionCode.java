@@ -84,17 +84,17 @@ public enum TransactionCode
     YWT(TransactionType.PAY, "NUYONTAXEX", "YONKERS WITHHOLDING EXEMP");
 
     /** The type of transaction, e.g. Payroll, Personnel */
-    private TransactionType type;
+    private final TransactionType type;
 
     /** The SFMS database columns that this transaction affects. */
-    private String dbColumns;
+    private final String dbColumns;
 
     /** Description of the transaction. */
-    private String desc;
+    private final String desc;
 
     /** --- Constructors --- */
 
-    private TransactionCode(TransactionType type, String dbColumns, String desc) {
+    TransactionCode(TransactionType type, String dbColumns, String desc) {
         this.type = type;
         this.dbColumns = dbColumns;
         this.desc = desc;

@@ -3,15 +3,14 @@ package gov.nysenate.ess.core.model.unit;
 /**
  * Enumeration of all possible location codes
  */
-public enum LocationType
-{
+public enum LocationType {
     WAREHOUSE('H', "Warehouse Location"),
     STORAGE('S', "Storage Location"),
     SUPPLY('P', "Supply Location"),
     WORK('W', "Work Location");
 
-    char code;
-    String name;
+    private final char code;
+    private final String name;
 
     LocationType(char code, String name) {
         this.code = code;

@@ -2,9 +2,7 @@
   <h3 class="content-info">
     <span ng-show="accruals.computed && !accruals.submitted">Projected</span>
     Accrual Usage for {{accruals.payPeriod.startDate | moment:'YYYY'}}
-    Pay Period {{accruals.payPeriod.payPeriodNum +
-        (accruals.payPeriod.endYearSplit ? 'A' : accruals.payPeriod.startYearSplit ? 'B' : 0)
-    }}
+    Pay Period {{accruals.payPeriod.payPeriodNum}}
   </h3>
   <div class="accrual-detail-content col-12-12">
     <div class="col-10-12 accrual-detail-table-container">
@@ -45,6 +43,10 @@
               <td>Used YTD (Family)</td>
               <td ng-bind="-accruals.sickFamUsed | number:2"></td>
             </tr>
+            <tr>
+              <td>Donated YTD</td>
+              <td ng-bind="-accruals.sickDonated | number:2"></td>
+            </tr>
             <tr class="total-row">
               <td>Available for Period</td>
               <td ng-bind="accruals.sickAvailable | number:2"></td>
@@ -56,6 +58,10 @@
             <tr>
               <td>Used in Period (Family)</td>
               <td ng-bind="-accruals.biweekSickFamUsed | number:2"></td>
+            </tr>
+            <tr>
+              <td>Donated in Period</td>
+              <td ng-bind="-accruals.biweekSickDonated | number:2"></td>
             </tr>
           </tbody>
         </table>
@@ -135,7 +141,7 @@
       <h4 class="content-info">Actions</h4>
       <p class="accrual-report-link">
         <a target="_blank" title="Open a Printable View for this Record"
-           ng-href="{{ctxPath}}/api/v1/attendance/report?empId={{accruals.empId}}&date={{accruals.payPeriod.endDate}}">
+           ng-href="{{ctxPath}}/api/v1/accrual/report?empId={{accruals.empId}}&date={{accruals.payPeriod.endDate}}">
           Print Report
         </a>
         <br><br>

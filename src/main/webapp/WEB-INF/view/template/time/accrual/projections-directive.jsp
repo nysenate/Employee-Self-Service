@@ -46,6 +46,7 @@
         <th class="sick rate">Rate</th>
         <th class="sick used-hours">Emp Use</th>
         <th class="sick used-hours">Fam Use</th>
+        <th class="sick used-hours">Donated</th>
         <th class="sick available-hours">Avail</th>
       </tr>
       </thead>
@@ -106,6 +107,13 @@
                  ng-model="$parent.projections[$index].biweekSickFamUsed"
                  ng-change="onAccUsageChange(record, 'sick')"
                  ng-class="{invalid: !isSickFamValid(record)}"/>
+        </td>
+        <td class="accrual-hours sick used-hours"
+            title="Project Sick Hour Donations">
+          <input type="number" min="0" max="{{record.maxHours}}" step=".5" placeholder="{{$parent.projections[$index].biweekSickDonated || 0}}"
+                 ng-model="$parent.projections[$index].biweekSickDonated"
+                 ng-change="onAccUsageChange(record, 'sick')"
+                 ng-class="{invalid: !isSickDonationValid(record)}"/>
         </td>
         <td class="accrual-hours sick available-hours"
             ng-class="{changed: record.changed.sick}" ng-click="viewDetails(record)">

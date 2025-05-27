@@ -1,7 +1,6 @@
 package gov.nysenate.ess.core.client.response.error;
 
-public enum ErrorCode
-{
+public enum ErrorCode {
     /** Core Errors */
     APPLICATION_ERROR(1, "An error occurred while processing your request"),
     INVALID_ARGUMENTS(2, "The necessary arguments were not provided in the correct format."),
@@ -11,6 +10,9 @@ public enum ErrorCode
     EMPLOYEE_INACTIVE(6, "Attempt to take action on one or more employees that are inactive."),
     ACK_DOC_NOT_FOUND(7, "The requested acknowledged document was not found."),
     DUPLICATE_ACK(8, "The requested document has already been acknowledged"),
+    INVALID_PARAM_TYPE(9, "One of the provided parameters could not be converted to the correct type"),
+    PERSONNEL_ASSIGNED_TASK_NOT_FOUND(10, "The requested personnel assigned task could not be found."),
+    INVALID_PEC_CODE(11, "The submitted personnel task code(s) are incorrect."),
 
     /** Errors with Personnel Records */
     INVALID_RC_ERROR(50, "There is an issue with your responsibility center in your personnel records"),
@@ -22,6 +24,7 @@ public enum ErrorCode
     EMPLOYEE_NOT_SUPERVISOR(102, "The given employee is not a supervisor"),
     TIME_RECORD_NOT_FOUND(103, "The requested time record was not found"),
     CANNOT_CREATE_NEW_RECORD(104, "Time record creation is not allowed for given pay period"),
+    ERROR_SUBMITTING_TIME_DONATION(105, "An error occurred, the submission was not made."),
     TIME_OFF_REQUEST_NOT_FOUND(105, "The requested time off request was not found"),
 
     /** Supply Errors */
@@ -30,12 +33,12 @@ public enum ErrorCode
 
     /** Travel Errors */
     DATA_PROVIDER_ERROR(301, "An error occurred while communicating with 3rd party data providers."),
-    INVALID_TRAVEL_DATES(302, "One or more of your travel dates are invalid.");
-    ;
+    INVALID_TRAVEL_DATES(302, "One or more of your travel dates are invalid."),
+    MISSING_DEPARTMENT(303, "Department lookup failed.");
 
     /** Unique ID for error code */
-    private int code;
-    private String message;
+    private final int code;
+    private final String message;
 
     ErrorCode(int code, String message) {
         this.code = code;

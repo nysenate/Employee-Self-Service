@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 /**
  * A simple wrapper around the google geocoding API.
@@ -50,7 +51,7 @@ public class GoogleGeocoderCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
     public ResponseEntity<byte[]> geocodeAddress(@RequestParam String address) throws IOException {
-        String addr = URLEncoder.encode(address, "UTF-8");
+        String addr = URLEncoder.encode(address, StandardCharsets.UTF_8);
         String url = String.format(URL_FORMAT, key, addr);
 
         HttpGet httpget = new HttpGet(url);

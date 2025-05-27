@@ -3,6 +3,7 @@ package gov.nysenate.ess.web.config;
 import gov.nysenate.ess.core.dao.stats.UserAgentDao;
 import gov.nysenate.ess.web.security.filter.EssApiAuthenticationFilter;
 import gov.nysenate.ess.web.security.filter.EssAuthenticationFilter;
+import gov.nysenate.ess.web.security.filter.EssLdapAuthenticationFilter;
 import gov.nysenate.ess.web.security.filter.SessionTimeoutFilter;
 import gov.nysenate.ess.web.security.session.SessionTimeoutDao;
 import gov.nysenate.ess.web.security.xsrf.XsrfTokenValidator;
@@ -15,8 +16,6 @@ import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.session.mgt.ServletContainerSessionManager;
 import org.apache.shiro.web.session.mgt.WebSessionManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -27,12 +26,11 @@ import javax.servlet.Filter;
 
 /**
  * Configures dependencies necessary for security based functionality.
- * The security framework used is Apache Shiro (http://shiro.apache.org/).
+ * The security framework used is Apache Shiro (<a href="https://shiro.apache.org/">...</a>).
  */
 @Configuration
 public class SecurityConfig
 {
-    private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
 
     private final String loginUrl;
     private final String loginSuccessUrl;
@@ -40,15 +38,18 @@ public class SecurityConfig
 
     private final UserAgentDao userAgentDao;
     private final SessionTimeoutDao sessionTimeoutDao;
+    private final EssLdapAuthenticationFilter essLdapAuthenticationFilter;
 
     @Autowired
     public SecurityConfig(UserAgentDao userAgentDao,
                           SessionTimeoutDao sessionTimeoutDao,
+                          EssLdapAuthenticationFilter essLdapAuthenticationFilter,
                           @Value("${login.url:/login}") String loginUrl,
                           @Value("${login.success.url:/}") String loginSuccessUrl,
                           @Value("${xsrf.token.bytes:128}") int xsrfBytesSize) {
         this.userAgentDao = userAgentDao;
         this.sessionTimeoutDao = sessionTimeoutDao;
+        this.essLdapAuthenticationFilter = essLdapAuthenticationFilter;
         this.loginUrl = loginUrl;
         this.loginSuccessUrl = loginSuccessUrl;
         this.xsrfBytesSize = xsrfBytesSize;
@@ -85,8 +86,7 @@ public class SecurityConfig
      */
     @Bean(name = "sessionManager")
     public WebSessionManager sessionManager() {
-        ServletContainerSessionManager sessionManager = new ServletContainerSessionManager();
-        return sessionManager;
+        return new ServletContainerSessionManager();
     }
 
     @Bean(name = "shiroCacheManager")
@@ -111,8 +111,8 @@ public class SecurityConfig
      * the bean name.
      */
     @Bean(name = "essAuthc")
-    public Filter essAuthenticationFilter () {
-        return new EssAuthenticationFilter(userAgentDao);
+    public Filter essAuthenticationFilter (EssLdapAuthenticationFilter essLdapAuthenticationFilter) {
+        return new EssAuthenticationFilter(userAgentDao, essLdapAuthenticationFilter);
     }
 
     /**

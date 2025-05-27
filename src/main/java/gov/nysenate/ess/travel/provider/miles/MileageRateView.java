@@ -12,9 +12,9 @@ public class MileageRateView implements ViewObject {
     private BigDecimal rate;
 
     public MileageRateView(MileageRate mileageRate) {
-        this.startDate = mileageRate.getStartDate();
-        this.endDate = mileageRate.getEndDate();
-        this.rate = mileageRate.getRate();
+        this.startDate = mileageRate.startDate();
+        this.endDate = mileageRate.endDate();
+        this.rate = mileageRate.rate();
     }
 
     public LocalDate getStartDate() {

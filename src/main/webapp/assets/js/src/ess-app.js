@@ -29,6 +29,15 @@ essCore.run(['$cookies', function ($cookies) {
     $cookies.put("appVersion", globalProps.releaseVersion);
 }]);
 
+/**
+ * Prevent strict sanitation of links.
+ * Some of our 3rd party libs use "unsafe" links that the sanitizer doesn't like.
+ * E.g. <a href="javascript:void(0)" ng-click=...
+ */
+essCore.config(['$compileProvider', function ($compileProvider) {
+    $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|javascript):/);
+}]);
+
 // disable backspace key from nav
 essCore.run(function unbindBackspace() {
     $(document).unbind('keydown').bind('keydown', function (event) {

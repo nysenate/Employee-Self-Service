@@ -6,47 +6,46 @@ function reviewEditForm($compile, appProps, modals) {
     return {
         restrict: 'E',
         scope: {
-            app: '<',               // The application being edited.
-            title: '@',             // The title
-            positiveCallback: '&',  // Callback function called when continuing. Takes a travel app param named 'app'.
-            positiveBtnLabel: '@',   // The label to use for the positive button.
-            neutralCallback: '&',   // Callback function called when moving back. Takes a travel app param named 'app'.
-            negativeCallback: '&?', // Callback function called when canceling. Takes a travel app param named 'app'.
+            data: '<',         // The application being edited.
+            positiveCallback: '&',  // Callback function called when continuing. Takes a draft param named 'draft'.
+            positiveBtnLabel: '@',  // The label to use for the positive button.
+            neutralCallback: '&',   // Callback function called when moving back. Takes a draft param named 'draft'.
+            negativeCallback: '&?', // Callback function called when canceling. Takes a draft param named 'draft'.
             negativeLabel: '@'      // Text to label the negative button. Defaults to 'Cancel'
         },
         controller: 'AppEditCtrl',
         templateUrl: appProps.ctxPath + '/template/travel/common/app/review-edit-form-directive',
         link: function (scope, elem, attrs) {
 
+            scope.mode = scope.data.mode;
+            scope.app = {
+                activeAmendment: scope.data.draft.amendment,
+                traveler: scope.data.draft.traveler,
+                submittedDateTime: new Date(),
+            };
+
             // Hides the negative button if no callback was provided.
             scope.showNegative = attrs.hasOwnProperty('negativeCallback');
-
-            scope.reviewApp = angular.copy(scope.app);
 
             displayMap();
 
             scope.next = function () {
-                scope.positiveCallback({app: scope.reviewApp});
+                scope.positiveCallback({draft: scope.data.draft});
             };
 
+            scope.save = function () {
+                scope.saveDraft(scope.data.draft)
+                    .then(function (draft) {
+                        scope.data.draft = draft;
+                    });
+            }
+
             scope.back = function () {
-                scope.neutralCallback({app: scope.dirtyApp});
+                scope.neutralCallback({draft: scope.data.draft});
             };
 
             scope.cancel = function () {
-                scope.negativeCallback({app: scope.reviewApp});
-            };
-
-            scope.displayLodgingDetails = function () {
-                modals.open('ess-lodging-details-modal', {app: scope.reviewApp}, true);
-            };
-
-            scope.displayMealDetails = function () {
-                modals.open('ess-meal-details-modal', {app: scope.reviewApp}, true);
-            };
-
-            scope.displayMileageDetails = function () {
-                modals.open('ess-mileage-details-modal', {app: scope.reviewApp}, true);
+                scope.negativeCallback({draft: scope.data.draft});
             };
 
             function displayMap() {
@@ -66,10 +65,10 @@ function reviewEditForm($compile, appProps, modals) {
 
                 // Create map api parameters.
                 // All intermediate destinations should be waypoints, final destination should an address string.
-                var origin = scope.reviewApp.route.origin.formattedAddressWithCounty;
+                var origin = scope.data.draft.amendment.route.origin.formattedAddressWithCounty;
 
                 var waypoints = [];
-                scope.reviewApp.route.outboundLegs.forEach(function (leg) {
+                scope.data.draft.amendment.route.outboundLegs.forEach(function (leg) {
                     waypoints.push({location: leg.to.address.formattedAddressWithCounty});
                 });
 

@@ -8,13 +8,13 @@ import org.junit.experimental.categories.Category;
 import java.time.LocalDate;
 import java.time.temporal.ChronoField;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 @Category(UnitTest.class)
 public class PersonTest
 {
     @Test
-    public void testCopyConstructor() throws Exception {
+    public void testCopyConstructor() {
         Person p = new Person();
         p.setDateOfBirth(LocalDate.now());
         p.setEmail("test@test.com");
@@ -42,7 +42,7 @@ public class PersonTest
     }
 
     @Test
-    public void testGetAge() throws Exception {
+    public void testGetAge() {
         Person p = new Person();
         LocalDate dob = LocalDate.now().with(ChronoField.YEAR, 1991);
         p.setDateOfBirth(dob);
@@ -54,7 +54,7 @@ public class PersonTest
 
     /** Throws IllegalStateException if dob is null. */
     @Test(expected = IllegalStateException.class)
-    public void testGetAge_nullDOB() throws Exception {
+    public void testGetAge_nullDOB() {
         Person nullDob = new Person();
         nullDob.setDateOfBirth(null);
         assertEquals(0, nullDob.getAge());

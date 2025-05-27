@@ -1,22 +1,21 @@
 package gov.nysenate.ess.supply.integration.item;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
-import gov.nysenate.ess.core.annotation.IntegrationTest;
 import gov.nysenate.ess.core.BaseTest;
+import gov.nysenate.ess.core.annotation.IntegrationTest;
 import gov.nysenate.ess.supply.item.dao.SupplyItemDao;
-import gov.nysenate.ess.supply.item.model.*;
+import gov.nysenate.ess.supply.item.model.SupplyItem;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Set;
 
-import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
 @Ignore
-@org.junit.experimental.categories.Category(IntegrationTest.class)
+@Category(IntegrationTest.class)
 public class SupplyItemDaoIT extends BaseTest {
 
     @Autowired
@@ -69,38 +68,38 @@ public class SupplyItemDaoIT extends BaseTest {
     public void descriptionShouldPrefer_DeCommdtyEssSupply_field() {
         // Item 111 has both decommdty and decommdtyesssupply description fields.
         SupplyItem item = itemDao.getItemById(111);
-        assertThat(item.getDescription(), is("LABELING AND COVER UP TAPE"));
+        assertEquals("LABELING AND COVER UP TAPE", item.getDescription());
     }
 
     @Test
     public void descriptionShouldUse_Decommodityf_If_DeCommdtyEssSupply_IsNull() {
         SupplyItem item = itemDao.getItemById(904);
-        assertThat(item.getDescription(), is("COPYHOLDER METAL (STENO BOOK)"));
+        assertEquals("COPYHOLDER METAL (STENO BOOK)", item.getDescription());
     }
 
     @Test
     public void if_cdsensuppieditem_isNullDefaultToOrderedBySupply() {
         SupplyItem item = itemDao.getItemById(4700);
-        assertThat(item.isExpendable(), is(true));
-        assertThat(item.requiresSynchronization(), is(true));
+        assertTrue(item.isExpendable());
+        assertTrue(item.requiresSynchronization());
     }
 
     @Test
     public void if_cdspecpermvisible_isNullDefaultToVisible() {
         SupplyItem item = itemDao.getItemById(4700);
-        assertThat(item.isVisible(), is(true));
+        assertTrue(item.isVisible());
     }
 
     @Test
     public void if_cdspecpermreq_isNullDefaultToNotSpecialRequest() {
         SupplyItem item = itemDao.getItemById(4700);
-        assertThat(item.isSpecialRequest(), is(false));
+        assertFalse(item.isSpecialRequest());
     }
 
     @Test
     public void reconciliationPageNum_defaultsTo2() {
         SupplyItem item = itemDao.getItemById(4700);
-        assertThat(item.getReconciliationPage(), is(2));
+        assertEquals(2, item.getReconciliationPage());
     }
 
     // Cant test default value when cdstockitem is null, no values in the database.

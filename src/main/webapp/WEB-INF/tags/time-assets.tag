@@ -50,6 +50,12 @@
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/time/accrual/accrual-utils.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/time/accrual/sick-time-donation-ctrl.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/time/accrual/donation-modal.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/time/accrual/donation-continue-modal.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/time/accrual/time-off-request-list-directive.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/time/accrual/time-off-request.js?v=${releaseVersion}"></script>

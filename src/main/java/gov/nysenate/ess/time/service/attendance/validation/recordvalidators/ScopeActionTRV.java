@@ -1,7 +1,10 @@
 package gov.nysenate.ess.time.service.attendance.validation.recordvalidators;
 
 import gov.nysenate.ess.core.client.view.base.InvalidParameterView;
-import gov.nysenate.ess.time.model.attendance.*;
+import gov.nysenate.ess.time.model.attendance.InvalidTimeRecordActionEx;
+import gov.nysenate.ess.time.model.attendance.TimeRecord;
+import gov.nysenate.ess.time.model.attendance.TimeRecordAction;
+import gov.nysenate.ess.time.model.attendance.TimeRecordStatus;
 import gov.nysenate.ess.time.service.attendance.validation.TimeRecordErrorCode;
 import gov.nysenate.ess.time.service.attendance.validation.TimeRecordErrorException;
 import gov.nysenate.ess.time.service.attendance.validation.TimeRecordValidator;
@@ -35,7 +38,7 @@ public class ScopeActionTRV implements TimeRecordValidator {
      */
     @Override
     public void checkTimeRecord(TimeRecord record, Optional<TimeRecord> prevState, TimeRecordAction action) throws TimeRecordErrorException {
-        if (!prevState.isPresent()) {
+        if (prevState.isEmpty()) {
             return;
         }
         TimeRecord previousState = prevState.get();

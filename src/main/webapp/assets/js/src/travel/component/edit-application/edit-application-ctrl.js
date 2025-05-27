@@ -1,96 +1,105 @@
 var essTravel = angular.module('essTravel');
 
 essTravel.controller('EditApplicationCtrl',
-                     ['$scope', 'LocationService', 'modals', 'AppEditStateService', 'TravelApplicationByIdApi',
-                      'TravelRouteCalcApi', editAppCtrl]);
+                     ['$scope', 'LocationService', 'modals', 'AppEditStateService',
+                      'TravelAppEditApi', 'TravelAppEditResubmitApi', editAppCtrl]);
 
-function editAppCtrl($scope, locationService, modals, stateService, appIdApi, routeCalcApi) {
+function editAppCtrl($scope, locationService, modals, stateService, appEditApi, appResubmitApi) {
 
     var vm = this;
-    vm.app = undefined;
+    vm.draft = undefined; // Contains the `traveler` and `amendment` fields which can be edited.
+    vm.appId = 0;
+    // Some editing functionality is only available to the TRAVEL_ADMIN.
+    vm.activeRole = 'NONE';
+    vm.dirtyRoute = {};
+    vm.mode = undefined;
 
     (function init() {
         vm.stateService = stateService;
         vm.stateService.setPurposeState();
 
-        var appId = locationService.getSearchParam("appId");
-        appIdApi.get({id: appId}, function (response) {
-            vm.app = response.result;
+        vm.appId = locationService.getSearchParam("appId");
+        vm.activeRole = locationService.getSearchParam("role");
+        appEditApi.get({id: vm.appId, role: vm.activeRole}, function (response) {
+            vm.draft = response.result;
+            vm.dirtyRoute = angular.copy(vm.draft.amendment.route);
         }, $scope.handleErrorResponse);
+        if (vm.activeRole === 'NONE') {
+            vm.mode = 'RESUBMIT';
+        } else {
+            vm.mode = 'EDIT';
+        }
     })();
 
-    vm.savePurpose = function (app) {
-        vm.app = app;
+    vm.savePurpose = function (draft) {
+        vm.draft = draft;
         stateService.setOutboundState();
     };
 
-    vm.saveOutbound = function (app) {
-        vm.app = app;
+    vm.saveOutbound = function (route) {
+        vm.dirtyRoute = route;
         stateService.setReturnState();
     };
 
-    vm.saveRoute = function (app) {
-        vm.openLoadingModal();
-        routeCalcApi.save({}, app.route, function (response) {
-            console.log(response);
-            vm.app.route = response.result;
-            stateService.setAllowancesState();
-            vm.closeLoadingModal();
-        }, function (error) {
-            vm.closeLoadingModal();
-            $scope.handleErrorResponse(error);
-        });
-    };
-
-    vm.saveAllowances = function (app) {
-        vm.app = app;
-        stateService.setOverridesState();
-        // var patches = {
-        //     allowances: JSON.stringify(app.allowances),
-        //     mealPerDiems: JSON.stringify(app.mealPerDiems),
-        //     lodgingPerDiems: JSON.stringify(app.lodgingPerDiems),
-        //     mileagePerDiems: JSON.stringify(app.mileagePerDiems)
-        // };
-        // appIdApi.update({id: app.id}, patches, function (response) {
-        //     vm.app = response.result;
-        //     stateService.setOverridesState();
-        // }, $scope.handleErrorResponse)
-    };
-
-    vm.saveOverrides = function (app) {
-        vm.app = app;
-        stateService.setReviewState();
-    };
-
-    vm.saveEdits = function (app) {
-        appIdApi.save({appId: app.id}, app, function (response) {
-            locationService.go("/travel/review", false, {appId: app.id});
-        }, $scope.handleErrorResponse);
-    };
-
-    vm.cancelEdit = function (app) {
-        modals.open('cancel-edits').then(function () {
-            locationService.go("/travel/review", false, {appId: app.id});
-        })
-    };
-
-    vm.toPurposeState = function (app) {
-        stateService.setPurposeState();
-    };
-
-    vm.toOutboundState = function (app) {
-        stateService.setOutboundState();
-    };
-
-    vm.toReturnState = function (app) {
-        stateService.setReturnState();
-    };
-
-    vm.toAllowancesState = function (app) {
+    vm.saveRoute = function (draft) {
+        vm.draft = draft;
+        vm.dirtyRoute = angular.copy(draft.amendment.route);
         stateService.setAllowancesState();
     };
 
-    vm.toOverridesState = function (app) {
+    vm.saveAllowances = function (draft) {
+        vm.draft = draft
+        if (vm.activeRole === 'TRAVEL_ADMIN' || vm.activeRole === 'SECRETARY_OF_THE_SENATE') {
+            stateService.setOverridesState();
+        } else {
+            stateService.setReviewState();
+        }
+    };
+
+    vm.saveOverrides = function (draft) {
+        vm.draft = draft
+        stateService.setReviewState();
+    };
+
+    vm.saveEdits = function (draft) {
+        if (vm.mode === 'RESUBMIT') {
+            appResubmitApi.save({id: vm.appId}, vm.draft, function (response) {
+                locationService.go("/travel/applications", false);
+            }, $scope.handleErrorResponse);
+        } else if (vm.mode === 'EDIT') {
+            appEditApi.save({id: vm.appId}, vm.draft, function (response) {
+                locationService.go("/travel/manage/review", false, {appId: vm.appId, role: vm.activeRole});
+            }, $scope.handleErrorResponse);
+        }
+    };
+
+    vm.cancelEdit = function (draft) {
+        modals.open('cancel-edits').catch(function () {
+            if (vm.mode === 'RESUBMIT') {
+                locationService.go("/travel/applications", false);
+            } else {
+                locationService.go("/travel/manage/review", false, {appId: vm.appId, role: vm.activeRole});
+            }
+        })
+    };
+
+    vm.toPurposeState = function (draft) {
+        stateService.setPurposeState();
+    };
+
+    vm.toOutboundState = function (draft) {
+        stateService.setOutboundState();
+    };
+
+    vm.toReturnState = function (draft) {
+        stateService.setReturnState();
+    };
+
+    vm.toAllowancesState = function (draft) {
+        stateService.setAllowancesState();
+    };
+
+    vm.toOverridesState = function (draft) {
         stateService.setOverridesState();
     };
 

@@ -6,36 +6,33 @@ function outboundEditLink(appProps) {
     return {
         restrict: 'E',
         scope: {
-            app: '<',               // The application being edited.
-            title: '@',             // The title
-            positiveCallback: '&',  // Callback function called when continuing. Takes a travel app param named 'app'.
-            neutralCallback: '&',   // Callback function called when moving back. Takes a travel app param named 'app'.
-            negativeCallback: '&',  // Callback function called when canceling. Takes a travel app param named 'app'.
+            data: '<',         // The amendment being edited.
+            positiveCallback: '&',  // Callback function called when continuing. Takes a route param named 'route'.
+            neutralCallback: '&',   // Callback function called when moving back. Takes a draft param named 'draft'.
+            negativeCallback: '&',  // Callback function called when canceling. Takes a draft param named 'draft'.
             negativeLabel: '@'      // Text to label the negative button. Defaults to 'Cancel'
         },
         controller: 'AppEditCtrl',
         templateUrl: appProps.ctxPath + '/template/travel/common/app/outbound-edit-form-directive',
         link: function (scope, elem, attrs) {
+            scope.mode = scope.data.mode;
+            scope.route = angular.copy(scope.data.dirtyRoute);
 
-            scope.dirtyApp = angular.copy(scope.app);
-
-            if (scope.dirtyApp.route.outboundLegs.length === 0) {
+            if (scope.route.outboundLegs.length === 0) {
                 var leg = new Leg();
                 // Init from address to employees work address.
-                leg.from.address = scope.app.traveler.empWorkLocation.address;
-                scope.dirtyApp.route.outboundLegs.push(leg);
+                leg.from.address = scope.data.draft.traveler.empWorkLocation.address;
+                scope.route.outboundLegs.push(leg);
             }
-
-            console.log(scope.dirtyApp.route);
 
             scope.addSegment = function () {
                 // Initialize new leg
                 var segment = new Leg();
-                var prevSeg = scope.dirtyApp.route.outboundLegs[scope.dirtyApp.route.outboundLegs.length - 1];
+                var prevSeg = scope.route.outboundLegs[scope.route.outboundLegs.length - 1];
                 segment.from = prevSeg.to;
                 segment.methodOfTravel = prevSeg.methodOfTravel;
                 segment.methodOfTravelDescription = prevSeg.methodOfTravelDescription;
-                scope.dirtyApp.route.outboundLegs.push(segment);
+                scope.route.outboundLegs.push(segment);
             };
 
             scope.setFromAddress = function (leg, address) {
@@ -47,30 +44,30 @@ function outboundEditLink(appProps) {
             };
 
             scope.isLastSegment = function (index) {
-                return scope.dirtyApp.route.outboundLegs.length - 1 === index;
+                return scope.route.outboundLegs.length - 1 === index;
             };
 
             scope.deleteSegment = function () {
-                scope.dirtyApp.route.outboundLegs.pop();
+                scope.route.outboundLegs.pop();
             };
 
             scope.next = function () {
                 scope.setInvalidFormElementsTouched(scope.outbound.form);
                 if (scope.outbound.form.$valid) {
-                    scope.normalizeTravelDates(scope.dirtyApp.route.outboundLegs);
-                    scope.checkCounties(scope.dirtyApp.route.outboundLegs)
+                    scope.normalizeTravelDates(scope.route.outboundLegs);
+                    scope.checkCounties(scope.route.outboundLegs)
                         .then(function () {
-                            scope.positiveCallback({app: scope.dirtyApp});
+                            scope.positiveCallback({route: scope.route});
                         });
                 }
             };
 
             scope.back = function () {
-                scope.neutralCallback({app: scope.dirtyApp});
+                scope.neutralCallback({draft: scope.dirtyDraft});
             };
 
             scope.cancel = function () {
-                scope.negativeCallback({app: scope.dirtyApp});
+                scope.negativeCallback({draft: scope.dirtyDraft});
             };
         }
     }

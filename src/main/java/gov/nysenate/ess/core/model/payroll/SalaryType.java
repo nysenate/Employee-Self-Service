@@ -7,15 +7,15 @@ package gov.nysenate.ess.core.model.payroll;
  */
 public enum SalaryType
 {
-    HOURLY("Hourly Salary", "TE", 3600000l),
-    BIWEEKLY("Biweekly Salary", "RA", 1209600000l),
-    BIWEEKLYSA("Biweekly Salary", "SA", 1209600000l),
-    YEARLY("Yearly Salary", "RA", 31536000000l),
-    YEARLYSA("Yearly Salary", "SA", 31536000000l);
+    HOURLY("Hourly Salary", "TE", 3600000L),
+    BIWEEKLY("Biweekly Salary", "RA", 1209600000L),
+    BIWEEKLYSA("Biweekly Salary", "SA", 1209600000L),
+    YEARLY("Yearly Salary", "RA", 31536000000L),
+    YEARLYSA("Yearly Salary", "SA", 31536000000L);
 
-    private String desc;
-    private String payType;
-    private long time;
+    private final String desc;
+    private final String payType;
+    private final long time;
 
     SalaryType(String desc, String payType, long time) {
         this.desc = desc;

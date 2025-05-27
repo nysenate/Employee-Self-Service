@@ -25,6 +25,7 @@
         <shiro:hasPermission name="<%= SimpleTimePermission.ACCRUAL_PROJECTIONS.getPermissionString() %>">
             <li class="sub-topic teal"><a href="${ctxPath}/time/accrual/projections">Accrual Projections</a></li>
         </shiro:hasPermission>
+        <li class="sub-topic teal"><a href="${ctxPath}/time/accrual/donation">Sick Leave Donation</a></li>
         <shiro:hasPermission name="<%= SimpleTimePermission.TIME_OFF_REQUEST_PAGES.getPermissionString() %>">
             <li class="sub-topic teal"><a href="${ctxPath}/time/accrual/time-off-request">Time Off Requests</a>
               <badge title="Pending Request Count" style="cursor: default"
@@ -63,6 +64,12 @@
   </shiro:hasPermission>
   <shiro:hasPermission name="<%= SimpleTimePermission.PERSONNEL_PAGES.getPermissionString() %>">
     <h3 class="main-topic">Personnel</h3>
+    <ul class="sub-topic-list">
+      <li class="sub-topic teal"><a href="${ctxPath}/time/personnel/search">Employee Search</a></li>
+    </ul>
+  </shiro:hasPermission>
+  <shiro:hasPermission name="<%= SimpleTimePermission.DEVELOPER.getPermissionString() %>">
+    <h3 class="main-topic">Developer</h3>
     <ul class="sub-topic-list">
       <li class="sub-topic teal"><a href="${ctxPath}/time/personnel/search">Employee Search</a></li>
     </ul>

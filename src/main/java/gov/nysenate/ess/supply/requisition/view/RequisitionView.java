@@ -98,12 +98,12 @@ public class RequisitionView implements ViewObject {
 
     @JsonIgnore
     private String dateTimeToString(Optional<LocalDateTime> dtOption) {
-        return dtOption.map(dt -> dt.format(DateTimeFormatter.ISO_DATE_TIME)).orElse(null);
+        return dtOption.map(LocalDateTime::toString).orElse(null);
     }
 
     @JsonIgnore
     private LocalDateTime stringToDateTime(String dt) {
-        return dt == null ? null : LocalDateTime.parse(dt, DateTimeFormatter.ISO_DATE_TIME);
+        return dt == null ? null : LocalDateTime.parse(dt);
     }
 
     @XmlElement

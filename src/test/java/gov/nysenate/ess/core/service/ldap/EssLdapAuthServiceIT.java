@@ -38,7 +38,7 @@ public class EssLdapAuthServiceIT extends BaseTest
     }
 
     @Test
-    public void testAutowiredSucceeds() throws Exception {
+    public void testAutowiredSucceeds() {
         assertNotNull(senateLdapService);
     }
 
@@ -59,7 +59,7 @@ public class EssLdapAuthServiceIT extends BaseTest
     }
 
     @Test
-    public void testAuthenticateUserByUid_EmptyUserPass() throws Exception {
+    public void testAuthenticateUserByUid_EmptyUserPass() {
         LdapAuthResult authResult = senateLdapService.authenticateUserByUid(null, "pass");
         assertEquals(LdapAuthStatus.EMPTY_USERNAME, authResult.getAuthStatus());
         authResult = senateLdapService.authenticateUserByUid("user", null);
@@ -67,14 +67,14 @@ public class EssLdapAuthServiceIT extends BaseTest
     }
 
     @Test
-    public void testAuthenticateUserByUid_AuthenticationFailsInvalidPass() throws Exception {
+    public void testAuthenticateUserByUid_AuthenticationFailsInvalidPass() {
         LdapAuthResult authResult = senateLdapService.authenticateUserByUid(validUid, "invalidPassword");
         assertEquals(LdapAuthStatus.INCORRECT_CREDENTIALS, authResult.getAuthStatus());
         assertEquals(validUid, authResult.getUid());
     }
 
     @Test
-    public void testAuthenticateUserByUid_AuthenticationFailsInvalidUser() throws Exception {
+    public void testAuthenticateUserByUid_AuthenticationFailsInvalidUser() {
         String invalidUser = "gloork";
         LdapAuthResult authResult = senateLdapService.authenticateUserByUid(invalidUser, "invalidPassword");
         assertEquals(LdapAuthStatus.NAME_NOT_FOUND_EXCEPTION, authResult.getAuthStatus());

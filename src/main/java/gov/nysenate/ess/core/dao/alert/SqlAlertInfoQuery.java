@@ -33,11 +33,9 @@ public enum SqlAlertInfoQuery implements BasicSqlQuery {
         "email_personal = :personalEmail,\n" +
         "  email_alternate = :alternateEmail\n" +
         "WHERE employee_id = :empId"
-    ),
+    );
 
-    ;
-
-    private String sql;
+    private final String sql;
 
     SqlAlertInfoQuery(String sql) {
         this.sql = sql;

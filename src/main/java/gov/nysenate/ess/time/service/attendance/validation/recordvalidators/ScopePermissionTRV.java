@@ -41,7 +41,7 @@ public class ScopePermissionTRV implements TimeRecordValidator {
      */
     @Override
     public void checkTimeRecord(TimeRecord record, Optional<TimeRecord> prevState, TimeRecordAction action) throws TimeRecordErrorException {
-        if (!prevState.isPresent()) {
+        if (prevState.isEmpty()) {
             return;
         }
         TimeRecord prevRecord = prevState.get();

@@ -18,9 +18,10 @@ public interface TimeRecordValidationService
      *  - A time record for this pay period has not already been submitted
      *  - The pay period for this time record is valid
      *
-     * @param record {@link TimeRecord} The time record that will be saved
+     * @param currRecord {@link TimeRecord} The current record for this period
+     * @param newRecord {@link TimeRecord} The time record that will be saved
      * @param action {@link TimeRecordAction} the requested action to be performed on the time record
      * @throws InvalidTimeRecordException if the given time record is not valid
      */
-    void validateTimeRecord(TimeRecord record, TimeRecordAction action) throws InvalidTimeRecordException;
+    void validateTimeRecord(TimeRecord currRecord, TimeRecord newRecord, TimeRecordAction action) throws InvalidTimeRecordException;
 }

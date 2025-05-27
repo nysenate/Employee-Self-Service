@@ -20,7 +20,7 @@ public enum SqlHolidayQuery implements BasicSqlQuery
         GET_HOLIDAYS_SQL.getSql() + " AND cdquest = 'N'"
     );
 
-    private String sql;
+    private final String sql;
 
     SqlHolidayQuery(String sql) {
         this.sql = sql;

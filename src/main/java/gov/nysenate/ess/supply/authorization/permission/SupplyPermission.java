@@ -15,10 +15,9 @@ public enum SupplyPermission {
     SUPPLY_UI_MANAGE_FULFILLMENT("supply:ui:manage:fulfillment"), // Permission to view the fulfillment page.
     SUPPLY_UI_MANAGE_RECONCILIATION("supply:ui:manage:reconciliation"), // Permission to view the reconciliation page.
     SUPPLY_UI_MANAGE_REQUISITION_HISTORY("supply:ui:manage:requisition-history"), // Permission to view the requisition history page.
-    SUPPLY_UI_MANAGE_ITEM_HISTORY("supply:ui:manage:item-history") // Permission to view the item history page.
-    ;
+    SUPPLY_UI_MANAGE_ITEM_HISTORY("supply:ui:manage:item-history"); // Permission to view the item history page.
 
-    private String permissionString;
+    private final String permissionString;
 
     SupplyPermission(String permissionString) {
         this.permissionString = permissionString;

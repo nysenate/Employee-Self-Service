@@ -2,6 +2,8 @@ package gov.nysenate.ess.core.model.unit;
 
 import gov.nysenate.ess.core.model.personnel.ResponsibilityHead;
 
+import java.util.Objects;
+
 /**
  * Typically used to represent a Senate employee's place of work or some other location
  * that serves a business purpose.
@@ -58,7 +60,7 @@ public final class Location
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Location location = (Location) o;
-        return locId != null ? locId.equals(location.locId) : location.locId == null;
+        return Objects.equals(locId, location.locId);
 
     }
 

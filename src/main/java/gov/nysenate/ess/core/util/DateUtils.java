@@ -1,12 +1,15 @@
 package gov.nysenate.ess.core.util;
 
 import com.google.common.collect.*;
+import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.EnumSet;
+import java.util.GregorianCalendar;
 
 
 public class DateUtils
@@ -335,7 +338,16 @@ public class DateUtils
         return LocalDate.from(date).minusYears(1).withDayOfYear(1);
     }
 
-
+    /**
+     * Adds the specified number of days to the base date.
+     */
+    public static LocalDate addDays(LocalDate baseDate, int daysToAdd) {
+        Date startDate = Date.from(baseDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        Calendar calendar = new GregorianCalendar(/* remember about timezone! */);
+        calendar.setTime(startDate);
+        calendar.add(Calendar.DATE, daysToAdd);
+        return calendar.getTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+    }
 
     /**
      * --- Discrete Domains ---

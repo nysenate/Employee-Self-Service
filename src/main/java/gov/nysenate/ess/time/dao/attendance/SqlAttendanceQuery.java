@@ -77,10 +77,9 @@ public enum SqlAttendanceQuery implements BasicSqlQuery {
         GET_ATTENDANCE_RECORDS_SELECT.getSql() + "\n" +
         "  AND rec.NUXREFEM = :empId\n" +
         "  AND rec.DTEND = :endDate"
-    )
-    ;
+    );
 
-    private String sql;
+    private final String sql;
 
     SqlAttendanceQuery(String sql) {
         this.sql = sql;

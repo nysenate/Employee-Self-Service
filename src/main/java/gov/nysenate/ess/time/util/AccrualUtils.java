@@ -28,6 +28,18 @@ public final class AccrualUtils {
     }
 
     /**
+     * Get a prorate percentage based on the minimum total hours worked in a year
+     * @param minTotalHours BigDecimal
+     * @return BigDecimal
+     */
+    public static BigDecimal getProratePercentageNoDigitLimits(BigDecimal minTotalHours) {
+        if (minTotalHours == null) {
+            return BigDecimal.ZERO;
+        }
+        return minTotalHours.divide(MAX_YTD_HOURS, new MathContext(50));
+    }
+
+    /**
      * Get the number of hours an employee is expected to work in a pay period,
      * given the number of hours expected for a whole year.
      *
@@ -92,7 +104,15 @@ public final class AccrualUtils {
      * @return BigDecimal
      */
     private static BigDecimal roundAccrualValue(BigDecimal value, BigDecimal increment) {
+        value = value.setScale(4, RoundingMode.FLOOR);
         BigDecimal multiplier = BigDecimal.ONE.divide(increment, RoundingMode.HALF_UP);
+        multiplier = multiplier.setScale(4, RoundingMode.FLOOR);
+        /// Below previously was:   .setScale(0, RoundingMode.CEILING)
+        /// Issue was that accruals were not rounding correctly.  EX: Employee with Sick Accrual 2.250015 rounded to
+        /// 2.5 with CEILING when it should have been 2.25..
+        /// Sick, Vac can accrue in .25 increments but have to be used in .5 increments
+        /// Personal, Work Time are only in .5 increments.
+
         return value.multiply(multiplier)
                 .setScale(0, RoundingMode.CEILING)
                 .divide(multiplier);

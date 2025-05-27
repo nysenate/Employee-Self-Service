@@ -4,6 +4,7 @@ import gov.nysenate.ess.core.dao.base.BasicSqlQuery;
 import gov.nysenate.ess.core.dao.base.DbVendor;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.travel.utils.Dollars;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -22,7 +23,13 @@ public class SqlSenateMieDao extends SqlBaseDao {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("senateMieId", senateMieId);
         String sql = SqlSenateMieQuery.SELECT_SENATE_MIE_BY_ID.getSql(schemaMap());
-        return localNamedJdbc.queryForObject(sql, params, new SenateMieRowMapper());
+        List<SenateMie> senateMiles = localNamedJdbc.query(sql, params, new SenateMieRowMapper());
+        if (senateMiles.isEmpty() || senateMiles == null) {
+            throw new IncorrectResultSizeDataAccessException(0);
+        }
+        else {
+            return senateMiles.get(0);
+        }
     }
 
     public SenateMie selectSenateMie(int fiscalYear, Dollars total) {
@@ -30,7 +37,13 @@ public class SqlSenateMieDao extends SqlBaseDao {
                 .addValue("fiscalYear", fiscalYear)
                 .addValue("total", total.toString());
         String sql = SqlSenateMieQuery.SELECT_SENATE_MIE.getSql(schemaMap());
-        return localNamedJdbc.queryForObject(sql, params, new SenateMieRowMapper());
+        List<SenateMie> senateMiles = localNamedJdbc.query(sql, params, new SenateMieRowMapper());
+        if (senateMiles.isEmpty() || senateMiles == null) {
+            throw new IncorrectResultSizeDataAccessException(0);
+        }
+        else {
+            return senateMiles.get(0);
+        }
     }
 
     /**
@@ -64,10 +77,9 @@ public class SqlSenateMieDao extends SqlBaseDao {
         SELECT_SENATE_MIE(
                 "SELECT * FROM ${travelSchema}.senate_mie\n" +
                         "WHERE fiscal_year = :fiscalYear AND total = :total"
-        )
-        ;
+        );
 
-        private String sql;
+        private final String sql;
 
         SqlSenateMieQuery(String sql) {
             this.sql = sql;
@@ -84,7 +96,7 @@ public class SqlSenateMieDao extends SqlBaseDao {
         }
     }
 
-    private class SenateMieRowMapper implements RowMapper<SenateMie> {
+    private static class SenateMieRowMapper implements RowMapper<SenateMie> {
 
         @Override
         public SenateMie mapRow(ResultSet rs, int i) throws SQLException {

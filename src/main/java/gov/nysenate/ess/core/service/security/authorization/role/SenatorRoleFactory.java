@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 public class SenatorRoleFactory implements RoleFactory {
 
     @Override
-    public Stream<Enum> getRoles(Employee employee) {
+    public Stream<Enum<?>> getRoles(Employee employee) {
         if (employee.isSenator()) {
             return Stream.of(EssRole.SENATOR);
         }

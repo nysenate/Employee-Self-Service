@@ -5,10 +5,14 @@ import com.google.common.collect.Range;
 import com.google.common.eventbus.EventBus;
 import gov.nysenate.ess.core.model.auth.SenatePerson;
 import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
+import gov.nysenate.ess.core.model.personnel.Employee;
+import gov.nysenate.ess.core.model.personnel.EmployeeNotFoundEx;
+import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.util.LimitOffset;
-import gov.nysenate.ess.travel.application.TravelApplication;
+import gov.nysenate.ess.travel.request.app.TravelApplication;
 import gov.nysenate.ess.travel.authorization.permission.TravelPermissionBuilder;
 import gov.nysenate.ess.travel.authorization.permission.TravelPermissionObject;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.shiro.SecurityUtils;
@@ -35,19 +39,20 @@ public class BaseRestApiCtrl
 
     public static final String REST_PATH = "/api/v1/";
     
-    public static final String ADMIN_REST_PATH = "/api/v1/admin";
+    public static final String ADMIN_REST_PATH = REST_PATH + "admin";
 
     /** Maximum number of results that can be requested via the query params. */
     private static final int MAX_LIMIT = 1000;
 
+    @Autowired private EmployeeInfoService empInfoService;
     @Autowired protected EventBus eventBus;
 
     @PostConstruct
-    public void init() throws Exception {
+    public void init() {
         this.eventBus.register(this);
     }
 
-    /** --- Request Parsers / Getters --- */
+    /* --- Request Parsers / Getters --- */
 
     /**
      * @return The currently authenticated subject
@@ -67,6 +72,24 @@ public class BaseRestApiCtrl
     }
 
     /**
+     * Check that the current subject has at least one Permission.
+     * @param permissions to check
+     */
+    protected void checkHasPermission(Permission... permissions) {
+        for (int i = 0; i < permissions.length; i++) {
+            try {
+                checkPermission(permissions[i]);
+                break;
+            }
+            catch (AuthorizationException ex) {
+                if (i == permissions.length - 1) {
+                    throw ex;
+                }
+            }
+        }
+    }
+
+    /**
      * Checks the currently authenticated subject has permissions to perform the given action on a travel application.
      * @param app
      * @param method
@@ -74,7 +97,7 @@ public class BaseRestApiCtrl
     protected void checkTravelAppPermission(TravelApplication app, RequestMethod method) {
         TravelPermissionBuilder submitterPerm = new TravelPermissionBuilder()
                 .forObject(TravelPermissionObject.TRAVEL_APPLICATION)
-                .forEmpId(app.getSubmittedBy().getEmployeeId())
+                .forEmpId(app.getCreatedBy().getEmployeeId())
                 .forAction(method);
 
         TravelPermissionBuilder travelerPerm = new TravelPermissionBuilder()
@@ -148,7 +171,7 @@ public class BaseRestApiCtrl
      * @param <T> T
      * @return Range<T>
      */
-    protected <T extends Comparable> Range<T> getRange(T lower, T upper, String lowerName, String upperName,
+    protected <T extends Comparable<?>> Range<T> getRange(T lower, T upper, String lowerName, String upperName,
                                                        BoundType lowerType, BoundType upperType) {
         try {
             return Range.range(lower, lowerType, upper, upperType);
@@ -160,19 +183,19 @@ public class BaseRestApiCtrl
         }
     }
 
-    protected <T extends Comparable> Range<T> getOpenRange(T lower, T upper, String lowerName, String upperName) {
+    protected <T extends Comparable<?>> Range<T> getOpenRange(T lower, T upper, String lowerName, String upperName) {
         return getRange(lower, upper, lowerName, upperName, BoundType.OPEN, BoundType.OPEN);
     }
 
-    protected <T extends Comparable> Range<T> getOpenClosedRange(T lower, T upper, String lowerName, String upperName) {
+    protected <T extends Comparable<?>> Range<T> getOpenClosedRange(T lower, T upper, String lowerName, String upperName) {
         return getRange(lower, upper, lowerName, upperName, BoundType.OPEN, BoundType.CLOSED);
     }
 
-    protected <T extends Comparable> Range<T> getClosedOpenRange(T lower, T upper, String lowerName, String upperName) {
+    protected <T extends Comparable<?>> Range<T> getClosedOpenRange(T lower, T upper, String lowerName, String upperName) {
         return getRange(lower, upper, lowerName, upperName, BoundType.CLOSED, BoundType.OPEN);
     }
 
-    protected <T extends Comparable> Range<T> getClosedRange(T lower, T upper, String lowerName, String upperName) {
+    protected <T extends Comparable<?>> Range<T> getClosedRange(T lower, T upper, String lowerName, String upperName) {
         return getRange(lower, upper, lowerName, upperName, BoundType.CLOSED, BoundType.CLOSED);
     }
 
@@ -194,22 +217,22 @@ public class BaseRestApiCtrl
      */
     protected <T extends Enum<T>> T getEnumParameter(String paramName, String paramValue, Class<T> enumType)
             throws InvalidRequestParamEx {
-        T result = getEnumParameter(paramValue, enumType, null);
-        if (result == null) {
-            throw getEnumParamEx(enumType, Enum::toString, paramName, paramValue);
-        }
-        return result;
-    }
-    /**
-     * Attempts to map the given request parameter to an enum by finding an enum instance whose name matches the parameter
-     * returns a default value if no such enum was found
-     */
-    protected <T extends Enum<T>> T getEnumParameter(String paramValue, Class<T> enumType, T defaultValue) {
         try {
             return T.valueOf(enumType, StringUtils.upperCase(paramValue));
         } catch (IllegalArgumentException | NullPointerException ex) {
+            throw getEnumParamEx(enumType, Enum::toString, paramName, paramValue);
+        }
+    }
+    /**
+     * Attempts to map the given request parameter to an enum by finding an enum instance whose name matches the parameter
+     * returns a default value if null.
+     */
+    protected <T extends Enum<T>> T getEnumParameter(String paramName, String paramValue,
+                                                     Class<T> enumType, T defaultValue) {
+        if (paramValue == null) {
             return defaultValue;
         }
+        return getEnumParameter(paramName, paramValue, enumType);
     }
 
     /**
@@ -247,8 +270,8 @@ public class BaseRestApiCtrl
     protected LimitOffset getLimitOffset(WebRequest webRequest, int defaultLimit) {
         int limit = defaultLimit;
         int offset = 0;
-        if (webRequest.getParameter("limit") != null) {
-            String limitStr = webRequest.getParameter("limit");
+        String limitStr = webRequest.getParameter("limit");
+        if (limitStr != null) {
             if (limitStr.equalsIgnoreCase("all")) {
                 limit = 0;
             }
@@ -263,5 +286,103 @@ public class BaseRestApiCtrl
             offset = NumberUtils.toInt(webRequest.getParameter("offset"), 0);
         }
         return new LimitOffset(limit, offset);
+    }
+
+    /**
+     * Parses the specified query param as a boolean or returns the default value if the param is not set.
+     *
+     * @param param WebRequest
+     * @param defaultVal boolean
+     * @return boolean
+     */
+    protected Boolean getBooleanParam(WebRequest request, String param, Boolean defaultVal) {
+        String value = request.getParameter(param);
+        try {
+            return value != null
+                    ? (Boolean) BooleanUtils.toBoolean(value.toLowerCase(), "true", "false")
+                    : defaultVal;
+        } catch (IllegalArgumentException ex) {
+            throw new InvalidRequestParamEx(value, param, "boolean", "true|false");
+        }
+    }
+
+    /**
+     * Parse an integer from the given string value, throwing an appropriate exception if it is invalid.
+     *
+     * @param paramName String
+     * @param paramValue String
+     * @return int
+     * @throws InvalidRequestParamEx if the given value is not valid.
+     */
+    protected int parseIntegerParam(String paramName, String paramValue) {
+        try {
+            return Integer.parseInt(paramValue);
+        } catch (NumberFormatException ex) {
+            throw new InvalidRequestParamEx(paramValue, paramName, "integer", "integer");
+        }
+    }
+
+    /**
+     * Extracts and parses an integer param from the given web request, throws an exception if it doesn't parse
+     */
+    protected int getIntegerParam(WebRequest request, String paramName) {
+        String intString = request.getParameter(paramName);
+        return parseIntegerParam(paramName, intString);
+    }
+
+    /**
+     * An overload of getIntegerParam that returns a default int value if not present.
+     * @see #getIntegerParam
+     */
+    protected Integer getIntegerParam(WebRequest request, String paramName, Integer defaultVal) {
+        String intString = request.getParameter(paramName);
+        return intString == null
+                ? defaultVal
+                : (Integer) parseIntegerParam(paramName, intString);
+    }
+
+    /**
+     * Checks to make sure the given emp id is valid.
+     *
+     * @param empId int
+     * @param paramName String
+     * @throws InvalidRequestParamEx if the given emp doesn't exist.
+     */
+    protected void ensureEmpIdExists(int empId, String paramName) throws InvalidRequestParamEx {
+        try {
+            empInfoService.getEmployee(empId);
+        } catch (EmployeeNotFoundEx ex) {
+            throw new InvalidRequestParamEx(
+                    Integer.toString(empId),
+                    paramName,
+                    "int",
+                    "employee id must correspond to an employee"
+            );
+        }
+    }
+
+    /**
+     * Checks to make sure the given emp id corresponds to an active employee.
+     *
+     * @param empId int
+     * @param paramName String
+     * @throws InvalidRequestParamEx if the given emp id is not active or doesn't exist
+     */
+    protected void ensureEmpIdActive(int empId, String paramName) throws InvalidRequestParamEx {
+        boolean empActive;
+        try {
+            Employee employee = empInfoService.getEmployee(empId);
+            empActive = employee.isActive();
+        } catch (EmployeeNotFoundEx ex) {
+            empActive = false;
+        }
+        if (!empActive) {
+            throw new InvalidRequestParamEx(
+                    Integer.toString(empId),
+                    paramName,
+                    "int",
+                    "employee id must correspond to a currently active employee"
+            );
+        }
     }
 }

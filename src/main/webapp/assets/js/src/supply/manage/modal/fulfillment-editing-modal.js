@@ -18,9 +18,10 @@ var essSupply = angular.module('essSupply')
         }
     }])
     .controller('FulfillmentEditingModal', ['$scope', 'appProps', 'modals', 'SupplyRequisitionByIdApi', 'SupplyRequisitionRejectApi',
-                                            'SupplyRequisitionProcessApi', 'SupplyItemApi', 'SupplyDestinationApi', fulfillmentEditingModal]);
+                                            'SupplyRequisitionProcessApi', 'SupplyRequisitionUndoApi', 'SupplyItemApi',
+                                            'SupplyDestinationApi', fulfillmentEditingModal]);
 
-function fulfillmentEditingModal($scope, appProps, modals, reqSaveApi, reqRejectApi, reqProcessApi,
+function fulfillmentEditingModal($scope, appProps, modals, reqSaveApi, reqRejectApi, reqProcessApi, reqUndoApi,
                                  itemApi, destinationApi) {
     $scope.dirty = false;
     $scope.originalRequisition = {};
@@ -72,6 +73,10 @@ function fulfillmentEditingModal($scope, appProps, modals, reqSaveApi, reqReject
     $scope.processReq = function () {
         modals.resolve(reqProcessApi.save({id: $scope.originalRequisition.requisitionId}, $scope.editableRequisition).$promise);
     };
+
+    $scope.undo = function () {
+        modals.resolve(reqUndoApi.save({id: $scope.originalRequisition.requisitionId}, $scope.editableRequisition).$promise);
+    }
 
     $scope.rejectReq = function () {
         modals.resolve(reqRejectApi.save({id: $scope.originalRequisition.requisitionId}, $scope.editableRequisition).$promise);

@@ -53,10 +53,17 @@ public class MiscTRV implements TimeRecordValidator {
      */
     private void checkMisc(TimeEntry entry)  throws TimeRecordErrorException {
 
+        //MISC 1
         // True if misc hours are not null and greater than 0
         boolean miscHoursPresent = entry.getMiscHours().orElse(BigDecimal.ZERO).compareTo(BigDecimal.ZERO) > 0;
         // True if there is a misc type on the entry
         boolean miscTypePresent = entry.getMiscType() != null;
+
+        //MISC 2
+        // True if misc hours are not null and greater than 0
+        boolean misc2HoursPresent = entry.getMisc2Hours().orElse(BigDecimal.ZERO).compareTo(BigDecimal.ZERO) > 0;
+        // True if there is a misc type on the entry
+        boolean miscType2Present = entry.getMiscType2() != null;
 
         if (miscHoursPresent && !miscTypePresent) {
             throw new TimeRecordErrorException(TimeRecordErrorCode.MISSING_MISC_TYPE,
@@ -70,6 +77,20 @@ public class MiscTRV implements TimeRecordValidator {
                     new InvalidParameterView("miscType", "decimal",
                             "Misc hours must be present when a misc type is specified",
                             entry.getMiscType()));
+        }
+
+        if (misc2HoursPresent && !miscType2Present) {
+            throw new TimeRecordErrorException(TimeRecordErrorCode.MISSING_MISC_TYPE,
+                    new InvalidParameterView("miscType", "decimal",
+                            "A misc type must be specified for misc hours",
+                            entry.getMisc2Hours().orElse(null)));
+        }
+
+        if (!misc2HoursPresent && miscType2Present) {
+            throw new TimeRecordErrorException(TimeRecordErrorCode.MISSING_MISC_HOURS,
+                    new InvalidParameterView("miscType", "decimal",
+                            "Misc hours must be present when a misc type is specified",
+                            entry.getMiscType2()));
         }
     }
 }

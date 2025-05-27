@@ -17,6 +17,7 @@ public class RespCenterView implements ViewObject
     protected LocalDate effectiveDateEnd;
     protected String agencyCode;
     protected String agencyName;
+    protected AgencyView agency;
     protected RespCenterHeadView respCenterHead;
 
     public RespCenterView() {}
@@ -31,11 +32,26 @@ public class RespCenterView implements ViewObject
             if (respCtr.getAgency() != null) {
                 this.agencyCode = respCtr.getAgency().getCode();
                 this.agencyName = respCtr.getAgency().getName();
+                this.agency = new AgencyView(respCtr.getAgency());
             }
             if (respCtr.getHead() != null) {
                 this.respCenterHead = new RespCenterHeadView(respCtr.getHead());
             }
         }
+    }
+
+    public ResponsibilityCenter toResponsibilityCenter() {
+        ResponsibilityCenter respCtr = new ResponsibilityCenter();
+        respCtr.setActive(active);
+        respCtr.setCode(code);
+        respCtr.setName(name);
+        respCtr.setEffectiveDateBegin(effectiveDateBegin);
+        respCtr.setEffectiveDateEnd(effectiveDateEnd);
+        if (agency != null) {
+            respCtr.setAgency(agency.toAgency());
+        }
+        respCtr.setHead(respCenterHead.toResponsibilityHead());
+        return respCtr;
     }
 
     @Override
@@ -77,6 +93,11 @@ public class RespCenterView implements ViewObject
     @XmlElement
     public String getAgencyName() {
         return agencyName;
+    }
+
+    @XmlElement
+    public AgencyView getAgency() {
+        return agency;
     }
 
     @XmlElement

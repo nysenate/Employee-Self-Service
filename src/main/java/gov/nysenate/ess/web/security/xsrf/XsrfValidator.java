@@ -10,10 +10,10 @@ import javax.servlet.http.HttpSession;
 public interface XsrfValidator
 {
     /** The key used to store the xsrf token in the session */
-    static String XSRF_TOKEN_SESSION_KEY = "__xsrfSessionToken__";
+    String XSRF_TOKEN_SESSION_KEY = "__xsrfSessionToken__";
 
     /** The key used to store the xsrf token as a request attribute */
-    static String XSRF_TOKEN_REQUEST_ATTR_KEY = "__xsrfToken__";
+    String XSRF_TOKEN_REQUEST_ATTR_KEY = "__xsrfToken__";
 
     String generateXsrfToken();
 

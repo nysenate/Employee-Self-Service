@@ -1,5 +1,6 @@
 package gov.nysenate.ess.supply.requisition.view;
 
+import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.requisition.model.Requisition;
 
@@ -24,7 +25,7 @@ public class SfmsRequisitionView {
     protected char destinationTypeCode;
     protected Set<SfmsLineItemView> lineItems;
     protected String issuerUid;
-    protected LocalDateTime approvedDateTime;
+    protected String approvedDateTime;
 
     public SfmsRequisitionView(Requisition requisition) {
         this.requisitionId = requisition.getRequisitionId();
@@ -35,7 +36,7 @@ public class SfmsRequisitionView {
                 .map(SfmsLineItemView::new)
                 .collect(Collectors.toSet());
         this.issuerUid = requisition.getIssuer().get().getUid();
-        this.approvedDateTime = requisition.getApprovedDateTime().get();
+        this.approvedDateTime = DateUtils.SFMS_DATE_TIME_FMT.format(requisition.getApprovedDateTime().get());
     }
 
     public int getRequisitionId() {
@@ -62,7 +63,7 @@ public class SfmsRequisitionView {
         return issuerUid;
     }
 
-    public LocalDateTime getApprovedDateTime() {
+    public String getApprovedDateTime() {
         return approvedDateTime;
     }
 

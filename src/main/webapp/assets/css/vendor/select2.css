@@ -95,7 +95,7 @@ Version: 3.4.5 Timestamp: Mon Nov  4 08:22:42 PST 2013
   font-size: 1px;
   text-decoration: none;
 
-  border: 1px solid #999;
+  /*border: 1px solid #999;*/
   background: url('../../img/select2.png') right top no-repeat;
   cursor: pointer;
   outline: 0;

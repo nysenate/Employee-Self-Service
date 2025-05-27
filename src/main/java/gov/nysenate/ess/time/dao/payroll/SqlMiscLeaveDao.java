@@ -8,20 +8,27 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 
+import static gov.nysenate.ess.time.dao.payroll.SqlMiscLeaveQuery.GET_MISC_LEAVE_GRANTS;
+import static gov.nysenate.ess.time.dao.payroll.SqlMiscLeaveQuery.GET_SICK_LEAVE_GRANTS;
+
 @Repository
 public class SqlMiscLeaveDao extends SqlBaseDao implements MiscLeaveDao {
-
     @Override
     public List<MiscLeaveGrant> getMiscLeaveGrants(int empId) {
-        return remoteNamedJdbc.query(SqlMiscLeaveQuery.GET_MISC_LEAVE_GRANTS.getSql(schemaMap()),
-                new MapSqlParameterSource("empId", empId), miscLeaveGrantRowMapper);
+        var param = new MapSqlParameterSource("empId", empId);
+        List<MiscLeaveGrant> miscLeaveList = remoteNamedJdbc.query(
+                GET_MISC_LEAVE_GRANTS.getSql(schemaMap()),
+                param, miscLeaveGrantRowMapper);
+        miscLeaveList.addAll(remoteNamedJdbc.query(
+                GET_SICK_LEAVE_GRANTS.getSql(schemaMap()),
+                param, donatedSickLeaveGrantRowMapper));
+        return miscLeaveList;
     }
 
-    private RowMapper<MiscLeaveGrant> miscLeaveGrantRowMapper = (rs, rowNum) ->
+    private final RowMapper<MiscLeaveGrant> miscLeaveGrantRowMapper = (rs, rowNum) ->
         new MiscLeaveGrant(
                 rs.getInt("NUXREFEM"),
                 MiscLeaveType.valueOfId(
@@ -30,7 +37,11 @@ public class SqlMiscLeaveDao extends SqlBaseDao implements MiscLeaveDao {
                                 .orElse(null)
                 ),
                 getLocalDate(rs, "DTBEGIN"),
-                getLocalDate(rs, "DTEND")
-        );
+                getLocalDate(rs, "DTEND"),
+                null);
 
+    private final RowMapper<MiscLeaveGrant> donatedSickLeaveGrantRowMapper = (rs, rowNum) ->
+            new MiscLeaveGrant(rs.getInt("NUXREFEM"), MiscLeaveType.LEAVE_DONATION,
+            getLocalDate(rs, "DTEFFECT"), getLocalDate(rs, "DTEND"),
+            rs.getBigDecimal("NUAPPROVEHRS"));
 }

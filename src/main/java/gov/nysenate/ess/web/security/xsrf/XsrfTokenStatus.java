@@ -11,7 +11,8 @@ public enum XsrfTokenStatus
     EMPTY_XSRF_SESSION_TOKEN(false),
     INVALID_XSRF_TOKEN(false);
 
-    private boolean success;
+    private final boolean success;
+
     XsrfTokenStatus(boolean success) {
         this.success = success;
     }

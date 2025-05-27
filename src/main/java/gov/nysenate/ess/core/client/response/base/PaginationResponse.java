@@ -1,7 +1,6 @@
 package gov.nysenate.ess.core.client.response.base;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import gov.nysenate.ess.core.util.LimitOffset;
 
@@ -25,7 +24,7 @@ public abstract class PaginationResponse extends BaseResponse
         this(total, limitOffset.getOffsetStart(), Math.min(limitOffset.getOffsetEnd(), total), limitOffset.getLimit());
     }
 
-    public void serialize(PaginationResponse pr, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
+    public void serialize(PaginationResponse pr, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
         super.serialize(pr, jsonGenerator, serializerProvider);
         jsonGenerator.writeNumberField("total", pr.getTotal());
         jsonGenerator.writeNumberField("offsetStart", pr.getOffsetStart());

@@ -15,7 +15,8 @@ import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 @Category(IntegrationTest.class)
 public class DatabaseConfigIT extends BaseTest
@@ -31,41 +32,41 @@ public class DatabaseConfigIT extends BaseTest
     @Resource(name = "remoteNamedJdbcTemplate") NamedParameterJdbcTemplate remoteNamedJdbcTemplate;
 
     @Test
-    public void testLocalJdbcTemplate() throws Exception {
+    public void testLocalJdbcTemplate() {
         assertNotNull(localJdbcTemplate);
         List<Integer> res = localJdbcTemplate.query("SELECT ?", new SingleColumnRowMapper<>(), 2);
         assertNotNull(res);
-        assertTrue("List size is not equal to 1.", res.size() == 1);
+        assertEquals("List size is not equal to 1.", 1, res.size());
         assertEquals(2, res.get(0).intValue());
     }
 
     @Test
-    public void testLocalNamedJdbcTemplate() throws Exception {
+    public void testLocalNamedJdbcTemplate() {
         assertNotNull(localNamedJdbcTemplate);
         MapSqlParameterSource params = new MapSqlParameterSource("num", 2);
         List<Integer> res = localNamedJdbcTemplate.query("SELECT :num", params, new SingleColumnRowMapper<>());
         assertNotNull(res);
-        assertTrue("List size is not equal to 1.", res.size() == 1);
+        assertEquals("List size is not equal to 1.", 1, res.size());
         assertEquals(2, res.get(0).intValue());
     }
 
     @Test
-    public void testRemoteJdbcTemplate() throws Exception {
+    public void testRemoteJdbcTemplate() {
         assertNotNull(remoteJdbcTemplate);
         Object[] args = {2};
         List<BigDecimal> res = remoteJdbcTemplate.query("SELECT ? FROM DUAL", new SingleColumnRowMapper<>(), args);
         assertNotNull(res);
-        assertTrue("List size is not equal to 1.", res.size() == 1);
+        assertEquals("List size is not equal to 1.", 1, res.size());
         assertEquals(2, res.get(0).intValue());
     }
 
     @Test
-    public void testRemoteNamedJdbcTemplate() throws Exception {
+    public void testRemoteNamedJdbcTemplate() {
         assertNotNull(remoteNamedJdbcTemplate);
         MapSqlParameterSource params = new MapSqlParameterSource("num", 2);
         List<BigDecimal> res = remoteNamedJdbcTemplate.query("SELECT :num FROM DUAL", params, new SingleColumnRowMapper<>());
         assertNotNull(res);
-        assertTrue("List size is not equal to 1.", res.size() == 1);
+        assertEquals("List size is not equal to 1.", 1, res.size());
         assertEquals(2, res.get(0).intValue());
     }
 }

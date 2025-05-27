@@ -18,7 +18,7 @@ public class EssRoleService {
     /**
      * Get a stream of roles for an employee
      */
-    public Stream<Enum> getRoles(Employee employee) {
+    public Stream<Enum<?>> getRoles(Employee employee) {
         return roleFactories.stream()
                 .flatMap(rf -> rf.getRoles(employee));
     }

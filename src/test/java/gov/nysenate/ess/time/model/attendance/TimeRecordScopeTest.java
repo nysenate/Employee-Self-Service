@@ -17,7 +17,7 @@ public class TimeRecordScopeTest
     private static final Logger logger = LoggerFactory.getLogger(TimeRecordScopeTest.class);
 
     @Test
-    public void testGetStatuses() throws Exception {
+    public void testGetStatuses() {
         Set<TimeRecordStatus> empStatuses = TimeRecordStatus.unlockedForEmployee();
 
         Assert.assertNotNull(empStatuses);
@@ -34,14 +34,14 @@ public class TimeRecordScopeTest
     }
 
     @Test
-    public void testGetCode() throws Exception {
+    public void testGetCode() {
         assertEquals("E", TimeRecordScope.EMPLOYEE.getCode());
         assertEquals("S", TimeRecordScope.SUPERVISOR.getCode());
         assertEquals("P", TimeRecordScope.PERSONNEL.getCode());
     }
 
     @Test
-    public void testGetScopeFromCode() throws Exception {
+    public void testGetScopeFromCode() {
         assertEquals(TimeRecordScope.EMPLOYEE, TimeRecordScope.getScopeFromCode("E"));
         assertEquals(TimeRecordScope.EMPLOYEE, TimeRecordScope.getScopeFromCode("e"));
         assertEquals(TimeRecordScope.EMPLOYEE, TimeRecordScope.getScopeFromCode(" e  "));
@@ -54,12 +54,12 @@ public class TimeRecordScopeTest
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testGetScopeFromCodeFailsWithNoCode() throws Exception {
+    public void testGetScopeFromCodeFailsWithNoCode() {
         TimeRecordScope.getScopeFromCode("");
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testGetScopeFromCodeFailsWithBadCode() throws Exception {
+    public void testGetScopeFromCodeFailsWithBadCode() {
         TimeRecordScope.getScopeFromCode("X");
     }
 }

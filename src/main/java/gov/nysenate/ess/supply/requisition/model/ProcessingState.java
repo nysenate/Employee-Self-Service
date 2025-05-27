@@ -11,6 +11,12 @@ public class ProcessingState extends RequisitionState {
     }
 
     @Override
+    public Requisition undo(Requisition requisition, LocalDateTime undoDateTime) {
+        requisition = requisition.setProcessedDateTime(null); // Reset ProcessedDateTime since it is no longer processed.
+        return requisition.setState(new PendingState());
+    }
+
+    @Override
     public RequisitionStatus getStatus() {
         return RequisitionStatus.PROCESSING;
     }

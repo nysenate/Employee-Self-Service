@@ -12,6 +12,7 @@ import gov.nysenate.ess.core.util.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataRetrievalFailureException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
@@ -46,7 +47,15 @@ public class SqlPayPeriodDao extends SqlBaseDao implements PayPeriodDao
         params.addValue("periodType", type.getCode());
         params.addValue("date", toDate(date));
         try {
-            return remoteNamedJdbc.queryForObject(GET_PAY_PERIOD_SQL.getSql(schemaMap()), params, new PayPeriodRowMapper(""));
+
+            List<PayPeriod> payPeriods = remoteNamedJdbc.query(GET_PAY_PERIOD_SQL.getSql(schemaMap()), params, new PayPeriodRowMapper(""));
+            if (payPeriods.isEmpty() || payPeriods == null) {
+                logger.warn("Error retrieving pay period of type: {} during: {} | {}", type, date);
+                throw new IncorrectResultSizeDataAccessException(0);
+            }
+            else {
+                return payPeriods.get(0);
+            }
         }
         catch (DataRetrievalFailureException ex) {
             logger.warn("Error retrieving pay period of type: {} during: {} | {}", type, date, ex.getMessage());

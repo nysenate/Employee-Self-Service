@@ -27,7 +27,7 @@ public class EssTimeAccrualPermissionFactory implements PermissionFactory {
     }
 
     @Override
-    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum> roles) {
+    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum<?>> roles) {
         int empId = employee.getEmployeeId();
         SortedSet<Integer> accrualYears = accInfoService.getAccrualYears(empId);
         // Permit access to accrual pages only if employee has ever been eligible for accruals

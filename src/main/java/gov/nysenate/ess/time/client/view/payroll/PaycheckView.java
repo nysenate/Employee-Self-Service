@@ -9,9 +9,9 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.Optional;
-import java.util.TreeMap;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toMap;
 
@@ -22,8 +22,7 @@ public class PaycheckView implements ViewObject
     protected LocalDate checkDate;
     protected BigDecimal grossIncome;
     protected BigDecimal netIncome;
-    /** Map of deduction code to deduction for a paycheck. Makes for less work displaying in client. */
-    protected TreeMap<String, DeductionView> deductions;
+    protected List<DeductionView> deductions;
     protected BigDecimal directDepositAmount;
     protected BigDecimal checkAmount;
 
@@ -32,11 +31,9 @@ public class PaycheckView implements ViewObject
         this.checkDate = paycheck.getCheckDate();
         this.grossIncome = paycheck.getGrossIncome();
         this.netIncome = paycheck.getNetIncome();
-        this.deductions = Optional.ofNullable(paycheck.getDeductions())
-                .orElse(Collections.emptyList()).stream()
-                .collect(toMap(
-                        Deduction::getDescription,
-                        DeductionView::new, (a, b) -> a, TreeMap::new));
+        this.deductions = paycheck.getDeductions().stream()
+                .map(DeductionView::new)
+                .collect(Collectors.toList());
         this.directDepositAmount = paycheck.getDirectDepositAmount();
         this.checkAmount = paycheck.getCheckAmount();
     }
@@ -68,7 +65,7 @@ public class PaycheckView implements ViewObject
     }
 
     @XmlElement
-    public TreeMap<String, DeductionView> getDeductions() {
+    public List<DeductionView> getDeductions() {
         return deductions;
     }
 

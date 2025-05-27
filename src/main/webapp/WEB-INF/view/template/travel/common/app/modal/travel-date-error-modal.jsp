@@ -10,7 +10,7 @@
     Please review the travel dates in both the outbound and return segments and try again.
   </div>
   <div class="travel-button-container">
-    <input type="button" class="reject-button" value="Ok"
+    <input type="button" class="travel-neutral-btn" value="Ok"
            title="ok" ng-click="ok()">
   </div>
 </div>

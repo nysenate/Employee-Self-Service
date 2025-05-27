@@ -122,7 +122,7 @@ public class CommonAttributeFilter implements Filter
 
     /** Life-cycle is maintained by Spring. The init method is not used. */
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {}
+    public void init(FilterConfig filterConfig) {}
 
     /** Life-cycle is maintained by Spring. The destroy method is not used. */
     @Override

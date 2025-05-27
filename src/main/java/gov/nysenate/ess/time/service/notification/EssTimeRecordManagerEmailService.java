@@ -25,8 +25,6 @@ public class EssTimeRecordManagerEmailService implements TimeRecordManagerEmailS
     @Autowired private SendMailService sendMailService;
     @Autowired private Configuration freemarkerCfg;
 
-    @Value("${report.email}") private String reportEmail;
-
     @Value("${freemarker.time.templates.trm_error:trm_error.ftlh}")
     private String errorEmailTemplateName;
 
@@ -41,13 +39,10 @@ public class EssTimeRecordManagerEmailService implements TimeRecordManagerEmailS
             return;
         }
 
-        String to = reportEmail;
         String subject = reminderEmailSubject + exceptions.size();
         String body = getErrorEmailBody(exceptions);
 
-        MimeMessage message = sendMailService.newHtmlMessage(to, subject, body);
-
-        sendMailService.send(message);
+        sendMailService.sendMessageToReportEmails(subject, body);
     }
 
     /* --- Internal Methods --- */

@@ -7,7 +7,7 @@ package gov.nysenate.ess.time.model.personnel;
  */
 public class SecondarySupEmpGroup extends PrimarySupEmpGroup {
 
-    private int supSupId;
+    private final int supSupId;
 
     public SecondarySupEmpGroup(PrimarySupEmpGroup supEmpGroup, int supSupId) {
         super(supEmpGroup);

@@ -142,7 +142,7 @@ public class TimeRecordDaoIT extends BaseTest
 
     @Test
     @Ignore
-    public void getRecordByEmployeeId() throws Exception {
+    public void getRecordByEmployeeId() {
         Stopwatch sw = Stopwatch.createStarted();
         ListMultimap<Integer, TimeRecord> timeRecords = timeRecordDao.getRecordsDuring(Collections.singleton(11423),
                 Range.closed(LocalDate.of(2015, 1, 1), LocalDate.now()),
@@ -152,7 +152,7 @@ public class TimeRecordDaoIT extends BaseTest
 
     @Test
     @Ignore
-    public void testGetRecord() throws Exception {
+    public void testGetRecord() {
         List<TimeRecord> records = timeRecordDao.getRecordsDuring(11423, Range.closedOpen(LocalDate.of(2015, 8, 12), LocalDate.of(2015, 8, 15)));
         records.forEach(record -> logger.info("{}", record.getBeginDate()));
     }

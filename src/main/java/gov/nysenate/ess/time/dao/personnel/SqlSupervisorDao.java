@@ -36,8 +36,16 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
     public boolean isSupervisor(int empId) {
         MapSqlParameterSource params = new MapSqlParameterSource("empId", empId);
         try {
-            return remoteNamedJdbc.queryForObject(SqlSupervisorQuery.TEST_IF_SUPERVISOR.getSql(schemaMap()),
-                    params, Boolean.class);
+            List<Object> booleans = remoteNamedJdbc.query(SqlSupervisorQuery.TEST_IF_SUPERVISOR.getSql(schemaMap()),
+                    params, (rs, rowNum) -> rs.getString("1"));
+
+            if (booleans.isEmpty()) {
+                return false;
+            }
+            else {
+                // TODO: "booleans" is really a list of Strings, so this fails. Note that the Strings are not just "false" or "true".
+                return (Boolean) booleans.get(0);
+            }
         } catch (EmptyResultDataAccessException ex) {
             return false;
         }
@@ -230,8 +238,15 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
 
     @Override
     public LocalDateTime getLastSupUpdateDate() {
-        return remoteNamedJdbc.queryForObject(SqlSupervisorQuery.GET_LATEST_SUP_UPDATE_DATE.getSql(schemaMap()),
+        List<Object> timestamps = remoteNamedJdbc.query(SqlSupervisorQuery.GET_LATEST_SUP_UPDATE_DATE.getSql(schemaMap()),
                 new MapSqlParameterSource(), (rs, rowNum) -> getLocalDateTime(rs, "DTTXNUPDATE"));
+
+        if (timestamps.isEmpty()) {
+            return null;
+        }
+        else {
+            return (LocalDateTime) timestamps.get(0);
+        }
     }
 
     /* --- Internal Methods --- */
@@ -297,7 +312,7 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
         return value.toString();
     }
 
-    private class EmpSupInfoNullValEx extends Exception {
+    private static class EmpSupInfoNullValEx extends Exception {
         private final int empId;
         private final String field;
 

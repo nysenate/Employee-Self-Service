@@ -40,7 +40,7 @@ public class EssTimeSupervisorPermissionFactory implements PermissionFactory {
     @Autowired private TimeRecordService timeRecordService;
 
     @Override
-    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum> roles) {
+    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum<?>> roles) {
         int empId = employee.getEmployeeId();
         if (supInfoService.isSupervisor(empId) ||
                 timeRecordService.hasActiveEmployeeRecord(empId)) {

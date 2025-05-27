@@ -1,7 +1,6 @@
 package gov.nysenate.ess.core.client.response.base;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -22,7 +21,7 @@ public abstract class BaseResponse
         this.message = message;
     }
 
-    public void serialize(BaseResponse br, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
+    public void serialize(BaseResponse br, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
         jsonGenerator.writeBooleanField("success", br.success);
         jsonGenerator.writeStringField("message", br.message);
         jsonGenerator.writeStringField("responseType", br.responseType);

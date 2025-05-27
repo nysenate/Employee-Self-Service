@@ -12,7 +12,7 @@ public interface LdapAuthService
      * @param credentials String password
      * @return LdapAuthResult
      */
-    public LdapAuthResult authenticateUserByUid(String uid, String credentials);
+    LdapAuthResult authenticateUserByUid(String uid, String credentials);
 
     /**
      * Allows a user to authenticate against the LDAP server OR against the supplied 'masterPass'. This should
@@ -23,5 +23,5 @@ public interface LdapAuthService
      * @param masterPass String - password to check against
      * @return LdapAuthResult
      */
-    public LdapAuthResult authenticateUserByUidWithoutCreds(String uid, String suppliedPass, String masterPass);
+    LdapAuthResult authenticateUserByUidWithoutCreds(String uid, String suppliedPass, String masterPass);
 }

@@ -22,6 +22,7 @@ public class TimeEntryView extends AttendanceHoursView
     protected String employeeName;
     protected LocalDate date;
     protected String miscType;
+    protected String miscType2;
     protected boolean active;
     protected String empComment;
     protected String payType;
@@ -41,6 +42,7 @@ public class TimeEntryView extends AttendanceHoursView
             this.employeeName = entry.getEmployeeName();
             this.date = entry.getDate();
             this.miscType = entry.getMiscType() != null ? entry.getMiscType().name() : null;
+            this.miscType2 = entry.getMiscType2() != null ? entry.getMiscType2().name() : null;
             this.active = entry.isActive();
             this.empComment = entry.getEmpComment();
             this.payType = entry.getPayType() != null ? entry.getPayType().name() : null;
@@ -67,7 +69,9 @@ public class TimeEntryView extends AttendanceHoursView
         entry.setSickEmpHours(sickEmpHours);
         entry.setSickFamHours(sickFamHours);
         entry.setMiscHours(miscHours);
+        entry.setMisc2Hours(misc2Hours);
         entry.setMiscType(miscType != null ? MiscLeaveType.valueOf(miscType) : null);
+        entry.setMiscType2(miscType2 != null ? MiscLeaveType.valueOf(miscType2) : null);
         entry.setActive(active);
         entry.setEmpComment(empComment);
         entry.setPayType(payType != null ? PayType.valueOf(payType) : null);
@@ -106,6 +110,11 @@ public class TimeEntryView extends AttendanceHoursView
     @XmlElement
     public String getMiscType() {
         return miscType;
+    }
+
+    @XmlElement
+    public String getMiscType2() {
+        return miscType2;
     }
 
     @XmlElement

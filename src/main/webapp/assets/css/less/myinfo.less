@@ -102,43 +102,110 @@
   }
 }
 
-/** --- Acknowledgment Page --- */
+/** --- Personnel To-do Page --- */
 
-.ack-doc-display {
-  width: 45em;
-  margin: auto;
+.personnel-todo-margin {
+  margin: 0 10em;
+}
+
+.confirm-modal .todo-input-container {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.content-info.personnel-todo-instructions {
+  padding-left: 10em;
+  padding-right: 10em;
+  text-align: left;
+  span {
+    padding: 0;
+  }
+}
+
+.personnel-assignment-display {
+  .personnel-todo-margin;
   padding-bottom: 1em;
-
-  //label.year-select {
-  //  font-weight: normal;
-  //  display: inline-block;
-  //  margin-top: 30px;
-  //}
 
   h2 {
     margin-top: 30px;
   }
 }
 
-.ack-doc-list-item-title {
+.personnel-assignment-list-item-title {
   text-decoration: underline;
 }
 
-.unacknowledged-doc-list .ack-doc-list-item {
+.personnel-assignment-incomplete-list .personnel-assignment-list-item {
   font-weight: bold;
 }
 
-.ack-doc-list-item:hover {
+.personnel-assignment-list-item:hover {
   background: #fafafa;
 }
 
-.ack-doc-list-item-ack-date {
+.personnel-assignment-list-item-action-date {
   color: rgba(34,34,34,0.5);
 }
 
-.acknowledgment-instructions {
-  text-align: left;
+/* --- General Personnel task detail view --- */
+
+.todo-task-view-nav {
+  margin: 10px 20px 0 20px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
+
+/* --- Leg Ethics Instructions --- */
+
+.legethics-instruction-container {
+  .personnel-todo-margin;
+  padding-bottom: 10px;
+
+  ul {
+    list-style: circle;
+    .bold-text {
+      padding-left: 0
+    }
+  }
+}
+
+/* --- Video Code Entry Page --- */
+
+.pec-video-container {
+  padding: 30px 20px;
+
+  video {
+    width: 100%;
+  }
+}
+
+.pec-video-code-form {
+
+  margin-left: auto;
+  margin-right: auto;
+
+  padding-left: 10px;
+  padding-bottom: 20px;
+
+  display: table;
+
+  label {
+    display: table;
+    margin: 10px 0;
+    input[type=text].ng-invalid.ng-pristine {
+      border-color: #ccc;
+    }
+  }
+
+  .pec-video-code-submit-message {
+    display: inline-block;
+    margin-left: 10px;
+  }
+}
+
+/* --- Ack Doc View --- */
 
 .ack-doc-container {
   padding-bottom: 10px;
@@ -226,14 +293,6 @@
   font-weight: bold;
 }
 
-.ack-doc-view-nav {
-  margin: 10px 20px 0 20px;
-
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
 .ack-doc-report-link {
   text-decoration: underline !important;
   color: blue !important;
@@ -244,6 +303,165 @@
 
   li:not(:first-of-type) {
     margin-top: 5px;
+  }
+}
+
+/** --- To-do reporting --- */
+
+.todo-report {
+  overflow: auto;
+
+  label {
+    display: block;
+  }
+}
+
+.todo-search-facets {
+  float: left;
+  width: 40%;
+  padding: 2em;
+}
+
+.todo-search-facet {
+  margin-top: 1em;
+
+  select {
+    display: block;
+  }
+}
+
+.todo-search-result-container {
+  float: right;
+  width: 60%;
+  padding: 2em;
+}
+
+.todo-search-bar input {
+  width: 20em;
+}
+
+.todo-search-match-info {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.todo-search-results {
+  margin-top: 10px;
+}
+
+.todo-report-pagination-controls {
+  margin: 10px 0;
+}
+
+.todo-search-result-table {
+  width: 100%;
+
+  .todo-report-sort-asc:after {
+    content: " ▴"
+  }
+
+  .todo-report-sort-desc:after {
+    content: " ▾"
+  }
+}
+
+.dir-pagination-controls-only-hack {
+  display: none;
+}
+
+.todo-report-result {
+  height: 2em;
+  border: 1px solid transparent;
+  border-bottom: none;
+
+  &:hover {
+    background: #fafafa;
+    cursor: pointer;
+  }
+
+  &.todo-report-result-selected {
+    border-color: #aaa;
+  }
+
+  .completion-icon {
+    vertical-align: middle;
+  }
+
+  .icon-cross {
+    color: orangered;
+  }
+
+  .icon-minus {
+    color: #ffa30f;
+  }
+
+  .icon-check {
+    color: green;
+  }
+}
+
+.todo-report-result-details {
+  border: 1px solid #aaa;
+
+  .todo-report-result-details-label {
+    padding-left: 10px;
+    margin: 0;
+    font-weight: 600;
+  }
+
+  ul {
+    margin: 5px 0;
+    list-style: disc;
+
+    .todo-result-completed-date {
+      color: rgba(34,34,34,0.5);
+    }
+  }
+
+  // TODO figure out animations for detail expander.  These aren't working
+  //
+  //&.ng-enter, &.ng-leave {
+  //  transition: 0.25s linear all;
+  //  overflow: hidden;
+  //}
+  //
+  //&.ng-enter {
+  //  max-height: 0;
+  //  opacity: 0;
+  //}
+  //
+  //&ng-enter.ng-enter-active, &.ng-leave {
+  //  max-height: 100px;
+  //  opacity: 1;
+  //}
+  //
+  //&.ng-leave.ng-leave-active {
+  //  max-height: 0;
+  //  opacity: 1;
+  //}
+}
+
+/** --- RCH Picker --- */
+
+.resp-ctr-head-picker {
+
+  .ui-select-container {
+    width: 23em;
+
+    li.ui-select-match-item {
+      float: none;
+      padding-left: 10px;
+
+      .select2-search-choice-close {
+        left: unset;
+      }
+    }
+  }
+
+  .ui-select-dropdown.select2-drop-active {
+    position: relative;
   }
 }
 

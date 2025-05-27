@@ -1,6 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
-<section ng-controller="AckDocReportCtrl" >
+<section>
   <div class="my-info-hero">
     <h2>Full Report</h2>
   </div>

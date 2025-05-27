@@ -29,10 +29,9 @@ public class SqlUserOrderableRchDao extends SqlBaseDao {
         SELECT_USER_ORDERABLE_RCHS(
                 "SELECT rch FROM ${travelSchema}.user_orderable_rch\n" +
                         "WHERE emp_id = :empId"
-        )
-        ;
+        );
 
-        private String sql;
+        private final String sql;
 
         SqlUserOrderableRchQuery(String sql) {
             this.sql = sql;

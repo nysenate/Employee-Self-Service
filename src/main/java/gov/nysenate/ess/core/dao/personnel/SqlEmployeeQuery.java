@@ -46,8 +46,8 @@ public enum SqlEmployeeQuery implements BasicSqlQuery
     GET_EMP_BY_ID_SQL(
             GET_ALL_EMPS_SQL.getSql() +  "WHERE per.NUXREFEM = :empId"
     ),
-    GET_EMP_BY_EMAIL_SQL(
-            GET_ALL_EMPS_SQL.getSql() + "WHERE per.NAEMAIL = :email"
+    GET_ACTIVE_EMP_BY_EMAIL_SQL(
+            GET_ALL_EMPS_SQL.getSql() + "WHERE per.NAEMAIL = :email and per.CDEMPSTATUS = 'A'"
     ),
     GET_ACTIVE_EMPS_SQL(
             GET_ALL_EMPS_SQL.getSql() + "WHERE per.CDEMPSTATUS = 'A'"
@@ -61,6 +61,21 @@ public enum SqlEmployeeQuery implements BasicSqlQuery
             "WHERE UPPER(TRIM(per.NAFIRST) || ' ' || TRIM(per.FFNAMIDINIT) || ' ' || TRIM(per.FFNALAST))\n" +
             "        LIKE UPPER('%' || :term || '%')\n" +
             "  AND (:activeOnly = 0 OR per.CDEMPSTATUS = 'A')"
+    ),
+    GET_EMPS_BY_SEARCH_QUERY("" +
+            GET_EMP_SQL_COLS.getSql() + ", COUNT(*) OVER () AS total_rows\n" +
+            GET_EMP_SQL_TABLES.getSql() +
+            "WHERE (:empStatus IS NULL OR per.CDEMPSTATUS = :empStatus)\n" +
+            "  AND (:name IS NULL OR \n" +
+            "    REGEXP_REPLACE(\n" +
+            "      UPPER(TRIM(per.FFNALAST) || ' ' || TRIM(per.FFNAFIRST) || ' ' || TRIM(per.FFNAMIDINIT)),\n" +
+            "      '[^A-Z ]', ''\n" +
+            "    )\n" +
+            "      LIKE UPPER(:name || '%')\n" +
+            "  )\n" +
+            "  AND (:respCtrHeadCodesEmpty = 1 OR rctrhd.CDRESPCTRHD IN (:respCtrHeadCodes))\n" +
+            "  AND (:contServFrom IS NULL OR DTCONTSERV >= :contServFrom)\n" +
+            "  AND (:contServTo IS NULL OR DTCONTSERV <= :contServTo)"
     ),
 
     GET_ACTIVE_EMP_IDS(
@@ -88,10 +103,26 @@ public enum SqlEmployeeQuery implements BasicSqlQuery
         "    MAX(agcy.DTTXNUPDATE)\n" +
         ") AS MAX_UPDATE_DATE\n" +
         GET_EMP_SQL_TABLES.getSql()
-    )
-    ;
+    ),
 
-    private String sql;
+    GET_NEW_EMPLOYEES(
+            "SELECT *\n" +
+                    "FROM  ${masterSchema}.pm21personn\n" +
+                    "WHERE cdempstatus = 'A'\n" +
+                    "  AND nuxrefem IN (SELECT nuxrefem\n" +
+                    "                   FROM  ${masterSchema}.pd21ptxncode\n" +
+                    "                   WHERE cdtrans IN ('APP', 'RTP')\n" +
+                    "                     AND CASE WHEN dteffect >= TRUNC(dttxnorigin) THEN dteffect\n" +
+                    "                              ELSE TRUNC(dttxnorigin)\n" +
+                    "                             END >= TRUNC(SYSDATE) - 30\n" +
+                    "                     AND cdstatus = 'A')"
+    ),
+
+    GET_INACTIVE_EMPLOYEES_SINCE_DATE(
+            "SELECT * FROM ${masterSchema}.PM21PERSONN p WHERE p.CDEMPSTATUS = 'I' AND TRUNC(p.DTTXNUPDATE) >= TO_DATE(:since, 'DD-MON-RRRR')"
+    );
+
+    private final String sql;
 
     SqlEmployeeQuery(String sql) {
         this.sql = sql;

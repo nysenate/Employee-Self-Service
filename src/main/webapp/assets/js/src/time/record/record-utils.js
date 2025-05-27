@@ -15,13 +15,15 @@ function recordUtils() {
         'personalHours',
         'sickEmpHours',
         'sickFamHours',
-        'miscHours'
+        'miscHours',
+        'misc2Hours'
     ];
 
     return {
         getDailyTotal: getDailyTotal,
         calculateDailyTotals: calculateDailyTotals,
         getTotal: getTotal,
+        wasMiscEntered: wasMiscEntered,
         getRecordTotals: getRecordTotals,
         getTimeEntryFields: getTimeEntryFields,
         formatAttendRecord: formatAttendRecord,
@@ -49,7 +51,8 @@ function recordUtils() {
 
     // Calculate and add the daily total as a field in each time entry within a record
     function calculateDailyTotals (record) {
-        for (var i = 0, entries = record.timeEntries; i < entries.length; i++) {
+        var entries = record.timeEntries
+        for (var i = 0; i < entries.length; i++) {
             entries[i].total = getDailyTotal(entries[i]);
         }
     }
@@ -69,7 +72,15 @@ function recordUtils() {
         return total;
     }
 
-    // Returns an object containing the total number of hours for each time usage type over an entire time recodr
+    function wasMiscEntered(record) {
+        var total = getTotal(record, 'miscHours');
+        if (total > 0) {
+            return true;
+        }
+        return false;
+    }
+
+    // Returns an object containing the total number of hours for each time usage type over an entire time record
     function getRecordTotals(record) {
         var totals = {};
 
@@ -101,6 +112,7 @@ function recordUtils() {
             sickEmpHours: attendRecord.sickEmpHours,
             sickFamHours: attendRecord.sickFamHours,
             miscHours: attendRecord.miscHours,
+            misc2Hours: attendRecord.misc2Hours,
             total: attendRecord.totalHours
         };
         attendRecord.recordStatus = 'APPROVED_PERSONNEL';

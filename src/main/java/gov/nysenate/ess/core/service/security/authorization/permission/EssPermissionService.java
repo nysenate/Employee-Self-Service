@@ -32,7 +32,7 @@ public class EssPermissionService {
     /**
      * Get a list of an employee's permissions across all ESS applications
      */
-    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum> roles) {
+    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum<?>> roles) {
         return permissionFactories.stream()
                 .map(pFactory -> pFactory.getPermissions(employee, roles))
                 .flatMap(Collection::stream)

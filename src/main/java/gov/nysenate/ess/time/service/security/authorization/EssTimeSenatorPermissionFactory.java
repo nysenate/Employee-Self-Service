@@ -18,7 +18,7 @@ public class EssTimeSenatorPermissionFactory implements PermissionFactory {
 
     /** {@inheritDoc} */
     @Override
-    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum> roles) {
+    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum<?>> roles) {
         if (roles.contains(EssRole.SENATOR)) {
             return getSenatorPermissions();
         }

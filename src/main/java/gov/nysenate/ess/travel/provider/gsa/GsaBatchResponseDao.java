@@ -5,9 +5,9 @@ import org.springframework.dao.DataAccessException;
 
 public interface GsaBatchResponseDao {
 
-    public void handleNewData(GsaResponse gsaResponse) throws JsonProcessingException,
+    void handleNewData(GsaResponse gsaResponse) throws JsonProcessingException,
             NullPointerException, DataAccessException;
 
-    public GsaResponse getGsaData(GsaResponseId gsaResponseId);
+    GsaResponse getGsaData(GsaResponseId gsaResponseId);
 
 }

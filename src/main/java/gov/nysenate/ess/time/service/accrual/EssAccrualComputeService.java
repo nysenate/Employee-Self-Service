@@ -9,7 +9,6 @@ import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.model.period.PayPeriodType;
 import gov.nysenate.ess.core.model.personnel.PersonnelStatus;
 import gov.nysenate.ess.core.model.transaction.TransactionHistory;
-import gov.nysenate.ess.core.service.base.SqlDaoBaseService;
 import gov.nysenate.ess.core.service.period.PayPeriodService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
@@ -28,6 +27,7 @@ import gov.nysenate.ess.time.util.AccrualUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -44,25 +44,26 @@ import static gov.nysenate.ess.time.model.EssTimeConstants.ANNUAL_PER_HOURS;
 import static gov.nysenate.ess.time.model.EssTimeConstants.MAX_DAYS_PER_YEAR;
 import static gov.nysenate.ess.time.util.AccrualUtils.getProratePercentage;
 import static gov.nysenate.ess.time.util.AccrualUtils.roundPersonalHours;
+import static java.time.temporal.TemporalAdjusters.lastDayOfYear;
+import static java.time.temporal.TemporalAdjusters.firstDayOfYear;
 
 /**
  * Service layer for computing accrual information for an employee based on processed accrual
  * and employee transaction data in SFMS.
- *
+ * <p>
  * Accrual computation is slightly tricky because we have to rely on transaction data to adjust
  * the accrual rates. @see SqlAccrualDao for details on how the accruals are stored in the database.
- *
+ * <p>
  * Essentially the high-level approach we take here is to:
  * 1. Pull in all the relevant data from the dao layer (which may be cached periodically)
  * 2. Figure out which pay periods we are missing accrual data for
  * 3. For those pay periods compute the accrual state which indicates what the rates are
- *    based on several factors obtained from the transaction history
+ * based on several factors obtained from the transaction history
  * 4. Apply the accrual state to increment/decrement the accruals for the given pay period
  * 5. Repeat steps 3 and 4 until all the pay periods are filled in.
  */
 @Service
-public class EssAccrualComputeService extends SqlDaoBaseService implements AccrualComputeService
-{
+public class EssAccrualComputeService implements AccrualComputeService {
     private static final Logger logger = LoggerFactory.getLogger(EssAccrualComputeService.class);
 
     /** Set of statuses that prevent accrual if present at pay period end */
@@ -71,6 +72,7 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
     @Autowired private AccrualDao accrualDao;
     @Autowired private TimeRecordDao timeRecordDao;
 
+    @Autowired private DonationService donationService;
     @Autowired private PayPeriodService payPeriodService;
     @Autowired private AccrualInfoService accrualInfoService;
     @Autowired private EmpTransactionService empTransService;
@@ -86,10 +88,12 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
 
         PayPeriod prevPeriod = payPeriodService.getPayPeriod(
                 PayPeriodType.AF, payPeriod.getStartDate().minusDays(1));
+        PayPeriod prevPrevPeriod = payPeriodService.getPayPeriod(
+                PayPeriodType.AF, prevPeriod.getStartDate().minusDays(1));
 
-        // Get accrual records for the current and previous pay period
+        // Get accrual records for the current and previous two pay periods.
         TreeMap<PayPeriod, PeriodAccSummary> periodAccruals =
-                getAccruals(empId, Arrays.asList(prevPeriod, payPeriod));
+                getAccruals(empId, Arrays.asList(prevPrevPeriod, prevPeriod, payPeriod));
 
         PeriodAccSummary currentAccruals = periodAccruals.get(payPeriod);
         PeriodAccSummary lastAccruals = periodAccruals.get(prevPeriod);
@@ -128,7 +132,8 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
             serviceYtdExpected = lastAccruals.getExpectedTotalHours();
         }
 
-        return new AccrualsAvailable(referenceSummary, payPeriod, serviceYtdExpected, biWeekHrsExpected);
+        return new AccrualsAvailable(referenceSummary, payPeriod, serviceYtdExpected, biWeekHrsExpected,
+                donationService.getHoursDonated(empId, payPeriod.getYear()));
     }
 
     /** {@inheritDoc} */
@@ -209,6 +214,16 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
                 .map(date -> date.plusDays(1))
                 .orElseGet(() -> empInfoService.getEmployee(empId).getSenateContServiceDate());
 
+        //if previous year is closed && fromDate is before current year then fromDate is jan 1 of current year
+        List<PayPeriod> listOfOpenPayPeriods = accrualInfoService.getOpenPayPeriods(PayPeriodType.AF, empId, SortOrder.ASC);
+        if (!listOfOpenPayPeriods.isEmpty() && fromDate.isBefore(listOfOpenPayPeriods.get(0).getStartDate())) {
+            fromDate = listOfOpenPayPeriods.get(0).getStartDate();
+        }
+
+        if (fromDate.isAfter(LocalDate.now())) {
+            fromDate = listOfOpenPayPeriods.get(0).getStartDate();
+        }
+
         // Throw accrual exception if from date is null
         if (fromDate == null) {
             throw new AccrualException(empId, AccrualExceptionType.NO_FROM_DATE_FOUND);
@@ -242,9 +257,8 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
         Range<LocalDate> gapDateRange = Range.closedOpen(
                 accrualState.getEndDate().plusDays(1),
                 lastPeriod.getEndDate().plusDays(1));
-        LinkedList<PayPeriod> gapPeriods = new LinkedList<>(unMatchedPeriods.stream()
-                .filter(p -> RangeUtils.intersects(gapDateRange, p.getDateRange()))
-                .collect(Collectors.toList()));
+        LinkedList<PayPeriod> gapPeriods = unMatchedPeriods.stream()
+                .filter(p -> RangeUtils.intersects(gapDateRange, p.getDateRange())).collect(Collectors.toCollection(LinkedList::new));
         PayPeriod refPeriod = optPeriodAccRecord
                 .map(PeriodAccSummary::getRefPayPeriod)
                 .orElseGet(gapPeriods::getFirst); // FIXME?
@@ -255,10 +269,23 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
 
         // Compute accruals for each gap period
         for (PayPeriod period : gapPeriods) {
-            computeGapPeriodAccruals(period, accrualState, empTrans,
-                    timeRecords, periodUsages, accrualAllowedDates, expectedHourDates);
 
+            boolean countRemainingPeriod = false;
             if (remainingPeriods.contains(period)) {
+                countRemainingPeriod = true;
+            }
+
+            /**
+             *  Pass the last Annual Accrual Summary Record since we need
+             *  the year to determine if we need to include the prior year
+             *  Donations as part of the calculations. Included the Annual
+             *  Accrual Summary instead of passing in its year so that it would
+             *  be easier to obtain other information from it if needed.
+             */
+            computeGapPeriodAccruals(period, accrualState, empTrans,  lastAnnualAccSummary,
+                    timeRecords, periodUsages, accrualAllowedDates, expectedHourDates, countRemainingPeriod);
+
+            if (countRemainingPeriod) {
                 PeriodAccSummary periodAccSummary = accrualState.toPeriodAccrualSummary(refPeriod, period);
                 gapAccruals.add(periodAccSummary);
             }
@@ -269,13 +296,14 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
 
     /**
      * Return period accruals that intersect with the given set of pay periods
-     * @param empId int - Employee id
+     *
+     * @param empId          int - Employee id
      * @param periodAccruals TreeMap<PayPeriod, PeriodAccSummary>
-     * @param payPeriods desired pay periods
+     * @param payPeriods     desired pay periods
      * @return TreeMap<PayPeriod, PeriodAccSummary>
      */
     private TreeMap<PayPeriod, PeriodAccSummary> getRelevantAccruals(int empId,
-            TreeMap<PayPeriod, PeriodAccSummary> periodAccruals, SortedSet<PayPeriod> payPeriods) {
+                                                                     TreeMap<PayPeriod, PeriodAccSummary> periodAccruals, SortedSet<PayPeriod> payPeriods) {
         RangeSet<LocalDate> employedAnnualEmploymentDates =
                 getEmployedAnnualEmploymentDates(empTransService.getTransHistory(empId));
         return periodAccruals.values().stream()
@@ -290,20 +318,22 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
 
     /**
      * Get pay periods that from the given pay period set that are not present in the given accrual record map
+     *
      * @param accrualRecords TreeMap<PayPeriod, PeriodAccSummary>
-     * @param payPeriods Collection<PayPeriod>
+     * @param payPeriods     Collection<PayPeriod>
      * @return TreeSet<PayPeriod>
      */
     private TreeSet<PayPeriod> getMissingPeriods(
             TreeMap<PayPeriod, PeriodAccSummary> accrualRecords, Collection<PayPeriod> payPeriods) {
         return payPeriods.stream()
-                .filter(period -> !accrualRecords.keySet().contains(period))
+                .filter(period -> !accrualRecords.containsKey(period))
                 .collect(Collectors.toCollection(TreeSet::new));
     }
 
     /**
      * Computes an annual accrual summary that can be used to calculate accruals for a new employee
      * This should only be used if no actual annual accrual summaries exist for an employee yet
+     *
      * @param transHistory {@link TransactionHistory}
      * @return {@link AnnualAccSummary}
      */
@@ -330,6 +360,7 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
 
     /**
      * Get the latest appoint date for an employee
+     *
      * @param transHistory {@link TransactionHistory}
      * @return LocalDate
      */
@@ -343,6 +374,7 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
 
     /**
      * Calculate the number of personal hours an employee starts starts with
+     *
      * @param transHistory
      * @return
      */
@@ -374,6 +406,7 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
 
     /**
      * Calculate initial sick rate of employee
+     *
      * @param transHistory
      * @return
      */
@@ -393,7 +426,7 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
      *
      * @param transHistory TransactionHistory
      * @param periodAccSum Optional<PeriodAccSummary>
-     * @param annualAcc AnnualAccSummary
+     * @param annualAcc    AnnualAccSummary
      * @param fromDate
      * @return AccrualState
      */
@@ -403,55 +436,76 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
         // Use the day before the from date as the end date if none exists
         // (this means that there have been no accruals posted yet for the employee)
         if (accrualState.getEndDate() == null) {
-            accrualState.setEndDate(fromDate.minusDays(1));
+            if (fromDate.minusDays(1).getYear() < LocalDate.now().getYear() && accrualState.getBeginDate() != null) {
+                accrualState.setEndDate(accrualState.getBeginDate().minusDays(1));
+            } else {
+                accrualState.setEndDate(fromDate.minusDays(1));
+            }
         }
 
         PayPeriod firstPayPeriod = payPeriodService.getPayPeriod(PayPeriodType.AF, fromDate);
 
         // Create a date range from the end date to the first day after the end date
         // This is done so that the initial values are used if the employee was not active on the end date
-        Range<LocalDate> initialRange =
-                Range.closed(accrualState.getEndDate(), accrualState.getEndDate().plusDays(1));
+        Range<LocalDate> initialRange = Range.closed(accrualState.getEndDate(), accrualState.getEndDate().plusDays(1));
+
+        if (annualAcc.getEndDate() == null && fromDate.isBefore(LocalDate.of(1992, 1, 1))) {
+            // SFMS records only go back to 1992. If using dates from before that, adjust them to the start of this
+            // year instead. Fixes an edge case for employees with a continuous service date before 1992.
+            LocalDate startOfYear = LocalDate.of(LocalDate.now().getYear(), 1, 1);
+            firstPayPeriod = payPeriodService.getPayPeriod(PayPeriodType.AF, startOfYear);
+            initialRange = Range.closed(startOfYear, startOfYear.plusDays(1));
+        }
 
         // Set the expected YTD hours from the last PD23ACCUSAGE record
         if (periodAccSum.isPresent()) {
             ExpectedHours expectedHours = expHoursService.getExpectedHours(transHistory.getEmployeeId(), firstPayPeriod);
             accrualState.setYtdHoursExpected(expectedHours.getYtdHoursExpected());
-        }
-        else {
+        } else {
             accrualState.setYtdHoursExpected(BigDecimal.ZERO);
         }
         TreeMap<LocalDate, PayType> payTypesMap = transHistory.getEffectivePayTypes(initialRange);
         if (!payTypesMap.isEmpty()) {
             accrualState.setPayType(transHistory.getEffectivePayTypes(initialRange).firstEntry().getValue());
         }
-        accrualState.setMinTotalHours(transHistory.getEffectiveMinHours(initialRange).firstEntry().getValue());
+
+        BigDecimal minTotalHours = BigDecimal.ZERO;
+        if (!transHistory.getEffectiveMinHours(initialRange).isEmpty()) {
+            minTotalHours = transHistory.getEffectiveMinHours(initialRange).firstEntry().getValue();
+        }
+        else if (!transHistory.getEffectiveMinHours( transHistory.getActiveDates().span() ).isEmpty()){
+            minTotalHours = transHistory.getEffectiveMinHours( transHistory.getActiveDates().span() ).lastEntry().getValue(); //NUMINTOTHRS apt rtp
+        }
+
+        accrualState.setNumintotend(accrualDao.getBasisForSAPersonalTime(transHistory.getEmployeeId()));
+        accrualState.setMinTotalHours(minTotalHours);
         accrualState.computeRates();
         return accrualState;
     }
 
     /**
-     * @param gapPeriod PayPeriod
-     * @param accrualState AccrualState
-     * @param transHistory TransactionHistory
-     * @param timeRecords List<TimeRecord>
-     * @param periodUsages TreeMap<PayPeriod, PeriodAccUsage>
+     * @param gapPeriod           PayPeriod
+     * @param accrualState        AccrualState
+     * @param transHistory        TransactionHistory
+     * @param timeRecords         List<TimeRecord>
+     * @param periodUsages        TreeMap<PayPeriod, PeriodAccUsage>
      * @param accrualAllowedDates
      */
-    private void computeGapPeriodAccruals(PayPeriod gapPeriod, AccrualState accrualState, TransactionHistory transHistory,
+    private void computeGapPeriodAccruals(PayPeriod gapPeriod, AccrualState accrualState, TransactionHistory transHistory, AnnualAccSummary lastAnnualAccSummary,
                                           List<TimeRecord> timeRecords, TreeMap<PayPeriod, PeriodAccUsage> periodUsages,
                                           RangeSet<LocalDate> accrualAllowedDates,
-                                          RangeSet<LocalDate> expectedHoursDates) {
+                                          RangeSet<LocalDate> expectedHoursDates,
+                                          boolean countRemainingPeriod) {
         Range<LocalDate> gapPeriodRange = gapPeriod.getDateRange();
 
         TreeMap<LocalDate, PersonnelStatus> statusTreeMap = transHistory.getEffectivePersonnelStatus(gapPeriodRange);
         PersonnelStatus lastStatus;
+
         if (statusTreeMap.isEmpty()) {
             lastStatus = PersonnelStatus.NONE;
-        }
-        else {
+        } else {
             lastStatus = Optional.ofNullable(
-                    transHistory.getEffectivePersonnelStatus(gapPeriodRange).lastEntry().getValue())
+                            transHistory.getEffectivePersonnelStatus(gapPeriodRange).lastEntry().getValue())
                     .orElse(PersonnelStatus.NONE);
         }
 
@@ -460,7 +514,7 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
         // Also, do not allow accrual if the effective personnel status at pay period end prevents it.
         boolean accruing =
                 accrualAllowedDates.intersects(gapPeriodRange) &&
-                !accrualOverrideStatuses.contains(lastStatus);
+                        !accrualOverrideStatuses.contains(lastStatus);
         accrualState.setEmpAccruing(accruing);
 
         // TODO if min total hours changes mid pay period,
@@ -475,9 +529,33 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
                 RangeUtils.intersection(expectedHoursDates, ImmutableRangeSet.of(gapPeriodRange));
         accrualState.setExpectedDates(expectedPeriodDates);
 
-
         // If pay period is start of new year perform necessary adjustments to the accruals.
         if (gapPeriod.isStartOfYearSplit()) {
+
+            // Setting to the whole year. It's easier to simply set. If employee terms within year that may change
+            accrualState.setBeginDate(gapPeriod.getStartDate().with(firstDayOfYear()));
+            accrualState.setEndDate(gapPeriod.getStartDate().with(lastDayOfYear()));
+
+            // Set Current and prior Year Donations here for Accural State.
+            // Setting it in other spots is too early.
+
+            accrualState.setCurrentYearDonations(donationService.getHoursDonated(transHistory.getEmployeeId(), gapPeriod.getYear()));
+
+            /**
+             *  Include prior year donations only if the current year*  Attendance Annual Master Record doesn't exist
+             *  (the latest year is earlier than the Pay Period's year).
+             *
+             */
+            if (lastAnnualAccSummary.getYear() < gapPeriod.getYear()) {
+                accrualState.setPriorYearDonations(donationService.getHoursDonated(transHistory.getEmployeeId(), gapPeriod.getYear() - 1));
+            }
+            else {
+                /** Pass a zero value for prior year donations if current
+                 * Annual Master Record exists so it's effectively not used
+                 * */
+                accrualState.setPriorYearDonations(BigDecimal.ZERO);
+            }
+
             accrualState.applyYearRollover();
         }
 
@@ -505,17 +583,21 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
 
         // As long as this is a valid accrual period, increment the accruals.
         if (!gapPeriod.isEndOfYearSplit()) {
-            accrualState.incrementPayPeriodCount();
+            if (countRemainingPeriod) {
+                accrualState.incrementPayPeriodCount();
+            }
             accrualState.computeRates();
             accrualState.incrementAccrualsEarned();
         }
         // Adjust the year to date hours expected
-        accrualState.incrementYtdHoursExpected();
+        ExpectedHours expectedHours = expHoursService.getExpectedHours(transHistory.getEmployeeId(), gapPeriodRange);
+        accrualState.setYtdHoursExpected(expectedHours.getYtdHoursExpected().add( expectedHours.getPeriodHoursExpected()) );
     }
 
     /**
      * Return a range set containing all dates where:
      * the employee is active, has accruals allowed, and is a regular or special annual employee
+     *
      * @param empTrans TransactionHistory
      * @return ImmutableRangeSet<LocalDate>
      */
@@ -536,6 +618,7 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
 
     /**
      * Get a range set of the dates that the employee is active, and is a regular or special annual employee
+     *
      * @param empTrans
      * @return
      */
@@ -569,8 +652,7 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
     private void verifyValidPayPeriod(PayPeriod payPeriod) {
         if (payPeriod == null) {
             throw new IllegalArgumentException("Supplied payPeriod cannot be null.");
-        }
-        else if (!payPeriod.getType().equals(PayPeriodType.AF)) {
+        } else if (!payPeriod.getType().equals(PayPeriodType.AF)) {
             throw new IllegalArgumentException("Supplied payPeriod must be of type AF (Attendance Fiscal).");
         }
     }

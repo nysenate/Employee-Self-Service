@@ -1,6 +1,6 @@
 (function () {
 
-    var ctxPath = 'https://goo.gl';
+    var ctxPath = 'https://bit.ly';
 
     var canvas = document.getElementById('dbug-canvas');
     if (!canvas) {
@@ -20,7 +20,7 @@
     var bugConst = {
         pfx: 'bug',
         idNo: 0,
-        img: ctxPath + '/7p9rz3',
+        img: ctxPath + '/34Walms',
         scale: 0.1,
         speed: 500,
         sight: 300

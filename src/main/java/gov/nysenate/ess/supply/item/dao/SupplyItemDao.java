@@ -6,10 +6,12 @@ import gov.nysenate.ess.core.util.SortOrder;
 import gov.nysenate.ess.supply.item.model.ItemRestriction;
 import gov.nysenate.ess.supply.item.model.SupplyItem;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -48,8 +50,13 @@ public class SupplyItemDao extends SqlBaseDao {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("id", id);
         String sql = OracleSupplyItemQuery.GET_SUPPLY_ITEM_BY_ID.getSql(schemaMap());
-        SupplyItem item = remoteNamedJdbc.queryForObject(sql, params, new SupplyItemRowMapper());
-        return setItemRestriction(item);
+        List<SupplyItem> itemList = remoteNamedJdbc.query(sql, params, new SupplyItemRowMapper());
+        if (itemList.isEmpty() || itemList == null) {
+            throw new IncorrectResultSizeDataAccessException(0);
+        }
+        else {
+            return setItemRestriction(itemList.get(0));
+        }
     }
 
     private void applyItemRestrictions(Set<SupplyItem> items) {

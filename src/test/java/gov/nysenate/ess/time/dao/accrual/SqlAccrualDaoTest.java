@@ -1,11 +1,11 @@
 package gov.nysenate.ess.time.dao.accrual;
 
 import com.google.common.collect.Range;
+import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.annotation.SillyTest;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.OutputUtils;
 import gov.nysenate.ess.core.util.SortOrder;
-import gov.nysenate.ess.core.BaseTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
@@ -24,27 +24,27 @@ public class SqlAccrualDaoTest extends BaseTest
     private SqlAccrualDao accDao;
 
     @Test
-    public void testGetPeriodAccrualSummaries() throws Exception {
+    public void testGetPeriodAccrualSummaries() {
         logger.info("{}", OutputUtils.toJson(
                 accDao.getPeriodAccruals(10976, LocalDate.now(), new LimitOffset(2), SortOrder.DESC)));
     }
 
     @Test
-    public void testGetAnnualAccrualSummaries() throws Exception {
+    public void testGetAnnualAccrualSummaries() {
         logger.info("{}", OutputUtils.toJson(
             accDao.getAnnualAccruals(10976, 2015)
         ));
     }
 
     @Test
-    public void testGetPeriodAccrualUsages() throws Exception {
+    public void testGetPeriodAccrualUsages() {
         logger.info("{}", OutputUtils.toJson(
             accDao.getPeriodAccrualUsages(10976, Range.all())
         ));
     }
 
     @Test
-    public void testGetAnnualAccUpdated() throws Exception {
+    public void testGetAnnualAccUpdated() {
         logger.info("{}", OutputUtils.toJson(accDao.getAnnualAccsUpdatedSince(LocalDateTime.of(2015, 9, 25, 0,0,0))));
     }
 }

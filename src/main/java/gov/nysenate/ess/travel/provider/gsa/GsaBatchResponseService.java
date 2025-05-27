@@ -16,13 +16,11 @@ import java.util.Map;
 
 @Service
 public class GsaBatchResponseService {
-
     private static final Logger logger = LoggerFactory.getLogger(GsaBatchResponseService.class);
-    private final GsaResponseParser gsaResponseParser;
-    private ObjectMapper mapper;
-    private GsaBatchResponseDao gsaBatchResponseDao;
-    private HttpUtils httpUtils;
 
+    private final GsaResponseParser gsaResponseParser;
+    private final ObjectMapper mapper;
+    private final GsaBatchResponseDao gsaBatchResponseDao;
 
     @Value("${travel.gsa.api.url_path}") private String apiUrl;
     @Value("${travel.gsa.api.url_base}")private String hostUrl;
@@ -31,11 +29,10 @@ public class GsaBatchResponseService {
 
     @Autowired
     public GsaBatchResponseService(GsaResponseParser gsaResponseParser, ObjectMapper jsonObjectMapper,
-                                   GsaBatchResponseDao gsaBatchResponseDao, HttpUtils httpUtils) {
+                                   GsaBatchResponseDao gsaBatchResponseDao) {
         this.gsaResponseParser = gsaResponseParser;
         this.mapper = jsonObjectMapper;
         this.gsaBatchResponseDao = gsaBatchResponseDao;
-        this.httpUtils = httpUtils;
     }
 
     // Turn off this schedule for now. Needs to be updated for new GSA API.
@@ -49,18 +46,18 @@ public class GsaBatchResponseService {
         int batchNumber = 1000;
         int offset = 0;
         int total = getTotalNumberOfGsaRecords(
-                httpUtils.urlToString(hostUrl + apiUrl + limit + "1"));
+                HttpUtils.urlToString(hostUrl + apiUrl + limit + "1"));
         String urlString = hostUrl + apiUrl + limit + batchNumber;
 
         if (total != 0) {
-            String firstResult = httpUtils.urlToString(urlString);
+            String firstResult = HttpUtils.urlToString(urlString);
             nextBatchUrl = parseBatchGsaResponse(firstResult);
             offset = offset + batchNumber;
 
             while (offset < total) {
                 logger.info("Processing batch at offset: " + offset + " out of total: " + total);
                 urlString = hostUrl + nextBatchUrl;
-                String result = httpUtils.urlToString(urlString );
+                String result = HttpUtils.urlToString(urlString );
                 nextBatchUrl = parseBatchGsaResponse(result);
                 offset = offset + batchNumber;
             }

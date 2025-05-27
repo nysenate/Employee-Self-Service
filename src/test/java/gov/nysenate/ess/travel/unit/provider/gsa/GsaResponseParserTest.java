@@ -6,25 +6,18 @@ import gov.nysenate.ess.travel.fixtures.GsaApiResponseFixture;
 import gov.nysenate.ess.travel.provider.gsa.GsaResponse;
 import gov.nysenate.ess.travel.provider.gsa.GsaResponseId;
 import gov.nysenate.ess.travel.provider.gsa.GsaResponseParser;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
 @Category(UnitTest.class)
 public class GsaResponseParserTest {
-
-    private static GsaResponseParser parser;
-
-    @BeforeClass
-    public static void beforeClass() {
-        parser = new GsaResponseParser(OutputUtils.jsonMapper);
-    }
+    private static final GsaResponseParser parser = new GsaResponseParser(OutputUtils.jsonMapper);
 
     @Test
     public void correctlyParsesGsaResponse() throws IOException {
@@ -34,18 +27,11 @@ public class GsaResponseParserTest {
         assertEquals(2018, resId.getFiscalYear());
         assertEquals("10008", resId.getZipcode());
         assertEquals("74", res.getMealTier());
-        assertEquals(new BigDecimal("164"), res.getLodging(LocalDate.of(2018, 1, 1)));
-        assertEquals(new BigDecimal("164"), res.getLodging(LocalDate.of(2018, 2, 1)));
-        assertEquals(new BigDecimal("253"), res.getLodging(LocalDate.of(2018, 3, 1)));
-        assertEquals(new BigDecimal("253"), res.getLodging(LocalDate.of(2018, 4, 1)));
-        assertEquals(new BigDecimal("253"), res.getLodging(LocalDate.of(2018, 5, 1)));
-        assertEquals(new BigDecimal("253"), res.getLodging(LocalDate.of(2018, 6, 1)));
-        assertEquals(new BigDecimal("230"), res.getLodging(LocalDate.of(2018, 7, 1)));
-        assertEquals(new BigDecimal("230"), res.getLodging(LocalDate.of(2018, 8, 1)));
-        assertEquals(new BigDecimal("291"), res.getLodging(LocalDate.of(2018, 9, 1)));
-        assertEquals(new BigDecimal("291"), res.getLodging(LocalDate.of(2018, 10, 1)));
-        assertEquals(new BigDecimal("291"), res.getLodging(LocalDate.of(2018, 11, 1)));
-        assertEquals(new BigDecimal("291"), res.getLodging(LocalDate.of(2018, 12, 1)));
+        LocalDate date = LocalDate.of(2018, 1, 1);
+        List<Integer> expectedRates = List.of(0, 164, 164, 253, 253, 253, 253, 230, 230, 291, 291, 291, 291);
+        for (int month = 1; month <= 12; month++) {
+            assertEquals(expectedRates.get(month).intValue(), res.getLodging(date.withMonth(month)).intValue());
+        }
     }
 
     @Test
@@ -56,18 +42,10 @@ public class GsaResponseParserTest {
         assertEquals(2018, resId.getFiscalYear());
         assertEquals("10940", resId.getZipcode());
         assertEquals("59", res.getMealTier());
-        assertEquals(new BigDecimal("108"), res.getLodging(LocalDate.of(2018, 1, 1)));
-        assertEquals(new BigDecimal("108"), res.getLodging(LocalDate.of(2018, 2, 1)));
-        assertEquals(new BigDecimal("108"), res.getLodging(LocalDate.of(2018, 3, 1)));
-        assertEquals(new BigDecimal("108"), res.getLodging(LocalDate.of(2018, 4, 1)));
-        assertEquals(new BigDecimal("108"), res.getLodging(LocalDate.of(2018, 5, 1)));
-        assertEquals(new BigDecimal("108"), res.getLodging(LocalDate.of(2018, 6, 1)));
-        assertEquals(new BigDecimal("108"), res.getLodging(LocalDate.of(2018, 7, 1)));
-        assertEquals(new BigDecimal("108"), res.getLodging(LocalDate.of(2018, 8, 1)));
-        assertEquals(new BigDecimal("108"), res.getLodging(LocalDate.of(2018, 9, 1)));
-        assertEquals(new BigDecimal("108"), res.getLodging(LocalDate.of(2018, 10, 1)));
-        assertEquals(new BigDecimal("108"), res.getLodging(LocalDate.of(2018, 11, 1)));
-        assertEquals(new BigDecimal("108"), res.getLodging(LocalDate.of(2018, 12, 1)));
+        LocalDate date = LocalDate.of(2018, 1, 1);
+        for (int month = 1; month <= 12; month++) {
+            assertEquals(108, res.getLodging(date.withMonth(month)).intValue());
+        }
     }
 
     @Test

@@ -21,9 +21,23 @@ essApp.directive('essNavigation', ['$route', '$routeParams', '$location',
 
             /** React to route changes and set the active link that matches the url */
             scope.$on('$routeChangeStart', function(){
+                // Remove existing 'active' classes
                 element.find(".main-topic.active, .sub-topic-list.active, .sub-topic.active").removeClass("active");
-                var $a = element.find(".sub-topic a[href='" + $location.$$path + "']");
-                if ($a.length == 1) {
+
+                // Matches the last segment of a path
+                var pathEndRe = /\/[^\/]*$/;
+
+                var bestMatch = $location.$$path;
+
+                // Strip the path down until a match is found or the path is empty.
+                var $a;
+                do {
+                    $a = element.find(".sub-topic a[href='" + bestMatch + "']");
+                    bestMatch = bestMatch.replace(pathEndRe, "");
+                } while ($a.length < 1 && pathEndRe.test(bestMatch));
+
+                // If a match was found, set 'active' classes on several levels
+                if ($a.length === 1) {
                     var $subTopicLi = $a.parent();
                     var $subTopicUl = $subTopicLi.parent();
                     var $mainTopic = $subTopicUl.parent().prev();

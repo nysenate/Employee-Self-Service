@@ -17,7 +17,7 @@ public class RequisitionPermission {
      * @return
      */
     public static WildcardPermission forCustomer(int customerId, RequestMethod action) {
-        return new WildcardPermission(prefix(action) + CUSTOMER + ":" + String.valueOf(customerId));
+        return new WildcardPermission(prefix(action) + CUSTOMER + ":" + customerId);
     }
 
     /**

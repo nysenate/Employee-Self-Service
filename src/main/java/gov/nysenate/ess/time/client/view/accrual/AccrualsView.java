@@ -34,15 +34,18 @@ public class AccrualsView implements ViewObject
 
     protected BigDecimal sickEmpUsed = BigDecimal.ZERO;
     protected BigDecimal sickFamUsed = BigDecimal.ZERO;
+    protected BigDecimal sickDonated = BigDecimal.ZERO;
     protected BigDecimal personalUsed = BigDecimal.ZERO;
     protected BigDecimal vacationUsed = BigDecimal.ZERO;
     protected BigDecimal holidayUsed = BigDecimal.ZERO;
     protected BigDecimal miscUsed = BigDecimal.ZERO;
+    protected BigDecimal misc2Used = BigDecimal.ZERO;
     protected BigDecimal prevTotalHoursYtd = BigDecimal.ZERO;
     protected BigDecimal totalHoursYtd = BigDecimal.ZERO;
 
     protected BigDecimal biweekSickEmpUsed = BigDecimal.ZERO;
     protected BigDecimal biweekSickFamUsed = BigDecimal.ZERO;
+    protected BigDecimal biweekSickDonated = BigDecimal.ZERO;
     protected BigDecimal biweekPersonalUsed = BigDecimal.ZERO;
     protected BigDecimal biweekHolidayUsed = BigDecimal.ZERO;
     protected BigDecimal biweekVacationUsed = BigDecimal.ZERO;
@@ -55,8 +58,11 @@ public class AccrualsView implements ViewObject
 
     /** --- Constructors --- */
 
-    public AccrualsView(PeriodAccSummary pac) {
+    public AccrualsView(PeriodAccSummary pac, BigDecimal donationsYtd, BigDecimal donationThisPeriod) {
         if (pac != null) {
+            this.sickDonated = donationsYtd;
+            this.biweekSickDonated = donationThisPeriod;
+
             this.payPeriod = new PayPeriodView(pac.getPayPeriod());
             this.computed = pac.isComputed();
             if (this.computed) {
@@ -78,6 +84,7 @@ public class AccrualsView implements ViewObject
             this.vacationUsed = pac.getVacHoursUsed();
             this.holidayUsed = pac.getHolHoursUsed();
             this.miscUsed = pac.getMiscHoursUsed();
+            this.misc2Used = pac.getMisc2HoursUsed();
             this.vacationRate = pac.getVacRate();
             this.sickRate = pac.getSickRate();
             this.prevTotalHoursYtd =  pac.getPrevTotalHoursYtd();
@@ -111,7 +118,8 @@ public class AccrualsView implements ViewObject
         return Optional.ofNullable(sickAccruedYtd).orElse(BigDecimal.ZERO)
                 .add(Optional.ofNullable(sickBanked).orElse(BigDecimal.ZERO))
                 .subtract(Optional.ofNullable(sickEmpUsed).orElse(BigDecimal.ZERO))
-                .subtract(Optional.ofNullable(sickFamUsed).orElse(BigDecimal.ZERO));
+                .subtract(Optional.ofNullable(sickFamUsed).orElse(BigDecimal.ZERO))
+                .subtract(Optional.ofNullable(sickDonated).orElse(BigDecimal.ZERO));
     }
 
     /** --- Basic Getters --- */
@@ -182,6 +190,11 @@ public class AccrualsView implements ViewObject
     }
 
     @XmlElement
+    public BigDecimal getsickDonated() {
+        return sickDonated;
+    }
+
+    @XmlElement
     public BigDecimal getPersonalUsed() {
         return personalUsed;
     }
@@ -202,6 +215,11 @@ public class AccrualsView implements ViewObject
     }
 
     @XmlElement
+    public BigDecimal getMisc2Used() {
+        return misc2Used;
+    }
+
+    @XmlElement
     public BigDecimal getBiweekSickEmpUsed() {
         return biweekSickEmpUsed;
     }
@@ -209,6 +227,11 @@ public class AccrualsView implements ViewObject
     @XmlElement
     public BigDecimal getBiweekSickFamUsed() {
         return biweekSickFamUsed;
+    }
+
+    @XmlElement
+    public BigDecimal getBiweekSickDonated() {
+        return biweekSickDonated;
     }
 
     @XmlElement

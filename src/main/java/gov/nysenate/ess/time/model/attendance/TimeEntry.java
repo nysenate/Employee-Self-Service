@@ -22,6 +22,7 @@ public class TimeEntry extends AttendanceHours
     protected String employeeName;
     protected LocalDate date;
     protected MiscLeaveType miscType;
+    protected MiscLeaveType miscType2;
     protected boolean active;
     protected String empComment;
     protected PayType payType;
@@ -60,6 +61,7 @@ public class TimeEntry extends AttendanceHours
         this.employeeName = other.employeeName;
         this.date = other.date;
         this.miscType = other.miscType;
+        this.miscType2 = other.miscType2;
         this.active = other.active;
         this.empComment = other.empComment;
         this.payType = other.payType;
@@ -78,6 +80,7 @@ public class TimeEntry extends AttendanceHours
     public boolean isEmpty() {
         return super.isEmpty() &&
                 miscType == null &&
+                miscType2 == null &&
                 empComment == null;
     }
 
@@ -96,6 +99,7 @@ public class TimeEntry extends AttendanceHours
                 Objects.equal(employeeName, timeEntry.employeeName) &&
                 Objects.equal(date, timeEntry.date) &&
                 miscType == timeEntry.miscType &&
+                miscType2 == timeEntry.miscType2 &&
                 Objects.equal(empComment, timeEntry.empComment) &&
                 payType == timeEntry.payType &&
                 Objects.equal(originalUserId, timeEntry.originalUserId) &&
@@ -107,7 +111,7 @@ public class TimeEntry extends AttendanceHours
     @Override
     public int hashCode() {
         return Objects.hashCode(super.hashCode(), entryId, timeRecordId, empId,
-                employeeName, date, miscType, active, empComment, payType,
+                employeeName, date, miscType, miscType2, active, empComment, payType,
                 originalUserId, updateUserId, originalDate, updateDate);
     }
 
@@ -125,6 +129,7 @@ public class TimeEntry extends AttendanceHours
                     .put("sickEmp", getSickEmpHours())
                     .put("sickFam", getSickFamHours())
                     .put("misc", getMiscHours())
+                    .put("misc2", getMisc2Hours())
                     .build();
             hourMap.forEach((label, valueOpt) -> {
                 if (valueOpt.isPresent()) {
@@ -186,6 +191,14 @@ public class TimeEntry extends AttendanceHours
 
     public void setMiscType(MiscLeaveType miscType) {
         this.miscType = miscType;
+    }
+
+    public MiscLeaveType getMiscType2() {
+        return miscType2;
+    }
+
+    public void setMiscType2(MiscLeaveType miscType2) {
+        this.miscType2 = miscType2;
     }
 
     public boolean isActive() {

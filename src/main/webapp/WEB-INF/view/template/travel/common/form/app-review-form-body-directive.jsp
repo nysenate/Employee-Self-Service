@@ -16,9 +16,10 @@
           <hr/>
 
           <div style="display: flex; flex-direction: column; margin: 10px;">
-            <div ng-repeat="action in appReview.actions | orderBy: 'dateTime'">
+            <div ng-repeat="action in modifiedActions">
 
               <div style="display: flex; flex-direction: row; justify-content: space-between">
+                <div ng-if="action.resubmitted" class="approved-text">Resubmitted by user</div>
                 <div style="" ng-bind="::action.dateTime | date: 'shortDate'"></div>
                 <div style="" ng-bind="::action.user.lastName"></div>
                 <div ess-review-action-status="action"></div>

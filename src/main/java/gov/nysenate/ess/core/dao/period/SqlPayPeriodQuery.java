@@ -13,10 +13,9 @@ public enum SqlPayPeriodQuery implements BasicSqlQuery
         "SELECT * FROM ${masterSchema}.SL16PERIOD\n" +
         "WHERE CDPERIOD = :periodType AND (DTBEGIN >= TRUNC(:startDate) OR TRUNC(:startDate) BETWEEN DTBEGIN AND DTEND)\n" +
         "                             AND (DTEND <= TRUNC(:endDate) OR TRUNC(:endDate) BETWEEN DTBEGIN AND DTEND)\n"
-    ),
-    ;
+    );
 
-    private String sql;
+    private final String sql;
 
     SqlPayPeriodQuery(String sql) {
         this.sql = sql;

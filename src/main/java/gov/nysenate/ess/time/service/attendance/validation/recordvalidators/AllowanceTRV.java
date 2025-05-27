@@ -1,12 +1,12 @@
 package gov.nysenate.ess.time.service.attendance.validation.recordvalidators;
 
 import gov.nysenate.ess.core.client.view.base.InvalidParameterView;
+import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.time.model.allowances.AllowanceUsage;
 import gov.nysenate.ess.time.model.attendance.TimeRecord;
 import gov.nysenate.ess.time.model.attendance.TimeRecordAction;
 import gov.nysenate.ess.time.model.attendance.TimeRecordScope;
 import gov.nysenate.ess.time.service.allowance.AllowanceService;
-import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.time.service.attendance.validation.TimeRecordErrorCode;
 import gov.nysenate.ess.time.service.attendance.validation.TimeRecordErrorException;
 import gov.nysenate.ess.time.service.attendance.validation.TimeRecordValidator;
@@ -61,7 +61,7 @@ public class AllowanceTRV implements TimeRecordValidator {
         if (recordCost.compareTo(moneyAvailable) > 0) {
             throw new TimeRecordErrorException(TimeRecordErrorCode.RECORD_EXCEEDS_ALLOWANCE,
                     new InvalidParameterView("recordMoneyUsed", "decimal",
-                            "recordMoneyUsed <= " + moneyAvailable.toString(), recordCost.toString()));
+                            "recordMoneyUsed <= " + moneyAvailable, recordCost.toString()));
         }
     }
 }

@@ -78,9 +78,9 @@ public class EssApiAuthenticationFilter extends AuthenticationFilter {
 
         HttpResponseUtils.preventCaching(httpResponse);
         // Write authorization response in desired format
-        if (mediaType == MediaType.APPLICATION_JSON) {
+        if (mediaType.equals(MediaType.APPLICATION_JSON)) {
             httpResponse.getWriter().append(OutputUtils.toJson(authResponse));
-        } else if (mediaType == MediaType.APPLICATION_XML) {
+        } else if (mediaType.equals(MediaType.APPLICATION_XML)) {
             httpResponse.getWriter().append(OutputUtils.toXml(authResponse));
         } else {
             // Just send the error code if the format isn't supported

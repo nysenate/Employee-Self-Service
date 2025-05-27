@@ -17,7 +17,7 @@ essTravel.directive('essAddressAutocomplete', ['appProps', '$q', 'GooglePlaceSer
         restrict: 'A',
         scope: {
             callback: '&', // callback function
-            leg: '='
+            passThrough: '='
         },
         link: function ($scope, $elem, $attrs, $ctrl) {
 
@@ -42,7 +42,7 @@ essTravel.directive('essAddressAutocomplete', ['appProps', '$q', 'GooglePlaceSer
                 var address = placeService.parseAddressFromPlace(autocomplete.getPlace());
                 // Call $apply here because angular does not seem to realize when $scope vars are updated in the callback function.
                 $scope.$apply(function () {
-                    $scope.callback({leg: $scope.leg, address: address});
+                    $scope.callback({passThrough: $scope.passThrough, address: address});
                 });
             });
         }

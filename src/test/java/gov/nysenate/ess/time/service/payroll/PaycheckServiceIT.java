@@ -17,7 +17,7 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category({IntegrationTest.class, TestDependsOnDatabase.class})
 public class PaycheckServiceIT extends BaseTest
@@ -41,11 +41,11 @@ public class PaycheckServiceIT extends BaseTest
         for (Paycheck paycheck : paychecks) {
             assertThat(paycheck.getCheckDate().getYear(), is(year));
             assertTrue(paycheck.getPayPeriod().matches("[0-9]{1,2}")); //
-            assertTrue(paycheck.getGrossIncome() != null);
-            assertTrue(paycheck.getNetIncome() != null);
-            assertTrue(paycheck.getDeductions() != null);
-            assertTrue(paycheck.getDirectDepositAmount() != null);
-            assertTrue(paycheck.getCheckAmount() != null);
+            assertNotNull(paycheck.getGrossIncome());
+            assertNotNull(paycheck.getNetIncome());
+            assertNotNull(paycheck.getDeductions());
+            assertNotNull(paycheck.getDirectDepositAmount());
+            assertNotNull(paycheck.getCheckAmount());
         }
     }
 
@@ -59,10 +59,9 @@ public class PaycheckServiceIT extends BaseTest
     public void grossIncomeMinusDeductionsShouldEqualNetIncome() {
         Paycheck paycheck = paychecks.get(0);
         BigDecimal calculatedNet = paycheck.getGrossIncome().subtract(paycheck.getTotalDeductions());
-        assertTrue("Gross Income: " + paycheck.getGrossIncome() +
-                        " - " + paycheck.getTotalDeductions() +
-                        " != " + paycheck.getNetIncome() +
-                        "\tGot: " + calculatedNet,
-                calculatedNet.compareTo(paycheck.getNetIncome()) == 0);
+        assertEquals("Gross Income: " + paycheck.getGrossIncome() +
+                " - " + paycheck.getTotalDeductions() +
+                " != " + paycheck.getNetIncome() +
+                "\tGot: " + calculatedNet, 0, calculatedNet.compareTo(paycheck.getNetIncome()));
     }
 }

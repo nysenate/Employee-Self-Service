@@ -1,5 +1,7 @@
 package gov.nysenate.ess.core.model.personnel;
 
+import java.util.Objects;
+
 /**
  * Represents a Responsibility Center Head. Various responsibility centers can
  * share a common organizational head.
@@ -80,12 +82,9 @@ public class ResponsibilityHead
         if (o == null || getClass() != o.getClass()) return false;
 
         ResponsibilityHead that = (ResponsibilityHead) o;
-
-        if (active != that.active) return false;
-        if (code != null ? !code.equals(that.code) : that.code != null) return false;
-        if (shortName != null ? !shortName.equals(that.shortName) : that.shortName != null) return false;
-        if (name != null ? !name.equals(that.name) : that.name != null) return false;
-        return !(affiliateCode != null ? !affiliateCode.equals(that.affiliateCode) : that.affiliateCode != null);
+        return active == that.active && Objects.equals(code, that.code) &&
+                Objects.equals(shortName, that.shortName) && Objects.equals(name, that.name) &&
+                Objects.equals(affiliateCode, that.affiliateCode);
 
     }
 

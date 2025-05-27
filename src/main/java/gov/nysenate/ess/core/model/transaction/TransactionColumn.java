@@ -92,7 +92,7 @@ public enum TransactionColumn
     NUXREFSV("Supervisor Id"),
     NUYONTAXEX("");
     
-    private String desc;
+    private final String desc;
 
     TransactionColumn(String desc) {
         this.desc = desc;

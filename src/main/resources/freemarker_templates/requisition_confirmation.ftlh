@@ -14,7 +14,7 @@ Your requisition request has been received by Senate Supply.
 
 <#if requisition.deliveryMethod.name() == "PICKUP">
   <p>
-    Please pickup your order from LC100 at your earliest convenience.
+    Please pickup your order from L212 at your earliest convenience.
   </p>
 </#if>
 

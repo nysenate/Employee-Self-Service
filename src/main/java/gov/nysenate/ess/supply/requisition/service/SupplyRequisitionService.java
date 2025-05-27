@@ -44,6 +44,12 @@ public class SupplyRequisitionService implements RequisitionService {
     }
 
     @Override
+    public Requisition undoRequisition(Requisition requisition) {
+        requisition = requisition.undoProcess(LocalDateTime.now());
+        return saveRequisition(requisition);
+    }
+
+    @Override
     public Requisition rejectRequisition(Requisition requisition) {
         requisition = requisition.reject(LocalDateTime.now());
         requisition = saveRequisition(requisition);

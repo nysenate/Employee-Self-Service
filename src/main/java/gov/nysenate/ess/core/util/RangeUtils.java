@@ -199,21 +199,6 @@ public class RangeUtils
     }
 
     /**
-     * @deprecated a RangeSet intersects method was added in guava 20
-     * @see RangeSet#intersects(Range)
-     *
-     * Returns true iff the given range set intersects the given range
-     * @param rangeSet RangeSet<T>
-     * @param range Range<T>
-     * @param <T> Class<T>
-     * @return boolean
-     */
-//    @Deprecated
-    public static <T extends Comparable<? super T>> boolean intersects(RangeSet<T> rangeSet, Range<T> range) {
-        return !rangeSet.complement().encloses(range);
-    }
-
-    /**
      * Returns an iterator that produces values of the specified discrete class that are in the given range, in default order
      * @param range Range<T>
      * @param domain DiscreteDomain<T> - a discrete domain implementation that supports the class of the range

@@ -82,6 +82,11 @@ loginApp.controller('LoginController', ['$scope', '$http', '$window', 'appProps'
                         else if (authResponse.status == 'INCORRECT_CREDENTIALS') {
                             $scope.errorFields.password = true;
                         }
+                        else if (authResponse.status == 'LDAP_MISMATCH' ||
+                            authResponse.status == 'NAME_NOT_FOUND' ||
+                            authResponse.status == 'UNKNOWN_EXCEPTION') {
+                            alert("There is an issue with your employee record. Please contact the Helpline");
+                        }
                         $scope.loginInProgress = false;
                     }
                 }

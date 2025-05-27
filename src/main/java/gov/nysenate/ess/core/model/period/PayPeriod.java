@@ -3,7 +3,7 @@ package gov.nysenate.ess.core.model.period;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.util.DateUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.RegExUtils;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -152,7 +152,7 @@ public class PayPeriod implements Comparable<PayPeriod>
      * @param payPeriodNum String
      */
     public void setPayPeriodNum(String payPeriodNum) {
-        this.payPeriodNum = StringUtils.replacePattern(payPeriodNum, "[^0-9]", "");
+        this.payPeriodNum = RegExUtils.replacePattern(payPeriodNum, "[^0-9]", "");
     }
 
     /* --- Overrides --- */

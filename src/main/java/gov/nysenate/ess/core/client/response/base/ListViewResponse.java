@@ -1,17 +1,20 @@
 package gov.nysenate.ess.core.client.response.base;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import gov.nysenate.ess.core.client.view.base.ListView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.core.util.LimitOffset;
+import gov.nysenate.ess.core.util.PaginatedList;
 
 import javax.xml.bind.annotation.XmlElement;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @JsonSerialize(using = ListViewResponse.ListViewResponseJsonSerializer.class)
 public class ListViewResponse<ViewType> extends PaginationResponse
@@ -49,6 +52,14 @@ public class ListViewResponse<ViewType> extends PaginationResponse
         return new ListViewResponse<>(ListView.of(items), resultFieldName, total, limitOffset);
     }
 
+    public static <ModelType, ViewType extends ViewObject> ListViewResponse<ViewType> fromPaginatedList(
+            PaginatedList<ModelType> paginatedList, Function<ModelType, ViewType> viewConverter) {
+        List<ViewType> resultViews = paginatedList.getResults().stream()
+                .map(viewConverter)
+                .collect(Collectors.toList());
+        return of(resultViews, paginatedList.getTotal(), paginatedList.getLimOff());
+    }
+
     public static ListViewResponse<String> ofStringList(Collection<String> items, String resultFieldName, int total, LimitOffset limitOffset) {
         return new ListViewResponse<>(ListView.ofStringList(items), resultFieldName, total, limitOffset);
     }
@@ -64,7 +75,7 @@ public class ListViewResponse<ViewType> extends PaginationResponse
     public static class ListViewResponseJsonSerializer extends JsonSerializer<ListViewResponse>
     {
         @Override
-        public void serialize(ListViewResponse listViewResponse, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
+        public void serialize(ListViewResponse listViewResponse, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
             jsonGenerator.writeStartObject();
             listViewResponse.serialize(listViewResponse, jsonGenerator, serializerProvider);
             jsonGenerator.writeObjectField(listViewResponse.resultFieldName, listViewResponse.result);

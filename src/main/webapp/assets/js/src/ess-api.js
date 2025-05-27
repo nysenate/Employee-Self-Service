@@ -2,20 +2,20 @@ var essApi = angular.module('essApi');
 
 /** --- Pay Period API --- */
 
-essApi.factory('PayPeriodApi', ['$resource', 'appProps', function($resource, appProps) {
+essApi.factory('PayPeriodApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/periods/:periodType');
 }]);
 
 /** --- Holiday API --- */
 
-essApi.factory('HolidayApi', ['$resource', 'appProps', function($resource, appProps) {
+essApi.factory('HolidayApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/holidays');
 }]);
 
 /** --- Time Record API --- */
 
 essApi.factory('TimeRecordApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/timerecords');  
+    return $resource(appProps.apiPath + '/timerecords');
 }]);
 
 essApi.factory('TimeRecordReviewApi', ['$resource', 'appProps', function ($resource, appProps) {
@@ -73,16 +73,30 @@ essApi.factory('SupervisorGrantsApi', ['$resource', 'appProps', function ($resou
 
 /** --- Accrual API --- */
 
-essApi.factory('AccrualPeriodApi', ['$resource', 'appProps', function($resource, appProps) {
+essApi.factory('AccrualPeriodApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/accruals');
 }]);
 
-essApi.factory('AccrualActiveYearsApi', ['$resource', 'appProps', function($resource, appProps) {
+essApi.factory('AccrualActiveYearsApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/accruals/active-years');
 }]);
 
-essApi.factory('AccrualHistoryApi', ['$resource', 'appProps', function($resource, appProps) {
+essApi.factory('AccrualHistoryApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/accruals/history');
+}]);
+
+/** --- Donation API --- */
+
+essApi.factory('DonationInfoApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/donation/info');
+}]);
+
+essApi.factory('DonationHistoryApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/donation/history');
+}]);
+
+essApi.factory('SubmitDonationApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/donation/submit');
 }]);
 
 essApi.factory('ActiveSupervisorTimeOffRequestApi', ['$resource', 'appProps', function($resource, appProps){
@@ -99,21 +113,21 @@ essApi.factory('TimeOffRequestDateRangeApi', ['$resource', 'appProps', function(
 
 /** --- Expected Hours API --- */
 
-essApi.factory('ExpectedHoursApi', ['$resource', 'appProps', function($resource, appProps) {
+essApi.factory('ExpectedHoursApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/expectedhrs');
 }]);
 
 /** --- Employee API --- */
 
 essApi.factory('EmpInfoApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/employees.json');
+    return $resource(appProps.apiPath + '/employees');
 }]);
 
-essApi.factory('EmpActiveYearsApi', ['$resource', 'appProps', function($resource, appProps) {
+essApi.factory('EmpActiveYearsApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/employees/activeDates');
 }]);
 
-essApi.factory('EmpActiveYearsApi', ['$resource', 'appProps', function($resource, appProps) {
+essApi.factory('EmpActiveYearsApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/employees/activeYears');
 }]);
 
@@ -125,51 +139,102 @@ essApi.factory('EmployeeSearchApi', ['$resource', 'appProps', function ($resourc
     return $resource(appProps.apiPath + '/employees/search');
 }]);
 
+/** --- Responsibility Center API --- */
+
+essApi.factory('RCHSearchApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/respctr/head/search');
+}]);
+
 /** --- Alert Info API --- */
 
 essApi.factory('AlertInfoApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/alert-info');
 }]);
 
+/** --- Personnel Task API --- */
+
+essApi.factory('PersonnelTaskApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/personnel/task');
+}]);
+
+essApi.factory('EmpPATSearchApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/personnel/task/emp/search');
+}]);
+
+essApi.factory('EmpAssignPATSearchApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/personnel/task/emp/assignSearch');
+}]);
+
+essApi.factory('PersonnelAssignmentsForEmpApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/personnel/task/assignment/:empId', {
+        empId: '@empId'
+    });
+}]);
+
+essApi.factory('PersonnelAssignmentApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/personnel/task/assignment/:empId/:taskId', {
+        empId: '@empId',
+        taskId: '@taskId'
+    });
+}]);
+
+essApi.factory('UpdatePersonnelTaskAssignmentCompletionApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/admin/personnel/task/overrride/:updateEmpID/:taskId/true/:empId', {
+        updateEmpID: '@updateEmpID',
+        taskId: '@taskId',
+        empId: '@empId'
+    });
+}]);
+
+essApi.factory('InsertPersonnelTaskAssignmentApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/admin/personnel/task/overrride/:updateEmpID/:taskId/:empId', {
+        updateEmpID: '@updateEmpID',
+        taskId: '@taskId',
+        empId: '@empId'
+    });
+}]);
+
+essApi.factory('UpdatePersonnelTaskAssignmentActiveStatusApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/admin/personnel/task/overrride/activation/:updateEmpID/:taskId/false/:empId', {
+        updateEmpID: '@updateEmpID',
+        taskId: '@taskId',
+        empId: '@empId'
+    });
+}]);
+
 /** --- Acknowledgment API --- */
 
-essApi.factory('AckDocApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/acknowledgment/documents/:ackDocId', {
-            ackDocId: '@ackDocId'
-        });
-}]);
-
-essApi.factory('AllAckDocApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/acknowledgment/documents/all');
-}]);
-
 essApi.factory('AcknowledgmentApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/acknowledgment/acks');
+    return $resource(appProps.apiPath + '/personnel/task/acknowledgment');
 }]);
 
-essApi.factory('AcknowledgmentYearApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/acknowledgment/documents/years');
+/** --- PEC Video Code API --- */
+
+essApi.factory('PECVidCodeApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/personnel/task/video/code');
 }]);
 
-essApi.factory('EmpAckReportApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/acknowledgment/report/acks/emp');
+/** --- Ethics Code API --- */
+
+essApi.factory('PECEthicsCodeApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/personnel/task/ethics/live/code');
 }]);
 
 /** --- Transaction API --- */
 
-essApi.factory('EmpTransactionsApi', ['$resource', 'appProps', function($resource, appProps) {
+essApi.factory('EmpTransactionsApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/empTransactions/')
 }]);
 
-essApi.factory('EmpTransactionSnapshotApi', ['$resource', 'appProps', function($resource, appProps) {
+essApi.factory('EmpTransactionSnapshotApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/empTransactions/snapshot')
 }]);
 
-essApi.factory('EmpTransactionCurrentSnapshotApi', ['$resource', 'appProps', function($resource, appProps) {
+essApi.factory('EmpTransactionCurrentSnapshotApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/empTransactions/snapshot/current')
 }]);
 
-essApi.factory('EmpTransactionTimelineApi', ['$resource', 'appProps', function($resource, appProps) {
+essApi.factory('EmpTransactionTimelineApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/empTransactions/timeline')
 }]);
 
@@ -191,51 +256,55 @@ essApi.factory('PeriodAllowanceUsageApi', ['$resource', 'appProps', function ($r
 /** --- Misc Leave Type Grant API --- */
 
 essApi.factory('MiscLeaveGrantApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/miscleave/grants')
+    return $resource(appProps.apiPath + '/miscleave/grantsWithRemainingHours')
 }]);
 
 /** --- Paycheck History API --- */
 
-essApi.factory('EmpCheckHistoryApi',  ['$resource', 'appProps', function($resource, appProps) {
-    return $resource(appProps.apiPath + '/paychecks.json')
+essApi.factory('EmpCheckHistoryApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/paychecks')
 }]);
 
 /** --- Location API --- */
 
-essApi.factory('LocationApi', ['$resource', 'appProps', function($resource, appProps) {
-    return $resource(appProps.apiPath + '/locations.json')
+essApi.factory('LocationApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/locations')
 }]);
 
 /** --- Supply Destination Api --- */
 
-essApi.factory('SupplyDestinationApi', ['$resource', 'appProps', function($resource, appProps) {
-    return $resource(appProps.apiPath + '/supply/destinations/:empId.json', {empId: '@empId'})
+essApi.factory('SupplyDestinationApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/supply/destinations/:empId', {empId: '@empId'})
 }]);
 
 /** --- Supply Requisition Api --- */
 
-essApi.factory('SupplyRequisitionApi', ['$resource', 'appProps', function($resource, appProps) {
-    return $resource(appProps.apiPath + '/supply/requisitions.json')
+essApi.factory('SupplyRequisitionApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/supply/requisitions')
 }]);
 
-essApi.factory('SupplyRequisitionByIdApi', ['$resource', 'appProps', function($resource, appProps) {
-    return $resource(appProps.apiPath + '/supply/requisitions/:id.json', {id: '@id'})
+essApi.factory('SupplyRequisitionByIdApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/supply/requisitions/:id', {id: '@id'})
 }]);
 
-essApi.factory('SupplyRequisitionProcessApi', ['$resource', 'appProps', function($resource, appProps) {
-    return $resource(appProps.apiPath + '/supply/requisitions/:id/process.json', {id: '@id'})
+essApi.factory('SupplyRequisitionProcessApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/supply/requisitions/:id/process', {id: '@id'})
 }]);
 
-essApi.factory('SupplyRequisitionRejectApi', ['$resource', 'appProps', function($resource, appProps) {
-    return $resource(appProps.apiPath + '/supply/requisitions/:id/reject.json', {id: '@id'})
+essApi.factory('SupplyRequisitionUndoApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/supply/requisitions/:id/undo', {id: '@id'})
 }]);
 
-essApi.factory('SupplyRequisitionHistoryApi', ['$resource', 'appProps', function($resource, appProps) {
-    return $resource(appProps.apiPath + '/supply/requisitions/history/:id.json', {id: '@id'})
+essApi.factory('SupplyRequisitionRejectApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/supply/requisitions/:id/reject', {id: '@id'})
 }]);
 
-essApi.factory('SupplyRequisitionOrderHistoryApi', ['$resource', 'appProps', function($resource, appProps) {
-    return $resource(appProps.apiPath + '/supply/requisitions/orderHistory.json')
+essApi.factory('SupplyRequisitionHistoryApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/supply/requisitions/history/:id', {id: '@id'})
+}]);
+
+essApi.factory('SupplyRequisitionOrderHistoryApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/supply/requisitions/orderHistory')
 }]);
 
 
@@ -246,50 +315,65 @@ essApi.factory('SupplyEmployeesApi', ['$resource', 'appProps', function ($resour
 }]);
 
 essApi.factory('SupplyIssuersApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/supply/employees/issuers.json')
+    return $resource(appProps.apiPath + '/supply/employees/issuers')
 }]);
 
 /** --- Supply Reconciliation API --- */
 
-essApi.factory('SupplyReconciliationApi', ['$resource', 'appProps', function($resource, appProps) {
+essApi.factory('SupplyReconciliationApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + "/supply/reconciliation")
 }]);
 
 /** --- Supply Statistics API --- */
 
 essApi.factory('SupplyLocationStatisticsApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/supply/statistics/locations.json')
+    return $resource(appProps.apiPath + '/supply/statistics/locations')
 }]);
 
 /** --- Travel API --- */
 
-essApi.factory('TravelApplicationInitApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/travel/application/uncompleted/init.json')
-}]);
-
 essApi.factory('TravelApplicationApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/travel/application.json')
+    return $resource(appProps.apiPath + '/travel/application')
 }]);
 
-essApi.factory('UnsubmittedAppApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/travel/unsubmitted', {}, {'update': {method: 'PATCH'}})
+essApi.factory('TravelDraftsApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/travel/drafts', {}, {'create': {method: 'PUT'}, 'update': {method: 'PATCH'}})
 }]);
+
+essApi.factory('TravelDraftsSubmitApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/travel/drafts/submit')
+}]);
+
+essApi.factory('TravelDraftByIdApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/travel/drafts/:id', {id: '@id'}, {'delete': {method: 'DELETE'}})
+}]);
+
+essApi.factory('TravelEventTypesApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/travel/event-types')
+}]);
+
+essApi.factory('AllowedTravelersApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/travel/allowed-travelers')
+}]);
+
+essApi.factory('TravelAppEditApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/travel/application/edit/:id', {id: '@id'}, {'update': {method: 'PATCH'}})
+}])
+
+essApi.factory('TravelAppCancelApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/travel/application/edit/:id/cancel', {id: '@id'})
+}])
+
+essApi.factory('TravelAppEditResubmitApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/travel/application/edit/resubmit/:id', {id: '@id'}, {'update': {method: 'PATCH'}})
+}])
 
 essApi.factory('TravelApplicationByIdApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/travel/application/:id.json', {id: '@id'})
+    return $resource(appProps.apiPath + '/travel/application/:id', {id: '@id'})
 }]);
 
 essApi.factory('TravelApplicationsForTravelerApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/travel/applications')
-}]);
-
-essApi.factory('TravelRouteCalcApi', ['$resource', 'appProps', function($resource, appProps) {
-    return $resource(appProps.apiPath + '/travel/route')
-}]);
-
-essApi.factory('TravelAttachmentDelete', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/travel/application/uncompleted/:id/attachment/:attachmentId',
-        {id: '@id', attachmentId: '@attachmentId'})
 }]);
 
 essApi.factory('TravelUserConfigApi', ['$resource', 'appProps', function ($resource, appProps) {
@@ -305,7 +389,7 @@ essApi.factory('TravelUserConfigDeleteApi', ['$resource', 'appProps', function (
 }]);
 
 essApi.factory('TravelModeOfTransportationApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/travel/mode-of-transportation.json')
+    return $resource(appProps.apiPath + '/travel/mode-of-transportation')
 }]);
 
 essApi.factory('TravelGeocodeApi', ['$resource', 'appProps', function ($resource, appProps) {
@@ -316,14 +400,18 @@ essApi.factory('TravelDistrictAssignApi', ['$resource', 'appProps', function ($r
     return $resource(appProps.apiPath + '/travel/address/district')
 }]);
 
+essApi.factory('TravelLodgingPerDiemsApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/travel/lodging-per-diems')
+}])
+
 /** --- Timeout API --- */
 
 essApi.factory('TimeoutApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/timeout/ping.json')
+    return $resource(appProps.apiPath + '/timeout/ping')
 }]);
 
 /** --- Error Report API --- */
 
 essApi.factory('ErrorReportApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/report/error.json')
+    return $resource(appProps.apiPath + '/report/error')
 }]);

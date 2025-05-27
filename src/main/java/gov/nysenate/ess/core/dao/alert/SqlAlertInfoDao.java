@@ -29,7 +29,13 @@ public class SqlAlertInfoDao extends SqlBaseDao implements AlertInfoDao {
         final String sql = GET_ALERT_INFO_BY_EMP.getSql(schemaMap());
         MapSqlParameterSource params = new MapSqlParameterSource("empId", empId);
         try {
-            return localNamedJdbc.queryForObject(sql, params, alertInfoRowMapper);
+            List<AlertInfo> alertInfos = localNamedJdbc.query(sql, params, alertInfoRowMapper);
+            if (alertInfos.isEmpty() || alertInfos == null) {
+                throw new AlertInfoNotFound(empId);
+            }
+            else {
+                return alertInfos.get(0);
+            }
         } catch (EmptyResultDataAccessException ex) {
             throw new AlertInfoNotFound(empId);
         }

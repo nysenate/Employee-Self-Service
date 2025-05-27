@@ -30,7 +30,7 @@ public class EssTimeRecordServiceTest extends BaseTest {
     @Autowired private SupervisorInfoService supervisorInfoService;
 
     @Test
-    public void testGetActiveRecords() throws Exception {
+    public void testGetActiveRecords() {
         Stopwatch sw = Stopwatch.createStarted();
         List<TimeRecord> timeRecords = timeRecordService.getTimeRecords(Collections.singleton(1719),
                 Range.closed(LocalDate.of(2015, 1, 1), LocalDate.now()),
@@ -39,7 +39,7 @@ public class EssTimeRecordServiceTest extends BaseTest {
     }
 
     @Test
-    public void testGetSupervisorRecordsTest() throws Exception {
+    public void testGetSupervisorRecordsTest() {
         int empId = 1024;
         // prime sup emp group cache
         supervisorInfoService.getSupervisorEmpGroup(empId, Range.all());
@@ -54,7 +54,7 @@ public class EssTimeRecordServiceTest extends BaseTest {
     }
 
     @Test
-    public void testGetSupervisorRecordsTest2() throws Exception {
+    public void testGetSupervisorRecordsTest2() {
         Stopwatch sw = Stopwatch.createStarted();
         Set<TimeRecordStatus> statusSet = Sets.union(TimeRecordStatus.unlockedForEmployee(), TimeRecordStatus.unlockedForSupervisor());
         ListMultimap<Integer, TimeRecord> supRecords =
@@ -68,26 +68,6 @@ public class EssTimeRecordServiceTest extends BaseTest {
         int empId = 2868;
         List<TimeRecord> tRecs = timeRecordService.getActiveTimeRecords(empId);
         tRecs.forEach(record -> logger.info("{} - {}", record.getDateRange(), record.getTimeRecordId()));
-    }
-
-    @Test
-    public void testSaveRecord() throws Exception {
-
-    }
-
-    @Test
-    public void testGetActiveRecords1() throws Exception {
-
-    }
-
-    @Test
-    public void testCreateEmptyTimeRecords() throws Exception {
-
-    }
-
-    @Test
-    public void testSaveRecord1() throws Exception {
-
     }
 
     @Test

@@ -30,16 +30,14 @@ public class SimpleEmailService implements DeliverServices<SimpleEmailMessage> {
     public void delivery(SimpleEmailMessage message) throws ClassNotFoundException {
         List<Component> list = message.getComponent();
         String subject = "";
-        String content = new String();
+        String content = "";
         Map<String, String> map = new HashMap<>();
-        for (int i = 0; i < list.size(); i++) {
-            Object o = NotificationUtils.deCompoent(list.get(i).getClass(), list.get(i)); // get the object with its class
-            if (o instanceof SimpleEmailTemplate) {
-                SimpleEmailTemplate simpleEmailTemplate = ((SimpleEmailTemplate) o);
+        for (Component component : list) {
+            Object o = NotificationUtils.deCompoent(component.getClass(), component); // get the object with its class
+            if (o instanceof SimpleEmailTemplate simpleEmailTemplate) {
                 content = simpleEmailTemplate.getContent();
             }
-            if (o instanceof SimpleEmailContent) {
-                SimpleEmailContent simpleEmailContent = ((SimpleEmailContent) o);
+            if (o instanceof SimpleEmailContent simpleEmailContent) {
                 map.put(simpleEmailContent.getBind(), simpleEmailContent.getContent());
             }
             if (o instanceof SimpleEmailSubject) {

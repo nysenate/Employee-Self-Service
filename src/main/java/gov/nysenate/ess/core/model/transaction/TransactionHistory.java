@@ -412,10 +412,7 @@ public class TransactionHistory
      */
     public Optional<String> latestValueOf(String key, LocalDate latestDate, boolean skipNulls) {
         Optional<ImmutablePair<LocalDate, String>> entry = getLatestEntryOf(key, latestDate, skipNulls);
-        if (entry.isPresent()) {
-            return Optional.ofNullable(entry.get().getValue());
-        }
-        return Optional.empty();
+        return entry.map(Pair::getValue);
     }
 
     /**

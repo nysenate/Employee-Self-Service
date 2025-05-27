@@ -4,62 +4,57 @@ import gov.nysenate.ess.core.model.util.UnsuccessfulHttpReqException;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.HttpUtils;
 import gov.nysenate.ess.travel.provider.ProviderException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.HashMap;
 
 /**
  * Responsible for getting GsaResponse objects from the official GSA Api.
- *
- * GSA API Docs: https://open.gsa.gov/api/perdiem/
+ * GSA API Docs: <a href="https://open.gsa.gov/api/perdiem/">...</a>
  */
 @Service
 public class GsaApi {
-
-    private static final Logger logger = LoggerFactory.getLogger(GsaApi.class);
-
-    private HttpUtils httpUtils;
-    private String baseUrl;
-    private String ratesPathTemplate;
-    private String miePathTemplate;
-    private GsaResponseParser gsaResponseParser;
+    private final String baseUrl;
+    private final String ratesPathTemplate;
+    private final GsaResponseParser gsaResponseParser;
 
     @Autowired
     public GsaApi(@Value("${travel.gsa.api.url_base}") String baseUrl, @Value("${travel.gsa.api.key}") String apiKey,
-                  GsaResponseParser gsaResponseParser, HttpUtils httpUtils) {
+                  GsaResponseParser gsaResponseParser) {
         this.baseUrl = baseUrl.endsWith("/") ? baseUrl : baseUrl + "/";
         this.ratesPathTemplate = "zip/%s/year/%s?api_key=" + apiKey;
-        this.miePathTemplate = "conus/mie/%s?api_key=" + apiKey;
         this.gsaResponseParser = gsaResponseParser;
-        this.httpUtils = httpUtils;
     }
 
     /**
      * Returns data from the GSA API in a {@link GsaResponse} object for the given date and zip.
+     *
      * @param date The date to get GSA rates for.
-     * @param zip The zipcode to get GSA rates for.
+     * @param zip  The zipcode to get GSA rates for.
      * @return GsaResponse for the given date and zip.
      * @throws ProviderException
      */
-    public GsaResponse queryGsa(LocalDate date, String zip) throws ProviderException {
+    public GsaResponse queryGsaApi(LocalDate date, String zip) throws ProviderException {
         GsaResponseId id = new GsaResponseId(date, zip);
-        return queryApi(id);
+        return doQueryGsaApi(id);
     }
 
-    private GsaResponse queryApi(GsaResponseId id) throws ProviderException {
+    private GsaResponse doQueryGsaApi(GsaResponseId id) throws ProviderException {
         // Format the URL with the zip code and fiscal year of the request.
-        String url = String.format(baseUrl + ratesPathTemplate, id.getZipcode(), String.valueOf(id.getFiscalYear()));
+        String url = String.format(baseUrl + ratesPathTemplate,
+                URLEncoder.encode(id.getZipcode(), StandardCharsets.UTF_8),
+                URLEncoder.encode(String.valueOf(id.getFiscalYear()), StandardCharsets.UTF_8));
         try {
-            String content = httpUtils.urlToString(url);
+            String content = HttpUtils.urlToString(url);
             if (dateTooFarInFuture(id, content)) {
                 id = new GsaResponseId(id.getFiscalYear() - 1, id.getZipcode());
-                return queryApi(id);
+                return doQueryGsaApi(id);
             } else if (gsaResponseParser.isResponseEmpty(content)) {
                 // If no records are found, return an GsaResponse with no lodging rates and a meal tier of $0.
                 // This occurs when querying US locations outside of CONUS. i.e. Alaska, Hawaii.
@@ -67,7 +62,7 @@ public class GsaApi {
             } else {
                 return gsaResponseParser.parseGsaResponse(content);
             }
-        } catch(IOException|UnsuccessfulHttpReqException ex) {
+        } catch (IOException | UnsuccessfulHttpReqException ex) {
             throw new ProviderException(ex);
         }
     }

@@ -61,7 +61,7 @@ public abstract class AlertInfoValidation {
         );
         Set<String> phoneNumberSet = new HashSet<>();
         for (String phoneNumber : phoneNumbers) {
-            if (phoneNumber == null)
+            if (StringUtils.isBlank(phoneNumber))
                 continue;
             String formattedPhoneNumber = phoneNumber.replaceAll("[^0-9]+", "");
             if (!phoneNumberPredicate.test(formattedPhoneNumber))
@@ -83,7 +83,7 @@ public abstract class AlertInfoValidation {
         );
         Set<String> emailSet = new HashSet<>();
         for (String email : emails) {
-            if (email == null)
+            if (StringUtils.isBlank(email))
                 continue;
             if (!emailValidator.isValid(email))
                 throw new InvalidAlertInfoEx(INVALID_EMAIL, email, alertInfo);

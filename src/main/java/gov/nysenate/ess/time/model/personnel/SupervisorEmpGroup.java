@@ -21,8 +21,8 @@ public class SupervisorEmpGroup extends PrimarySupEmpGroup
     /** Collection of supervisor overrides */
     private Multimap<Integer, EmployeeSupInfo> supOverrideEmployees = HashMultimap.create();
 
-    public SupervisorEmpGroup() {
-        super();
+    public SupervisorEmpGroup(int supId) {
+        super(supId);
     }
 
     public SupervisorEmpGroup(PrimarySupEmpGroup primarySupEmpGroup) {

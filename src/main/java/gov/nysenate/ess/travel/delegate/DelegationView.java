@@ -3,6 +3,7 @@ package gov.nysenate.ess.travel.delegate;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.nysenate.ess.core.client.view.base.EmployeeSearchView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
+import gov.nysenate.ess.travel.authorization.role.TravelRoleView;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -12,6 +13,7 @@ public class DelegationView implements ViewObject {
     private static final DateTimeFormatter DATEPICKER_FORMAT = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
     int id;
+    TravelRoleView role;
     EmployeeSearchView principal;
     EmployeeSearchView delegate;
     @JsonProperty("useStartDate")
@@ -33,6 +35,7 @@ public class DelegationView implements ViewObject {
 
     public DelegationView(Delegation delegation) {
         this.id = delegation.id;
+        this.role = new TravelRoleView(delegation.role);
         this.principal = new EmployeeSearchView(delegation.principal);
         this.delegate = new EmployeeSearchView(delegation.delegate);
         this.useStartDate = true;
@@ -43,6 +46,10 @@ public class DelegationView implements ViewObject {
         this.isActive = delegation.isActive();
         this.isScheduled = delegation.isScheduled();
         this.isExpired = delegation.isExpired();
+    }
+
+    public TravelRoleView getRole() {
+        return role;
     }
 
     public LocalDate startDate() {

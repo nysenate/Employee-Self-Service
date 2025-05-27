@@ -55,7 +55,7 @@ public class ItemRestrictionDao extends SqlBaseDao {
             this.sql = sql;
         }
 
-        private String sql;
+        private final String sql;
 
         @Override
         public String getSql() {
@@ -68,13 +68,13 @@ public class ItemRestrictionDao extends SqlBaseDao {
         }
     }
 
-    private class ItemRestrictionHandler implements RowCallbackHandler {
+    private static class ItemRestrictionHandler implements RowCallbackHandler {
 
-        private Set<LocationId> locationSet = new HashSet<>();
+        private final Set<LocationId> locationSet = new HashSet<>();
 
         @Override
         public void processRow(ResultSet rs) throws SQLException {
-            locationSet.add(new LocationId(rs.getString("location_id")));
+            locationSet.add(LocationId.ofString(rs.getString("location_id")));
         }
 
         public Set<LocationId> results() {
@@ -82,13 +82,13 @@ public class ItemRestrictionDao extends SqlBaseDao {
         }
     }
 
-    private class ItemRestrictionsHandler implements RowCallbackHandler {
+    private static class ItemRestrictionsHandler implements RowCallbackHandler {
 
-        private Multimap<Integer, LocationId> itemRestrictions = HashMultimap.create();
+        private final Multimap<Integer, LocationId> itemRestrictions = HashMultimap.create();
 
         @Override
         public void processRow(ResultSet rs) throws SQLException {
-            itemRestrictions.put(rs.getInt("item_id"), new LocationId(rs.getString("location_id")));
+            itemRestrictions.put(rs.getInt("item_id"), LocationId.ofString(rs.getString("location_id")));
         }
 
         public Map<Integer, ItemRestriction> getResults() {

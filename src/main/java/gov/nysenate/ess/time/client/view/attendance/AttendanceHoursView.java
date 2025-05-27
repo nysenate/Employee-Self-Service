@@ -16,6 +16,8 @@ public class AttendanceHoursView implements ViewObject {
     protected BigDecimal sickEmpHours;
     protected BigDecimal sickFamHours;
     protected BigDecimal miscHours;
+
+    protected BigDecimal misc2Hours;
     protected BigDecimal totalHours;
 
     protected AttendanceHoursView() {}
@@ -30,6 +32,7 @@ public class AttendanceHoursView implements ViewObject {
             this.sickEmpHours = hours.getSickEmpHours().orElse(null);
             this.sickFamHours = hours.getSickFamHours().orElse(null);
             this.miscHours = hours.getMiscHours().orElse(null);
+            this.misc2Hours = hours.getMisc2Hours().orElse(null);
             this.totalHours = hours.getTotalHours();
         }
     }
@@ -72,6 +75,11 @@ public class AttendanceHoursView implements ViewObject {
     @XmlElement
     public BigDecimal getMiscHours() {
         return miscHours;
+    }
+
+    @XmlElement
+    public BigDecimal getMisc2Hours() {
+        return misc2Hours;
     }
 
     @XmlElement

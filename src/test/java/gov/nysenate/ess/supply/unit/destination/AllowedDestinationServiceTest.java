@@ -20,16 +20,16 @@ import static org.junit.Assert.assertEquals;
 @org.junit.experimental.categories.Category(UnitTest.class)
 public class AllowedDestinationServiceTest {
 
-    private AllowedDestinationService adService = new AllowedDestinationService();
+    private final AllowedDestinationService adService = new AllowedDestinationService();
 
     private Employee employee;
     private Location empWorkLocation;
     private Location empRchLocation;
-    private ResponsibilityCenter empRc;
     private ResponsibilityHead empRch;
     private Location tempRchLoc;
     private ResponsibilityHead tempRch;
-    private Location randomLocation = new Location(new LocationId("FOOBAR-W"), new Address(), new ResponsibilityHead(), "", true);
+    private final Location randomLocation = new Location(LocationId.ofString("FOOBAR-W"),
+            new Address(), new ResponsibilityHead(), "", true);
 
     @Before
     public void before() {
@@ -37,12 +37,12 @@ public class AllowedDestinationServiceTest {
         empRch.setActive(true);
         empRch.setCode("STSBAC");
 
-        empRc = new ResponsibilityCenter();
+        ResponsibilityCenter empRc = new ResponsibilityCenter();
         empRc.setActive(true);
         empRc.setHead(empRch);
 
-        empWorkLocation = new Location(new LocationId("A42FB-W"), new Address(), new ResponsibilityHead(), "", true);
-        empRchLocation = new Location(new LocationId("A400-W"), new Address(), empRch, "", true);
+        empWorkLocation = new Location(LocationId.ofString("A42FB-W"), new Address(), new ResponsibilityHead(), "", true);
+        empRchLocation = new Location(LocationId.ofString("A400-W"), new Address(), empRch, "", true);
 
         employee = new Employee();
         employee.setWorkLocation(empWorkLocation);
@@ -51,7 +51,7 @@ public class AllowedDestinationServiceTest {
         tempRch = new ResponsibilityHead();
         tempRch.setActive(true);
         tempRch.setCode("STUDFELLOW");
-        tempRchLoc = new Location(new LocationId("TRCH-W"), new Address(), tempRch, "", true);
+        tempRchLoc = new Location(LocationId.ofString("TRCH-W"), new Address(), tempRch, "", true);
     }
 
     @Test(expected = NullPointerException.class)
@@ -61,7 +61,7 @@ public class AllowedDestinationServiceTest {
 
     @Test
     public void workLocationInsideRch_allowed() {
-        Location workLoc = new Location(new LocationId("A42FB-W"), new Address(), empRch, "", true);
+        Location workLoc = new Location(LocationId.ofString("A42FB-W"), new Address(), empRch, "", true);
         employee.setWorkLocation(workLoc);
 
         Set<Location> actualDestinations = adService.allowedDestinationsFor(employee,
@@ -74,7 +74,7 @@ public class AllowedDestinationServiceTest {
 
     @Test
     public void workLocationOutsideRch_allowed() {
-        Location workLoc = new Location(new LocationId("A42FB-W"), new Address(), tempRch, "", true);
+        Location workLoc = new Location(LocationId.ofString("A42FB-W"), new Address(), tempRch, "", true);
         employee.setWorkLocation(workLoc);
 
         Set<Location> actualDestinations = adService.allowedDestinationsFor(employee,
@@ -87,7 +87,7 @@ public class AllowedDestinationServiceTest {
 
     @Test
     public void workLocationOutsideRchAndInactive_notAllowed() {
-        Location workLoc = new Location(new LocationId("A42FB-W"), new Address(), tempRch, "", false);
+        Location workLoc = new Location(LocationId.ofString("A42FB-W"), new Address(), tempRch, "", false);
         employee.setWorkLocation(workLoc);
 
         Set<Location> actualDestinations = adService.allowedDestinationsFor(employee,
@@ -100,7 +100,7 @@ public class AllowedDestinationServiceTest {
 
     @Test
     public void workLocationInsideRchAndInactive_notAllowed() {
-        Location workLoc = new Location(new LocationId("A42FB-W"), new Address(), empRch, "", false);
+        Location workLoc = new Location(LocationId.ofString("A42FB-W"), new Address(), empRch, "", false);
         employee.setWorkLocation(workLoc);
 
         Set<Location> actualDestinations = adService.allowedDestinationsFor(employee,
@@ -113,8 +113,7 @@ public class AllowedDestinationServiceTest {
 
     @Test
     public void workLocationNull_notAllowed() {
-        Location workLoc = null;
-        employee.setWorkLocation(workLoc);
+        employee.setWorkLocation(null);
 
         Set<Location> actualDestinations = adService.allowedDestinationsFor(employee,
                 Sets.newHashSet(randomLocation),
@@ -126,7 +125,7 @@ public class AllowedDestinationServiceTest {
 
     @Test
     public void workLocationNotWorkType_notAllowed() {
-        Location workLoc = new Location(new LocationId("A42FB-P"), new Address(), tempRch, "", true);
+        Location workLoc = new Location(LocationId.ofString("A42FB-P"), new Address(), tempRch, "", true);
         employee.setWorkLocation(workLoc);
 
         Set<Location> actualDestinations = adService.allowedDestinationsFor(employee,
@@ -139,7 +138,7 @@ public class AllowedDestinationServiceTest {
 
     @Test
     public void workLocationTemporary_notAllowed() {
-        Location workLoc = new Location(new LocationId("TEMP40-W"), new Address(), tempRch, "", true);
+        Location workLoc = new Location(LocationId.ofString("TEMP40-W"), new Address(), tempRch, "", true);
         employee.setWorkLocation(workLoc);
 
         Set<Location> actualDestinations = adService.allowedDestinationsFor(employee,

@@ -11,7 +11,7 @@ import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.model.period.PayPeriodType;
 import gov.nysenate.ess.core.model.transaction.TransactionCode;
 import gov.nysenate.ess.core.service.period.PayPeriodService;
-import gov.nysenate.ess.core.service.transaction.EssCachedEmpTransactionService;
+import gov.nysenate.ess.core.service.transaction.CachedEmpTransactionService;
 import gov.nysenate.ess.core.util.SortOrder;
 import gov.nysenate.ess.time.dao.attendance.AttendanceDao;
 import gov.nysenate.ess.time.model.attendance.TimeRecord;
@@ -42,7 +42,7 @@ public class EssTimeRecordManagerTest extends BaseTest
     @Autowired EssTimeRecordManager manager;
     @Autowired PayPeriodService periodService;
     @Autowired TimeRecordService timeRecordService;
-    @Autowired EssCachedEmpTransactionService transService;
+    @Autowired CachedEmpTransactionService transService;
     @Autowired AttendanceDao attendanceDao;
 
     @Value("${master.schema}") protected String MASTER_SCHEMA;
@@ -62,7 +62,7 @@ public class EssTimeRecordManagerTest extends BaseTest
     @Test
     @Transactional(value = DatabaseConfig.remoteTxManager)
     public void ensureRecordsTest() {
-        int empId = 9896;
+        int empId = 12045;
 
         RangeSet<LocalDate> openDates = attendanceDao.getOpenDates(empId);
         List<PayPeriod> payPeriods = openDates.asRanges().stream()
@@ -100,11 +100,8 @@ public class EssTimeRecordManagerTest extends BaseTest
     @Transactional(value = DatabaseConfig.remoteTxManager)
     public void splitRecordTest() {
         int empId = 11423;
-
         postSplitTransaction(empId);
-
-        transService.evictContent(empId);
-
+        transService.evictContent(String.valueOf(empId));
         manager.ensureRecords(empId);
     }
 

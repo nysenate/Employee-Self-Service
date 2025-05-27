@@ -12,7 +12,7 @@ import static org.junit.Assert.assertTrue;
 public class OrderByTest
 {
     @Test
-    public void testGetSortColumns() throws Exception {
+    public void testGetSortColumns() {
         // Empty order by
         assertTrue(new OrderBy().getSortColumns().isEmpty());
         // Map Constructor

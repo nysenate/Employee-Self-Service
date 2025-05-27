@@ -1,5 +1,6 @@
 package gov.nysenate.ess.core.dao.base;
 
+import com.google.common.collect.ImmutableMap;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
@@ -13,8 +14,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Map;
 
-public abstract class SqlBaseDao
-{
+public abstract class SqlBaseDao implements BaseDao {
     @Resource(name = "localJdbcTemplate")
     protected JdbcTemplate localJdbc;
 
@@ -28,7 +28,7 @@ public abstract class SqlBaseDao
     protected NamedParameterJdbcTemplate remoteNamedJdbc;
 
     @Resource(name = "schemaMap")
-    protected Map<String, String> schemaMap;
+    protected ImmutableMap<String, String> schemaMap;
 
     protected Map<String, String> schemaMap() {
         return schemaMap;
@@ -69,6 +69,19 @@ public abstract class SqlBaseDao
     public static LocalDate getLocalDate(ResultSet rs, String column) throws SQLException {
         if (rs.getDate(column) == null) return null;
         return rs.getDate(column).toLocalDate();
+    }
+
+    /**
+     * Get a nullable int value from the given result set.
+     *
+     * This is needed because {@link ResultSet#getInt(String)} returns 0 if the column is null.
+     */
+    public static Integer getNullableInt(ResultSet rs, String column) throws SQLException {
+        Integer intValue = rs.getInt(column);
+        if (rs.wasNull()) {
+            intValue = null;
+        }
+        return intValue;
     }
 
     /**

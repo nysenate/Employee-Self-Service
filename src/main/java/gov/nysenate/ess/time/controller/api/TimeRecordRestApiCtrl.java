@@ -109,7 +109,7 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl {
      * --------------------------
      *
      * @param empId Integer
-     * @param scope String (accepted values are 'E', 'S', 'P', for employee, supervisor, and personnel respectively.
+     * @param scope String accepted values are 'E', 'S', 'P', for employee, supervisor, and personnel respectively.
      * @return TimeRecord ListView Response
      */
     @RequestMapping(value = "/active", method = {GET, HEAD}, produces = "application/json")
@@ -429,7 +429,7 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl {
 
     private Set<TimeRecordStatus> parseStatuses(String[] status, Set<TimeRecordStatus> defaultValue) {
         if (status != null && status.length > 0) {
-            return Arrays.asList(status).stream()
+            return Arrays.stream(status)
                     .map(recordStatus -> getEnumParameter("status", recordStatus, TimeRecordStatus.class))
                     .collect(Collectors.toSet());
         }
@@ -451,7 +451,7 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl {
      */
     private ViewObjectResponse<?> getRecordResponse(ListMultimap<Integer, TimeRecord> records, boolean supervisor, boolean xml) {
         Set<Integer> empIdSet = new HashSet<>();
-        records.values().stream().forEach(tr -> {
+        records.values().forEach(tr -> {
             empIdSet.add(tr.getEmployeeId());
             empIdSet.add(tr.getSupervisorId());
         });

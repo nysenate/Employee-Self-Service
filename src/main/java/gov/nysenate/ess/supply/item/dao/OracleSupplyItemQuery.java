@@ -29,7 +29,7 @@ public enum OracleSupplyItemQuery implements BasicSqlQuery {
                     "Where com.CdStatus= 'A' And com.CdStockItem= 'Y'"
     );
 
-    private String sql;
+    private final String sql;
 
     OracleSupplyItemQuery(String sql) {
         this.sql = sql;

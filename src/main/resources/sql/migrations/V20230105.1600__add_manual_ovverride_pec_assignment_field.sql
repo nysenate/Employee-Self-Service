@@ -1,0 +1,1 @@
+ALTER TABLE ess.personnel_task_assignment ADD COLUMN "manual_override" BOOLEAN NOT NULL DEFAULT FALSE;

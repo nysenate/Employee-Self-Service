@@ -34,7 +34,7 @@ public class NewRequisitionEmail {
                                @Value("${domain.url}") final String domainUrl) {
         this.sendMailService = sendMailService;
         this.freemarkerCfg = freemarkerCfg;
-        this.domainUrl = domainUrl;
+        NewRequisitionEmail.domainUrl = domainUrl;
     }
 
     public MimeMessage generateNewRequisitionEmail(Requisition requisition, String toEmail) {
@@ -50,7 +50,7 @@ public class NewRequisitionEmail {
 
     private String generateBody(Requisition requisition) {
         StringWriter out = new StringWriter();
-        Map dataModel = ImmutableMap.of("requisition", requisition,
+        Map<String, Object> dataModel = ImmutableMap.of("requisition", requisition,
                 "orderedDateTime", requisition.getOrderedDateTime().format(formatter),
                 "domainUrl", domainUrl);
         try {

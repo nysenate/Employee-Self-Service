@@ -30,18 +30,18 @@ public class SqlPayPeriodDaoIT extends BaseTest
 
     /** Null date should yield an IllegalArgumentException */
     @Test(expected = IllegalArgumentException.class)
-    public void testGetPayPeriod_nullDate() throws Exception {
+    public void testGetPayPeriod_nullDate() {
         payPeriodDao.getPayPeriod(PayPeriodType.AF, null);
     }
 
     /** Null period type will yield an IllegalArgumentException */
     @Test(expected = IllegalArgumentException.class)
-    public void testGetPayPeriod_nullPeriodType() throws Exception {
+    public void testGetPayPeriod_nullPeriodType() {
         payPeriodDao.getPayPeriod(null, LocalDate.now());
     }
 
     @Test
-    public void testGetPayPeriod_validCases() throws Exception {
+    public void testGetPayPeriod_validCases() {
         // Pay period start date (jan 16, 2014)
         PayPeriod payPeriod = payPeriodDao.getPayPeriod(PayPeriodType.AF, LocalDate.of(2014, 1, 16));
         assertEquals(PayPeriodType.AF, payPeriod.getType());
@@ -72,7 +72,7 @@ public class SqlPayPeriodDaoIT extends BaseTest
     /** Ensure that all pay period types return valid periods for AF, PF, and SF. Other period types
      *  aren't widely used. */
     @Test
-    public void testGetPayPeriod_allPeriodTypes() throws Exception {
+    public void testGetPayPeriod_allPeriodTypes() {
         LocalDate date = LocalDate.of(2014, 1, 14); // Use a sample date
         Stream.of(new PayPeriodType[]{PayPeriodType.AF, PayPeriodType.PF, PayPeriodType.SF}).forEach(type -> {
             assertEquals(type, payPeriodDao.getPayPeriod(type, date).getType());
@@ -81,7 +81,7 @@ public class SqlPayPeriodDaoIT extends BaseTest
 
     /** Check that the correct numDaysIsPeriod is being set. */
     @Test
-    public void testGetPayPeriodDays() throws Exception {
+    public void testGetPayPeriodDays() {
         /** Regular pay period */
         PayPeriod period = payPeriodDao.getPayPeriod(PayPeriodType.AF, LocalDate.of(2014, 4, 23));
         Assert.assertEquals(14, period.getNumDaysInPeriod());
@@ -97,7 +97,7 @@ public class SqlPayPeriodDaoIT extends BaseTest
 
     /** Pay periods that occur during the Daylight savings transition should report 14 days as usual. */
     @Test
-    public void testGetPayPeriodDays_checkForDaylightSavingsIssues() throws Exception {
+    public void testGetPayPeriodDays_checkForDaylightSavingsIssues() {
         PayPeriod marchDSTPeriod = payPeriodDao.getPayPeriod(PayPeriodType.AF, LocalDate.of(2014, 3, 12));
         PayPeriod novemberDSTPeriod = payPeriodDao.getPayPeriod(PayPeriodType.AF, LocalDate.of(2015, 11, 1));
 
@@ -106,7 +106,7 @@ public class SqlPayPeriodDaoIT extends BaseTest
     }
 
     @Test
-    public void testGetPayPeriods_range() throws Exception {
+    public void testGetPayPeriods_range() {
         // 2014 had a start of year split so should have 27 pay periods
         Range<LocalDate> closedOneYear = Range.closed(LocalDate.of(2014, 1, 1), LocalDate.of(2014, 12, 31));
         List<PayPeriod> payPeriods = payPeriodDao.getPayPeriods(PayPeriodType.AF, closedOneYear, SortOrder.ASC);

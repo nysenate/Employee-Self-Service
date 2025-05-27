@@ -28,7 +28,7 @@ public class SqlSupervisorDaoTest extends BaseTest
     private SupervisorDao supervisorDao;
 
     @Test
-    public void testGetSupEmpGroup_ReturnsEmpGroup() throws Exception {
+    public void testGetSupEmpGroup_ReturnsEmpGroup() {
         int empId = 7729;
 
         PrimarySupEmpGroup group = supervisorDao.getPrimarySupEmpGroup(empId);
@@ -46,7 +46,7 @@ public class SqlSupervisorDaoTest extends BaseTest
     }
 
     @Test
-    public void supOverrideTest() throws Exception {
+    public void supOverrideTest() {
         logger.info("{}", OutputUtils.toJson(supervisorDao.getSupervisorOverrides(7048)));
     }
 
@@ -56,7 +56,7 @@ public class SqlSupervisorDaoTest extends BaseTest
     }
 
     @Test
-    public void testSetSupervisorOverrides() throws Exception {
+    public void testSetSupervisorOverrides() {
         supervisorDao.setSupervisorOverride(9896, 7048, true, null, null);
     }
 

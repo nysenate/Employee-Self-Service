@@ -57,6 +57,13 @@ public interface EmployeeInfoService
     RangeSet<LocalDate> getEmployeeActiveDatesService(int empId);
 
     /**
+     * Returns a localdate that is the employees most recent continuous service start date
+     * @param empId
+     * @return
+     */
+    LocalDate getEmployeesMostRecentContinuousServiceDate(int empId);
+
+    /**
      * Get a list of years that an employee was active
      * @param empId Integer - employee id
      * @param fiscalYears boolean - will return active fiscal years if set true
@@ -93,8 +100,18 @@ public interface EmployeeInfoService
      *
      * @param term String - search term
      * @param activeOnly
-     *@param limitOffset {@link LimitOffset} - pagination for query results  @return {@link PaginatedList<Employee>}
+     * @param limitOffset {@link LimitOffset} - pagination for query results
+     * @return {@link PaginatedList<Employee>}
      */
     PaginatedList<Employee> searchEmployees(String term, boolean activeOnly, LimitOffset limitOffset);
+
+    /**
+     * Search for employees based on the given query object.
+     *
+     * @param employeeSearchBuilder {@link EmployeeSearchBuilder}
+     * @param limitOffset {@link LimitOffset}
+     * @return {@link PaginatedList}
+     */
+    PaginatedList<Employee> searchEmployees(EmployeeSearchBuilder employeeSearchBuilder, LimitOffset limitOffset);
 
 }

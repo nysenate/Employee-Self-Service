@@ -1,7 +1,6 @@
 package gov.nysenate.ess.core.client.response.base;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -38,10 +37,10 @@ public final class ViewObjectResponse<ViewType extends ViewObject> extends BaseR
         this.message = message;
     }
 
-    public static class ViewObjectResponseJsonSerializer extends JsonSerializer<ViewObjectResponse>
+    public static class ViewObjectResponseJsonSerializer extends JsonSerializer<ViewObjectResponse<?>>
     {
         @Override
-        public void serialize(ViewObjectResponse vor, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
+        public void serialize(ViewObjectResponse vor, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
             jsonGenerator.writeStartObject();
             vor.serialize(vor, jsonGenerator, serializerProvider);
             jsonGenerator.writeObjectField(vor.resultFieldName, vor.result);

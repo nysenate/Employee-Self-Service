@@ -40,7 +40,7 @@ public enum SqlDockHoursQuery implements BasicSqlQuery
                     "AND acc.DTTXNUPDATE > :fromDate\n"
     );
 
-    private String sql;
+    private final String sql;
 
     SqlDockHoursQuery(String sql) {
         this.sql = sql;

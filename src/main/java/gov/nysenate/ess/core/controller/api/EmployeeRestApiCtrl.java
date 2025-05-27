@@ -59,7 +59,7 @@ public class EmployeeRestApiCtrl extends BaseRestApiCtrl
      * @throws EmployeeException if something gets messed up
      */
     @RequestMapping(value = "", method = {GET, HEAD}, params = "empId")
-    public BaseResponse getEmployeeById(@RequestParam(required = true) Integer empId[],
+    public BaseResponse getEmployeeById(@RequestParam(required = true) Integer[] empId,
                                         @RequestParam(defaultValue = "false") boolean detail) throws EmployeeException {
         Arrays.stream(empId)
                 .map(eId -> new CorePermission(eId, EMPLOYEE_INFO, GET))

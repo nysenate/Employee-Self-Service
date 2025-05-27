@@ -35,7 +35,7 @@ public class XsrfTokenValidatorIT extends WebTest
 
     /** Should return the correct number of bytes when decoded. */
     @Test
-    public void testGenerateXsrfTokenWithSize() throws Exception {
+    public void testGenerateXsrfTokenWithSize() {
         int bytesSize = Math.abs(new Random().nextInt()) % 1024 + 1;
         XsrfTokenValidator xsrfTokenValidator = new XsrfTokenValidator(bytesSize);
         String xsrfTokenBase64Encoded = xsrfTokenValidator.generateXsrfToken();
@@ -45,7 +45,7 @@ public class XsrfTokenValidatorIT extends WebTest
 
     /** Token is saved to and retrieved from session properly. */
     @Test
-    public void testGetSetXsrfTokenInSession() throws Exception {
+    public void testGetSetXsrfTokenInSession() {
         String sessionKey = XsrfTokenValidator.XSRF_TOKEN_SESSION_KEY;
         String xsrfToken = xsrfTokenValidator.generateXsrfToken();
         assertTrue(xsrfTokenValidator.setXsrfTokenInSession(mockSession, xsrfToken));
@@ -56,7 +56,7 @@ public class XsrfTokenValidatorIT extends WebTest
 
     /** Token is saved as a request attribute properly. */
     @Test
-    public void testSetXsrfTokenInRequest() throws Exception {
+    public void testSetXsrfTokenInRequest() {
         String requestKey = XsrfTokenValidator.XSRF_TOKEN_REQUEST_ATTR_KEY;
         String xsrfToken = xsrfTokenValidator.generateXsrfToken();
         assertTrue(xsrfTokenValidator.setXsrfTokenInRequestAttribute(mockRequest, xsrfToken));
@@ -65,13 +65,13 @@ public class XsrfTokenValidatorIT extends WebTest
 
     /** Token save succeeds on proper session/request */
     @Test
-    public void testSaveTokenSucceeds() throws Exception {
+    public void testSaveTokenSucceeds() {
         assertNotNull(xsrfTokenValidator.saveXsrfToken(mockRequest, mockSession));
     }
 
     /** Token is not re-generated once set for the session */
     @Test
-    public void testSaveTokenReusesTokenStoredInSession() throws Exception {
+    public void testSaveTokenReusesTokenStoredInSession() {
         assertNotNull(xsrfTokenValidator.saveXsrfToken(mockRequest, mockSession));
         String token = xsrfTokenValidator.getXsrfTokenFromSession(mockSession);
         assertNotNull(token);
@@ -82,7 +82,7 @@ public class XsrfTokenValidatorIT extends WebTest
 
     /** New token created when session resets. */
     @Test
-    public void testSaveTokenCreatesNewTokenForNewSession() throws Exception {
+    public void testSaveTokenCreatesNewTokenForNewSession() {
         String oldXsrfToken = xsrfTokenValidator.saveXsrfToken(mockRequest, mockSession);
         String oldSessionToken = xsrfTokenValidator.getXsrfTokenFromSession(mockSession);
         assertNotNull(oldSessionToken);
@@ -92,13 +92,13 @@ public class XsrfTokenValidatorIT extends WebTest
         String newSessionToken = xsrfTokenValidator.getXsrfTokenFromSession(mockSession);
         assertEquals(oldSessionToken, oldXsrfToken);
         assertEquals(newSessionToken, newXsrfToken);
-        assertFalse("Old and new tokens are the same!", oldSessionToken.equals(newSessionToken));
-        assertFalse("Old and new tokens are the same!", oldXsrfToken.equals(newXsrfToken));
+        assertNotEquals("Old and new tokens are the same!", oldSessionToken, newSessionToken);
+        assertNotEquals("Old and new tokens are the same!", oldXsrfToken, newXsrfToken);
     }
 
     /** Token save fails on null session/request */
     @Test
-    public void testSaveTokenFailsOnEmptySessionOrRequest() throws Exception {
+    public void testSaveTokenFailsOnEmptySessionOrRequest() {
         assertNull(xsrfTokenValidator.saveXsrfToken(null, null));
         assertNull(xsrfTokenValidator.saveXsrfToken(null, mockSession));
         assertNull(xsrfTokenValidator.saveXsrfToken(mockRequest, null));
@@ -106,7 +106,7 @@ public class XsrfTokenValidatorIT extends WebTest
 
     /** Validation returns the correct status on success */
     @Test
-    public void testValidateXsrfTokenReturnsValidated() throws Exception {
+    public void testValidateXsrfTokenReturnsValidated() {
         xsrfTokenValidator.saveXsrfToken(mockRequest, mockSession);
         String xsrfToken = mockRequest.getAttribute(XsrfTokenValidator.XSRF_TOKEN_REQUEST_ATTR_KEY).toString();
         XsrfTokenStatus status = xsrfTokenValidator.validateXsrfToken(mockSession, xsrfToken);
@@ -115,7 +115,7 @@ public class XsrfTokenValidatorIT extends WebTest
 
     /** Validation returns the correct invalid status with bad xsrf token */
     @Test
-    public void testValidateXsrfTokenReturnsInvalid() throws Exception {
+    public void testValidateXsrfTokenReturnsInvalid() {
         xsrfTokenValidator.saveXsrfToken(mockRequest, mockSession);
         String xsrfToken = "moose";
         XsrfTokenStatus status = xsrfTokenValidator.validateXsrfToken(mockSession, xsrfToken);
@@ -124,7 +124,7 @@ public class XsrfTokenValidatorIT extends WebTest
 
     /** Validation returns the correct status with empty input */
     @Test
-    public void testValidateXsrfTokenReturnsEmptyXsrfToken() throws Exception {
+    public void testValidateXsrfTokenReturnsEmptyXsrfToken() {
         xsrfTokenValidator.saveXsrfToken(mockRequest, mockSession);
         XsrfTokenStatus status = xsrfTokenValidator.validateXsrfToken(mockSession, null);
         assertEquals(XsrfTokenStatus.EMPTY_XSRF_TOKEN, status);
@@ -132,7 +132,7 @@ public class XsrfTokenValidatorIT extends WebTest
 
     /** Validation returns the correct status with empty session */
     @Test
-    public void testValidateXsrfTokenReturnsEmptySession() throws Exception {
+    public void testValidateXsrfTokenReturnsEmptySession() {
         xsrfTokenValidator.saveXsrfToken(mockRequest, mockSession);
         XsrfTokenStatus status = xsrfTokenValidator.validateXsrfToken(null, "moose");
         assertEquals(XsrfTokenStatus.EMPTY_SESSION, status);
@@ -140,7 +140,7 @@ public class XsrfTokenValidatorIT extends WebTest
 
     /** Validation returns the correct status with empty session attribute */
     @Test
-    public void testValidateXsrfTokenReturnsEmptySessionXsrf() throws Exception {
+    public void testValidateXsrfTokenReturnsEmptySessionXsrf() {
         xsrfTokenValidator.saveXsrfToken(mockRequest, mockSession);
         mockSession.removeAttribute(XsrfTokenValidator.XSRF_TOKEN_SESSION_KEY);
         XsrfTokenStatus status = xsrfTokenValidator.validateXsrfToken(mockSession, "moose");

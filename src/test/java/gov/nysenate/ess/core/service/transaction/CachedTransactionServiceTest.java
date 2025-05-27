@@ -9,8 +9,6 @@ import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.annotation.SillyTest;
 import gov.nysenate.ess.core.dao.transaction.EmpTransDaoOption;
 import gov.nysenate.ess.core.dao.transaction.EmpTransactionDao;
-import gov.nysenate.ess.core.model.cache.CacheEvictIdEvent;
-import gov.nysenate.ess.core.model.cache.ContentCache;
 import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.model.transaction.TransactionHistoryUpdateEvent;
 import gov.nysenate.ess.core.model.transaction.TransactionRecord;
@@ -31,13 +29,13 @@ public class CachedTransactionServiceTest extends BaseTest {
     private static final Logger logger = LoggerFactory.getLogger(CachedTransactionServiceTest.class);
 
     @Autowired EmpTransactionDao transDao;
-    @Autowired EssCachedEmpTransactionService transService;
+    @Autowired CachedEmpTransactionService transService;
 
     @Autowired EventBus eventBus;
 
     private void timedGet(int empId) {
         Stopwatch sw = Stopwatch.createStarted();
-        TransactionHistory transHistory = transService.getTransHistory(empId);
+        transService.getTransHistory(empId);
         logger.info("got trans history for {}:  {}", empId, sw.stop().elapsed(TimeUnit.NANOSECONDS));
     }
 
@@ -55,12 +53,12 @@ public class CachedTransactionServiceTest extends BaseTest {
         timedGet(empId);
         timedGet(empId);
         logger.info("invalidating {}!", empId);
-        eventBus.post(new CacheEvictIdEvent<>(ContentCache.TRANSACTION, empId));
+        transService.evictContent(String.valueOf(empId));
         timedGet(empId);
     }
 
     @Test
-    public void testTransactions() throws Exception {
+    public void testTransactions() {
         TransactionHistory transHistory = transDao.getTransHistory(1719, EmpTransDaoOption.NONE);
         logger.info("{}", transHistory.getEffectiveAccrualStatus(Range.upTo(LocalDate.now(), BoundType.CLOSED)));
     }

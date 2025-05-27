@@ -6,10 +6,10 @@ public class InvalidRequestParamEx extends RuntimeException
 
     protected String parameterName;
     protected String parameterType;
-    protected String parameterValue;
+    protected Object parameterValue;
     protected String parameterConstraint;
 
-    public InvalidRequestParamEx(String parameterValue, String parameterName,
+    public InvalidRequestParamEx(Object parameterValue, String parameterName,
                                  String parameterType, String parameterConstraint) {
         super(String.format("The received value for a request parameter did not satisfy the parameter constraint" +
                         " value: %s, paramName: %s, paramType: %s, constraint: %s",
@@ -28,7 +28,7 @@ public class InvalidRequestParamEx extends RuntimeException
         return parameterType;
     }
 
-    public String getParameterValue() {
+    public Object getParameterValue() {
         return parameterValue;
     }
 

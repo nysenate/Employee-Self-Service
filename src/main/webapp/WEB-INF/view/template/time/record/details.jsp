@@ -1,14 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="org.springframework.web.servlet.support.RequestContextUtils" %>
-<%@ page import="org.springframework.context.ApplicationContext" %>
-<%@ page import="gov.nysenate.ess.time.service.attendance.SfmsAttendanceReportUrlService" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
-<%
-  ApplicationContext ac = RequestContextUtils.findWebApplicationContext(request);
-  SfmsAttendanceReportUrlService reportUrlService = (SfmsAttendanceReportUrlService) ac.getBean("sfmsurlservice");
-  request.setAttribute("reportUrl", reportUrlService.getAccrualReportBaseUrl());
-%>
 
 <div class="grid">
   <h3 class="content-info" style="margin-bottom:0;">
@@ -67,6 +59,8 @@
           <th class="hour-col">Sick Fam</th>
           <th class="hour-col">Misc</th>
           <th>Misc Type</th>
+          <th class="hour-col">Misc 2</th>
+          <th>Misc Type 2</th>
           <th class="hour-col">Total</th>
         </tr>
         </thead>
@@ -82,6 +76,8 @@
           <td>{{entry.sickFamHours | entryHours}}</td>
           <td>{{entry.miscHours | entryHours}}</td>
           <td>{{entry.miscType | miscLeave}}</td>
+          <td>{{entry.misc2Hours | entryHours}}</td>
+          <td>{{entry.miscType2| miscLeave}}</td>
           <td>{{entry.total}}</td>
         </tr>
         <tr class="time-totals-row">
@@ -94,6 +90,8 @@
           <td><strong>{{record.totals.sickEmpHours}}</strong></td>
           <td><strong>{{record.totals.sickFamHours}}</strong></td>
           <td><strong>{{record.totals.miscHours}}</strong></td>
+          <td></td>
+          <td><strong>{{record.totals.misc2Hours}}</strong></td>
           <td></td>
           <td><strong>{{record.totals.total}}</strong></td>
         </tr>
@@ -122,7 +120,7 @@
     <h3 class="content-info">Actions</h3>
     <div class="record-details-section">
       <a target="_blank" title="Open a Printable View for this Record"
-         ng-href="${reportUrl}?report=PRTIMESHEET23&cmdkey=tsuser&p_stamp=N&p_nuxrtimesheet={{record.timeRecordId}}">
+         ng-href="${ctxPath}/api/v1/attendance/report?timeRecordId={{record.timeRecordId}}">
         Print Record
       </a>
       <div ng-if="showExitBtn">

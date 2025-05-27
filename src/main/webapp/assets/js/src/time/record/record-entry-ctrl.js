@@ -16,12 +16,23 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
                          promiseUtils, allowanceUtils) {
 
     function getInitialState() {
+        function shortnameMap (miscLeaves) {
+            var map = {}
+            for (var leaveIndex in miscLeaves) {
+                var miscLeave = miscLeaves[leaveIndex];
+                map[miscLeave.type] = miscLeave.shortName
+            }
+            return map
+        }
+
         return {
             empId: appProps.user.employeeId,    // Employee Id
+            miscEntered: false,                 // True if misc 1 leave was entered
             miscLeaves: appProps.miscLeaves,    // Listing of misc leave types
-            miscLeaveGrants: null,              // List of records that grant use of a misc leave type
+            miscLeaveGrantInfoList: null,       // List of info about grants of a misc leave type for the currently selected record
+            miscLeaveUsageErrors: [],           // Data on misc leave that too much is being used of
             accrual: null,                      // Accrual info for selected record
-            expectedHrs: null,                    // An object containing expected hour data for the selected record
+            expectedHrs: null,                  // An object containing expected hour data for the selected record
             allowances: {},                     // A map that stores yearly temp employee allowances
             selectedYear: 0,                    // The year of the selected record (makes it easy to get the selected record's allowance)
             records: [],                        // All active employee records
@@ -38,7 +49,9 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
                 accruals: false,                //  Get accruals for selected record
                 allowances: false,              //  Get allowances for selected record
                 save: false                     //  Save selected record
-            }
+            },
+            // A map for displaying convenience.
+            miscLeavesShortnameMap: shortnameMap(appProps.miscLeaves),
         }
     }
 
@@ -56,7 +69,6 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
         //console.log('Time record initialization');
         $scope.initializeState();
         $scope.getRecords();
-        $scope.getMiscLeaveTypeGrants();
         $scope.getHolidays();
     };
 
@@ -77,6 +89,7 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
                 setRecordSearchParams();
                 fullValidationCheck();
             });
+            $scope.getMiscLeaveTypeGrants();
         }
     });
 
@@ -282,9 +295,10 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
     };
 
     $scope.getMiscLeaveTypeGrants = function () {
-        var params = {empId: $scope.state.empId};
+        var params = {empId: $scope.state.empId, endDateStr:
+            $scope.state.records[$scope.state.iSelectedRecord].beginDate};
         miscLeaveGrantApi.get(params, function (response) {
-            $scope.state.miscLeaveGrants = response.result;
+            $scope.state.miscLeaveGrantInfoList = response.result;
         }, $scope.handleErrorResponse);
     };
 
@@ -375,8 +389,34 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
      */
     $scope.recordValid = function () {
         var record = $scope.getSelectedRecord();
-        return !(record == null || $scope.selRecordHasEntryErrors());
+        return !(record == null || $scope.selRecordHasEntryErrors() );
     };
+
+    $scope.isRecordEmpty = function (record) {
+        var timeEntries = record.timeEntries;
+        var nullRecordCount = 0;
+
+        for (var i = 0; i < timeEntries.length; i++) {
+            if ( (timeEntries[i].payType === "RA" || timeEntries[i].payType === "SA") &&
+                timeEntries[i].totalHours === 0) {
+                nullRecordCount = nullRecordCount + 1;
+                if (timeEntries[i].workHours !== null || timeEntries[i].travelHours !== null
+                    || timeEntries[i].holidayHours !== null || timeEntries[i].vacationHours !== null
+                    || timeEntries[i].personalHours !== null || timeEntries[i].sickEmpHours !== null
+                    || timeEntries[i].sickFamHours !== null || timeEntries[i].miscHours !== null
+                    || timeEntries[i].misc2Hours !== null)  {
+
+                    nullRecordCount = nullRecordCount - 1;
+                }
+            }
+        }
+        if (nullRecordCount === timeEntries.length) {
+            //RECORD IS EMPTY RETURN TRUE
+            return true;
+        }
+        //RECORD HAS SOME DATA RETURN FALSE
+        return false;
+    }
 
     /**
      * Returns true if the record is submittable, i.e. it exists, passes all validations, and has ended or will end
@@ -386,7 +426,8 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
     $scope.recordSubmittable = function () {
         return !$scope.requestInProgress() &&
                $scope.recordValid() &&
-               !$scope.selRecordHasRecordErrors();
+               !$scope.selRecordHasRecordErrors() &&
+            !$scope.isRecordEmpty($scope.getSelectedRecord());
     };
 
     /**
@@ -465,7 +506,8 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
         personal: getAccrualTabIndexFn('personalHours'),
         sickEmp: getAccrualTabIndexFn('sickEmpHours'),
         sickFam: getAccrualTabIndexFn('sickFamHours'),
-        misc: getAccrualTabIndexFn('miscHours')
+        misc: getAccrualTabIndexFn('miscHours'),
+        misc2: getAccrualTabIndexFn('misc2Hours')
     };
 
     function getAccrualTabIndexFn (propName) {
@@ -510,13 +552,19 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
         var dateMoment = moment(date);
         return function(miscLeave) {
             // Return true if the misc leave is not restricted
-            if (miscLeave.restricted === false) return true;
-            for (var iGrant in $scope.state.miscLeaveGrants) {
-                var grant = $scope.state.miscLeaveGrants[iGrant];
+            if (miscLeave.restricted === false) {
+                return true;
+            }
+            var grantInfoList = $scope.state.miscLeaveGrantInfoList
+            for (var grantIndex in grantInfoList) {
+                var grant = grantInfoList[grantIndex].grant;
                 // Return true if the date falls within the grant date range and is of the same leave type
-                if (dateMoment.isBefore(grant.beginDate, 'day')) continue;
-                if (dateMoment.isAfter(grant.endDate, 'day')) continue;
-                if (miscLeave.type === grant.miscLeaveType) return true;
+                if (dateMoment.isBefore(grant.beginDate, 'day') || dateMoment.isAfter(grant.endDate, 'day')) {
+                    continue;
+                }
+                if (miscLeave.type === grant.miscLeaveType) {
+                    return true;
+                }
             }
             return false;
         }
@@ -601,6 +649,9 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
         // sanitizeEntries(record);
         recordUtils.calculateDailyTotals(record);
         $scope.state.totals = recordUtils.getRecordTotals(record);
+        console.log($scope.state.miscEntered );
+        $scope.state.miscEntered = recordUtils.wasMiscEntered(record);
+        console.log($scope.state.miscEntered );
     }
 
     /**
@@ -796,12 +847,13 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
 
     /**
      * This function is called before time entries are validated
-     * this resets any error flags ( they will be restored if errors are detected during validation)
+     * this resets any error flags (they will be restored if errors are detected during validation)
      * and also does any validations on the record scope
      */
     $scope.preValidation = function() {
         var record = $scope.getSelectedRecord();
         $scope.errorTypes.reset();
+        $scope.state.miscLeaveUsageErrors = [];
         checkForPrevUnsubmittedRaSa(record);
     };
 
@@ -856,7 +908,11 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
             notEnoughSickTime: false,
             noMiscTypeGiven: false,
             noMiscHoursGiven: false,
-            halfHourIncrements: false
+            noMiscType2Given: false,
+            noMisc2HoursGiven: false,
+            halfHourIncrements: false,
+            notEnoughMiscTime: false,
+            notEnoughMisc2Time: false
         },
         // Error messages for temporary pay time entries
         te: {
@@ -939,6 +995,25 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
         return false;
     }
 
+    function grantApplies(grant, entry) {
+        var entryDate = new Date(entry.date);
+        return entry.miscHours && entry.miscType === grant.miscLeaveType
+            && new Date(grant.beginDate) <= entryDate && entryDate <= new Date(grant.endDate);
+    }
+
+    function grantAppliesMisc2(grant, entry) {
+        var entryDate = new Date(entry.date);
+        return entry.misc2Hours && entry.miscType2 === grant.miscLeaveType
+            && new Date(grant.beginDate) <= entryDate && entryDate <= new Date(grant.endDate);
+    }
+
+    // e.g. turns "2024-01-04" into "1/4/24"
+    function dateToStr(date) {
+        var year = date.substring(0, 4)
+        var month = parseInt(date.substring(5, 7));
+        var dayOfMonth = parseInt(date.substring(8, 10));
+        return month + "/" + dayOfMonth + "/" + year;
+    }
 
     /**
      * Checks that the given hours are divisible by 0.25
@@ -974,6 +1049,7 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
                 isValid &= checkRaSaHourIncrements(hrs);
                 return isValid;
             },
+
             holidayHours: function (entry) {
                 // Short circuit if entry is not special annual, holidays are not yet loaded, or the entry is a non holiday
                 if (entry.payType !== 'SA' || !$scope.state.holidays || !$scope.isHoliday(entry)) {
@@ -991,6 +1067,7 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
                 isValid &= checkRaSaHourIncrements(hrs);
                 return isValid;
             },
+
             vacationHours: function (entry) {
                 var hrs = entry.vacationHours;
                 var isValid = true;
@@ -1008,6 +1085,7 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
                 isValid &= checkRaSaHourIncrements(hrs);
                 return isValid;
             },
+
             personalHours: function (entry) {
                 var hrs = entry.personalHours;
                 var isValid = true;
@@ -1025,6 +1103,7 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
                 isValid &= checkRaSaHourIncrements(hrs);
                 return isValid;
             },
+
             sickEmpHours: function (entry) {
                 var hrs = entry.sickEmpHours;
                 var isValid = true;
@@ -1039,6 +1118,7 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
                 isValid &= checkRaSaHourIncrements(hrs);
                 return isValid;
             },
+
             sickFamHours: function (entry) {
                 var hrs = entry.sickFamHours;
                 var isValid = true;
@@ -1053,10 +1133,11 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
                 isValid &= checkRaSaHourIncrements(hrs);
                 return isValid;
             },
+
             miscHours: function (entry) {
                 var hrs = entry.miscHours;
                 var isValid = true;
-                if (hrs === 0 || hrs === null) { // Short circuit to true if hours are null or 0
+                if (hrs === 0 || hrs === null) {
                     return true;
                 }
                 if (typeof hrs === 'undefined') {
@@ -1064,8 +1145,35 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
                     isValid = false;
                 }
                 isValid &= checkRaSaHourIncrements(hrs);
+                var entries = $scope.state.records[$scope.state.iSelectedRecord].timeEntries;
+                var grantInfoList = $scope.state.miscLeaveGrantInfoList;
+
+                for (var grantIndex = 0; grantIndex < grantInfoList.length; grantIndex++) {
+                    var grantInfo = grantInfoList[grantIndex];
+                    // Also checks that the grant time is not unlimited.
+                    if (grantInfo.hoursRemaining === null || !grantApplies(grantInfo.grant, entry)) {
+                        continue;
+                    }
+                    var hoursUsed = 0.0;
+
+                    for (var entryIndex = 0; entryIndex <= entry.index; entryIndex++) {
+                        var currEntry = entries[entryIndex];
+                        if (grantApplies(grantInfo.grant, currEntry)) {
+                            hoursUsed += currEntry.miscHours;
+                        }
+                    }
+                    if (hoursUsed > grantInfo.hoursRemaining) {
+                        $scope.errorTypes.raSa.notEnoughMiscTime = true;
+                        var shortname = $scope.state.miscLeavesShortnameMap[entry.miscType];
+                        var range = dateToStr(grantInfo.grant.beginDate) + " - " + dateToStr(grantInfo.grant.endDate);
+                        var data = {shortname: shortname, range: range, hoursUsed: hoursUsed, hoursRemaining: grantInfo.hoursRemaining};
+                        $scope.state.miscLeaveUsageErrors.push(data);
+                        isValid = false;
+                    }
+                }
                 return isValid;
             },
+
             miscType: function (entry) {
                 var miscTypePresent = entry.miscType !== null;
                 var miscHoursPresent = entry.miscHours > 0;
@@ -1080,6 +1188,68 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
                 }
                 return true;
             },
+
+            misc2Hours: function (entry) {
+                // console.log(entry)
+                var hrs = entry.misc2Hours;
+                var isValid = true;
+                if (hrs === 0 || hrs === null) {
+                    return true;
+                }
+                if (typeof hrs === 'undefined') {
+                    $scope.errorTypes.raSa.miscHoursInvalidRange = true;
+                    isValid = false;
+                }
+                isValid &= checkRaSaHourIncrements(hrs);
+                var entries = $scope.state.records[$scope.state.iSelectedRecord].timeEntries;
+                var grantInfoList = $scope.state.miscLeaveGrantInfoList;
+
+                for (var grantIndex = 0; grantIndex < grantInfoList.length; grantIndex++) {
+                    var grantInfo = grantInfoList[grantIndex];
+                    // Also checks that the grant time is not unlimited.
+                    if (grantInfo.hoursRemaining === null || !grantAppliesMisc2(grantInfo.grant, entry)) {
+                        continue;
+                    }
+                    var hoursUsed = 0.0;
+
+                    for (var entryIndex = 0; entryIndex <= entry.index; entryIndex++) {
+                        var currEntry = entries[entryIndex];
+                        if (grantAppliesMisc2(grantInfo.grant, currEntry)) {
+                            hoursUsed += currEntry.misc2Hours;
+                        }
+                    }
+                    if (hoursUsed > grantInfo.hoursRemaining) {
+                        $scope.errorTypes.raSa.notEnoughMisc2Time = true;
+                        var shortname = $scope.state.miscLeavesShortnameMap[entry.miscType2];
+                        var range = dateToStr(grantInfo.grant.beginDate) + " - " + dateToStr(grantInfo.grant.endDate);
+                        var data = {shortname: shortname, range: range, hoursUsed: hoursUsed, hoursRemaining: grantInfo.hoursRemaining};
+                        $scope.state.miscLeaveUsageErrors.push(data);
+                        isValid = false;
+                    }
+                }
+                return isValid;
+            },
+
+            miscType2: function (entry) {
+                
+                // if (entry.misc2Hours === 'undefined') {
+                //     entry.misc2Hours = null;
+                // }
+
+                var miscType2Present = entry.miscType2 !== null;
+                var misc2HoursPresent = entry.misc2Hours > 0;
+                var isActiveRow = entry.index === activeRow.getActiveRow();
+                if (!isActiveRow && !miscType2Present && misc2HoursPresent) {
+                    $scope.errorTypes.raSa.noMiscType2Given = true;
+                    return false;
+                }
+                if (miscType2Present && !misc2HoursPresent) {
+                    $scope.errorTypes.raSa.noMisc2HoursGiven = true;
+                    return false;
+                }
+                return true;
+            },
+
             totalHours: function (entry) {
                 // Don't invalidate total entry if its not a number.
                 // This is to avoid confusion since no number is displayed to the user.

@@ -10,7 +10,7 @@ import gov.nysenate.ess.core.client.parameter.ErrorReport;
 import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.mail.SendMailService;
-import gov.nysenate.ess.core.service.personnel.EssCachedEmployeeInfoService;
+import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.template.EssTemplateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,39 +28,38 @@ import java.io.StringWriter;
 import java.time.LocalDateTime;
 import java.util.Map;
 
-/**
- * Created by senateuser on 2016/11/4.
- */
 @RestController
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/report")
 public class ErrorReportApiCtrl extends BaseRestApiCtrl {
-
     private static final Logger logger = LoggerFactory.getLogger(ErrorReportApiCtrl.class);
-
     private static final String subjectPrefix = "ESS Error Report from ";
 
-    @Value("${report.email}") private String reportEmail;
+    private final Configuration freemarkerCfg;
+    private final SendMailService sendMailService;
+    private final EmployeeInfoService employeeInfoService;
+
     @Value("${freemarker.core.templates.error_report:error_report.ftlh}")
     private String emailTemplateName;
+    @Resource(name = "jsonObjectMapper")
+    private ObjectMapper objectMapper;
 
-    @Autowired private Configuration freemarkerCfg;
-    @Autowired private SendMailService sendMailService;
-    @Autowired private EssCachedEmployeeInfoService essCachedEmployeeInfoService;
-
-    @Resource(name = "jsonObjectMapper") ObjectMapper objectMapper;
+    @Autowired
+    public ErrorReportApiCtrl(Configuration freemarkerCfg, SendMailService sendMailService, EmployeeInfoService employeeInfoService) {
+        this.freemarkerCfg = freemarkerCfg;
+        this.sendMailService = sendMailService;
+        this.employeeInfoService = employeeInfoService;
+    }
 
     /**
      * Receives an error report and sends an email notification
      *
      * @param errorReport {@link ErrorReport}
      * @return {@link SimpleResponse}
-     * @throws JsonProcessingException
      */
     @RequestMapping(value = "/error", method = RequestMethod.POST, consumes = "application/json")
-    public SimpleResponse report(@RequestBody ErrorReport errorReport) throws JsonProcessingException {
+    public SimpleResponse report(@RequestBody ErrorReport errorReport) {
         try {
-            MimeMessage message = getErrorMessage(errorReport);
-            sendMailService.send(message);
+            sendErrorMessage(errorReport);
         } catch (Exception e) {
             logger.error("Exception occurred during processing of error report submission!", e);
             return new SimpleResponse(false, e.getMessage(), e.getClass().getSimpleName());
@@ -71,22 +70,18 @@ public class ErrorReportApiCtrl extends BaseRestApiCtrl {
 
     /* --- Internal Methods --- */
 
-    private MimeMessage getErrorMessage(ErrorReport errorReport) throws JsonProcessingException {
-        Employee employee = essCachedEmployeeInfoService.getEmployee(errorReport.getUser());
-
+    private void sendErrorMessage(ErrorReport errorReport) throws JsonProcessingException {
+        Employee employee = employeeInfoService.getEmployee(errorReport.getUser());
         String subject = subjectPrefix + employee.getFullName();
         String message = getMessageBody(errorReport, employee);
-
-        return sendMailService.newHtmlMessage(reportEmail, subject, message);
+        sendMailService.sendMessageToReportEmails(subject, message);
     }
 
     private String getMessageBody(ErrorReport errorReport, Employee employee) throws JsonProcessingException {
         LocalDateTime now = LocalDateTime.now();
-
         String details = objectMapper.writerWithDefaultPrettyPrinter()
                 .writeValueAsString(errorReport.getDetails());
-
-        Map dataModel = ImmutableMap.of(
+        Map<String, Object> dataModel = ImmutableMap.of(
                 "employee", employee,
                 "timestamp", now,
                 "errorReport", errorReport,
@@ -100,7 +95,6 @@ public class ErrorReportApiCtrl extends BaseRestApiCtrl {
         } catch (IOException | TemplateException ex) {
             throw new EssTemplateException(emailTemplateName, ex);
         }
-
         return out.toString();
     }
 

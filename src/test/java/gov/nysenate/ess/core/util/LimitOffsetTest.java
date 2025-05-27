@@ -15,7 +15,7 @@ public class LimitOffsetTest
 {
     /** Limit list will return a subset of an array. */
     @Test
-    public void testLimitList() throws Exception {
+    public void testLimitList() {
         List<Integer> numbers = IntStream.range(0, 100).boxed().collect(Collectors.toList());
         assertEquals(10, LimitOffset.limitList(numbers, LimitOffset.TEN).size());
         assertEquals(0, (long) LimitOffset.limitList(numbers, new LimitOffset(10, 0)).get(0));
@@ -26,7 +26,7 @@ public class LimitOffsetTest
 
     /** Limit list on a zero limit will return the whole list. */
     @Test
-    public void testLimitList_noLimit() throws Exception {
+    public void testLimitList_noLimit() {
         List<Integer> numbers = IntStream.range(0, 100).boxed().collect(Collectors.toList());
         assertEquals(100, LimitOffset.limitList(numbers, new LimitOffset(0,0)).size());
         assertEquals(100, LimitOffset.limitList(numbers, new LimitOffset(0,10)).size());
@@ -34,7 +34,7 @@ public class LimitOffsetTest
 
     /** The next method should return a new limit offset that is offset by the prev limit. */
     @Test
-    public void testNext() throws Exception {
+    public void testNext() {
         LimitOffset lim1 = new LimitOffset(10, 0);
         assertEquals(new LimitOffset(10, 11), lim1.next());
         assertEquals(new LimitOffset(10, 21), lim1.next().next());
@@ -47,7 +47,7 @@ public class LimitOffsetTest
 
     /** A LimitOffset will have a limit when the limit is not 0. */
     @Test
-    public void testHasLimit() throws Exception {
+    public void testHasLimit() {
         assertTrue(LimitOffset.TEN.hasLimit());
         assertFalse(LimitOffset.ALL.hasLimit());
         assertFalse(new LimitOffset(0,0).hasLimit());
@@ -55,7 +55,7 @@ public class LimitOffsetTest
     }
 
     @Test
-    public void testHasOffset() throws Exception {
+    public void testHasOffset() {
         // Typical case
         assertTrue(new LimitOffset(0, 10).hasOffset());
         assertFalse(new LimitOffset(0, 0).hasOffset());
@@ -64,7 +64,7 @@ public class LimitOffsetTest
 
     /** Offset start should always be positive */
     @Test
-    public void testGetOffsetStart() throws Exception {
+    public void testGetOffsetStart() {
         // Typical
         assertEquals(10, new LimitOffset(1, 10).getOffsetStart());
         // Zero offset becomes 1
@@ -78,7 +78,7 @@ public class LimitOffsetTest
 
     /** The offset should always be positive. */
     @Test
-    public void testGetOffsetEnd() throws Exception {
+    public void testGetOffsetEnd() {
         // Typical
         assertEquals(10, new LimitOffset(1, 10).getOffsetEnd());
         // negative offset will return max offset
@@ -87,18 +87,18 @@ public class LimitOffsetTest
 
     /** negative limits throw exception */
     @Test(expected = IllegalArgumentException.class)
-    public void testGetLimit_negative() throws Exception {
+    public void testGetLimit_negative() {
         new LimitOffset(-1, 0).getLimit();
     }
 
     /** Zero limits are just zero. */
     @Test
-    public void testGetLimit_zero() throws Exception {
+    public void testGetLimit_zero() {
         assertEquals(0, new LimitOffset(0, 0).getLimit());
     }
 
     @Test
-    public void testEquals() throws Exception {
+    public void testEquals() {
         LimitOffset lim1 = new LimitOffset(0,0);
         assertEquals(lim1, new LimitOffset(0,0));
 
@@ -114,7 +114,7 @@ public class LimitOffsetTest
 
     /** Hash codes are unique for the most part. */
     @Test
-    public void testHashCode() throws Exception {
+    public void testHashCode() {
         for (int i = 1; i < 1000; i++) {
             assertEquals(new LimitOffset(i, i).hashCode(), new LimitOffset(i, i).hashCode());
             assertNotEquals(new LimitOffset(i, i).hashCode(), new LimitOffset(i - 1, i).hashCode());

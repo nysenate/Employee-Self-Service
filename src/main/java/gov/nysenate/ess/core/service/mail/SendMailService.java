@@ -12,6 +12,21 @@ import java.util.Collection;
 public interface SendMailService extends JavaMailSender
 {
     /**
+     * Will send an email to all comma seperated values in the report.email app property
+     * @param subject Subject of the email
+     * @param text The email body
+     */
+    public void sendMessageToReportEmails(String subject, String text);
+
+    /**
+     * Will send an HTML body email to all comma seperated values in the report.email app property
+     *
+     * @param subject String - subject
+     * @param html String - html body content
+     */
+    public void sendHTMLMessageToReportEmails(String subject, String html);
+
+    /**
      * Sends a simple plaintext email message constructed from basic message parameters
      *
      * @param to The intended receiver of the email

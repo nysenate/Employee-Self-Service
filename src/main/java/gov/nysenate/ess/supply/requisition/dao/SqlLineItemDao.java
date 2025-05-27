@@ -85,11 +85,11 @@ public class SqlLineItemDao extends SqlBaseDao {
                 "AND r.ordered_date_time BETWEEN :from AND :to"
         );
 
+        private final String sql;
+
         SqlReqLineItemQuery(String sql) {
             this.sql = sql;
         }
-
-        private String sql;
 
         @Override
         public String getSql() {
@@ -108,17 +108,12 @@ public class SqlLineItemDao extends SqlBaseDao {
      * Cant sort in original select statement since description information is
      * not contained in local database.
      */
-    private class ReqLineItemHandler extends BaseHandler {
+    private static class ReqLineItemHandler extends BaseHandler {
 
         private SupplyItemDao itemDao;
         private Map<Integer, Integer> itemIdToCounts;
 
-        private Comparator<LineItem> alphabeticalItemDesc = new Comparator<LineItem>() {
-            @Override
-            public int compare(LineItem o1, LineItem o2) {
-                return o1.getItem().getDescription().compareTo(o2.getItem().getDescription());
-            }
-        };
+        private Comparator<LineItem> alphabeticalItemDesc = Comparator.comparing(o -> o.getItem().getDescription());
 
         ReqLineItemHandler(SupplyItemDao itemDao) {
             this.itemDao = itemDao;
@@ -132,7 +127,7 @@ public class SqlLineItemDao extends SqlBaseDao {
 
         Set<LineItem> getResults() {
             Set<SupplyItem> items = itemDao.getItemsByIds(itemIdToCounts.keySet());
-            TreeSet<LineItem> lineItems = new TreeSet<LineItem>(alphabeticalItemDesc);
+            TreeSet<LineItem> lineItems = new TreeSet<>(alphabeticalItemDesc);
             for(SupplyItem item : items) {
                 lineItems.add(new LineItem(item, itemIdToCounts.get(item.getId())));
             }

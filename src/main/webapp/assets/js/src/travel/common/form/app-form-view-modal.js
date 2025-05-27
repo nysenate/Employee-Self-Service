@@ -3,13 +3,12 @@ var essTravel = angular.module('essTravel');
 essTravel.directive('appFormViewModal', ['appProps', function (appProps) {
     return {
         templateUrl: appProps.ctxPath + '/template/travel/common/form/app-form-view-modal',
-        scope: {},
         controller: 'AppFormViewModal'
     }
 }])
-    .controller('AppFormViewModal', ['$scope', 'modals', appFormView]);
+    .controller('AppFormViewModal', ['$scope', 'modals', 'TravelAppCancelApi', 'LocationService', appFormView]);
 
-function appFormView($scope, modals) {
+function appFormView($scope, modals, appCancelApi, locationService) {
 
     $scope.app = modals.params();
 
@@ -17,8 +16,11 @@ function appFormView($scope, modals) {
         modals.resolve();
     };
 
-    $scope.viewExpenseSummary = function (app) {
-        modals.open("app-expense-summary-modal", app, true)
-            .catch(function () {});
+    $scope.cancel = function() {
+        modals.open("app-cancel-confirm").then(function() {
+            appCancelApi.save({id: $scope.app.id}).$promise.then(function(app) {
+                locationService.go("/travel/applications", true);
+            });
+        })
     }
 }

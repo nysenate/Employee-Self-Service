@@ -9,7 +9,6 @@ import org.springframework.web.servlet.DispatcherServlet;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 import java.util.EnumSet;
 
@@ -35,10 +34,9 @@ public class WebInitializer implements WebApplicationInitializer
      * under the Spring context.
      *
      * @param servletContext ServletContext
-     * @throws ServletException
      */
     @Override
-    public void onStartup(ServletContext servletContext) throws ServletException {
+    public void onStartup(ServletContext servletContext) {
         /** Create the root Spring application context. */
         AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();
 

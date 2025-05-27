@@ -10,8 +10,8 @@ public enum MaritalStatus
     MARRIED("M", "Married"),
     WIDOWED("W", "Widowed");
 
-    String code;
-    String desc;
+    private final String code;
+    private final String desc;
 
     MaritalStatus(String code, String desc) {
         this.code = code;

@@ -11,6 +11,12 @@ public class PendingState extends RequisitionState {
     }
 
     @Override
+    public Requisition undo(Requisition requisition, LocalDateTime undoDateTime) {
+        // Can't undo when in pending state.
+        return requisition;
+    }
+
+    @Override
     public RequisitionStatus getStatus() {
         return RequisitionStatus.PENDING;
     }

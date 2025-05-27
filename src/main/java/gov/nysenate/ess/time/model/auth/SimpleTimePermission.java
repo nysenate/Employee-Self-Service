@@ -38,9 +38,11 @@ public enum SimpleTimePermission {
 
     /** Allows full use of the time record manager to create / modify records */
     TIME_RECORD_MANAGEMENT("admin:time:timerecords:manager"),
+
+    DEVELOPER("time:developer"),
     ;
 
-    private String permissionString;
+    private final String permissionString;
 
     SimpleTimePermission(String permissionString) {
         this.permissionString = permissionString;

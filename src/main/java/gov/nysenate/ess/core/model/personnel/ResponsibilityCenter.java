@@ -36,6 +36,11 @@ public class ResponsibilityCenter
                 .orElse(null);
     }
 
+    public boolean isAdministrativeOffice() {
+        int firstDigit = Integer.parseInt(String.valueOf(this.code).substring(0, 1));
+        return firstDigit == 3;
+    }
+
     /* --- Overridden Methods --- */
 
     @Override

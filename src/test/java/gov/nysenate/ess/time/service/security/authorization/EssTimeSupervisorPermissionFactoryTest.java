@@ -22,7 +22,7 @@ public class EssTimeSupervisorPermissionFactoryTest extends BaseTest {
     @Autowired private EmployeeInfoService empInfoService;
 
     @Test
-    public void getPermissions() throws Exception {
+    public void getPermissions() {
         int empId = 9896;
         Employee employee = empInfoService.getEmployee(empId);
         logger.info("Adding permissions for {}", empId);

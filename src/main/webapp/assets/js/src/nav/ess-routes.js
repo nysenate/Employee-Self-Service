@@ -25,11 +25,39 @@ essApp.config(function ($routeProvider, $locationProvider) {
         templateUrl: ctxPath + '/template/myinfo/personnel/emergency-alert-info'
     });
 
-    $routeProvider.when(ctxPath + '/myinfo/personnel/acknowledgments', {
-        templateUrl: ctxPath + '/template/myinfo/personnel/acknowledgment'
+    $routeProvider.when(ctxPath + '/myinfo/personnel/todo', {
+        templateUrl: ctxPath + '/template/myinfo/personnel/todo'
     });
 
-    $routeProvider.when(ctxPath + '/myinfo/personnel/acknowledgments/:ackDocId', {
+    $routeProvider.when(ctxPath + '/myinfo/personnel/todo/report', {
+        templateUrl: ctxPath + '/template/myinfo/personnel/todo-report'
+    });
+
+    $routeProvider.when(ctxPath + '/myinfo/personnel/todo/assignment', {
+        templateUrl: ctxPath + '/template/myinfo/personnel/todo-assignment'
+    });
+
+    $routeProvider.when(ctxPath + '/myinfo/personnel/todo/legethics/:taskId', {
+        templateUrl: ctxPath + '/template/myinfo/personnel/legethics'
+    });
+
+    $routeProvider.when(ctxPath + '/myinfo/personnel/todo/ethicscourse/:taskId', {
+        templateUrl: ctxPath + '/template/myinfo/personnel/ethicscourse'
+    });
+
+    $routeProvider.when(ctxPath + '/myinfo/personnel/todo/ethicscourselive/:taskId', {
+        templateUrl: ctxPath + '/template/myinfo/personnel/ethicscourselive'
+    });
+
+    $routeProvider.when(ctxPath + '/myinfo/personnel/todo/knowbe4course/:taskId', {
+        templateUrl: ctxPath + '/template/myinfo/personnel/knowbe4course'
+    });
+
+    $routeProvider.when(ctxPath + '/myinfo/personnel/todo/video/:videoId', {
+        templateUrl: ctxPath + '/template/myinfo/personnel/pec-vid-view'
+    });
+
+    $routeProvider.when(ctxPath + '/myinfo/personnel/todo/acknowledgment/:ackDocId', {
         templateUrl: ctxPath + '/template/myinfo/personnel/ack-doc-view'
     });
 
@@ -91,7 +119,8 @@ essApp.config(function ($routeProvider, $locationProvider) {
     });
 
     $routeProvider.when(ctxPath + '/time/period/calendar', {
-        templateUrl: ctxPath + '/template/time/period/calendar'
+        templateUrl: ctxPath + '/template/time/period/calendar',
+        reloadOnSearch: false
     });
 
     $routeProvider.when(ctxPath + '/time/accrual/history', {
@@ -101,6 +130,10 @@ essApp.config(function ($routeProvider, $locationProvider) {
 
     $routeProvider.when(ctxPath + '/time/accrual/projections', {
         templateUrl: ctxPath + '/template/time/accrual/projections'
+    });
+
+    $routeProvider.when(ctxPath + '/time/accrual/donation', {
+        templateUrl: ctxPath + '/template/time/accrual/donation'
     });
 
     $routeProvider.when(ctxPath + '/time/accrual/emphistory', {
@@ -204,6 +237,10 @@ essApp.config(function ($routeProvider, $locationProvider) {
         templateUrl: ctxPath + '/template/travel/component/new-application/new-application'
     });
 
+    $routeProvider.when(ctxPath + '/travel/application/new/:draftId', {
+        templateUrl: ctxPath + '/template/travel/component/new-application/new-application'
+    });
+
     $routeProvider.when(ctxPath + '/travel/application/edit', {
         templateUrl: ctxPath + '/template/travel/component/edit-application/edit-application'
     });
@@ -212,21 +249,33 @@ essApp.config(function ($routeProvider, $locationProvider) {
         templateUrl: ctxPath + '/template/travel/component/view-applications/view-applications'
     });
 
+    $routeProvider.when(ctxPath + '/travel/drafts', {
+        templateUrl: ctxPath + '/template/travel/component/drafts/application-drafts'
+    });
+
     $routeProvider.when(ctxPath + '/travel/config', {
         templateUrl: ctxPath + '/template/travel/component/user-config/user-config'
     });
 
-    $routeProvider.when(ctxPath + '/travel/review', {
-        templateUrl: ctxPath + '/template/travel/component/review/app-review',
+    $routeProvider.when(ctxPath + '/travel/manage/review', {
+        templateUrl: ctxPath + '/template/travel/component/review-travel-app/review-travel-app',
         reloadOnSearch: false
     });
 
-    $routeProvider.when(ctxPath + '/travel/review/history', {
+    $routeProvider.when(ctxPath + '/travel/manage/history', {
         templateUrl: ctxPath + '/template/travel/component/review-history/review-history'
     });
 
     $routeProvider.when(ctxPath + '/travel/delegation', {
         templateUrl: ctxPath + '/template/travel/component/delegation/delegation'
+    });
+
+    $routeProvider.when(ctxPath + '/travel/reconcile', {
+        templateUrl: ctxPath + '/template/travel/component/reconcile-travel/reconcile-travel'
+    });
+
+    $routeProvider.when(ctxPath + '/travel/application/:id', {
+        templateUrl: ctxPath + '/template/travel/component/travel-application/travel-application'
     });
 
     /** Help */

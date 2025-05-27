@@ -7,10 +7,9 @@ public enum SqlLocationCountyQuery implements BasicSqlQuery {
     SELECT_WORK_ADDRESS_COUNTY(
             "SELECT county FROM ${essSchema}.work_location_county \n" +
                     "WHERE location_code = :locCode and location_type = :locType"
-    )
-    ;
+    );
 
-    private String sql;
+    private final String sql;
 
     SqlLocationCountyQuery(String sql) {
         this.sql = sql;

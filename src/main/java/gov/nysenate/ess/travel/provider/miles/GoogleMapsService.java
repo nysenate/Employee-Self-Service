@@ -7,7 +7,7 @@ import com.google.maps.model.DistanceMatrix;
 import com.google.maps.model.TrafficModel;
 import com.google.maps.model.TravelMode;
 import com.google.maps.model.Unit;
-import gov.nysenate.ess.travel.application.address.GoogleAddress;
+import gov.nysenate.ess.travel.request.address.TravelAddress;
 import gov.nysenate.ess.travel.utils.UnitUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,14 +18,11 @@ import java.io.IOException;
 
 @Service
 public class GoogleMapsService implements MapService {
-
-    private String apiKey;
     private final GeoApiContext context;
 
     @Autowired
     public GoogleMapsService(@Value("${google.maps.api.key}") String apiKey) {
-        this.apiKey = apiKey;
-        context = new GeoApiContext.Builder().apiKey(apiKey).build();
+        this.context = new GeoApiContext.Builder().apiKey(apiKey).build();
     }
 
     /**
@@ -34,7 +31,7 @@ public class GoogleMapsService implements MapService {
      * @param to The ending address.
      */
     @Override
-    public double drivingDistance(GoogleAddress from, GoogleAddress to) throws InterruptedException, ApiException, IOException {
+    public double drivingDistance(TravelAddress from, TravelAddress to) throws InterruptedException, ApiException, IOException {
         String[] origins = new String[] {getGoolgeAddressParam(from)};
         String[] destinations = new String[] {getGoolgeAddressParam(to)};
         DistanceMatrix request = DistanceMatrixApi.getDistanceMatrix(context, origins, destinations)
@@ -52,12 +49,11 @@ public class GoogleMapsService implements MapService {
 
     /**
      * Get the address param to be passed into google distance matrix.
-     *
      * Use the place_id if it exists, otherwise use the address string.
      * @param address
      * @return
      */
-    private String getGoolgeAddressParam(GoogleAddress address) {
+    private String getGoolgeAddressParam(TravelAddress address) {
         if (address.getPlaceId().isEmpty()) {
             return address.toString();
         }
