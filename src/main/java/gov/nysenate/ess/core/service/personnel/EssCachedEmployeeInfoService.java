@@ -14,7 +14,6 @@ import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.core.model.unit.LocationType;
 import gov.nysenate.ess.core.service.base.LocationService;
 import gov.nysenate.ess.core.service.cache.EmployeeEhCache;
-import gov.nysenate.ess.core.service.cache.EssCacheManager;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.LimitOffset;
@@ -35,9 +34,9 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Service
-public class CachedEmployeeInfoService extends EmployeeEhCache<Employee>
+public class EssCachedEmployeeInfoService extends EmployeeEhCache<Employee>
         implements EmployeeInfoService {
-    private static final Logger logger = LoggerFactory.getLogger(CachedEmployeeInfoService.class);
+    private static final Logger logger = LoggerFactory.getLogger(EssCachedEmployeeInfoService.class);
 
     private final EmployeeDao employeeDao;
     private final ActiveEmployeeIdService employeeIdService;
@@ -46,10 +45,10 @@ public class CachedEmployeeInfoService extends EmployeeEhCache<Employee>
     private LocalDateTime lastUpdateDateTime;
 
     @Autowired
-    public CachedEmployeeInfoService(EmployeeDao employeeDao,
-                                     ActiveEmployeeIdService employeeIdService,
-                                     EmpTransactionService transService,
-                                     LocationService locationService) {
+    public EssCachedEmployeeInfoService(EmployeeDao employeeDao,
+                                        ActiveEmployeeIdService employeeIdService,
+                                        EmpTransactionService transService,
+                                        LocationService locationService) {
         this.employeeDao = employeeDao;
         this.employeeIdService = employeeIdService;
         this.transService = transService;

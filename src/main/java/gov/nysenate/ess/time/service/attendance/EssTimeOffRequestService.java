@@ -11,7 +11,6 @@ import gov.nysenate.ess.time.model.attendance.TimeOffStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;

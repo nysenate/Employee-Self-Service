@@ -11,7 +11,6 @@ import gov.nysenate.ess.core.service.personnel.EssCachedEmployeeInfoService;
 import gov.nysenate.ess.time.dao.attendance.SqlTimeOffRequestDao;
 import gov.nysenate.ess.time.model.attendance.TimeOffRequest;
 import gov.nysenate.ess.time.model.attendance.TimeOffStatus;
-import org.apache.tomcat.jni.Local;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
