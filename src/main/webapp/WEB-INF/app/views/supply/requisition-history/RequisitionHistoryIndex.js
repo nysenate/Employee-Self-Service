@@ -59,7 +59,11 @@ function filtersReducer(state, action) {
 
 export default function RequisitionHistoryIndex() {
   let [searchParams, setSearchParams] = useSearchParams();
-  const [filters, dispatch] = useReducer(filtersReducer, initialFilters);
+  const [filters, dispatch] = useReducer(
+    filtersReducer,
+    initialFilters,
+    initializeFilters,
+  );
   const requisitionQuery = useRequisitionSearch({
     from: formatISO(startOfDay(new UTCDate(filters.fromDate))),
     to: formatISO(endOfDay(new UTCDate(filters.toDate))),
@@ -71,8 +75,32 @@ export default function RequisitionHistoryIndex() {
     status: ["APPROVED", "REJECTED"],
   });
 
+  function initializeFilters(initFilters) {
+    const urlFilters = {
+      fromDate: searchParams.get("fromDate"),
+      toDate: searchParams.get("toDate"),
+      destinationId: searchParams.get("destinationId"),
+      itemId: searchParams.get("itemId"),
+      issuerId: searchParams.get("issuerId"),
+      limit: searchParams.get("limit"),
+      offset: searchParams.get("offset"),
+    };
+    return {
+      ...initFilters,
+      ...Object.fromEntries(
+        Object.entries(urlFilters).filter(([_, v]) => v !== null),
+      ),
+    };
+  }
+
   useEffect(() => {
-    // setSearchParams(filters);
+    // Don't add null or undefined filters to the search params.
+    const filteredParams = Object.fromEntries(
+      Object.entries(filters).filter(
+        ([, value]) => value !== null && value !== undefined,
+      ),
+    );
+    setSearchParams(filteredParams);
   }, [filters]);
 
   return (
