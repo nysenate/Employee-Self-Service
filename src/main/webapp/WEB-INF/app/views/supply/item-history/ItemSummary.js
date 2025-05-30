@@ -99,7 +99,7 @@ export default function ItemSummary() {
         ([, value]) => value !== null && value !== undefined,
       ),
     );
-    setSearchParams(filteredParams);
+    setSearchParams(filteredParams, { replace: true });
   }, [filters]);
 
   return (

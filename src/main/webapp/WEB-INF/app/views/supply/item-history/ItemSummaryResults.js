@@ -6,12 +6,14 @@ import NoMatchesFound from "app/components/NoMatchesFound";
 import clsx from "clsx";
 import { isoToShortDate } from "app/utils/dateUtils";
 import * as dateUtils from "app/utils/dateUtils";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function ItemSummaryResults({
   itemSummaries,
   filters,
   dispatch,
 }) {
+  const navigate = useNavigate();
   const [selectedRow, setSelectedRow] = useState(null);
 
   if (itemSummaries.length === 0) {
@@ -57,7 +59,7 @@ export default function ItemSummaryResults({
                   className={clsx("table__row", {
                     "bg-gray-75": selectedRow === summary.item.id,
                   })}
-                  onClick={() => toggleSelection(summary.item.id)}
+                  onClick={() => navigate(`/supply/requisition-history`)}
                 >
                   <td className="table__cell table__cell--text">
                     {summary.item.commodityCode}
