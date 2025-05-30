@@ -1,4 +1,4 @@
-import React, { useReducer } from "react";
+import React, { useEffect, useReducer } from "react";
 import { endOfDay, formatISO, startOfDay, subMonths } from "date-fns";
 import { useItemSummary } from "app/views/supply/item-history/useItemSummary";
 import Hero from "app/components/Hero";
@@ -14,12 +14,13 @@ import ItemSummaryFilters from "app/views/supply/item-history/ItemSummaryFilters
 import ItemSummaryResults from "app/views/supply/item-history/ItemSummaryResults";
 import { isValidDateString } from "app/utils/dateUtils";
 import { UTCDate } from "@date-fns/utc";
+import { useSearchParams } from "react-router-dom";
 
 const initialFilters = {
-  commodityCode: null,
-  locationCode: null,
   fromDate: formatISO(subMonths(new Date(), 1), { representation: "date" }),
   toDate: formatISO(new Date(), { representation: "date" }),
+  commodityCode: null,
+  locationCode: null,
   limit: 16,
   offset: 1,
 };
@@ -61,13 +62,45 @@ function filtersReducer(state, action) {
 }
 
 export default function ItemSummary() {
-  const [filters, dispatch] = useReducer(filtersReducer, initialFilters);
+  let [searchParams, setSearchParams] = useSearchParams();
+  const [filters, dispatch] = useReducer(
+    filtersReducer,
+    initialFilters,
+    initializeFilters,
+  );
   const itemSummaryQuery = useItemSummary({
     fromDateTime: formatISO(startOfDay(new UTCDate(filters.fromDate))),
     toDateTime: formatISO(endOfDay(new UTCDate(filters.toDate))),
     locationCode: filters.locationCode,
     commodityCode: filters.commodityCode,
   });
+
+  function initializeFilters(initFilters) {
+    const urlFilters = {
+      fromDate: searchParams.get("fromDate"),
+      toDate: searchParams.get("toDate"),
+      commodityCode: searchParams.get("commodityCode"),
+      locationCode: searchParams.get("locationCode"),
+      limit: searchParams.get("limit"),
+      offset: searchParams.get("offset"),
+    };
+    return {
+      ...initFilters,
+      ...Object.fromEntries(
+        Object.entries(urlFilters).filter(([_, v]) => v !== null),
+      ),
+    };
+  }
+
+  useEffect(() => {
+    // Don't add null or undefined filters to the search params.
+    const filteredParams = Object.fromEntries(
+      Object.entries(filters).filter(
+        ([, value]) => value !== null && value !== undefined,
+      ),
+    );
+    setSearchParams(filteredParams);
+  }, [filters]);
 
   return (
     <div>

@@ -38,7 +38,7 @@ export default function ItemSummaryResults({
       <div className="p-4">
         <table className="table--sticky table">
           <thead>
-            <tr className="table__head__row text-purple-700">
+            <tr className="table__head__row">
               <th className="table__head__cell table__head__cell--text w-3/12">
                 Commodity Code
               </th>
