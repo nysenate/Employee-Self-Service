@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.time.LocalDateTime;
@@ -74,7 +73,7 @@ public class ErrorReportApiCtrl extends BaseRestApiCtrl {
         Employee employee = employeeInfoService.getEmployee(errorReport.getUser());
         String subject = subjectPrefix + employee.getFullName();
         String message = getMessageBody(errorReport, employee);
-        sendMailService.sendMessageToReportEmails(subject, message);
+        sendMailService.sendHTMLMessageToReportEmails(subject, message);
     }
 
     private String getMessageBody(ErrorReport errorReport, Employee employee) throws JsonProcessingException {
