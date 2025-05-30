@@ -1,11 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import Card from "app/components/Card";
 import NoMatchesFound from "app/components/NoMatchesFound";
 import { isoToShortDateTime } from "app/utils/dateUtils";
 import PaginationComponent from "app/components/PaginationComponent";
 import { setOffset } from "app/views/supply/requisition-history/RequisitionHistoryActions";
+import RequisitionInfoModal from "app/views/supply/RequisitionInfoModal";
 
 export default function RequisitionHistoryResults({ data, filters, dispatch }) {
+  const [selectedReq, setSelectedReq] = useState(null);
   const results = data.result;
   const currentPage = (filters.offset + filters.limit - 1) / filters.limit;
   const totalPages = Math.ceil(data.total / filters.limit);
@@ -38,9 +40,13 @@ export default function RequisitionHistoryResults({ data, filters, dispatch }) {
               </th>
             </tr>
           </thead>
-          <tbody className="table__body table__body--highlight divide-y divide-gray-200/50">
+          <tbody className="table__body table__body--highlight divide-y divide-gray-200/80">
             {results.map((r) => (
-              <tr className="table__row" key={r.requisitionId}>
+              <tr
+                className="table__row"
+                key={r.requisitionId}
+                onClick={() => setSelectedReq(r)}
+              >
                 <td className="table__cell table__cell--text">
                   {r.requisitionId}
                 </td>
@@ -71,6 +77,11 @@ export default function RequisitionHistoryResults({ data, filters, dispatch }) {
           }
         />
       </div>
+      <RequisitionInfoModal
+        isOpen={selectedReq !== null}
+        requisition={selectedReq}
+        onResolve={() => setSelectedReq(null)}
+      />
     </Card>
   );
 }

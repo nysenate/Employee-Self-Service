@@ -59,7 +59,7 @@ export default function ItemSummaryResults({
                   className={clsx("table__row", {
                     "bg-gray-75": selectedRow === summary.item.id,
                   })}
-                  onClick={() => navigate(`/supply/requisition-history`)}
+                  onClick={() => toggleSelection(summary.item.id)}
                 >
                   <td className="table__cell table__cell--text">
                     {summary.item.commodityCode}
