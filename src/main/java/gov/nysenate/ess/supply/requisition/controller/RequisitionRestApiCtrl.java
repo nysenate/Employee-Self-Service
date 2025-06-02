@@ -85,13 +85,14 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
      * @param requisitionView
      */
     @RequestMapping(value = "/{id}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void saveRequisition(@PathVariable int id, @RequestBody RequisitionView requisitionView) {
+    public BaseResponse saveRequisition(@PathVariable int id, @RequestBody RequisitionView requisitionView) {
         Requisition requisition = requisitionView.toRequisition();
         checkPermission(RequisitionPermission.forCustomer(requisition.getCustomer().getEmployeeId(), RequestMethod.POST));
 
         requisition = requisition.setModifiedBy(getModifiedBy());
         requisition = requisitionService.saveRequisition(requisition);
         broadcastRequisitionUpdate(new RequisitionView(requisition));
+        return new ViewObjectResponse<>(requisitionView);
     }
 
     /**

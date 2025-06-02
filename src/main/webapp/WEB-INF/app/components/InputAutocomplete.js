@@ -1,22 +1,25 @@
-import React from "react";
+import React, { forwardRef } from "react";
 import { useState } from "react";
 import { Combobox } from "@headlessui/react";
 import { twMerge } from "tailwind-merge";
 import { useDebounce } from "use-debounce";
 import clsx from "clsx";
 
-export default function Autocomplete({
-  id = "",
-  name = "",
-  value,
-  onChange,
-  options,
-  displayValue = (item) => item,
-  renderOption,
-  placeholder = "",
-  debounceDelay = 300,
-  className = "",
-}) {
+const InputAutocomplete = forwardRef(function InputAutocomplete(
+  {
+    id = "",
+    name = "",
+    value,
+    onChange,
+    options,
+    displayValue = (item) => item,
+    renderOption,
+    placeholder = "",
+    debounceDelay = 300,
+    className = "",
+  },
+  ref,
+) {
   const [query, setQuery] = useState("");
   const [debouncedQuery] = useDebounce(query, debounceDelay);
 
@@ -30,13 +33,14 @@ export default function Autocomplete({
         );
 
   return (
-    <div className={twMerge("w-72", `${className}`)}>
+    <div className={twMerge(className)}>
       <Combobox value={value} onChange={onChange}>
         <div className="relative">
           <Combobox.Input
+            ref={ref}
             id={id}
             name={name}
-            className="input"
+            className="input w-full"
             onChange={(e) => setQuery(e.target.value)}
             displayValue={displayValue}
             placeholder={placeholder}
@@ -48,7 +52,7 @@ export default function Autocomplete({
             anchor="bottom"
             transition
             className={clsx(
-              "z-20 max-h-60 overflow-y-auto border border-gray-200 bg-white p-1",
+              "absolute z-20 max-h-60 overflow-y-auto border border-gray-200 bg-white p-1",
               "[--anchor-gap:2px] [--anchor-max-height:20rem] empty:invisible",
               "data-leave:data-closed:opacity-0 transition duration-100 ease-in",
             )}
@@ -70,4 +74,6 @@ export default function Autocomplete({
       </Combobox>
     </div>
   );
-}
+});
+
+export default InputAutocomplete;

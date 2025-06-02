@@ -22,11 +22,11 @@ export default function RequisitionInfoModal({
         </span>
       </Modal.Title>
       <Modal.Body>
-        <div className="grid w-[54rem] grid-cols-3 items-start gap-8">
-          <div className="col-span-2 max-h-96 overflow-auto">
+        <div className="grid w-[54rem] grid-cols-5 items-start gap-8">
+          <div className="col-span-3 max-h-96 overflow-auto">
             <ItemsTable requisition={requisition} />
           </div>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="col-span-2 grid grid-cols-2 gap-2">
             <RequisitionFields requisition={requisition} />
           </div>
         </div>

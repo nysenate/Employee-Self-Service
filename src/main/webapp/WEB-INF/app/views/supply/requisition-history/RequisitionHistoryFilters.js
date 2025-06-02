@@ -65,6 +65,7 @@ export default function RequisitionHistoryFilters({ filters, dispatch }) {
               </div>
             </div>
           )}
+          className="w-44"
         />
       </div>
       <div>
@@ -78,6 +79,7 @@ export default function RequisitionHistoryFilters({ filters, dispatch }) {
           onChange={(value) => dispatch(setFilter("itemId", value?.id))}
           options={Array.from(itemsQuery.data?.values() || [])}
           displayValue={(item) => item?.commodityCode}
+          className="w-44"
         />
       </div>
       <div>

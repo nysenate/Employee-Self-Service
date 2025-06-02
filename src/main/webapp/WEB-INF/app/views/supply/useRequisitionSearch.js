@@ -2,8 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { buildQueryString } from "app/utils/apiUtils";
 import { fetchApiJson } from "app/api/fetchJson";
 
-function getQueryKey(queryString) {
-  return ["supply", "requisition", "list", queryString];
+function getQueryKey(params) {
+  return ["supply", "requisition", "list", { ...params }];
 }
 
 /**
@@ -40,7 +40,7 @@ function getQueryKey(queryString) {
 export function useRequisitionSearch(params) {
   const queryString = buildQueryString(params);
   return useQuery({
-    queryKey: getQueryKey(queryString),
+    queryKey: getQueryKey(params),
     queryFn: () => {
       return fetchApiJson(`/supply/requisitions?${queryString}`);
     },

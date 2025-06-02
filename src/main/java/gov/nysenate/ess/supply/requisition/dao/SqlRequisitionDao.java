@@ -100,7 +100,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
     }
 
     @Override
-    public synchronized PaginatedList<Requisition> searchRequisitions(RequisitionQuery query) {
+    public PaginatedList<Requisition> searchRequisitions(RequisitionQuery query) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("destination", query.getDestination())
                 .addValue("customerId", query.getCustomerId())

@@ -34,7 +34,7 @@ export function Button({
 
   return (
     <span className={passThroughProps.disabled ? "cursor-not-allowed" : ""}>
-      <button {...passThroughProps} type="button" className={classes}>
+      <button {...{ type: "button", ...passThroughProps }} className={classes}>
         {children}
       </button>
     </span>
