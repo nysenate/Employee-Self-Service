@@ -3,7 +3,7 @@ import Card from "app/components/Card";
 import NoMatchesFound from "app/components/NoMatchesFound";
 import { isoToShortDateTime } from "app/utils/dateUtils";
 import PaginationComponent from "app/components/PaginationComponent";
-import { setOffset } from "app/views/supply/requisition-history/RequisitionHistoryActions";
+import { setOffset } from "app/views/supply/SupplyFilterActions";
 import RequisitionInfoModal from "app/views/supply/RequisitionInfoModal";
 
 export default function RequisitionHistoryResults({ data, filters, dispatch }) {

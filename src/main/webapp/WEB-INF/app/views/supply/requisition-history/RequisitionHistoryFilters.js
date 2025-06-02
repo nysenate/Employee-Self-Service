@@ -1,10 +1,7 @@
 import React from "react";
 import InputDebounced from "app/components/InputDebounced";
 import { useItemsMap } from "app/views/supply/useItems";
-import {
-  setDateRange,
-  setFilter,
-} from "app/views/supply/requisition-history/RequisitionHistoryActions";
+import { setDateRange, setFilter } from "app/views/supply/SupplyFilterActions";
 import { useLocations } from "app/views/supply/useLocations";
 import InputAutocomplete from "app/components/InputAutocomplete";
 import { useIssuers } from "app/views/supply/requisition-history/useIssuers";

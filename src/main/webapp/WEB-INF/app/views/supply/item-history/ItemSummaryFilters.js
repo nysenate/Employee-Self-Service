@@ -2,7 +2,7 @@ import {
   resetFilters,
   setDateRange,
   setFilter,
-} from "app/views/supply/item-history/itemSummaryActions";
+} from "app/views/supply/SupplyFilterActions";
 import React from "react";
 import InputDebounced from "app/components/InputDebounced";
 import { Button } from "app/components/Button";

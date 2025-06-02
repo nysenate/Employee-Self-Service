@@ -1,7 +1,7 @@
 import Card from "app/components/Card";
 import React, { useState } from "react";
 import PaginationComponent from "app/components/PaginationComponent";
-import { setOffset } from "app/views/supply/item-history/itemSummaryActions";
+import { setOffset } from "app/views/supply/SupplyFilterActions";
 import NoMatchesFound from "app/components/NoMatchesFound";
 import clsx from "clsx";
 import { isoToShortDate } from "app/utils/dateUtils";
