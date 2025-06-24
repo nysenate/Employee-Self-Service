@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Hero from "app/components/Hero";
 import PendingQueue from "app/views/supply/fulfillment/PendingQueue";
-import { useRequisitionSocket } from "app/views/supply/useRequisitionSocket";
+import { useRequisitionSocket } from "app/views/supply/fulfillment/useRequisitionSocket";
 import { endOfDay, formatISO, startOfDay } from "date-fns";
 import LoadingIndicator from "app/components/LoadingIndicator";
 import { useRequisitionSearch } from "app/views/supply/useRequisitionSearch";

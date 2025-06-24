@@ -1,10 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { buildQueryString } from "app/utils/apiUtils";
 import { fetchApiJson } from "app/api/fetchJson";
-
-function getQueryKey(params) {
-  return ["supply", "requisition", "list", { ...params }];
-}
+import { requisitionKeys } from "app/views/supply/requisition.queryKeys";
 
 /**
  * React hook that fetches and queries requisitions based on provided filters
@@ -40,9 +37,11 @@ function getQueryKey(params) {
 export function useRequisitionSearch(params) {
   const queryString = buildQueryString(params);
   return useQuery({
-    queryKey: getQueryKey(params),
+    queryKey: requisitionKeys.search(params),
     queryFn: () => {
       return fetchApiJson(`/supply/requisitions?${queryString}`);
     },
+    staleTime: 0,
+    throwOnError: true,
   });
 }

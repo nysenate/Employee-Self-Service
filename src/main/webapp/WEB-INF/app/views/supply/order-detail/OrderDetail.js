@@ -7,8 +7,8 @@ import { alphabetizeLineItems, formatDate } from "app/views/supply/helpers";
 import OrderDetailPrint from "app/views/supply/order-detail/OrderDetailPrint";
 import Controls from "app/components/Controls";
 import Card from "app/components/Card";
-import { useRequisitionHistory } from "app/views/supply/useRequisition";
 import LoadingIndicator from "app/components/LoadingIndicator";
+import { useRequisitionHistory } from "app/views/supply/order-detail/useRequisitionHistory";
 
 export default function OrderDetail() {
   const printRef = useRef();

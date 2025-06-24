@@ -10,7 +10,7 @@ import { useSupplyEmployees } from "app/views/supply/fulfillment/useSupplyEmploy
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import clsx from "clsx";
 import { useItemsMap } from "app/views/supply/useItems";
-import { useMutateRequisition } from "app/views/supply/useRequisition";
+import { useUpdateRequisition } from "app/views/supply/fulfillment/useUpdateRequisition";
 
 const PendingActionsModal = NiceModal.create(({ requisition }) => {
   const modal = useModal();
@@ -33,7 +33,7 @@ const PendingActionsModal = NiceModal.create(({ requisition }) => {
   const { fields, append } = useFieldArray({ control, name: "lineItems" });
   const submitAction = useRef("save");
   const locationQuery = useLocations();
-  const useUpdateRequisitionMutation = useMutateRequisition();
+  const updateRequisition = useUpdateRequisition();
 
   const onSubmit = (data) => {
     requisition.destination = locationQuery.data.find(
@@ -45,9 +45,7 @@ const PendingActionsModal = NiceModal.create(({ requisition }) => {
     requisition.lineItems = data.lineItems;
 
     if (submitAction.current === "save") {
-      useUpdateRequisitionMutation
-        .mutateAsync(requisition)
-        .then(() => modal.hide());
+      updateRequisition.mutateAsync(requisition).then(() => modal.hide());
     } else if (submitAction.current === "process") {
       console.log("Processing:");
     }
