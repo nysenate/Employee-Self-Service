@@ -14,31 +14,28 @@ import NotFound from "app/views/NotFound";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import TravelRouter from "app/views/travel/TravelRouter";
-import NiceModal from "@ebay/nice-modal-react";
 
 function App() {
   return (
     <BrowserRouter>
-      <NiceModal.Provider>
-        <AuthProvider>
-          {/*<TimeoutChecker>*/}
-          <Routes>
-            <Route path="/" element={<EssIndex />} />
-            <Route path="/" element={<EssLayout />}>
-              <Route path="/myinfo/*" element={<MyInfoRouter />} />
-              <Route path="/time/*" element={<TimeRouter />} />
-              <Route path="/supply/*" element={<SupplyRouter />} />
-              <Route path="/travel/*" element={<TravelRouter />} />
-            </Route>
-            <Route path="/login" element={<LoginIndex />} />
-            <Route path="/logout" element={<Logout />} />
-            <Route path="/404" element={<NotFound />} />
-            <Route path="*" element={<NotFound />} />
-            {/* TODO Errors page, 404 page. */}
-          </Routes>
-          {/*</TimeoutChecker>*/}
-        </AuthProvider>
-      </NiceModal.Provider>
+      <AuthProvider>
+        {/*<TimeoutChecker>*/}
+        <Routes>
+          <Route path="/" element={<EssIndex />} />
+          <Route path="/" element={<EssLayout />}>
+            <Route path="/myinfo/*" element={<MyInfoRouter />} />
+            <Route path="/time/*" element={<TimeRouter />} />
+            <Route path="/supply/*" element={<SupplyRouter />} />
+            <Route path="/travel/*" element={<TravelRouter />} />
+          </Route>
+          <Route path="/login" element={<LoginIndex />} />
+          <Route path="/logout" element={<Logout />} />
+          <Route path="/404" element={<NotFound />} />
+          <Route path="*" element={<NotFound />} />
+          {/* TODO Errors page, 404 page. */}
+        </Routes>
+        {/*</TimeoutChecker>*/}
+      </AuthProvider>
     </BrowserRouter>
   );
 }

@@ -8,7 +8,6 @@
   "license": "(BSD-2-Clause OR GPL-3.0)",
   "dependencies": {
     "@date-fns/utc": "^2.1.0",
-    "@ebay/nice-modal-react": "^1.2.13",
     "@headlessui/react": "^2.2.0",
     "@heroicons/react": "^2.1.5",
     "@stomp/stompjs": "^7.1.1",

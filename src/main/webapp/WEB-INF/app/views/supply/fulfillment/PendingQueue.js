@@ -1,5 +1,5 @@
 import FulfillmentCard from "app/views/supply/fulfillment/FulfillmentCard";
-import React from "react";
+import React, { useState } from "react";
 import * as dateUtils from "app/utils/dateUtils";
 import EmptyQueueMessage from "app/views/supply/fulfillment/EmptyQueueMessage";
 import PickupIcon from "app/views/supply/fulfillment/PickupIcon";
@@ -10,19 +10,13 @@ import {
   highlightRequisitionRow,
 } from "app/views/supply/fulfillment/fulfillmentUtils";
 import PendingActionsModal from "app/views/supply/fulfillment/PendingActionsModal";
-import NiceModal from "@ebay/nice-modal-react";
 
 export default function PendingQueue({ requisitions }) {
+  const [isOpen, setIsOpen] = useState(false);
   const locationStatisticsQuery = useLocationStatistics(
     new Date().getFullYear(),
     new Date().getMonth() + 1,
   );
-
-  const showReqModal = (req) => {
-    NiceModal.show(PendingActionsModal, { requisition: req })
-      .then(() => console.log("edit modal resolved"))
-      .catch(() => console.log("Error modal"));
-  };
 
   return (
     <div>
@@ -68,7 +62,7 @@ export default function PendingQueue({ requisitions }) {
                       "font-semibold",
                   )}
                   key={r.requisitionId}
-                  onClick={() => showReqModal(r)}
+                  onClick={() => setIsOpen(true)}
                 >
                   <td className="">
                     <div className="flex h-full items-center justify-center">
@@ -101,6 +95,8 @@ export default function PendingQueue({ requisitions }) {
           </table>
         )}
       </FulfillmentCard>
+
+      <PendingActionsModal isOpen={isOpen} requisition={requisitions[0]} />
     </div>
   );
 }

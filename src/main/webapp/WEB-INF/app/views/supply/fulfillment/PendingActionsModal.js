@@ -1,6 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import NiceModal, { useModal } from "@ebay/nice-modal-react";
-import TestModal from "app/components/TestModal";
 import { Button } from "app/components/Button";
 import { isoToShortDateTime } from "app/utils/dateUtils";
 import { Link } from "react-router-dom";
@@ -11,9 +9,9 @@ import { Controller, useFieldArray, useForm } from "react-hook-form";
 import clsx from "clsx";
 import { useItemsMap } from "app/views/supply/useItems";
 import { useUpdateRequisition } from "app/views/supply/fulfillment/useUpdateRequisition";
+import Modal from "app/components/Modal";
 
-const PendingActionsModal = NiceModal.create(({ requisition }) => {
-  const modal = useModal();
+const PendingActionsModal = ({ isOpen, requisition }) => {
   const supplyEmployeesQuery = useSupplyEmployees();
   const {
     register,
@@ -50,17 +48,18 @@ const PendingActionsModal = NiceModal.create(({ requisition }) => {
     requisition.lineItems = data.lineItems;
 
     if (submitAction.current === "save") {
-      updateRequisition.mutateAsync(requisition).then(() => modal.hide());
+      console.log("Save");
+      // updateRequisition.mutateAsync(requisition).then(() => modal.resolve());
     } else if (submitAction.current === "process") {
       console.log("Processing:");
     }
   };
 
   return (
-    <TestModal allowSoftDismiss={false}>
-      <TestModal.Title>Nice Modal Cool?</TestModal.Title>
+    <Modal isOpen={isOpen}>
+      <Modal.Title>Nice Modal Cool?</Modal.Title>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <TestModal.Body>
+        <Modal.Body>
           <div className="grid w-[54rem] grid-cols-5 items-start gap-8">
             <div className="col-span-3 max-h-96 overflow-auto">
               <EditableLineItemTable
@@ -81,8 +80,8 @@ const PendingActionsModal = NiceModal.create(({ requisition }) => {
               />
             </div>
           </div>
-        </TestModal.Body>
-        <TestModal.Buttons>
+        </Modal.Body>
+        <Modal.Buttons>
           <div className="flex w-full justify-between">
             <div className="w-20">&nbsp;</div>
             <div className="flex gap-3">
@@ -90,7 +89,7 @@ const PendingActionsModal = NiceModal.create(({ requisition }) => {
                 type="button"
                 color="secondary"
                 className="w-20"
-                onClick={() => modal.hide()}
+                onClick={() => undefined}
               >
                 Cancel
               </Button>
@@ -122,11 +121,11 @@ const PendingActionsModal = NiceModal.create(({ requisition }) => {
               </Button>
             </div>
           </div>
-        </TestModal.Buttons>
+        </Modal.Buttons>
       </form>
-    </TestModal>
+    </Modal>
   );
-});
+};
 
 export default PendingActionsModal;
 
@@ -233,7 +232,6 @@ function NotesInput({ register }) {
 }
 
 function EditableFields({ requisition, register, control }) {
-  const modal = useModal();
   const locationQuery = useLocations();
   const supplyEmployeesQuery = useSupplyEmployees();
   return (
@@ -307,7 +305,7 @@ function EditableFields({ requisition, register, control }) {
       <div>
         <Link
           to={`/supply/order-history/order/${requisition.requisitionId}`}
-          onClick={() => modal.hide()}
+          onClick={() => undefined}
         >
           View full history
         </Link>
