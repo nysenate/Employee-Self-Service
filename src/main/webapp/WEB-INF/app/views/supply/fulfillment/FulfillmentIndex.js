@@ -9,6 +9,10 @@ import { useQueryClient } from "@tanstack/react-query";
 import ProcessingQueue from "app/views/supply/fulfillment/ProcessingQueue";
 import CompletedQueue from "app/views/supply/fulfillment/CompletedQueue";
 import ApprovedQueue from "app/views/supply/fulfillment/ApprovedQueue";
+import { useSearchParams } from "react-router-dom";
+import RequisitionEditModal from "app/views/supply/fulfillment/RequisitionEditModal";
+
+export const REQUISITION_ID_SEARCH_PARAM = "requisitionId";
 
 const requisitionParams = {
   from: formatISO(new Date(2000, 0, 1)),
@@ -28,12 +32,27 @@ const rejectedRequisitionParams = {
 };
 
 export default function FulfillmentIndex() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const queryClient = useQueryClient();
   const requisitionQuery = useRequisitionSearch(requisitionParams);
   const socket = useRequisitionSocket((req) => {
     console.log("Received Event: " + req);
     queryClient.invalidateQueries(["supply", "requisition", "list"]);
   });
+
+  // The Requisition edit modal is controlled by the search params. The modal is displayed when
+  // REQUISITION_ID_SEARCH_PARAM is set and the relevant requisition is loaded.
+  // e.g. /fulfillment?requisitionId=23 will display the modal for requisition 23.
+  const isEditModalOpen = () =>
+    searchParams.get(REQUISITION_ID_SEARCH_PARAM) !== null;
+
+  // The full requisition object for the requisition specified in search params or undefined.
+  const requisitionToEdit = () =>
+    requisitionQuery.data.result.find(
+      (r) =>
+        r.requisitionId ===
+        parseInt(searchParams.get(REQUISITION_ID_SEARCH_PARAM)),
+    );
 
   if (requisitionQuery.isPending) {
     return <LoadingIndicator />;
@@ -70,6 +89,13 @@ export default function FulfillmentIndex() {
           />
         </div>
       </div>
+      {isEditModalOpen() && (
+        <RequisitionEditModal
+          isOpen={isEditModalOpen()}
+          onResolve={() => setSearchParams({})}
+          requisition={requisitionToEdit()}
+        />
+      )}
     </div>
   );
 }

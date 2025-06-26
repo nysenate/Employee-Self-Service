@@ -9,10 +9,11 @@ import {
   boldRequisitionRow,
   highlightRequisitionRow,
 } from "app/views/supply/fulfillment/fulfillmentUtils";
-import PendingActionsModal from "app/views/supply/fulfillment/PendingActionsModal";
+import { useSearchParams } from "react-router-dom";
+import { REQUISITION_ID_SEARCH_PARAM } from "app/views/supply/fulfillment/FulfillmentIndex";
 
 export default function PendingQueue({ requisitions }) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [, setSearchParams] = useSearchParams();
   const locationStatisticsQuery = useLocationStatistics(
     new Date().getFullYear(),
     new Date().getMonth() + 1,
@@ -62,7 +63,11 @@ export default function PendingQueue({ requisitions }) {
                       "font-semibold",
                   )}
                   key={r.requisitionId}
-                  onClick={() => setIsOpen(true)}
+                  onClick={() =>
+                    setSearchParams({
+                      [REQUISITION_ID_SEARCH_PARAM]: r.requisitionId,
+                    })
+                  }
                 >
                   <td className="">
                     <div className="flex h-full items-center justify-center">
@@ -95,8 +100,6 @@ export default function PendingQueue({ requisitions }) {
           </table>
         )}
       </FulfillmentCard>
-
-      <PendingActionsModal isOpen={isOpen} requisition={requisitions[0]} />
     </div>
   );
 }

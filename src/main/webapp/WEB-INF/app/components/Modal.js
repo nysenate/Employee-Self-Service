@@ -1,6 +1,5 @@
-import React from "react"
-import { Dialog } from '@headlessui/react'
-
+import React from "react";
+import { Dialog } from "@headlessui/react";
 
 /**
  * Displays a modal dialog.
@@ -13,35 +12,28 @@ import { Dialog } from '@headlessui/react'
  */
 function Modal({ isOpen, onSoftReject = () => undefined, children }) {
   return (
-    <Dialog open={isOpen} onClose={onSoftReject}
-            className="relative z-50">
-      <div className="fixed inset-0 bg-black/60" aria-hidden="true"/>
+    <Dialog open={isOpen} onClose={onSoftReject} className="relative z-50">
+      <div className="fixed inset-0 bg-black/60" aria-hidden="true" />
       <div className="fixed inset-0 flex items-center justify-center p-4">
         <Dialog.Panel className="w-auto max-w-screen-xl bg-white">
           {children}
         </Dialog.Panel>
       </div>
     </Dialog>
-  )
+  );
 }
 
 const Title = ({ children }) => (
-  <Dialog.Title className="py-3 px-4 font-semibold text-center border-b-1 border-teal-200">
+  <Dialog.Title className="border-b-1 border-teal-200 px-4 py-3 text-center font-semibold">
     {children}
   </Dialog.Title>
-)
+);
 
-const Body = ({ children }) => (
-  <div className="m-4">
-    {children}
-  </div>
-)
+const Body = ({ className, children }) => <div className="m-4">{children}</div>;
 
 const Controls = ({ children }) => (
-  <div className="p-3 border-t-1 border-teal-200">
-    {children}
-  </div>
-)
+  <div className="border-t-1 border-teal-200 p-3">{children}</div>
+);
 
 /**
  * Similar to Controls, but adds additional styling to center buttons.
@@ -49,15 +41,13 @@ const Controls = ({ children }) => (
  */
 const Buttons = ({ children }) => (
   <Controls>
-    <div className="flex justify-center gap-3">
-      {children}
-    </div>
+    <div className="flex justify-center gap-3">{children}</div>
   </Controls>
-)
+);
 
-Modal.Title = Title
-Modal.Body = Body
-Modal.Controls = Controls
-Modal.Buttons = Buttons
+Modal.Title = Title;
+Modal.Body = Body;
+Modal.Controls = Controls;
+Modal.Buttons = Buttons;
 
-export default Modal
+export default Modal;

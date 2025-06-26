@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Button } from "app/components/Button";
 import { isoToShortDateTime } from "app/utils/dateUtils";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useLocations } from "app/views/supply/useLocations";
 import InputAutocomplete from "app/components/InputAutocomplete";
 import { useSupplyEmployees } from "app/views/supply/fulfillment/useSupplyEmployees";
@@ -11,45 +11,69 @@ import { useItemsMap } from "app/views/supply/useItems";
 import { useUpdateRequisition } from "app/views/supply/fulfillment/useUpdateRequisition";
 import Modal from "app/components/Modal";
 
-const PendingActionsModal = ({ isOpen, requisition }) => {
+export default function RequisitionEditModal({
+  isOpen,
+  onResolve,
+  requisition,
+}) {
+  if (isOpen && !requisition) {
+    throw Error("Unable to find requested requisition");
+  }
+
   const supplyEmployeesQuery = useSupplyEmployees();
+  const locationQuery = useLocations();
+  const updateRequisition = useUpdateRequisition();
+  const submitAction = useRef("save");
   const {
     register,
     handleSubmit,
     control,
-    formState: { errors, isDirty },
+    reset,
+    formState: { errors, isDirty, dirtyFields },
   } = useForm({
     mode: "onBlur",
     defaultValues: {
-      destinationId: requisition.destination.locId,
-      deliveryMethod: requisition.deliveryMethod,
-      issuerEmpId: requisition.issuer?.employeeId || undefined,
-      note: requisition.note || "",
-      lineItems: requisition.lineItems,
+      destinationId: "",
+      deliveryMethod: "",
+      issuerEmpId: "",
+      note: "",
+      lineItems: [],
     },
   });
-
   const { fields, append } = useFieldArray({ control, name: "lineItems" });
-  const submitAction = useRef("save");
-  const locationQuery = useLocations();
-  const updateRequisition = useUpdateRequisition();
+
+  console.log(isDirty);
+  console.log(dirtyFields);
+
+  useEffect(() => {
+    if (requisition) {
+      reset({
+        destinationId: requisition.destination?.locId,
+        deliveryMethod: requisition.deliveryMethod,
+        issuerEmpId: requisition.issuer?.employeeId || null,
+        note: requisition.note || "",
+        lineItems: requisition.lineItems,
+      });
+    }
+  }, [requisition, reset]);
 
   const onSubmit = (data) => {
+    // Modify a shallow copy.
+    const dirtyReq = { ...requisition };
     // Always save changes regardless of action.
-    requisition.destination = locationQuery.data.find(
+    dirtyReq.destination = locationQuery.data.find(
       (loc) => loc.locId === data.destinationId,
     );
-    requisition.deliveryMethod = data.deliveryMethod;
-    requisition.issuer =
+    dirtyReq.deliveryMethod = data.deliveryMethod;
+    dirtyReq.issuer =
       supplyEmployeesQuery.data?.find(
         (emp) => emp.employeeId === data.issuerEmpId,
       ) || null;
-    requisition.note = data.note;
-    requisition.lineItems = data.lineItems;
+    dirtyReq.note = data.note;
+    dirtyReq.lineItems = data.lineItems;
 
     if (submitAction.current === "save") {
-      console.log("Save");
-      // updateRequisition.mutateAsync(requisition).then(() => modal.resolve());
+      updateRequisition.mutateAsync(dirtyReq).then(() => onResolve());
     } else if (submitAction.current === "process") {
       console.log("Processing:");
     }
@@ -63,10 +87,8 @@ const PendingActionsModal = ({ isOpen, requisition }) => {
           <div className="grid w-[54rem] grid-cols-5 items-start gap-8">
             <div className="col-span-3 max-h-96 overflow-auto">
               <EditableLineItemTable
-                lineItems={requisition.lineItems}
                 register={register}
                 fields={fields}
-                append={append}
                 errors={errors}
               />
               <AddItemInput append={append} />
@@ -89,7 +111,7 @@ const PendingActionsModal = ({ isOpen, requisition }) => {
                 type="button"
                 color="secondary"
                 className="w-20"
-                onClick={() => undefined}
+                onClick={() => onResolve()}
               >
                 Cancel
               </Button>
@@ -125,17 +147,9 @@ const PendingActionsModal = ({ isOpen, requisition }) => {
       </form>
     </Modal>
   );
-};
+}
 
-export default PendingActionsModal;
-
-function EditableLineItemTable({
-  lineItems,
-  register,
-  fields,
-  append,
-  errors,
-}) {
+function EditableLineItemTable({ register, fields, errors }) {
   return (
     <div>
       <table className="table">
@@ -271,8 +285,7 @@ function EditableFields({ requisition, register, control }) {
         <select
           className="select w-full"
           {...register("issuerEmpId", {
-            setValueAs: (value) =>
-              value === "" ? undefined : parseInt(value, 10),
+            setValueAs: (value) => (value === "" ? null : parseInt(value, 10)),
           })}
         >
           <option></option>
@@ -303,10 +316,7 @@ function EditableFields({ requisition, register, control }) {
 
       <div className="font-semibold">Actions:</div>
       <div>
-        <Link
-          to={`/supply/order-history/order/${requisition.requisitionId}`}
-          onClick={() => undefined}
-        >
+        <Link to={`/supply/order-history/order/${requisition.requisitionId}`}>
           View full history
         </Link>
       </div>
