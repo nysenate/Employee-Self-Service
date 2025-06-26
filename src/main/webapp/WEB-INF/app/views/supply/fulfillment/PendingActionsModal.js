@@ -14,6 +14,7 @@ import { useUpdateRequisition } from "app/views/supply/fulfillment/useUpdateRequ
 
 const PendingActionsModal = NiceModal.create(({ requisition }) => {
   const modal = useModal();
+  const supplyEmployeesQuery = useSupplyEmployees();
   const {
     register,
     handleSubmit,
@@ -24,7 +25,7 @@ const PendingActionsModal = NiceModal.create(({ requisition }) => {
     defaultValues: {
       destinationId: requisition.destination.locId,
       deliveryMethod: requisition.deliveryMethod,
-      issuer: requisition.issuer || "",
+      issuerEmpId: requisition.issuer?.employeeId || undefined,
       note: requisition.note || "",
       lineItems: requisition.lineItems,
     },
@@ -36,11 +37,15 @@ const PendingActionsModal = NiceModal.create(({ requisition }) => {
   const updateRequisition = useUpdateRequisition();
 
   const onSubmit = (data) => {
+    // Always save changes regardless of action.
     requisition.destination = locationQuery.data.find(
       (loc) => loc.locId === data.destinationId,
     );
     requisition.deliveryMethod = data.deliveryMethod;
-    requisition.issuer = data.issuer || null;
+    requisition.issuer =
+      supplyEmployeesQuery.data?.find(
+        (emp) => emp.employeeId === data.issuerEmpId,
+      ) || null;
     requisition.note = data.note;
     requisition.lineItems = data.lineItems;
 
@@ -52,7 +57,7 @@ const PendingActionsModal = NiceModal.create(({ requisition }) => {
   };
 
   return (
-    <TestModal allowSoftReject={true}>
+    <TestModal allowSoftDismiss={false}>
       <TestModal.Title>Nice Modal Cool?</TestModal.Title>
       <form onSubmit={handleSubmit(onSubmit)}>
         <TestModal.Body>
@@ -78,19 +83,45 @@ const PendingActionsModal = NiceModal.create(({ requisition }) => {
           </div>
         </TestModal.Body>
         <TestModal.Buttons>
-          <Button
-            type="submit"
-            disabled={!isDirty}
-            onClick={() => (submitAction.current = "save")}
-          >
-            Save
-          </Button>
-          <Button
-            type="submit"
-            onClick={() => (submitAction.current = "process")}
-          >
-            Process
-          </Button>
+          <div className="flex w-full justify-between">
+            <div className="w-20">&nbsp;</div>
+            <div className="flex gap-3">
+              <Button
+                type="button"
+                color="secondary"
+                className="w-20"
+                onClick={() => modal.hide()}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={!isDirty}
+                className="w-20"
+                onClick={() => (submitAction.current = "save")}
+              >
+                Save
+              </Button>
+              <Button
+                type="submit"
+                color="time"
+                className="w-20"
+                onClick={() => (submitAction.current = "process")}
+              >
+                Process
+              </Button>
+            </div>
+            <div>
+              <Button
+                type="submit"
+                color="error"
+                className="w-20"
+                onClick={() => (submitAction.current = "reject")}
+              >
+                Reject
+              </Button>
+            </div>
+          </div>
         </TestModal.Buttons>
       </form>
     </TestModal>
@@ -239,22 +270,21 @@ function EditableFields({ requisition, register, control }) {
 
       <div className="font-semibold">Assigned To:</div>
       <div>
-        <select className="select w-full" {...register("issuer")}>
+        <select
+          className="select w-full"
+          {...register("issuerEmpId", {
+            setValueAs: (value) =>
+              value === "" ? undefined : parseInt(value, 10),
+          })}
+        >
           <option></option>
           {supplyEmployeesQuery.data?.map((emp) => (
-            <option value={emp} key={emp.employeeId}>
+            <option value={emp.employeeId} key={emp.employeeId}>
               {emp.fullName}
             </option>
           ))}
         </select>
       </div>
-
-      {requisition.issuer && (
-        <>
-          <div className="font-semibold">Issuer:</div>
-          <div>{requisition.issuer.lastName}</div>
-        </>
-      )}
 
       {requisition.status === "APPROVED" && (
         <>
