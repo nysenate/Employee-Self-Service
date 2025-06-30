@@ -10,7 +10,7 @@ import ProcessingQueue from "app/views/supply/fulfillment/ProcessingQueue";
 import CompletedQueue from "app/views/supply/fulfillment/CompletedQueue";
 import ApprovedQueue from "app/views/supply/fulfillment/ApprovedQueue";
 import { useSearchParams } from "react-router-dom";
-import RequisitionEditModal from "app/views/supply/fulfillment/RequisitionEditModal";
+import RequisitionEditModal from "app/views/supply/fulfillment/modal/RequisitionEditModal";
 
 export const REQUISITION_ID_SEARCH_PARAM = "requisitionId";
 
@@ -47,7 +47,7 @@ export default function FulfillmentIndex() {
     searchParams.get(REQUISITION_ID_SEARCH_PARAM) !== null;
 
   // The full requisition object for the requisition specified in search params or undefined.
-  const requisitionToEdit = () =>
+  const selectedRequisition = () =>
     requisitionQuery.data.result.find(
       (r) =>
         r.requisitionId ===
@@ -93,7 +93,7 @@ export default function FulfillmentIndex() {
         <RequisitionEditModal
           isOpen={isEditModalOpen()}
           onResolve={() => setSearchParams({})}
-          requisition={requisitionToEdit()}
+          requisition={selectedRequisition()}
         />
       )}
     </div>
