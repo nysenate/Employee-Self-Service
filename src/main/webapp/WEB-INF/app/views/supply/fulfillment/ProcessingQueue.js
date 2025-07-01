@@ -9,8 +9,11 @@ import {
   boldRequisitionRow,
   highlightRequisitionRow,
 } from "app/views/supply/fulfillment/fulfillmentUtils";
+import { useSearchParams } from "react-router-dom";
+import { REQUISITION_ID_SEARCH_PARAM } from "app/views/supply/fulfillment/FulfillmentIndex";
 
 export default function ProcessingQueue({ requisitions }) {
+  const [, setSearchParams] = useSearchParams();
   const locationStatisticsQuery = useLocationStatistics(
     new Date().getFullYear(),
     new Date().getMonth() + 1,
@@ -59,7 +62,11 @@ export default function ProcessingQueue({ requisitions }) {
                       "font-semibold",
                   )}
                   key={r.requisitionId}
-                  onClick={() => console.log("CLICK")}
+                  onClick={() =>
+                    setSearchParams({
+                      [REQUISITION_ID_SEARCH_PARAM]: r.requisitionId,
+                    })
+                  }
                 >
                   <td className="">
                     <div className="flex h-full items-center justify-center">

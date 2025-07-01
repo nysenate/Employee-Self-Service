@@ -1,19 +1,18 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Button } from "app/components/Button";
-import { isoToShortDateTime } from "app/utils/dateUtils";
-import { Link, useSearchParams } from "react-router-dom";
 import { useLocations } from "app/views/supply/useLocations";
-import InputAutocomplete from "app/components/InputAutocomplete";
 import { useSupplyEmployees } from "app/views/supply/fulfillment/useSupplyEmployees";
-import { Controller, useFieldArray, useForm } from "react-hook-form";
-import clsx from "clsx";
-import { useItemsMap } from "app/views/supply/useItems";
+import { useFieldArray, useForm } from "react-hook-form";
 import { useUpdateRequisition } from "app/views/supply/fulfillment/useUpdateRequisition";
 import Modal from "app/components/Modal";
 import EditableLineItems from "app/views/supply/fulfillment/modal/EditableLineItems";
 import EditableFields from "app/views/supply/fulfillment/modal/EditableFields";
 import NotesInput from "app/views/supply/fulfillment/modal/NotesInput";
 import AddItemInput from "app/views/supply/fulfillment/modal/AddItemInput";
+import { useAdvanceRequisition } from "app/views/supply/fulfillment/useAdvanceRequisition";
+import { useRejectRequisition } from "app/views/supply/fulfillment/useRejectRequisition";
+import { useUndoRequisition } from "app/views/supply/fulfillment/useUndoRequisition";
+import LoadingIndicator from "app/components/LoadingIndicator";
 
 export default function RequisitionEditModal({
   isOpen,
@@ -27,13 +26,17 @@ export default function RequisitionEditModal({
   const supplyEmployeesQuery = useSupplyEmployees();
   const locationQuery = useLocations();
   const updateRequisition = useUpdateRequisition();
+  const advanceRequisition = useAdvanceRequisition();
+  const rejectRequisition = useRejectRequisition();
+  const undoRequisition = useUndoRequisition();
   const submitAction = useRef("save");
   const {
     register,
     handleSubmit,
     control,
     reset,
-    formState: { errors, isDirty, dirtyFields },
+    setError,
+    formState: { errors, isDirty, dirtyFields, isSubmitting },
   } = useForm({
     mode: "onBlur",
     defaultValues: {
@@ -58,8 +61,8 @@ export default function RequisitionEditModal({
     }
   }, [requisition, reset]);
 
-  const onSubmit = (data) => {
-    // Modify a shallow copy.
+  const onSubmit = async (data) => {
+    // Make modifications to a copy.
     const dirtyReq = { ...requisition };
     // Always save changes regardless of action.
     dirtyReq.destination = locationQuery.data.find(
@@ -73,16 +76,48 @@ export default function RequisitionEditModal({
     dirtyReq.note = data.note;
     dirtyReq.lineItems = data.lineItems;
 
-    if (submitAction.current === "save") {
-      updateRequisition.mutateAsync(dirtyReq).then(() => onResolve());
-    } else if (submitAction.current === "advance") {
-      console.log("Advancing...");
-    } else if (submitAction.current === "reject") {
-      console.log("Rejecting...");
-    } else {
-      console.error("Unknown action");
+    switch (submitAction.current) {
+      case "save":
+        await updateRequisition.mutateAsync(dirtyReq);
+        break;
+      case "advance":
+        await advanceRequisition.mutateAsync(dirtyReq);
+        break;
+      case "reject":
+        if (dirtyFields.note && data.note) {
+          // Require a note when rejecting.
+          await rejectRequisition.mutateAsync(dirtyReq);
+        } else {
+          setError("note", {
+            type: "custom",
+            message: "A note is required to reject.",
+          });
+        }
+        break;
+      case "undo":
+        await undoRequisition.mutateAsync(dirtyReq);
+        break;
+      default:
+        throw Error("Unknown action taken in edit requisition modal");
     }
+    onResolve();
   };
+
+  // if (
+  //   updateRequisition.isPending ||
+  //   advanceRequisition.isPending ||
+  //   rejectRequisition.isPending ||
+  //   undoRequisition.isPending ||
+  //   true
+  // ) {
+  //   return (
+  //     <Modal isOpen={isOpen}>
+  //       <div className="w-[54rem]">
+  //         <LoadingIndicator />
+  //       </div>
+  //     </Modal>
+  //   );
+  // }
 
   return (
     <Modal isOpen={isOpen}>
@@ -99,7 +134,7 @@ export default function RequisitionEditModal({
                 errors={errors}
               />
               <AddItemInput append={append} />
-              <NotesInput register={register} />
+              <NotesInput register={register} errors={errors} />
             </div>
             <div className="col-span-2">
               <EditableFields
@@ -113,7 +148,12 @@ export default function RequisitionEditModal({
         <Modal.Buttons>
           <div className="flex w-full justify-between">
             <div className="w-20">&nbsp;</div>
-            <div className="flex gap-3">
+            <div className="flex items-baseline gap-3">
+              <UndoButton
+                status={requisition.status}
+                submitAction={submitAction}
+                isSubmitting={isSubmitting}
+              />
               <Button
                 type="button"
                 color="secondary"
@@ -124,7 +164,7 @@ export default function RequisitionEditModal({
               </Button>
               <Button
                 type="submit"
-                disabled={!isDirty}
+                disabled={!isDirty || isSubmitting}
                 className="w-20"
                 onClick={() => (submitAction.current = "save")}
               >
@@ -133,12 +173,14 @@ export default function RequisitionEditModal({
               <AdvanceButton
                 status={requisition.status}
                 submitAction={submitAction}
+                isSubmitting={isSubmitting}
               />
             </div>
             <div>
               <RejectButton
                 status={requisition.status}
                 submitAction={submitAction}
+                isSubmitting={isSubmitting}
               />
             </div>
           </div>
@@ -148,7 +190,7 @@ export default function RequisitionEditModal({
   );
 }
 
-function AdvanceButton({ status, submitAction }) {
+function AdvanceButton({ status, submitAction, isSubmitting }) {
   let label = "";
   let color = "";
   switch (status) {
@@ -176,6 +218,7 @@ function AdvanceButton({ status, submitAction }) {
     <Button
       type="submit"
       color={color}
+      disabled={isSubmitting}
       className="w-20"
       onClick={() => (submitAction.current = "advance")}
     >
@@ -184,12 +227,14 @@ function AdvanceButton({ status, submitAction }) {
   );
 }
 
-function RejectButton({ status, submitAction }) {
+function RejectButton({ status, submitAction, isSubmitting }) {
   if (status === "PENDING" || status === "PROCESSING") {
+    // Only display reject option if status is currently pending or processing
     return (
       <Button
         type="submit"
         color="error"
+        disabled={isSubmitting}
         className="w-20"
         onClick={() => (submitAction.current = "reject")}
       >
@@ -197,7 +242,25 @@ function RejectButton({ status, submitAction }) {
       </Button>
     );
   } else {
-    // Only display reject option if currently in pending or processing
+    return <></>;
+  }
+}
+
+function UndoButton({ status, submitAction, isSubmitting }) {
+  if (status === "PROCESSING" || status === "COMPLETED") {
+    return (
+      <Button
+        type="submit"
+        variant="text"
+        color="link"
+        disabled={isSubmitting}
+        className="w-20"
+        onClick={() => (submitAction.current = "undo")}
+      >
+        Undo
+      </Button>
+    );
+  } else {
     return <></>;
   }
 }
