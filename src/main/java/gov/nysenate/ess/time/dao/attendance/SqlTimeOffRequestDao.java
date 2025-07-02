@@ -296,6 +296,11 @@ public class SqlTimeOffRequestDao extends SqlBaseDao implements TimeOffRequestDa
         params.addValue("miscType", Optional.ofNullable(day.getMiscType())
                                                         .map(Enum::name)
                                                         .orElse(null));
+        params.addValue("misc2_Hours", day.getMiscHours().orElse(BigDecimal.ZERO));
+        //Allow misc_type to be null
+        params.addValue("misc_Type2", Optional.ofNullable(day.getMiscType())
+                .map(Enum::name)
+                .orElse(null));
         return params;
     }
 

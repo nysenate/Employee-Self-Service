@@ -11,6 +11,7 @@ public class TimeOffRequestDayView extends AttendanceHoursView implements ViewOb
     protected int requestId;
     protected LocalDate date;
     protected String miscType;
+    protected String miscType2;
 
     public TimeOffRequestDayView() {}
 
@@ -20,6 +21,7 @@ public class TimeOffRequestDayView extends AttendanceHoursView implements ViewOb
             this.requestId = day.getRequestId();
             this.date = LocalDate.parse(day.getDate().toString());
             this.miscType = day.getMiscType() != null ? day.getMiscType().toString() : null;
+            this.miscType2 = day.getMiscType2() != null ? day.getMiscType2().toString() : null;
         }
     }
 
@@ -35,6 +37,7 @@ public class TimeOffRequestDayView extends AttendanceHoursView implements ViewOb
         day.setSickFamHours(sickFamHours);
         day.setMiscHours(miscHours);
         day.setMiscType(miscType != null ? MiscLeaveType.valueOf(miscType) : null);
+        day.setMiscType2(miscType2 != null ? MiscLeaveType.valueOf(miscType2) : null);
         day.setDate(date);
         return day;
     }
@@ -49,6 +52,10 @@ public class TimeOffRequestDayView extends AttendanceHoursView implements ViewOb
 
     public String getMiscType() {
         return miscType;
+    }
+
+    public String getMiscType2() {
+        return miscType2;
     }
 
     @Override

@@ -102,16 +102,22 @@ function timeOffRequestReviewModal(appProps, modals, locationService, AccrualApi
             );
             function updateAccrualTotals() {
                 var vacationUsed = 0, personalUsed = 0, sickUsed = 0;
+                $scope.requests[$scope.iSelectedRequest].totalHours = 0;
                 $scope.requests[$scope.iSelectedRequest].days.forEach(function (day) {
-                    day.totalHours = day.workHours + day.vacationHours + day.personalHours + day.sickEmpHours
-                        + day.sickFamHours + day.miscHours + day.holidayHours;
+                    $scope.requests[$scope.iSelectedRequest].totalHours =
+                        $scope.requests[$scope.iSelectedRequest].totalHours +
+                        day.workHours + day.vacationHours + day.personalHours + day.sickEmpHours
+                        + day.sickFamHours + day.miscHours + day.misc2Hours + day.holidayHours;
+
                     vacationUsed += day.vacationHours;
                     personalUsed += day.personalHours;
                     sickUsed += day.sickEmpHours + day.sickFamHours;
                 });
+
                 $scope.accrualsPost.vacation = $scope.accruals.vacation - vacationUsed;
                 $scope.accrualsPost.personal = $scope.accruals.personal - personalUsed;
                 $scope.accrualsPost.sick = $scope.accruals.sick - sickUsed;
+                console.log($scope.requests[$scope.iSelectedRequest]);
             };
         }
         retrieveAccrualInformation();//initialize accruals

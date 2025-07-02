@@ -16,12 +16,14 @@ public class TimeOffRequestDay extends AttendanceHours implements Comparable<Tim
     protected int requestId;
     protected LocalDate date;
     protected MiscLeaveType miscType;
+    protected MiscLeaveType miscType2;
 
     public TimeOffRequestDay() {}
 
     public TimeOffRequestDay(int requestId, LocalDate date, BigDecimal workHours, BigDecimal holidayHours,
                              BigDecimal vacationHours, BigDecimal personalHours, BigDecimal sickEmpHours,
-                             BigDecimal sickFamHours, BigDecimal miscHours, MiscLeaveType miscType) {
+                             BigDecimal sickFamHours, BigDecimal miscHours, MiscLeaveType miscType,
+                             BigDecimal misc2Hours, MiscLeaveType miscType2) {
         this.requestId = requestId;
         this.date = date;
         this.workHours = workHours;
@@ -32,6 +34,8 @@ public class TimeOffRequestDay extends AttendanceHours implements Comparable<Tim
         this.sickFamHours = sickFamHours;
         this.miscHours = miscHours;
         this.miscType = miscType;
+        this.misc2Hours = misc2Hours;
+        this.miscType2 = miscType2;
     }
 
     @Override
@@ -47,7 +51,7 @@ public class TimeOffRequestDay extends AttendanceHours implements Comparable<Tim
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), getRequestId(), getDate(), getMiscType());
+        return Objects.hash(super.hashCode(), getRequestId(), getDate(), getMiscType(), getMiscType2());
     }
 
     /*Basic Getters and Setters*/
@@ -63,6 +67,10 @@ public class TimeOffRequestDay extends AttendanceHours implements Comparable<Tim
         return miscType;
     }
 
+    public MiscLeaveType getMiscType2() {
+        return miscType2;
+    }
+
     public void setRequestId(int requestId) {
         this.requestId = requestId;
     }
@@ -71,6 +79,10 @@ public class TimeOffRequestDay extends AttendanceHours implements Comparable<Tim
 
     public void setMiscType(MiscLeaveType miscType) {
         this.miscType = miscType;
+    }
+
+    public void setMiscType2(MiscLeaveType miscType2) {
+        this.miscType2 = miscType2;
     }
 
     @Override

@@ -19,14 +19,16 @@
   </div>
 
   <div class="timeoff-request-accrual-container content-container content-controls" ng-show="pageLoaded">
+    <div><p style="color: black"><b>Submit a time-off request for approval by your Time and Attendance supervisor.<br/>
+      If the hours are approved you will still have to enter them in the time record for that date.</b></p></div>
     <div class="content-container"><h1>Active Time Off Requests</h1></div>
 
 
-    <time-off-request-list data="requests"></time-off-request-list>
+    <time-off-request-list class="time-off-request-list" data="requests"></time-off-request-list>
 
 
     <!--Add button to submit a new request-->
-    <button class="add-button" ng-click="newRequest()">
+    <button class="save-record-container time-off-request-submit-button" ng-click="newRequest()">
       &nbsp;New Time Off Request&nbsp;
     </button>
   </div>

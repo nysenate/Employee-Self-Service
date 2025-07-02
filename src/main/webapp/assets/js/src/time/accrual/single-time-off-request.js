@@ -25,11 +25,16 @@
         $scope.endDate = "";
         $scope.request = {};
 
+        $scope.goBack = function() {
+            window.open(window.location.href.substring(0,window.location.href.length-2), "_self");
+        };
+
         //make the call to the backend to get the active requests for the user
         RequestApi.get({requestId: $scope.requestId}).$promise.then(
             //successful query
             function (data) {
                 $scope.request = data;
+                console.log($scope.request);
                 $scope.startDate = new Date(data.startDate).toLocaleDateString();
                 $scope.endDate = new Date(data.endDate).toLocaleDateString();
                 $scope.request.days.forEach(function(day){

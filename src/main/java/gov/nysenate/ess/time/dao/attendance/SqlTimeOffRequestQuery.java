@@ -49,9 +49,10 @@ public enum SqlTimeOffRequestQuery implements BasicSqlQuery {
     ADD_DAY_TO_TIME_OFF_REQUEST(
             "INSERT INTO time.time_off_request_day" +
                     "(request_id, request_date, work_hours, holiday_hours, vacation_hours, personal_hours, " +
-                    "sick_emp_hours, sick_fam_hours, misc_hours, misc_type) \n" +
+                    "sick_emp_hours, sick_fam_hours, misc_hours, misc_type, misc2_Hours, misc_Type2) \n" +
                     "VALUES(:requestId, :date, :workHours, :holidayHours, :vacationHours, :personalHours, " +
-                    ":sickEmpHours, :sickFamHours, :miscHours, :miscType::\"time\".time_off_misc_type)"
+                    ":sickEmpHours, :sickFamHours, :miscHours, :miscType::\"time\".time_off_misc_type," +
+                    ":misc2_Hours, :misc_Type2::\"time\".time_off_misc_type)"
     ),
     UPDATE_REQUEST(
             "UPDATE time.time_off_request\n" +

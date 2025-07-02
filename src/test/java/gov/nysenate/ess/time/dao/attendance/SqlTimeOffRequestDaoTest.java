@@ -74,9 +74,9 @@ public class SqlTimeOffRequestDaoTest extends BaseTest {
         LocalDate dateTwo = LocalDate.now().plusDays(1);
         List<TimeOffRequestDay> days = new ArrayList<>();
         TimeOffRequestDay dayOne = new TimeOffRequestDay(requestId, dateOne, BigDecimal.ZERO, BigDecimal.ZERO,
-                BigDecimal.valueOf(7), BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO, null);
+                BigDecimal.valueOf(7), BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO, null, BigDecimal.ZERO, null);
         TimeOffRequestDay dayTwo = new TimeOffRequestDay(requestId, dateTwo, BigDecimal.ZERO, BigDecimal.ZERO,
-                BigDecimal.valueOf(7), BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO, null);
+                BigDecimal.valueOf(7), BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO, null, BigDecimal.ZERO, null);
         days.add(dayOne);
         days.add(dayTwo);
         request.setDays(days);
@@ -301,7 +301,7 @@ public class SqlTimeOffRequestDaoTest extends BaseTest {
         LocalDate dateOne = LocalDate.now();
         TimeOffRequestDay dayOne = new TimeOffRequestDay(requestId, dateOne, BigDecimal.valueOf(1), BigDecimal.valueOf(2),
                 BigDecimal.valueOf(3), BigDecimal.valueOf(4),BigDecimal.valueOf(5),BigDecimal.valueOf(6),BigDecimal.valueOf(7),
-                MiscLeaveType.JURY_LEAVE);
+                MiscLeaveType.JURY_LEAVE, BigDecimal.ZERO, null);
 
         //add and then retrieve the day
         List<TimeOffRequestDay> dayList = new ArrayList<>();
@@ -344,9 +344,9 @@ public class SqlTimeOffRequestDaoTest extends BaseTest {
         LocalDate dateOne = LocalDate.now();
         LocalDate dateTwo = LocalDate.now().plusDays(1);
         TimeOffRequestDay dayOne = new TimeOffRequestDay(requestId, dateOne, BigDecimal.ZERO, BigDecimal.ZERO,
-                BigDecimal.valueOf(7), BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO, null);
+                BigDecimal.valueOf(7), BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO, null, BigDecimal.ZERO, null);
         TimeOffRequestDay dayTwo = new TimeOffRequestDay(requestId, dateTwo, BigDecimal.ZERO, BigDecimal.ZERO,
-                BigDecimal.valueOf(7), BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO, null);
+                BigDecimal.valueOf(7), BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO, null, BigDecimal.ZERO, null);
 
         List<TimeOffRequestDay> dayList = new ArrayList<>();
         dayList.add(dayOne);
@@ -420,9 +420,9 @@ public class SqlTimeOffRequestDaoTest extends BaseTest {
         LocalDate dateOne = LocalDate.now();
         LocalDate dateTwo = LocalDate.now().plusDays(1);
         TimeOffRequestDay dayOne = new TimeOffRequestDay(requestId, dateOne, BigDecimal.ZERO, BigDecimal.ZERO,
-                BigDecimal.valueOf(7), BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO, null);
+                BigDecimal.valueOf(7), BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO, null, BigDecimal.ZERO, null);
         TimeOffRequestDay dayTwo = new TimeOffRequestDay(requestId, dateTwo, BigDecimal.ZERO, BigDecimal.ZERO,
-                BigDecimal.valueOf(7), BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO, null);
+                BigDecimal.valueOf(7), BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO, null, BigDecimal.ZERO, null);
         dayList.add(dayOne);
         dayList.add(dayTwo);
         request.setDays(dayList);
@@ -504,9 +504,9 @@ public class SqlTimeOffRequestDaoTest extends BaseTest {
         LocalDate dateOne = LocalDate.now();
         LocalDate dateTwo = LocalDate.now().plusDays(1);
         TimeOffRequestDay dayOne = new TimeOffRequestDay(-1, dateOne, BigDecimal.ZERO, BigDecimal.ZERO,
-                BigDecimal.valueOf(7), BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO, null);
+                BigDecimal.valueOf(7), BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO, null, BigDecimal.ZERO, null);
         TimeOffRequestDay dayTwo = new TimeOffRequestDay(-1, dateTwo, BigDecimal.ZERO, BigDecimal.ZERO,
-                BigDecimal.valueOf(7), BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO, MiscLeaveType.JURY_LEAVE);
+                BigDecimal.valueOf(7), BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO, MiscLeaveType.JURY_LEAVE, BigDecimal.ZERO, null);
         List<TimeOffRequestDay> days = new ArrayList<>();
         days.add(dayOne);
         days.add(dayTwo);

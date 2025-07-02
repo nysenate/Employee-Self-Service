@@ -483,7 +483,7 @@ table.attendance-entry-sub-table {
 time-off-request-list {
   width: 100%;
   margin: 0;
-  padding: 0;
+  padding: 5px;
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -492,15 +492,17 @@ time-off-request-list {
   .timeoff-request-table {
     width: 96%;
     margin: 0 0 20px;
+    justify-content: center;
+    align-content: center;
 
     thead {
       .timeoff-table-date-range {
-        width: 23%;
+        width: 25%;
         text-align: center !important;
       }
 
       .timeoff-table-status {
-        width: 13%;
+        width: 14%;
         text-align: center;
       }
 
@@ -510,7 +512,7 @@ time-off-request-list {
       }
 
       .timeoff-table-hour-types {
-        width: 50%;
+        width: 14%;
       }
 
       tr {
@@ -778,6 +780,13 @@ time-off-request-view, #time-off-request-details-view {
 
 .time-off-request-back-button {
   align-self: flex-start;
+  display: flex;
+  flex-direction: row;
+
+  button {
+    margin: 10px 3%;
+    padding: 5px 15px;
+  }
 }
 
 .time-off-request-save-button {
@@ -786,8 +795,9 @@ time-off-request-view, #time-off-request-details-view {
 }
 
 .time-off-request-submit-button {
-  background: #3f7506;
+  background: forestgreen;
   color: #fefefe;
+  font-weight: bold;
 }
 
 #time-off-request-checkbox {

@@ -6,8 +6,8 @@
     <th class="timeoff-table-date-range">Date Range</th>
     <th class="timeoff-table-status">Status</th>
     <th class="timeoff-table-total-hours">Total Hours</th>
-    <th class="timeoff-table-total-hours">Leave Hours</th>
-    <th class="timeoff-table-hour-types"></th>
+<%--    <th class="timeoff-table-total-hours">Leave Hours</th>--%>
+    <th class="timeoff-table-hour-types">Leave Type(s)</th>
   </tr>
   </thead>
   <tbody>
@@ -17,7 +17,7 @@
       <td class="timeoff-table-date-range">{{request.startDatePrint}} - {{request.endDatePrint}}</td>
       <td class="timeoff-table-status">{{request.status | timeOffRequestStatus}}</td>
       <td class="timeoff-table-total-hours">{{request.totalHours}}</td>
-      <td class="timeoff-table-total-hours">{{request.leaveHours}}</td>
+<%--      <td class="timeoff-table-total-hours">{{request.leaveHours}}</td>--%>
       <td class="timeoff-table-hour-types chip-container" >
         <div class="md-chip" ng-class="{vacation: type === 'VACATION', personal: type === 'PERSONAL',
                         sick: type === 'SICKEMP' || type === 'SICKFAM'}" ng-repeat="type in request.accrualTypes">
@@ -31,5 +31,5 @@
   </tbody>
 </table>
 <div ng-show="data.length < 1" class="no-requests" > <!--Only show if they have no requests-->
-  No Time Off Requests
+  <b>No Time Off Requests</b>
 </div>

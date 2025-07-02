@@ -14,9 +14,9 @@
   </div>
   <div class="timeoff-request-accrual-container content-container">
 
-    <a class="time-off-request-back-button" ng-click="goBack()">
+    <button class="time-off-request-back-button save-record-container" ng-click="goBack()">
       Back to Time Off Requests
-    </a>
+    </button>
 
     <time-off-request-view data="data" mode="viewMode"></time-off-request-view>
 

@@ -20,7 +20,7 @@
                 var currentUrl = appProps.ctxPath;
                 var id_num = request.requestId;
                 var newUrl = currentUrl + "/time/accrual/time-off-request/" + id_num;
-                window.open(newUrl, "_blank");
+                window.open(newUrl, "_self");
             };
         }
     }

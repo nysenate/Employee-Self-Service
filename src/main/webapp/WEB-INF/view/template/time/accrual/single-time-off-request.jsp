@@ -17,7 +17,11 @@
   </div>
 
   <div class="timeoff-request-accrual-container content-container content-controls" ng-if="!loadingRequests">
-    <div class="content-container" ng-if="!loadingRequests"><h1>Time Off Request: {{startDate}} to {{endDate}}</h1></div>
+    <button class="time-off-request-back-button save-record-container" ng-click="goBack()">
+      Back to Time Off Requests
+    </button>
+
+    <div class="content-container" ng-if="!loadingRequests"><h1>Time Off Request Review</h1></div>
 
       <time-off-request-view ng-if="!loadingRequests" mode="viewMode" data="request"></time-off-request-view>
 

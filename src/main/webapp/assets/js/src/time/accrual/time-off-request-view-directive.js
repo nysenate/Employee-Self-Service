@@ -42,11 +42,12 @@
         return {
             scope: {
                 data: '=',
-                mode: '='
+                mode: '=',
             },
             templateUrl: appProps.ctxPath + '/template/time/accrual/time-off-request-view',
             link: function ($scope) {
                 $scope.pageLoaded = true;
+                $scope.timeOffLoading = true;
 
                 /**
                  * Function to be executed when the page loads.
@@ -90,7 +91,10 @@
                         $scope.accrualsPost.personal = data.result.personalAvailable;
                         $scope.accrualsPost.vacation = data.result.vacationAvailable;
                         $scope.accrualsPost.sick = data.result.sickAvailable;
-                        $scope.updateTotals();
+                        if ($scope.mode === 'input') {
+                            $scope.addDay();
+                        }
+                        $scope.timeOffLoading = false;
                     },
                     function (data) {
                         console.log("There was an error accessing accrual data.", data);
@@ -166,7 +170,7 @@
                     var vacationUsed = 0, personalUsed = 0, sickUsed = 0;
                     $scope.data.days.forEach(function (day) {
                         day.totalHours = day.workHours + day.vacationHours + day.personalHours + day.sickEmpHours
-                            + day.sickFamHours + day.miscHours + day.holidayHours;
+                            + day.sickFamHours + day.miscHours + day.misc2Hours + day.holidayHours;
                         vacationUsed += day.vacationHours;
                         personalUsed += day.personalHours;
                         sickUsed += day.sickEmpHours + day.sickFamHours;
@@ -174,6 +178,7 @@
                     $scope.accrualsPost.vacation = $scope.accruals.vacation - vacationUsed;
                     $scope.accrualsPost.personal = $scope.accruals.personal - personalUsed;
                     $scope.accrualsPost.sick = $scope.accruals.sick - sickUsed;
+                    $scope.validate();
                 };
 
                 /**
@@ -209,7 +214,8 @@
                     var dayObj = {
                         date: null, checked: false, workHours: null, holidayHours: null,
                         vacationHours: null, personalHours: null, sickEmpHours: null,
-                        sickFamHours: null, miscHours: null, miscType: null, totalHours: null
+                        sickFamHours: null, miscHours: null, miscType: null, misc2Hours: null, miscType2: null,
+                        totalHours: null
                     };
 
                     /*First day added is today's date*/
@@ -256,7 +262,6 @@
                         ).finally(function () {
                             $scope.data.days.push(dayObj);
                             $scope.getFirstDatesInPayPeriods();
-                            $scope.updateTotals();
                         });
                     });
                 };
@@ -281,6 +286,7 @@
                     $scope.data.empId = $scope.empId; //needed for employee validation
                     $scope.data.supId = $scope.supId; //needed for supervisor validation
                     $scope.validationErrorMessages = TimeOffRequestValidationService.runChecks($scope.data, $scope.accruals);
+                    console.log($scope.validationErrorMessages);
                     $scope.validRequest = ($scope.validationErrorMessages.length === 0);
                     return $scope.validRequest;
                 };
@@ -299,7 +305,7 @@
                     if (!Array.isArray($scope.data.comments)) {
                         $scope.data.comments = [];
                     }
-                    if ($scope.data.addedComment !== "" && $scope.data.addedComment !== null && $scope.data.addedComment !== undefined) {   
+                    if ($scope.data.addedComment !== "" && $scope.data.addedComment !== null && $scope.data.addedComment !== undefined) {
                         $scope.data.comments.push({
                                                       text: $scope.data.addedComment,
                                                       authorId: $scope.data.employeeId
@@ -397,7 +403,7 @@
                                     $scope.updateData(requestId);
                                     //go to the request's individual page if it was a new request
                                     if (endOfUrl === "new") {
-                                        window.open(window.location.href.substring(0, window.location.href.length - 3) + requestId, "_self");
+                                        window.open(window.location.href.substring(0, window.location.href.length - 4) + "/" + requestId, "_self");
                                     }
 
                                     //update $scope.data to hold the request
@@ -436,14 +442,7 @@
                                     console.log("Success!");
                                     $scope.pageLoaded = false;
                                     var requestId = data.result.requestId;
-                                    //go to the request's individual page if it was a new request
-                                    if (endOfUrl === "new") {
-                                        window.open(window.location.href.substring(0, window.location.href.length - 3) + requestId, "_self");
-                                    }
-
-                                    //update $scope.data to hold the request
-                                    $scope.updateData(requestId);
-                                    $scope.mode = "output";
+                                    window.open(window.location.href.substring(0,window.location.href.length - 4), "_self");
                                 },
                                 //on failure
                                 function (data) {
