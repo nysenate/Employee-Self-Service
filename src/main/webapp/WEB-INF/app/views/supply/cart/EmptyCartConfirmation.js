@@ -1,5 +1,5 @@
 import Modal from "app/components/Modal";
-import { Button } from "app/components/Button";
+import Button from "app/components/Button";
 import React, { useState } from "react";
 import { useSupplyContext } from "app/views/supply/requisition/useSupplyContext";
 

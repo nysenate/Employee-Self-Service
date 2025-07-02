@@ -1,5 +1,5 @@
 import Modal from "app/components/Modal";
-import { Button } from "app/components/Button";
+import Button from "app/components/Button";
 import React from "react";
 
 export default function DeliveryMethodModal({ isOpen, setIsOpen, onResolve }) {

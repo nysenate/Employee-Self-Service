@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useSupplyContext } from "app/views/supply/requisition/useSupplyContext";
 import Modal from "app/components/Modal";
-import { Button } from "app/components/Button";
+import Button from "app/components/Button";
 import ItemQuantityControls from "app/views/supply/ItemQuantityControls";
 import Ribbon from "app/views/supply/requisition/Ribbon";
 
@@ -26,11 +26,11 @@ export default function ItemCell({ item }) {
 
   return (
     <div
-      className={`w-[220px] p-3 border-1 relative ${item.specialRequest && "bg-red-100"}`}
+      className={`relative w-[220px] border-1 p-3 ${item.specialRequest && "bg-red-100"}`}
     >
       {item.specialRequest && <Ribbon>Special</Ribbon>}
       <img
-        className="my-3 mx-auto h-[120px]"
+        className="mx-auto my-3 h-[120px]"
         alt={item.description}
         src={`/assets/supply_photos/${item.commodityCode}.jpg`}
         onError={({ currentTarget }) => {
@@ -40,7 +40,7 @@ export default function ItemCell({ item }) {
         onClick={() => setIsImagePreviewOpen(true)}
       />
       <p
-        className={`m-1 font-semibold text-center`}
+        className={`m-1 text-center font-semibold`}
         style={{ height: "40px", overflow: "hidden" }}
       >
         {item.description}
@@ -50,7 +50,7 @@ export default function ItemCell({ item }) {
           <div className="">{item.unit}</div>
           {!itemQuantity ? (
             <input
-              className="w-40 m-2 h-[28px] bg-green-600 hover:bg-green-500 font-semibold rounded-sm text-white cursor-pointer transition"
+              className="m-2 h-[28px] w-40 cursor-pointer rounded-sm bg-green-600 font-semibold text-white transition hover:bg-green-500"
               onClick={addToCart}
               type="button"
               value="Add to Cart"

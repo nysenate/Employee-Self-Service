@@ -1,4 +1,4 @@
-import { Button } from "app/components/Button";
+import Button from "app/components/Button";
 import React, { useEffect, useState } from "react";
 import Hero from "app/components/Hero";
 import Controls from "app/components/Controls";
@@ -45,9 +45,9 @@ export default function SelectDestination() {
   return (
     <div>
       <Hero>Requisition Form</Hero>
-      <Controls className="text-center p-3">
+      <Controls className="p-3 text-center">
         <label
-          className="text-purple-700 font-semibold mr-2"
+          className="mr-2 font-semibold text-purple-700"
           htmlFor="destination"
         >
           Please select a destination:
@@ -108,14 +108,13 @@ function DestinationSearchBox({ value, destinations, onChange }) {
         </div>
         <ComboboxOptions
           anchor="bottom"
-          className="py-1 w-[var(--input-width)] [--anchor-max-height:300px] overflow-y-auto shadow-lg bg-white
-                         empty:invisible transition duration-100 ease-in"
+          className="w-[var(--input-width)] overflow-y-auto bg-white py-1 shadow-lg transition duration-100 ease-in [--anchor-max-height:300px] empty:invisible"
         >
           {({ option: dest }) => (
             <ComboboxOption
               value={dest}
               key={dest.locId}
-              className="px-3 py-2 w-full cursor-pointer data-[focus]:bg-gray-100"
+              className="w-full cursor-pointer px-3 py-2 data-[focus]:bg-gray-100"
             >
               {dest.locId} ({dest.locationDescription})
             </ComboboxOption>

@@ -5,7 +5,7 @@ import Controls from "app/components/Controls";
 import Hero from "app/components/Hero";
 import Card from "app/components/Card";
 import ItemQuantityControls from "app/views/supply/ItemQuantityControls";
-import { Button } from "app/components/Button";
+import Button from "app/components/Button";
 import EmptyCartConfirmation from "app/views/supply/cart/EmptyCartConfirmation";
 import { Link } from "react-router-dom";
 import DeliveryMethodModal from "app/views/supply/cart/DeliveryMethodModal";

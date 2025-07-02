@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { forwardRef, useContext } from "react";
 import { ThemeContext } from "app/contexts/ThemeContext";
 import { twMerge } from "tailwind-merge";
 
@@ -12,13 +12,16 @@ import { twMerge } from "tailwind-merge";
  * @param passThroughProps Any valid attributes for a button element, besides those in controlledProps, will
  *                         be passed onto the button element. For example: "onClick", "disabled", etc.
  */
-export function Button({
-  variant = "contained",
-  color,
-  children,
-  className = "",
-  ...passThroughProps
-}) {
+const Button = forwardRef(function (
+  {
+    variant = "contained",
+    color,
+    children,
+    className = "",
+    ...passThroughProps
+  },
+  ref,
+) {
   const theme = useContext(ThemeContext);
   if (!color) {
     color = variantDefaultColors[variant];
@@ -27,19 +30,23 @@ export function Button({
   }
 
   const classes = twMerge(
-    `transition disabled:pointer-events-none disabled:opacity-50
-                  ${variantStyles[variant].core} ${variantStyles[variant].color[color]}`,
+    "transition disabled:opacity-50 disabled:cursor-not-allowed",
+    `${variantStyles[variant].core} ${variantStyles[variant].color[color]}`,
     className,
   );
 
   return (
-    <span className={passThroughProps.disabled ? "cursor-not-allowed" : ""}>
-      <button {...{ type: "button", ...passThroughProps }} className={classes}>
-        {children}
-      </button>
-    </span>
+    <button
+      {...{ type: "button", ...passThroughProps }}
+      ref={ref}
+      className={classes}
+    >
+      {children}
+    </button>
   );
-}
+});
+
+export default Button;
 
 // All styles have to be hard coded, they cannot be dynamic due to tailwind's JIT compiler.
 const variantStyles = {

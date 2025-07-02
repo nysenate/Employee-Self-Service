@@ -5,7 +5,7 @@ import {
   toggleInactiveTrainings,
   toggleTraining,
 } from "app/views/myinfo/personnel/pec/to-do-reporting/todoReportingActions";
-import { Button } from "app/components/Button";
+import Button from "app/components/Button";
 import { useTrainings } from "app/views/myinfo/personnel/pec/useTrainings";
 
 /**
@@ -53,7 +53,7 @@ export default function TrainingFilters({ state, dispatch }) {
             Clear selected trainings
           </Button>
         </div>
-        <hr/>
+        <hr />
         <TrainingsList
           trainings={activeTrainings}
           state={state}
@@ -61,7 +61,7 @@ export default function TrainingFilters({ state, dispatch }) {
         />
         {!state.taskActive && (
           <>
-            <hr/>
+            <hr />
             <TrainingsList
               trainings={inactiveTrainings}
               state={state}
@@ -74,7 +74,7 @@ export default function TrainingFilters({ state, dispatch }) {
           <label className="font-light">
             Completion Status for Selected Training(s)
           </label>
-          <CompletionStatusSelect state={state} dispatch={dispatch}/>
+          <CompletionStatusSelect state={state} dispatch={dispatch} />
         </div>
       </div>
     </div>
@@ -86,7 +86,7 @@ function TrainingsList({ trainings, state, dispatch }) {
     <>
       {trainings.map((item) => (
         <div key={item.taskId}>
-          <TrainingInput state={state} dispatch={dispatch} item={item}/>
+          <TrainingInput state={state} dispatch={dispatch} item={item} />
         </div>
       ))}
     </>
@@ -94,13 +94,13 @@ function TrainingsList({ trainings, state, dispatch }) {
 }
 
 function IncludeInactiveTrainingsInput({
-                                         state,
-                                         dispatch,
-                                         inactiveTrainingIds,
-                                       }) {
+  state,
+  dispatch,
+  inactiveTrainingIds,
+}) {
   return (
     <label
-      className="font-light flex items-center gap-1"
+      className="flex items-center gap-1 font-light"
       htmlFor="includeInactiveTrainings"
     >
       <input
@@ -121,7 +121,7 @@ function IncludeInactiveTrainingsInput({
 
 function TrainingInput({ state, dispatch, item }) {
   return (
-    <label className="font-light flex items-start gap-1" htmlFor={item.taskId}>
+    <label className="flex items-start gap-1 font-light" htmlFor={item.taskId}>
       <input
         id={item.taskId}
         name={item.taskId}

@@ -6,7 +6,7 @@ import {
   useSubmitReconciliation,
 } from "app/views/supply/reconciliation/useReconciliation";
 import LoadingIndicator from "app/components/LoadingIndicator";
-import { Button } from "app/components/Button";
+import Button from "app/components/Button";
 import ErrorBanner from "app/components/ErrorBanner";
 import ReconciliationTabs from "app/views/supply/reconciliation/ReconciliationTabs";
 import { useNavigate } from "react-router-dom";
@@ -40,18 +40,21 @@ export default function ReconciliationIndex() {
     data.items.forEach((item) => {
       itemQuantities[item.id] = item.expectedQuantity;
     });
-    submitReconciliationApi.mutateAsync({ itemQuantities: itemQuantities }).then((r) => {
-      if (!r.result.success) {
-        setStatus(STATUS.ERRORS);
-        // There are errors in the counts.
-        r.result.errors.forEach((error) => {
-          const item = (data.items.find((i) => i.id === error.itemId).actualQuantity =
-            error.actualQuantity);
-        });
-      } else {
-        setStatus(STATUS.SUCCESS);
-      }
-    });
+    submitReconciliationApi
+      .mutateAsync({ itemQuantities: itemQuantities })
+      .then((r) => {
+        if (!r.result.success) {
+          setStatus(STATUS.ERRORS);
+          // There are errors in the counts.
+          r.result.errors.forEach((error) => {
+            const item = (data.items.find(
+              (i) => i.id === error.itemId,
+            ).actualQuantity = error.actualQuantity);
+          });
+        } else {
+          setStatus(STATUS.SUCCESS);
+        }
+      });
   };
 
   return (
@@ -86,7 +89,8 @@ function InvalidReconciliationErrorMsg({ status }) {
   return (
     <div className="p-3">
       <ErrorBanner>
-        One or more of the quantities entered is incorrect. Please review the below errors
+        One or more of the quantities entered is incorrect. Please review the
+        below errors
       </ErrorBanner>
     </div>
   );

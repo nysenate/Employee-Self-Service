@@ -1,7 +1,7 @@
 import React from "react";
 import Modal from "app/components/Modal";
 import { isoToShortDateTime } from "app/utils/dateUtils";
-import { Button } from "app/components/Button";
+import Button from "app/components/Button";
 import { Link } from "react-router-dom";
 
 export default function RequisitionInfoModal({

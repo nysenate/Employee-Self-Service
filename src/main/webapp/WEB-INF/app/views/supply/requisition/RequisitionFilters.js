@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useSupplyContext } from "app/views/supply/requisition/useSupplyContext";
-import { Button } from "app/components/Button";
+import Button from "app/components/Button";
 import {
   resetFilters,
   setSort,
@@ -35,9 +35,9 @@ export default function RequisitionFilters({ filterState, dispatch }) {
 
   return (
     <>
-      <div className="flex justify-between items-baseline p-2">
+      <div className="flex items-baseline justify-between p-2">
         <div className="my-auto">
-          <span className="font-bold text-purple-500 mr-3">Destination:</span>
+          <span className="mr-3 font-bold text-purple-500">Destination:</span>
           <Button variant="text" onClick={() => setOpen(true)}>
             [change]
           </Button>

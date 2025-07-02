@@ -1,5 +1,5 @@
 import Modal from "app/components/Modal";
-import { Button } from "app/components/Button";
+import Button from "app/components/Button";
 import React from "react";
 import { Link } from "react-router-dom";
 

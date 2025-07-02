@@ -1,7 +1,7 @@
 import { useItemsMap } from "app/views/supply/useItems";
 import React, { useState } from "react";
 import InputAutocomplete from "app/components/InputAutocomplete";
-import { Button } from "app/components/Button";
+import Button from "app/components/Button";
 
 export default function AddItemInput({ append }) {
   const itemsQuery = useItemsMap();

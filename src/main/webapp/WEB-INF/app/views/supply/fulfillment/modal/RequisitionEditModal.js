@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Button } from "app/components/Button";
 import { useLocations } from "app/views/supply/useLocations";
 import { useSupplyEmployees } from "app/views/supply/fulfillment/useSupplyEmployees";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -12,7 +11,9 @@ import AddItemInput from "app/views/supply/fulfillment/modal/AddItemInput";
 import { useAdvanceRequisition } from "app/views/supply/fulfillment/useAdvanceRequisition";
 import { useRejectRequisition } from "app/views/supply/fulfillment/useRejectRequisition";
 import { useUndoRequisition } from "app/views/supply/fulfillment/useUndoRequisition";
-import LoadingIndicator from "app/components/LoadingIndicator";
+import { EssPopoverPanel } from "app/components/EssPopover";
+import Button from "app/components/Button";
+import { Popover, PopoverButton } from "@headlessui/react";
 
 export default function RequisitionEditModal({
   isOpen,
@@ -62,6 +63,8 @@ export default function RequisitionEditModal({
   }, [requisition, reset]);
 
   const onSubmit = async (data) => {
+    console.log("onSubmit");
+    console.log(data);
     // Make modifications to a copy.
     const dirtyReq = { ...requisition };
     // Always save changes regardless of action.
@@ -79,15 +82,19 @@ export default function RequisitionEditModal({
     switch (submitAction.current) {
       case "save":
         await updateRequisition.mutateAsync(dirtyReq);
+        onResolve();
         break;
       case "advance":
         await advanceRequisition.mutateAsync(dirtyReq);
+        onResolve();
         break;
       case "reject":
         if (dirtyFields.note && data.note) {
           // Require a note when rejecting.
           await rejectRequisition.mutateAsync(dirtyReq);
+          onResolve();
         } else {
+          console.log("SETTING ERRRO");
           setError("note", {
             type: "custom",
             message: "A note is required to reject.",
@@ -96,28 +103,12 @@ export default function RequisitionEditModal({
         break;
       case "undo":
         await undoRequisition.mutateAsync(dirtyReq);
+        onResolve();
         break;
       default:
         throw Error("Unknown action taken in edit requisition modal");
     }
-    onResolve();
   };
-
-  // if (
-  //   updateRequisition.isPending ||
-  //   advanceRequisition.isPending ||
-  //   rejectRequisition.isPending ||
-  //   undoRequisition.isPending ||
-  //   true
-  // ) {
-  //   return (
-  //     <Modal isOpen={isOpen}>
-  //       <div className="w-[54rem]">
-  //         <LoadingIndicator />
-  //       </div>
-  //     </Modal>
-  //   );
-  // }
 
   return (
     <Modal isOpen={isOpen}>
@@ -180,6 +171,7 @@ export default function RequisitionEditModal({
               <RejectButton
                 status={requisition.status}
                 submitAction={submitAction}
+                handleSubmit={handleSubmit(onSubmit)}
                 isSubmitting={isSubmitting}
               />
             </div>
@@ -227,19 +219,49 @@ function AdvanceButton({ status, submitAction, isSubmitting }) {
   );
 }
 
-function RejectButton({ status, submitAction, isSubmitting }) {
+function RejectButton({ status, submitAction, handleSubmit, isSubmitting }) {
+  // Only display reject option if status is currently pending or processing
   if (status === "PENDING" || status === "PROCESSING") {
-    // Only display reject option if status is currently pending or processing
     return (
-      <Button
-        type="submit"
-        color="error"
-        disabled={isSubmitting}
-        className="w-20"
-        onClick={() => (submitAction.current = "reject")}
-      >
-        Reject
-      </Button>
+      <Popover className="relative">
+        {({ open, close }) => (
+          <>
+            <PopoverButton as="div">
+              <Button
+                type="button"
+                color="error"
+                disabled={isSubmitting}
+                className="w-20"
+              >
+                Reject
+              </Button>
+            </PopoverButton>
+            {open && (
+              <EssPopoverPanel>
+                <div className="">
+                  <div>Are you sure?</div>
+                  <div className="mt-3 flex gap-3">
+                    <Button color="secondary" onClick={close}>
+                      Cancel
+                    </Button>
+                    <Button
+                      color="error"
+                      type="submit"
+                      onClick={() => {
+                        close();
+                        submitAction.current = "reject";
+                        handleSubmit();
+                      }}
+                    >
+                      Reject
+                    </Button>
+                  </div>
+                </div>
+              </EssPopoverPanel>
+            )}
+          </>
+        )}
+      </Popover>
     );
   } else {
     return <></>;

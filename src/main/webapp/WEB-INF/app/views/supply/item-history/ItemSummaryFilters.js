@@ -5,7 +5,7 @@ import {
 } from "app/views/supply/SupplyFilterActions";
 import React from "react";
 import InputDebounced from "app/components/InputDebounced";
-import { Button } from "app/components/Button";
+import Button from "app/components/Button";
 
 export default function ItemSummaryFilters({ filters, dispatch }) {
   const labelClasses = "block font-semibold";

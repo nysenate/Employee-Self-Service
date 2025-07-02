@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import Modal from "app/components/Modal";
-import { Button } from "app/components/Button";
+import Button from "app/components/Button";
 import { useSupplyContext } from "app/views/supply/requisition/useSupplyContext";
 import { twMerge } from "tailwind-merge";
 
 export default function ItemQuantityControls({ item }) {
-  const { cart, incrementItem, decrementItem, updateQuantity } = useSupplyContext();
+  const { cart, incrementItem, decrementItem, updateQuantity } =
+    useSupplyContext();
   const quantity = cart.items[item.id] || 0;
   const [dirtyQty, setDirtyQty] = useState(quantity);
   const isMaxQuantity = quantity >= item.perOrderAllowance;
@@ -46,7 +47,10 @@ export default function ItemQuantityControls({ item }) {
         value={dirtyQty}
         onChange={(e) => setDirtyQty(parseInt(e.target.value) || 0)}
         onBlur={() => {
-          if (dirtyQty > item.perOrderAllowance && quantity <= item.perOrderAllowance) {
+          if (
+            dirtyQty > item.perOrderAllowance &&
+            quantity <= item.perOrderAllowance
+          ) {
             setIsQtyWarningOpen(true);
           } else {
             updateQuantity(item.id, dirtyQty);
@@ -82,7 +86,8 @@ function QtyWarningModal({ isOpen, onResolve, onReject }) {
     <Modal isOpen={isOpen}>
       <Modal.Title>Ordering over recommended quantity</Modal.Title>
       <Modal.Body>
-        You are trying to order over the recommended quantity. This requires management approval.
+        You are trying to order over the recommended quantity. This requires
+        management approval.
         <br />
         Would you like to continue?
       </Modal.Body>

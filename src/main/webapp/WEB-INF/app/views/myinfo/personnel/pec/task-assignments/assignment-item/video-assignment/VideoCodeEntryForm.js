@@ -1,12 +1,12 @@
-import React from 'react';
+import React from "react";
 import { useForm } from "react-hook-form";
-import { Button } from "app/components/Button";
+import Button from "app/components/Button";
 import useAuth from "app/contexts/Auth/useAuth";
 import { useSubmitVideoCodes } from "app/views/myinfo/personnel/pec/useTaskAssignment";
 
 export default function VideoCodeEntryForm({ taskId, onSuccess }) {
   const auth = useAuth();
-  const submitVideoCodesApi = useSubmitVideoCodes()
+  const submitVideoCodesApi = useSubmitVideoCodes();
   const {
     register,
     handleSubmit,
@@ -15,23 +15,24 @@ export default function VideoCodeEntryForm({ taskId, onSuccess }) {
   } = useForm();
 
   const onSubmit = (data) => {
-    submitVideoCodesApi.mutateAsync({
-      codes: [data.firstCode, data.secondCode],
-      empId: auth.empId(),
-      taskId: taskId,
-    })
+    submitVideoCodesApi
+      .mutateAsync({
+        codes: [data.firstCode, data.secondCode],
+        empId: auth.empId(),
+        taskId: taskId,
+      })
       .then(onSuccess)
       .catch((err) => {
         if (err.data?.errorCode === "INVALID_PEC_CODE") {
           // One or more of the codes submitted were invalid.
           setError("firstCode", {
             type: "invalid",
-            message: ""
-          })
+            message: "",
+          });
           setError("secondCode", {
             type: "invalid",
-            message: ""
-          })
+            message: "",
+          });
         } else {
           // TODO will this trigger error boundary once merged?
           throw err;
@@ -41,18 +42,25 @@ export default function VideoCodeEntryForm({ taskId, onSuccess }) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="pb-3">
-      <div className="flex justify-center items-center my-3">
-        {(errors.firstCode?.type === "invalid" || errors.secondCode?.type === "invalid") &&
+      <div className="my-3 flex items-center justify-center">
+        {(errors.firstCode?.type === "invalid" ||
+          errors.secondCode?.type === "invalid") && (
           <p className="text-red-500">
-            One or more of the submitted codes were incorrect. Please double check them and resubmit.
+            One or more of the submitted codes were incorrect. Please double
+            check them and resubmit.
           </p>
-        }
+        )}
       </div>
 
-      <div className="grid grid-cols-3 gap-2 items-center">
+      <div className="grid grid-cols-3 items-center gap-2">
         <div></div>
-        <div className="flex justify-start items-center">
-          <label className="text-left text-teal-700 font-semibold w-24" htmlFor="firstCode">First Code</label>
+        <div className="flex items-center justify-start">
+          <label
+            className="w-24 text-left font-semibold text-teal-700"
+            htmlFor="firstCode"
+          >
+            First Code
+          </label>
           <input
             {...register("firstCode", {
               required: "First code is required",
@@ -63,15 +71,18 @@ export default function VideoCodeEntryForm({ taskId, onSuccess }) {
         </div>
         <div>
           {errors.firstCode && (
-            <p className="text-red-500">
-              {errors.firstCode.message}
-            </p>
+            <p className="text-red-500">{errors.firstCode.message}</p>
           )}
         </div>
 
         <div></div>
-        <div className="flex justify-start items-center">
-          <label className="text-teal-700 font-semibold w-24" htmlFor="secondCode">Second Code</label>
+        <div className="flex items-center justify-start">
+          <label
+            className="w-24 font-semibold text-teal-700"
+            htmlFor="secondCode"
+          >
+            Second Code
+          </label>
           <input
             {...register("secondCode", {
               required: "Second code is required",
@@ -82,9 +93,7 @@ export default function VideoCodeEntryForm({ taskId, onSuccess }) {
         </div>
         <div>
           {errors.secondCode && (
-            <p className="text-red-500">
-              {errors.secondCode.message}
-            </p>
+            <p className="text-red-500">{errors.secondCode.message}</p>
           )}
         </div>
 

@@ -1,7 +1,7 @@
 import Hero from "app/components/Hero";
 import styles from "app/views/supply/cart/ShoppingCartIndex.module.css";
 import { Link } from "react-router-dom";
-import { Button } from "app/components/Button";
+import Button from "app/components/Button";
 import React from "react";
 import Controls from "app/components/Controls";
 

@@ -1,39 +1,43 @@
-import React from 'react';
-import { useTrainings } from "../useTrainings";
-import { Button } from "../../../../../components/Button";
-import { clearTrainings, toggleTraining } from "./todoAssignmentActions";
-
+import React from "react";
+import { Button } from "@headlessui/react";
+import { useTrainings } from "app/views/myinfo/personnel/pec/useTrainings";
+import {
+  clearTrainings,
+  toggleTraining,
+} from "app/views/myinfo/personnel/pec/to-do-reporting/todoReportingActions";
 
 export default function TrainingFilters({ state, dispatch }) {
-  const trainingsQuery = useTrainings(true)
+  const trainingsQuery = useTrainings(true);
 
   if (trainingsQuery.isPending) {
-    return <></>
+    return <></>;
   }
 
   return (
     <div>
       <span className="text-lg font-semibold">Training Filters</span>
       <div className="mt-1">
-        <Button variant="text"
-                color="link"
-                onClick={() => dispatch(clearTrainings())}>
+        <Button
+          variant="text"
+          color="link"
+          onClick={() => dispatch(clearTrainings())}
+        >
           Clear selected trainings
         </Button>
-        <hr className="my-1"/>
+        <hr className="my-1" />
         {trainingsQuery.data.map((item) => (
           <div key={item.taskId}>
-            <TrainingInput state={state} dispatch={dispatch} item={item}/>
+            <TrainingInput state={state} dispatch={dispatch} item={item} />
           </div>
         ))}
       </div>
     </div>
-  )
+  );
 }
 
 function TrainingInput({ state, dispatch, item }) {
   return (
-    <label className="font-light flex items-start gap-1" htmlFor={item.taskId}>
+    <label className="flex items-start gap-1 font-light" htmlFor={item.taskId}>
       <input
         id={item.taskId}
         name={item.taskId}

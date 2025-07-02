@@ -1,5 +1,5 @@
 import Modal from "app/components/Modal";
-import { Button } from "app/components/Button";
+import Button from "app/components/Button";
 import React from "react";
 
 /**
@@ -16,9 +16,7 @@ export default function ModalNotice({ isOpen, onResolve, title, body }) {
     <Modal isOpen={isOpen} onShow={onResolve}>
       <Modal.Title>{title}</Modal.Title>
       <Modal.Body>
-        <div className="max-w-lg">
-          {body}
-        </div>
+        <div className="max-w-lg">{body}</div>
       </Modal.Body>
       <Modal.Buttons>
         <Button color="theme" onClick={onResolve}>
@@ -26,5 +24,5 @@ export default function ModalNotice({ isOpen, onResolve, title, body }) {
         </Button>
       </Modal.Buttons>
     </Modal>
-  )
+  );
 }
