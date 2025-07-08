@@ -77,25 +77,25 @@ request and allows the user to edit, save, or submit the request. -->
     <!--INSERT ACCRUAL VALUES ROW HERE IF FIRST DAY IN PAY PERIOD IS TRUE-->
     <td><input id="time-off-request-checkbox" type="checkbox" ng-model="day.checked"/></td>
     <td><input id="first-date-picker" type="date" ng-model="day.date" ng-change="datePickerChanged(day)"/></td>
-    <td><input type="number" min="0" max="24" step="0.5" placeholder="--" onpaste="return false;"
+    <td><input type="number" placeholder="--" onpaste="return false;"
                ng-model="day.workHours" ng-change="updateTotals()"/></td>
     <td class="timeoff-table-hours holiday-hours-disable">{{day.holidayHours}}</td>
-    <td><input type="number" min="0" max="24" step="0.5" placeholder="--" onpaste="return false;"
+    <td><input type="number" placeholder="--" onpaste="return false;"
                ng-model="day.vacationHours" ng-change="updateTotals()"/></td>
-    <td><input type="number" min="0" max="24" step="0.5" placeholder="--" onpaste="return false;"
+    <td><input type="number" placeholder="--" onpaste="return false;"
                ng-model="day.personalHours" ng-change="updateTotals()"/></td>
-    <td><input type="number" min="0" max="24" step="0.5" placeholder="--" onpaste="return false;"
+    <td><input type="number" placeholder="--" onpaste="return false;"
                ng-model="day.sickEmpHours" ng-change="updateTotals()"/></td>
-    <td><input type="number" min="0" max="24" step="0.5" placeholder="--" onpaste="return false;"
+    <td><input type="number" placeholder="--" onpaste="return false;"
                ng-model="day.sickFamHours" ng-change="updateTotals()"/></td>
-    <td><input type="number" min="0" max="24" step="0.5" placeholder="--" onpaste="return false;"
+    <td><input type="number" placeholder="--" onpaste="return false;"
                ng-model="day.miscHours" ng-change="updateTotals()"/></td>
     <td class="timeoff-table-misc  misc-drop-down">
       <select ng-model="day.miscType" ng-options="miscLeave.type as miscLeave.shortName for miscLeave in miscTypeList">
         <option value="" selected="selected">Choose Type...</option>
       </select>
     </td>
-    <td><input type="number" min="0" max="24" step="0.5" placeholder="--" onpaste="return false;"
+    <td><input type="number" placeholder="--" onpaste="return false;"
                ng-model="day.misc2Hours" ng-change="updateTotals()"/></td>
     <td class="timeoff-table-misc  misc-drop-down">
       <select ng-model="day.miscType2" ng-options="miscLeave.type as miscLeave.shortName for miscLeave in miscTypeList">

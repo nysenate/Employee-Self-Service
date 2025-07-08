@@ -137,7 +137,11 @@
                 requests: selectedRequests,
                 alreadyApproved: alreadyApproved
             };
-            modals.open('time-off-request-review', params, false);
+            modals.open('time-off-request-review', params, false).then(
+                function () {
+                    window.open("/time/accrual/emp-time-off-requests", "_self");
+                }
+            );
         };
 
 
@@ -153,7 +157,6 @@
             }
             return ReviewRequestApi.save(params).$promise.then(
                 function (data) {
-                    console.log("Success!: ", data);
                     $scope.updateLists();
                 },
                 function (data) {

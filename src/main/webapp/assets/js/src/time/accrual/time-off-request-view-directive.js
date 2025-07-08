@@ -286,7 +286,6 @@
                     $scope.data.empId = $scope.empId; //needed for employee validation
                     $scope.data.supId = $scope.supId; //needed for supervisor validation
                     $scope.validationErrorMessages = TimeOffRequestValidationService.runChecks($scope.data, $scope.accruals);
-                    console.log($scope.validationErrorMessages);
                     $scope.validRequest = ($scope.validationErrorMessages.length === 0);
                     return $scope.validRequest;
                 };
@@ -388,7 +387,6 @@
                     $scope.pageLoaded = false;
                     //validate request
                     if ($scope.validate()) {
-                        console.log($scope.validationErrorMessages);
                         var sendObject = $scope.getSendObject("SAVED");
                         var endOfUrl = window.location.href.substring(window.location.href.length - 3, window.location.href.length);
 
@@ -397,13 +395,12 @@
                             .then(
                                 //on success
                                 function (data) {
-                                    console.log("Success!");
                                     $scope.pageLoaded = false;
                                     var requestId = data.result.requestId;
                                     $scope.updateData(requestId);
                                     //go to the request's individual page if it was a new request
                                     if (endOfUrl === "new") {
-                                        window.open(window.location.href.substring(0, window.location.href.length - 4) + "/" + requestId, "_self");
+                                        window.open("/time/accrual/time-off-request/" + requestId, "_self");
                                     }
 
                                     //update $scope.data to hold the request
@@ -429,20 +426,17 @@
                 $scope.submitRequest = function () {
                     //validate request
                     if ($scope.validate()) {
-                        console.log($scope.validationErrorMessages);
                         $scope.pageLoaded = false;
                         var sendObject = $scope.getSendObject("SUBMITTED");
-                        var endOfUrl = window.location.href.substring(window.location.href.length - 3, window.location.href.length);
 
                         //api call to submit the request
                         updateRequestsApi.save(sendObject).$promise
                             .then(
                                 //on success
                                 function (data) {
-                                    console.log("Success!");
                                     $scope.pageLoaded = false;
                                     var requestId = data.result.requestId;
-                                    window.open(window.location.href.substring(0,window.location.href.length - 4), "_self");
+                                    window.open('/time/accrual/time-off-request', "_self");
                                 },
                                 //on failure
                                 function (data) {

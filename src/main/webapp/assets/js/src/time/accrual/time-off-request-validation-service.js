@@ -41,7 +41,7 @@ function timeOffRequestValidationUtils(HolidayApi, EmploymentApi, EmpRequestApi)
             zeroHours: "ERROR: Each day must have more than 0 hours of time off requested.",
             positiveValues: "ERROR: The requested hours off are not all positive.",
             hoursPerDay: "ERROR: There are too many hours requested in one or more days.",
-            hourInterval: "ERROR: Not all numeric values are in .25 intervals.",
+            hourInterval: "ERROR: Not all numeric values are in .5 intervals.",
             miscRequirement: "ERROR: Misc hours and misc type must either both be filled in or both be empty.",
             accrualUsage: "ERROR: You are requesting more time off than your accruals allow.",
             holidayHour: "ERROR: Holiday hours entered does not match the Senate's holiday schedule.",
@@ -225,7 +225,7 @@ function timeOffRequestValidationUtils(HolidayApi, EmploymentApi, EmpRequestApi)
                 correctIntervalCheck = false;
             }
         });
-        return true;
+        return correctIntervalCheck;
     }
 
     /**

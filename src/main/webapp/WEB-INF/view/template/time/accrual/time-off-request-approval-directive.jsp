@@ -28,7 +28,7 @@
      <tbody>
      <!--Loop through all current time off requests and display them in tabular form  -->
      <!--chips in each row will be given a classname of md-chip-->
-          <tr ng-repeat="request in requests">
+          <tr ng-repeat="request in requests" ng-if="request.status === 'SUBMITTED'">
                <td class="time-off-approval-table-emp-column">{{request.name}}</td>
                <td class="time-off-approval-table-select-column">
                     <input id="time-off-request-checkbox"
