@@ -174,8 +174,6 @@
                     $scope.handleActiveResultAndMakePendingCall(data)
                         .then(function (data2) {
                             $scope.handlePendingResult(data2);
-                            $scope.activeRequests = changeToNames($scope.activeRequests);
-                            $scope.pendingRequests = changeToNames($scope.pendingRequests);
                             $scope.activeRequests.forEach(function (r) {
                                 r.checked = false;
                             });
@@ -188,16 +186,8 @@
                     ;
                 })
                 .finally(function() {$scope.loadingRequests=false;})
-                .catch($scope.errorHandler());
         };
 
-        function changeToNames(requests) {
-            requests.forEach(function(request) {
-                request.name = supEmpGroupService.getName(request.employeeId).firstName
-                    + " " + supEmpGroupService.getName(request.employeeId).lastName;
-            });
-            return requests;
-        };
         /**
          * function to sort the requests by date, from earliest to latest
          */
