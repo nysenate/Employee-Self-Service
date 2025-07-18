@@ -41,13 +41,9 @@ export default function ItemSummaryResults({
         <table className="table--sticky table">
           <thead>
             <tr className="table__head__row">
-              <th className="table__head__cell table__head__cell--text w-3/12">
-                Commodity Code
-              </th>
-              <th className="table__head__cell table__head__cell--text w-7/12">
-                Description
-              </th>
-              <th className="table__head__cell table__head__cell--number w-2/12">
+              <th className="table__head__cell w-3/12">Commodity Code</th>
+              <th className="table__head__cell w-7/12">Description</th>
+              <th className="table__head__cell cell--number w-2/12">
                 Quantity
               </th>
             </tr>
@@ -61,13 +57,9 @@ export default function ItemSummaryResults({
                   })}
                   onClick={() => toggleSelection(summary.item.id)}
                 >
-                  <td className="table__cell table__cell--text">
-                    {summary.item.commodityCode}
-                  </td>
-                  <td className="table__cell table__cell--text">
-                    {summary.item.description}
-                  </td>
-                  <td className="table__cell table__cell--number">
+                  <td className="table__cell">{summary.item.commodityCode}</td>
+                  <td className="table__cell">{summary.item.description}</td>
+                  <td className="table__cell cell--number">
                     {summary.totalQuantity}
                   </td>
                 </tr>
@@ -99,43 +91,31 @@ function ItemOccurrencesTable({ occurrences }) {
     <table className="table">
       <thead>
         <tr className="table__head__row text-purple-700">
-          <th className="table__head__cell table__head__cell--text">
-            Requisition Id
-          </th>
-          <th className="table__head__cell table__head__cell--text">
-            Location
-          </th>
-          <th className="table__head__cell table__head__cell--text">
-            Ordered By
-          </th>
-          <th className="table__head__cell table__head__cell--text">
-            Completed Date
-          </th>
-          <th className="table__head__cell table__head__cell--number">
-            Quantity
-          </th>
+          <th className="table__head__cell">Requisition Id</th>
+          <th className="table__head__cell">Location</th>
+          <th className="table__head__cell">Ordered By</th>
+          <th className="table__head__cell">Completed Date</th>
+          <th className="table__head__cell cell--number">Quantity</th>
         </tr>
       </thead>
       <tbody className="table__body table__body--highlight divide-y divide-gray-200/50">
         {occurrences.map((occurrence) => (
           <tr key={occurrence.itemId} className="table__row">
-            <td className="table__cell table__cell--text">
+            <td className="table__cell">
               {occurrence.requisition.requisitionId}
             </td>
-            <td className="table__cell table__cell--text">
+            <td className="table__cell">
               {occurrence.requisition.destination.locId}
             </td>
-            <td className="table__cell table__cell--text">
+            <td className="table__cell">
               {occurrence.requisition.customer.lastName}
             </td>
-            <td className="table__cell table__cell--text">
+            <td className="table__cell">
               {dateUtils.isoToShortDateTime(
                 occurrence.requisition.completedDateTime,
               )}
             </td>
-            <td className="table__cell table__cell--number">
-              {occurrence.quantity}
-            </td>
+            <td className="table__cell cell--number">{occurrence.quantity}</td>
           </tr>
         ))}
       </tbody>

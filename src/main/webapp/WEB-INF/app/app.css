@@ -63,15 +63,7 @@
     }
 
     .table__head__cell {
-        @apply py-3 px-5 font-semibold tracking-wide;
-    }
-
-    .table__head__cell--text {
-        @apply text-left;
-    }
-
-    .table__head__cell--number {
-        @apply text-right;
+        @apply py-3 px-5 text-left font-semibold tracking-wide;
     }
 
     .table__body {
@@ -99,27 +91,19 @@
     }
 
     .table__cell {
-        @apply py-1.5 px-5;
+        @apply py-1.5 px-5 text-left;
     }
 
     .table__cell--bold {
         @apply font-semibold;
     }
 
-    .table__cell--right {
-        @apply text-right;
+    th.cell--number {
+        @apply text-right
     }
 
-    .table__cell--left {
-        @apply text-left;
-    }
-
-    .table__cell--text {
-        @apply table__cell--left;
-    }
-
-    .table__cell--number {
-        @apply table__cell--right font-mono;
+    td.cell--number {
+        @apply text-right font-mono;
     }
 
     .table__totals {

@@ -46,27 +46,17 @@ function ItemsTable({ requisition }) {
       <table className="table">
         <thead>
           <tr className="table__head__row">
-            <th className="table__head__cell table__head__cell--text">
-              Commodity Code
-            </th>
-            <th className="table__head__cell table__head__cell--text">
-              Description
-            </th>
-            <th className="table__head__cell table__head__cell--number">
-              Quantity
-            </th>
+            <th className="table__head__cell">Commodity Code</th>
+            <th className="table__head__cell">Description</th>
+            <th className="table__head__cell cell--number">Quantity</th>
           </tr>
         </thead>
         <tbody className="table__body divide-y divide-gray-200/80">
           {requisition.lineItems.map((li) => (
             <tr className="table__row" key={li.item.id}>
-              <td className="table__cell table__cell--text">
-                {li.item.commodityCode}
-              </td>
-              <td className="table__cell table__cell--text">
-                {li.item.description}
-              </td>
-              <td className="table__cell table__cell--number">{li.quantity}</td>
+              <td className="table__cell">{li.item.commodityCode}</td>
+              <td className="table__cell">{li.item.description}</td>
+              <td className="table__cell cell--number">{li.quantity}</td>
             </tr>
           ))}
         </tbody>

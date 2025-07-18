@@ -22,22 +22,12 @@ export default function RequisitionHistoryResults({ data, filters, dispatch }) {
         <table className="table--sticky table">
           <thead>
             <tr className="table__head__row">
-              <th className="table__head__cell table__head__cell--text">Id</th>
-              <th className="table__head__cell table__head__cell--text">
-                Location
-              </th>
-              <th className="table__head__cell table__head__cell--text">
-                Customer
-              </th>
-              <th className="table__head__cell table__head__cell--number">
-                Item Count
-              </th>
-              <th className="table__head__cell table__head__cell--text">
-                Ordered Date
-              </th>
-              <th className="table__head__cell table__head__cell--text">
-                Issued By
-              </th>
+              <th className="table__head__cell">Id</th>
+              <th className="table__head__cell">Location</th>
+              <th className="table__head__cell">Customer</th>
+              <th className="table__head__cell cell--number">Item Count</th>
+              <th className="table__head__cell">Ordered Date</th>
+              <th className="table__head__cell">Issued By</th>
             </tr>
           </thead>
           <tbody className="table__body table__body--highlight divide-y divide-gray-200/80">
@@ -47,24 +37,16 @@ export default function RequisitionHistoryResults({ data, filters, dispatch }) {
                 key={r.requisitionId}
                 onClick={() => setSelectedReq(r)}
               >
-                <td className="table__cell table__cell--text">
-                  {r.requisitionId}
-                </td>
-                <td className="table__cell table__cell--text">
-                  {r.destination.locId}
-                </td>
-                <td className="table__cell table__cell--text">
-                  {r.customer.lastName}
-                </td>
-                <td className="table__cell table__cell--number">
+                <td className="table__cell">{r.requisitionId}</td>
+                <td className="table__cell">{r.destination.locId}</td>
+                <td className="table__cell">{r.customer.lastName}</td>
+                <td className="table__cell cell--number">
                   {r.lineItems.length}
                 </td>
-                <td className="table__cell table__cell--text">
+                <td className="table__cell">
                   {isoToShortDateTime(r.orderedDateTime)}
                 </td>
-                <td className="table__cell table__cell--text">
-                  {r.issuer?.lastName}
-                </td>
+                <td className="table__cell">{r.issuer?.lastName}</td>
               </tr>
             ))}
           </tbody>
