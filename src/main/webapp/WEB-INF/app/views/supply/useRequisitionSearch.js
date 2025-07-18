@@ -18,7 +18,7 @@ import { requisitionKeys } from "app/views/supply/requisition.queryKeys";
  * @param {Boolean} [params.savedInSfms] - Filter for requisitions saved in SFMS (true) or not saved (false)
  * @param {Number} [params.itemId] - Filter for requisitions containing this specific item ID
  * @param {Boolean} [params.reconciled] - Filter for reconciled requisitions (true) or unreconciled (false)
- * @param {Number} [params.limit] - Maximum number of results to return
+ * @param {Number|String} [params.limit] - Maximum number of results to return
  * @param {Number} [params.offset] - Number of results to skip before returning (used with 'limit' for pagination)
  * @returns {Object} Query result object containing requisition data, loading state, and error state
  *

@@ -63,9 +63,7 @@ export default function RequisitionEditModal({
   }, [requisition, reset]);
 
   const onSubmit = async (data) => {
-    console.log("onSubmit");
-    console.log(data);
-    // Make modifications to a copy.
+    // Make a copy.
     const dirtyReq = { ...requisition };
     // Always save changes regardless of action.
     dirtyReq.destination = locationQuery.data.find(
@@ -123,6 +121,7 @@ export default function RequisitionEditModal({
                 register={register}
                 fields={fields}
                 errors={errors}
+                destination={requisition.destination}
               />
               <AddItemInput append={append} />
               <NotesInput register={register} errors={errors} />

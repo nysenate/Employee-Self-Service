@@ -1,7 +1,24 @@
 import clsx from "clsx";
 import React from "react";
+import {
+  boldItemRow,
+  boldRequisitionRow,
+  highlightItemRow,
+  highlightRequisitionRow,
+} from "app/views/supply/fulfillment/fulfillmentUtils";
+import { useLocationStatistics } from "app/views/supply/fulfillment/useLocationStatistics";
 
-export default function EditableLineItems({ register, fields, errors }) {
+export default function EditableLineItems({
+  register,
+  fields,
+  errors,
+  destination,
+}) {
+  const locationStatisticsQuery = useLocationStatistics(
+    new Date().getFullYear(),
+    new Date().getMonth() + 1,
+  );
+
   return (
     <div>
       <table className="table">
@@ -20,7 +37,19 @@ export default function EditableLineItems({ register, fields, errors }) {
         </thead>
         <tbody className="table__body divide-y divide-gray-200/80">
           {fields.map((li, index) => (
-            <tr className="table__row" key={li.id}>
+            <tr
+              key={li.id}
+              className={clsx(
+                "table__row",
+                highlightItemRow(
+                  li,
+                  locationStatisticsQuery.data,
+                  destination,
+                ) && "bg-red-400/50",
+                boldItemRow(li, locationStatisticsQuery.data, destination) &&
+                  "font-semibold",
+              )}
+            >
               <td className="table__cell table__cell--text">
                 {li.item.commodityCode}
               </td>

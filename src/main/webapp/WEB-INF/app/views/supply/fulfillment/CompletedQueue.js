@@ -47,7 +47,7 @@ export default function CompletedQueue({ requisitions }) {
                   Order Date
                 </th>
                 <th className="table__head__cell table__head__cell--text">
-                  Assigned To
+                  Issuer
                 </th>
               </tr>
             </thead>

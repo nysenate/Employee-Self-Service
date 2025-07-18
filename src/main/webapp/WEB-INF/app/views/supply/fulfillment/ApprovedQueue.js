@@ -50,7 +50,7 @@ export default function ApprovedQueue({ requisitions }) {
                   Approved Date
                 </th>
                 <th className="table__head__cell table__head__cell--text">
-                  Assigned To
+                  Issuer
                 </th>
                 <th className="table__head__cell table__head__cell--text">
                   Sync Status

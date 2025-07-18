@@ -35,8 +35,10 @@ export default function FulfillmentIndex() {
   const [searchParams, setSearchParams] = useSearchParams();
   const queryClient = useQueryClient();
   const requisitionQuery = useRequisitionSearch(requisitionParams);
+  const rejectedRequisitionsQuery = useRequisitionSearch(
+    rejectedRequisitionParams,
+  );
   const socket = useRequisitionSocket((req) => {
-    console.log("Received Event: " + req);
     queryClient.invalidateQueries(["supply", "requisition", "list"]);
   });
 
@@ -89,6 +91,7 @@ export default function FulfillmentIndex() {
           />
         </div>
       </div>
+
       {isEditModalOpen() && (
         <RequisitionEditModal
           isOpen={isEditModalOpen()}

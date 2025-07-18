@@ -48,7 +48,7 @@ export default function PendingQueue({ requisitions }) {
                   Order Date
                 </th>
                 <th className="table__head__cell table__head__cell--text">
-                  Assigned To
+                  Issuer
                 </th>
               </tr>
             </thead>

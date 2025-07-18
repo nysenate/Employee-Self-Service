@@ -31,9 +31,9 @@ function containsItemOverOrderMax(requisition) {
  * @param locationStatistics
  */
 function isAnyItemOverMonthlyMax(requisition, locationStatistics) {
-  requisition.lineItems.some((li) => {
+  return requisition.lineItems.some((li) => {
     const monthToDateQty =
-      locationStatistics?.[requisition.destination.locId].itemQuantities[
+      locationStatistics?.[requisition.destination.locId]?.itemQuantities[
         li.item.commodityCode
       ];
     return monthToDateQty > li.item.perMonthAllowance;
@@ -73,23 +73,6 @@ export function highlightItemRow(lineItem, locationStatistics, destination) {
   );
 }
 
-function isItemOverOrderAllowance(lineItem) {
-  return lineItem.quantity > lineItem.item.perOrderAllowance;
-}
-
-function isItemOverMonthlyAllowance(lineItem, locationStatistics, destination) {
-  return (
-    lineItem.quantity >
-    locationStatistics?.[destination.locId].itemQuantities[
-      li.item.commodityCode
-    ]
-  );
-}
-
-function isSpecialItem(lineItem) {
-  return lineItem.item.specialRequest;
-}
-
 /**
  * Returns true of an item row should be bolded in a RequisitionEditModal.
  * @param lineItem
@@ -99,4 +82,20 @@ function isSpecialItem(lineItem) {
  */
 export function boldItemRow(lineItem, locationStatistics, destination) {
   return isItemOverMonthlyAllowance(lineItem, locationStatistics, destination);
+}
+
+function isItemOverOrderAllowance(lineItem) {
+  return lineItem.quantity > lineItem.item.perOrderAllowance;
+}
+
+function isItemOverMonthlyAllowance(lineItem, locationStatistics, destination) {
+  const monthToDateQty =
+    locationStatistics?.[destination.locId]?.itemQuantities[
+      lineItem.item.commodityCode
+    ];
+  return lineItem.quantity + monthToDateQty > lineItem.item.perMonthAllowance;
+}
+
+function isSpecialItem(lineItem) {
+  return lineItem.item.specialRequest;
 }
