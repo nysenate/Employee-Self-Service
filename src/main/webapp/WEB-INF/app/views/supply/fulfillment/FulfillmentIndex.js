@@ -49,11 +49,13 @@ export default function FulfillmentIndex() {
 
   // The full requisition object for the requisition specified in search params or undefined.
   const selectedRequisition = () =>
-    requisitionQuery.data.result.find(
-      (r) =>
-        r.requisitionId ===
-        parseInt(searchParams.get(REQUISITION_ID_SEARCH_PARAM)),
-    );
+    requisitionQuery.data.result
+      .concat(rejectedRequisitionsQuery.data.result)
+      .find(
+        (r) =>
+          r.requisitionId ===
+          parseInt(searchParams.get(REQUISITION_ID_SEARCH_PARAM)),
+      );
 
   // Display either the info or editable modal depending on the status of the requisition.
   const displayRequisitionModal = (req) => {
@@ -155,6 +157,23 @@ export default function FulfillmentIndex() {
           />
         </div>
       </div>
+
+      {rejectedRequisitionsQuery.data.result.length > 0 && (
+        <div className="my-4">
+          <FulfillmentQueue
+            requisitions={rejectedRequisitionsQuery.data.result}
+            title="Rejected Requisition Requests"
+            colorClass="bg-gray-500"
+            columns={[
+              QUEUE_COLUMNS.ID,
+              QUEUE_COLUMNS.LOCATION,
+              QUEUE_COLUMNS.CUSTOMER,
+              QUEUE_COLUMNS.ITEM_COUNT,
+              QUEUE_COLUMNS.ORDERED_DATE,
+            ]}
+          />
+        </div>
+      )}
 
       {isModalOpen() && displayRequisitionModal(selectedRequisition())}
     </div>
