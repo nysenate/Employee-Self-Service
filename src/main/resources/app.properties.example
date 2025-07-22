@@ -248,6 +248,9 @@ supply.requisition.notification.list =
 # Comma-separated list of commodity codes which do not need to be reconciled.
 supply.reconciliation.ignore.list = E69, E710, E912, E1013, E1015, E1215
 
+# Comma-separated list of allowed origins for cross-origin WebSocket connections.
+supply.websocket.permitted.origins =
+
 # --- Google Maps Configuration -----------------------------------------------
 google.maps.api.key =
 
