@@ -1,8 +1,8 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.directive('essOutboundEditForm', ['appProps', outboundEditLink]);
+essTravel.directive('essOutboundEditForm', ['appProps', 'modals', outboundEditLink]);
 
-function outboundEditLink(appProps) {
+function outboundEditLink(appProps, modals) {
     return {
         restrict: 'E',
         scope: {
@@ -40,6 +40,9 @@ function outboundEditLink(appProps) {
             };
 
             scope.setToAddress = function (leg, address) {
+                if (address.country !== "United States" || address.state === "Alaska" || address.state === "Hawaii") {
+                    modals.open("travel-outside-conus");
+                }
                 leg.to.address = address;
             };
 

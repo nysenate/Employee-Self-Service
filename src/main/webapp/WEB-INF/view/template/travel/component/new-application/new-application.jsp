@@ -90,6 +90,28 @@
       </div>
     </modal>
 
+    <%--      Travel outside CONUS message--%>
+    <modal modal-id="travel-outside-conus">
+      <div confirm-modal rejectable="false"
+           title="Your destination is outside the continental U.S."
+           resolve-button="Okay">
+        <div class="margin-bottom-20">
+          Currently, ESS Travel can only calculate housing and other costs for the 48 continental U.S. states.
+          If you are traveling outside of these states, please submit a paper Request for Travel Approval:
+          <ul style="list-style-type: disc;">
+            <li>
+              A printable PDF Request for Travel Approval is available <a target="_blank"
+                                                                          href="https://my.nysenate.gov/department/secretary-senate/travel">here</a>.
+            </li>
+            <li>
+              Non-continental U.S. per diems can be looked up <a target="_blank"
+                                                                 href="https://www.travel.dod.mil/Travel-Transportation-Rates/Per-Diem/Per-Diem-Rate-Lookup/">here</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </modal>
+
     <%--Error with one or more travel dates--%>
     <modal modal-id="travel-date-error-modal">
       <travel-date-error-modal></travel-date-error-modal>
