@@ -62,10 +62,13 @@ function timeOffRequestListUtils() {
         var pendingRequestCount = 0;
         var approvedRequestCount = 0;
         var rejectedRequestCount = 0;
+        var now = new Date();
         for (var index = 0; index < requests.length; ++index) {
-            if (requests[index].status === "SUBMITTED") pendingRequestCount++;
-            if (requests[index].status === "APPROVED") approvedRequestCount++;
-            if (requests[index].status === "DISAPPROVED") rejectedRequestCount++;
+            if (requests[index].endDate >= now) {
+                if (requests[index].status === "SUBMITTED") pendingRequestCount++;
+                if (requests[index].status === "APPROVED") approvedRequestCount++;
+                if (requests[index].status === "DISAPPROVED") rejectedRequestCount++;
+            }
         }
         return { pendingRequestCount: pendingRequestCount,
             approvedRequestCount: approvedRequestCount,

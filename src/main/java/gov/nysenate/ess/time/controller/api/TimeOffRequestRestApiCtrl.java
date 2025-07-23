@@ -145,6 +145,8 @@ public class TimeOffRequestRestApiCtrl extends BaseRestApiCtrl {
         checkPermission(new EssTimePermission(request.getEmployeeId(), TIME_OFF_REQUESTS, POST, LocalDate.now()));
         TimeOffRequest timeOffRequest = request.toTimeOffRequest();
         int requestId = timeOffRequestService.updateRequest(timeOffRequest);
+        //if submitted, send email to supervisor
+        timeOffRequestService.notifyStatusChange(timeOffRequest);
         return new ViewObjectResponse<>(new ViewObject() {
             public Integer getRequestId() {
                 return requestId;
@@ -205,6 +207,8 @@ public class TimeOffRequestRestApiCtrl extends BaseRestApiCtrl {
 
         //update the request to save the changes that were just made
         timeOffRequestService.updateRequest(request);
+        //send approve or disapprove email
+        timeOffRequestService.notifyStatusChange(request);
     }
 
     /**
