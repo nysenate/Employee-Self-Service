@@ -36,6 +36,7 @@ import java.util.concurrent.Executor;
 public class AsyncConfig implements SchedulingConfigurer, AsyncConfigurer {
     private static final Logger logger = LoggerFactory.getLogger(AsyncConfig.class);
     private boolean isShuttingDown = false;
+    private ThreadPoolTaskScheduler scheduler;
 
     @EventListener(ContextClosedEvent.class)
     public void onShutdown() {
@@ -44,6 +45,10 @@ public class AsyncConfig implements SchedulingConfigurer, AsyncConfigurer {
         ctx.addFilter(LevelMatchFilter.newBuilder().setLevel(Level.WARN)
                 .setOnMatch(Filter.Result.DENY).setOnMismatch(Filter.Result.NEUTRAL).build());
         ctx.updateLoggers();
+        if (scheduler != null) {
+            logger.info("Shutting down task scheduler");
+            scheduler.shutdown();
+        }
         isShuttingDown = true;
     }
 
@@ -63,8 +68,7 @@ public class AsyncConfig implements SchedulingConfigurer, AsyncConfigurer {
                 try {
                     logger.info("De-registering JDBC driver {}", driver);
                     DriverManager.deregisterDriver(driver);
-                }
-                catch (SQLException ex) {
+                } catch (SQLException ex) {
                     logger.error("Error de-registering JDBC driver {}", driver, ex);
                 }
             } else
@@ -74,7 +78,7 @@ public class AsyncConfig implements SchedulingConfigurer, AsyncConfigurer {
 
     @Bean
     public ThreadPoolTaskScheduler getTaskScheduler() {
-        var scheduler = new ThreadPoolTaskScheduler();
+        this.scheduler = new ThreadPoolTaskScheduler();
         scheduler.setPoolSize(8);
         scheduler.setThreadGroupName("scheduler");
         scheduler.setErrorHandler(new CustomThrowableHandler());
@@ -84,7 +88,7 @@ public class AsyncConfig implements SchedulingConfigurer, AsyncConfigurer {
 
     @Override
     public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
-        taskRegistrar.setScheduler(getTaskScheduler());
+        taskRegistrar.setScheduler(scheduler);
     }
 
     @Override
