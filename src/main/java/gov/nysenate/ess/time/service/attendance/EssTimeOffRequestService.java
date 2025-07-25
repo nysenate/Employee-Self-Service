@@ -101,9 +101,9 @@ public class EssTimeOffRequestService implements TimeOffRequestService {
         String requestDates = request.getStartDate() + " - " + request.getEndDate();
         String statusUpdate = " has been: ";
 
-        String submittedEmailBody = "Please review this time off request by " + employee.getFullName() + ".";
-        String disapprovedEmailBody = "Your time off request has been rejected by your supervisor. Please review the comments and make any necessary changes and resubmit the request.";
-        String approvedEmailBody = "Your time off request has been approved by your supervisor!";
+        String submittedEmailBody = "Please review this time off request in ESS by " + employee.getFullName() + " for " + requestDates + ".";
+        String disapprovedEmailBody = "Your time off request for " + requestDates + " has been rejected by your supervisor. Please review the comments, make any necessary changes and resubmit the request in ESS.";
+        String approvedEmailBody = "Your time off request for " + requestDates + " has been approved by your supervisor!";
         switch (request.getStatus()) {
             case SUBMITTED:
                 mimeSendMailService.sendMessage(supervisor.getEmail(),
