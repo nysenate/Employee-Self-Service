@@ -1,6 +1,5 @@
 package gov.nysenate.ess.core.service.mail;
 
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 
 import javax.mail.internet.MimeMessage;
@@ -12,19 +11,12 @@ import java.util.Collection;
 public interface SendMailService extends JavaMailSender
 {
     /**
-     * Will send an email to all comma seperated values in the report.email app property
-     * @param subject Subject of the email
-     * @param text The email body
-     */
-    public void sendMessageToReportEmails(String subject, String text);
-
-    /**
      * Will send an HTML body email to all comma seperated values in the report.email app property
      *
      * @param subject String - subject
      * @param html String - html body content
      */
-    public void sendHTMLMessageToReportEmails(String subject, String html);
+    void sendHTMLMessageToReportEmails(String subject, String html);
 
     /**
      * Sends a simple plaintext email message constructed from basic message parameters
@@ -54,12 +46,6 @@ public interface SendMailService extends JavaMailSender
      * @return
      */
     MimeMessage newHtmlMessage(String to, String subject, String html);
-
-    /**
-     * Sends all email messages from the given collection of simple email messages
-     * @param messages {@link Collection<SimpleMailMessage>} - the messages to send
-     */
-    void sendSimpleMessages(Collection<SimpleMailMessage> messages);
 
     /**
      * Sends each of the given MIME messages

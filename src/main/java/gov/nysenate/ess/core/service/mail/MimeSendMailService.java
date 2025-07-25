@@ -74,16 +74,6 @@ public class MimeSendMailService extends JavaMailSenderImpl implements SendMailS
      * {@inheritDoc}
      */
     @Override
-    public void sendMessageToReportEmails(String subject, String text) {
-        for (String email : reportEmails) {
-            sendMessage(email, subject, text);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public void sendHTMLMessageToReportEmails(String subject, String html) {
         for (String email : reportEmails) {
             MimeMessage message = newHtmlMessage(email, subject, html);
@@ -126,14 +116,6 @@ public class MimeSendMailService extends JavaMailSenderImpl implements SendMailS
             throw new EssMessagingException(ex);
         }
         return message;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void sendSimpleMessages(Collection<SimpleMailMessage> messages) {
-        send(messages.toArray(new SimpleMailMessage[messages.size()]));
     }
 
 

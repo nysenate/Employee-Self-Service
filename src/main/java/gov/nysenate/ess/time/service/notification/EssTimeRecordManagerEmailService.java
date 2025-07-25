@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.time.LocalDateTime;
@@ -42,7 +41,7 @@ public class EssTimeRecordManagerEmailService implements TimeRecordManagerEmailS
         String subject = reminderEmailSubject + exceptions.size();
         String body = getErrorEmailBody(exceptions);
 
-        sendMailService.sendMessageToReportEmails(subject, body);
+        sendMailService.sendHTMLMessageToReportEmails(subject, body);
     }
 
     /* --- Internal Methods --- */
