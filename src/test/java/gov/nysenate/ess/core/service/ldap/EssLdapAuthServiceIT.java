@@ -7,8 +7,10 @@ import gov.nysenate.ess.core.model.auth.LdapAuthResult;
 import gov.nysenate.ess.core.model.auth.LdapAuthStatus;
 import gov.nysenate.ess.core.service.security.authentication.EssLdapAuthService;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.rules.Timeout;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -22,6 +24,10 @@ import static org.junit.Assert.assertNotNull;
 @Category({IntegrationTest.class, TestDependsOnDatabase.class})
 public class EssLdapAuthServiceIT extends BaseTest
 {
+
+    @Rule
+    public Timeout globalTimeout = Timeout.seconds(15);
+
     @Value("${test.ldap.valid.uid}") private String validUid;
     @Value("${test.ldap.valid.dn}") private String validRelDn;
     @Value("${test.ldap.valid.password}") private String validPassword;
