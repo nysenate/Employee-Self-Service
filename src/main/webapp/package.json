@@ -23,5 +23,8 @@
   },
   "scripts": {
     "postinstall": "bower install && grunt compile"
+  },
+  "volta": {
+    "node": "20.12.0"
   }
 }
