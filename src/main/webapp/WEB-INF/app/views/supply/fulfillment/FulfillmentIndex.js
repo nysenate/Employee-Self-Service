@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
 import Hero from "app/components/Hero";
-import { useRequisitionSocket } from "app/views/supply/fulfillment/useRequisitionSocket";
+import { useRequisitionSocket } from "app/views/supply/fulfillment/hooks/useRequisitionSocket";
 import { endOfDay, formatISO, startOfDay } from "date-fns";
 import LoadingIndicator from "app/components/LoadingIndicator";
-import { useRequisitionSearch } from "app/views/supply/useRequisitionSearch";
+import { useRequisitionSearch } from "app/views/supply/shared/hooks/useRequisitionSearch";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
-import RequisitionEditModal from "app/views/supply/fulfillment/modal/RequisitionEditModal";
-import FulfillmentQueue from "app/views/supply/fulfillment/FilfillmentQueue";
-import { QUEUE_COLUMNS } from "app/views/supply/fulfillment/queueUtils";
-import RequisitionInfoModal from "app/views/supply/RequisitionInfoModal";
+import RequisitionEditModal from "app/views/supply/fulfillment/components/editModal/RequisitionEditModal";
+import FulfillmentQueue from "app/views/supply/fulfillment/components/FilfillmentQueue";
+import { QUEUE_COLUMNS } from "app/views/supply/fulfillment/utils/queueUtils";
+import RequisitionInfoModal from "app/views/supply/shared/componenets/RequisitionInfoModal";
 
 export const REQUISITION_ID_SEARCH_PARAM = "requisitionId";
 

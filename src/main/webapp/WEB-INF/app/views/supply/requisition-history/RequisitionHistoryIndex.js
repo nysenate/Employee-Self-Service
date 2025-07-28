@@ -2,7 +2,7 @@ import React, { useEffect, useReducer, useState } from "react";
 import { endOfDay, formatISO, isValid, startOfDay, subMonths } from "date-fns";
 import Hero from "app/components/Hero";
 import Controls from "app/components/Controls";
-import { useRequisitionSearch } from "app/views/supply/useRequisitionSearch";
+import { useRequisitionSearch } from "app/views/supply/shared/hooks/useRequisitionSearch";
 import LoadingIndicator from "app/components/LoadingIndicator";
 import RequisitionHistoryResults from "app/views/supply/requisition-history/RequisitionHistoryResults";
 import { isValidDateString } from "app/utils/dateUtils";
@@ -12,7 +12,7 @@ import {
   SET_DATE_RANGE,
   SET_FILTER,
   SET_OFFSET,
-} from "app/views/supply/SupplyFilterActions";
+} from "app/views/supply/shared/helpers/supplyFilterActions";
 import RequisitionHistoryFilters from "app/views/supply/requisition-history/RequisitionHistoryFilters";
 
 const initialFilters = {

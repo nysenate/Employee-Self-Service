@@ -1,6 +1,6 @@
 import React from "react";
-import styles from "../universalStyles.module.css";
-import { formatDate } from "app/views/supply/helpers";
+import styles from "app/views/supply/shared/styles/universalStyles.module.css";
+import { formatDate } from "app/views/supply/shared/helpers/helpers";
 
 const ReconciliationPrint = ({
   reconcilableSearch,

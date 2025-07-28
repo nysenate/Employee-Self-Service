@@ -9,7 +9,7 @@ import {
   SET_DATE_RANGE,
   SET_FILTER,
   SET_OFFSET,
-} from "app/views/supply/SupplyFilterActions";
+} from "app/views/supply/shared/helpers/supplyFilterActions";
 import ItemSummaryFilters from "app/views/supply/item-history/ItemSummaryFilters";
 import ItemSummaryResults from "app/views/supply/item-history/ItemSummaryResults";
 import { isValidDateString } from "app/utils/dateUtils";
