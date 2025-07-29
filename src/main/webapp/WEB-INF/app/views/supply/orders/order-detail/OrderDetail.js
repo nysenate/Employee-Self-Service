@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import styles from "app/views/supply/shared/styles/universalStyles.module.css";
 import Hero from "app/components/Hero";
-import CustomerPopover from "app/views/supply/orders/order-list/CustomPopover";
 import {
   alphabetizeLineItems,
   formatDate,
@@ -17,47 +16,47 @@ export default function OrderDetail() {
   const printRef = useRef();
   let { orderId } = useParams();
   const { data, isPending } = useRequisitionHistory(orderId);
-  const [currentOrder, setCurrentOrder] = useState(null);
-  const [orders, setOrders] = useState(null);
+  const [selectedVersion, setselectedVersion] = useState(null);
+  const [versions, setVersions] = useState(null);
 
   useEffect(() => {
-    setCurrentOrder(data?.result[0]);
-    setOrders(data?.result);
+    setselectedVersion(data?.result[0]);
+    setVersions(data?.result);
   }, [data]);
 
   useEffect(() => {
-    if (print && currentOrder) {
+    if (print && selectedVersion) {
       // handlePrint();
     }
-  }, [print, currentOrder]);
+  }, [print, selectedVersion]);
 
-  const handlePrint = useReactToPrint({
-    content: () => printRef.current,
-  });
+  // const handlePrint = useReactToPrint({
+  //   content: () => printRef.current,
+  // });
 
-  if (isPending) {
+  if (isPending || !selectedVersion) {
     return <LoadingIndicator />;
   }
 
   return (
     <div>
-      <Hero>Requisition Order: {currentOrder.requisitionId}</Hero>
+      <Hero>Requisition Order: {selectedVersion.requisitionId}</Hero>
       <Controls>
         <VersionFilter
-          versions={orders}
-          setCurrentOrder={setCurrentOrder}
-          handlePrint={handlePrint}
+          versions={versions}
+          setCurrentOrder={setselectedVersion}
+          handlePrint={() => undefined}
         />
       </Controls>
       <Card className="mt-5">
-        <OrderInfo order={currentOrder} />
-        <SpecialInstructions order={currentOrder} />
-        <ItemTable items={currentOrder.lineItems} />
+        <OrderInfo order={selectedVersion} />
+        <SpecialInstructions order={selectedVersion} />
+        <ItemTable items={selectedVersion.lineItems} />
       </Card>
 
       {/* Print */}
       <div ref={printRef} className={styles.printOnly}>
-        <OrderDetailPrint selectedVersion={currentOrder} />
+        <OrderDetailPrint selectedVersion={selectedVersion} />
       </div>
     </div>
   );
@@ -120,7 +119,6 @@ const OrderInfo = ({ order }) => {
         {/*<div className={styles.col412}>*/}
         {/*  <b>Requested By:</b> {order.customer.fullName}*/}
         {/*</div>*/}
-        <CustomerPopover order={order} />
         <div className={styles.col412}>
           <b>Requested Office:</b> {order.destination.locId}
         </div>
