@@ -50,8 +50,7 @@ Create config files from all the example files:
 
 ```shell
 for f in src/{main,test}/resources/*.example; do cp -- "$f" "${f%.example}"; done
-# Mirror the app.properties for the test.app.properties
-ln -s ../../main/resources/app.properties src/test/resources/test.app.properties
+touch src/test/resources/test.app.properties
 cp src/main/resources/log4j2.xml src/test/resources/test.log4j2.xml
 cp src/main/webapp/grunt.properties.example.json src/main/webapp/grunt.properties.json
 ```
