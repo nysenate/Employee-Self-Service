@@ -37,6 +37,9 @@ public class TransactionInfo {
     /** The date when this record was updated. */
     protected LocalDateTime updateDate;
 
+    /** The date when this record was posted. */
+    protected LocalDateTime postDate;
+
     /** --- Constructors --- */
 
     public TransactionInfo() {}
@@ -122,5 +125,13 @@ public class TransactionInfo {
 
     public void setUpdateDate(LocalDateTime updateDate) {
         this.updateDate = updateDate;
+    }
+
+    public LocalDateTime getPostDate() {
+        return postDate;
+    }
+
+    public void setPostDate(LocalDateTime postDate) {
+        this.postDate = postDate;
     }
 }
