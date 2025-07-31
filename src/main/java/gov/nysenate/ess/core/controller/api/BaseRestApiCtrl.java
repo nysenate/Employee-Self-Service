@@ -4,6 +4,7 @@ import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
 import com.google.common.eventbus.EventBus;
 import gov.nysenate.ess.core.model.auth.SenatePerson;
+import gov.nysenate.ess.core.model.auth.SimpleEssPermission;
 import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.personnel.EmployeeNotFoundEx;
@@ -118,6 +119,8 @@ public class BaseRestApiCtrl
      * @return
      */
     protected int getSubjectEmployeeId() {
+        // First check the user is authed using a permission granted to everyone.
+        checkPermission(SimpleEssPermission.SENATE_EMPLOYEE.getPermission());
         SenatePerson person = (SenatePerson) getSubject().getPrincipals().getPrimaryPrincipal();
         return person.getEmployeeId();
     }
