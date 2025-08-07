@@ -7,6 +7,8 @@ import gov.nysenate.ess.core.model.transaction.TransactionRecord;
 import java.time.LocalDateTime;
 import java.util.Collection;
 
+import javax.xml.bind.annotation.XmlElement;
+
 public class BACHelpEmpStatusChangeView extends BACHelpEmployeeView {
 
     protected TransactionCode transactionCode;
@@ -16,6 +18,16 @@ public class BACHelpEmpStatusChangeView extends BACHelpEmployeeView {
         super(employee);
         this.transactionCode = statusChangeRecord.getTransCode();
         this.postDateTime = statusChangeRecord.getPostDate();
+    }
+
+    @XmlElement
+    public TransactionCode getTransactionCode() {
+        return transactionCode;
+    }
+
+    @XmlElement
+    public LocalDateTime getPostDateTime() {
+        return postDateTime;
     }
 
     @Override

@@ -15,7 +15,7 @@ public class AppIT extends WebTest
 {
     @Test
     public void simple() throws Exception {
-        mockMvc.perform(get("/"))
+        performAuthenticated(get("/"))
                 .andExpect(redirectedUrlPattern("/time"));
     }
 
