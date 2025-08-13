@@ -53,6 +53,7 @@ public class TransactionInfo {
         this.effectDate = other.effectDate;
         this.originalDate = other.originalDate;
         this.updateDate = other.updateDate;
+        this.postDate = other.postDate;
     }
 
     /** --- Functional Getters / Setters --- */
