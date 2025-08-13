@@ -22,7 +22,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class BACHelpRestApiCtrlIT extends WebTest {
 
     private static final String BACHELP_STATUS_CHANGE_ENDPOINT = "/api/v1/bachelp/statusChanges";
-    private static final String BACHELP_SEARCH_ENDPOINT = "/api/v1/bachelp/empSearch";
+    private static final String BACHELP_SEARCH_ENDPOINT = "/api/v1/bachelp/employee/search";
+    private static final String BACHELP_EMPLOYEE_LOOKUP_ENDPOINT = "/api/v1/bachelp/employee";
     private static final Logger logger = LoggerFactory.getLogger(BACHelpRestApiCtrlIT.class);
 
     @Value("${auth.bachelp.api.key}")
@@ -157,5 +158,44 @@ public class BACHelpRestApiCtrlIT extends WebTest {
         assertTrue("Should have total field", response.has("total"));
         assertTrue("Should have result array", response.has("result"));
         assertTrue("Total should be >= 0", response.get("total").asInt() >= 0);
+    }
+
+    @Test
+    public void testEmployeeLookupApi() throws Exception {
+        // Test the employee lookup endpoint with a known employee ID
+        // Using employee ID 1 which should exist in most test datasets
+        int testEmpId = 1;
+        
+        MvcResult result = mockMvc.perform(get(BACHELP_EMPLOYEE_LOOKUP_ENDPOINT + "/" + testEmpId)
+                .header("X-BACHelp-API-Key", bachelpApiKey)
+                .header("Accept", "application/json"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json"))
+                .andReturn();
+
+        String responseContent = result.getResponse().getContentAsString();
+        JsonNode response = jsonObjectMapper.readTree(responseContent);
+        
+        assertTrue("Should be successful", response.get("success").asBoolean());
+
+        // Verify employee data structure
+        JsonNode employee = response.get("employee");
+        assertTrue("Should have employeeId", employee.has("employeeId"));
+        assertTrue("Should have fullName", employee.has("fullName"));
+        assertTrue("Should have active status", employee.has("active"));
+
+        assertEquals("Employee ID should match", testEmpId, employee.get("employeeId").asInt());
+    }
+
+    @Test
+    public void testEmployeeLookupNotFound() throws Exception {
+        // Test employee lookup with non-existent employee ID
+        int nonExistentEmpId = 999999;
+        
+        mockMvc.perform(get(BACHELP_EMPLOYEE_LOOKUP_ENDPOINT + "/" + nonExistentEmpId)
+                .header("X-BACHelp-API-Key", bachelpApiKey)
+                .header("Accept", "application/json"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType("application/json"));
     }
 }

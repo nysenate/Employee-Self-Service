@@ -1,22 +1,26 @@
 package gov.nysenate.ess.core.controller.api;
 
 import com.google.common.collect.ImmutableSet;
+import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
+import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
+import gov.nysenate.ess.core.client.response.error.ErrorCode;
+import gov.nysenate.ess.core.client.response.error.ErrorResponse;
+import gov.nysenate.ess.core.client.response.error.ViewObjectErrorResponse;
 import gov.nysenate.ess.core.client.view.BACHelpEmpStatusChangeView;
 import gov.nysenate.ess.core.client.view.BACHelpEmployeeView;
 import gov.nysenate.ess.core.dao.transaction.EmpTransactionDao;
 import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.model.personnel.Employee;
+import gov.nysenate.ess.core.model.personnel.EmployeeNotFoundEx;
 import gov.nysenate.ess.core.model.transaction.TransactionCode;
 import gov.nysenate.ess.core.model.transaction.TransactionRecord;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.PaginatedList;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 
@@ -61,13 +65,36 @@ public class BACHelpRestApiCtrl extends BaseRestApiCtrl {
      * @return ListViewResponse<BACHelpEmployeeView> - search results
      */
     @RequiresAuthentication
-    @RequestMapping(value = "empSearch", method = {GET, HEAD})
+    @RequestMapping(value = "employee/search", method = {GET, HEAD})
     public ListViewResponse<BACHelpEmployeeView> employeeSearch(@RequestParam(defaultValue = "") String term,
                                                                 WebRequest request) {
         checkPermission(BACHELP_API_ACCESS.getPermission());
         LimitOffset limitOffset = getLimitOffset(request, 20);
         PaginatedList<Employee> results = empInfoService.searchEmployees(term, false, limitOffset);
         return ListViewResponse.fromPaginatedList(results, BACHelpEmployeeView::new);
+    }
+
+    /**
+     * Retrieve info for a specific employee.
+     *
+     * @param empId    - int - id of employee to lookup
+     * @return ViewObjectResponse<BACHelpEmployeeView> - employee info
+     */
+    @RequiresAuthentication
+    @RequestMapping(value = "employee/{empId}", method = {GET, HEAD})
+    public ViewObjectResponse<BACHelpEmployeeView> empLookup(@PathVariable int empId) {
+        checkPermission(BACHELP_API_ACCESS.getPermission());
+        Employee emp = empInfoService.getEmployee(empId);
+        return new ViewObjectResponse<>(
+                new BACHelpEmployeeView(emp), "employee"
+        );
+    }
+
+    @ExceptionHandler(EmployeeNotFoundEx.class)
+    @ResponseStatus(value = HttpStatus.NOT_FOUND)
+    @ResponseBody
+    protected ViewObjectErrorResponse handleEmpNotFoundEx(EmployeeNotFoundEx ex) {
+        return new ViewObjectErrorResponse(ErrorCode.EMPLOYEE_NOT_FOUND, ex.getEmpId());
     }
 
     /**
