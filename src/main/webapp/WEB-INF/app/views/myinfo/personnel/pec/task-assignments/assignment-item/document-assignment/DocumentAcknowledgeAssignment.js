@@ -8,11 +8,11 @@ import useScrollDetection from "app/views/myinfo/personnel/pec/task-assignments/
 import Button from "app/components/Button";
 import Modal from "app/components/Modal";
 import ModalNotice from "app/components/ModalNotice";
-import useAuth from "app/contexts/Auth/useAuth";
 import { useAcknowledgeDocument } from "app/views/myinfo/personnel/pec/useTaskAssignment";
+import useAuthedUser from "app/core/useAuthedUser";
 
 export default function DocumentAcknowledgeAssignment({ assignment }) {
-  const auth = useAuth();
+  const { data: user } = useAuthedUser();
   const navigate = useNavigate();
   const acknowledgeDocumentApi = useAcknowledgeDocument();
   const isScrolledToBottom = useScrollDetection();
@@ -30,7 +30,7 @@ export default function DocumentAcknowledgeAssignment({ assignment }) {
     setIsConfirmationModalOpen(false);
     acknowledgeDocumentApi
       .mutateAsync({
-        empId: auth.empId(),
+        empId: user.employeeId,
         taskId: assignment.taskId,
       })
       .then(() => {

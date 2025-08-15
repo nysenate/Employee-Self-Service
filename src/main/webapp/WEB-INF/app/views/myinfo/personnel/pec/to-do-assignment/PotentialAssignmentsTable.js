@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import { MinusIcon } from "@heroicons/react/16/solid";
 import { useTasks } from "../to-do-reporting/useTasks";
 import { useManuallyAssignTask } from "../useTaskAssignment";
-import useAuth from "../../../../../contexts/Auth/useAuth";
 import Modal from "../../../../../components/Modal";
 import { isoToMediumDate } from "../../../../../utils/dateUtils";
 import Button from "app/components/Button";
+import useAuthedUser from "app/core/useAuthedUser";
 
 export default function PotentialAssignmentsTable({
   potentialAssignments,
@@ -181,13 +181,13 @@ function UnassignedDetails({ emp, assignment, tasksMap }) {
 }
 
 function AssignTaskModal({ isOpen, setIsOpen, emp, task }) {
-  const userEmpId = useAuth().empId();
+  const { data: user } = useAuthedUser();
   const manuallyAssignApi = useManuallyAssignTask();
 
   const onProceed = () => {
     manuallyAssignApi
       .mutateAsync({
-        updatedByEmpId: userEmpId,
+        updatedByEmpId: user.employeeId,
         taskId: task.taskId,
         assignedEmpId: emp.employeeId,
       })

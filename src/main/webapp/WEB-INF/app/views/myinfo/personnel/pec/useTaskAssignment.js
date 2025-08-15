@@ -29,6 +29,7 @@ export function useTaskAssignments(empId) {
     queryFn: () => {
       return getTaskAssignments(empId).then((body) => body.assignments);
     },
+    enabled: !!empId,
     throwOnError: true,
   });
 }
@@ -39,6 +40,7 @@ export function useTaskAssignment(empId, taskId) {
     queryFn: () => {
       return getTaskAssignment(empId, taskId).then((body) => body.task);
     },
+    enabled: !!empId,
     throwOnError: true,
   });
 }

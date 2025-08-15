@@ -1,11 +1,11 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import Button from "app/components/Button";
-import useAuth from "app/contexts/Auth/useAuth";
 import { useSubmitEthicsLiveForm } from "app/views/myinfo/personnel/pec/useTaskAssignment";
+import useAuthedUser from "app/core/useAuthedUser";
 
 export default function EthicsLiveCodeEntryForm({ taskId, onSuccess }) {
-  const auth = useAuth();
+  const { data: user } = useAuthedUser();
   const submitEthicsLiveCodesApi = useSubmitEthicsLiveForm();
   const {
     register,
@@ -19,7 +19,7 @@ export default function EthicsLiveCodeEntryForm({ taskId, onSuccess }) {
       .mutateAsync({
         trainingDate: data.trainingDate,
         codes: [data.firstCode, data.secondCode],
-        empId: auth.empId(),
+        empId: user.employeeId,
         taskId: taskId,
       })
       .then(onSuccess)

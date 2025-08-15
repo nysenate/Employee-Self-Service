@@ -2,7 +2,6 @@ import Button from "app/components/Button";
 import React, { useEffect, useState } from "react";
 import Hero from "app/components/Hero";
 import Controls from "app/components/Controls";
-import useAuth from "app/contexts/Auth/useAuth";
 import { useSupplyDestinations } from "app/views/supply/store/shop/hooks/useSupplyDestinations";
 import LoadingIndicator from "app/components/LoadingIndicator";
 import { useEmployee } from "app/views/useEmployee";
@@ -16,11 +15,12 @@ import {
 } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/16/solid";
 import { useDebounce } from "use-debounce";
+import useAuthedUser from "app/core/useAuthedUser";
 
 export default function SelectDestination() {
-  const auth = useAuth();
-  const employeeQuery = useEmployee(auth.empId());
-  const validDestinationsQuery = useSupplyDestinations(auth.empId());
+  const { data: user } = useAuthedUser();
+  const employeeQuery = useEmployee(user?.employeeId);
+  const validDestinationsQuery = useSupplyDestinations(user?.employeeId);
   const { setDestination } = useSupplyContext();
   const [dirtyDestination, setDirtyDestination] = useState({});
 

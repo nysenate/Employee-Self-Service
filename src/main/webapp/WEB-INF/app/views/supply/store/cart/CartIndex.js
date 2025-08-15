@@ -10,13 +10,13 @@ import EmptyCartConfirmation from "app/views/supply/store/cart/EmptyCartConfirma
 import { Link } from "react-router-dom";
 import DeliveryMethodModal from "app/views/supply/store/cart/DeliveryMethodModal";
 import { useCheckout } from "app/views/supply/store/cart/useCheckout";
-import useAuth from "app/contexts/Auth/useAuth";
 import LoadingIndicator from "app/components/LoadingIndicator";
 import CheckoutSummaryModal from "app/views/supply/store/cart/CheckoutSummaryModal";
 import { useItemsMap } from "app/views/supply/shared/hooks/useItems";
+import useAuthedUser from "app/core/useAuthedUser";
 
 export default function CartIndex() {
-  const auth = useAuth();
+  const { data: user } = useAuthedUser();
   const { cart, clearCart, destination } = useSupplyContext();
   const [instructions, setInstructions] = useState("");
   const itemsQuery = useItemsMap();
@@ -35,7 +35,7 @@ export default function CartIndex() {
     }));
     checkoutApi
       .mutateAsync({
-        customerId: auth.empId(),
+        customerId: user.employeeId,
         deliveryMethod,
         destinationId: destination.locId,
         lineItems,

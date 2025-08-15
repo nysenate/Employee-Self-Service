@@ -3,7 +3,6 @@ import Hero from "app/components/Hero";
 import SubHero from "app/views/supply/orders/order-list/SubHero";
 import Results from "app/views/supply/orders/order-list/Results";
 import styles from "app/views/supply/shared/styles/universalStyles.module.css";
-import useAuth from "app/contexts/Auth/useAuth";
 import Pagination from "app/components/Pagination";
 import LoadingIndicator from "app/components/LoadingIndicator";
 import {
@@ -14,10 +13,10 @@ import {
   getOrderHistory,
 } from "app/views/supply/shared/helpers/helpers";
 import { add } from "date-fns";
+import useAuthedUser from "app/core/useAuthedUser";
 
 export default function OrderHistoryIndex() {
-  const auth = useAuth();
-  const { userData, empId } = useAuth();
+  const { data: user } = useAuthedUser();
   const [orderHistory, setOrderHistory] = useState([]);
   const [from, setFrom] = useState(getOneMonthBeforeDate());
   const [to, setTo] = useState(getCurrentDate());
@@ -45,12 +44,12 @@ export default function OrderHistoryIndex() {
     const fetchCustomerIdAndOrderHistory = async () => {
       try {
         setLoading(true); // Set loading to true before the fetch
-        const customerId = empId();
+        const customerId = user.employeeId;
         const response = await getOrderHistory(
           customerId,
           formatDateForApi(new Date(from)),
           ordersPerPage,
-          userData().employee.empWorkLocation.locId,
+          // userData().employee.empWorkLocation.locId, // TODO fetch user work location to use here.
           1 + (currentPage - 1) * ordersPerPage,
           status,
           formatDateForApi(add(new Date(to), { days: 1 })),
@@ -67,10 +66,10 @@ export default function OrderHistoryIndex() {
       }
     };
 
-    if (auth) {
+    if (user) {
       fetchCustomerIdAndOrderHistory();
     }
-  }, [auth, from, to, status, currentPage]);
+  }, [user, from, to, status, currentPage]);
 
   return (
     <div>

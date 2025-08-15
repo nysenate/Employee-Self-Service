@@ -11,6 +11,7 @@ export function useSupplyDestinations(empId) {
     queryFn: () => {
       return getSupplyDestinations(empId).then((body) => body.result);
     },
+    enable: !!empId,
     staleTime: 60000,
     throwOnError: true,
   });

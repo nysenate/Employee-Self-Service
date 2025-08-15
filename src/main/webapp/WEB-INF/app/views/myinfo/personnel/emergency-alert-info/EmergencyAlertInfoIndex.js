@@ -1,15 +1,14 @@
-import React from "react"
+import React from "react";
 import Hero from "app/components/Hero";
 import Card from "app/components/Card";
 import AlertInfoForm from "app/views/myinfo/personnel/emergency-alert-info/AlertInfoForm";
 import LoadingIndicator from "app/components/LoadingIndicator";
-import useAuth from "app/contexts/Auth/useAuth";
 import { useEmployeeAlertInfo } from "app/views/myinfo/personnel/emergency-alert-info/useEmployeeAlertInfo";
-
+import useAuthedUser from "app/core/useAuthedUser";
 
 export default function EmergencyAlertInfoIndex() {
-  const auth = useAuth()
-  const alertInfo = useEmployeeAlertInfo(auth.empId())
+  const { data: user } = useAuthedUser();
+  const alertInfo = useEmployeeAlertInfo(user?.employeeId);
 
   return (
     <div>
@@ -20,9 +19,9 @@ export default function EmergencyAlertInfoIndex() {
           event of a Senate-wide emergency.
         </Card.Header>
 
-        {alertInfo.isPending && <LoadingIndicator/>}
-        {alertInfo.isSuccess && <AlertInfoForm alertInfo={alertInfo.data}/>}
+        {alertInfo.isPending && <LoadingIndicator />}
+        {alertInfo.isSuccess && <AlertInfoForm alertInfo={alertInfo.data} />}
       </Card>
     </div>
-  )
+  );
 }

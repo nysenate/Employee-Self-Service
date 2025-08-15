@@ -1,14 +1,12 @@
-import React from "react"
-import useAuth from "app/contexts/Auth/useAuth";
-
+import useAuthedUser from "app/core/useAuthedUser";
 
 export default function useLocalStorage() {
-  const auth = useAuth()
+  const { data: user } = useAuthedUser();
 
   // Prefixes the key with the logged in empId.
-  const getKey = key => {
-    return `${auth.empId()}-${key}`
-  }
+  const getKey = (key) => {
+    return `${user?.employeeId}-${key}`;
+  };
 
   /**
    * Saves the given key value pair in local storage.
@@ -17,11 +15,11 @@ export default function useLocalStorage() {
    */
   const save = (key, value) => {
     try {
-      localStorage.setItem(getKey(key), JSON.stringify(value))
+      localStorage.setItem(getKey(key), JSON.stringify(value));
     } catch (e) {
-      throw e
+      throw e;
     }
-  }
+  };
 
   /**
    * Attempts to load the given key from local storage.
@@ -31,24 +29,24 @@ export default function useLocalStorage() {
    * @returns {any|null} The key's value parsed into an object or null if key was not found.
    */
   const load = (key) => {
-    const item = localStorage.getItem(getKey(key))
+    const item = localStorage.getItem(getKey(key));
     if (item == null) {
-      return null
+      return null;
     }
     try {
       return JSON.parse(item);
     } catch (e) {
-      throw e
+      throw e;
     }
-  }
+  };
 
   /**
    * Remove the given key from local storage.
    * @param key
    */
   const remove = (key) => {
-    localStorage.removeItem(getKey(key))
-  }
+    localStorage.removeItem(getKey(key));
+  };
 
-  return { save, load, remove }
+  return { save, load, remove };
 }

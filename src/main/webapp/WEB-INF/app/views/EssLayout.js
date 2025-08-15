@@ -1,17 +1,13 @@
 import React, { useEffect, useState } from "react";
 import EssNavBar from "app/core/EssNavBar/EssNavBar";
-import { Navigate, Outlet } from "react-router-dom";
-import useAuth from "app/contexts/Auth/useAuth";
+import { Outlet } from "react-router-dom";
+import useAuthedUser from "app/core/useAuthedUser";
 
 export default function EssLayout() {
-  const { isAuthed, isAuthLoading } = useAuth();
+  const { data: user, isPending } = useAuthedUser();
 
-  if (isAuthLoading()) {
+  if (isPending) {
     return <></>;
-  }
-
-  if (!isAuthed()) {
-    return <Navigate to="/login" />;
   }
 
   return (

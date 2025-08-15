@@ -2,13 +2,13 @@ import { CheckIcon, MinusIcon, XMarkIcon } from "@heroicons/react/16/solid";
 import React, { useState } from "react";
 import { isoToMediumDate } from "app/utils/dateUtils";
 import Button from "app/components/Button";
-import useAuth from "app/contexts/Auth/useAuth";
 import Modal from "app/components/Modal";
 import { useTasks } from "app/views/myinfo/personnel/pec/to-do-reporting/useTasks";
 import {
   useManuallyDeactivateTaskAssignment,
   useManuallyOverrideCompletionStatus,
 } from "app/views/myinfo/personnel/pec/useTaskAssignment";
+import useAuthedUser from "app/core/useAuthedUser";
 
 export default function AssignmentsTable({ taskAssignments, state, dispatch }) {
   // Assignment details will be displayed for the row of this employee. Only display one row details at a time.
@@ -226,13 +226,13 @@ function IncompleteAssignmentDetails({ emp, assignment, tasksMap }) {
 }
 
 function ManuallyOverrideModal({ isOpen, setIsOpen, emp, assignment, task }) {
-  const userEmpId = useAuth().empId();
+  const { data: user } = useAuthedUser();
   const manuallyOverrideApi = useManuallyOverrideCompletionStatus();
 
   const onProceed = () => {
     manuallyOverrideApi
       .mutateAsync({
-        updatedByEmpId: userEmpId,
+        updatedByEmpId: user.employeeId,
         taskId: task.taskId,
         isCompleted: true,
         assignedEmpId: assignment.empId,
@@ -271,13 +271,13 @@ function ManuallyOverrideModal({ isOpen, setIsOpen, emp, assignment, task }) {
 }
 
 function ManuallyDeactivateModal({ isOpen, setIsOpen, emp, assignment, task }) {
-  const userEmpId = useAuth().empId();
+  const { data: user } = useAuthedUser();
   const deactivateTaskAssignmentApi = useManuallyDeactivateTaskAssignment();
 
   const onProceed = () => {
     deactivateTaskAssignmentApi
       .mutateAsync({
-        updatedByEmpId: userEmpId,
+        updatedByEmpId: user.employeeId,
         taskId: task.taskId,
         isActive: false,
         assignedEmpId: assignment.empId,

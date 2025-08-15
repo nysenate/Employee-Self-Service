@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import Card from "app/components/Card";
 import Hero from "app/components/Hero";
-import useAuth from "app/contexts/Auth/useAuth";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import LoginForm from "app/views/login/LoginForm";
 import LoginDevBanner from "app/views/login/LoginDevBanner";
 import LoginHelp from "app/views/login/LoginHelp";
+import useAuthedUser, { useAuthedUserNoRedirect } from "app/core/useAuthedUser";
 
 export const LOGIN_STATES = {
   LOGIN: 0,
@@ -16,18 +16,18 @@ export const LOGIN_BUTTON_CLASSES = `py-0.5 bg-gray-100 border-1 border-gray-400
 duration-500 hover:bg-gray-50 hover:text-teal-600 disabled:pointer-events-none disabled:opacity-50`;
 
 export default function LoginIndex() {
-  const { isAuthed, isAuthLoading } = useAuth();
+  const { data: user, isPending } = useAuthedUserNoRedirect();
   const navigate = useNavigate();
   const [state, setState] = useState(LOGIN_STATES.LOGIN);
 
   useEffect(() => {
     // If the user is already logged in, redirect them.
-    if (!isAuthLoading() && isAuthed()) {
+    if (user) {
       navigate("/myinfo");
     }
-  }, [isAuthed(), isAuthLoading()]);
+  }, [user]);
 
-  if (isAuthLoading()) {
+  if (isPending) {
     return <></>;
   }
 

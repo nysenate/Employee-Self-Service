@@ -1,11 +1,11 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import Button from "app/components/Button";
-import useAuth from "app/contexts/Auth/useAuth";
 import { useSubmitVideoCodes } from "app/views/myinfo/personnel/pec/useTaskAssignment";
+import useAuthedUser from "app/core/useAuthedUser";
 
 export default function VideoCodeEntryForm({ taskId, onSuccess }) {
-  const auth = useAuth();
+  const { data: user } = useAuthedUser();
   const submitVideoCodesApi = useSubmitVideoCodes();
   const {
     register,
@@ -18,7 +18,7 @@ export default function VideoCodeEntryForm({ taskId, onSuccess }) {
     submitVideoCodesApi
       .mutateAsync({
         codes: [data.firstCode, data.secondCode],
-        empId: auth.empId(),
+        empId: user.employeeId,
         taskId: taskId,
       })
       .then(onSuccess)
