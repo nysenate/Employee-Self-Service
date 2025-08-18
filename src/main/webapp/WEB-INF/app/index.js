@@ -17,7 +17,6 @@ import TravelRouter from "app/views/travel/TravelRouter";
 function App() {
   return (
     <BrowserRouter>
-      {/*<TimeoutChecker>*/}
       <Routes>
         <Route path="/" element={<EssIndex />} />
         <Route path="/" element={<EssLayout />}>
@@ -32,7 +31,6 @@ function App() {
         <Route path="*" element={<NotFound />} />
         {/* TODO Errors page, 404 page. */}
       </Routes>
-      {/*</TimeoutChecker>*/}
     </BrowserRouter>
   );
 }

@@ -1,5 +1,6 @@
 import React from "react";
 import { Dialog } from "@headlessui/react";
+import { twMerge } from "tailwind-merge";
 
 /**
  * Displays a modal dialog.
@@ -23,13 +24,20 @@ function Modal({ isOpen, onSoftReject = () => undefined, children }) {
   );
 }
 
-const Title = ({ children }) => (
-  <Dialog.Title className="border-b-1 border-teal-200 px-4 py-3 text-center font-semibold">
+const Title = ({ className, children }) => (
+  <Dialog.Title
+    className={twMerge(
+      className,
+      "border-b-1 border-teal-200 px-4 py-3 text-center font-semibold",
+    )}
+  >
     {children}
   </Dialog.Title>
 );
 
-const Body = ({ className, children }) => <div className="m-4">{children}</div>;
+const Body = ({ className, children }) => (
+  <div className={twMerge(className, "m-4")}>{children}</div>
+);
 
 const Controls = ({ children }) => (
   <div className="border-t-1 border-teal-200 p-3">{children}</div>
