@@ -1,10 +1,12 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import React from "react";
 import "./essNavBar.css";
 import { themes } from "app/contexts/ThemeContext";
+import { QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
+import useAuthedUser from "app/core/useAuthedUser";
 
 export default function EssNavBar() {
-  const navigate = useNavigate();
+  const { data: user } = useAuthedUser();
 
   return (
     <nav
@@ -20,9 +22,9 @@ export default function EssNavBar() {
               className="h-[35px] w-[35px]"
             />
             <div className="ml-3 mr-6 inline-block">
-              <span className="text-[20.8px] text-lg font-medium">NYS</span>
+              <span className="text-[20.8px] font-medium">NYS</span>
               &nbsp;
-              <span className="text-[20.8px] text-lg font-light">ESS</span>
+              <span className="text-[20.8px] font-light">ESS</span>
             </div>
             <ul className="h-full">
               <li className="inline leading-[40px]">
@@ -43,13 +45,29 @@ export default function EssNavBar() {
               </li>
             </ul>
           </div>
-          <div>
-            <span
-              className="cursor-pointer text-[14.3px]"
-              onClick={() => navigate("/logout")}
+          <div className="flex h-full items-center p-0.5">
+            {process.env.NODE_ENV === "development" && (
+              <div className="mx-3 text-[14.3px] font-semibold text-red-700">
+                <span className="mx-3">dev</span>
+                <span>emp #{user.employeeId}</span>
+              </div>
+            )}
+            <div className="mx-3 text-[14.3px] font-semibold">
+              Hi, {user?.firstName} {user?.lastName}
+            </div>
+            <Link
+              target="_blank"
+              to="/assets/help/html/index.htm"
+              className="flex h-full items-center px-2 text-[14.3px] text-gray-800 hover:bg-gray-200 hover:text-gray-800"
+            >
+              <QuestionMarkCircleIcon className="mr-1 size-5" /> Help
+            </Link>
+            <Link
+              to="/logout"
+              className="flex h-full items-center px-2 text-[14.3px] text-gray-800 hover:bg-gray-200 hover:text-gray-800"
             >
               Sign Out
-            </span>
+            </Link>
           </div>
         </div>
       </div>
