@@ -5,8 +5,8 @@ import Modal from "app/components/Modal";
 import Button from "app/components/Button";
 
 // Values are in Seconds.
-const PING_RATE = 5;
-const WARNING_THRESHOLD = 70;
+const PING_RATE = 15;
+const WARNING_THRESHOLD = 80;
 const PING_FAIL_TOLERANCE = 10;
 
 export default function TimeoutChecker({ children }) {
