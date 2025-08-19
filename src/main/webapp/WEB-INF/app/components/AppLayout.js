@@ -5,13 +5,13 @@ import { ErrorBoundary } from "react-error-boundary";
 
 export default function AppLayout({ children }) {
   return (
-    <div className="flex flex-row justify-between relative">
-      {children}
-      <main className="w-[880px] flex-none">
+    <>
+      <div className="fixed">{children}</div>
+      <main className="mb-[20px] ml-[270px] w-[880px]">
         <ErrorBoundary FallbackComponent={ErrorPage}>
           <Outlet />
         </ErrorBoundary>
       </main>
-    </div>
+    </>
   );
 }
