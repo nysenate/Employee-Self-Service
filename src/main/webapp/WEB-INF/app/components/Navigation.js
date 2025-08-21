@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import { ThemeContext, themes } from "app/contexts/ThemeContext";
 import { NavLink } from "react-router-dom";
 import Card from "app/components/Card";
+import useCheckPermission from "app/core/useCheckPermission";
 
 const Navigation = ({ children }) => {
   return (
@@ -40,7 +41,20 @@ const Title = ({ children }) => {
   );
 };
 
-const Section = ({ name, children }) => {
+/**
+ * @param name The name of the section
+ * @param permission If given, this Section will only be rendered if the user has this permission.
+ * @param children
+ * @returns {JSX.Element}
+ * @constructor
+ */
+const Section = ({ name, permission, children }) => {
+  const { data, isLoading } = useCheckPermission(permission);
+
+  if (isLoading || data?.isPermitted === false) {
+    return null;
+  }
+
   return (
     <>
       <h2 className="mx-5 my-2 border-b-1 border-gray-300 py-1 text-lg font-semibold">
@@ -51,8 +65,17 @@ const Section = ({ name, children }) => {
   );
 };
 
-const Link = ({ to, children }) => {
+/**
+ * @param to The url to link to.
+ * @param permission If given, this Link will only be rendered if the user has this permission.
+ * @param children
+ * @returns {JSX.Element|null}
+ * @constructor
+ */
+const Link = ({ to, permission, children }) => {
   const theme = useContext(ThemeContext);
+  const { data, isLoading } = useCheckPermission(permission);
+
   let borderColor;
   switch (theme) {
     case themes.myinfo:
@@ -75,6 +98,11 @@ const Link = ({ to, children }) => {
   }
   const activeClasses = `block px-4 py-1 font-semibold border-l-4 ${borderColor} bg-gray-50`;
   const inactiveClasses = `block px-5 py-1`;
+
+  if (isLoading || data?.isPermitted === false) {
+    return null;
+  }
+
   return (
     <li>
       <NavLink
