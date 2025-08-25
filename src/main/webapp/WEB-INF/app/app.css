@@ -55,7 +55,7 @@
     }
 
     .table--sticky thead tr:nth-child(1) th {
-        @apply sticky bg-white top-[45px] z-10 border-b-1 border-teal-600 shadow;
+        @apply sticky bg-white z-10 border-b-1 border-teal-600 shadow;
     }
 
     .table__head__row {

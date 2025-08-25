@@ -1,14 +1,24 @@
 import React from "react";
 import { format, parseISO } from "date-fns";
 import { toCurrency } from "app/utils/textUtils";
+import clsx from "clsx";
 
 export default function Paycheck({ summary }) {
   return (
-    <div className="px-3 pt-3">
+    <div className="overflow-x-scroll pt-3">
       <table className="table--sticky table">
         <thead className="">
           <tr className="table__head__row">
-            <th className="table__head__cell">Check Date</th>
+            <th
+              className={clsx(
+                "table__head__cell relative sticky left-0 bg-white",
+                "after:pointer-events-none after:absolute after:bottom-0 after:right-0",
+                "after:top-0 after:w-[2px] after:bg-teal-600 after:content-['']",
+              )}
+              style={{ "z-index": "15" }}
+            >
+              Check Date
+            </th>
             <th className="table__head__cell">Pay Period</th>
             <th className="table__head__cell">Gross</th>
             {summary.deductions.map((d) => (
@@ -19,13 +29,24 @@ export default function Paycheck({ summary }) {
             {displayDirectDepositColumn(summary) && (
               <th className="table__head__cell">Direct Deposit</th>
             )}
-            {displayCheckColumn(summary) && <th className="table__head__cell">Check</th>}
+            {displayCheckColumn(summary) && (
+              <th className="table__head__cell">Check</th>
+            )}
           </tr>
         </thead>
         <tbody className="table__body table__body--striped table__body--highlight">
           {summary.paychecks.map((p, i) => (
             <tr key={p.payPeriod} className="table__row">
-              <td className="table__cell">{format(parseISO(p.checkDate), "M/dd/yyyy")}</td>
+              <td
+                className={clsx(
+                  "table__cell relative sticky left-0 z-10",
+                  `${i % 2 === 0 ? "bg-gray-75" : "bg-white"}`,
+                  "after:pointer-events-none after:absolute after:bottom-0 after:right-0",
+                  "after:top-0 after:w-[2px] after:bg-teal-600 after:content-['']",
+                )}
+              >
+                {format(parseISO(p.checkDate), "M/dd/yyyy")}
+              </td>
               <td className="table__cell">{p.payPeriod}</td>
               <td
                 className={`table__cell table__cell--right ${isSignificantChange(
