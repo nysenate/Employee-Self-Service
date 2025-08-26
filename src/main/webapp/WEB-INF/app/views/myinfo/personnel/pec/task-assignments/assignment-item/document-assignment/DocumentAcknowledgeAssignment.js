@@ -187,78 +187,63 @@ function AcknowledgeBanner({
 
 function RenderPdf({ pdfPath }) {
   const [doc, setDoc] = useState(null);
-  const [pageNumbers, setPageNumbers] = useState([]);
+  const [pages, setPages] = useState([]);
 
   useEffect(() => {
+    let isMounted = true;
     (async () => {
       if (pdfPath) {
-        const [doc, pageNums] = await loadPdf(pdfPath);
-        setDoc(doc);
-        setPageNumbers(pageNums);
+        const loadingTask = pdfjsLib.getDocument(pdfPath);
+        const pdf = await loadingTask.promise;
+        if (!isMounted) return;
+
+        setDoc(pdf);
+        setPages(Array.from({ length: pdf.numPages }, (_, i) => i + 1));
       }
     })();
+    return () => {
+      isMounted = false;
+    };
   }, [pdfPath]);
 
-  useEffect(() => {
-    if (doc && pageNumbers) {
-      for (
-        let pageNum = pageNumbers[0];
-        pageNum <= pageNumbers.at(-1);
-        pageNum++
-      ) {
-        renderPage(doc, pageNum);
-      }
-    }
-  }, [doc, pageNumbers]);
-
   return (
-    <div className="">
-      {pageNumbers.map((i) => (
-        <canvas
-          id={`pdf-canvas-${i}`}
-          className="w-full"
-          width="880"
-          key={i}
-        ></canvas>
+    <div>
+      {pages.map((pageNum) => (
+        <PdfPage key={pageNum} doc={doc} pageNum={pageNum} />
       ))}
     </div>
   );
 }
 
-async function loadPdf(url) {
-  const doc = await pdfjsLib.getDocument(url).promise;
-  const numPages = doc.numPages;
-  const pages = [];
-  for (let i = 1; i <= numPages; i++) {
-    pages.push(i);
-  }
-  return [doc, pages];
-}
+function PdfPage({ doc, pageNum }) {
+  const canvasRef = useRef(null);
 
-async function renderPage(doc, pageNum) {
-  const page = await doc.getPage(pageNum);
-  const canvasId = `pdf-canvas-${pageNum}`;
-  const canvas = document.getElementById(canvasId);
+  useEffect(() => {
+    if (!doc) return;
+    let renderTask;
 
-  const ctx = canvas.getContext("2d");
-  const dpr = window.devicePixelRatio || 1;
-  const bsr =
-    ctx.webkitBackingStorePixelRatio ||
-    ctx.mozBackingStorePixelRatio ||
-    ctx.msBackingStorePixelRatio ||
-    ctx.oBackingStorePixelRatio ||
-    ctx.backingStorePixelRatio ||
-    1;
-  const ratio = dpr / bsr;
+    (async () => {
+      const page = await doc.getPage(pageNum);
 
-  const viewport = page.getViewport({ scale: 1.4 });
-  canvas.width = viewport.width * ratio;
-  canvas.height = viewport.height * ratio;
-  ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      const viewport = page.getViewport({
+        scale: 1.5,
+        rotation: page.rotate, // respect PDF metadata
+      });
 
-  const renderContext = {
-    canvasContext: ctx,
-    viewport: viewport,
-  };
-  await page.render(renderContext);
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext("2d");
+
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+
+      renderTask = page.render({ canvasContext: ctx, viewport });
+      await renderTask.promise;
+    })();
+
+    return () => {
+      if (renderTask) renderTask.cancel();
+    };
+  }, [doc, pageNum]);
+
+  return <canvas ref={canvasRef} className="w-full" />;
 }
