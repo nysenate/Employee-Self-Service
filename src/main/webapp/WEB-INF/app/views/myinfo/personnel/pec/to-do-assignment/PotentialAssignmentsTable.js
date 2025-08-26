@@ -202,8 +202,14 @@ function AssignTaskModal({ isOpen, setIsOpen, emp, task }) {
       <Modal.Title>Personnel Task Assignment</Modal.Title>
       <Modal.Body>
         <div className="text-center">
-          Warning: You are attempting to assign a task to employee
-          <br />
+          <p className="mb-1 font-semibold">
+            Tasks that rely on external services (Everfi & KnowBe4) must be
+            assigned on their platforms. ESS CANNOT assign tasks on their
+            platforms!
+          </p>
+          <p className="mb-1 font-semibold">
+            Warning: You are attempting to assign a task to employee
+          </p>
           {emp.fullName}
           <br />
           for task
