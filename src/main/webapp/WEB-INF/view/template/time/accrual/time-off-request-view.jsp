@@ -11,8 +11,8 @@ request and allows the user to edit, save, or submit the request. -->
 
 <!-- Error messages that appear on submit if request invalid -->
 <div class="ess-notification error" style="width:100%" ng-show="!validRequest">
-  <p><strong>Please fix the following errors in your request: </strong></p>
-  <p ng-repeat="msg in validationErrorMessages">
+  <p><strong style="color: white">Please fix the following errors in your request: </strong></p>
+  <p ng-repeat="msg in validationErrorMessages" style="color: white">
     {{msg}}
   </p>
 </div>
@@ -151,9 +151,11 @@ request and allows the user to edit, save, or submit the request. -->
 <!-- Inital Datepicker and Add Day and Delete Selected buttons -->
 <div class="time-off-request-buttons" ng-hide="timeOffLoading">
   <button ng-show="pageLoaded && data.days.length > 0" ng-click="deleteSelected()"
-          ng-if="mode==='input' && data.status!=='APPROVED' && data.status!=='SUBMITTED'" >Delete Selected</button>
+          ng-if="mode==='input' && data.status!=='APPROVED' && data.status!=='SUBMITTED'">Delete Selected
+  </button>
   <button ng-show="pageLoaded" ng-if="mode==='input' && data.status!=='APPROVED' && data.status!=='SUBMITTED'"
-          ng-click="addDay()">+ Add Another Date</button>
+          ng-click="addDay()">+ Add Another Date
+  </button>
 </div>
 
 <!--Accruals available after the request-->
@@ -209,10 +211,10 @@ request and allows the user to edit, save, or submit the request. -->
 
 <!--Save and Submit buttons-->
 <div class="time-off-request-buttons" ng-if="pageLoaded" ng-hide="timeOffLoading">
-  <button ng-if="mode==='input'" ng-disabled="data.days.length == 0" ng-click="saveRequest()"
+  <button ng-if="mode==='input'" ng-disabled="data.days.length.isEmpty()" ng-click="saveRequest()"
           class="time-off-request-save-button">SAVE
   </button>
-  <button ng-if="mode==='input'" ng-disabled="data.days.length == 0" ng-click="submitRequest()"
+  <button ng-if="mode==='input'" ng-disabled="data.days.length.isEmpty()" ng-click="submitRequest()"
           class="time-off-request-submit-button">SUBMIT
   </button>
   <!-- Cannot edit a request if it has been submitted or approved-->
