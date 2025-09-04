@@ -1,107 +1,62 @@
 import React from "react";
-import styles from './Pagination.module.css';
+import ReactPaginate from "react-paginate";
+import {
+  getOffset,
+  getPageCount,
+  getPageNumber,
+} from "app/utils/paginationUtils";
 
 /**
  * Pagination component to navigate through pages.
- *
- * @param {number} currentPage - The current active page.
- * @param {number} totalPages - The total number of pages available.
- * @param {function(number)} onPageChange - Callback function to handle page change.
- * @returns {JSX.Element}
+ * @param limit - The number of results to show per page.
+ * @param offset - The inclusive one-indexed start point for displaying results.
+ * @param total - The total number of results.
+ * @param onPageChange - Callback function executed when the user changes pages.
+ *                       It is passed the offset for the selected page.
  */
-const Pagination = ({ currentPage, totalPages, onPageChange }) => {
+export default function Pagination({
+  limit = 12,
+  offset,
+  total,
+  onPageChange,
+}) {
+  if (!total || !offset) {
+    console.error(`Pagination component requires "offset" and "total" values.`);
+    return null;
+  }
 
-    /**
-     * Calculate the page numbers to be displayed in the pagination.
-     *
-     * @param {number} currentPage - The current active page.
-     * @param {number} totalPages - The total number of pages available.
-     * @returns {Array<number|string>} - Array of page numbers and ellipsis to be displayed.
-     */
-    const calculatePageNumbers = (currentPage, totalPages) => {
-        let pageNumbers = [1];
+  const page = getPageNumber(limit, offset);
+  const pageCount = getPageCount(limit, total);
 
-        // Add ellipsis if current page is greater than 5 and total pages are greater than 9
-        if (currentPage > 5 && totalPages > 9) {
-            pageNumbers.push('...');
-        }
+  const onPageChangeWrapper = ({ selected: selectedPage }) => {
+    return onPageChange(getOffset(limit, selectedPage + 1));
+  };
 
-        // Calculate range start based on current page and total pages
-        let dl = Math.abs(currentPage - 1) - 4;
-        let dr = Math.abs(currentPage - totalPages) - 4;
-        let rangeStart = currentPage - 3;
+  const itemClassName = "hover:bg-gray-100 cursor-pointer";
+  const linkClassName = "px-2 py-1 text-gray-500 border-none";
 
-        if (dl < 0) {
-            rangeStart -= dl;
-        }
-        if (dr < 0) {
-            rangeStart += dr;
-        }
-
-        // Add page numbers in the range to the array
-        for (let i = rangeStart; i <= rangeStart + 6 && i < totalPages; i++) {
-            if (i > 1 && i < totalPages) {
-                pageNumbers.push(i);
-            }
-        }
-
-        // Add ellipsis if current page is less than total pages minus 4 and total pages are greater than 9
-        if (currentPage < totalPages - 4 && totalPages > 9) {
-            pageNumbers.push('...');
-        }
-        pageNumbers.push(totalPages);
-
-        return pageNumbers;
-    };
-
-    const pageNumbers = calculatePageNumbers(currentPage, totalPages);
-
-    return (
-        <div className={styles.pagination}>
-            <button
-                style={{padding: '0px 5px'}}
-                className={styles.pageButton}
-                onClick={() => onPageChange(1)}
-                disabled={currentPage === 1}
-            >
-                &laquo;
-            </button>
-            <button
-                style={{padding: '0px 5px'}}
-                className={styles.pageButton}
-                onClick={() => onPageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-            >
-                &lsaquo;
-            </button>
-            {pageNumbers.map((number, index) => (
-                <button
-                    style={{padding: '0px 5px'}}
-                    key={index}
-                    className={`${styles.pageButton} ${number === currentPage ? styles.activePage : ''}`}
-                    onClick={() => (typeof number === 'number') && onPageChange(number)}
-                >
-                    {number}
-                </button>
-            ))}
-            <button
-                style={{padding: '0px 5px'}}
-                className={styles.pageButton}
-                onClick={() => onPageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-            >
-                &rsaquo;
-            </button>
-            <button
-                style={{padding: '0px 5px'}}
-                className={styles.pageButton}
-                onClick={() => onPageChange(totalPages)}
-                disabled={currentPage === totalPages}
-            >
-                &raquo;
-            </button>
-        </div>
-    );
-};
-
-export default Pagination;
+  return (
+    <ReactPaginate
+      pageCount={pageCount}
+      pageRangeDisplayed={5}
+      onPageChange={onPageChangeWrapper}
+      marginPagesDisplayed={1}
+      forcePage={page - 1} // react-paginate pages are 0 indexed.
+      disableInitialCallback={true}
+      nextLabel=">"
+      previousLabel="<"
+      containerClassName="flex space-x-0 md:space-x-2 justify-center m-3"
+      pageClassName={itemClassName}
+      pageLinkClassName={linkClassName}
+      activeClassName="border-solid border-1 border-teal-600"
+      activeLinkClassName="text-teal-600"
+      previousClassName={itemClassName}
+      previousLinkClassName={linkClassName}
+      nextClassName={itemClassName}
+      nextLinkClassName={linkClassName}
+      breakClassName={itemClassName}
+      breakLinkClassName={linkClassName}
+      disabledClassName=""
+    />
+  );
+}

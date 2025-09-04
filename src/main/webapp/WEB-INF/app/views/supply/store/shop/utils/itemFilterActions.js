@@ -1,6 +1,6 @@
 // Action Types
 export const SET_TERM = "SET_TERM";
-export const SET_PAGE = "SET_PAGE";
+export const SET_OFFSET = "SET_OFFSET";
 export const SET_SORT = "SET_SORT";
 export const RESET_FILTERS = "RESET_FILTERS";
 export const TOGGLE_CATEGORY = "TOGGLE_CATEGORY";
@@ -12,9 +12,9 @@ export const setTerm = (term) => ({
   payload: { term },
 });
 
-export const setPage = (page) => ({
-  type: SET_PAGE,
-  payload: { page },
+export const setOffset = (offset) => ({
+  type: SET_OFFSET,
+  payload: { offset },
 });
 
 export const setSort = (sort) => ({

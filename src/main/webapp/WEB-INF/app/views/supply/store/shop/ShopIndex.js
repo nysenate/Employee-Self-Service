@@ -10,7 +10,7 @@ import Controls from "app/components/Controls";
 import {
   CLEAR_CATEGORIES,
   RESET_FILTERS,
-  SET_PAGE,
+  SET_OFFSET,
   SET_SORT,
   SET_TERM,
   TOGGLE_CATEGORY,
@@ -18,6 +18,7 @@ import {
 import CategoryCard from "app/views/supply/store/shop/components/CategoryCard";
 import Navigation from "app/components/Navigation";
 import { Link } from "react-router-dom";
+import { PaginationModel } from "app/components/Pagination";
 
 const initFilterState = {
   term: "",
@@ -25,7 +26,6 @@ const initFilterState = {
   sort: "Name",
   limit: 16,
   offset: 1,
-  page: 1,
 };
 
 function itemFilterReducer(state, action) {
@@ -34,20 +34,17 @@ function itemFilterReducer(state, action) {
       return {
         ...state,
         term: action.payload.term,
-        page: 1,
         offset: 1,
       };
-    case SET_PAGE:
+    case SET_OFFSET:
       return {
         ...state,
-        page: action.payload.page,
-        offset: action.payload.page * state.limit - state.limit + 1,
+        offset: action.payload.offset,
       };
     case SET_SORT:
       return {
         ...state,
         sort: action.payload.sort,
-        page: 1,
         offset: 1,
       };
     case RESET_FILTERS:
@@ -66,14 +63,12 @@ function itemFilterReducer(state, action) {
       return {
         ...state,
         categories: [...new Set(updatedCategories)], // Remove any duplicates.
-        page: 1,
         offset: 1,
       };
     case CLEAR_CATEGORIES:
       return {
         ...state,
         categories: [],
-        page: 1,
         offset: 1,
       };
     default:

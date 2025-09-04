@@ -1,46 +1,52 @@
 import React from "react";
 import LoadingIndicator from "../../../../../components/LoadingIndicator";
-import PaginationComponent from "../../../../../components/PaginationComponent";
 import PotentialAssignmentsTable from "./PotentialAssignmentsTable";
 import { setOffset } from "./todoAssignmentActions";
+import Pagination from "app/components/Pagination";
 
-
-export default function PotentialAssignmentsSummary({ query, state, dispatch }) {
-
-  const onPageChange = selectedPage => {
-    const offset = (selectedPage - 1) * state.limit + 1
-    dispatch(setOffset(offset))
-  }
+export default function PotentialAssignmentsSummary({
+  query,
+  state,
+  dispatch,
+}) {
+  const onPageChange = (offset) => {
+    dispatch(setOffset(offset));
+  };
 
   if (query.isPending) {
-    return <LoadingIndicator/>
+    return <LoadingIndicator />;
   }
-
-  const currentPage = (state.offset + state.limit - 1) / state.limit
-  const totalPages = Math.ceil(query.data.total / state.limit)
 
   return (
     <div>
-      <div className="my-3 flex justify-between items-center">
-        <TotalResults total={query.data.total}/>
+      <div className="my-3 flex items-center justify-between">
+        <TotalResults total={query.data.total} />
       </div>
-      {query.data.result.length > 0 &&
+      {query.data.result.length > 0 && (
         <>
-          <PaginationComponent currentPage={currentPage} totalPages={totalPages} onPageChange={onPageChange}/>
-          <PotentialAssignmentsTable potentialAssignments={query.data.result}
-                                     state={state}
-                                     dispatch={dispatch}/>
-          <PaginationComponent currentPage={currentPage} totalPages={totalPages} onPageChange={onPageChange}/>
+          <Pagination
+            limit={state.limit}
+            offset={state.offset}
+            total={query.data.total}
+            onPageChange={onPageChange}
+          />
+          <PotentialAssignmentsTable
+            potentialAssignments={query.data.result}
+            state={state}
+            dispatch={dispatch}
+          />
+          <Pagination
+            limit={state.limit}
+            offset={state.offset}
+            total={query.data.total}
+            onPageChange={onPageChange}
+          />
         </>
-      }
+      )}
     </div>
-  )
+  );
 }
 
 function TotalResults({ total }) {
-  return (
-    <span className="font-semibold">
-      {total} Matching Employees
-    </span>
-  )
+  return <span className="font-semibold">{total} Matching Employees</span>;
 }

@@ -68,6 +68,7 @@ export default function ItemSummary() {
     initialFilters,
     initializeFilters,
   );
+
   const itemSummaryQuery = useItemSummary({
     fromDateTime: formatISO(startOfDay(new UTCDate(filters.fromDate))),
     toDateTime: formatISO(endOfDay(new UTCDate(filters.toDate))),
@@ -81,8 +82,8 @@ export default function ItemSummary() {
       toDate: searchParams.get("toDate"),
       commodityCode: searchParams.get("commodityCode"),
       locationCode: searchParams.get("locationCode"),
-      limit: searchParams.get("limit"),
-      offset: searchParams.get("offset"),
+      limit: searchParams.get("limit") && Number(searchParams.get("limit")),
+      offset: searchParams.get("offset") && Number(searchParams.get("offset")),
     };
     return {
       ...initFilters,

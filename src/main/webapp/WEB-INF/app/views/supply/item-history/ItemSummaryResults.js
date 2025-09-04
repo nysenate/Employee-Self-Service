@@ -1,31 +1,31 @@
 import Card from "app/components/Card";
-import React, { useState } from "react";
-import PaginationComponent from "app/components/PaginationComponent";
+import React, { useEffect, useState } from "react";
 import { setOffset } from "app/views/supply/shared/helpers/supplyFilterActions";
 import NoMatchesFound from "app/components/NoMatchesFound";
 import clsx from "clsx";
-import { isoToShortDate } from "app/utils/dateUtils";
 import * as dateUtils from "app/utils/dateUtils";
-import { Link, useNavigate } from "react-router-dom";
+import Pagination from "app/components/Pagination";
 
 export default function ItemSummaryResults({
   itemSummaries,
   filters,
   dispatch,
 }) {
-  const navigate = useNavigate();
   const [selectedRow, setSelectedRow] = useState(null);
+  const [pageData, setPageData] = useState([]);
+
+  useEffect(() => {
+    setPageData(
+      itemSummaries.slice(
+        filters.offset - 1,
+        filters.offset - 1 + filters.limit,
+      ),
+    );
+  }, [itemSummaries, filters.limit, filters.offset]);
 
   if (itemSummaries.length === 0) {
     return <NoMatchesFound />;
   }
-
-  const pageData = itemSummaries.slice(
-    filters.offset - 1,
-    filters.offset - 1 + filters.limit,
-  );
-  const currentPage = (filters.offset + filters.limit - 1) / filters.limit;
-  const totalPages = Math.ceil((itemSummaries.length + 1) / filters.limit);
 
   const toggleSelection = (itemId) => {
     if (selectedRow === itemId) {
@@ -74,12 +74,11 @@ export default function ItemSummaryResults({
             ))}
           </tbody>
         </table>
-        <PaginationComponent
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={(page) =>
-            dispatch(setOffset(page * filters.limit - filters.limit + 1))
-          }
+        <Pagination
+          limit={filters.limit}
+          offset={filters.offset}
+          total={itemSummaries.length}
+          onPageChange={(offset) => dispatch(setOffset(offset))}
         />
       </div>
     </Card>

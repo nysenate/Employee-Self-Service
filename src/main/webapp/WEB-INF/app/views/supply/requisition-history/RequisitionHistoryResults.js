@@ -2,17 +2,14 @@ import React, { useState } from "react";
 import Card from "app/components/Card";
 import NoMatchesFound from "app/components/NoMatchesFound";
 import { isoToShortDateTime } from "app/utils/dateUtils";
-import PaginationComponent from "app/components/PaginationComponent";
 import { setOffset } from "app/views/supply/shared/helpers/supplyFilterActions";
 import RequisitionInfoModal from "app/views/supply/shared/componenets/RequisitionInfoModal";
+import Pagination from "app/components/Pagination";
 
 export default function RequisitionHistoryResults({ data, filters, dispatch }) {
   const [selectedReq, setSelectedReq] = useState(null);
-  const results = data.result;
-  const currentPage = (filters.offset + filters.limit - 1) / filters.limit;
-  const totalPages = Math.ceil(data.total / filters.limit);
 
-  if (results.length === 0) {
+  if (data.result.length === 0) {
     return <NoMatchesFound />;
   }
 
@@ -31,7 +28,7 @@ export default function RequisitionHistoryResults({ data, filters, dispatch }) {
             </tr>
           </thead>
           <tbody className="table__body table__body--highlight divide-y divide-gray-200/80">
-            {results.map((r) => (
+            {data.result.map((r) => (
               <tr
                 className="table__row"
                 key={r.requisitionId}
@@ -51,12 +48,11 @@ export default function RequisitionHistoryResults({ data, filters, dispatch }) {
             ))}
           </tbody>
         </table>
-        <PaginationComponent
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={(page) =>
-            dispatch(setOffset(page * filters.limit - filters.limit + 1))
-          }
+        <Pagination
+          limit={filters.limit}
+          offset={filters.offset}
+          total={data.total}
+          onPageChange={(offset) => dispatch(setOffset(offset))}
         />
       </div>
       <RequisitionInfoModal
