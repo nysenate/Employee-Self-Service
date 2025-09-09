@@ -16,7 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class BACHelpAuthenticationIT extends WebTest {
 
     private static final String INVALID_API_KEY = "invalid-key";
-    private static final String BACHELP_SEARCH_ENDPOINT = "/api/v1/bachelp/empSearch";
+    private static final String BACHELP_SEARCH_ENDPOINT = "/api/v1/bachelp/employee/search";
     private static final String BACHELP_STATUS_CHANGE_ENDPOINT = "/api/v1/bachelp/statusChanges";
     private static final String NON_BACHELP_ENDPOINT = "/api/v1/employees/search";
 

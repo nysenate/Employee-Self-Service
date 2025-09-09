@@ -2,9 +2,11 @@ package gov.nysenate.ess.core.client.view;
 
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.core.model.personnel.Employee;
+import gov.nysenate.ess.core.model.personnel.ResponsibilityCenter;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Optional;
 
 @XmlRootElement
 public class BACHelpEmployeeView implements ViewObject
@@ -17,6 +19,7 @@ public class BACHelpEmployeeView implements ViewObject
     protected String email;
     protected String workPhone;
     protected boolean active;
+    protected RespCenterHeadView respCenterHead;
 
     public BACHelpEmployeeView(Employee employee) {
         if (employee != null) {
@@ -28,6 +31,10 @@ public class BACHelpEmployeeView implements ViewObject
             this.email = employee.getEmail();
             this.active = employee.isActive();
             this.workPhone = employee.getWorkPhone();
+            this.respCenterHead = Optional.ofNullable(employee.getRespCenter())
+                    .map(ResponsibilityCenter::getHead)
+                    .map(RespCenterHeadView::new)
+                    .orElse(null);
         }
     }
 
@@ -74,5 +81,10 @@ public class BACHelpEmployeeView implements ViewObject
     @XmlElement
     public boolean isActive() {
         return active;
+    }
+
+    @XmlElement
+    public RespCenterHeadView getRespCenterHead() {
+        return respCenterHead;
     }
 }

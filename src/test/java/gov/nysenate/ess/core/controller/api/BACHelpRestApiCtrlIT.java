@@ -158,6 +158,17 @@ public class BACHelpRestApiCtrlIT extends WebTest {
         assertTrue("Should have total field", response.has("total"));
         assertTrue("Should have result array", response.has("result"));
         assertTrue("Total should be >= 0", response.get("total").asInt() >= 0);
+        
+        // If we have results, verify they contain the respCenterHead field
+        JsonNode results = response.get("result");
+        if (!results.isEmpty()) {
+            JsonNode firstEmployee = results.get(0);
+            assertTrue("Employee should have respCenterHead", firstEmployee.has("respCenterHead"));
+            
+            JsonNode respCenterHead = firstEmployee.get("respCenterHead");
+            assertNotNull("respCenterHead should not be null", respCenterHead);
+            assertTrue("Should have code field in respCenterHead", respCenterHead.has("code"));
+        }
     }
 
     @Test
@@ -183,8 +194,18 @@ public class BACHelpRestApiCtrlIT extends WebTest {
         assertTrue("Should have employeeId", employee.has("employeeId"));
         assertTrue("Should have fullName", employee.has("fullName"));
         assertTrue("Should have active status", employee.has("active"));
+        assertTrue("Should have respCenterHead", employee.has("respCenterHead"));
 
         assertEquals("Employee ID should match", testEmpId, employee.get("employeeId").asInt());
+        
+        // Verify respCenterHead structure
+        JsonNode respCenterHead = employee.get("respCenterHead");
+        assertNotNull("respCenterHead should not be null", respCenterHead);
+        assertTrue("Should have active field in respCenterHead", respCenterHead.has("active"));
+        assertTrue("Should have code field in respCenterHead", respCenterHead.has("code"));
+        assertTrue("Should have name field in respCenterHead", respCenterHead.has("name"));
+        assertTrue("Should have shortName field in respCenterHead", respCenterHead.has("shortName"));
+        assertTrue("Should have affiliateCode field in respCenterHead", respCenterHead.has("affiliateCode"));
     }
 
     @Test
