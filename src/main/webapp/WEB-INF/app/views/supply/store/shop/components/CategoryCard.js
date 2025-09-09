@@ -15,7 +15,7 @@ export default function CategoryCard({ filterState, dispatch }) {
   }
 
   return (
-    <div className="flex h-[420px] flex-col bg-white">
+    <div className="flex max-h-[calc(100vh-530px)] flex-col bg-white">
       <div className="mx-3 my-1">
         <a
           className="cursor-pointer"

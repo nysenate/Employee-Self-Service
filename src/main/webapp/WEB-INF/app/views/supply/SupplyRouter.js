@@ -65,6 +65,7 @@ function SupplyLayout() {
           </Navigation.Link>
         </Navigation.Section>
       </Navigation>
+      <div id="categories-portal" className="py-5"></div>
     </AppLayout>
   );
 }

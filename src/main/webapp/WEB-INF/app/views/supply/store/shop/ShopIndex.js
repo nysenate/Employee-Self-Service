@@ -18,7 +18,7 @@ import {
 import CategoryCard from "app/views/supply/store/shop/components/CategoryCard";
 import Navigation from "app/components/Navigation";
 import { Link } from "react-router-dom";
-import { PaginationModel } from "app/components/Pagination";
+import { createPortal } from "react-dom";
 
 const initFilterState = {
   term: "",
@@ -101,7 +101,7 @@ export default function ShopIndex() {
   }
 
   return (
-    <div>
+    <>
       <div>
         <Hero>
           Requisition Form
@@ -116,12 +116,27 @@ export default function ShopIndex() {
         </div>
         <ItemListing filterState={filterState} dispatch={dispatch} />
       </div>
-      <div className="absolute left-0 top-[370px]">
+      <div className="absolute left-[20px] top-[370px]">
+        <Categories filterState={filterState} dispatch={dispatch} />
+      </div>
+    </>
+  );
+}
+
+function Categories({ filterState, dispatch }) {
+  const [domReady, setDomReady] = React.useState(false);
+
+  React.useEffect(() => {
+    setDomReady(true);
+  }, []);
+
+  return domReady
+    ? createPortal(
         <Navigation>
           <Navigation.Title>Categories</Navigation.Title>
           <CategoryCard filterState={filterState} dispatch={dispatch} />
-        </Navigation>
-      </div>
-    </div>
-  );
+        </Navigation>,
+        document.getElementById("categories-portal"),
+      )
+    : null;
 }
