@@ -38,8 +38,8 @@ export function useRequisitionSearch(params) {
   const queryString = buildQueryString(params);
   return useQuery({
     queryKey: requisitionKeys.search(params),
-    queryFn: () => {
-      return fetchApiJson(`/supply/requisitions?${queryString}`);
+    queryFn: ({ signal }) => {
+      return fetchApiJson(`/supply/requisitions?${queryString}`, { signal });
     },
     staleTime: 0,
     throwOnError: true,
