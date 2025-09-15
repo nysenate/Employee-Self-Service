@@ -26,11 +26,8 @@
         <li><a ng-click="selectNone('SUBMITTED')">Select None</a></li>
       </ul>
       <div class="select-actions">
-        <input class="submit-button" type="button" value="Approve Selected"
-               ng-disabled = "hasSelections('SUBMITTED') === false"
-               ng-click="approveSelected('SUBMITTED')">
         <input class="time-neutral-button" type="button" value="Review Selected"
-               ng-disabled = "hasSelections('SUBMITTED') === false"
+               ng-disabled="hasSelections('SUBMITTED') === false"
                ng-click="reviewSelected('SUBMITTED')">
       </div>
     </div>
@@ -52,11 +49,8 @@
         <li><a ng-click="selectNone('APPROVED')">Select None</a></li>
       </ul>
       <div class="select-actions">
-        <input class="reject-button" type="button" value="Reject Selected"
-               ng-disabled = "hasSelections('APPROVED') === false"
-               ng-click="rejectSelected('APPROVED')">
         <input class="time-neutral-button" type="button" value="Review Selected"
-               ng-disabled = "hasSelections('APPROVED') === false"
+               ng-disabled="hasSelections('APPROVED') === false"
                ng-click="reviewSelected('APPROVED')">
       </div>
     </div>

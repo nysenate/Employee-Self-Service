@@ -23,11 +23,11 @@
 
     essTime.controller('RequestApprovalCtrl', ['$scope', '$route', 'appProps', 'ActiveRequestsApi',
                                                'PendingRequestsApi', 'ReviewRequestApi',
-                                               'TimeOffRequestListService', 'modals', 'badgeService', 
+                                               'TimeOffRequestListService', 'modals', 'badgeService',
                                                'supEmpGroupService', requestApprovalCtrl]);
 
     function requestApprovalCtrl($scope, $route, appProps, ActiveRequestsApi, PendingRequestsApi,
-                                 ReviewRequestApi, TimeOffRequestListService, modals, badgeService, 
+                                 ReviewRequestApi, TimeOffRequestListService, modals, badgeService,
                                  supEmpGroupService) {
         $scope.pendingFormat = "pending";
         $scope.approvedFormat = "approved";
@@ -185,7 +185,9 @@
                         })
                     ;
                 })
-                .finally(function() {$scope.loadingRequests=false;})
+                .finally(function () {
+                    $scope.loadingRequests = false;
+                })
         };
 
         /**

@@ -66,7 +66,7 @@
                     var supStartYear = moment(startDate || 0).year();
                     var supEndYear = moment(endDate || undefined).year();
                     $scope.state.recordYears = resp.years
-                    // Only use years that overlap with supervisor dates
+                        // Only use years that overlap with supervisor dates
                         .filter(function (year) {
                             return year >= supStartYear && year <= supEndYear;
                         })
@@ -100,10 +100,10 @@
                         * year selected. */
                         var today = new Date();
                         var yesterday = new Date();
-                        yesterday.setDate(today.getDate()-1);
+                        yesterday.setDate(today.getDate() - 1);
                         var startDate = new Date($scope.state.selectedRecYear + "/01/01").toISOString().substr(0, 10);
                         var endDate = null;
-                        if(today.getFullYear() === $scope.state.selectedRecYear) {
+                        if (today.getFullYear() === $scope.state.selectedRecYear) {
                             endDate = yesterday.toISOString().substr(0, 10);
                         } else {
                             endDate = new Date($scope.state.selectedRecYear + "/12/31").toISOString().substr(0, 10);
@@ -120,6 +120,7 @@
                             function (data) {
                                 $scope.requests = TimeOffRequestListService.formatData(data);
                                 sortRequests();
+                                filterRequests();
                             },
                             //failed query
                             function () {
@@ -133,11 +134,24 @@
                  * function to sort the requests by date, from earliest to latest
                  */
                 function sortRequests() {
-                    ($scope.requests).sort(function(a,b){
-                        if(a.startDate > b.startDate)
+                    ($scope.requests).sort(function (a, b) {
+                        if (a.startDate > b.startDate)
                             return 1;
                         return -1
                     });
+                }
+
+                /**
+                 * function to remove requests with a saved status
+                 */
+                function filterRequests() {
+                    var req = [];
+                    for (var i = 0; i < $scope.requests.length; i++) {
+                        if ($scope.requests[i].status !== 'SAVED') {
+                            req.push($scope.requests[i]);
+                        }
+                    }
+                    $scope.requests = req;
                 }
 
             }
