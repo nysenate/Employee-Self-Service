@@ -1,14 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import Hero from "app/components/Hero";
-import {
-  alphabetizeLineItems,
-  formatDate,
-} from "app/views/supply/shared/helpers/helpers";
 import Controls from "app/components/Controls";
 import Card from "app/components/Card";
 import LoadingIndicator from "app/components/LoadingIndicator";
 import { useRequisitionHistory } from "app/views/supply/orders/order-detail/useRequisitionHistory";
+import { isoToShortDateTime } from "app/utils/dateUtils";
 
 export default function OrderDetail() {
   const printRef = useRef();
@@ -143,13 +140,12 @@ const OrderInfo = ({ order }) => {
       </div>
       <div className="">
         <div>
-          <b>Requested Date:</b>{" "}
-          {new Date(order.orderedDateTime).toLocaleString()}
+          <b>Requested Date:</b> {isoToShortDateTime(order.orderedDateTime)}
         </div>
         <div className="">
           <b>Issued Date: </b>
           {order.status === "COMPLETED" || order.status === "APPROVED"
-            ? formatDate(order.completedDateTime)
+            ? isoToShortDateTime(order.completedDateTime)
             : ""}
         </div>
       </div>
@@ -185,7 +181,12 @@ const SpecialInstructions = ({ order }) => {
 };
 
 const ItemTable = ({ items }) => {
-  const sortedLineItems = items ? alphabetizeLineItems(items) : [];
+  let sortedLineItems = [];
+  if (items && items.length > 0) {
+    sortedLineItems = items.sort((a, b) =>
+      a.item.commodityCode.localeCompare(b.item.commodityCode),
+    );
+  }
   return (
     <div className="">
       <div className="p-3">

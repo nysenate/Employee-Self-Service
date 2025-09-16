@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styles from "app/views/supply/shared/styles/universalStyles.module.css";
-import {
-  alphabetizeLineItems,
-  formatDate,
-} from "app/views/supply/shared/helpers/helpers";
+import { isoToShortDateTime } from "app/utils/dateUtils";
 
 const OrderDetailPrint = ({ selectedVersion }) => {
   const [sortedLineItems, setSortedLineItems] = useState([]);
@@ -54,7 +51,7 @@ const OrderDetailPrint = ({ selectedVersion }) => {
             </div>
             <div className={styles.col412}>
               <b>Requested Date:</b>{" "}
-              {formatDate(selectedVersion.orderedDateTime)}
+              {isoToShortDateTime(selectedVersion.orderedDateTime)}
             </div>
             <div className={styles.col412}>
               <b>Status:</b> {selectedVersion.status}
@@ -152,6 +149,8 @@ export default OrderDetailPrint;
 
 function sortSelectedVersionLineItems(selectedVersion) {
   if (selectedVersion && selectedVersion.lineItems) {
-    return alphabetizeLineItems(selectedVersion.lineItems, "description");
+    return selectedVersion.lineItems.sort((a, b) =>
+      a.item.description.localeCompare(b.item.description),
+    );
   }
 }

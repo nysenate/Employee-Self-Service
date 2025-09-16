@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "app/views/supply/shared/styles/universalStyles.module.css";
-import { formatDate } from "app/views/supply/shared/helpers/helpers";
+import { isoToShortDateTime } from "app/utils/dateUtils";
 
 const ReconciliationPrint = ({
   reconcilableSearch,
@@ -125,7 +125,9 @@ const ReconciliationPrint = ({
                               </td>
                               <td>
                                 {shipment.approvedDateTime
-                                  ? formatDate(shipment.approvedDateTime)
+                                  ? isoToShortDateTime(
+                                      shipment.approvedDateTime,
+                                    )
                                   : ""}
                               </td>
                             </tr>
