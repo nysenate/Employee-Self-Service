@@ -1,12 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import styles from "app/views/supply/shared/styles/universalStyles.module.css";
 import Hero from "app/components/Hero";
 import {
   alphabetizeLineItems,
   formatDate,
 } from "app/views/supply/shared/helpers/helpers";
-import OrderDetailPrint from "app/views/supply/orders/order-detail/OrderDetailPrint";
 import Controls from "app/components/Controls";
 import Card from "app/components/Card";
 import LoadingIndicator from "app/components/LoadingIndicator";
@@ -16,11 +14,11 @@ export default function OrderDetail() {
   const printRef = useRef();
   let { orderId } = useParams();
   const { data, isPending } = useRequisitionHistory(orderId);
-  const [selectedVersion, setselectedVersion] = useState(null);
+  const [selectedVersion, setSelectedVersion] = useState(null);
   const [versions, setVersions] = useState(null);
 
   useEffect(() => {
-    setselectedVersion(data?.result[0]);
+    setSelectedVersion(data?.result[0]);
     setVersions(data?.result);
   }, [data]);
 
@@ -44,7 +42,7 @@ export default function OrderDetail() {
       <Controls>
         <VersionFilter
           versions={versions}
-          setCurrentOrder={setselectedVersion}
+          setCurrentOrder={setSelectedVersion}
           handlePrint={() => undefined}
         />
       </Controls>
@@ -55,9 +53,9 @@ export default function OrderDetail() {
       </Card>
 
       {/* Print */}
-      <div ref={printRef} className={styles.printOnly}>
-        <OrderDetailPrint selectedVersion={selectedVersion} />
-      </div>
+      {/*<div ref={printRef} className={styles.printOnly}>*/}
+      {/*  <OrderDetailPrint selectedVersion={selectedVersion} />*/}
+      {/*</div>*/}
     </div>
   );
 }
@@ -114,24 +112,24 @@ const VersionFilter = ({ versions, setCurrentOrder, handlePrint }) => {
 
 const OrderInfo = ({ order }) => {
   return (
-    <div className={styles.contentInfo}>
-      <div className={`${styles.grid} ${styles.paddingX}`}>
-        {/*<div className={styles.col412}>*/}
-        {/*  <b>Requested By:</b> {order.customer.fullName}*/}
-        {/*</div>*/}
-        <div className={styles.col412}>
-          <b>Requested Office:</b> {order.destination.locId}
+    <div className="grid grid-cols-3 gap-3 p-3">
+      <div className="">
+        <div className="">
+          <b>Requested by:</b> {order.customer.fullName}
         </div>
-        <div className={styles.col412}>
-          <b>Requested Date:</b>{" "}
-          {new Date(order.orderedDateTime).toLocaleString()}
-        </div>
-      </div>
-      <div className={`${styles.grid} ${styles.paddingX}`}>
-        <div className={styles.col412}>
+        <div className="">
           <b>Status:</b> {order.status}
         </div>
-        <div className={styles.col412}>
+        <div className="">
+          <b>Modified By:</b> {order.modifiedBy.lastName}
+        </div>
+      </div>
+
+      <div className="">
+        <div className="">
+          <b>Requested Office:</b> {order.destination.locId}
+        </div>
+        <div className="">
           <b>
             {order.status === "PENDING" || order.status === "PROCESSING"
               ? "Issuer: "
@@ -139,19 +137,20 @@ const OrderInfo = ({ order }) => {
           </b>
           {order.issuer ? order.issuer.lastName : order.issuer}
         </div>
-        <div className={styles.col412}>
+        <div className="">
+          <b>Delivery Method:</b> {order.deliveryMethod}
+        </div>
+      </div>
+      <div className="">
+        <div>
+          <b>Requested Date:</b>{" "}
+          {new Date(order.orderedDateTime).toLocaleString()}
+        </div>
+        <div className="">
           <b>Issued Date: </b>
           {order.status === "COMPLETED" || order.status === "APPROVED"
             ? formatDate(order.completedDateTime)
             : ""}
-        </div>
-      </div>
-      <div className={`${styles.grid} ${styles.paddingX}`}>
-        <div className={styles.col412}>
-          <b>Modified By:</b> {order.modifiedBy.lastName}
-        </div>
-        <div className={styles.col412}>
-          <b>Delivery Method:</b> {order.deliveryMethod}
         </div>
       </div>
     </div>
@@ -162,27 +161,20 @@ const SpecialInstructions = ({ order }) => {
   return (
     <>
       {order.note || order.specialInstructions ? (
-        <div className="">
-          <div className={styles.contentInfo}>
-            {order.note && (
-              <div className={`${styles.grid} ${styles.paddingX}`}>
-                <div className={styles.col412} style={{ fontWeight: "700" }}>
-                  Supply Note:
-                </div>
-                <div className={styles.col812}>{order.note}</div>
+        <div className="p-3">
+          <div className="">
+            {order.specialInstructions && (
+              <div className="">
+                <span className="mr-1 font-semibold">
+                  Special Instructions:
+                </span>
+                <span className="">{order.specialInstructions}</span>
               </div>
             )}
-            {order.note && order.specialInstructions && (
-              <div style={{ borderBottom: "black 1px solid" }}></div>
-            )}
-            {order.specialInstructions && (
-              <div className={`${styles.grid} ${styles.paddingX}`}>
-                <div className={styles.col412} style={{ fontWeight: "700" }}>
-                  Special Instructions:
-                </div>
-                <div className={styles.col812} style={{ textAlign: "left" }}>
-                  {order.specialInstructions}
-                </div>
+            {order.note && (
+              <div className="">
+                <span className="mr-1 font-semibold">Supply Note:</span>
+                <span className="">{order.note}</span>
               </div>
             )}
           </div>
@@ -195,8 +187,8 @@ const SpecialInstructions = ({ order }) => {
 const ItemTable = ({ items }) => {
   const sortedLineItems = items ? alphabetizeLineItems(items) : [];
   return (
-    <div className={styles.contentContainer}>
-      <div className={styles.paddingX}>
+    <div className="">
+      <div className="p-3">
         <table className="table">
           <thead>
             <tr className="table__head__row">

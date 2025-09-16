@@ -1,7 +1,9 @@
 import React from "react";
 import { isoToShortDateTime } from "app/utils/dateUtils";
+import { useNavigate } from "react-router-dom";
 
 export default function OrderHistoryTable({ query }) {
+  const navigate = useNavigate();
   return (
     <table className="table--sticky table">
       <thead>
@@ -18,7 +20,7 @@ export default function OrderHistoryTable({ query }) {
           <tr
             className="table__row"
             key={order.requisitionId}
-            onClick={() => console.log(order)}
+            onClick={() => navigate(`${order.requisitionId}`)}
           >
             <td className="table__cell">{order.requisitionId}</td>
             <td className="table__cell">{order.customer.lastName}</td>
