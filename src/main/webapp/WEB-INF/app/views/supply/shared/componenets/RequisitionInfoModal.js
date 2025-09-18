@@ -113,9 +113,16 @@ function RequisitionFields({ requisition }) {
 
       <div className="font-semibold">Actions:</div>
       <div>
-        <Link to={`/supply/orders/${requisition.requisitionId}`}>
-          View full history
-        </Link>
+        <div>
+          <Link to={`/supply/orders/${requisition.requisitionId}`}>
+            View full history
+          </Link>
+        </div>
+        <div>
+          <Link to={`/supply/orders/${requisition.requisitionId}?print=true`}>
+            Print Requisition
+          </Link>
+        </div>
       </div>
     </>
   );

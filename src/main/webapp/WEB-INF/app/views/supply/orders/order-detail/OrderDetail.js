@@ -1,33 +1,38 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import Hero from "app/components/Hero";
 import Controls from "app/components/Controls";
 import Card from "app/components/Card";
 import LoadingIndicator from "app/components/LoadingIndicator";
 import { useRequisitionHistory } from "app/views/supply/orders/order-detail/useRequisitionHistory";
 import { isoToShortDateTime } from "app/utils/dateUtils";
+import Button from "app/components/Button";
 
 export default function OrderDetail() {
-  const printRef = useRef();
+  const hasPrinted = useRef(false);
+  const [searchParams] = useSearchParams();
   let { orderId } = useParams();
   const { data, isPending } = useRequisitionHistory(orderId);
   const [selectedVersion, setSelectedVersion] = useState(null);
   const [versions, setVersions] = useState(null);
 
   useEffect(() => {
-    setSelectedVersion(data?.result[0]);
+    setSelectedVersion(data?.result[data.result.length - 1]);
     setVersions(data?.result);
   }, [data]);
 
   useEffect(() => {
-    if (print && selectedVersion) {
-      // handlePrint();
+    // hasPrinted prevents the print dialog from opening everytime the version is changed.
+    // We only want it to open on the initial load.
+    if (
+      searchParams.get("print") === "true" &&
+      selectedVersion &&
+      !hasPrinted.current
+    ) {
+      hasPrinted.current = true;
+      window.print();
     }
-  }, [print, selectedVersion]);
-
-  // const handlePrint = useReactToPrint({
-  //   content: () => printRef.current,
-  // });
+  }, [searchParams, selectedVersion]);
 
   if (isPending || !selectedVersion) {
     return <LoadingIndicator />;
@@ -47,12 +52,8 @@ export default function OrderDetail() {
         <OrderInfo order={selectedVersion} />
         <SpecialInstructions order={selectedVersion} />
         <ItemTable items={selectedVersion.lineItems} />
+        <PrintSignatures />
       </Card>
-
-      {/* Print */}
-      {/*<div ref={printRef} className={styles.printOnly}>*/}
-      {/*  <OrderDetailPrint selectedVersion={selectedVersion} />*/}
-      {/*</div>*/}
     </div>
   );
 }
@@ -101,7 +102,13 @@ const VersionFilter = ({ versions, setCurrentOrder, handlePrint }) => {
         </select>
       </div>
       <div className="">
-        <a onClick={handlePrint}>Print Page</a>
+        <Button
+          variant="text"
+          className="print:hidden"
+          onClick={() => window.print()}
+        >
+          Print Page
+        </Button>
       </div>
     </div>
   );
@@ -212,3 +219,12 @@ const ItemTable = ({ items }) => {
     </div>
   );
 };
+
+function PrintSignatures() {
+  return (
+    <div className="hidden justify-around py-12 text-3xl print:flex">
+      <div className="">Received By: _______________________________</div>
+      <div>Received Date:________________________________</div>
+    </div>
+  );
+}

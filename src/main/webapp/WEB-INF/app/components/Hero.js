@@ -8,7 +8,8 @@ export default function Hero({ children, className }) {
   return (
     <div
       className={twMerge(
-        `text-3xl text-center text-white py-4 ${heroStyles[theme]}`,
+        `py-4 text-center text-3xl text-white ${heroStyles[theme]}`,
+        "print:border-b-2 print:bg-white print:text-black",
         className,
       )}
     >

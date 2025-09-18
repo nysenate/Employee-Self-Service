@@ -29,7 +29,6 @@
     }
 }
 
-
 /*  Custom css classes */
 @layer components {
 
@@ -108,5 +107,11 @@
 
     .table__totals {
         @apply font-semibold border-t-2 border-teal-600;
+    }
+}
+
+@media print {
+    input::placeholder {
+        color: transparent !important;
     }
 }

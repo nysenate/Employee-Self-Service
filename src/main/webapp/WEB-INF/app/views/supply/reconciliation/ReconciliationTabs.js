@@ -28,6 +28,7 @@ export default function ReconciliationTabs({ data, status }) {
     "border-1 border-gray-300 border-b-purple-500",
     "data-[selected]:bg-white  data-[selected]:border-purple-500 data-[selected]:border-b-white",
     "data-[selected]:text-purple-700 data-[selected]:font-bold",
+    "print:[&:not([data-selected])]:hidden",
   );
 
   return (
@@ -38,10 +39,18 @@ export default function ReconciliationTabs({ data, status }) {
       </TabList>
       <TabPanels className="-mt-px border-t-1 border-purple-500">
         <TabPanel>
-          <ItemTable data={data} pageItemIds={pageOneItemsIds} status={status} />
+          <ItemTable
+            data={data}
+            pageItemIds={pageOneItemsIds}
+            status={status}
+          />
         </TabPanel>
         <TabPanel>
-          <ItemTable data={data} pageItemIds={pageTwoItemsIds} status={status} />
+          <ItemTable
+            data={data}
+            pageItemIds={pageTwoItemsIds}
+            status={status}
+          />
         </TabPanel>
       </TabPanels>
     </TabGroup>
@@ -79,7 +88,7 @@ function ItemTable({ data, pageItemIds, status }) {
             </th>
           </tr>
         </thead>
-        <tbody className="table__body table__body--striped table__body--highlight">
+        <tbody className="table__body table__body--highlight divide-y divide-gray-200/80 print:divide-gray-300">
           {pageItemIds
             .map((id) => items.find((i) => i.id === id))
             .map((item) => (
@@ -98,9 +107,17 @@ function ItemTable({ data, pageItemIds, status }) {
   );
 }
 
-function ItemRow({ item, status, requisitions, showRequisitions, handleRowClick }) {
+function ItemRow({
+  item,
+  status,
+  requisitions,
+  showRequisitions,
+  handleRowClick,
+}) {
   const showReqClasses = "border-1 border-gray-500";
-  const rowError = status === STATUS.ERRORS && item.expectedQuantity - item.actualQuantity != 0;
+  const rowError =
+    status === STATUS.ERRORS &&
+    item.expectedQuantity - item.actualQuantity != 0;
   return (
     <>
       <tr
@@ -157,9 +174,11 @@ function QtyOnHandInput({ item, status }) {
 
   return (
     <input
+      id={`${item.commodityCode}-qtyOnHand`}
       type="number"
       className={clsx(
         "input w-14",
+        "p-0",
         status === STATUS.ERRORS && "input--invalid",
         status === STATUS.FORM_ERROR && "input--invalid",
       )}
@@ -191,13 +210,17 @@ function ItemRequisitionTable({ item, requisitions }) {
             <tr
               key={req.requisitionId}
               className="cursor-pointer"
-              onClick={() => navigate(`/supply/order-history/order/${req.requisitionId}`)}
+              onClick={() =>
+                navigate(`/supply/order-history/order/${req.requisitionId}`)
+              }
             >
               <td className="table__cell">{req.requisitionId}</td>
               <td className="table__cell">{req.destination.locId}</td>
               <td className="table__cell">{getItemQuantity(req)}</td>
               <td className="table__cell">{req.issuer.fullName}</td>
-              <td className="table__cell">{isoToShortDateTime(req.approvedDateTime)}</td>
+              <td className="table__cell">
+                {isoToShortDateTime(req.approvedDateTime)}
+              </td>
             </tr>
           ))}
         </tbody>

@@ -6,7 +6,7 @@ import useCheckPermission from "app/core/useCheckPermission";
 
 const Navigation = ({ children }) => {
   return (
-    <nav className="w-[250px] flex-none" aria-label="Secondary">
+    <nav className="w-[250px] flex-none print:hidden" aria-label="Secondary">
       <Card className="pb-5">{children}</Card>
     </nav>
   );

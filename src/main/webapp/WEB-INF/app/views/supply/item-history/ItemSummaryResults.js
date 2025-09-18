@@ -48,7 +48,7 @@ export default function ItemSummaryResults({
               </th>
             </tr>
           </thead>
-          <tbody className="table__body table__body--highlight divide-y divide-gray-200/50">
+          <tbody className="table__body table__body--highlight divide-y divide-gray-200/80">
             {pageData.map((summary) => (
               <React.Fragment key={summary.item.id}>
                 <tr
@@ -97,7 +97,7 @@ function ItemOccurrencesTable({ occurrences }) {
           <th className="table__head__cell cell--number">Quantity</th>
         </tr>
       </thead>
-      <tbody className="table__body table__body--highlight divide-y divide-gray-200/50">
+      <tbody className="table__body table__body--highlight divide-y divide-gray-200/80">
         {occurrences.map((occurrence) => (
           <tr key={occurrence.itemId} className="table__row">
             <td className="table__cell">

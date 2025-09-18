@@ -7,7 +7,7 @@ export default function AppLayout({ children }) {
   return (
     <>
       <div className="fixed">{children}</div>
-      <main className="mb-[20px] ml-[270px] w-[880px]">
+      <main className="mb-[20px] ml-[270px] w-[880px] print:m-0 print:w-full">
         <ErrorBoundary FallbackComponent={ErrorPage}>
           <Outlet />
         </ErrorBoundary>

@@ -2,7 +2,11 @@ import React from "react";
 import { twMerge } from "tailwind-merge";
 
 function Card({ children, className }) {
-  return <div className={`bg-white shadow ${className}`}>{children}</div>;
+  return (
+    <div className={twMerge("bg-white shadow", "print:shadow-none", className)}>
+      {children}
+    </div>
+  );
 }
 
 function Header({ children, className }) {

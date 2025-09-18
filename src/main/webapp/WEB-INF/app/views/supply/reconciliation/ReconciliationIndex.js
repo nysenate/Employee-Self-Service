@@ -67,7 +67,16 @@ export default function ReconciliationIndex() {
           <FormErrorMsg status={status} />
           <InvalidReconciliationErrorMsg status={status} />
           <div className="float-right p-3">
-            <Button onClick={handleReconcile}>Reconcile</Button>
+            <Button onClick={handleReconcile} className="print:hidden">
+              Reconcile
+            </Button>
+            <Button
+              className="ml-3 print:hidden"
+              variant="text"
+              onClick={() => window.print()}
+            >
+              Print
+            </Button>
           </div>
           <ReconciliationTabs data={data} status={status} />
         </Card>

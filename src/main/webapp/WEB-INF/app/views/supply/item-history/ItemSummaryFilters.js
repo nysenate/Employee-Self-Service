@@ -38,7 +38,11 @@ export default function ItemSummaryFilters({ filters, dispatch }) {
       </div>
 
       <div className="mb-px pb-1.5">
-        <Button variant="text" onClick={() => dispatch(resetFilters())}>
+        <Button
+          className="print:hidden"
+          variant="text"
+          onClick={() => dispatch(resetFilters())}
+        >
           Reset
         </Button>
       </div>
@@ -73,7 +77,15 @@ export default function ItemSummaryFilters({ filters, dispatch }) {
         />
       </div>
 
-      <div className="mb-px pb-1.5">Print Report</div>
+      <div className="mb-px pb-1.5">
+        <Button
+          className="print:hidden"
+          variant="text"
+          onClick={() => window.print()}
+        >
+          Print Report
+        </Button>
+      </div>
     </div>
   );
 }
