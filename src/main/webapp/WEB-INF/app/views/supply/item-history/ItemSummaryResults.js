@@ -5,6 +5,7 @@ import NoMatchesFound from "app/components/NoMatchesFound";
 import clsx from "clsx";
 import * as dateUtils from "app/utils/dateUtils";
 import Pagination from "app/components/Pagination";
+import { useNavigate } from "react-router-dom";
 
 export default function ItemSummaryResults({
   itemSummaries,
@@ -86,6 +87,7 @@ export default function ItemSummaryResults({
 }
 
 function ItemOccurrencesTable({ occurrences }) {
+  const navigate = useNavigate();
   return (
     <table className="table">
       <thead>
@@ -99,7 +101,13 @@ function ItemOccurrencesTable({ occurrences }) {
       </thead>
       <tbody className="table__body table__body--highlight divide-y divide-gray-200/80">
         {occurrences.map((occurrence) => (
-          <tr key={occurrence.itemId} className="table__row">
+          <tr
+            key={occurrence.itemId}
+            className="table__row"
+            onClick={() =>
+              navigate(`/supply/orders/${occurrence.requisition.requisitionId}`)
+            }
+          >
             <td className="table__cell">
               {occurrence.requisition.requisitionId}
             </td>
