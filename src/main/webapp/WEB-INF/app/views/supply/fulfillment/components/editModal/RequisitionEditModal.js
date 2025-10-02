@@ -14,6 +14,7 @@ import { useUndoRequisition } from "app/views/supply/fulfillment/hooks/useUndoRe
 import { EssPopoverPanel } from "app/components/EssPopover";
 import Button from "app/components/Button";
 import { Popover, PopoverButton } from "@headlessui/react";
+import PermissionGate from "app/components/PermissionGate";
 
 export default function RequisitionEditModal({
   isOpen,
@@ -139,11 +140,13 @@ export default function RequisitionEditModal({
           <div className="flex w-full justify-between">
             <div className="w-20">&nbsp;</div>
             <div className="flex items-baseline gap-3">
-              <UndoButton
-                status={requisition.status}
-                submitAction={submitAction}
-                isSubmitting={isSubmitting}
-              />
+              <PermissionGate permission="supply:requisition:approve">
+                <UndoButton
+                  status={requisition.status}
+                  submitAction={submitAction}
+                  isSubmitting={isSubmitting}
+                />
+              </PermissionGate>
               <Button
                 type="button"
                 color="secondary"
@@ -205,7 +208,7 @@ function AdvanceButton({ status, submitAction, isSubmitting }) {
     return <></>;
   }
 
-  return (
+  const advanceButton = (
     <Button
       type="submit"
       color={color}
@@ -216,6 +219,17 @@ function AdvanceButton({ status, submitAction, isSubmitting }) {
       {label}
     </Button>
   );
+
+  // Only supply mangers are allowed to approve
+  if (status === "COMPLETED") {
+    return (
+      <PermissionGate permission="supply:requisition:approve">
+        {advanceButton}
+      </PermissionGate>
+    );
+  }
+
+  return advanceButton;
 }
 
 function RejectButton({ status, submitAction, handleSubmit, isSubmitting }) {
