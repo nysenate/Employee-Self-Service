@@ -12,9 +12,10 @@ export function useReconciliation() {
       return fetchApiJson(`/supply/reconciliation`).then((body) => body.result);
     },
     throwOnError: true,
-    staleTime: Infinity,
-    refetchOnWindowFocus: false,
+    staleTime: 0,
     refetchOnMount: true,
+    // Prevent refetches while users are entering data.
+    refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   });
 }
@@ -22,7 +23,10 @@ export function useReconciliation() {
 export function useSubmitReconciliation() {
   return useMutation({
     mutationFn: (data) => {
-      return fetchApiJson(`/supply/reconciliation`, { method: "POST", payload: data });
+      return fetchApiJson(`/supply/reconciliation`, {
+        method: "POST",
+        payload: data,
+      });
     },
     throwOnError: true,
   });

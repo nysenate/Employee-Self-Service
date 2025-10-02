@@ -28,7 +28,7 @@ public class SupplyPageCtrl {
     @RequestMapping(method = {RequestMethod.GET, RequestMethod.HEAD})
     public Object supplyPage(ModelMap modelMap, HttpServletRequest request) {
         if (serveReact) {
-            return new InternalResourceView("assets/dist/index.html");
+            return "forward:/assets/dist/index.html";
         } else {
             modelMap.addAllAttributes(pageCtrlUtils.commonPageData());
             return "supply";

@@ -9,8 +9,8 @@ import LoadingIndicator from "app/components/LoadingIndicator";
 import Button from "app/components/Button";
 import ErrorBanner from "app/components/ErrorBanner";
 import ReconciliationTabs from "app/views/supply/reconciliation/ReconciliationTabs";
-import { useNavigate } from "react-router-dom";
 import ModalNotice from "app/components/ModalNotice";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const STATUS = {
   TYPING: 1,
@@ -21,7 +21,7 @@ export const STATUS = {
 };
 
 export default function ReconciliationIndex() {
-  const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [status, setStatus] = useState(STATUS.TYPING);
   const submitReconciliationApi = useSubmitReconciliation();
   const { isPending, data } = useReconciliation();
@@ -53,6 +53,9 @@ export default function ReconciliationIndex() {
           });
         } else {
           setStatus(STATUS.SUCCESS);
+          queryClient.invalidateQueries({
+            queryKey: ["supply", "reconciliation"],
+          });
         }
       });
   };
@@ -83,7 +86,7 @@ export default function ReconciliationIndex() {
       )}
       <ModalNotice
         isOpen={status === STATUS.SUCCESS}
-        onResolve={() => navigate(0)}
+        onResolve={() => setStatus(STATUS.TYPING)}
         title="Success"
         body="The reconciliation was successful!"
       />

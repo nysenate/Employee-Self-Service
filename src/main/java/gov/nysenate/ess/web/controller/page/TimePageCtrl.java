@@ -31,10 +31,10 @@ public class TimePageCtrl {
     @RequestMapping(method = {RequestMethod.GET, RequestMethod.HEAD})
     public Object timePage(ModelMap modelMap, HttpServletRequest request) {
         if (serveReact) {
-            return new InternalResourceView("assets/dist/index.html");
+            return "forward:/assets/dist/index.html";
         } else {
             modelMap.addAllAttributes(pageCtrlUtils.commonPageData());
             return "time";
         }
-	}
+    }
 }

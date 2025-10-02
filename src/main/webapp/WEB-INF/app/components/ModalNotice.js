@@ -13,7 +13,7 @@ import React from "react";
  */
 export default function ModalNotice({ isOpen, onResolve, title, body }) {
   return (
-    <Modal isOpen={isOpen} onShow={onResolve}>
+    <Modal isOpen={isOpen}>
       <Modal.Title>{title}</Modal.Title>
       <Modal.Body>
         <div className="max-w-lg">{body}</div>
