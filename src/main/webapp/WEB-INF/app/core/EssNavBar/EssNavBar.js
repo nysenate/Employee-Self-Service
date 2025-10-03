@@ -10,7 +10,7 @@ export default function EssNavBar() {
 
   return (
     <nav
-      className="fixed z-10 h-[45px] w-screen bg-gray-50 shadow print:hidden print:h-0"
+      className="fixed z-20 h-[45px] w-screen bg-gray-50 shadow print:hidden print:h-0"
       aria-label="Main"
     >
       <div className="mx-auto h-full w-[1150px]">

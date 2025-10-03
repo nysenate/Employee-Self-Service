@@ -15,7 +15,6 @@ export default function Paycheck({ summary }) {
                 "after:pointer-events-none after:absolute after:bottom-0 after:right-0",
                 "after:top-0 after:w-[2px] after:bg-teal-600 after:content-['']",
               )}
-              style={{ "z-index": "15" }}
             >
               Check Date
             </th>
