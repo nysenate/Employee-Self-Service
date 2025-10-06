@@ -1,5 +1,5 @@
 import React, { forwardRef, useContext } from "react";
-import { ThemeContext } from "app/contexts/ThemeContext";
+import { ThemeContext } from "app/ThemeContext";
 import { twMerge } from "tailwind-merge";
 
 /**

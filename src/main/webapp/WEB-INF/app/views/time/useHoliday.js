@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getHolidays } from "app/api/holiday";
+import { fetchApiJson } from "app/api/fetchJson";
 
 function getQueryKey(year) {
   return ["year", year];
@@ -9,9 +9,9 @@ export function useHoliday(year) {
   return useQuery({
     queryKey: getQueryKey(year),
     queryFn: () => {
-      return getHolidays(year).then((body) => body);
+      return fetchApiJson(`/holidays/${year}`).then((body) => body);
     },
-    staleTime: 60000,
+    staleTime: 1000 * 60 * 1,
     throwOnError: true,
   });
 }

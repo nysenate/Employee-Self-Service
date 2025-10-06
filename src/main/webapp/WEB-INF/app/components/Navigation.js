@@ -1,8 +1,8 @@
 import React, { useContext } from "react";
-import { ThemeContext, themes } from "app/contexts/ThemeContext";
+import { ThemeContext, themes } from "app/ThemeContext";
 import { NavLink } from "react-router-dom";
 import Card from "app/components/Card";
-import useCheckPermission from "app/core/useCheckPermission";
+import useCheckPermission from "app/hooks/useCheckPermission";
 
 const Navigation = ({ children }) => {
   return (

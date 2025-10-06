@@ -1,19 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  acknowledgeDocument,
-  getTaskAssignment,
-  getTaskAssignments,
-  manuallyDeactivateTaskAssignment,
-  manuallyOverrideCompletionStatus,
-  searchTaskAssignments,
-  submitEthicsLiveForm,
-  submitVideoCodes,
-} from "app/api/taskAssignment";
-import {
-  manuallyAssignTask,
-  searchPotentialTaskAssignments,
-} from "app/api/taskAssignment";
 import { buildQueryString } from "app/utils/apiUtils";
+import { fetchApiJson } from "app/api/fetchJson";
 
 const taskAssignmentKeys = {
   all: ["tasks", "assignments"],
@@ -23,11 +10,13 @@ const taskAssignmentKeys = {
   potential: (params) => [...taskAssignmentKeys.all, "potential", params],
 };
 
-export function useTaskAssignments(empId) {
+export function useTaskAssignments(empId, detail = true, activeOnly = true) {
   return useQuery({
     queryKey: taskAssignmentKeys.list(empId),
     queryFn: () => {
-      return getTaskAssignments(empId).then((body) => body.assignments);
+      return fetchApiJson(
+        `/personnel/task/assignment/${empId}?detail=${detail}&activeOnly=${activeOnly}`,
+      ).then((body) => body.assignments);
     },
     enabled: !!empId,
     throwOnError: true,
@@ -38,7 +27,9 @@ export function useTaskAssignment(empId, taskId) {
   return useQuery({
     queryKey: taskAssignmentKeys.detail(empId, taskId),
     queryFn: () => {
-      return getTaskAssignment(empId, taskId).then((body) => body.task);
+      return fetchApiJson(`/personnel/task/assignment/${empId}/${taskId}`).then(
+        (body) => body.task,
+      );
     },
     enabled: !!empId,
     throwOnError: true,
@@ -48,7 +39,11 @@ export function useTaskAssignment(empId, taskId) {
 export function useAcknowledgeDocument() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: acknowledgeDocument,
+    mutationFn: ({ empId, taskId }) =>
+      fetchApiJson(
+        `/personnel/task/acknowledgment?empId=${empId}&taskId=${taskId}`,
+        { method: "POST" },
+      ),
     onSuccess: (data, { empId, taskId }) => {
       return queryClient.invalidateQueries({
         queryKey: taskAssignmentKeys.all,
@@ -61,7 +56,11 @@ export function useAcknowledgeDocument() {
 export function useSubmitVideoCodes() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: submitVideoCodes,
+    mutationFn: (data) =>
+      fetchApiJson(`/personnel/task/video/code`, {
+        method: "POST",
+        payload: data,
+      }),
     onSuccess: (data, { empId, taskId }) => {
       return queryClient.invalidateQueries({
         queryKey: taskAssignmentKeys.all,
@@ -73,7 +72,11 @@ export function useSubmitVideoCodes() {
 export function useSubmitEthicsLiveForm() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: submitEthicsLiveForm,
+    mutationFn: (data) =>
+      fetchApiJson(`/personnel/task/ethics/live/code`, {
+        method: "POST",
+        payload: data,
+      }),
     onSuccess: (data, { empId, taskId }) => {
       return queryClient.invalidateQueries({
         queryKey: taskAssignmentKeys.all,
@@ -85,7 +88,10 @@ export function useSubmitEthicsLiveForm() {
 export function useManuallyOverrideCompletionStatus() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: manuallyOverrideCompletionStatus,
+    mutationFn: (data) =>
+      fetchApiJson(
+        `/admin/personnel/task/overrride/${data.updatedByEmpId}/${data.taskId}/${data.isCompleted}/${data.assignedEmpId}`,
+      ),
     onSuccess: (data) => {
       return queryClient.invalidateQueries({
         queryKey: taskAssignmentKeys.all,
@@ -97,7 +103,10 @@ export function useManuallyOverrideCompletionStatus() {
 export function useManuallyDeactivateTaskAssignment() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: manuallyDeactivateTaskAssignment,
+    mutationFn: (data) =>
+      fetchApiJson(
+        `/admin/personnel/task/overrride/activation/${data.updatedByEmpId}/${data.taskId}/${data.isActive}/${data.assignedEmpId}`,
+      ),
     onSuccess: (data) => {
       return queryClient.invalidateQueries({
         queryKey: taskAssignmentKeys.all,
@@ -109,7 +118,10 @@ export function useManuallyDeactivateTaskAssignment() {
 export function useManuallyAssignTask() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: manuallyAssignTask,
+    mutationFn: (data) =>
+      fetchApiJson(
+        `/admin/personnel/task/overrride/${data.updatedByEmpId}/${data.taskId}/${data.assignedEmpId}`,
+      ),
     onSuccess: (data) => {
       return queryClient.invalidateQueries({
         queryKey: taskAssignmentKeys.all,
@@ -123,7 +135,7 @@ export function useSearchTaskAssignments(state) {
   return useQuery({
     queryKey: taskAssignmentKeys.search(queryParams),
     queryFn: () => {
-      return searchTaskAssignments(queryParams);
+      return fetchApiJson(`/personnel/task/emp/search?${queryParams}`);
     },
     cacheTime: 0, // Disable caching for this query.
   });
@@ -134,7 +146,7 @@ export function useSearchPotentialAssignments(state) {
   return useQuery({
     queryKey: taskAssignmentKeys.potential(queryParams),
     queryFn: () => {
-      return searchPotentialTaskAssignments(queryParams);
+      return fetchApiJson(`/personnel/task/emp/assignSearch?${queryParams}`);
     },
     cacheTime: 0, // Disable caching for this query.
   });

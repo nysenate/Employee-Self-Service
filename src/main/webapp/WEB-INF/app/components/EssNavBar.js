@@ -1,10 +1,10 @@
 import { Link, useLocation } from "react-router-dom";
 import React from "react";
-import "./essNavBar.css";
-import { themes } from "app/contexts/ThemeContext";
+import "app/components/essNavBar.css";
+import { themes } from "app/ThemeContext";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
-import useAuthedUser from "app/core/useAuthedUser";
-import { useConfig } from "app/core/useConfig";
+import useAuthedUser from "app/hooks/useAuthedUser";
+import { useConfig } from "app/hooks/useConfig";
 
 export default function EssNavBar() {
   const { data: config } = useConfig();

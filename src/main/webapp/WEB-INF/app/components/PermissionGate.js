@@ -1,4 +1,4 @@
-import useCheckPermission from "app/core/useCheckPermission";
+import useCheckPermission from "app/hooks/useCheckPermission";
 
 /**
  * Only shows children components if the user has the given permission.

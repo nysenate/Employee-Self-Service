@@ -1,5 +1,5 @@
-import { getSupplyDestinations } from "app/api/supplyDestinations";
 import { useQuery } from "@tanstack/react-query";
+import { fetchApiJson } from "app/api/fetchJson";
 
 function getQueryKey(empId) {
   return ["supply", "destination", "list", empId];
@@ -9,10 +9,12 @@ export function useSupplyDestinations(empId) {
   return useQuery({
     queryKey: getQueryKey(empId),
     queryFn: () => {
-      return getSupplyDestinations(empId).then((body) => body.result);
+      return fetchApiJson(`/supply/destinations/${empId}`).then(
+        (body) => body.result,
+      );
     },
     enable: !!empId,
-    staleTime: 60000,
+    staleTime: 1000 * 60 * 1,
     throwOnError: true,
   });
 }

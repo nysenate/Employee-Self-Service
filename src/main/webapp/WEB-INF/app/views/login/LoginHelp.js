@@ -1,7 +1,7 @@
 import React from "react";
 import LoginTitle from "app/views/login/LoginTitle";
 import { LOGIN_BUTTON_CLASSES, LOGIN_STATES } from "app/views/login/LoginIndex";
-import { useConfig } from "app/core/useConfig";
+import { useConfig } from "app/hooks/useConfig";
 
 export default function LoginHelp({ setState }) {
   const { data: config } = useConfig();

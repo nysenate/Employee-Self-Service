@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { ThemeContext } from "app/contexts/ThemeContext";
+import { ThemeContext } from "app/ThemeContext";
 import { twMerge } from "tailwind-merge";
 
 export default function Hero({ children, className }) {

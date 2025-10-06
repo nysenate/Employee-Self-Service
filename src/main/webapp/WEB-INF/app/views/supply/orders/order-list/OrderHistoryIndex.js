@@ -1,6 +1,6 @@
 import React, { useEffect, useReducer, useState } from "react";
 import { add, endOfDay, formatISO, startOfDay, subMonths } from "date-fns";
-import useAuthedUser from "app/core/useAuthedUser";
+import useAuthedUser from "app/hooks/useAuthedUser";
 import { useEmployee } from "app/views/useEmployee";
 import { useOrderHisotry } from "app/views/supply/orders/order-list/useOrderHistory";
 import { UTCDate } from "@date-fns/utc";
@@ -12,7 +12,7 @@ import {
   SET_FILTER,
   SET_OFFSET,
   setOffset,
-} from "app/views/supply/shared/helpers/supplyFilterActions";
+} from "app/views/supply/shared/lib/supplyFilterActions";
 import { isValidDateString } from "app/utils/dateUtils";
 import LoadingIndicator from "app/components/LoadingIndicator";
 import Card from "app/components/Card";

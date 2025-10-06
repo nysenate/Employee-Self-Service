@@ -13,7 +13,7 @@ import {
 import LoadingIndicator from "app/components/LoadingIndicator";
 import { useEmployee } from "app/views/useEmployee";
 import { useEmployeeTransactions } from "app/views/myinfo/personnel/summary/useEmployeeTransactions";
-import useAuthedUser from "app/core/useAuthedUser";
+import useAuthedUser from "app/hooks/useAuthedUser";
 
 export default function SummaryIndex() {
   const { data: user } = useAuthedUser();

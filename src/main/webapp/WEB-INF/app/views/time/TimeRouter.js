@@ -1,5 +1,5 @@
 import React from "react";
-import { ThemeContext, themes } from "app/contexts/ThemeContext";
+import { ThemeContext, themes } from "app/ThemeContext";
 import Navigation from "app/components/Navigation";
 import AppLayout from "app/components/AppLayout";
 import { Route, Routes } from "react-router-dom";

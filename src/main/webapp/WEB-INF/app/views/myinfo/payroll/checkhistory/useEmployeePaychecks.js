@@ -1,19 +1,19 @@
 import { useQuery } from "@tanstack/react-query";
-import { getEmployeePaychecks } from "app/api/employeePaychecks";
-
+import { fetchApiJson } from "app/api/fetchJson";
 
 function getQueryKey(empId, year, useFiscalYear) {
-  return ['employee', 'detail', empId, 'paychecks', year, useFiscalYear]
+  return ["employee", "detail", empId, "paychecks", year, useFiscalYear];
 }
 
 export function useEmployeePaychecks(empId, year, useFiscalYear) {
   return useQuery({
     queryKey: getQueryKey(empId, year, useFiscalYear),
     queryFn: () => {
-      return getEmployeePaychecks(empId, year, useFiscalYear)
-        .then((body) => body.result)
+      return fetchApiJson(
+        `/paychecks?empId=${empId}&year=${year}&fiscalYear=${useFiscalYear}`,
+      ).then((body) => body.result);
     },
-    staleTime: 60000,
+    staleTime: 1000 * 60 * 1,
     throwOnError: true,
-  })
+  });
 }

@@ -5,8 +5,10 @@ import { useNavigate } from "react-router-dom";
 import LoginForm from "app/views/login/LoginForm";
 import LoginDevBanner from "app/views/login/LoginDevBanner";
 import LoginHelp from "app/views/login/LoginHelp";
-import useAuthedUser, { useAuthedUserNoRedirect } from "app/core/useAuthedUser";
-import { useConfig } from "app/core/useConfig";
+import useAuthedUser, {
+  useAuthedUserNoRedirect,
+} from "app/hooks/useAuthedUser";
+import { useConfig } from "app/hooks/useConfig";
 
 export const LOGIN_STATES = {
   LOGIN: 0,

@@ -7,7 +7,7 @@ import MoodleAssignment from "app/views/myinfo/personnel/pec/task-assignments/as
 import EthicsCourseAssignment from "app/views/myinfo/personnel/pec/task-assignments/assignment-item/ethics-course-assignment/EthicsCourseAssignment";
 import EthicsLiveAssignment from "app/views/myinfo/personnel/pec/task-assignments/assignment-item/ethics-live-assignment/EthicsLiveAssignment";
 import { useTaskAssignment } from "app/views/myinfo/personnel/pec/useTaskAssignment";
-import useAuthedUser from "app/core/useAuthedUser";
+import useAuthedUser from "app/hooks/useAuthedUser";
 
 export default function TaskAssignmentIndex() {
   const { data: user } = useAuthedUser();

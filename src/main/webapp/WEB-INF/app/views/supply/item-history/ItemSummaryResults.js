@@ -1,6 +1,6 @@
 import Card from "app/components/Card";
 import React, { useEffect, useState } from "react";
-import { setOffset } from "app/views/supply/shared/helpers/supplyFilterActions";
+import { setOffset } from "app/views/supply/shared/lib/supplyFilterActions";
 import NoMatchesFound from "app/components/NoMatchesFound";
 import clsx from "clsx";
 import * as dateUtils from "app/utils/dateUtils";

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { pingApi } from "app/core/TimeoutChecker/pingApi";
+import { pingApi } from "app/api/pingApi";
 import { Link, useNavigate } from "react-router-dom";
 import Modal from "app/components/Modal";
 import Button from "app/components/Button";

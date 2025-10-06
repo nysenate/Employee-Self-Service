@@ -2,7 +2,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import Button from "app/components/Button";
 import { useSubmitVideoCodes } from "app/views/myinfo/personnel/pec/useTaskAssignment";
-import useAuthedUser from "app/core/useAuthedUser";
+import useAuthedUser from "app/hooks/useAuthedUser";
 
 export default function VideoCodeEntryForm({ taskId, onSuccess }) {
   const { data: user } = useAuthedUser();

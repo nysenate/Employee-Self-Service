@@ -4,7 +4,7 @@ import { useItemsMap } from "app/views/supply/shared/hooks/useItems";
 import {
   setDateRange,
   setFilter,
-} from "app/views/supply/shared/helpers/supplyFilterActions";
+} from "app/views/supply/shared/lib/supplyFilterActions";
 import { useLocations } from "app/views/supply/shared/hooks/useLocations";
 import InputAutocomplete from "app/components/InputAutocomplete";
 import { useIssuers } from "app/views/supply/requisition-history/useIssuers";

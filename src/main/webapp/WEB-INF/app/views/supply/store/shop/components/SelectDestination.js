@@ -15,7 +15,7 @@ import {
 } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/16/solid";
 import { useDebounce } from "use-debounce";
-import useAuthedUser from "app/core/useAuthedUser";
+import useAuthedUser from "app/hooks/useAuthedUser";
 
 export default function SelectDestination() {
   const { data: user } = useAuthedUser();

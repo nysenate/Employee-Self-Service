@@ -5,7 +5,7 @@ import { useManuallyAssignTask } from "../useTaskAssignment";
 import Modal from "../../../../../components/Modal";
 import { isoToMediumDate } from "../../../../../utils/dateUtils";
 import Button from "app/components/Button";
-import useAuthedUser from "app/core/useAuthedUser";
+import useAuthedUser from "app/hooks/useAuthedUser";
 
 export default function PotentialAssignmentsTable({
   potentialAssignments,

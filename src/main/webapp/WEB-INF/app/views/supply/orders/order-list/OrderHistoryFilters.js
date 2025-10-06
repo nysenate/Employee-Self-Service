@@ -2,7 +2,7 @@ import React from "react";
 import {
   setDateRange,
   setFilter,
-} from "app/views/supply/shared/helpers/supplyFilterActions";
+} from "app/views/supply/shared/lib/supplyFilterActions";
 import InputDebounced from "app/components/InputDebounced";
 
 export default function OrderHistoryFilters({ filters, dispatch }) {

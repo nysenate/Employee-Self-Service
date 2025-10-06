@@ -2,7 +2,7 @@ import React from "react";
 import LoadingIndicator from "app/components/LoadingIndicator";
 import CheckHistoryForm from "app/views/myinfo/payroll/checkhistory/CheckHistoryForm";
 import { useEmployeeActiveYears } from "app/views/myinfo/payroll/checkhistory/useEmployeeActiveYears";
-import useAuthedUser from "app/core/useAuthedUser";
+import useAuthedUser from "app/hooks/useAuthedUser";
 
 export default function CheckHistoryIndex() {
   const { data: user } = useAuthedUser();

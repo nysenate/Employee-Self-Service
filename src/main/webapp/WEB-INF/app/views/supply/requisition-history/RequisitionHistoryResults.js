@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Card from "app/components/Card";
 import NoMatchesFound from "app/components/NoMatchesFound";
 import { isoToShortDateTime } from "app/utils/dateUtils";
-import { setOffset } from "app/views/supply/shared/helpers/supplyFilterActions";
+import { setOffset } from "app/views/supply/shared/lib/supplyFilterActions";
 import RequisitionInfoModal from "app/views/supply/shared/componenets/RequisitionInfoModal";
 import Pagination from "app/components/Pagination";
 

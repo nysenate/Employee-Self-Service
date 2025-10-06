@@ -12,7 +12,7 @@ import {
   SET_DATE_RANGE,
   SET_FILTER,
   SET_OFFSET,
-} from "app/views/supply/shared/helpers/supplyFilterActions";
+} from "app/views/supply/shared/lib/supplyFilterActions";
 import RequisitionHistoryFilters from "app/views/supply/requisition-history/RequisitionHistoryFilters";
 
 const initialFilters = {

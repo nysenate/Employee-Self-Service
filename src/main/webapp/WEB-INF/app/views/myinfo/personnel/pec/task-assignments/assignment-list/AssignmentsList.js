@@ -10,7 +10,7 @@ import { Link } from "react-router-dom";
 import LoadingIndicator from "app/components/LoadingIndicator";
 import { isoToMediumDate } from "app/utils/dateUtils";
 import { useTaskAssignments } from "app/views/myinfo/personnel/pec/useTaskAssignment";
-import useAuthedUser from "app/core/useAuthedUser";
+import useAuthedUser from "app/hooks/useAuthedUser";
 
 /**
  * Generates URL, Url Text

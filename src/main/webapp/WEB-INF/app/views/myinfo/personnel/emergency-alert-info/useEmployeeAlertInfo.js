@@ -1,8 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  getEmployeeAlertInfo,
-  updateEmployeeAlertInfo,
-} from "app/api/employeeAlertInfo";
+import { fetchApiJson } from "app/api/fetchJson";
 
 function getQueryKey(empId) {
   return ["employee", "detail", empId, "alert-info"];
@@ -12,7 +9,9 @@ export function useEmployeeAlertInfo(empId) {
   return useQuery({
     queryKey: getQueryKey(empId),
     queryFn: () => {
-      return getEmployeeAlertInfo(empId).then((body) => body.result);
+      return fetchApiJson(`/alert-info?empId=${empId}`).then(
+        (body) => body.result,
+      );
     },
     enabled: !!empId,
     staleTime: 1000 * 60 * 1,
@@ -24,7 +23,7 @@ export function useMutateEmployeeAlertInfo() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data) => {
-      return updateEmployeeAlertInfo(data);
+      return fetchApiJson(`/alert-info`, { method: "POST", payload: data });
     },
     onSuccess: (data, { empId }) => {
       // Invalidate and refetch

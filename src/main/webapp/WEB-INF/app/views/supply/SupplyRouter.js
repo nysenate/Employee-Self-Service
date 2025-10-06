@@ -1,6 +1,6 @@
 import React from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
-import { ThemeContext, themes } from "app/contexts/ThemeContext";
+import { ThemeContext, themes } from "app/ThemeContext";
 import ShopIndex from "app/views/supply/store/shop/ShopIndex";
 import CartIndex from "app/views/supply/store/cart/CartIndex";
 import OrderHistoryIndex from "app/views/supply/orders/order-list/OrderHistoryIndex";

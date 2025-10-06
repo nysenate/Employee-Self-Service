@@ -1,4 +1,4 @@
-import useAuthedUser from "app/core/useAuthedUser";
+import useAuthedUser from "app/hooks/useAuthedUser";
 
 export default function useLocalStorage() {
   const { data: user } = useAuthedUser();

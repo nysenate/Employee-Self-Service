@@ -8,7 +8,7 @@ import {
   useManuallyDeactivateTaskAssignment,
   useManuallyOverrideCompletionStatus,
 } from "app/views/myinfo/personnel/pec/useTaskAssignment";
-import useAuthedUser from "app/core/useAuthedUser";
+import useAuthedUser from "app/hooks/useAuthedUser";
 
 export default function AssignmentsTable({ taskAssignments, state, dispatch }) {
   // Assignment details will be displayed for the row of this employee. Only display one row details at a time.

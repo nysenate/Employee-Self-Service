@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getPayPeriods } from "app/api/payPeriod";
+import { fetchApiJson } from "app/api/fetchJson";
 
 function getQueryKey(payPeriod, year) {
   return ["payPeriod", payPeriod, "year", year];
@@ -9,9 +9,11 @@ export function usePayPeriods(payPeriod, year) {
   return useQuery({
     queryKey: getQueryKey(payPeriod),
     queryFn: () => {
-      return getPayPeriods(payPeriod, year).then((body) => body);
+      return fetchApiJson(`/periods/${payPeriod}?year=${year}`).then(
+        (body) => body,
+      );
     },
-    staleTime: 60000,
+    staleTime: 1000 * 60 * 1,
     throwOnError: true,
   });
 }

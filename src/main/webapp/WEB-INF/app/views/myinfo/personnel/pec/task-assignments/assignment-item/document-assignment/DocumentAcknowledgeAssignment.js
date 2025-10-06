@@ -9,7 +9,7 @@ import Button from "app/components/Button";
 import Modal from "app/components/Modal";
 import ModalNotice from "app/components/ModalNotice";
 import { useAcknowledgeDocument } from "app/views/myinfo/personnel/pec/useTaskAssignment";
-import useAuthedUser from "app/core/useAuthedUser";
+import useAuthedUser from "app/hooks/useAuthedUser";
 
 export default function DocumentAcknowledgeAssignment({ assignment }) {
   const { data: user } = useAuthedUser();

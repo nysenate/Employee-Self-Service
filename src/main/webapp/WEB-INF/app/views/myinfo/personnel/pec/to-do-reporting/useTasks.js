@@ -1,14 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
-import { getTasks } from "app/api/tasks";
+import { fetchApiJson } from "app/api/fetchJson";
 
 export function useTasks(activeOnly = false) {
   return useQuery({
-    queryKey: ['tasks', activeOnly],
+    queryKey: ["tasks", activeOnly],
     queryFn: () => {
-      return getTasks(activeOnly)
-        .then(body => body.tasks)
+      return fetchApiJson(`/personnel/task?activeOnly=${activeOnly}`).then(
+        (body) => body.tasks,
+      );
     },
-    staleTime: 60000,
+    staleTime: 1000 * 60 * 1,
     throwOnError: true,
-  })
+  });
 }

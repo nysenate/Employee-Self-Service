@@ -1,4 +1,4 @@
-import useCheckPermission from "app/core/useCheckPermission";
+import useCheckPermission from "app/hooks/useCheckPermission";
 
 /**
  * Use to wrap a page which requires permissions to view. This will throw an exception if the
