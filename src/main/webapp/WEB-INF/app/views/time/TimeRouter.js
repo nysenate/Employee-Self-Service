@@ -4,6 +4,7 @@ import Navigation from "app/components/Navigation";
 import AppLayout from "app/components/AppLayout";
 import { Route, Routes } from "react-router-dom";
 import PayrollCalendar from "app/views/time/attendance/payroll-calendar/PayrollCalendar";
+import NotFound from "app/views/NotFound";
 
 export default function TimeRouter() {
   return (
@@ -53,7 +54,7 @@ export default function TimeRouter() {
 
           <Route path="personnel/search" element={<div>Employee Search</div>} />
 
-          <Route path="*" element={<div>404</div>} />
+          <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
     </ThemeContext.Provider>

@@ -4,13 +4,15 @@ import Navigation from "app/components/Navigation";
 import AppLayout from "app/components/AppLayout";
 import Travel from "app/views/travel/Travel";
 import { Route, Routes } from "react-router-dom";
+import NotFound from "app/views/NotFound";
 
 export default function TravelRouter() {
   return (
     <ThemeContext.Provider value={themes.travel}>
       <Routes>
-        <Route path="" element={<TravelLayout/>}>
-          <Route path="/stats" element={<Travel/>}/>
+        <Route path="" element={<TravelLayout />}>
+          <Route path="/stats" element={<Travel />} />
+          <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
     </ThemeContext.Provider>

@@ -11,6 +11,7 @@ import TaskAssignmentIndex from "app/views/myinfo/personnel/pec/task-assignments
 import ToDoAssignment from "./personnel/pec/to-do-assignment/ToDoAssignment";
 import ToDoReporting from "./personnel/pec/to-do-reporting/ToDoReporting";
 import AssertPermission from "app/components/AssertPermission";
+import NotFound from "app/views/NotFound";
 
 export default function MyInfoRouter() {
   return (
@@ -51,6 +52,7 @@ export default function MyInfoRouter() {
             path=""
             element={<Navigate to="personnel/summary" replace />}
           />
+          <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
     </ThemeContext.Provider>

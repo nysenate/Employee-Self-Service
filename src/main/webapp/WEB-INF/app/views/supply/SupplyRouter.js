@@ -14,6 +14,7 @@ import { SupplyContextProvider } from "app/views/supply/store/useSupplyContext";
 import ReconciliationIndex from "app/views/supply/reconciliation/ReconciliationIndex";
 import ItemSummary from "app/views/supply/item-history/ItemSummary";
 import AssertPermission from "app/components/AssertPermission";
+import NotFound from "app/views/NotFound";
 
 export default function SupplyRouter() {
   return (
@@ -58,7 +59,7 @@ export default function SupplyRouter() {
               }
             />
             <Route path="" element={<Navigate to="shop" replace />} />
-            <Route path="*" element={<div>404</div>} />
+            <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
       </SupplyContextProvider>
