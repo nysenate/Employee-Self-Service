@@ -13,8 +13,11 @@ import NotFound from "app/views/NotFound";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import TravelRouter from "app/views/travel/TravelRouter";
+import { useConfig } from "app/core/useConfig";
 
 function App() {
+  // Check that config can be loaded from the backend.
+  const { data } = useConfig();
   return (
     <BrowserRouter>
       <Routes>
@@ -29,7 +32,6 @@ function App() {
         <Route path="/logout" element={<Logout />} />
         <Route path="/404" element={<NotFound />} />
         <Route path="*" element={<NotFound />} />
-        {/* TODO Errors page, 404 page. */}
       </Routes>
     </BrowserRouter>
   );

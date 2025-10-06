@@ -4,8 +4,10 @@ import "./essNavBar.css";
 import { themes } from "app/contexts/ThemeContext";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
 import useAuthedUser from "app/core/useAuthedUser";
+import { useConfig } from "app/core/useConfig";
 
 export default function EssNavBar() {
+  const { data: config } = useConfig();
   const { data: user } = useAuthedUser();
 
   return (
@@ -46,7 +48,7 @@ export default function EssNavBar() {
             </ul>
           </div>
           <div className="flex h-full items-center p-0.5">
-            {process.env.NODE_ENV === "development" && (
+            {config?.runtimeLevel === "dev" && (
               <div className="mx-3 text-[14.3px] font-semibold text-red-700">
                 <span className="mx-3">dev</span>
                 <span>emp #{user.employeeId}</span>

@@ -6,6 +6,7 @@ import LoginForm from "app/views/login/LoginForm";
 import LoginDevBanner from "app/views/login/LoginDevBanner";
 import LoginHelp from "app/views/login/LoginHelp";
 import useAuthedUser, { useAuthedUserNoRedirect } from "app/core/useAuthedUser";
+import { useConfig } from "app/core/useConfig";
 
 export const LOGIN_STATES = {
   LOGIN: 0,
@@ -16,6 +17,7 @@ export const LOGIN_BUTTON_CLASSES = `py-0.5 bg-gray-100 border-1 border-gray-400
 duration-500 hover:bg-gray-50 hover:text-teal-600 disabled:pointer-events-none disabled:opacity-50`;
 
 export default function LoginIndex() {
+  const { data: config } = useConfig();
   const { data: user, isPending } = useAuthedUserNoRedirect();
   const navigate = useNavigate();
   const [state, setState] = useState(LOGIN_STATES.LOGIN);
@@ -33,7 +35,7 @@ export default function LoginIndex() {
 
   return (
     <div>
-      {process.env.RUNTIME_LEVEL === "dev" && <LoginDevBanner />}
+      {config?.runtimeLevel === "dev" && <LoginDevBanner />}
       <div className="relative flex h-screen items-center justify-center">
         <Card className="border-b-4 border-teal-600">
           <Hero>New York State Senate Employee Self Service</Hero>
