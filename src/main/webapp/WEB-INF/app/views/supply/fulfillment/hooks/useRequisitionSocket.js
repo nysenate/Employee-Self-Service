@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 
@@ -8,6 +8,14 @@ import SockJS from "sockjs-client";
  *                  It is passed the changed requisition.
  */
 export function useRequisitionSocket(onMessage) {
+  const onMessageRef = useRef(onMessage);
+
+  // Save updates to onMessage.
+  useEffect(() => {
+    onMessageRef.current = onMessage;
+  }, [onMessage]);
+
+  // Connect to the socket once on mount.
   useEffect(() => {
     const client = new Client({
       // Use SockJS client instead of brokerURL
@@ -18,7 +26,7 @@ export function useRequisitionSocket(onMessage) {
         client.subscribe("/event/requisition", (message) => {
           try {
             const requisition = JSON.parse(message.body);
-            onMessage(requisition);
+            onMessageRef.current(requisition);
           } catch (err) {
             console.error("Error parsing requisition message", err);
           }
@@ -34,5 +42,5 @@ export function useRequisitionSocket(onMessage) {
     return () => {
       client.deactivate();
     };
-  }, [onMessage]);
+  }, []);
 }
