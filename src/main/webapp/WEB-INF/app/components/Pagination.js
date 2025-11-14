@@ -48,7 +48,7 @@ export default function Pagination({
       containerClassName="flex space-x-0 md:space-x-2 justify-center m-3"
       pageClassName={itemClassName}
       pageLinkClassName={linkClassName}
-      activeClassName="border-solid border-1 border-teal-600"
+      activeClassName="border-solid border border-teal-600"
       activeLinkClassName="text-teal-600"
       previousClassName={itemClassName}
       previousLinkClassName={linkClassName}

@@ -25,7 +25,7 @@ export default function ReconciliationTabs({ data, status }) {
 
   const tabClasses = clsx(
     "ml-3 bg-gray-100 px-3 py-2",
-    "border-1 border-gray-300 border-b-purple-500",
+    "border border-gray-300 border-b-purple-500",
     "data-[selected]:bg-white  data-[selected]:border-purple-500 data-[selected]:border-b-white",
     "data-[selected]:text-purple-700 data-[selected]:font-bold",
     "print:[&:not([data-selected])]:hidden",
@@ -114,7 +114,7 @@ function ItemRow({
   showRequisitions,
   handleRowClick,
 }) {
-  const showReqClasses = "border-1 border-gray-500";
+  const showReqClasses = "border border-gray-500";
   const rowError =
     status === STATUS.ERRORS &&
     item.expectedQuantity - item.actualQuantity != 0;

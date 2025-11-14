@@ -1,15 +1,81 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@source "../../../WEB-INF/app/**/*.js";
+@source "../../../WEB-INF/app/**/*.html";
+
+@theme {
+  /* Custom Colors */
+  --color-teal-100: #EDF4F6;
+  --color-teal-200: #DBEAED;
+  --color-teal-300: #BCE4EC;
+  --color-teal-400: #B8E3EB;
+  --color-teal-500: #4195A7;
+  --color-teal-600: #016B80;
+  --color-teal-700: #016073;
+  --color-teal-800: #005667;
+  --color-teal-900: #004552;
+
+  --color-green-100: #F1F5EC;
+  --color-green-200: #E5EADB;
+  --color-green-300: #c9d6ad;
+  --color-green-400: #afc285;
+  --color-green-500: #81AD1F;
+  --color-green-600: #799933;
+  --color-green-700: #6d8a2e;
+  --color-green-800: #5B7325;
+  --color-green-900: #495c1f;
+
+  --color-purple-100: #eff1f8;
+  --color-purple-200: #e0e2f2;
+  --color-purple-300: #c1c6e5;
+  --color-purple-400: #929bd1;
+  --color-purple-500: #737ec4;
+  --color-purple-600: #6370BD;
+  --color-purple-700: #5060B5;
+  --color-purple-800: #404d91;
+  --color-purple-900: #303a6d;
+
+  --color-orange-100: #FAF4EB;
+  --color-orange-200: #F5EAD9;
+  --color-orange-300: #edd5a8;
+  --color-orange-400: #e3bf7d;
+  --color-orange-500: #daaa51;
+  --color-orange-600: #D19526;
+  --color-orange-700: #BB8620;
+  --color-orange-800: #966b1a;
+  --color-orange-900: #705013;
+
+  --color-gray-25: #FEFEFE;
+  --color-gray-50: #FAFAFA;
+  --color-gray-75: #F5F5F5;
+  --color-gray-100: #F1F1F1;
+  --color-gray-450: #848B98;
+
+  /* Custom Font Sizes */
+  --text-xs: 0.688rem;
+  --text-sm: 0.75rem;
+  --text-base: 0.813rem;
+  --text-lg: 0.9rem;
+  --text-xl: 1rem;
+  --text-2xl: 1.125rem;
+  --text-3xl: 1.25rem;
+  --text-4xl: 1.5rem;
+  --text-5xl: 1.875rem;
+  --text-6xl: 2.25rem;
+
+  /* Custom Font Family */
+  --font-family-openSans: "Open Sans", sans-serif;
+}
 
 /* Base styles */
 @layer base {
     html {
-        @apply font-openSans;
+        font-family: var(--font-family-openSans);
     }
 
     body {
-        @apply m-0 font-openSans text-base text-gray-800 bg-gray-100;
+        @apply m-0 text-base text-gray-800 bg-gray-100;
+        font-family: var(--font-family-openSans);
     }
 
     input {
@@ -33,19 +99,19 @@
 @layer components {
 
     .input {
-        @apply p-1.5 border-1 border-gray-300 bg-gray-50
+        @apply p-1.5 border border-gray-300 bg-gray-50
         focus-visible:border-gray-600
         disabled:bg-white disabled:border-none
         [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none
     }
 
     .input--invalid {
-        @apply border-1 border-red-600
+        @apply border border-red-600
         focus-visible:border-red-600;
     }
 
     .select {
-        @apply p-1.5 border-1 border-gray-300 bg-gray-50;
+        @apply p-1.5 border border-gray-300 bg-gray-50;
     }
 
     /* --- Table  Classes --- */
@@ -54,11 +120,11 @@
     }
 
     .table--sticky thead tr:nth-child(1) th {
-        @apply sticky bg-white z-10 border-b-1 border-teal-600 shadow;
+        @apply sticky bg-white z-10 border-b border-teal-600 shadow;
     }
 
     .table__head__row {
-        @apply border-b-1 border-teal-600;
+        @apply border-b border-teal-600;
     }
 
     .table__head__cell {

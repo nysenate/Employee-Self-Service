@@ -26,7 +26,7 @@ export default function ItemCell({ item }) {
 
   return (
     <div
-      className={`relative w-[220px] border-1 p-3 ${item.specialRequest && "bg-red-100"}`}
+      className={`relative w-[220px] border-r border-b border-gray-300 p-3 ${item.specialRequest && "bg-red-100"}`}
     >
       {item.specialRequest && <Ribbon>Special</Ribbon>}
       <img

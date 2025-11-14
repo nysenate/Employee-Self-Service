@@ -5,6 +5,8 @@ import { themes } from "app/ThemeContext";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
 import useAuthedUser from "app/hooks/useAuthedUser";
 import { useConfig } from "app/hooks/useConfig";
+import clsx from "clsx";
+import { twMerge } from "tailwind-merge";
 
 export default function EssNavBar() {
   const { data: config } = useConfig();
@@ -16,36 +18,28 @@ export default function EssNavBar() {
       aria-label="Main"
     >
       <div className="mx-auto h-full w-[1150px]">
-        <div className="flex h-full items-center justify-between">
+        <div className="flex h-full items-stretch justify-between">
           <div className="ml-2 flex h-full items-center">
             <img
               src="/assets/img/nysslogo.png"
               alt="logo"
               className="h-[35px] w-[35px]"
             />
-            <div className="ml-3 mr-6 inline-block">
+            <div className="mr-6 ml-3 inline-block">
               <span className="text-[20.8px] font-medium">NYS</span>
               &nbsp;
               <span className="text-[20.8px] font-light">ESS</span>
             </div>
-            <ul className="h-full">
-              <li className="inline leading-[40px]">
-                <AppLink name="My Info" to="/myinfo" theme={themes.myinfo} />
-              </li>
-              <li className="inline leading-[40px]">
-                <AppLink
-                  name="Time & Attendance"
-                  to="/time"
-                  theme={themes.time}
-                />
-              </li>
-              <li className="inline leading-[40px]">
-                <AppLink name="Supply" to="/supply" theme={themes.supply} />
-              </li>
-              <li className="inline leading-[40px]">
-                <AppLink name="Travel" to="/travel" theme={themes.travel} />
-              </li>
-            </ul>
+            <div className="flex h-full flex-row items-stretch">
+              <AppLink name="My Info" to="/myinfo" theme={themes.myinfo} />
+              <AppLink
+                name="Time & Attendance"
+                to="/time"
+                theme={themes.time}
+              />
+              <AppLink name="Supply" to="/supply" theme={themes.supply} />
+              <AppLink name="Travel" to="/travel" theme={themes.travel} />
+            </div>
           </div>
           <div className="flex h-full items-center p-0.5">
             {config?.runtimeLevel === "dev" && (
@@ -80,50 +74,61 @@ export default function EssNavBar() {
 function AppLink({ to, name, theme }) {
   const location = useLocation();
   const isActive = location.pathname.includes(theme);
-  let themeBorder;
-  let themeText;
 
-  switch (theme) {
-    case themes.myinfo:
-      themeBorder = "border-green-600";
-      themeText = "hover:text-green-600";
-      break;
-    case themes.time:
-      themeBorder = "border-teal-600";
-      themeText = "hover:text-teal-600";
-      break;
-    case themes.supply:
-      themeBorder = "border-purple-600";
-      themeText = "hover:text-purple-600";
-      break;
-    case themes.travel:
-      themeBorder = "border-orange-600";
-      themeText = "hover:text-orange-600";
-      break;
-    default:
-      themeBorder = "border-gray-700";
-      themeText = "hover:text-gray-700";
-  }
+  // Define potential classes statically so Tailwind can detect them:
+  const possibleBorderHovClasses = {
+    [themes.myinfo]: "hover:border-green-600",
+    [themes.time]: "hover:border-teal-600",
+    [themes.supply]: "hover:border-purple-600",
+    [themes.travel]: "hover:border-orange-600",
+  };
 
-  const baseClasses = `text-[14.3px] inline-block h-full px-5 mx-0.5 border-0 hover:border-b-[3px] ${themeBorder} ${themeText}`;
-  const activeClasses = `font-semibold border-b-[3px]`;
-  const classes = baseClasses + " " + (isActive ? activeClasses : "");
-  return (
-    <a href={to} className={classes}>
-      {name}
-    </a>
+  const possibleBorderActiveClasses = {
+    [themes.myinfo]: "border-green-600",
+    [themes.time]: "border-teal-600",
+    [themes.supply]: "border-purple-600",
+    [themes.travel]: "border-orange-600",
+  };
+
+  const possibleTextHovClasses = {
+    [themes.myinfo]: "hover:text-green-800",
+    [themes.time]: "hover:text-teal-800",
+    [themes.supply]: "hover:text-purple-800",
+    [themes.travel]: "hover:text-orange-800",
+  };
+
+  const containerClasses = twMerge(
+    "px-5 mx-0.5 border-b-3 border-transparent",
+    possibleBorderHovClasses[theme],
+    isActive && "border-b-3",
+    isActive && possibleBorderActiveClasses[theme],
   );
-  // TODO Can't use a NavLink until all ESS sub apps are implemented in React.
-  // return (
-  //   <NavLink
-  //     to={to}
-  //     className={({ isActive }) =>
-  //       isActive ? `${classes} ${activeClasses}` : `${classes}`
-  //     }
-  //   >
-  //     <span className="app-link inline-block" title={name}>
-  //     {name}
-  //     </span>
-  //   </NavLink>
-  // )
+
+  const textClasses = clsx(
+    "text-[14.3px] text-gray-800",
+    isActive && "font-semibold",
+    possibleTextHovClasses[theme],
+  );
+
+  return (
+    <div className={`flex items-center ${containerClasses}`}>
+      <a href={to} className={textClasses}>
+        {name}
+      </a>
+    </div>
+  );
 }
+
+// TODO Can't use a NavLink until all ESS sub apps are implemented in React.
+// return (
+//   <NavLink
+//     to={to}
+//     className={({ isActive }) =>
+//       isActive ? `${classes} ${activeClasses}` : `${classes}`
+//     }
+//   >
+//     <span className="app-link inline-block" title={name}>
+//     {name}
+//     </span>
+//   </NavLink>
+// )

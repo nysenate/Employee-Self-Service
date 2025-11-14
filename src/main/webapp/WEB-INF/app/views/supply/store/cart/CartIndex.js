@@ -78,7 +78,7 @@ export default function CartIndex() {
         {Object.keys(cart.items).map((itemId) => (
           <div key={itemId}>
             <CartItem item={itemsQuery.data.get(parseInt(itemId))} />
-            <hr />
+            <hr className="border-gray-300" />
           </div>
         ))}
         <div className="flex items-center justify-between gap-2 bg-gray-50 p-3">
@@ -88,7 +88,7 @@ export default function CartIndex() {
             </label>
             <textarea
               id="special-instructsion"
-              className="border-1 align-middle"
+              className="border border-gray-400 align-middle"
               value={instructions}
               onChange={(e) => setInstructions(e.target.value)}
               rows="3"

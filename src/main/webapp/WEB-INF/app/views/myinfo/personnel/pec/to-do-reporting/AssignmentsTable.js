@@ -64,7 +64,7 @@ export default function AssignmentsTable({ taskAssignments, state, dispatch }) {
 }
 
 function AssignmentRow({ emp, assignments, tasksMap, showDetails, onClick }) {
-  const showDetailsClasses = showDetails ? "border-1 border-gray-500" : "";
+  const showDetailsClasses = showDetails ? "border border-gray-500" : "";
   return (
     <>
       <tr
@@ -122,7 +122,7 @@ function CompletedStatus({ assignments }) {
 }
 
 // TODO similar to login button, try to extract a common component?
-const buttonClasses = `py-0.5 bg-gray-100 border-1 border-gray-400 transition
+const buttonClasses = `py-0.5 bg-gray-100 border border-gray-400 transition
 duration-500 hover:bg-gray-50 hover:text-teal-600 disabled:pointer-events-none disabled:opacity-50`;
 
 function AssignmentRowDetails({ emp, assignments, tasksMap }) {

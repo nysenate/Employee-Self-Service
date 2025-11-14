@@ -15,7 +15,7 @@ export const LOGIN_STATES = {
   HELP: 1,
 };
 
-export const LOGIN_BUTTON_CLASSES = `py-0.5 bg-gray-100 border-1 border-gray-400 transition
+export const LOGIN_BUTTON_CLASSES = `py-0.5 bg-gray-100 border border-gray-400 transition
 duration-500 hover:bg-gray-50 hover:text-teal-600 disabled:pointer-events-none disabled:opacity-50`;
 
 export default function LoginIndex() {

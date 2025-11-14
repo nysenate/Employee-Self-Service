@@ -28,9 +28,11 @@ export default function ItemListing({ filterState, dispatch }) {
           total={itemsQuery.data.total}
           onPageChange={handlePageChange}
         />
-        <div className="grid grid-cols-4">
+        <div className="grid grid-cols-4 border-t border-l border-gray-300">
           {itemsQuery.data.result.map((item) => (
-            <ItemCell item={item} key={item.id} />
+            <div key={item.id} className="">
+              <ItemCell item={item} />
+            </div>
           ))}
         </div>
         <Pagination

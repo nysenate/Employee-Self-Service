@@ -82,7 +82,7 @@ const variantStyles = {
     },
   },
   outlined: {
-    core: "px-2.5 py-1 font-semibold border-1",
+    core: "px-2.5 py-1 font-semibold border",
     color: {
       success:
         "text-green-700 border-green-700 hover:text-green-800 hover:bg-green-100",

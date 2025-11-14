@@ -71,7 +71,7 @@ function AssignmentRow({
   showDetails,
   onClick,
 }) {
-  const showDetailsClasses = showDetails ? "border-1 border-gray-500" : "";
+  const showDetailsClasses = showDetails ? "border border-gray-500" : "";
   return (
     <>
       <tr
@@ -153,7 +153,7 @@ function RowDetails({ emp, assignments, tasksMap }) {
 }
 
 // TODO similar to login button, try to extract a common component?
-const buttonClasses = `py-0.5 bg-gray-100 border-1 border-gray-400 transition
+const buttonClasses = `py-0.5 bg-gray-100 border border-gray-400 transition
 duration-500 hover:bg-gray-50 hover:text-teal-600 disabled:pointer-events-none disabled:opacity-50`;
 
 function UnassignedDetails({ emp, assignment, tasksMap }) {
