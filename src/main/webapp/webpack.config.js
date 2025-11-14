@@ -13,6 +13,7 @@ module.exports = {
     publicPath: process.env.NODE_ENV === "production" ? "/assets/dist/" : "/",
   },
   resolve: {
+    extensions: [".js", ".jsx", ".json"],
     alias: {
       app: path.resolve(__dirname, "WEB-INF/app"),
     },
@@ -24,9 +25,10 @@ module.exports = {
         test: /\.css$/i,
         use: ["style-loader", "css-loader", "postcss-loader"],
       },
-      // Transpile JS
+      // Transpile JS and JSX
       {
-        test: /\.(js)$/,
+        test: /\.(js|jsx)$/,
+        exclude: /node_modules/,
         use: "babel-loader",
       },
       // Load image files
