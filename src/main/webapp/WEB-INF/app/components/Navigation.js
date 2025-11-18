@@ -72,7 +72,7 @@ const Section = ({ name, permission, children }) => {
  * @returns {JSX.Element|null}
  * @constructor
  */
-const Link = ({ to, permission, children }) => {
+const Link = ({ to, permission, children, ...rest }) => {
   const theme = useContext(ThemeContext);
   const { data, isLoading } = useCheckPermission(permission);
 
@@ -107,6 +107,7 @@ const Link = ({ to, permission, children }) => {
     <li>
       <NavLink
         to={to}
+        {...rest}
         className={({ isActive }) =>
           isActive ? activeClasses : inactiveClasses
         }
