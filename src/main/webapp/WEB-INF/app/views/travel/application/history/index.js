@@ -4,6 +4,8 @@ import Controls from "app/components/Controls";
 import { formatISO, subMonths } from "date-fns";
 import { useSearchParams } from "react-router-dom";
 import InputDebounced from "app/components/InputDebounced";
+import { Label } from "app/components/ui/label";
+import { Input } from "app/components/ui/input";
 
 const initialState = {
   fromDate: formatISO(subMonths(new Date(), 1), { representation: "date" }),
@@ -35,6 +37,12 @@ function appHistoryReducer(state, action) {
         fromDate: action.value,
         offset: 1,
       };
+    case "SET_TO_DATE":
+      return {
+        ...state,
+        toDate: action.value,
+        offset: 1,
+      };
     default:
       return state;
   }
@@ -54,9 +62,9 @@ export default function ApplicationHistory() {
     <div>
       <Hero>Travel Application History</Hero>
       <Controls>
-        <div className="p-4">
+        <div className="flex gap-3 p-4">
           <div>
-            <label htmlFor="fromDate" className="block font-semibold">
+            <label htmlFor="fromDate" className="font-semibold">
               From Date
             </label>
             <InputDebounced
@@ -64,6 +72,15 @@ export default function ApplicationHistory() {
               value={state.fromDate}
               type="date"
               onChange={(value) => dispatch(setFromDate(value))}
+            />
+          </div>
+          <div>
+            <Label htmlFor="toDate">To Date</Label>
+            <Input
+              id="toDate"
+              type="date"
+              value={state.toDate}
+              onChange={(value) => dispatch(setToDate(value))}
             />
           </div>
         </div>
@@ -79,10 +96,9 @@ function setFromDate(fromDate) {
   };
 }
 
-function setFilter(filterName, filterValue) {
+function setToDate(toDate) {
   return {
-    type: "SET_DATE_RANGE",
-    fromDate: fromDate,
-    value: filterValue,
+    type: "SET_TO_DATE",
+    value: toDate,
   };
 }

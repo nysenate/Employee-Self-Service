@@ -10,7 +10,8 @@ function Empty({
     <div
       data-slot="empty"
       className={cn(
-        "flex min-w-0 flex-1 flex-col items-center justify-center gap-6 rounded-lg border-dashed p-6 text-center text-balance md:p-12",
+        "flex min-w-0 flex-1 flex-col items-center justify-center gap-6",
+        "rounded-lg border-dashed p-6 text-center text-balance md:p-12",
         className
       )}
       {...props} />
@@ -30,12 +31,18 @@ function EmptyHeader({
 }
 
 const emptyMediaVariants = cva(
-  "flex shrink-0 items-center justify-center mb-2 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  cn(
+    "flex shrink-0 items-center justify-center mb-2",
+    "[&_svg]:pointer-events-none [&_svg]:shrink-0"
+  ),
   {
     variants: {
       variant: {
         default: "bg-transparent",
-        icon: "bg-muted text-foreground flex size-10 shrink-0 items-center justify-center rounded-lg [&_svg:not([class*='size-'])]:size-6",
+        icon: cn(
+          "bg-muted text-foreground flex size-10 shrink-0 items-center justify-center",
+          "rounded-lg [&_svg:not([class*='size-'])]:size-6"
+        ),
       },
     },
     defaultVariants: {
@@ -78,7 +85,8 @@ function EmptyDescription({
     <div
       data-slot="empty-description"
       className={cn(
-        "text-muted-foreground [&>a:hover]:text-primary text-sm/relaxed [&>a]:underline [&>a]:underline-offset-4",
+        "text-muted-foreground [&>a:hover]:text-primary text-sm/relaxed",
+        "[&>a]:underline [&>a]:underline-offset-4",
         className
       )}
       {...props} />
@@ -93,7 +101,8 @@ function EmptyContent({
     <div
       data-slot="empty-content"
       className={cn(
-        "flex w-full max-w-sm min-w-0 flex-col items-center gap-4 text-sm text-balance",
+        "flex w-full max-w-sm min-w-0 flex-col items-center gap-4",
+        "text-sm text-balance",
         className
       )}
       {...props} />
