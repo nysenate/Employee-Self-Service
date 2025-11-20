@@ -1,11 +1,13 @@
-import React, { useMemo, useReducer } from "react";
+import React, { useEffect, useMemo } from "react";
 import Hero from "app/components/Hero";
 import Controls from "app/components/Controls";
-import { formatISO, subMonths } from "date-fns";
+import { endOfDay, formatISO, startOfDay, subMonths } from "date-fns";
 import { useSearchParams } from "react-router-dom";
-import InputDebounced from "app/components/InputDebounced";
 import { Label } from "app/components/ui/label";
-import { Input } from "app/components/ui/input";
+import { UTCDate } from "@date-fns/utc";
+import { useTravelApps } from "app/views/travel/application/history/useTravelApps";
+import TravelApplicationResults from "app/views/travel/application/history/TravelApplicationResults";
+import InputDebounced from "app/components/InputDebounced";
 
 const initialState = {
   fromDate: formatISO(subMonths(new Date(), 1), { representation: "date" }),
@@ -23,82 +25,110 @@ function fromSearchParams(searchParams) {
   };
 }
 
-function appHistoryReducer(state, action) {
-  switch (action.type) {
-    case "SET_FILTER":
-      return {
-        ...state,
-        [action.filter]: action.value,
-        offset: 1,
-      };
-    case "SET_FROM_DATE":
-      return {
-        ...state,
-        fromDate: action.value,
-        offset: 1,
-      };
-    case "SET_TO_DATE":
-      return {
-        ...state,
-        toDate: action.value,
-        offset: 1,
-      };
-    default:
-      return state;
-  }
-}
-
 export default function ApplicationHistory() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const initial = useMemo(() => fromSearchParams(searchParams), []);
-  const [state, dispatch] = useReducer(appHistoryReducer, initial);
+  const state = useMemo(() => fromSearchParams(searchParams), [searchParams]);
 
-  console.log(state);
+  // Push default values to the URL if not present.
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams);
+    let changed = false;
 
-  // TODO update state on query param change, i.e. forward/back navigation
-  // TODO update query params on state change
+    [
+      ["fromDate", state.fromDate],
+      ["toDate", state.toDate],
+      ["limit", state.limit],
+      ["offset", state.offset],
+    ].forEach(([key, value]) => {
+      if (!params.get(key) && value != null) {
+        params.set(key, value.toString());
+        changed = true;
+      }
+    });
+
+    if (changed) {
+      setSearchParams(params, { replace: true });
+    }
+  }, [searchParams, setSearchParams, state]);
+
+  const updateSearchParams = (updates) => {
+    const params = new URLSearchParams(searchParams);
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value === undefined || value === null || value === "") {
+        params.delete(key);
+      } else {
+        params.set(key, value.toString());
+      }
+    });
+    setSearchParams(params, { replace: true });
+  };
+
+  const appQuery = useTravelApps({
+    from: formatISO(startOfDay(new UTCDate(state.fromDate))),
+    to: formatISO(endOfDay(new UTCDate(state.toDate))),
+    limit: state.limit,
+    offset: state.offset,
+  });
+
+  const apps = Array.isArray(appQuery.data?.result) ? appQuery.data.result : [];
+
+  const filteredApps = useMemo(() => {
+    if (!state.fromDate || !state.toDate) {
+      return apps;
+    }
+
+    const from = startOfDay(new UTCDate(state.fromDate));
+    const to = endOfDay(new UTCDate(state.toDate));
+
+    return apps.filter((app) => {
+      const travelDate = app?.startDate;
+      if (!travelDate) {
+        return false;
+      }
+      const travelDay = new UTCDate(travelDate);
+      return travelDay >= from && travelDay <= to;
+    });
+  }, [apps, state.fromDate, state.toDate]);
 
   return (
     <div>
       <Hero>Travel Application History</Hero>
       <Controls>
         <div className="flex gap-3 p-4">
-          <div>
-            <label htmlFor="fromDate" className="font-semibold">
-              From Date
-            </label>
+          <div className="grid gap-1">
+            <Label htmlFor="fromDate">From Date</Label>
             <InputDebounced
               id="fromDate"
-              value={state.fromDate}
               type="date"
-              onChange={(value) => dispatch(setFromDate(value))}
+              value={state.fromDate}
+              onChange={(value) =>
+                updateSearchParams({
+                  fromDate: value,
+                  offset: 1,
+                })
+              }
             />
           </div>
-          <div>
+          <div className="grid gap-1">
             <Label htmlFor="toDate">To Date</Label>
-            <Input
+            <InputDebounced
               id="toDate"
               type="date"
               value={state.toDate}
-              onChange={(value) => dispatch(setToDate(value))}
+              onChange={(value) =>
+                updateSearchParams({
+                  toDate: value,
+                  offset: 1,
+                })
+              }
             />
           </div>
         </div>
       </Controls>
+      <TravelApplicationResults
+        apps={filteredApps}
+        isLoading={appQuery.isPending}
+      />
     </div>
   );
-}
-
-function setFromDate(fromDate) {
-  return {
-    type: "SET_FROM_DATE",
-    value: fromDate,
-  };
-}
-
-function setToDate(toDate) {
-  return {
-    type: "SET_TO_DATE",
-    value: toDate,
-  };
 }
