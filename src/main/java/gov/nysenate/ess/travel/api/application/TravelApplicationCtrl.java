@@ -99,13 +99,13 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
         return ListViewResponse.of(appStatsViews);
     }
 
-    @RequestMapping(value = "/applications")
+    @GetMapping(value = "/applications")
     public BaseResponse getActiveTravelApps() {
         List<TravelApplication> apps = appService.selectTravelApplications(getSubjectEmployeeId());
-        List<TravelApplicationView> appViews = apps.stream()
-                .map(TravelApplicationView::new)
+        List<TravelApplicationSummaryView> appSummaryViews = apps.stream()
+                .map(TravelApplicationSummaryView::new)
                 .collect(Collectors.toList());
-        return ListViewResponse.of(appViews);
+        return ListViewResponse.of(appSummaryViews);
     }
 
     @RequestMapping(value = "/application/attachment/{uuid}", method = RequestMethod.GET)

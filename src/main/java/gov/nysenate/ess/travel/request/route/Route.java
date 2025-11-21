@@ -47,6 +47,19 @@ public class Route {
                 .collect(Collectors.toList());
     }
 
+    public String destinationSummary() {
+        if (destinations().isEmpty()) {
+            return "";
+        }
+
+        String summary = destinations().get(0).getAddress().getSummary();
+        if (destinations().size() > 1) {
+            summary += " ...";
+        }
+
+        return summary;
+    }
+
     /**
      * @return The first day of travel.
      */
