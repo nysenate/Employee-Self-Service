@@ -29,36 +29,42 @@ public class EssTimeRecordInitializer implements TimeRecordInitializer {
 
     /**
      * Ensures that the given time record contains entries for each day covered.
+     *
      * @param timeRecord - TimeRecord
      */
     @Override
     public void initializeEntries(TimeRecord timeRecord) {
-        RangeMap<LocalDate, PayType> payTypeMap = null;
+        TransactionHistory transHistory = transService.getTransHistory(timeRecord.getEmployeeId());
+        RangeMap<LocalDate, PayType> payTypeMap = RangeUtils.toRangeMap(
+                transHistory.getEffectivePayTypes(timeRecord.getDateRange()), timeRecord.getEndDate());
 
         for (LocalDate entryDate = timeRecord.getBeginDate();
              !entryDate.isAfter(timeRecord.getEndDate());
              entryDate = entryDate.plusDays(1)) {
-            if (timeRecord.containsEntry(entryDate)) {
-                continue;
-            }
-            if (payTypeMap == null) {
-                TransactionHistory transHistory = transService.getTransHistory(timeRecord.getEmployeeId());
-                payTypeMap = RangeUtils.toRangeMap(
-                        transHistory.getEffectivePayTypes(timeRecord.getDateRange()), timeRecord.getEndDate());
-            }
-            var entry = new TimeEntry(timeRecord, payTypeMap.get(entryDate), entryDate);
-            timeRecord.addTimeEntry(entry);
-            if (entry.getPayType() != PayType.TE) {
-                // Set holiday hours if applicable
-                Optional<Holiday> holiday = holidayService.getActiveHoliday(entryDate);
-                if (holiday.isPresent()) {
-                    if (entry.getPayType() == PayType.RA) {
-                        entry.setHolidayHours(holiday.get().getHours());
-                    }
-                    else if (entry.getHolidayHours().isEmpty()) {
-                        entry.setHolidayHours(BigDecimal.ZERO);
-                    }
+
+            Optional<Holiday> holiday = holidayService.getActiveHoliday(entryDate);
+            TimeEntry entry = timeRecord.getEntry(entryDate);
+            if (entry == null) {
+                // Entry does not yet exist, fully initialize it.
+                entry = new TimeEntry(timeRecord, payTypeMap.get(entryDate), entryDate);
+                initHolidayHours(entry, holiday);
+                timeRecord.addTimeEntry(entry);
+            } else if (holiday.isPresent()) {
+                // Initialize holidays if not yet overwritten by the user or if used holiday hours is > what is provided.
+                if (entry.getHolidayHours().isEmpty() || entry.getHolidayHours().get().compareTo(holiday.get().getHours()) > 0) {
+                    initHolidayHours(entry, holiday);
                 }
+            }
+            // Otherwise do nothing (The TimeEntry exists and entryDate is not a holiday)
+        }
+    }
+
+    private void initHolidayHours(TimeEntry entry, Optional<Holiday> holiday) {
+        if (holiday.isPresent()) {
+            switch (entry.getPayType()) {
+                case RA -> entry.setHolidayHours(holiday.get().getHours());
+                case SA, SE -> entry.setHolidayHours(BigDecimal.ZERO);
+                case TE -> entry.setHolidayHours(null);
             }
         }
     }
