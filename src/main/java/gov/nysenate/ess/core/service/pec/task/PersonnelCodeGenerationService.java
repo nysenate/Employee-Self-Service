@@ -23,12 +23,14 @@ public class PersonnelCodeGenerationService {
 
     static {
         for (char c = 'A'; c <= 'Z'; c++) {
-            if (c != 'I' && c != 'O') {
+            if (c != 'I' && c != 'O' && c != 'Z') {
                 charList.add(c);
             }
         }
-        for (char c = '0'; c <= '9'; c++) {
-            charList.add(c);
+        for (char c = '1'; c <= '9'; c++) {
+            if (c != '2') {
+                charList.add(c);
+            }
         }
     }
 
@@ -118,8 +120,7 @@ public class PersonnelCodeGenerationService {
         if (now.getDayOfMonth() >= 28) {
             output = LocalDateTime.of(year, nextMonth, 28, 0, 0, 0);
             return output;
-        }
-        else {
+        } else {
             output = LocalDateTime.of(now.getYear(), now.getMonthValue(), 28, 0, 0, 0);
             return output;
         }
