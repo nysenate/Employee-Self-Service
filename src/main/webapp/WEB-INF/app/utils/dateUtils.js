@@ -2,12 +2,12 @@ import { format, isValid, parseISO } from "date-fns";
 
 /**
  * Converts an ISO date string to a short date format
- * i.e. 10/14/1983
+ * i.e. 10/14/1983, 7/10/2020
  * @param isoDate an ISO date string, i.e. 2015-09-24 00:00:00
  * @returns {string} isoDate in short form or an empty string if isoDate is invalid.
  */
 export function isoToShortDate(isoDate) {
-  return formatDate(isoDate, "MM/dd/yyyy");
+  return formatDate(isoDate, "M/dd/yy");
 }
 
 /**

@@ -1,19 +1,15 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import * as PopoverPrimitive from "@radix-ui/react-popover"
+import * as React from "react";
+import * as PopoverPrimitive from "@radix-ui/react-popover";
 
-import { cn } from "app/utils/cn"
+import { cn } from "app/utils/cn";
 
-function Popover({
-  ...props
-}) {
+function Popover({ ...props }) {
   return <PopoverPrimitive.Root data-slot="popover" {...props} />;
 }
 
-function PopoverTrigger({
-  ...props
-}) {
+function PopoverTrigger({ ...props }) {
   return <PopoverPrimitive.Trigger data-slot="popover-trigger" {...props} />;
 }
 
@@ -37,18 +33,17 @@ function PopoverContent({
           "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2",
           "data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
           "z-50 w-72 origin-(--radix-popover-content-transform-origin)",
-          "rounded-md border p-4 shadow-md outline-hidden",
-          className
+          "rounded-none border p-4 shadow-md outline-hidden",
+          className,
         )}
-        {...props} />
+        {...props}
+      />
     </PopoverPrimitive.Portal>
   );
 }
 
-function PopoverAnchor({
-  ...props
-}) {
+function PopoverAnchor({ ...props }) {
   return <PopoverPrimitive.Anchor data-slot="popover-anchor" {...props} />;
 }
 
-export { Popover, PopoverTrigger, PopoverContent, PopoverAnchor }
+export { Popover, PopoverTrigger, PopoverContent, PopoverAnchor };

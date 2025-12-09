@@ -2,6 +2,7 @@
 .idea/*
 !.idea/codeStyleSettings.xml
 !.idea/codeStyles/**
+*.swp
 **/target/
 **.properties
 grunt.properties.json

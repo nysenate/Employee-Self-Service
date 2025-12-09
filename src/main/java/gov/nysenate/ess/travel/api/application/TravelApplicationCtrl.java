@@ -45,14 +45,14 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
     @Autowired private AttachmentService attachmentService;
     @Autowired private SqlAttachmentDao attachmentDao;
 
-    @RequestMapping(value = "/application/{appId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/applications/{appId}", method = RequestMethod.GET)
     public BaseResponse getTravelAppById(@PathVariable int appId) {
         TravelApplication app = appService.getTravelApplication(appId);
         checkTravelAppPermission(app, RequestMethod.GET);
         return new ViewObjectResponse<>(new TravelApplicationView(app));
     }
 
-    @RequestMapping(value = "/application/{appId}.pdf", method = RequestMethod.GET)
+    @RequestMapping(value = "/applications/{appId}.pdf", method = RequestMethod.GET)
     public ResponseEntity<byte[]> getAppPdf(@PathVariable int appId) throws IOException {
         ApplicationReview appReview = appReviewService.getApplicationReviewByAppId(appId);
         checkTravelAppPermission(appReview.application(), RequestMethod.GET);
@@ -108,7 +108,7 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
         return ListViewResponse.of(appSummaryViews);
     }
 
-    @RequestMapping(value = "/application/attachment/{uuid}", method = RequestMethod.GET)
+    @RequestMapping(value = "/applications/attachment/{uuid}", method = RequestMethod.GET)
     public ResponseEntity<byte[]> getAttachment(@PathVariable String uuid) throws IOException {
         Attachment attachment = attachmentDao.selectAttachment(uuid);
         File attachmentFile = attachmentService.getAttachmentFile(uuid);

@@ -12,7 +12,7 @@ import {
 } from "app/components/ui/table";
 import { isoToShortDate } from "app/utils/dateUtils";
 import { toCurrency } from "app/utils/textUtils";
-import TravelAppStatusBadge from "app/views/travel/application/history/TravelAppStatusBadge";
+import TravelAppStatusBadge from "app/views/travel/shared/components/TravelAppStatusBadge";
 
 export default function TravelApplicationResults({ apps, isLoading }) {
   if (isLoading) {
