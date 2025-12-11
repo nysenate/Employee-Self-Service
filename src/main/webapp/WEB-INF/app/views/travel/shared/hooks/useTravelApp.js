@@ -7,5 +7,6 @@ export function useTravelApp(id) {
     queryFn: () => fetchApiJson(`/travel/applications/${id}`),
     staleTime: 0,
     throwOnError: true,
+    enabled: Boolean(id),
   });
 }
