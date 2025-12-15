@@ -7,6 +7,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import NotFound from "app/views/NotFound";
 import ApplicationHistory from "app/views/travel/application/history";
 import SubmitApplication from "app/views/travel/application/submit";
+import Drafts from "app/views/travel/application/drafts";
 
 export default function TravelRouter() {
   return (
@@ -14,6 +15,7 @@ export default function TravelRouter() {
       <Routes>
         <Route path="" element={<TravelLayout />}>
           <Route path="/applications/new" element={<SubmitApplication />} />
+          <Route path="/applications/drafts" element={<Drafts />} />
           <Route path="/applications" element={<ApplicationHistory />} />
 
           <Route path="/stats" element={<Travel />} />
