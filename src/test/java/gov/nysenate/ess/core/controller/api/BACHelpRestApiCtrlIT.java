@@ -159,13 +159,17 @@ public class BACHelpRestApiCtrlIT extends WebTest {
         assertTrue("Should have result array", response.has("result"));
         assertTrue("Total should be >= 0", response.get("total").asInt() >= 0);
         
-        // If we have results, verify they contain the respCenterHead field
+        // If we have results, verify they contain the location field with respCenterHead
         JsonNode results = response.get("result");
         if (!results.isEmpty()) {
             JsonNode firstEmployee = results.get(0);
-            assertTrue("Employee should have respCenterHead", firstEmployee.has("respCenterHead"));
-            
-            JsonNode respCenterHead = firstEmployee.get("respCenterHead");
+            assertTrue("Employee should have location", firstEmployee.has("location"));
+
+            JsonNode location = firstEmployee.get("location");
+            assertNotNull("location should not be null", location);
+            assertTrue("Should have respCenterHead field in location", location.has("respCenterHead"));
+
+            JsonNode respCenterHead = location.get("respCenterHead");
             assertNotNull("respCenterHead should not be null", respCenterHead);
             assertTrue("Should have code field in respCenterHead", respCenterHead.has("code"));
         }
@@ -194,12 +198,17 @@ public class BACHelpRestApiCtrlIT extends WebTest {
         assertTrue("Should have employeeId", employee.has("employeeId"));
         assertTrue("Should have fullName", employee.has("fullName"));
         assertTrue("Should have active status", employee.has("active"));
-        assertTrue("Should have respCenterHead", employee.has("respCenterHead"));
+        assertTrue("Should have location", employee.has("location"));
 
         assertEquals("Employee ID should match", testEmpId, employee.get("employeeId").asInt());
-        
+
+        // Verify location structure
+        JsonNode location = employee.get("location");
+        assertNotNull("location should not be null", location);
+        assertTrue("Should have respCenterHead field in location", location.has("respCenterHead"));
+
         // Verify respCenterHead structure
-        JsonNode respCenterHead = employee.get("respCenterHead");
+        JsonNode respCenterHead = location.get("respCenterHead");
         assertNotNull("respCenterHead should not be null", respCenterHead);
         assertTrue("Should have active field in respCenterHead", respCenterHead.has("active"));
         assertTrue("Should have code field in respCenterHead", respCenterHead.has("code"));

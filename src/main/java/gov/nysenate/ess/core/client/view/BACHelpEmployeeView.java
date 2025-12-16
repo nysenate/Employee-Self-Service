@@ -19,7 +19,7 @@ public class BACHelpEmployeeView implements ViewObject
     protected String email;
     protected String workPhone;
     protected boolean active;
-    protected RespCenterHeadView respCenterHead;
+    protected LocationView location;
 
     public BACHelpEmployeeView(Employee employee) {
         if (employee != null) {
@@ -31,10 +31,7 @@ public class BACHelpEmployeeView implements ViewObject
             this.email = employee.getEmail();
             this.active = employee.isActive();
             this.workPhone = employee.getWorkPhone();
-            this.respCenterHead = Optional.ofNullable(employee.getRespCenter())
-                    .map(ResponsibilityCenter::getHead)
-                    .map(RespCenterHeadView::new)
-                    .orElse(null);
+            this.location = new LocationView(employee.getWorkLocation());
         }
     }
 
@@ -79,12 +76,13 @@ public class BACHelpEmployeeView implements ViewObject
     }
 
     @XmlElement
+    public LocationView getLocation() {
+        return location;
+    }
+
+    @XmlElement
     public boolean isActive() {
         return active;
     }
 
-    @XmlElement
-    public RespCenterHeadView getRespCenterHead() {
-        return respCenterHead;
-    }
 }
