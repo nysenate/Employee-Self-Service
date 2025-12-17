@@ -1,9 +1,8 @@
-import React from "react"
+import React from "react";
+import { cn } from "app/utils/cn";
 
 export default function Controls({ children, className }) {
   return (
-    <div className={`bg-white ${className}`}>
-      {children}
-    </div>
-  )
+    <div className={cn("bg-white p-3 text-center", className)}>{children}</div>
+  );
 }

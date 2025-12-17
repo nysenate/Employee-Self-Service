@@ -2,7 +2,6 @@ package gov.nysenate.ess.travel.review.controller;
 
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
-import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.client.view.base.ListView;
 import gov.nysenate.ess.core.client.view.base.MapView;
@@ -10,6 +9,7 @@ import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
+import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.travel.authorization.permission.TravelPermissionBuilder;
 import gov.nysenate.ess.travel.authorization.permission.TravelPermissionObject;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
@@ -18,11 +18,14 @@ import gov.nysenate.ess.travel.review.ApplicationReview;
 import gov.nysenate.ess.travel.review.dao.ApplicationReviewDao;
 import gov.nysenate.ess.travel.review.ApplicationReviewService;
 import gov.nysenate.ess.travel.review.view.ActionBodyView;
+import gov.nysenate.ess.travel.review.view.ApplicationReviewSummaryView;
 import gov.nysenate.ess.travel.review.view.ApplicationReviewView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.WebRequest;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -35,8 +38,21 @@ public class ApplicationReviewCtrl extends BaseRestApiCtrl {
 
     @Autowired private ApplicationReviewDao reviewDao;
 
+
+    @GetMapping(value = "/{id}")
+    public BaseResponse getTravelAppReview(@PathVariable Integer id) {
+        ApplicationReview review = appReviewService.getApplicationReview(id);
+        checkPermission(new TravelPermissionBuilder()
+                .forObject(TravelPermissionObject.TRAVEL_APPLICATION_REVIEW)
+                .forEmpId(review.application().getTraveler().getEmployeeId())
+                .forAction(RequestMethod.GET)
+                .buildPermission());
+        return new ViewObjectResponse<>(new ApplicationReviewView(review));
+    }
+
     /**
      * Get ApplicationReviews which have completed the review process.
+     *
      * @return
      */
     @RequestMapping(value = "/reconcile", method = RequestMethod.GET)
@@ -96,12 +112,36 @@ public class ApplicationReviewCtrl extends BaseRestApiCtrl {
      * @return A list of ApplicationReviews where the user has performed an action.
      */
     @RequestMapping(value = "/history")
-    public BaseResponse reviewHistory() {
+    public BaseResponse reviewHistory(@RequestParam String from, @RequestParam String to, WebRequest request) {
+        LocalDateTime fromDate = parseISODateTime(from, "from");
+        LocalDateTime toDate = parseISODateTime(to, "to");
+        LimitOffset limitOffset = getLimitOffset(request, 12);
+
         Employee emp = employeeInfoService.getEmployee(getSubjectEmployeeId());
         Set<ApplicationReview> reviews = appReviewService.appReviewHistory(emp);
-        return ListViewResponse.of(reviews.stream()
-                .map(ApplicationReviewView::new)
-                .collect(Collectors.toList()));
+
+        // TODO implement this filtering at the service/dao level
+        List<ApplicationReview> filtered = reviews.stream()
+                .filter(review -> {
+                    LocalDateTime startDate = review.application().startDate().atStartOfDay();
+                    return startDate != null
+                            && (startDate.isEqual(fromDate) || startDate.isAfter(fromDate))
+                            && (startDate.isEqual(toDate) || startDate.isBefore(toDate));
+                })
+                .sorted(
+                        Comparator.<ApplicationReview, LocalDate>comparing(review -> review.application().startDate())
+                                .thenComparing(review -> review.application().getAppId())
+                )
+                .collect(Collectors.toList());
+
+
+        List<ApplicationReview> limited = LimitOffset.limitList(filtered, limitOffset);
+
+        return ListViewResponse.of(
+                limited.stream().map(ApplicationReviewSummaryView::new).collect(Collectors.toList()),
+                filtered.size(),
+                limitOffset
+        );
     }
 
     /**

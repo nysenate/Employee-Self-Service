@@ -8,6 +8,7 @@ import NotFound from "app/views/NotFound";
 import ApplicationHistory from "app/views/travel/application/history";
 import SubmitApplication from "app/views/travel/application/submit";
 import Drafts from "app/views/travel/application/drafts";
+import ReviewHistory from "app/views/travel/reviewer/history";
 
 export default function TravelRouter() {
   return (
@@ -18,8 +19,9 @@ export default function TravelRouter() {
           <Route path="/applications/drafts" element={<Drafts />} />
           <Route path="/applications" element={<ApplicationHistory />} />
 
-          <Route path="/stats" element={<Travel />} />
+          <Route path="/manage/review-history" element={<ReviewHistory />} />
 
+          <Route path="/stats" element={<Travel />} />
           <Route path="" element={<Navigate to="applications" replace />} />
           <Route path="*" element={<NotFound />} />
         </Route>
@@ -45,10 +47,10 @@ function TravelLayout() {
           </Navigation.Link>
         </Navigation.Section>
         <Navigation.Section name="Manage Travel">
-          <Navigation.Link to="/travel/manage/review">
+          <Navigation.Link to="/travel/manage/queue">
             Review Travel
           </Navigation.Link>
-          <Navigation.Link to="/travel/manage/history">
+          <Navigation.Link to="/travel/manage/review-history">
             Review History
           </Navigation.Link>
           <Navigation.Link to="/travel/manage/stats">
