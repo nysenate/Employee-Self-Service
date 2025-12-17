@@ -7,7 +7,6 @@ import gov.nysenate.ess.core.model.transaction.TransactionRecord;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -56,9 +55,10 @@ public interface EmpTransactionDao
     /**
      * Get list of records of a given set of transaction codes with a post date later than the given datetime.
      *
-     * @param dateTime  LocalDateTime   earliest date time
-     * @param transactionCodes Set<TransactionCodes> which transaction codes to include
+     * @param dateRange         Range<LocalDate>        Include records with post date in this range
+     * @param transactionCodes  Set<TransactionCodes>   which transaction codes to include
      * @return List<TransactionRecord>
      */
-    List<TransactionRecord> postedRecordsSince(LocalDateTime dateTime, Set<TransactionCode> transactionCodes);
+    List<TransactionRecord> getRecordsByPostDate(Range<LocalDate> dateRange,
+                                                 Set<TransactionCode> transactionCodes);
 }

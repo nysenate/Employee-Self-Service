@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static org.junit.Assert.*;
@@ -33,9 +34,9 @@ public class BACHelpRestApiCtrlIT extends WebTest {
     private ObjectMapper jsonObjectMapper;
 
     @Test
-    public void testStatusChangesApiReturnsPostDateTime() throws Exception {
-        // Test that the status changes API returns non-null postDateTime values
-        final String fromDateString = LocalDateTime.now().minusDays(3).toString();
+    public void testStatusChangesApiReturnsPostDate() throws Exception {
+        // Test that the status changes API returns non-null postDate values
+        final String fromDateString = LocalDate.now().minusDays(3).toString();
         MvcResult result = mockMvc.perform(get(BACHELP_STATUS_CHANGE_ENDPOINT)
                 .header("X-BACHelp-API-Key", bachelpApiKey)
                 .header("Accept", "application/json")
@@ -61,7 +62,7 @@ public class BACHelpRestApiCtrlIT extends WebTest {
             logger.warn("No status changes detected since {}", fromDateString);
         }
 
-        // Check each result for postDateTime field
+        // Check each result for postDate field
         for (JsonNode statusChange : results) {
             // Verify required fields are present
             assertTrue("Should have employeeId", statusChange.has("employeeId"));
@@ -88,7 +89,7 @@ public class BACHelpRestApiCtrlIT extends WebTest {
     public void testStatusChangesApiWithDateFilter() throws Exception {
         // Test that the date filtering is working correctly
         // Records returned should have post dates after the specified 'from' parameter
-        LocalDateTime fromDate = LocalDateTime.now().minusDays(2);
+        LocalDate fromDate = LocalDate.now().minusDays(2);
         
         MvcResult result = mockMvc.perform(get(BACHELP_STATUS_CHANGE_ENDPOINT)
                 .header("X-BACHelp-API-Key", bachelpApiKey)
@@ -116,7 +117,7 @@ public class BACHelpRestApiCtrlIT extends WebTest {
     @Test
     public void testStatusChangesApiDateValidation() throws Exception {
         // Test that dates older than 7 days are rejected
-        LocalDateTime tooOldDate = LocalDateTime.now().minusDays(8);
+        LocalDate tooOldDate = LocalDate.now().minusDays(8);
         
         MvcResult result = mockMvc.perform(get(BACHELP_STATUS_CHANGE_ENDPOINT)
                 .header("X-BACHelp-API-Key", bachelpApiKey)
@@ -135,7 +136,7 @@ public class BACHelpRestApiCtrlIT extends WebTest {
                     response.get("errorData").get("parameterConstraint").get("name").asText());
         assertTrue("Should contain constraint message", 
                   response.get("errorData").get("parameterConstraint").get("constraint").asText()
-                          .contains("from datetime must not be earlier than 7 days ago"));
+                          .contains("from date must not be earlier than 7 days ago"));
     }
 
     @Test

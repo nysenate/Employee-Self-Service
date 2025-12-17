@@ -1,11 +1,10 @@
 package gov.nysenate.ess.core.controller.api;
 
 import com.google.common.collect.ImmutableSet;
-import gov.nysenate.ess.core.client.response.base.BaseResponse;
+import com.google.common.collect.Range;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.client.response.error.ErrorCode;
-import gov.nysenate.ess.core.client.response.error.ErrorResponse;
 import gov.nysenate.ess.core.client.response.error.ViewObjectErrorResponse;
 import gov.nysenate.ess.core.client.view.BACHelpEmpStatusChangeView;
 import gov.nysenate.ess.core.client.view.BACHelpEmployeeView;
@@ -16,19 +15,18 @@ import gov.nysenate.ess.core.model.personnel.EmployeeNotFoundEx;
 import gov.nysenate.ess.core.model.transaction.TransactionCode;
 import gov.nysenate.ess.core.model.transaction.TransactionRecord;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
+import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.PaginatedList;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static gov.nysenate.ess.core.model.auth.SimpleEssPermission.BACHELP_API_ACCESS;
 import static gov.nysenate.ess.core.model.transaction.TransactionCode.*;
@@ -98,25 +96,33 @@ public class BACHelpRestApiCtrl extends BaseRestApiCtrl {
     }
 
     /**
-     * Get a list of employees that had certain status changes after the given "from" datetime.
+     * Get a list of employees that had certain status changes on or after the given "from" date,
+     * and before the given "to" date
      *
-     * @param from - String - date time string. Defaults to one day ago
+     * @param from - String - Defaults to one day ago
+     * @param to - String - Defaults to far in the future
      * @return ListViewResponse<BACHelpEmpStatusChangeView>
      */
     @RequiresAuthentication
     @RequestMapping(value = "statusChanges", method = {GET, HEAD})
-    public ListViewResponse<BACHelpEmpStatusChangeView> getStatusChangeEmps(@RequestParam(required = false) String from) {
+    public ListViewResponse<BACHelpEmpStatusChangeView> getStatusChangeEmps(@RequestParam(required = false) String from,
+                                                                            @RequestParam(required = false) String to) {
         checkPermission(BACHELP_API_ACCESS.getPermission());
-        LocalDateTime fromDateTime = Optional.ofNullable(from)
-                .map(f -> parseISODateTime(f, "from"))
-                .orElse(LocalDateTime.now().minusDays(1));
-        LocalDateTime weekAgo = LocalDateTime.now().minusDays(7);
-        if (fromDateTime.isBefore(weekAgo)) {
-            throw new InvalidRequestParamEx(fromDateTime, "from", "datetime",
-                    "from datetime must not be earlier than 7 days ago");
+        LocalDate fromDate = Optional.ofNullable(from)
+                .map(f -> parseISODate(f, "from"))
+                .orElse(LocalDate.now().minusDays(1));
+        LocalDate toDate = Optional.ofNullable(to)
+                .map(f -> parseISODate(f, "to"))
+                .orElse(DateUtils.THE_FUTURE);
+        LocalDate weekAgo = LocalDate.now().minusDays(7);
+        if (fromDate.isBefore(weekAgo)) {
+            throw new InvalidRequestParamEx(fromDate, "from", "date",
+                    "from date must not be earlier than 7 days ago");
         }
 
-        List<TransactionRecord> transactionRecords = empTransactionDao.postedRecordsSince(fromDateTime, allowedCodes);
+        Range<LocalDate> dateRange = getClosedOpenRange(fromDate, toDate, "from", "to");
+
+        List<TransactionRecord> transactionRecords = empTransactionDao.getRecordsByPostDate(dateRange, allowedCodes);
 
         List<BACHelpEmpStatusChangeView> empStatusChangeViews = transactionRecords.stream()
                 .map(tRec -> new BACHelpEmpStatusChangeView(

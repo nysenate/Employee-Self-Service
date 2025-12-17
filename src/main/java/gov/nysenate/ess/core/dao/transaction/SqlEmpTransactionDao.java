@@ -92,9 +92,11 @@ public class SqlEmpTransactionDao extends SqlBaseDao implements EmpTransactionDa
     }
 
     @Override
-    public List<TransactionRecord> postedRecordsSince(LocalDateTime dateTime, Set<TransactionCode> transactionCodes) {
+    public List<TransactionRecord> getRecordsByPostDate(Range<LocalDate> dateRange,
+                                                        Set<TransactionCode> transactionCodes) {
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("lastDateTime", toDate(dateTime))
+                .addValue("startDate", toDate(DateUtils.startOfDateRange(dateRange)))
+                .addValue("endDate", toDate(DateUtils.endOfDateRange(dateRange)))
                 .addValue("transCodes", getTransCodesFromSet(transactionCodes));
         EmpTransDaoOption options = EmpTransDaoOption.NONE;
         String sql = SqlEmpTransactionQuery.GET_LAST_POSTED_RECS_SQL.getSql(schemaMap());

@@ -1,5 +1,6 @@
 package gov.nysenate.ess.core.dao.transaction;
 
+import com.google.common.collect.Range;
 import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.annotation.SillyTest;
 import gov.nysenate.ess.core.model.transaction.TransactionRecord;
@@ -10,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
@@ -33,10 +34,10 @@ public class SqlEmpTransactionDaoTest extends BaseTest {
     }
 
     @Test
-    public void testCheckForPostedRecordsSince() {
+    public void testCheckForGetRecordsByPostDate() {
         var codes = Set.of(APP, LOC, NAM, PHO, RTP, LIN, EMP);
-        var sinceDateTime = LocalDateTime.now().minusDays(7);
-        List<TransactionRecord> records = empTransactionDao.postedRecordsSince(sinceDateTime, codes);
+        var dateRange = Range.closedOpen(LocalDate.now().minusDays(7), LocalDate.now());
+        List<TransactionRecord> records = empTransactionDao.getRecordsByPostDate(dateRange, codes);
         logger.info("{}", records.size());
     }
 }

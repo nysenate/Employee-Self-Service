@@ -7,7 +7,7 @@ import org.junit.experimental.categories.Category;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.web.servlet.MvcResult;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -25,7 +25,7 @@ public class BACHelpAuthenticationIT extends WebTest {
     @Test
     public void testBACHelpEndpointWithInvalidKey() throws Exception {
         // Test that invalid API key is rejected
-        MvcResult result = mockMvc.perform(get(BACHELP_SEARCH_ENDPOINT)
+        mockMvc.perform(get(BACHELP_SEARCH_ENDPOINT)
                 .header("X-BACHelp-API-Key", INVALID_API_KEY)
                 .param("term", "test"))
                 .andExpect(status().isUnauthorized())
@@ -61,7 +61,7 @@ public class BACHelpAuthenticationIT extends WebTest {
     public void testBACHelpStatusChangesEndpoint() throws Exception {
         mockMvc.perform(get(BACHELP_STATUS_CHANGE_ENDPOINT)
                 .header("X-BACHelp-API-Key", bachelpApiKey)
-                .param("from", LocalDateTime.now().minusDays(1).toString()))
+                .param("from", LocalDate.now().minusDays(1).toString()))
                 .andExpect(status().isOk());
     }
 

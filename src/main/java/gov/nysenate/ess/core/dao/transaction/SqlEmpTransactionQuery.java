@@ -35,7 +35,10 @@ public enum SqlEmpTransactionQuery implements BasicSqlQuery
 
     GET_LAST_POSTED_RECS_SQL(
         String.format(GET_TRANS_HISTORY_TEMPLATE.sql,
-        "WHERE PTX.DTTXNPOST > :lastDateTime AND PTX.CDTRANS IN (:transCodes)\n")
+                """
+                WHERE PTX.DTTXNPOST BETWEEN :startDate AND :endDate
+                  AND PTX.CDTRANS IN (:transCodes)
+                """)
     ),
 
     GET_MAX_UPDATE_DATE_TIME_SQL(
