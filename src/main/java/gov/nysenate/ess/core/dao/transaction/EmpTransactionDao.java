@@ -51,4 +51,14 @@ public interface EmpTransactionDao
     LocalDateTime getMaxUpdateDateTime();
 
     List<TransactionRecord> updatedRecordsSince(LocalDateTime dateTime);
+
+    /**
+     * Get list of records of a given set of transaction codes with a post date later than the given datetime.
+     *
+     * @param dateRange         Range<LocalDate>        Include records with post date in this range
+     * @param transactionCodes  Set<TransactionCodes>   which transaction codes to include
+     * @return List<TransactionRecord>
+     */
+    List<TransactionRecord> getRecordsByPostDate(Range<LocalDate> dateRange,
+                                                 Set<TransactionCode> transactionCodes);
 }

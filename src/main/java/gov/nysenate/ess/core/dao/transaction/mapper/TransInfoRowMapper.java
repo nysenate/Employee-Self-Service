@@ -33,6 +33,7 @@ public class TransInfoRowMapper implements RowMapper<TransactionInfo> {
         transInfo.setOriginalDate(getLocalDateTimeFromRs(rs, pfx + "DTTXNORIGIN"));
         transInfo.setUpdateDate(getLocalDateTimeFromRs(rs, pfx + "DTTXNUPDATE"));
         transInfo.setEffectDate(getLocalDateFromRs(rs, pfx + "DTEFFECT"));
+        transInfo.setPostDate(getLocalDateTimeFromRs(rs, pfx + "DTTXNPOST"));
         return transInfo;
     }
 }

@@ -3,6 +3,7 @@ package gov.nysenate.ess.web.config;
 import gov.nysenate.ess.core.dao.stats.UserAgentDao;
 import gov.nysenate.ess.web.security.filter.EssApiAuthenticationFilter;
 import gov.nysenate.ess.web.security.filter.EssAuthenticationFilter;
+import gov.nysenate.ess.web.security.filter.EssBACHelpAuthenticationFilter;
 import gov.nysenate.ess.web.security.filter.EssLdapAuthenticationFilter;
 import gov.nysenate.ess.web.security.filter.SessionTimeoutFilter;
 import gov.nysenate.ess.web.security.session.SessionTimeoutDao;
@@ -134,6 +135,16 @@ public class SecurityConfig
     @Bean(name = "essApiAuthc")
     public Filter essApiAuthenticationFilter() {
         return new EssApiAuthenticationFilter(sessionTimeoutDao);
+    }
+
+    /**
+     * Filter implementation used for BACHelp integration authentication. This bean is automatically 
+     * detected by the ShiroFilterFactoryBean instance and can be used in the filter chain definitions 
+     * by referencing the bean name as seen in shiro.ini.
+     */
+    @Bean(name = "essBACHelpAuthc")
+    public Filter essBACHelpAuthenticationFilter() {
+        return new EssBACHelpAuthenticationFilter();
     }
 
     /**

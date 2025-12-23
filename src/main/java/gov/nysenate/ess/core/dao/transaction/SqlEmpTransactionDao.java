@@ -91,7 +91,20 @@ public class SqlEmpTransactionDao extends SqlBaseDao implements EmpTransactionDa
         return remoteNamedJdbc.query(sql, params, new TransRecordRowMapper("", "AUD_", options));
     }
 
-    /** --- Internal Methods --- */
+    @Override
+    public List<TransactionRecord> getRecordsByPostDate(Range<LocalDate> dateRange,
+                                                        Set<TransactionCode> transactionCodes) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("startDate", toDate(DateUtils.startOfDateRange(dateRange)))
+                .addValue("endDate", toDate(DateUtils.endOfDateRange(dateRange)))
+                .addValue("transCodes", getTransCodesFromSet(transactionCodes));
+        EmpTransDaoOption options = EmpTransDaoOption.NONE;
+        String sql = SqlEmpTransactionQuery.GET_LAST_POSTED_RECS_SQL.getSql(schemaMap());
+        sql = applyAuditColsToSql(sql, "audColumns", "AUD.", TransactionCode.getAll(), options);
+        return remoteNamedJdbc.query(sql, params, new TransRecordRowMapper("", "AUD_", options));
+    }
+
+    /* --- Internal Methods --- */
 
     /**
      * Helper method to addUsage audit columns to the select sql statement. This is done because the columns need to be

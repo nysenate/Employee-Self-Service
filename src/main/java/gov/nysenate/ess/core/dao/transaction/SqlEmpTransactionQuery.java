@@ -9,7 +9,7 @@ public enum SqlEmpTransactionQuery implements BasicSqlQuery
         "SELECT\n" +
         "    AUD.NUXREFEM, AUD.DTTXNORIGIN AS AUD_DTTXNORIGIN, AUD.DTTXNUPDATE AS AUD_DTTXNUPDATE,\n" +
         "    PTX.CDSTATUS, PTX.CDTRANS, PTX.CDTRANSTYP, PTX.NUCHANGE, PTX.NUDOCUMENT," +
-        "    PTX.DTTXNORIGIN AS DTTXNORIGIN, PTX.DTTXNUPDATE AS DTTXNUPDATE,\n" +
+        "    PTX.DTTXNORIGIN AS DTTXNORIGIN, PTX.DTTXNUPDATE AS DTTXNUPDATE, PTX.DTTXNPOST AS DTTXNPOST,\n" +
         "    PTX.DTEFFECT, AUD.DETXNNOTE50, AUD.DETXNNOTEPAY ${audColumns}\n" +
         "FROM ${masterSchema}.PM21PERAUDIT AUD\n" +
         "JOIN ${masterSchema}.PD21PTXNCODE PTX ON AUD.NUCHANGE = PTX.NUCHANGE\n" +
@@ -31,6 +31,14 @@ public enum SqlEmpTransactionQuery implements BasicSqlQuery
     GET_LAST_UPDATED_RECS_SQL(
         String.format(GET_TRANS_HISTORY_TEMPLATE.sql, "" +
         "WHERE PTX.DTTXNUPDATE > :lastDateTime OR AUD.DTTXNUPDATE > :lastDateTime\n")
+    ),
+
+    GET_LAST_POSTED_RECS_SQL(
+        String.format(GET_TRANS_HISTORY_TEMPLATE.sql,
+                """
+                WHERE PTX.DTTXNPOST BETWEEN :startDate AND :endDate
+                  AND PTX.CDTRANS IN (:transCodes)
+                """)
     ),
 
     GET_MAX_UPDATE_DATE_TIME_SQL(
