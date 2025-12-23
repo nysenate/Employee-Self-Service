@@ -29,13 +29,13 @@ import static gov.nysenate.ess.web.security.BACHelpKeyAuthenticationToken.BACHEL
 /**
  * Authentication filter for BACHelp integration API endpoints.
  * 
- * Extracts API key from X-BACHelp-API-Key header and attempts authentication
+ * Extracts API key from X-API-Key header and attempts authentication
  * using the BACHelp key realm. The actual key validation is performed by the realm.
  */
 public class EssBACHelpAuthenticationFilter extends AuthenticationFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(EssBACHelpAuthenticationFilter.class);
-    private static final String API_KEY_HEADER = "X-BACHelp-API-Key";
+    private static final String API_KEY_HEADER = "X-API-Key";
 
     @Override
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {

@@ -38,7 +38,7 @@ public class BACHelpRestApiCtrlIT extends WebTest {
         // Test that the status changes API returns non-null postDate values
         final String fromDateString = LocalDate.now().minusDays(3).toString();
         MvcResult result = mockMvc.perform(get(BACHELP_STATUS_CHANGE_ENDPOINT)
-                .header("X-BACHelp-API-Key", bachelpApiKey)
+                .header("X-API-Key", bachelpApiKey)
                 .header("Accept", "application/json")
                 .param("from", fromDateString))
                 .andExpect(status().isOk())
@@ -92,7 +92,7 @@ public class BACHelpRestApiCtrlIT extends WebTest {
         LocalDate fromDate = LocalDate.now().minusDays(2);
         
         MvcResult result = mockMvc.perform(get(BACHELP_STATUS_CHANGE_ENDPOINT)
-                .header("X-BACHelp-API-Key", bachelpApiKey)
+                .header("X-API-Key", bachelpApiKey)
                 .header("Accept", "application/json")
                 .param("from", fromDate.toString()))
                 .andExpect(status().isOk())
@@ -120,7 +120,7 @@ public class BACHelpRestApiCtrlIT extends WebTest {
         LocalDate tooOldDate = LocalDate.now().minusDays(8);
         
         MvcResult result = mockMvc.perform(get(BACHELP_STATUS_CHANGE_ENDPOINT)
-                .header("X-BACHelp-API-Key", bachelpApiKey)
+                .header("X-API-Key", bachelpApiKey)
                 .header("Accept", "application/json")
                 .param("from", tooOldDate.toString()))
                 .andExpect(status().isBadRequest())
@@ -143,7 +143,7 @@ public class BACHelpRestApiCtrlIT extends WebTest {
     public void testEmployeeSearchApi() throws Exception {
         // Basic test for the employee search endpoint to ensure it works
         MvcResult result = mockMvc.perform(get(BACHELP_SEARCH_ENDPOINT)
-                .header("X-BACHelp-API-Key", bachelpApiKey)
+                .header("X-API-Key", bachelpApiKey)
                 .header("Accept", "application/json")
                 .param("term", "smith"))
                 .andExpect(status().isOk())
@@ -183,7 +183,7 @@ public class BACHelpRestApiCtrlIT extends WebTest {
         int testEmpId = 1;
         
         MvcResult result = mockMvc.perform(get(BACHELP_EMPLOYEE_LOOKUP_ENDPOINT + "/" + testEmpId)
-                .header("X-BACHelp-API-Key", bachelpApiKey)
+                .header("X-API-Key", bachelpApiKey)
                 .header("Accept", "application/json"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
@@ -224,7 +224,7 @@ public class BACHelpRestApiCtrlIT extends WebTest {
         int nonExistentEmpId = 999999;
         
         mockMvc.perform(get(BACHELP_EMPLOYEE_LOOKUP_ENDPOINT + "/" + nonExistentEmpId)
-                .header("X-BACHelp-API-Key", bachelpApiKey)
+                .header("X-API-Key", bachelpApiKey)
                 .header("Accept", "application/json"))
                 .andExpect(status().isNotFound())
                 .andExpect(content().contentType("application/json"));

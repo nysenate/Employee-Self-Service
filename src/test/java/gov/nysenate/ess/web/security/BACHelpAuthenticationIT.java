@@ -26,7 +26,7 @@ public class BACHelpAuthenticationIT extends WebTest {
     public void testBACHelpEndpointWithInvalidKey() throws Exception {
         // Test that invalid API key is rejected
         mockMvc.perform(get(BACHELP_SEARCH_ENDPOINT)
-                .header("X-BACHelp-API-Key", INVALID_API_KEY)
+                .header("X-API-Key", INVALID_API_KEY)
                 .param("term", "test"))
                 .andExpect(status().isUnauthorized())
                 .andReturn();
@@ -47,7 +47,7 @@ public class BACHelpAuthenticationIT extends WebTest {
     @Test
     public void testBACHelpEndpointWithEmptyKey() throws Exception {
         MvcResult result = mockMvc.perform(get(BACHELP_SEARCH_ENDPOINT)
-                .header("X-BACHelp-API-Key", "")
+                .header("X-API-Key", "")
                 .param("term", "test"))
                 .andExpect(status().isUnauthorized())
                 .andExpect(content().contentType("application/json"))
@@ -60,7 +60,7 @@ public class BACHelpAuthenticationIT extends WebTest {
     @Test
     public void testBACHelpStatusChangesEndpoint() throws Exception {
         mockMvc.perform(get(BACHELP_STATUS_CHANGE_ENDPOINT)
-                .header("X-BACHelp-API-Key", bachelpApiKey)
+                .header("X-API-Key", bachelpApiKey)
                 .param("from", LocalDate.now().minusDays(1).toString()))
                 .andExpect(status().isOk());
     }
@@ -69,7 +69,7 @@ public class BACHelpAuthenticationIT extends WebTest {
     public void testNonBACHelpEndpointNotAffected() throws Exception {
         // Regular API endpoints should not be accessible with BACHelp auth
         mockMvc.perform(get(NON_BACHELP_ENDPOINT)
-                .header("X-BACHelp-API-Key", bachelpApiKey))
+                .header("X-API-Key", bachelpApiKey))
                 .andExpect(status().isUnauthorized());
     }
 
