@@ -20,9 +20,10 @@ function DialogClose({ ...props }) {
   return <DialogPrimitive.Close data-slot="dialog-close" {...props} />;
 }
 
-function DialogOverlay({ className, ...props }) {
-  return (
+const DialogOverlay = React.forwardRef(
+  ({ className, ...props }, ref) => (
     <DialogPrimitive.Overlay
+      ref={ref}
       data-slot="dialog-overlay"
       className={cn(
         "data-[state=open]:animate-in data-[state=closed]:animate-out",
@@ -32,19 +33,16 @@ function DialogOverlay({ className, ...props }) {
       )}
       {...props}
     />
-  );
-}
+  ),
+);
+DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
 
-function DialogContent({
-  className,
-  children,
-  showCloseButton = true,
-  ...props
-}) {
-  return (
+const DialogContent = React.forwardRef(
+  ({ className, children, showCloseButton = true, ...props }, ref) => (
     <DialogPortal data-slot="dialog-portal">
       <DialogOverlay />
       <DialogPrimitive.Content
+        ref={ref}
         data-slot="dialog-content"
         className={cn(
           "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out",
@@ -75,54 +73,57 @@ function DialogContent({
         )}
       </DialogPrimitive.Content>
     </DialogPortal>
-  );
-}
+  ),
+);
+DialogContent.displayName = DialogPrimitive.Content.displayName;
 
-function DialogHeader({ className, ...props }) {
-  return (
-    <div
-      data-slot="dialog-header"
-      className={cn(
-        "flex flex-col items-center gap-2 border-b-1 border-teal-200 p-4 sm:text-left",
-        className,
-      )}
-      {...props}
-    />
-  );
-}
+const DialogHeader = React.forwardRef(({ className, ...props }, ref) => (
+  <div
+    ref={ref}
+    data-slot="dialog-header"
+    className={cn(
+      "flex flex-col items-center gap-2 border-b-1 border-teal-200 p-4 sm:text-left",
+      className,
+    )}
+    {...props}
+  />
+));
+DialogHeader.displayName = "DialogHeader";
 
-function DialogFooter({ className, ...props }) {
-  return (
-    <div
-      data-slot="dialog-footer"
-      className={cn(
-        "flex flex-col-reverse gap-2 sm:flex-row sm:justify-end",
-        className,
-      )}
-      {...props}
-    />
-  );
-}
+const DialogFooter = React.forwardRef(({ className, ...props }, ref) => (
+  <div
+    ref={ref}
+    data-slot="dialog-footer"
+    className={cn(
+      "flex flex-col-reverse gap-2 sm:flex-row sm:justify-end",
+      className,
+    )}
+    {...props}
+  />
+));
+DialogFooter.displayName = "DialogFooter";
 
-function DialogTitle({ className, ...props }) {
-  return (
-    <DialogPrimitive.Title
-      data-slot="dialog-title"
-      className={cn("text-xl leading-none font-semibold", className)}
-      {...props}
-    />
-  );
-}
+const DialogTitle = React.forwardRef(({ className, ...props }, ref) => (
+  <DialogPrimitive.Title
+    ref={ref}
+    data-slot="dialog-title"
+    className={cn("text-xl leading-none font-semibold", className)}
+    {...props}
+  />
+));
+DialogTitle.displayName = DialogPrimitive.Title.displayName;
 
-function DialogDescription({ className, ...props }) {
-  return (
+const DialogDescription = React.forwardRef(
+  ({ className, ...props }, ref) => (
     <DialogPrimitive.Description
+      ref={ref}
       data-slot="dialog-description"
       className={cn("text-muted-foreground text-sm", className)}
       {...props}
     />
-  );
-}
+  ),
+);
+DialogDescription.displayName = DialogPrimitive.Description.displayName;
 
 export {
   Dialog,
