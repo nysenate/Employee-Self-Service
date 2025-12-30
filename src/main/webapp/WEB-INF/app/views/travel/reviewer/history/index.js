@@ -20,6 +20,7 @@ import {
   DialogTitle,
 } from "app/components/ui/dialog";
 import Button from "app/components/Button";
+import Pagination from "app/components/Pagination";
 
 const initialState = {
   fromDate: formatISO(subMonths(new Date(), 1), { representation: "date" }),
@@ -82,10 +83,6 @@ export default function ReviewHistory() {
     offset: state.offset,
   });
 
-  const historyItems = Array.isArray(historyQuery.data?.result)
-    ? historyQuery.data.result
-    : [];
-
   return (
     <div>
       <Hero>Review History</Hero>
@@ -124,14 +121,20 @@ export default function ReviewHistory() {
       {historyQuery.isPending ? (
         <LoadingIndicator />
       ) : (
-        <Results appReviews={historyItems} />
+        <Results
+          data={historyQuery.data}
+          state={state}
+          updateSearchParams={updateSearchParams}
+        />
       )}
     </div>
   );
 }
 
-function Results({ appReviews }) {
+function Results({ data, state, updateSearchParams }) {
   const [selectedReview, setSelectedReview] = React.useState(null);
+  const appReviews = data?.result ?? [];
+  const total = data.total;
 
   const appIdToReview = new Map();
   appReviews.forEach((review, index) =>
@@ -164,11 +167,17 @@ function Results({ appReviews }) {
   return (
     <>
       <Card className="mt-6">
-        <div className="p-4">
+        <div className="p-3">
           <TravelAppSummaryTable
             apps={apps}
             handleRowClick={handleRowClick}
             handleRowKeyDown={handleRowKeyDown}
+          />
+          <Pagination
+            limit={state.limit}
+            offset={state.offset}
+            total={total}
+            onPageChange={(offset) => updateSearchParams({ offset: offset })}
           />
         </div>
       </Card>
