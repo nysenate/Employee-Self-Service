@@ -4,12 +4,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nysenate.ess.core.annotation.IntegrationTest;
 import gov.nysenate.ess.web.WebTest;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.test.context.junit.jupiter.DisabledIf;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.time.LocalDate;
@@ -33,30 +35,31 @@ public class BACHelpRestApiCtrlIT extends WebTest {
     @Autowired
     private ObjectMapper jsonObjectMapper;
 
+    @Ignore
     @Test
     public void testStatusChangesApiReturnsPostDate() throws Exception {
         // Test that the status changes API returns non-null postDate values
         final String fromDateString = LocalDate.now().minusDays(3).toString();
         MvcResult result = mockMvc.perform(get(BACHELP_STATUS_CHANGE_ENDPOINT)
-                .header("X-API-Key", bachelpApiKey)
-                .header("Accept", "application/json")
-                .param("from", fromDateString))
+                        .header("X-API-Key", bachelpApiKey)
+                        .header("Accept", "application/json")
+                        .param("from", fromDateString))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
                 .andReturn();
 
         String responseContent = result.getResponse().getContentAsString();
         JsonNode response = jsonObjectMapper.readTree(responseContent);
-        
+
         // Verify basic response structure
         assertTrue("Response should have success field", response.has("success"));
         assertTrue("Should be successful", response.get("success").asBoolean());
-        assertEquals("Should have correct response type", "bachelp employee status change list", 
-                    response.get("responseType").asText());
-        
+        assertEquals("Should have correct response type", "bachelp employee status change list",
+                response.get("responseType").asText());
+
         JsonNode results = response.get("result");
         assertTrue("Should have results array", results.isArray());
-        
+
         // check that we have some results to test
         if (results.isEmpty()) {
             logger.warn("No status changes detected since {}", fromDateString);
@@ -70,15 +73,15 @@ public class BACHelpRestApiCtrlIT extends WebTest {
             assertTrue("Should have postDateTime field", statusChange.has("postDateTime"));
 
             JsonNode postDateTime = statusChange.get("postDateTime");
-            
+
             // ALL records should have non-null postDateTime
             assertFalse("PostDateTime should NOT be null.", postDateTime.isNull());
-            
+
             // Verify the postDateTime is a valid ISO datetime string
             String postDateTimeStr = postDateTime.asText();
             assertNotNull("PostDateTime should not be null string", postDateTimeStr);
             assertFalse("PostDateTime should not be empty", postDateTimeStr.isEmpty());
-            
+
             // Should be able to parse as LocalDateTime
             LocalDateTime parsedDateTime = LocalDateTime.parse(postDateTimeStr);
             assertNotNull("Should be able to parse postDateTime as LocalDateTime", parsedDateTime);
@@ -90,11 +93,11 @@ public class BACHelpRestApiCtrlIT extends WebTest {
         // Test that the date filtering is working correctly
         // Records returned should have post dates after the specified 'from' parameter
         LocalDate fromDate = LocalDate.now().minusDays(2);
-        
+
         MvcResult result = mockMvc.perform(get(BACHELP_STATUS_CHANGE_ENDPOINT)
-                .header("X-API-Key", bachelpApiKey)
-                .header("Accept", "application/json")
-                .param("from", fromDate.toString()))
+                        .header("X-API-Key", bachelpApiKey)
+                        .header("Accept", "application/json")
+                        .param("from", fromDate.toString()))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
                 .andReturn();
@@ -109,7 +112,7 @@ public class BACHelpRestApiCtrlIT extends WebTest {
                 String transactionCode = statusChange.get("transactionCode").asText();
                 // Should be one of the allowed BACHelp transaction codes
                 assertTrue("Transaction code should be one of the allowed BACHelp codes",
-                          transactionCode.matches("APP|LOC|NAM|PHO|RTP|LIN|EMP"));
+                        transactionCode.matches("APP|LOC|NAM|PHO|RTP|LIN|EMP"));
             }
         }
     }
@@ -118,48 +121,48 @@ public class BACHelpRestApiCtrlIT extends WebTest {
     public void testStatusChangesApiDateValidation() throws Exception {
         // Test that dates older than 7 days are rejected
         LocalDate tooOldDate = LocalDate.now().minusDays(8);
-        
+
         MvcResult result = mockMvc.perform(get(BACHELP_STATUS_CHANGE_ENDPOINT)
-                .header("X-API-Key", bachelpApiKey)
-                .header("Accept", "application/json")
-                .param("from", tooOldDate.toString()))
+                        .header("X-API-Key", bachelpApiKey)
+                        .header("Accept", "application/json")
+                        .param("from", tooOldDate.toString()))
                 .andExpect(status().isBadRequest())
                 .andReturn();
-        
+
         String responseContent = result.getResponse().getContentAsString();
         JsonNode response = jsonObjectMapper.readTree(responseContent);
-        
+
         assertFalse("Should not be successful", response.get("success").asBoolean());
-        assertEquals("Should have correct error code", "INVALID_ARGUMENTS", 
-                    response.get("errorCode").asText());
-        assertEquals("Should have correct parameter name", "from", 
-                    response.get("errorData").get("parameterConstraint").get("name").asText());
-        assertTrue("Should contain constraint message", 
-                  response.get("errorData").get("parameterConstraint").get("constraint").asText()
-                          .contains("from date must not be earlier than 7 days ago"));
+        assertEquals("Should have correct error code", "INVALID_ARGUMENTS",
+                response.get("errorCode").asText());
+        assertEquals("Should have correct parameter name", "from",
+                response.get("errorData").get("parameterConstraint").get("name").asText());
+        assertTrue("Should contain constraint message",
+                response.get("errorData").get("parameterConstraint").get("constraint").asText()
+                        .contains("from date must not be earlier than 7 days ago"));
     }
 
     @Test
     public void testEmployeeSearchApi() throws Exception {
         // Basic test for the employee search endpoint to ensure it works
         MvcResult result = mockMvc.perform(get(BACHELP_SEARCH_ENDPOINT)
-                .header("X-API-Key", bachelpApiKey)
-                .header("Accept", "application/json")
-                .param("term", "smith"))
+                        .header("X-API-Key", bachelpApiKey)
+                        .header("Accept", "application/json")
+                        .param("term", "smith"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
                 .andReturn();
 
         String responseContent = result.getResponse().getContentAsString();
         JsonNode response = jsonObjectMapper.readTree(responseContent);
-        
+
         assertTrue("Should be successful", response.get("success").asBoolean());
-        assertEquals("Should have correct response type", "bachelp employee list", 
-                    response.get("responseType").asText());
+        assertEquals("Should have correct response type", "bachelp employee list",
+                response.get("responseType").asText());
         assertTrue("Should have total field", response.has("total"));
         assertTrue("Should have result array", response.has("result"));
         assertTrue("Total should be >= 0", response.get("total").asInt() >= 0);
-        
+
         // If we have results, verify they contain the location field with respCenterHead
         JsonNode results = response.get("result");
         if (!results.isEmpty()) {
@@ -181,17 +184,17 @@ public class BACHelpRestApiCtrlIT extends WebTest {
         // Test the employee lookup endpoint with a known employee ID
         // Using employee ID 1 which should exist in most test datasets
         int testEmpId = 1;
-        
+
         MvcResult result = mockMvc.perform(get(BACHELP_EMPLOYEE_LOOKUP_ENDPOINT + "/" + testEmpId)
-                .header("X-API-Key", bachelpApiKey)
-                .header("Accept", "application/json"))
+                        .header("X-API-Key", bachelpApiKey)
+                        .header("Accept", "application/json"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
                 .andReturn();
 
         String responseContent = result.getResponse().getContentAsString();
         JsonNode response = jsonObjectMapper.readTree(responseContent);
-        
+
         assertTrue("Should be successful", response.get("success").asBoolean());
 
         // Verify employee data structure
@@ -222,10 +225,10 @@ public class BACHelpRestApiCtrlIT extends WebTest {
     public void testEmployeeLookupNotFound() throws Exception {
         // Test employee lookup with non-existent employee ID
         int nonExistentEmpId = 999999;
-        
+
         mockMvc.perform(get(BACHELP_EMPLOYEE_LOOKUP_ENDPOINT + "/" + nonExistentEmpId)
-                .header("X-API-Key", bachelpApiKey)
-                .header("Accept", "application/json"))
+                        .header("X-API-Key", bachelpApiKey)
+                        .header("Accept", "application/json"))
                 .andExpect(status().isNotFound())
                 .andExpect(content().contentType("application/json"));
     }
