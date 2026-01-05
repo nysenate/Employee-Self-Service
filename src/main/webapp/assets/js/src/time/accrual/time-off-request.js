@@ -5,10 +5,6 @@
         $locationProvider.html5Mode(true);
     }]);
 
-    essTime.factory('EmployeeDateRangeApi', ['$resource', function ($resource) {
-        return $resource("/api/v1/accruals/request/employee/:empId");
-    }]);
-
     essTime.controller('RequestCtrl', ['$scope', 'appProps', 'EmployeeDateRangeApi',
                                        'TimeOffRequestListService', 'badgeService', requestCtrl]);
 
@@ -110,8 +106,8 @@
          * Function to sort requests so they display in order
          */
         function sortRequests() {
-            ($scope.pastRequests).sort(function(a,b){
-                if(a.startDate > b.startDate)
+            ($scope.pastRequests).sort(function (a, b) {
+                if (a.startDate > b.startDate)
                     return 1;
                 return -1
             });

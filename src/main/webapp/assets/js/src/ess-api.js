@@ -85,6 +85,16 @@ essApi.factory('AccrualHistoryApi', ['$resource', 'appProps', function ($resourc
     return $resource(appProps.apiPath + '/accruals/history');
 }]);
 
+essTime.factory('UpdateAccrualRequestsApi', ['$resource', function ($resource) {
+    return $resource("/api/v1/accruals/request", {
+        request: '@request'
+    });
+}]);
+
+essTime.factory('AccrualRequestApi', ['$resource', function ($resource) {
+    return $resource("/api/v1/accruals/request/:requestId");
+}]);
+
 /** --- Donation API --- */
 
 essApi.factory('DonationInfoApi', ['$resource', 'appProps', function ($resource, appProps) {
@@ -99,15 +109,15 @@ essApi.factory('SubmitDonationApi', ['$resource', 'appProps', function ($resourc
     return $resource(appProps.apiPath + '/donation/submit');
 }]);
 
-essApi.factory('ActiveSupervisorTimeOffRequestApi', ['$resource', 'appProps', function($resource, appProps){
+essApi.factory('ActiveSupervisorTimeOffRequestApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/accruals/request/supervisor/:supId/active');
 }]);
 
-essApi.factory('ApprovalSupervisorTimeOffRequestsApi', ['$resource', 'appProps', function($resource, appProps){
+essApi.factory('ApprovalSupervisorTimeOffRequestsApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/accruals/request/supervisor/:supId/approval');
 }]);
 
-essApi.factory('TimeOffRequestDateRangeApi', ['$resource', 'appProps', function($resource, appProps){
+essApi.factory('TimeOffRequestDateRangeApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/accruals/request/employee/:empId');
 }]);
 
@@ -137,6 +147,18 @@ essApi.factory('ActiveEmployeeApi', ['$resource', 'appProps', function ($resourc
 
 essApi.factory('EmployeeSearchApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/employees/search');
+}]);
+
+essTime.factory('EmploymentApi', ['$resource', function ($resource) {
+    return $resource("/api/v1/employees/activeDates");
+}]);
+
+essTime.factory('EmpRequestApi', ['$resource', function ($resource) {
+    return $resource("/api/v1/accruals/request/employee/:empId");
+}]);
+
+essTime.factory('EmployeeDateRangeApi', ['$resource', function ($resource) {
+    return $resource("/api/v1/accruals/request/employee/:empId");
 }]);
 
 /** --- Responsibility Center API --- */

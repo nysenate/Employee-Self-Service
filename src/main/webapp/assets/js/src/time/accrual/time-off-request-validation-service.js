@@ -8,18 +8,6 @@ var essTime = angular.module('essTime');
  *      pass.
  */
 
-essTime.factory('HolidayApi', ['$resource', function ($resource) {
-    return $resource("/api/v1/holidays");
-}]);
-
-essTime.factory('EmploymentApi', ['$resource', function ($resource) {
-    return $resource("/api/v1/employees/activeDates");
-}]);
-
-essTime.factory('EmpRequestApi', ['$resource', function ($resource) {
-    return $resource("/api/v1/accruals/request/employee/:empId");
-}]);
-
 essTime.service('TimeOffRequestValidationService', ['HolidayApi', 'EmploymentApi',
                                                     'EmpRequestApi', timeOffRequestValidationUtils]);
 
@@ -263,14 +251,14 @@ function timeOffRequestValidationUtils(HolidayApi, EmploymentApi, EmpRequestApi)
     function holidayHourCheck(days, startDate, endDate) {
         var holidayCheck = true;
 
-        days = days.sort(function(a,b) {
+        days = days.sort(function (a, b) {
             return a.date - b.date;
         });
-        if (days !=- null) {
+        if (days != -null) {
             var holidays;
             var params = {
-                'fromDate': days[0].date.toISOString().substr(0,10),
-                'toDate': days[days.length-1].date.toISOString().substr(0,10)
+                'fromDate': days[0].date.toISOString().substr(0, 10),
+                'toDate': days[days.length - 1].date.toISOString().substr(0, 10)
             };
             HolidayApi.get(params).$promise.then(
                 function (data) {
