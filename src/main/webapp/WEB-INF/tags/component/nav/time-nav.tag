@@ -1,6 +1,6 @@
 <%@ tag import="gov.nysenate.ess.time.model.auth.SimpleTimePermission" %>
 <%@ tag import="gov.nysenate.ess.core.model.auth.SimpleEssPermission" %>
-<%@tag description="Left navigation menu for Time & Attendance screens" pageEncoding="UTF-8"%>
+<%@tag description="Left navigation menu for Time & Attendance screens" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="ess-component-nav" tagdir="/WEB-INF/tags/component/nav" %>
 <%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
@@ -20,12 +20,23 @@
   </ul>
   <shiro:hasPermission name="<%= SimpleTimePermission.ACCRUAL_PAGES.getPermissionString() %>">
     <h3 class="main-topic">My Accruals</h3>
-    <ul class="sub-topic-list">
-        <li class="sub-topic teal"><a href="${ctxPath}/time/accrual/history">Accrual History</a></li>
-        <shiro:hasPermission name="<%= SimpleTimePermission.ACCRUAL_PROJECTIONS.getPermissionString() %>">
-            <li class="sub-topic teal"><a href="${ctxPath}/time/accrual/projections">Accrual Projections</a></li>
-        </shiro:hasPermission>
-        <li class="sub-topic teal"><a href="${ctxPath}/time/accrual/donation">Sick Leave Donation</a></li>
+    <ul class="sub-topic-list" ng-init="initializeActiveRequestsBadge()">
+      <li class="sub-topic teal"><a href="${ctxPath}/time/accrual/history">Accrual History</a></li>
+      <shiro:hasPermission name="<%= SimpleTimePermission.ACCRUAL_PROJECTIONS.getPermissionString() %>">
+        <li class="sub-topic teal"><a href="${ctxPath}/time/accrual/projections">Accrual Projections</a></li>
+      </shiro:hasPermission>
+      <li class="sub-topic teal"><a href="${ctxPath}/time/accrual/donation">Sick Leave Donation</a></li>
+        <%--        <shiro:hasPermission name="<%= SimpleTimePermission.TIME_OFF_REQUEST_PAGES.getPermissionString() %>">--%>
+        <%--            <li class="sub-topic teal"><a href="${ctxPath}/time/accrual/time-off-request">Time Off Requests</a>--%>
+        <%--              <badge title="Pending Request Count" style="cursor: default"--%>
+        <%--                badge-id="activeRequestCount" hide-empty="true" color="teal"></badge>--%>
+        <%--              <badge title="Approved Request Count" style="cursor: default"--%>
+        <%--                badge-id="activeApprovedRequestCount" hide-empty="true" color="green"></badge>--%>
+        <%--              <badge title="Rejected Request Count" style="cursor: default"--%>
+        <%--                badge-id="activeRejectedRequestCount" hide-empty="true" color="orange"></badge>--%>
+        <%--            </li>--%>
+        <%--        </shiro:hasPermission>--%>
+
     </ul>
   </shiro:hasPermission>
   <shiro:hasPermission name="<%= SimpleTimePermission.MANAGEMENT_PAGES.getPermissionString() %>">
@@ -43,6 +54,12 @@
       <li class="sub-topic teal"><a href="${ctxPath}/time/accrual/emphistory">Employee Accrual History</a></li>
       <li class="sub-topic teal"><a href="${ctxPath}/time/accrual/emp-projections">Employee Accrual Projections</a></li>
       <li class="sub-topic teal"><a href="${ctxPath}/time/record/grant">Grant Supervisor Access</a></li>
+        <%--      <li class="sub-topic teal">--%>
+        <%--        <a href="${ctxPath}/time/accrual/emp-time-off-requests">Review Time Off Requests</a>--%>
+        <%--        <badge title="Requests needing action" style="cursor: default"--%>
+        <%--               badge-id="pendingRequestCount" hide-empty="true" color="teal"></badge>--%>
+        <%--      </li>--%>
+        <%--      <li class="sub-topic teal"><a href="${ctxPath}/time/accrual/emp-time-off-request-history">Employee Time Off Request History</a></li>--%>
     </ul>
   </shiro:hasPermission>
   <shiro:hasPermission name="<%= SimpleTimePermission.PERSONNEL_PAGES.getPermissionString() %>">

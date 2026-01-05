@@ -37,6 +37,9 @@ public class TransactionInfo {
     /** The date when this record was updated. */
     protected LocalDateTime updateDate;
 
+    /** The date when this record was posted. */
+    protected LocalDateTime postDate;
+
     /** --- Constructors --- */
 
     public TransactionInfo() {}
@@ -50,6 +53,7 @@ public class TransactionInfo {
         this.effectDate = other.effectDate;
         this.originalDate = other.originalDate;
         this.updateDate = other.updateDate;
+        this.postDate = other.postDate;
     }
 
     /** --- Functional Getters / Setters --- */
@@ -122,5 +126,13 @@ public class TransactionInfo {
 
     public void setUpdateDate(LocalDateTime updateDate) {
         this.updateDate = updateDate;
+    }
+
+    public LocalDateTime getPostDate() {
+        return postDate;
+    }
+
+    public void setPostDate(LocalDateTime postDate) {
+        this.postDate = postDate;
     }
 }

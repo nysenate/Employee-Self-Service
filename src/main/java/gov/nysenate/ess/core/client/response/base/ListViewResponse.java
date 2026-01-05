@@ -12,6 +12,7 @@ import gov.nysenate.ess.core.util.PaginatedList;
 import javax.xml.bind.annotation.XmlElement;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -33,6 +34,10 @@ public class ListViewResponse<ViewType> extends PaginationResponse
             success = true;
             this.responseType = result.getViewType();
         }
+    }
+
+    public static <ViewType extends ViewObject> ListViewResponse<ViewType> empty() {
+        return ListViewResponse.of(Collections.emptyList());
     }
 
     public static <ViewType extends ViewObject> ListViewResponse<ViewType> of(Collection<ViewType> items) {
