@@ -9,6 +9,7 @@ import ApplicationHistory from "app/views/travel/application/history";
 import SubmitApplication from "app/views/travel/application/submit";
 import Drafts from "app/views/travel/application/drafts";
 import ReviewHistory from "app/views/travel/reviewer/history";
+import ReviewQueue from "app/views/travel/reviewer/queue/ReviewQueuePage";
 
 export default function TravelRouter() {
   return (
@@ -20,6 +21,7 @@ export default function TravelRouter() {
           <Route path="/applications" element={<ApplicationHistory />} />
 
           <Route path="/manage/review-history" element={<ReviewHistory />} />
+          <Route path="/manage/queue" element={<ReviewQueue />} />
 
           <Route path="/stats" element={<Travel />} />
           <Route path="" element={<Navigate to="applications" replace />} />

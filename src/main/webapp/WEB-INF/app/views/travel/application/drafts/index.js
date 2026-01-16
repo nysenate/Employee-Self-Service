@@ -125,9 +125,6 @@ function DraftTable({ drafts }) {
                         </div>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
-                        <AlertDialogCancel disabled={deleteDraft.isPending}>
-                          Cancel
-                        </AlertDialogCancel>
                         <AlertDialogAction
                           variant="destructive"
                           onClick={() => handleDelete(row)}
@@ -135,6 +132,9 @@ function DraftTable({ drafts }) {
                         >
                           Delete
                         </AlertDialogAction>
+                        <AlertDialogCancel disabled={deleteDraft.isPending}>
+                          Cancel
+                        </AlertDialogCancel>
                       </AlertDialogFooter>
                     </AlertDialogContent>
                   </AlertDialog>

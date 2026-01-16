@@ -12,7 +12,7 @@ import LoadingIndicator from "app/components/LoadingIndicator";
 import { Card } from "app/components/ui/card";
 import TravelAppSummaryTable from "app/views/travel/shared/components/TravelAppSummaryTable";
 import TravelAppReviewForm from "app/views/travel/shared/components/TravelAppReviewForm";
-import { useTravelReview } from "app/views/travel/reviewer/history/useTravelReview";
+import { useTravelReview } from "app/views/travel/shared/hooks/useTravelReview";
 import {
   Dialog,
   DialogContent,
@@ -200,7 +200,6 @@ function TravelAppReviewModal({ reviewSummary, onOpenChange }) {
     return (
       <Dialog open={Boolean(reviewSummary)} onOpenChange={onOpenChange}>
         <DialogContent>
-          <DialogTitle>Loading</DialogTitle>
           <LoadingIndicator />
         </DialogContent>
       </Dialog>
@@ -212,7 +211,6 @@ function TravelAppReviewModal({ reviewSummary, onOpenChange }) {
   return (
     <Dialog open={Boolean(reviewSummary)} onOpenChange={onOpenChange}>
       <DialogContent>
-        <DialogTitle>Travel App Review Form</DialogTitle>
         <TravelAppReviewForm appReview={review} />
         <DialogFooter className="items-center gap-6 px-3 py-1.5">
           <a href={pdfHref} target="_blank" rel="noopener noreferrer">

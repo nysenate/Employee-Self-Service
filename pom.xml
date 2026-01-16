@@ -26,7 +26,6 @@
         <version>3.2.3</version>
         <configuration>
           <argLine>-Dlog4j.configurationFile=test.log4j2.xml</argLine>
-          <skipTests>false</skipTests>
           <groups>gov.nysenate.ess.core.annotation.UnitTest</groups>
         </configuration>
       </plugin>
