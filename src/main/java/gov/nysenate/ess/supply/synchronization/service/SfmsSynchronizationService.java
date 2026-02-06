@@ -34,16 +34,25 @@ public class SfmsSynchronizationService {
 
     private static final Logger logger = LoggerFactory.getLogger(SfmsSynchronizationService.class);
 
-    @Value("${scheduler.supply.sfms_synchronization.enabled}")
-    private boolean synchronizationEnabled;
+    private final boolean synchronizationEnabled;
+    private final RequisitionService requisitionService;
+    private final SfmsSynchronizationProcedure synchronizationProcedure;
+    private final DateTimeFactory dateTimeFactory;
+    private final SlackChatService slackChatService;
+
     @Autowired
-    private RequisitionService requisitionService;
-    @Autowired
-    private SfmsSynchronizationProcedure synchronizationProcedure;
-    @Autowired
-    private DateTimeFactory dateTimeFactory;
-    @Autowired
-    private SlackChatService slackChatService;
+    public SfmsSynchronizationService(@Value("${scheduler.supply.sfms_synchronization.enabled}")
+                                      boolean synchronizationEnabled,
+                                      RequisitionService requisitionService,
+                                      SfmsSynchronizationProcedure synchronizationProcedure,
+                                      DateTimeFactory dateTimeFactory,
+                                      SlackChatService slackChatService) {
+        this.synchronizationEnabled = synchronizationEnabled;
+        this.requisitionService = requisitionService;
+        this.synchronizationProcedure = synchronizationProcedure;
+        this.dateTimeFactory = dateTimeFactory;
+        this.slackChatService = slackChatService;
+    }
 
     /**
      * Inserts supply requisition line items into SFMS for all approved requisitions where savedInSfms = <code>false</code>.
