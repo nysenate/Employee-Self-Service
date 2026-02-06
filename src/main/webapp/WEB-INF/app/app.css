@@ -87,7 +87,7 @@
     --color-destructive: hsl(357 66% 45%);
     --color-destructive-foreground: hsl(0 0% 98%);
     --color-border: hsl(0 0% 89.8%);
-    --color-input: hsl(0 0% 89.8%);
+    --color-input: oklch(55.1% 0.027 264.364);
     --color-ring: hsl(0 0% 3.9%);
     --radius-lg: 0.5rem;
     --radius-md: calc(0.5rem - 2px);

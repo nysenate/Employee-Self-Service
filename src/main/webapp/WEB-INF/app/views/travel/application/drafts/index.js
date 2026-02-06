@@ -26,11 +26,11 @@ import {
   TableRow,
   Table,
 } from "app/components/ui/table";
-import { Card } from "app/components/ui/card";
-import { Button } from "app/components/ui/button";
 import { isoToShortDate, isoToShortDateTime } from "app/utils/dateUtils";
 import { Trash2 } from "lucide-react";
 import { toCurrency } from "app/utils/textUtils";
+import Card from "app/components/Card";
+import Button from "app/components/Button";
 
 export default function Drafts() {
   const { data, isPending } = useDrafts();
@@ -87,7 +87,7 @@ function DraftTable({ drafts }) {
                 <TableCell>{isoToShortDateTime(row.updatedDateTime)}</TableCell>
                 <TableCell className="flex justify-end gap-2">
                   <Button
-                    variant="outline"
+                    variant="outlined"
                     size="sm"
                     onClick={() => handleContinue(row)}
                     disabled={deleteDraft.isPending}
@@ -97,7 +97,7 @@ function DraftTable({ drafts }) {
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
                       <Button
-                        variant="outline"
+                        variant="outlined"
                         size="icon-sm"
                         aria-label="Delete draft"
                         disabled={deleteDraft.isPending}

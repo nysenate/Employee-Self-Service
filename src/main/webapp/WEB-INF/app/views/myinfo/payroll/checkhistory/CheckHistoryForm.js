@@ -5,6 +5,8 @@ import LoadingIndicator from "app/components/LoadingIndicator";
 import Card from "app/components/Card";
 import Paycheck from "app/views/myinfo/payroll/checkhistory/Paycheck";
 import { useEmployeePaychecks } from "app/views/myinfo/payroll/checkhistory/useEmployeePaychecks";
+import { Checkbox } from "app/components/ui/checkbox";
+import { Label } from "app/components/ui/label";
 
 export default function CheckHistoryForm({ empId, calendarYears, fiscalYears }) {
   const [year, setYear] = useState(Math.max(...calendarYears))
@@ -33,13 +35,14 @@ export default function CheckHistoryForm({ empId, calendarYears, fiscalYears }) 
             {yearOptions(fiscalYears, calendarYears, useFiscalYears)}
           </select>
         </div>
-        <div className="inline-flex">
-          <label className="text-teal-700 font-semibold mx-1" htmlFor="useFiscalYears">Show Fiscal Years</label>
-          <input id="useFiscalYears"
-                 name="useFiscalYears"
-                 type="checkbox"
-                 defaultChecked={useFiscalYears}
-                 onChange={(e => setUseFiscalYears(e.target.checked))}/>
+        <div className="inline-flex items-center">
+          <Label className="text-teal-700 mx-1" htmlFor="useFiscalYears">Show Fiscal Years</Label>
+          <Checkbox
+            id="useFiscalYears"
+            name="useFiscalYears"
+            checked={useFiscalYears}
+            onCheckedChange={(checked) => setUseFiscalYears(!!checked)}
+          />
         </div>
       </Controls>
       <CheckResults empId={empId}

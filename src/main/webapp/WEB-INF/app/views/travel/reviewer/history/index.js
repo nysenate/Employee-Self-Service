@@ -9,18 +9,13 @@ import InputDebounced from "app/components/InputDebounced";
 import { useReviewHistory } from "app/views/travel/reviewer/history/useReviewHistory";
 import NoMatchesFound from "app/components/NoMatchesFound";
 import LoadingIndicator from "app/components/LoadingIndicator";
-import { Card } from "app/components/ui/card";
 import TravelAppSummaryTable from "app/views/travel/shared/components/TravelAppSummaryTable";
 import TravelAppReviewForm from "app/views/travel/shared/components/TravelAppReviewForm";
 import { useTravelReview } from "app/views/travel/shared/hooks/useTravelReview";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogTitle,
-} from "app/components/ui/dialog";
+import { Dialog, DialogContent, DialogFooter } from "app/components/ui/dialog";
 import Button from "app/components/Button";
 import Pagination from "app/components/Pagination";
+import Card from "app/components/Card";
 
 const initialState = {
   fromDate: formatISO(subMonths(new Date(), 1), { representation: "date" }),
