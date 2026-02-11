@@ -33,6 +33,7 @@
     "lucide-react": "^0.554.0",
     "pdfjs-dist": "^4.6.82",
     "react": "^18.2.0",
+    "react-aria-components": "1.15.1",
     "react-calendar": "^6.0.0",
     "react-dom": "^18.2.0",
     "react-error-boundary": "^4.0.13",
@@ -48,6 +49,7 @@
   "scripts": {
     "build": "NODE_ENV='production' webpack",
     "dev": "webpack serve",
+    "lint": "eslint WEB-INF/app --ext .js",
     "postinstall": "npm run build && bower install && grunt compile"
   },
   "babel": {
