@@ -65,6 +65,30 @@
 
     /* Custom Font Family */
     --font-family-openSans: "Open Sans", sans-serif;
+
+    /* Theme Variables */
+    --color-background: hsl(0 0% 100%);
+    --color-foreground: hsl(0 0% 3.9%);
+    --color-card: hsl(0 0% 100%);
+    --color-card-foreground: hsl(0 0% 3.9%);
+    --color-popover: hsl(0 0% 100%);
+    --color-popover-foreground: hsl(0 0% 3.9%);
+    --color-primary: hsl(0 0% 9%);
+    --color-primary-foreground: hsl(0 0% 98%);
+    --color-secondary: hsl(0 0% 96.1%);
+    --color-secondary-foreground: hsl(0 0% 9%);
+    --color-muted: hsl(0 0% 96.1%);
+    --color-muted-foreground: hsl(0 0% 45.1%);
+    --color-accent: hsl(0 0% 96.1%);
+    --color-accent-foreground: hsl(0 0% 9%);
+    --color-destructive: hsl(357 66% 45%);
+    --color-destructive-foreground: hsl(0 0% 98%);
+    --color-border: hsl(0 0% 89.8%);
+    --color-input: oklch(55.1% 0.027 264.364);
+    --color-ring: hsl(0 0% 3.9%);
+    --radius-lg: 0.5rem;
+    --radius-md: calc(0.5rem - 2px);
+    --radius-sm: calc(0.5rem - 4px);
 }
 
 /* Base styles */
