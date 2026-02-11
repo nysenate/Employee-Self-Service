@@ -1,7 +1,6 @@
 import React, { forwardRef, useContext } from "react";
 import { ThemeContext } from "app/ThemeContext";
 import { twMerge } from "tailwind-merge";
-import { Button as AriaButton } from "react-aria-components";
 
 /**
  * A common button component for ESS.
@@ -16,20 +15,14 @@ import { Button as AriaButton } from "react-aria-components";
 const Button = forwardRef(function (
   {
     variant = "contained",
-    color: colorProp,
+    color,
     children,
     className = "",
-    disabled,
-    isDisabled,
-    type,
     ...passThroughProps
   },
   ref,
 ) {
   const theme = useContext(ThemeContext);
-  const resolvedDisabled = isDisabled ?? disabled ?? false;
-  let color = colorProp;
-
   if (!color) {
     color = variantDefaultColors[variant];
   } else if (color === "theme") {
@@ -37,23 +30,19 @@ const Button = forwardRef(function (
   }
 
   const classes = twMerge(
-    "transition outline-none",
-    "data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50",
-    "data-[focus-visible]:ring-2 data-[focus-visible]:ring-teal-600 data-[focus-visible]:ring-offset-1",
+    "transition disabled:opacity-50 disabled:cursor-not-allowed",
     `${variantStyles[variant].core} ${variantStyles[variant].color[color]}`,
     className,
   );
 
   return (
-    <AriaButton
-      {...passThroughProps}
+    <button
+      {...{ type: "button", ...passThroughProps }}
       ref={ref}
-      type={type || "button"}
-      isDisabled={resolvedDisabled}
       className={classes}
     >
       {children}
-    </AriaButton>
+    </button>
   );
 });
 
@@ -62,58 +51,51 @@ export default Button;
 // All styles have to be hard coded, they cannot be dynamic due to tailwind's JIT compiler.
 const variantStyles = {
   contained: {
-    core: "border-b-2 px-2.5 py-1 font-semibold text-white",
+    core: "px-2.5 py-1 font-semibold text-white border-b-2",
     color: {
-      success:
-        "border-green-800 bg-green-600 data-[hovered]:bg-green-500 data-[pressed]:bg-green-700",
-      secondary:
-        "border-gray-600 bg-gray-500 data-[hovered]:bg-gray-450 data-[pressed]:bg-gray-600",
-      error:
-        "border-red-700 bg-red-600 data-[hovered]:bg-red-500 data-[pressed]:bg-red-700",
-      myinfo:
-        "border-green-800 bg-green-600 data-[hovered]:bg-green-500 data-[pressed]:bg-green-700",
-      time: "border-teal-800 bg-teal-600 data-[hovered]:bg-teal-500 data-[pressed]:bg-teal-700",
-      supply:
-        "border-purple-800 bg-purple-600 data-[hovered]:bg-purple-500 data-[pressed]:bg-purple-700",
-      travel:
-        "border-orange-800 bg-orange-600 data-[hovered]:bg-orange-500 data-[pressed]:bg-orange-700",
+      success: "bg-green-600 border-green-800 hover:bg-green-500",
+      secondary: "bg-gray-500 border-gray-600 hover:bg-gray-450",
+      error: "bg-red-600 border-red-700 hover:bg-red-500",
+      myinfo: "bg-green-600 border-green-800 hover:bg-green-500",
+      time: "bg-teal-600 border-teal-800 hover:bg-teal-500",
+      supply: "bg-purple-600 border-purple-800 hover:bg-purple-500",
+      travel: "bg-orange-600 border-orange-800 hover:bg-orange-500",
     },
   },
   text: {
     core: "",
     color: {
       success:
-        "px-2.5 py-1 font-semibold text-green-600 data-[hovered]:bg-green-100 data-[hovered]:text-green-800 data-[pressed]:bg-green-200",
+        "px-2.5 py-1 font-semibold text-green-600 hover:text-green-800 hover:bg-green-100",
       secondary:
-        "px-2.5 py-1 font-semibold text-gray-600 data-[hovered]:bg-gray-100 data-[hovered]:text-gray-700 data-[pressed]:bg-gray-200",
+        "px-2.5 py-1 font-semibold text-gray-600 hover:text-gray-700 hover:bg-gray-100",
       error:
-        "px-2.5 py-1 font-semibold text-red-600 data-[hovered]:bg-red-100 data-[hovered]:text-red-700 data-[pressed]:bg-red-200",
-      link: "font-base leading-none text-teal-600 data-[hovered]:text-teal-800",
+        "px-2.5 py-1 font-semibold text-red-600 hover:text-red-700 hover:bg-red-100",
+      link: "font-base leading-none text-teal-600 hover:text-teal-800",
       myinfo:
-        "px-2.5 py-1 font-semibold text-green-600 data-[hovered]:bg-green-100 data-[hovered]:text-green-800 data-[pressed]:bg-green-200",
-      time: "px-2.5 py-1 font-semibold text-teal-600 data-[hovered]:bg-teal-100 data-[hovered]:text-teal-700 data-[pressed]:bg-teal-200",
+        "px-2.5 py-1 font-semibold text-green-600 hover:text-green-800 hover:bg-green-100",
+      time: "px-2.5 py-1 font-semibold text-teal-600 hover:text-teal-700 hover:bg-teal-100",
       supply:
-        "px-2.5 py-1 font-semibold text-purple-700 data-[hovered]:bg-purple-100 data-[hovered]:text-purple-800 data-[pressed]:bg-purple-200",
+        "px-2.5 py-1 font-semibold text-purple-700 hover:text-purple-800 hover:bg-purple-100",
       travel:
-        "px-2.5 py-1 font-semibold text-orange-700 data-[hovered]:bg-orange-100 data-[hovered]:text-orange-800 data-[pressed]:bg-orange-200",
+        "px-2.5 py-1 font-semibold text-orange-700 hover:text-orange-800 hover:bg-orange-100",
     },
   },
   outlined: {
-    core: "border px-2.5 py-1 font-semibold",
+    core: "px-2.5 py-1 font-semibold border",
     color: {
       success:
-        "border-green-700 text-green-700 data-[hovered]:bg-green-100 data-[hovered]:text-green-800 data-[pressed]:bg-green-200",
+        "text-green-700 border-green-700 hover:text-green-800 hover:bg-green-100",
       secondary:
-        "border-gray-600 text-gray-600 data-[hovered]:bg-gray-100 data-[hovered]:text-gray-700 data-[pressed]:bg-gray-200",
-      error:
-        "border-red-600 text-red-600 data-[hovered]:bg-red-100 data-[hovered]:text-red-700 data-[pressed]:bg-red-200",
+        "text-gray-600 border-gray-600 hover:text-gray-700 hover:bg-gray-100",
+      error: "text-red-600 border-red-600 hover:text-red-700 hover:bg-red-100",
       myinfo:
-        "border-green-700 text-green-700 data-[hovered]:bg-green-100 data-[hovered]:text-green-800 data-[pressed]:bg-green-200",
-      time: "border-teal-600 text-teal-600 data-[hovered]:bg-teal-100 data-[hovered]:text-teal-700 data-[pressed]:bg-teal-200",
+        "text-green-700 border-green-700 hover:text-green-800 hover:bg-green-100",
+      time: "text-teal-600 border-teal-600 hover:text-teal-700 hover:bg-teal-100",
       supply:
-        "border-purple-700 text-purple-700 data-[hovered]:bg-purple-100 data-[hovered]:text-purple-800 data-[pressed]:bg-purple-200",
+        "text-purple-700 border-purple-700 hover:text-purple-800 hover:bg-purple-100",
       travel:
-        "border-orange-700 text-orange-700 data-[hovered]:bg-orange-100 data-[hovered]:text-orange-800 data-[pressed]:bg-orange-200",
+        "text-orange-700 border-orange-700 hover:text-orange-800 hover:bg-orange-100",
     },
   },
 };
