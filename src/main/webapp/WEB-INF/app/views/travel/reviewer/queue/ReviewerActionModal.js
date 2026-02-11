@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useTravelReview } from "app/views/travel/shared/hooks/useTravelReview";
-import { Dialog, DialogContent, DialogFooter } from "app/components/ui/dialog";
+import Modal from "app/components/Modal";
 import TravelAppReviewForm from "app/views/travel/shared/components/TravelAppReviewForm";
 import Button from "app/components/Button";
 import LoadingIndicator from "app/components/LoadingIndicator";
@@ -22,63 +22,63 @@ export default function ReviewerActionModal({ reviewSummary, setIsOpen }) {
 
   if (isPending || !review) {
     return (
-      <Dialog open={Boolean(reviewSummary)} onOpenChange={setIsOpen}>
-        <DialogContent>
+      <Modal isOpen={Boolean(reviewSummary)} onSoftReject={() => setIsOpen(false)}>
+        <Modal.Body>
           <LoadingIndicator />
-        </DialogContent>
-      </Dialog>
+        </Modal.Body>
+      </Modal>
     );
   }
 
   const pdfHref = `${window.location.origin}/api/v1/travel/applications/${review?.travelApplication.id}.pdf`;
   return (
-    <Dialog open={Boolean(reviewSummary)} onOpenChange={setIsOpen}>
-      <DialogContent discription="desc">
+    <Modal isOpen={Boolean(reviewSummary)} onSoftReject={() => setIsOpen(false)}>
+      <Modal.Body>
         <TravelAppReviewForm appReview={review} />
-        <DialogFooter className="items-center gap-6 px-3 py-1.5 sm:justify-center">
-          <div className="grid w-full grid-cols-[1fr_auto]">
-            <div className="flex items-center justify-center gap-3">
-              <Button
-                color="success"
-                onClick={() => setApproveDialogOpen(true)}
-              >
-                Approve Application
-              </Button>
-              <Button
-                color="error"
-                onClick={() => setDisapproveDialogOpen(true)}
-              >
-                Disapprove Application
-              </Button>
-              <Button color="secondary">Edit Application</Button>
-            </div>
-            <div className="flex items-center gap-3">
-              <a href={pdfHref} target="_blank" rel="noopener noreferrer">
-                Print
-              </a>
-              <Button
-                color="secondary"
-                className="w-20"
-                onClick={() => setIsOpen(false)}
-              >
-                Close
-              </Button>
-            </div>
+      </Modal.Body>
+      <Modal.Controls>
+        <div className="grid w-full grid-cols-[1fr_auto] items-center gap-6 px-3 py-1.5 sm:justify-center">
+          <div className="flex items-center justify-center gap-3">
+            <Button
+              color="success"
+              onClick={() => setApproveDialogOpen(true)}
+            >
+              Approve Application
+            </Button>
+            <Button
+              color="error"
+              onClick={() => setDisapproveDialogOpen(true)}
+            >
+              Disapprove Application
+            </Button>
+            <Button color="secondary">Edit Application</Button>
           </div>
-        </DialogFooter>
-        <ApproveConfirmDialog
-          open={approveDialogOpen}
-          onOpenChange={setApproveDialogOpen}
-          review={review}
-          onApproved={() => setIsOpen(false)}
-        />
-        <DisapproveConfirmDialog
-          open={disapproveDialogOpen}
-          onOpenChange={setDisapproveDialogOpen}
-          review={review}
-          onDisapproved={() => setIsOpen(false)}
-        />
-      </DialogContent>
-    </Dialog>
+          <div className="flex items-center gap-3">
+            <a href={pdfHref} target="_blank" rel="noopener noreferrer">
+              Print
+            </a>
+            <Button
+              color="secondary"
+              className="w-20"
+              onClick={() => setIsOpen(false)}
+            >
+              Close
+            </Button>
+          </div>
+        </div>
+      </Modal.Controls>
+      <ApproveConfirmDialog
+        open={approveDialogOpen}
+        onOpenChange={setApproveDialogOpen}
+        review={review}
+        onApproved={() => setIsOpen(false)}
+      />
+      <DisapproveConfirmDialog
+        open={disapproveDialogOpen}
+        onOpenChange={setDisapproveDialogOpen}
+        review={review}
+        onDisapproved={() => setIsOpen(false)}
+      />
+    </Modal>
   );
 }

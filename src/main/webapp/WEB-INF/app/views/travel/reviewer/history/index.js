@@ -3,7 +3,6 @@ import Hero from "app/components/Hero";
 import Controls from "app/components/Controls";
 import { endOfDay, formatISO, startOfDay, subMonths } from "date-fns";
 import { useSearchParams } from "react-router-dom";
-import { Label } from "app/components/ui/label";
 import { UTCDate } from "@date-fns/utc";
 import InputDebounced from "app/components/InputDebounced";
 import { useReviewHistory } from "app/views/travel/reviewer/history/useReviewHistory";
@@ -12,7 +11,7 @@ import LoadingIndicator from "app/components/LoadingIndicator";
 import TravelAppSummaryTable from "app/views/travel/shared/components/TravelAppSummaryTable";
 import TravelAppReviewForm from "app/views/travel/shared/components/TravelAppReviewForm";
 import { useTravelReview } from "app/views/travel/shared/hooks/useTravelReview";
-import { Dialog, DialogContent, DialogFooter } from "app/components/ui/dialog";
+import Modal from "app/components/Modal";
 import Button from "app/components/Button";
 import Pagination from "app/components/Pagination";
 import Card from "app/components/Card";
@@ -84,7 +83,9 @@ export default function ReviewHistory() {
       <Controls>
         <div className="flex gap-3 p-4">
           <div className="grid gap-1">
-            <Label htmlFor="fromDate">From Date</Label>
+            <label className="text-sm font-semibold" htmlFor="fromDate">
+              From Date
+            </label>
             <InputDebounced
               id="fromDate"
               type="date"
@@ -98,7 +99,9 @@ export default function ReviewHistory() {
             />
           </div>
           <div className="grid gap-1">
-            <Label htmlFor="toDate">To Date</Label>
+            <label className="text-sm font-semibold" htmlFor="toDate">
+              To Date
+            </label>
             <InputDebounced
               id="toDate"
               type="date"
@@ -193,21 +196,29 @@ function TravelAppReviewModal({ reviewSummary, onOpenChange }) {
 
   if (isPending || !review) {
     return (
-      <Dialog open={Boolean(reviewSummary)} onOpenChange={onOpenChange}>
-        <DialogContent>
+      <Modal
+        isOpen={Boolean(reviewSummary)}
+        onSoftReject={() => onOpenChange(false)}
+      >
+        <Modal.Body>
           <LoadingIndicator />
-        </DialogContent>
-      </Dialog>
+        </Modal.Body>
+      </Modal>
     );
   }
 
   const pdfHref = `${window.location.origin}/api/v1/travel/applications/${review?.travelApplication.id}.pdf`;
 
   return (
-    <Dialog open={Boolean(reviewSummary)} onOpenChange={onOpenChange}>
-      <DialogContent>
+    <Modal
+      isOpen={Boolean(reviewSummary)}
+      onSoftReject={() => onOpenChange(false)}
+    >
+      <Modal.Body>
         <TravelAppReviewForm appReview={review} />
-        <DialogFooter className="items-center gap-6 px-3 py-1.5">
+      </Modal.Body>
+      <Modal.Controls>
+        <div className="flex items-center gap-6 px-3 py-1.5">
           <a href={pdfHref} target="_blank" rel="noopener noreferrer">
             Print
           </a>
@@ -218,8 +229,8 @@ function TravelAppReviewModal({ reviewSummary, onOpenChange }) {
           >
             Close
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </div>
+      </Modal.Controls>
+    </Modal>
   );
 }

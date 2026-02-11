@@ -1,16 +1,6 @@
 import React, { useState } from "react";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "app/components/ui/alert-dialog";
-import { Label } from "app/components/ui/label";
-import { Textarea } from "app/components/ui/textarea";
+import Modal from "app/components/Modal";
+import Button from "app/components/Button";
 import { ReviewSummary } from "./reviewSummary";
 import { useApproveReview } from "./useApproveReview";
 
@@ -42,41 +32,57 @@ export default function ApproveConfirmDialog({
   };
 
   return (
-    <AlertDialog
-      open={open}
-      onOpenChange={(nextOpen) => {
-        onOpenChange(nextOpen);
-        if (!nextOpen && !isPending) {
+    <Modal
+      isOpen={open}
+      onSoftReject={() => {
+        if (!isPending) {
+          onOpenChange(false);
           setNote("");
         }
       }}
     >
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Confirm approval</AlertDialogTitle>
-          <AlertDialogDescription>
-            Confirm the application details and add optional notes before
-            approving.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
+      <Modal.Title>Confirm approval</Modal.Title>
+      <Modal.Body>
+        <p className="mb-3">
+          Confirm the application details and add optional notes before
+          approving.
+        </p>
         <ReviewSummary review={review} />
         <div className="grid gap-2">
-          <Label htmlFor="approve-application-note">Approval notes</Label>
-          <Textarea
+          <label
+            className="text-sm font-semibold"
+            htmlFor="approve-application-note"
+          >
+            Approval notes
+          </label>
+          <textarea
             id="approve-application-note"
+            className="input w-full"
+            rows={4}
             value={note}
             onChange={(event) => setNote(event.target.value)}
             placeholder="Add notes (optional)"
             disabled={isPending}
           />
         </div>
-        <AlertDialogFooter>
-          <AlertDialogAction onClick={handleApprove} disabled={isPending}>
-            Approve
-          </AlertDialogAction>
-          <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+      </Modal.Body>
+      <Modal.Buttons>
+        <Button onClick={handleApprove} disabled={isPending}>
+          Approve
+        </Button>
+        <Button
+          color="secondary"
+          onClick={() => {
+            if (!isPending) {
+              onOpenChange(false);
+              setNote("");
+            }
+          }}
+          disabled={isPending}
+        >
+          Cancel
+        </Button>
+      </Modal.Buttons>
+    </Modal>
   );
 }

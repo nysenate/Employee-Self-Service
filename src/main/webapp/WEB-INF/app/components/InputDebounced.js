@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useDebounce } from "use-debounce";
 import { twMerge } from "tailwind-merge";
-import { Input } from "app/components/ui/input";
 
 export default function InputDebounced({
   id,
@@ -45,7 +44,7 @@ export default function InputDebounced({
 
   return (
     <div>
-      <Input
+      <input
         ref={inputRef}
         id={id}
         name={id}

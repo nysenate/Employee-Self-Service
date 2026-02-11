@@ -1,5 +1,4 @@
 import React from "react";
-import { Badge } from "app/components/ui/badge";
 import { cn } from "app/utils/cn";
 
 const STATUS_VARIANTS = {
@@ -36,8 +35,13 @@ export default function TravelAppStatusBadge({ status }) {
     STATUS_VARIANTS.default;
 
   return (
-    <Badge variant="outline" className={cn("rounded-none", className)}>
+    <span
+      className={cn(
+        "inline-flex items-center rounded-none border px-2 py-0.5 text-sm font-semibold",
+        className,
+      )}
+    >
       {label}
-    </Badge>
+    </span>
   );
 }

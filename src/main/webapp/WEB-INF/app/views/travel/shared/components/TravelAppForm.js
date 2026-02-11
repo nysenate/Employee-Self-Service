@@ -1,21 +1,5 @@
 import React, { useMemo } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "app/components/ui/table";
-import { Separator } from "app/components/ui/separator";
-import { Checkbox } from "app/components/ui/checkbox";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "app/components/ui/popover";
-import { Spinner } from "app/components/ui/spinner";
+import LoadingCircle from "app/components/LoadingCircle";
 import { fetchApiJson } from "app/api/fetchJson";
 import { useQuery } from "@tanstack/react-query";
 import { isoToShortDate } from "app/utils/dateUtils";
@@ -37,13 +21,13 @@ export default function TravelAppForm({ app, showStatus = false, className }) {
       <div className="mx-auto w-[816px]">
         <Header />
         <EmployeeInfo app={app} />
-        <Separator className="my-3 h-1 bg-gray-500 data-[orientation=horizontal]:h-1" />
+        <div className="my-3 h-1 bg-gray-500" />
         <AppInfo amendment={amendment} />
         <div className="mt-3 grid grid-cols-2 place-items-center">
           <ModeOfTransportationBox amendment={amendment} />
           <AllowancesBox amendment={amendment} />
         </div>
-        <Separator className="my-3 h-1 bg-gray-500 data-[orientation=horizontal]:h-1" />
+        <div className="my-3 h-1 bg-gray-500" />
         <Attachments amendment={amendment} />
         {showStatus && <Status status={app.status} />}
       </div>
@@ -208,16 +192,20 @@ function ModeOfTransportationBox({ amendment }) {
         Mode of Transportation
       </div>
       {isMotLoading ? (
-        <Spinner className="mx-auto my-3 h-9 w-9" />
+        <div className="mx-auto my-3">
+          <LoadingCircle textColor="text-teal-600" />
+        </div>
       ) : (
         <div className="mt-3 grid grid-cols-2 gap-0.5">
           {modesOfTransportation.map((mot) => (
             <React.Fragment key={mot.methodOfTravel}>
               <div className="text-muted-foreground">{mot.displayName}</div>
               <div className="text-right">
-                <Checkbox
+                <input
+                  type="checkbox"
                   checked={selectedModes.has(mot.displayName)}
                   aria-label={mot.displayName}
+                  readOnly
                 />
               </div>
             </React.Fragment>

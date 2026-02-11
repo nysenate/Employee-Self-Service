@@ -3,15 +3,7 @@ import Hero from "app/components/Hero";
 import Controls from "app/components/Controls";
 import { useUserTravelRoles } from "app/views/travel/shared/hooks/useUserTravelRoles";
 import { useReviewQueue } from "app/views/travel/reviewer/queue/useReviewQueue";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "app/components/ui/select";
 import LoadingIndicator from "app/components/LoadingIndicator";
-import { Label } from "app/components/ui/label";
 import ReviewQueueResults from "./ReviewQueueResults";
 
 export default function ReviewQueuePage() {
@@ -97,23 +89,28 @@ function RoleSelect({ selectedRole, setSelectedRole, roles, reviewQueue }) {
     <div
       className={`flex items-center justify-center gap-2 py-2 ${roleBgClass}`}
     >
-      <Label>Active Role:</Label>
-      <Select value={selectedRole?.name} onValueChange={handleChange}>
-        <SelectTrigger className="min-w-[16rem]">
-          <SelectValue placeholder="Select role" />
-        </SelectTrigger>
-        <SelectContent>
-          {roles.map((role) => {
-            const count = reviewQueue?.[role.name]?.length ?? 0;
-            const label = `${role.displayName} - (${count}) Pending`;
-            return (
-              <SelectItem key={role.name} value={role.name}>
-                {label}
-              </SelectItem>
-            );
-          })}
-        </SelectContent>
-      </Select>
+      <label
+        className="text-sm font-semibold"
+        htmlFor="review-queue-active-role"
+      >
+        Active Role:
+      </label>
+      <select
+        id="review-queue-active-role"
+        className="select min-w-[16rem]"
+        value={selectedRole?.name ?? ""}
+        onChange={(event) => handleChange(event.target.value)}
+      >
+        {roles.map((role) => {
+          const count = reviewQueue?.[role.name]?.length ?? 0;
+          const label = `${role.displayName} - (${count}) Pending`;
+          return (
+            <option key={role.name} value={role.name}>
+              {label}
+            </option>
+          );
+        })}
+      </select>
     </div>
   );
 }

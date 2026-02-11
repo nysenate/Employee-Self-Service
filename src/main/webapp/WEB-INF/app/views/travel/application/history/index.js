@@ -3,7 +3,6 @@ import Hero from "app/components/Hero";
 import Controls from "app/components/Controls";
 import { endOfDay, formatISO, startOfDay, subMonths } from "date-fns";
 import { useSearchParams } from "react-router-dom";
-import { Label } from "app/components/ui/label";
 import { UTCDate } from "@date-fns/utc";
 import { useTravelApps } from "app/views/travel/application/history/useTravelApps";
 import TravelApplicationResults from "app/views/travel/application/history/TravelApplicationResults";
@@ -96,7 +95,9 @@ export default function ApplicationHistory() {
       <Controls>
         <div className="flex gap-3 p-4">
           <div className="grid gap-1">
-            <Label htmlFor="fromDate">From Date</Label>
+            <label className="text-sm font-semibold" htmlFor="fromDate">
+              From Date
+            </label>
             <InputDebounced
               id="fromDate"
               type="date"
@@ -110,7 +111,9 @@ export default function ApplicationHistory() {
             />
           </div>
           <div className="grid gap-1">
-            <Label htmlFor="toDate">To Date</Label>
+            <label className="text-sm font-semibold" htmlFor="toDate">
+              To Date
+            </label>
             <InputDebounced
               id="toDate"
               type="date"

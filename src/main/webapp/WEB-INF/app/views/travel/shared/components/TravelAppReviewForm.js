@@ -1,6 +1,5 @@
 import React from "react";
 import TravelAppForm from "app/views/travel/shared/components/TravelAppForm";
-import { Separator } from "app/components/ui/separator";
 import { isoToShortDate } from "app/utils/dateUtils";
 
 export default function TravelAppReviewForm({ appReview }) {
@@ -52,7 +51,7 @@ function ActionsInfo({ actions }) {
       {actions.map((action, index) => (
         <React.Fragment key={index}>
           {index === 0 && (
-            <Separator className="data-[orientation=horizontal]:h-0.5" />
+            <div className="h-0.5 bg-gray-200" />
           )}
           <div className="grid grid-cols-[1.1fr_2fr_1.2fr] py-1.5">
             {action.resubmitted ? (
@@ -61,7 +60,7 @@ function ActionsInfo({ actions }) {
               <ReviewerActionRow action={action} />
             )}
           </div>
-          <Separator className="data-[orientation=horizontal]:h-0.5" />
+          <div className="h-0.5 bg-gray-200" />
         </React.Fragment>
       ))}
     </>

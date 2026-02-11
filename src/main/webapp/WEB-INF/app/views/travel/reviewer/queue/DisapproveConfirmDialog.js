@@ -1,16 +1,6 @@
 import React, { useMemo, useState } from "react";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "app/components/ui/alert-dialog";
-import { Label } from "app/components/ui/label";
-import { Textarea } from "app/components/ui/textarea";
+import Modal from "app/components/Modal";
+import Button from "app/components/Button";
 import { ReviewSummary } from "./reviewSummary";
 import { useDisapproveReview } from "./useDisapproveReview";
 
@@ -48,46 +38,60 @@ export default function DisapproveConfirmDialog({
   };
 
   return (
-    <AlertDialog
-      open={open}
-      onOpenChange={(nextOpen) => {
-        onOpenChange(nextOpen);
-        if (!nextOpen && !isPending) {
+    <Modal
+      isOpen={open}
+      onSoftReject={() => {
+        if (!isPending) {
+          onOpenChange(false);
           setNote("");
         }
       }}
     >
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Confirm disapproval</AlertDialogTitle>
-          <AlertDialogDescription>
-            Confirm the application details and add notes before disapproving.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
+      <Modal.Title>Confirm disapproval</Modal.Title>
+      <Modal.Body>
+        <p className="mb-3">
+          Confirm the application details and add notes before disapproving.
+        </p>
         <ReviewSummary review={review} />
         <div className="grid gap-2">
-          <Label htmlFor="disapprove-application-note">
+          <label
+            className="text-sm font-semibold"
+            htmlFor="disapprove-application-note"
+          >
             Disapproval notes<span className="text-red-600">*</span>
-          </Label>
-          <Textarea
+          </label>
+          <textarea
             id="disapprove-application-note"
+            className="input w-full"
+            rows={4}
             value={note}
             onChange={(event) => setNote(event.target.value)}
             placeholder="Add notes (required)"
             disabled={isPending}
           />
         </div>
-        <AlertDialogFooter>
-          <AlertDialogAction
-            variant="destructive"
-            onClick={handleDisapprove}
-            disabled={!canDisapprove}
-          >
-            Disapprove
-          </AlertDialogAction>
-          <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+      </Modal.Body>
+      <Modal.Buttons>
+        <Button
+          color="error"
+          onClick={handleDisapprove}
+          disabled={!canDisapprove}
+        >
+          Disapprove
+        </Button>
+        <Button
+          color="secondary"
+          onClick={() => {
+            if (!isPending) {
+              onOpenChange(false);
+              setNote("");
+            }
+          }}
+          disabled={isPending}
+        >
+          Cancel
+        </Button>
+      </Modal.Buttons>
+    </Modal>
   );
 }

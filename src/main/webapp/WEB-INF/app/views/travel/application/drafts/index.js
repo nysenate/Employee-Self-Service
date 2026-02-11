@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Hero from "app/components/Hero";
 import Controls from "app/components/Controls";
@@ -7,25 +7,7 @@ import {
   useMutateDraft,
 } from "app/views/travel/application/drafts/useDrafts";
 import LoadingIndicator from "app/components/LoadingIndicator";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "app/components/ui/alert-dialog";
-import {
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Table,
-} from "app/components/ui/table";
+import Modal from "app/components/Modal";
 import { isoToShortDate, isoToShortDateTime } from "app/utils/dateUtils";
 import { Trash2 } from "lucide-react";
 import { toCurrency } from "app/utils/textUtils";
@@ -50,100 +32,116 @@ function DraftTable({ drafts }) {
   const navigate = useNavigate();
   let rows = Array.isArray(drafts) ? drafts : [];
   const deleteDraft = useMutateDraft();
+  const [draftToDelete, setDraftToDelete] = useState(null);
 
   const handleContinue = (draft) => {
     navigate(`/travel/applications/new/${draft.id}`);
   };
 
   const handleDelete = (draft) => {
+    if (!draft) {
+      return;
+    }
     deleteDraft.mutate(draft.id);
+    setDraftToDelete(null);
   };
 
   return (
+    <>
     <Card className="mt-6">
       <div className="p-4">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Travel Date</TableHead>
-              <TableHead>Traveler</TableHead>
-              <TableHead>Destination</TableHead>
-              <TableHead>Allotted Funds</TableHead>
-              <TableHead>Updated Date Time</TableHead>
-              <TableHead></TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
+        <table className="table">
+          <thead>
+            <tr className="table__head__row">
+              <th className="table__head__cell">Travel Date</th>
+              <th className="table__head__cell">Traveler</th>
+              <th className="table__head__cell">Destination</th>
+              <th className="table__head__cell cell--number">Allotted Funds</th>
+              <th className="table__head__cell">Updated Date Time</th>
+              <th className="table__head__cell"></th>
+            </tr>
+          </thead>
+          <tbody className="table__body table__body--striped">
             {rows.map((row) => (
-              <TableRow key={row.id} className="hover:bg-transparent">
-                <TableCell>
+              <tr key={row.id} className="table__row">
+                <td className="table__cell">
                   {isoToShortDate(row.amendment?.startDate)}
-                </TableCell>
-                <TableCell>{row.traveler?.fullName}</TableCell>
-                <TableCell>{row.amendment?.destinationSummary}</TableCell>
-                <TableCell numeric>
+                </td>
+                <td className="table__cell">{row.traveler?.fullName}</td>
+                <td className="table__cell">
+                  {row.amendment?.destinationSummary}
+                </td>
+                <td className="table__cell cell--number">
                   {toCurrency(row.amendment?.totalAllowance)}
-                </TableCell>
-                <TableCell>{isoToShortDateTime(row.updatedDateTime)}</TableCell>
-                <TableCell className="flex justify-end gap-2">
-                  <Button
-                    variant="outlined"
-                    size="sm"
-                    onClick={() => handleContinue(row)}
-                    disabled={deleteDraft.isPending}
-                  >
-                    Continue
-                  </Button>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button
-                        variant="outlined"
-                        size="icon-sm"
-                        aria-label="Delete draft"
-                        disabled={deleteDraft.isPending}
-                      >
-                        <Trash2 />
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Delete draft</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          This action cannot be undone.
-                        </AlertDialogDescription>
-                        <div className="text-muted-foreground">
-                          Travel Date:{" "}
-                          {isoToShortDate(row.amendment?.startDate)}
-                          <br />
-                          Traveler: {row.traveler?.fullName}
-                          <br />
-                          {row.amendment?.destinationSummary && (
-                            <>
-                              Destination: {row.amendment?.destinationSummary}
-                            </>
-                          )}
-                        </div>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogAction
-                          variant="destructive"
-                          onClick={() => handleDelete(row)}
-                          disabled={deleteDraft.isPending}
-                        >
-                          Delete
-                        </AlertDialogAction>
-                        <AlertDialogCancel disabled={deleteDraft.isPending}>
-                          Cancel
-                        </AlertDialogCancel>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </TableCell>
-              </TableRow>
+                </td>
+                <td className="table__cell">
+                  {isoToShortDateTime(row.updatedDateTime)}
+                </td>
+                <td className="table__cell">
+                  <div className="flex justify-end gap-2">
+                    <Button
+                      variant="outlined"
+                      size="sm"
+                      onClick={() => handleContinue(row)}
+                      disabled={deleteDraft.isPending}
+                    >
+                      Continue
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      size="icon-sm"
+                      aria-label="Delete draft"
+                      onClick={() => setDraftToDelete(row)}
+                      disabled={deleteDraft.isPending}
+                    >
+                      <Trash2 />
+                    </Button>
+                  </div>
+                </td>
+              </tr>
             ))}
-          </TableBody>
-        </Table>
+          </tbody>
+        </table>
       </div>
     </Card>
+    <Modal
+      isOpen={Boolean(draftToDelete)}
+      onSoftReject={() => setDraftToDelete(null)}
+    >
+      <Modal.Title>Delete draft</Modal.Title>
+      <Modal.Body>
+        <div className="space-y-2">
+          <p>This action cannot be undone.</p>
+          {draftToDelete && (
+            <div className="text-muted-foreground">
+              Travel Date: {isoToShortDate(draftToDelete.amendment?.startDate)}
+              <br />
+              Traveler: {draftToDelete.traveler?.fullName}
+              <br />
+              {draftToDelete.amendment?.destinationSummary && (
+                <>Destination: {draftToDelete.amendment?.destinationSummary}</>
+              )}
+            </div>
+          )}
+        </div>
+      </Modal.Body>
+      <Modal.Buttons>
+        <Button
+          color="error"
+          onClick={() => handleDelete(draftToDelete)}
+          disabled={deleteDraft.isPending || !draftToDelete}
+        >
+          Delete
+        </Button>
+        <Button
+          color="secondary"
+          onClick={() => setDraftToDelete(null)}
+          disabled={deleteDraft.isPending}
+        >
+          Cancel
+        </Button>
+      </Modal.Buttons>
+    </Modal>
+    </>
   );
 }

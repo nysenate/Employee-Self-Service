@@ -2,7 +2,7 @@ import React from "react";
 import Card from "app/components/Card";
 import LoadingIndicator from "app/components/LoadingIndicator";
 import NoMatchesFound from "app/components/NoMatchesFound";
-import { Dialog, DialogContent } from "app/components/ui/dialog";
+import Modal from "app/components/Modal";
 import TravelAppForm from "app/views/travel/shared/components/TravelAppForm";
 import { useTravelApp } from "app/views/travel/shared/hooks/useTravelApp";
 import TravelAppSummaryTable from "app/views/travel/shared/components/TravelAppSummaryTable";
@@ -62,14 +62,17 @@ function TravelAppFormModal({ app, onOpenChange }) {
   const { data, isPending } = useTravelApp(app?.id);
 
   return (
-    <Dialog open={Boolean(app)} onOpenChange={onOpenChange}>
-      <DialogContent>
+    <Modal
+      isOpen={Boolean(app)}
+      onSoftReject={() => onOpenChange(false)}
+    >
+      <Modal.Body>
         {isPending ? (
           <LoadingIndicator />
         ) : (
           <TravelAppForm app={data.result} showStatus className="p-5" />
         )}
-      </DialogContent>
-    </Dialog>
+      </Modal.Body>
+    </Modal>
   );
 }

@@ -1,11 +1,3 @@
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "app/components/ui/table";
 import { isoToShortDate } from "app/utils/dateUtils";
 import { toCurrency } from "app/utils/textUtils";
 import TravelAppStatusBadge from "app/views/travel/shared/components/TravelAppStatusBadge";
@@ -21,38 +13,38 @@ export default function TravelAppSummaryTable({
   }
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Travel Date</TableHead>
-          <TableHead>Traveler</TableHead>
-          <TableHead>Destination</TableHead>
-          <TableHead numeric>Allotted Funds</TableHead>
-          <TableHead>Status</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
+    <table className="table">
+      <thead>
+        <tr className="table__head__row">
+          <th className="table__head__cell">Travel Date</th>
+          <th className="table__head__cell">Traveler</th>
+          <th className="table__head__cell">Destination</th>
+          <th className="table__head__cell cell--number">Allotted Funds</th>
+          <th className="table__head__cell">Status</th>
+        </tr>
+      </thead>
+      <tbody className="table__body table__body--highlight">
         {apps.map((app) => (
-          <TableRow
+          <tr
             key={app.id}
             role="button"
             tabIndex={0}
-            className="cursor-pointer"
+            className="table__row"
             onClick={() => handleRowClick(app)}
             onKeyDown={(event) => handleRowKeyDown(event, app)}
           >
-            <TableCell>{isoToShortDate(app.startDate)}</TableCell>
-            <TableCell>{app.travelerName ?? ""}</TableCell>
-            <TableCell>{app.destinationSummary ?? ""}</TableCell>
-            <TableCell numeric>
+            <td className="table__cell">{isoToShortDate(app.startDate)}</td>
+            <td className="table__cell">{app.travelerName ?? ""}</td>
+            <td className="table__cell">{app.destinationSummary ?? ""}</td>
+            <td className="table__cell cell--number">
               {toCurrency(app.totalAllowance ?? "")}
-            </TableCell>
-            <TableCell>
+            </td>
+            <td className="table__cell">
               <TravelAppStatusBadge status={app.status} />
-            </TableCell>
-          </TableRow>
+            </td>
+          </tr>
         ))}
-      </TableBody>
-    </Table>
+      </tbody>
+    </table>
   );
 }

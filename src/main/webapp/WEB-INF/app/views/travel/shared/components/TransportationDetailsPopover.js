@@ -1,12 +1,3 @@
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "app/components/ui/table";
 import React from "react";
 import { toCurrency } from "app/utils/textUtils";
 import InfoPopover from "app/views/travel/shared/components/InfoPopover";
@@ -30,43 +21,51 @@ export default function TransportationDetailsPopover({ amendment }) {
   return (
     <div className="flex items-center">
       <InfoPopover label="Transportation Summary">
-        <Table className="[&_td]:px-3 [&_th]:px-3">
-          <TableHeader>
-            <TableRow>
-              <TableHead>From</TableHead>
-              <TableHead>To</TableHead>
-              <TableHead numeric>Rate</TableHead>
-              <TableHead numeric>Miles</TableHead>
-              <TableHead numeric>Allowance</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
+        <table className="table">
+          <thead>
+            <tr className="table__head__row">
+              <th className="table__head__cell px-3">From</th>
+              <th className="table__head__cell px-3">To</th>
+              <th className="table__head__cell cell--number px-3">Rate</th>
+              <th className="table__head__cell cell--number px-3">Miles</th>
+              <th className="table__head__cell cell--number px-3">
+                Allowance
+              </th>
+            </tr>
+          </thead>
+          <tbody className="table__body">
             {rows.map((row) => (
-              <TableRow key={row.id}>
-                <TableCell className="whitespace-normal">
+              <tr key={row.id} className="table__row">
+                <td className="table__cell px-3 whitespace-normal">
                   {row.from.formattedAddressWithCounty}
-                </TableCell>
-                <TableCell className="whitespace-normal">
+                </td>
+                <td className="table__cell px-3 whitespace-normal">
                   {row.to.formattedAddressWithCounty}
-                </TableCell>
-                <TableCell numeric>{row.mileageRate}</TableCell>
-                <TableCell numeric>{row.miles}</TableCell>
-                <TableCell numeric>
+                </td>
+                <td className="table__cell cell--number px-3">
+                  {row.mileageRate}
+                </td>
+                <td className="table__cell cell--number px-3">{row.miles}</td>
+                <td className="table__cell cell--number px-3">
                   {toCurrency(row.requestedPerDiem) || "-"}
-                </TableCell>
-              </TableRow>
+                </td>
+              </tr>
             ))}
-          </TableBody>
-          <TableFooter>
-            <TableRow>
-              <TableCell colSpan={3}>Total</TableCell>
-              <TableCell numeric>{mileagePerDiem.totalMileage}</TableCell>
-              <TableCell numeric>
+          </tbody>
+          <tfoot>
+            <tr className="table__totals">
+              <td className="table__cell px-3" colSpan={3}>
+                Total
+              </td>
+              <td className="table__cell cell--number px-3">
+                {mileagePerDiem.totalMileage}
+              </td>
+              <td className="table__cell cell--number px-3">
                 {toCurrency(mileagePerDiem.totalPerDiem) || "-"}
-              </TableCell>
-            </TableRow>
-          </TableFooter>
-        </Table>
+              </td>
+            </tr>
+          </tfoot>
+        </table>
       </InfoPopover>
     </div>
   );

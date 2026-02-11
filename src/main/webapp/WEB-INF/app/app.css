@@ -1,7 +1,4 @@
 @import "tailwindcss";
-@import "tw-animate-css";
-
-@custom-variant dark (&:is(.dark *));
 
 @source "../../../WEB-INF/app/**/*.js";
 @source "../../../WEB-INF/app/**/*.html";
@@ -68,30 +65,6 @@
 
     /* Custom Font Family */
     --font-family-openSans: "Open Sans", sans-serif;
-
-    /* shadcn/ui Theme Variables */
-    --color-background: hsl(0 0% 100%);
-    --color-foreground: hsl(0 0% 3.9%);
-    --color-card: hsl(0 0% 100%);
-    --color-card-foreground: hsl(0 0% 3.9%);
-    --color-popover: hsl(0 0% 100%);
-    --color-popover-foreground: hsl(0 0% 3.9%);
-    --color-primary: hsl(0 0% 9%);
-    --color-primary-foreground: hsl(0 0% 98%);
-    --color-secondary: hsl(0 0% 96.1%);
-    --color-secondary-foreground: hsl(0 0% 9%);
-    --color-muted: hsl(0 0% 96.1%);
-    --color-muted-foreground: hsl(0 0% 45.1%);
-    --color-accent: hsl(0 0% 96.1%);
-    --color-accent-foreground: hsl(0 0% 9%);
-    --color-destructive: hsl(357 66% 45%);
-    --color-destructive-foreground: hsl(0 0% 98%);
-    --color-border: hsl(0 0% 89.8%);
-    --color-input: oklch(55.1% 0.027 264.364);
-    --color-ring: hsl(0 0% 3.9%);
-    --radius-lg: 0.5rem;
-    --radius-md: calc(0.5rem - 2px);
-    --radius-sm: calc(0.5rem - 4px);
 }
 
 /* Base styles */
@@ -206,48 +179,5 @@
 @media print {
     input::placeholder {
         color: transparent !important;
-    }
-}
-
-:root {
-    --sidebar: hsl(0 0% 98%);
-    --sidebar-foreground: hsl(240 5.3% 26.1%);
-    --sidebar-primary: hsl(240 5.9% 10%);
-    --sidebar-primary-foreground: hsl(0 0% 98%);
-    --sidebar-accent: hsl(240 4.8% 95.9%);
-    --sidebar-accent-foreground: hsl(240 5.9% 10%);
-    --sidebar-border: hsl(220 13% 91%);
-    --sidebar-ring: hsl(217.2 91.2% 59.8%);
-}
-
-.dark {
-    --sidebar: hsl(240 5.9% 10%);
-    --sidebar-foreground: hsl(240 4.8% 95.9%);
-    --sidebar-primary: hsl(224.3 76.3% 48%);
-    --sidebar-primary-foreground: hsl(0 0% 100%);
-    --sidebar-accent: hsl(240 3.7% 15.9%);
-    --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
-    --sidebar-border: hsl(240 3.7% 15.9%);
-    --sidebar-ring: hsl(217.2 91.2% 59.8%);
-}
-
-@theme inline {
-    --color-sidebar: var(--sidebar);
-    --color-sidebar-foreground: var(--sidebar-foreground);
-    --color-sidebar-primary: var(--sidebar-primary);
-    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-    --color-sidebar-accent: var(--sidebar-accent);
-    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-    --color-sidebar-border: var(--sidebar-border);
-    --color-sidebar-ring: var(--sidebar-ring);
-}
-
-@layer base {
-    * {
-        @apply border-border outline-ring/50;
-    }
-
-    body {
-        @apply bg-background text-foreground;
     }
 }
