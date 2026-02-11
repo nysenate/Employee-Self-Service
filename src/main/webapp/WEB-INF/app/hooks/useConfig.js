@@ -6,6 +6,7 @@ export function useConfig() {
     queryKey: ["config"],
     queryFn: () => fetchApiJson("/config").then((body) => body.result.config),
     staleTime: 1000 * 60 * 10,
-    throwOnError: true,
+    retry: false,
+    throwOnError: false,
   });
 }

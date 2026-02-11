@@ -5,7 +5,7 @@ export default async function loginUser(username, password) {
   body.append("username", username);
   body.append("password", password);
 
-  let data;
+  let data = null;
   try {
     data = await fetchJson(`/login`, {
       method: "POST",
@@ -16,13 +16,14 @@ export default async function loginUser(username, password) {
     });
   } catch (error) {
     console.error(error);
+    throw new Error("Unable to sign in. Please try again.");
   }
 
-  if (data.authenticated) {
+  if (data?.authenticated) {
     // successfully logged in.
     return data;
   } else {
     // Unsuccessful login.
-    throw new Error(data?.message);
+    throw new Error(data?.message || "Unable to sign in. Please try again.");
   }
 }
