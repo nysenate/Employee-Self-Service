@@ -1,4 +1,4 @@
-import React from "react"
+import React from "react";
 import ContactLabel from "app/views/myinfo/personnel/emergency-alert-info/ContactLabel";
 import ErrorText from "app/views/myinfo/personnel/emergency-alert-info/ErrorText";
 
@@ -11,38 +11,44 @@ export default function EmailInputs({ register, errors }) {
 
       <div className="col-span-3">
         <ContactLabel id="workEmail">Work</ContactLabel>
-        <EmailInput id="workEmail" register={register} errors={errors} readOnly/>
-        <ErrorText id="workEmail" errors={errors}/>
+        <EmailInput
+          id="workEmail"
+          register={register}
+          errors={errors}
+          readOnly
+        />
+        <ErrorText id="workEmail" errors={errors} />
       </div>
 
       <div className="col-span-3">
         <ContactLabel id="personalEmail">Personal</ContactLabel>
-        <EmailInput id="personalEmail" register={register} errors={errors}/>
-        <ErrorText id="personalEmail" errors={errors}/>
+        <EmailInput id="personalEmail" register={register} errors={errors} />
+        <ErrorText id="personalEmail" errors={errors} />
       </div>
 
       <div className="col-span-3">
         <ContactLabel id="alternateEmail">Alternate</ContactLabel>
-        <EmailInput id="alternateEmail" register={register} errors={errors}/>
-        <ErrorText id="alternateEmail" errors={errors}/>
+        <EmailInput id="alternateEmail" register={register} errors={errors} />
+        <ErrorText id="alternateEmail" errors={errors} />
       </div>
     </>
-  )
+  );
 }
 
 function EmailInput({ id, register, errors, readOnly = false }) {
   return (
-    <input id={id}
-           name={id}
-           className={`${!readOnly && 'input'} mx-3 ${errors[id] ? "input--invalid" : ""}`}
-           type="email"
-           {...register(id, {
-             pattern: {
-               value: /^\S+@\S+\.[A-z]{2,}$/,
-               message: "Please enter a valid email address"
-             },
-           })}
-           readOnly={readOnly}
+    <input
+      id={id}
+      name={id}
+      className={`${!readOnly && "input"} mx-3 ${errors[id] ? "input--invalid" : ""}`}
+      type="email"
+      {...register(id, {
+        pattern: {
+          value: /^\S+@\S+\.[A-z]{2,}$/,
+          message: "Please enter a valid email address",
+        },
+      })}
+      readOnly={readOnly}
     />
-  )
+  );
 }

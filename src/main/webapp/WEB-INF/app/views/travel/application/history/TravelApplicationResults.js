@@ -62,10 +62,7 @@ function TravelAppFormModal({ app, onOpenChange }) {
   const { data, isPending } = useTravelApp(app?.id);
 
   return (
-    <Modal
-      isOpen={Boolean(app)}
-      onSoftReject={() => onOpenChange(false)}
-    >
+    <Modal isOpen={Boolean(app)} onSoftReject={() => onOpenChange(false)}>
       <Modal.Body>
         {isPending ? (
           <LoadingIndicator />

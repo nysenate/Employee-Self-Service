@@ -116,7 +116,7 @@ export default function ShopIndex() {
         </div>
         <ItemListing filterState={filterState} dispatch={dispatch} />
       </div>
-      <div className="absolute left-[20px] top-[370px]">
+      <div className="absolute top-[370px] left-[20px]">
         <Categories filterState={filterState} dispatch={dispatch} />
       </div>
     </>

@@ -163,7 +163,7 @@ function AssignmentRowDetails({ emp, assignments, tasksMap }) {
             {completedAssignments.map((assignment) => (
               <li key={assignment.taskId}>
                 {tasksMap.get(assignment.taskId).title}
-                <div className="mb-4 mt-1">
+                <div className="mt-1 mb-4">
                   <a
                     href={`/api/v1/personnel/task/acknowledgment/download?taskId=${assignment.taskId}&empId=${assignment.empId}`}
                     className={`${buttonClasses} px-1`}
@@ -193,7 +193,7 @@ function IncompleteAssignmentDetails({ emp, assignment, tasksMap }) {
   return (
     <li>
       {tasksMap.get(assignment.taskId).title}
-      <div className="mb-4 mt-1 flex gap-1">
+      <div className="mt-1 mb-4 flex gap-1">
         <button
           className={`${buttonClasses} px-1`}
           onClick={() => setIsOverrideModalOpen(true)}

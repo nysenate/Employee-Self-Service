@@ -50,9 +50,7 @@ function ActionsInfo({ actions }) {
       </div>
       {actions.map((action, index) => (
         <React.Fragment key={index}>
-          {index === 0 && (
-            <div className="h-0.5 bg-gray-200" />
-          )}
+          {index === 0 && <div className="h-0.5 bg-gray-200" />}
           <div className="grid grid-cols-[1.1fr_2fr_1.2fr] py-1.5">
             {action.resubmitted ? (
               <ResubmittedActionRow />

@@ -99,7 +99,7 @@
     box-sizing: border-box;
     display: block;
     flex-wrap: wrap;
-    flexDirection: row;
+    flexdirection: row;
     justify-content: center;
     text-size-adjust: 100%;
     position: relative;
@@ -219,7 +219,7 @@
     border: 1px solid #ccc;
     outline: 0;
     background: #fafafa;
-    padding: .3em;
+    padding: 0.3em;
 }
 
 .qtyAdjustButton {
@@ -238,5 +238,4 @@
     border: none;
     border-radius: 2px;
     display: inline-block;
-
 }

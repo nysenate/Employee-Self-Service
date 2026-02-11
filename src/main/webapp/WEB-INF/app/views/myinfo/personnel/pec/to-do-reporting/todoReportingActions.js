@@ -40,7 +40,7 @@ export const toggleInactiveEmployees = (checked) => ({
 
 export const updateContServDate = (date) => ({
   type: UPDATE_CONT_SERV_DATE,
-  payload: { date }
+  payload: { date },
 });
 
 export const setRespCtrHeads = (respCtrHead) => ({
@@ -50,10 +50,10 @@ export const setRespCtrHeads = (respCtrHead) => ({
 
 export const setEmpName = (name) => ({
   type: SET_EMP_NAME,
-  payload: { name }
+  payload: { name },
 });
 
 export const setOffset = (offset) => ({
   type: SET_OFFSET,
-  payload: { offset }
+  payload: { offset },
 });

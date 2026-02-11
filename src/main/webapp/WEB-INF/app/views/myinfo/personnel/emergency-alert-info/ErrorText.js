@@ -1,14 +1,15 @@
-import React from "react"
-
+import React from "react";
 
 export default function ErrorText({ id, errors }) {
   if (errors[id]?.message) {
     return (
       <div className="inline-block">
-        <p className="pl-1 mt-0.5 text-red-600 inline-block">{errors[id]?.message}</p>
+        <p className="mt-0.5 inline-block pl-1 text-red-600">
+          {errors[id]?.message}
+        </p>
       </div>
-    )
+    );
   }
 
-  return null
+  return null;
 }

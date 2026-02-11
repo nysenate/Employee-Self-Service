@@ -1,10 +1,9 @@
-import React from 'react';
-
+import React from "react";
 
 export default function ErrorBanner({ children }) {
   return (
-    <div className="bg-red-50 border-2 border-red-300 p-6 text-center">
+    <div className="border-2 border-red-300 bg-red-50 p-6 text-center">
       {children}
     </div>
-  )
+  );
 }

@@ -48,7 +48,7 @@ export default function LoginIndex() {
               height="270"
               alt="New York State Senate Capital Building"
             />
-            <div className="w-[400px] bg-white py-10 pl-10 pr-16">
+            <div className="w-[400px] bg-white py-10 pr-16 pl-10">
               {state === LOGIN_STATES.LOGIN && (
                 <LoginForm setState={setState} />
               )}

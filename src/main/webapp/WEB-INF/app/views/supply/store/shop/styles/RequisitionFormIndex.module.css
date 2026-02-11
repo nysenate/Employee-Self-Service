@@ -125,7 +125,7 @@
 
 .itemDescription h4 {
     margin: 10px 0 5px; /* Reduced margin for fitting within the fixed height */
-    font-size: 1.0em;
+    font-size: 1em;
     color: #333;
     height: 40px; /* Ensures description does not overflow */
     overflow: hidden; /* Hide overflowing text */
@@ -168,7 +168,7 @@
 
 .itemInputs {
     display: flex;
-    justifyContent: center;
+    justifycontent: center;
     gap: 5px;
 }
 
@@ -181,7 +181,7 @@
     border: 1px solid #ccc;
     outline: 0;
     background: #fafafa;
-    padding: .3em;
+    padding: 0.3em;
 }
 
 .qtyAdjustButton {
@@ -198,7 +198,8 @@
 }
 
 /* Pagination */
-.paginationTop, .paginationBottom {
+.paginationTop,
+.paginationBottom {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -225,7 +226,8 @@
     padding: 5px 10px;
     margin: 0 5px;
     cursor: pointer;
-    transition: background-color 0.3s, border-color 0.3s;
+    transition: background-color 0.3s,
+    border-color 0.3s;
 }
 
 .pageButton:hover {

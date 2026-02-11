@@ -22,7 +22,10 @@ export default function ReviewerActionModal({ reviewSummary, setIsOpen }) {
 
   if (isPending || !review) {
     return (
-      <Modal isOpen={Boolean(reviewSummary)} onSoftReject={() => setIsOpen(false)}>
+      <Modal
+        isOpen={Boolean(reviewSummary)}
+        onSoftReject={() => setIsOpen(false)}
+      >
         <Modal.Body>
           <LoadingIndicator />
         </Modal.Body>
@@ -32,23 +35,20 @@ export default function ReviewerActionModal({ reviewSummary, setIsOpen }) {
 
   const pdfHref = `${window.location.origin}/api/v1/travel/applications/${review?.travelApplication.id}.pdf`;
   return (
-    <Modal isOpen={Boolean(reviewSummary)} onSoftReject={() => setIsOpen(false)}>
+    <Modal
+      isOpen={Boolean(reviewSummary)}
+      onSoftReject={() => setIsOpen(false)}
+    >
       <Modal.Body>
         <TravelAppReviewForm appReview={review} />
       </Modal.Body>
       <Modal.Controls>
         <div className="grid w-full grid-cols-[1fr_auto] items-center gap-6 px-3 py-1.5 sm:justify-center">
           <div className="flex items-center justify-center gap-3">
-            <Button
-              color="success"
-              onClick={() => setApproveDialogOpen(true)}
-            >
+            <Button color="success" onClick={() => setApproveDialogOpen(true)}>
               Approve Application
             </Button>
-            <Button
-              color="error"
-              onClick={() => setDisapproveDialogOpen(true)}
-            >
+            <Button color="error" onClick={() => setDisapproveDialogOpen(true)}>
               Disapprove Application
             </Button>
             <Button color="secondary">Edit Application</Button>

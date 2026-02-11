@@ -12,7 +12,7 @@ export default function Paycheck({ summary }) {
             <th
               className={clsx(
                 "table__head__cell relative sticky left-0 bg-white",
-                "after:pointer-events-none after:absolute after:bottom-0 after:right-0",
+                "after:pointer-events-none after:absolute after:right-0 after:bottom-0",
                 "after:top-0 after:w-[2px] after:bg-teal-600 after:content-['']",
               )}
             >
@@ -40,7 +40,7 @@ export default function Paycheck({ summary }) {
                 className={clsx(
                   "table__cell relative sticky left-0 z-10",
                   `${i % 2 === 0 ? "bg-gray-75" : "bg-white"}`,
-                  "after:pointer-events-none after:absolute after:bottom-0 after:right-0",
+                  "after:pointer-events-none after:absolute after:right-0 after:bottom-0",
                   "after:top-0 after:w-[2px] after:bg-teal-600 after:content-['']",
                 )}
               >

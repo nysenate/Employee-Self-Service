@@ -27,7 +27,8 @@
     animation-iteration-count: infinite;
 }
 
-.dot1, .dot2 {
+.dot1,
+.dot2 {
     left: 0;
 }
 
@@ -50,7 +51,7 @@
 
 @keyframes slide {
     to {
-        transform: translateX(1.5em)
+        transform: translateX(1.5em);
     }
 }
 
@@ -58,7 +59,8 @@
     animation-name: reveal;
 }
 
-.dot2, .dot3 {
+.dot2,
+.dot3 {
     animation-name: slide;
 }
 

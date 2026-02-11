@@ -26,10 +26,7 @@ export default function InfoPopover({ label, children }) {
       >
         <Info className="h-4 w-4" />
       </PopoverButton>
-      <EssPopoverPanel
-        anchor="bottom"
-        className="w-[680px] max-w-3xl p-0"
-      >
+      <EssPopoverPanel anchor="bottom" className="w-[680px] max-w-3xl p-0">
         <div className="max-h-[70vh] overflow-y-auto p-4">{children}</div>
       </EssPopoverPanel>
     </Popover>

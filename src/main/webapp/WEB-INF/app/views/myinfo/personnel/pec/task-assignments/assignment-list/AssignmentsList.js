@@ -75,7 +75,7 @@ export default function AssignmentsList() {
   }
 
   return (
-    <div className={"mx-[9em] mb-2 mt-5 pb-5"}>
+    <div className={"mx-[9em] mt-5 mb-2 pb-5"}>
       <span className={"text-2xl"}>Incomplete Assignments</span>
       <ul className={"my-2"}>
         {incompleteAssignments.length === 0 ? (

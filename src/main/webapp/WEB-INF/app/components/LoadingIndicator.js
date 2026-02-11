@@ -1,5 +1,5 @@
-import React from "react"
-import styles from "./LoadingIndicator.module.css"
+import React from "react";
+import styles from "./LoadingIndicator.module.css";
 
 /**
  * Displays three animated dots to indicate loading.
@@ -7,15 +7,14 @@ import styles from "./LoadingIndicator.module.css"
  *                           a smaller indicator.
  */
 export default function LoadingIndicator({ variant }) {
-  let size
+  let size;
   switch (variant) {
     case "sm":
     case "small":
-      size = `${styles.small}`
-      break
+      size = `${styles.small}`;
+      break;
     default:
-      size = `${styles.large}`
-
+      size = `${styles.large}`;
   }
   return (
     <div className={`${styles.loader} ${size}`}>
@@ -24,5 +23,5 @@ export default function LoadingIndicator({ variant }) {
       <div className={`${styles.dot} ${styles.dot3}`}></div>
       <div className={`${styles.dot} ${styles.dot4}`}></div>
     </div>
-  )
+  );
 }

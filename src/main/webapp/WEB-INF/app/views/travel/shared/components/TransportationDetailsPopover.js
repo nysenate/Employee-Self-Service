@@ -28,9 +28,7 @@ export default function TransportationDetailsPopover({ amendment }) {
               <th className="table__head__cell px-3">To</th>
               <th className="table__head__cell cell--number px-3">Rate</th>
               <th className="table__head__cell cell--number px-3">Miles</th>
-              <th className="table__head__cell cell--number px-3">
-                Allowance
-              </th>
+              <th className="table__head__cell cell--number px-3">Allowance</th>
             </tr>
           </thead>
           <tbody className="table__body">

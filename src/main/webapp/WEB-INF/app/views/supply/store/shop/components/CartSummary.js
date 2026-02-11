@@ -31,12 +31,12 @@ const CartIcon = () => {
 
 const CartSummary = ({ cart }) => {
   return (
-    <div className="inline float-right">
-      <div className="flex items-center gap-2 mr-3">
+    <div className="float-right inline">
+      <div className="mr-3 flex items-center gap-2">
         <div className="">
           <CartIcon />
         </div>
-        <div className="text-white font-semibold">
+        <div className="font-semibold text-white">
           {cart.totalItems} {cart.totalItems === 1 ? "item" : "items"}
         </div>
       </div>

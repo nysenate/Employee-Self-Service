@@ -162,7 +162,7 @@ function UnassignedDetails({ emp, assignment, tasksMap }) {
   return (
     <li>
       {tasksMap.get(assignment.taskId).title}
-      <div className="mb-4 mt-1 flex gap-1">
+      <div className="mt-1 mb-4 flex gap-1">
         <button
           className={`${buttonClasses} px-1`}
           onClick={() => setIsAssignModalOpen(true)}

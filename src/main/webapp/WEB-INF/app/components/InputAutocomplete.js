@@ -54,7 +54,7 @@ const InputAutocomplete = forwardRef(function InputAutocomplete(
             className={clsx(
               "absolute z-20 max-h-60 overflow-y-auto border border-gray-200 bg-white p-1",
               "[--anchor-gap:2px] [--anchor-max-height:20rem] empty:invisible",
-              "data-leave:data-closed:opacity-0 transition duration-100 ease-in",
+              "transition duration-100 ease-in data-leave:data-closed:opacity-0",
             )}
           >
             {filteredOptions.map((option, index) => (

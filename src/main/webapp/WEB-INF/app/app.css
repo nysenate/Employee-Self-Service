@@ -5,24 +5,24 @@
 
 @theme {
     /* Custom Colors */
-    --color-teal-100: #EDF4F6;
-    --color-teal-200: #DBEAED;
-    --color-teal-300: #BCE4EC;
-    --color-teal-400: #B8E3EB;
-    --color-teal-500: #4195A7;
-    --color-teal-600: #016B80;
+    --color-teal-100: #edf4f6;
+    --color-teal-200: #dbeaed;
+    --color-teal-300: #bce4ec;
+    --color-teal-400: #b8e3eb;
+    --color-teal-500: #4195a7;
+    --color-teal-600: #016b80;
     --color-teal-700: #016073;
     --color-teal-800: #005667;
     --color-teal-900: #004552;
 
-    --color-green-100: #F1F5EC;
-    --color-green-200: #E5EADB;
+    --color-green-100: #f1f5ec;
+    --color-green-200: #e5eadb;
     --color-green-300: #c9d6ad;
     --color-green-400: #afc285;
-    --color-green-500: #81AD1F;
+    --color-green-500: #81ad1f;
     --color-green-600: #799933;
     --color-green-700: #6d8a2e;
-    --color-green-800: #5B7325;
+    --color-green-800: #5b7325;
     --color-green-900: #495c1f;
 
     --color-purple-100: #eff1f8;
@@ -30,26 +30,26 @@
     --color-purple-300: #c1c6e5;
     --color-purple-400: #929bd1;
     --color-purple-500: #737ec4;
-    --color-purple-600: #6370BD;
-    --color-purple-700: #5060B5;
+    --color-purple-600: #6370bd;
+    --color-purple-700: #5060b5;
     --color-purple-800: #404d91;
     --color-purple-900: #303a6d;
 
-    --color-orange-100: #FAF4EB;
-    --color-orange-200: #F5EAD9;
+    --color-orange-100: #faf4eb;
+    --color-orange-200: #f5ead9;
     --color-orange-300: #edd5a8;
     --color-orange-400: #e3bf7d;
     --color-orange-500: #daaa51;
-    --color-orange-600: #D19526;
-    --color-orange-700: #BB8620;
+    --color-orange-600: #d19526;
+    --color-orange-700: #bb8620;
     --color-orange-800: #966b1a;
     --color-orange-900: #705013;
 
-    --color-gray-25: #FEFEFE;
-    --color-gray-50: #FAFAFA;
-    --color-gray-75: #F5F5F5;
-    --color-gray-100: #F1F1F1;
-    --color-gray-450: #848B98;
+    --color-gray-25: #fefefe;
+    --color-gray-50: #fafafa;
+    --color-gray-75: #f5f5f5;
+    --color-gray-100: #f1f1f1;
+    --color-gray-450: #848b98;
 
     /* Custom Font Sizes */
     --text-xs: 0.688rem;
@@ -74,7 +74,7 @@
     }
 
     body {
-        @apply m-0 text-base text-gray-800 bg-gray-100;
+        @apply m-0 bg-gray-100 text-base text-gray-800;
         font-family: var(--font-family-openSans);
     }
 
@@ -87,7 +87,7 @@
     }
 
     a {
-        @apply text-teal-600 hover:text-teal-800 text-base;
+        @apply text-base text-teal-600 hover:text-teal-800;
     }
 
     button {
@@ -97,21 +97,16 @@
 
 /*  Custom css classes */
 @layer components {
-
     .input {
-        @apply p-1.5 border border-gray-300 bg-gray-50
-        focus-visible:border-gray-600
-        disabled:bg-white disabled:border-none
-        [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none
+        @apply border border-gray-300 bg-gray-50 p-1.5 focus-visible:border-gray-600 disabled:border-none disabled:bg-white [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none;
     }
 
     .input--invalid {
-        @apply border border-red-600
-        focus-visible:border-red-600;
+        @apply border border-red-600 focus-visible:border-red-600;
     }
 
     .select {
-        @apply p-1.5 border border-gray-300 bg-gray-50;
+        @apply border border-gray-300 bg-gray-50 p-1.5;
     }
 
     /* --- Table  Classes --- */
@@ -120,7 +115,7 @@
     }
 
     .table--sticky thead tr:nth-child(1) th {
-        @apply sticky bg-white z-10 border-b border-teal-600 shadow;
+        @apply sticky z-10 border-b border-teal-600 bg-white shadow;
     }
 
     .table__head__row {
@@ -128,7 +123,7 @@
     }
 
     .table__head__cell {
-        @apply py-3 px-5 text-left font-semibold tracking-wide;
+        @apply px-5 py-3 text-left font-semibold tracking-wide;
     }
 
     .table__body {
@@ -144,7 +139,7 @@
     }
 
     .table__body--highlight .table__row {
-        @apply hover:brightness-90 transition duration-75 cursor-pointer;
+        @apply cursor-pointer transition duration-75 hover:brightness-90;
     }
 
     .table__row {
@@ -152,11 +147,11 @@
     }
 
     .table__row--error {
-        @apply bg-red-300/30
+        @apply bg-red-300/30;
     }
 
     .table__cell {
-        @apply py-1.5 px-5 text-left;
+        @apply px-5 py-1.5 text-left;
     }
 
     .table__cell--bold {
@@ -164,7 +159,7 @@
     }
 
     th.cell--number {
-        @apply text-right
+        @apply text-right;
     }
 
     td.cell--number {
@@ -172,7 +167,7 @@
     }
 
     .table__totals {
-        @apply font-semibold border-t-2 border-teal-600;
+        @apply border-t-2 border-teal-600 font-semibold;
     }
 }
 
