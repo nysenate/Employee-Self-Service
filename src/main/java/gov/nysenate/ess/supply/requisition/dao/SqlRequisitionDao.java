@@ -189,7 +189,11 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                 .addValue("rejectedDateTime", requisition.getRejectedDateTime().map(SqlBaseDao::toDate).orElse(null))
                 .addValue("last_sfms_sync_date_time", requisition.getLastSfmsSyncDateTime().map(SqlBaseDao::toDate).orElse(null))
                 .addValue("savedInSfms", requisition.getSavedInSfms())
-                .addValue("isReconciled", requisition.getReconciled());
+                .addValue("isReconciled", requisition.getReconciled())
+                .addValue("sfms_sync_status", requisition.getSfmsSyncStatus())
+                .addValue("sfms_Attempts_count", requisition.getSfmsSyncAttempts())
+                .addValue("sfms_Skipped_reason", requisition.getSfmsSkippedReason());
+
     }
 
     /** Convert an EnumSet into a Set containing each enum's name. */
@@ -237,6 +241,9 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                     .withLastSfmsSyncDateTimeDateTime(getLocalDateTimeFromRs(rs, "last_sfms_sync_date_time"))
                     .withSavedInSfms(rs.getBoolean("saved_in_sfms"))
                     .withReconciled(rs.getBoolean("is_reconciled"))
+                    .withSfmsSyncStatus(SyncStatus.valueOf(rs.getString("sfms_sync_status")))
+                    .withSfmsSyncAttempts(rs.getInt("sfms_sync_attempts") == 0 ? null : rs.getInt("sfms_sync_attempts"))
+                    .withSfmsSkippedReason(rs.getString("sfms_skipped_reason"))
                     .build();
         }
     }
