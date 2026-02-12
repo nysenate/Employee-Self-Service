@@ -36,7 +36,7 @@ public final class Requisition {
     private final boolean reconciled;
     private final SyncStatus sfmsSyncStatus;
     private final Integer sfmsSyncAttempts;
-    private final String sfmsSkippedReason;
+    private final SkippedReason sfmsSkippedReason;
 
 
 
@@ -168,7 +168,7 @@ public final class Requisition {
         return copy().withReconciled(reconciled).build();
     }
 
-    public Requisition setSyncStatus(boolean syncStatus){
+    public Requisition setSyncStatus(SyncStatus syncStatus){
         return copy().withSfmsSyncStatus(sfmsSyncStatus).build();
     }
 
@@ -176,7 +176,7 @@ public final class Requisition {
         return copy().withSfmsSyncAttempts(sfmsSyncAttempts).build();
     }
 
-    public Requisition setSfmsSkippedReason(String sfmsSkippedReason) {
+    public Requisition setSfmsSkippedReason(SkippedReason sfmsSkippedReason) {
         return copy().withSfmsSkippedReason(sfmsSkippedReason).build();
     }
 
@@ -268,7 +268,7 @@ public final class Requisition {
         return sfmsSyncAttempts;
     }
 
-    public String getSfmsSkippedReason(){
+    public SkippedReason getSfmsSkippedReason(){
         return sfmsSkippedReason;
     }
 
@@ -350,7 +350,7 @@ public final class Requisition {
                 Objects.equals(approvedDateTime, that.approvedDateTime) &&
                 Objects.equals(rejectedDateTime, that.rejectedDateTime) &&
                 Objects.equals(sfmsSyncStatus, that.sfmsSyncStatus) &&
-                sfmsSyncAttempts == that.sfmsSyncAttempts
+                Objects.equals(sfmsSyncAttempts, that.sfmsSyncAttempts)
                 && Objects.equals(sfmsSkippedReason, that.sfmsSkippedReason);
     }
 
@@ -387,7 +387,7 @@ public final class Requisition {
         private boolean reconciled;
         private SyncStatus sfmsSyncStatus;
         private int sfmsSyncAttempts;
-        private String sfmsSkippedReason;
+        private SkippedReason sfmsSkippedReason;
 
         public Builder withRequisitionId(int requisitionId) {
             this.requisitionId = requisitionId;
@@ -503,7 +503,7 @@ public final class Requisition {
             return this;
         }
 
-        public Builder withSfmsSkippedReason(String sfmsSkippedReason){
+        public Builder withSfmsSkippedReason(SkippedReason sfmsSkippedReason){
             this.sfmsSkippedReason = sfmsSkippedReason;
             return this;
         }

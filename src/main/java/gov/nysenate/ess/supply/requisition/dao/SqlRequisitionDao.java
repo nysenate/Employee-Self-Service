@@ -74,6 +74,19 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
      */
     private Requisition saveRequisitionInfo(Requisition requisition) {
         // Try to update
+
+        // sets the sync status depending on what data times are present or null
+        if(requisition.getRejectedDateTime().isPresent()) {
+            requisition.setSyncStatus(SyncStatus.SKIPPED);
+            requisition.setSfmsSkippedReason(SkippedReason.REJECTED);
+        }else if(requisition.getApprovedDateTime().isPresent() && requisition.getSavedInSfms()) {
+            requisition.setSyncStatus(SyncStatus.PENDING);
+        }else if(requisition.getApprovedDateTime().isPresent() && !requisition.getSavedInSfms()) {
+            requisition.setSyncStatus(SyncStatus.ERROR);
+        }else{
+            requisition.setSyncStatus(SyncStatus.PENDING);
+        }
+
         MapSqlParameterSource params = requisitionParams(requisition);
         String sql = SqlRequisitionQuery.UPDATE_REQUISITION.getSql(schemaMap());
         boolean updated = localNamedJdbc.update(sql, params) == 1;
@@ -158,6 +171,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
     public void savedInSfms(int requisitionId, boolean succeed) {
         MapSqlParameterSource params = new MapSqlParameterSource("requisitionId", requisitionId);
         params.addValue("succeed", succeed);
+        params.addValue("sfms_sync_status", SyncStatus.COMPLETE);
         String sql = SqlRequisitionQuery.SET_SAVED_IN_SFMS.getSql(schemaMap());
         localNamedJdbc.update(sql, params);
     }
@@ -190,9 +204,9 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                 .addValue("last_sfms_sync_date_time", requisition.getLastSfmsSyncDateTime().map(SqlBaseDao::toDate).orElse(null))
                 .addValue("savedInSfms", requisition.getSavedInSfms())
                 .addValue("isReconciled", requisition.getReconciled())
-                .addValue("sfms_sync_status", requisition.getSfmsSyncStatus())
-                .addValue("sfms_Attempts_count", requisition.getSfmsSyncAttempts())
-                .addValue("sfms_Skipped_reason", requisition.getSfmsSkippedReason());
+                .addValue("sfms_Sync_Status", requisition.getSfmsSyncStatus())
+                .addValue("sfms_Attempts_Count", requisition.getSfmsSyncAttempts())
+                .addValue("sfms_Skipped_Reason", requisition.getSfmsSkippedReason());
 
     }
 
@@ -243,7 +257,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                     .withReconciled(rs.getBoolean("is_reconciled"))
                     .withSfmsSyncStatus(SyncStatus.valueOf(rs.getString("sfms_sync_status")))
                     .withSfmsSyncAttempts(rs.getInt("sfms_sync_attempts") == 0 ? null : rs.getInt("sfms_sync_attempts"))
-                    .withSfmsSkippedReason(rs.getString("sfms_skipped_reason"))
+                    .withSfmsSkippedReason(SkippedReason.valueOf(rs.getString("sfms_skipped_reason")))
                     .build();
         }
     }
