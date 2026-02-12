@@ -1,12 +1,12 @@
 
-BEGIN;
+
 
 -- The new columns for tracking synchronization
 -- Check constraint enforces that if the sync reason skipped then we must provide a reason
 ALTER TABLE supply.requisition
 ADD COLUMN sfms_sync_status TEXT DEFAULT 'PENDING',
 ADD COLUMN sfms_sync_attempt_count INT DEFAULT 0,
-ADD COLUMN sfms_sync_skip_reason TEXT DEFAULT NULL CHECK (sfms_sync_status = 'SKIPPED' OR sfms_sync_skip_reason IS NULL);
+ADD COLUMN sfms_sync_skip_reason TEXT DEFAULT NULL;
 
 
 -- Logic for backfilling:
@@ -21,13 +21,11 @@ ADD COLUMN sfms_sync_skip_reason TEXT DEFAULT NULL CHECK (sfms_sync_status = 'SK
 UPDATE supply.requisition
 SET sfms_sync_status = CASE
     WHEN approved_date_time IS NOT NULL AND saved_in_sfms IS TRUE THEN 'COMPLETE'
-    WHEN rejected_date_time IS NOT NULL THEN 'SKIPPED'
     WHEN approved_date_time IS NOT NULL AND saved_in_sfms IS FALSE THEN 'ERROR'
-
+    WHEN rejected_date_time IS NOT NULL THEN 'SKIPPED'
     ELSE 'PENDING'
-END
-WHERE sfms_sync_status = 'PENDING';
-
+    END
+WHERE requisition.sfms_sync_status = 'PENDING';
 
 -- For all skipped sync status, we'll enter the skipped reason was rejected for now until later.
 UPDATE supply.requisition
@@ -35,6 +33,13 @@ SET sfms_sync_skip_reason = 'REJECTED'
 WHERE requisition.sfms_sync_status = 'SKIPPED';
 
 
-SELECT * FROM supply.requisition LIMIT 200;
+--Add alter check after filling the skipped rows since adding it at the start triggers the check constraint
+ALTER TABLE supply.requisition
+ADD CONSTRAINT skipped_with_skip_reason CHECK (
+    (sfms_sync_status != 'SKIPPED' AND sfms_sync_skip_reason IS NULL)
+        OR
+    (sfms_sync_status = 'SKIPPED' AND sfms_sync_skip_reason IS NOT NULL));
 
-ROLLBACK;
+
+
+
