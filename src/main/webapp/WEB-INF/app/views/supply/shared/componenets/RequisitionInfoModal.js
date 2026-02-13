@@ -32,7 +32,7 @@ export default function RequisitionInfoModal({
         </div>
       </Modal.Body>
       <Modal.Buttons>
-        <Button color="secondary" onClick={onResolve}>
+        <Button variant="secondary" onPress={onResolve}>
           Close
         </Button>
       </Modal.Buttons>

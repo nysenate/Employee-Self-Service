@@ -103,9 +103,9 @@ const VersionFilter = ({ versions, setCurrentOrder, handlePrint }) => {
       </div>
       <div className="">
         <Button
-          variant="text"
+          variant="link"
           className="print:hidden"
-          onClick={() => window.print()}
+          onPress={() => window.print()}
         >
           Print Page
         </Button>

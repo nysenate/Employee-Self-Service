@@ -218,10 +218,10 @@ function AssignTaskModal({ isOpen, setIsOpen, emp, task }) {
         </div>
       </Modal.Body>
       <Modal.Buttons>
-        <Button color="success" onClick={onProceed}>
+        <Button variant="primary" onPress={onProceed}>
           Proceed
         </Button>
-        <Button color="error" onClick={() => setIsOpen(false)}>
+        <Button variant="destructive" onPress={() => setIsOpen(false)}>
           Cancel
         </Button>
       </Modal.Buttons>

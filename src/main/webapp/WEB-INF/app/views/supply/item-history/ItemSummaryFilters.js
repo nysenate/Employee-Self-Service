@@ -40,8 +40,8 @@ export default function ItemSummaryFilters({ filters, dispatch }) {
       <div className="mb-px pb-1.5">
         <Button
           className="print:hidden"
-          variant="text"
-          onClick={() => dispatch(resetFilters())}
+          variant="link"
+          onPress={() => dispatch(resetFilters())}
         >
           Reset
         </Button>
@@ -80,8 +80,8 @@ export default function ItemSummaryFilters({ filters, dispatch }) {
       <div className="mb-px pb-1.5">
         <Button
           className="print:hidden"
-          variant="text"
-          onClick={() => window.print()}
+          variant="link"
+          onPress={() => window.print()}
         >
           Print Report
         </Button>

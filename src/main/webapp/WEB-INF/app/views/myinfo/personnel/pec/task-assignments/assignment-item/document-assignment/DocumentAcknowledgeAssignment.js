@@ -137,10 +137,10 @@ function ConfirmationModal({ assignment, isOpen, onResolve, onReject }) {
         </div>
       </Modal.Body>
       <Modal.Buttons>
-        <Button color="success" onClick={onResolve}>
+        <Button variant="primary" onPress={onResolve}>
           I Agree
         </Button>
-        <Button color="secondary" onClick={onReject}>
+        <Button variant="secondary" onPress={onReject}>
           Cancel
         </Button>
       </Modal.Buttons>
@@ -165,9 +165,9 @@ function AcknowledgeBanner({
           <div className="w-2/12 text-center">
             <Button
               type="submit"
-              color="success"
-              disabled={!isScrolledToBottom || isAcknowledgmentInProgress}
-              onClick={onAcknowledged}
+              variant="primary"
+              isDisabled={!isScrolledToBottom || isAcknowledgmentInProgress}
+              onPress={onAcknowledged}
             >
               Acknowledge
             </Button>

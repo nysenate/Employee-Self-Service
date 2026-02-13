@@ -149,17 +149,17 @@ export default function RequisitionEditModal({
               </PermissionGate>
               <Button
                 type="button"
-                color="secondary"
+                variant="secondary"
                 className="w-20"
-                onClick={() => onResolve()}
+                onPress={() => onResolve()}
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
-                disabled={!isDirty || isSubmitting}
+                isDisabled={!isDirty || isSubmitting}
                 className="w-20"
-                onClick={() => (submitAction.current = "save")}
+                onPress={() => (submitAction.current = "save")}
               >
                 Save
               </Button>
@@ -186,23 +186,23 @@ export default function RequisitionEditModal({
 
 function AdvanceButton({ status, submitAction, isSubmitting }) {
   let label = "";
-  let color = "";
+  let variant = "primary";
   switch (status) {
     case "PENDING":
       label = "Process";
-      color = "time";
+      variant = "secondary";
       break;
     case "PROCESSING":
       label = "Complete";
-      color = "myinfo";
+      variant = "primary";
       break;
     case "COMPLETED":
       label = "Approve";
-      color = "supply";
+      variant = "theme";
       break;
     default:
       label = "";
-      color = "";
+      variant = "primary";
   }
   if (!label) {
     return <></>;
@@ -211,10 +211,10 @@ function AdvanceButton({ status, submitAction, isSubmitting }) {
   const advanceButton = (
     <Button
       type="submit"
-      color={color}
-      disabled={isSubmitting}
+      variant={variant}
+      isDisabled={isSubmitting}
       className="w-20"
-      onClick={() => (submitAction.current = "advance")}
+      onPress={() => (submitAction.current = "advance")}
     >
       {label}
     </Button>
@@ -242,8 +242,8 @@ function RejectButton({ status, submitAction, handleSubmit, isSubmitting }) {
             <PopoverButton as="div">
               <Button
                 type="button"
-                color="error"
-                disabled={isSubmitting}
+                variant="destructive"
+                isDisabled={isSubmitting}
                 className="w-20"
               >
                 Reject
@@ -254,13 +254,13 @@ function RejectButton({ status, submitAction, handleSubmit, isSubmitting }) {
                 <div className="">
                   <div>Are you sure?</div>
                   <div className="mt-3 flex gap-3">
-                    <Button color="secondary" onClick={close}>
+                    <Button variant="secondary" onPress={close}>
                       Cancel
                     </Button>
                     <Button
-                      color="error"
+                      variant="destructive"
                       type="submit"
-                      onClick={() => {
+                      onPress={() => {
                         close();
                         submitAction.current = "reject";
                         handleSubmit();
@@ -286,11 +286,10 @@ function UndoButton({ status, submitAction, isSubmitting }) {
     return (
       <Button
         type="submit"
-        variant="text"
-        color="link"
-        disabled={isSubmitting}
+        variant="link"
+        isDisabled={isSubmitting}
         className="w-20"
-        onClick={() => (submitAction.current = "undo")}
+        onPress={() => (submitAction.current = "undo")}
       >
         Undo
       </Button>

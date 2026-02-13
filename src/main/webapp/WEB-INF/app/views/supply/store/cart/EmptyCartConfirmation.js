@@ -16,10 +16,10 @@ export default function EmptyCartConfirmation({ isOpen, setIsOpen }) {
       <Modal.Title>Confirm Empty Cart</Modal.Title>
       <Modal.Body>Are you sure you want to empty your cart?</Modal.Body>
       <Modal.Buttons>
-        <Button color="secondary" onClick={() => setIsOpen(false)}>
+        <Button variant="secondary" onPress={() => setIsOpen(false)}>
           Cancel
         </Button>
-        <Button color="success" onClick={onResolve}>
+        <Button variant="primary" onPress={onResolve}>
           Yes
         </Button>
       </Modal.Buttons>

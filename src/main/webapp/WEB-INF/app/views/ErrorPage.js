@@ -11,10 +11,10 @@ export default function ErrorPage({ error, resetErrorBoundary }) {
       <div className="mb-3 text-3xl">Something went wrong</div>
       <p className="my-3">{error.message}</p>
       <div className="mt-3 flex justify-center gap-3">
-        <Button color="error" onClick={() => navigate(0)}>
+        <Button variant="destructive" onPress={() => navigate(0)}>
           Try Again
         </Button>
-        <Button color="error" onClick={() => navigate("/logout")}>
+        <Button variant="destructive" onPress={() => navigate("/logout")}>
           Logout
         </Button>
       </div>

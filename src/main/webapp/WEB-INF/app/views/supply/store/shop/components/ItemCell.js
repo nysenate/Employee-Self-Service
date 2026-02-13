@@ -106,10 +106,10 @@ function SpecialItemModal({ isOpen, onResolve, onReject }) {
         </span>
       </Modal.Body>
       <Modal.Buttons>
-        <Button color="secondary" onClick={onReject}>
+        <Button variant="secondary" onPress={onReject}>
           Cancel
         </Button>
-        <Button color="success" onClick={onResolve}>
+        <Button variant="primary" onPress={onResolve}>
           Add to Cart
         </Button>
       </Modal.Buttons>

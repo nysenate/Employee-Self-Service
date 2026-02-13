@@ -27,7 +27,7 @@ export default function AddItemInput({ append }) {
         displayValue={(item) => item?.commodityCode}
         className="inline-block w-44"
       />
-      <Button color="secondary" onClick={appendItem}>
+      <Button variant="secondary" onPress={appendItem}>
         Add Item
       </Button>
     </div>

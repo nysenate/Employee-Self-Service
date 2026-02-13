@@ -82,19 +82,19 @@ function DraftTable({ drafts }) {
                   <td className="table__cell">
                     <div className="flex justify-end gap-2">
                       <Button
-                        variant="outlined"
+                        variant="secondary"
                         size="sm"
-                        onClick={() => handleContinue(row)}
-                        disabled={deleteDraft.isPending}
+                        onPress={() => handleContinue(row)}
+                        isDisabled={deleteDraft.isPending}
                       >
                         Continue
                       </Button>
                       <Button
-                        variant="outlined"
+                        variant="secondary"
                         size="icon-sm"
                         aria-label="Delete draft"
-                        onClick={() => setDraftToDelete(row)}
-                        disabled={deleteDraft.isPending}
+                        onPress={() => setDraftToDelete(row)}
+                        isDisabled={deleteDraft.isPending}
                       >
                         <Trash2 />
                       </Button>
@@ -132,16 +132,16 @@ function DraftTable({ drafts }) {
         </Modal.Body>
         <Modal.Buttons>
           <Button
-            color="error"
-            onClick={() => handleDelete(draftToDelete)}
-            disabled={deleteDraft.isPending || !draftToDelete}
+            variant="destructive"
+            onPress={() => handleDelete(draftToDelete)}
+            isDisabled={deleteDraft.isPending || !draftToDelete}
           >
             Delete
           </Button>
           <Button
-            color="secondary"
-            onClick={() => setDraftToDelete(null)}
-            disabled={deleteDraft.isPending}
+            variant="secondary"
+            onPress={() => setDraftToDelete(null)}
+            isDisabled={deleteDraft.isPending}
           >
             Cancel
           </Button>

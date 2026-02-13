@@ -25,10 +25,10 @@ export default function DeliveryMethodModal({ isOpen, setIsOpen, onResolve }) {
         Note: Orders can be picked up from L212
       </Modal.Body>
       <Modal.Buttons>
-        <Button color="success" onClick={onPickup}>
+        <Button variant="primary" onPress={onPickup}>
           I'll pick it up
         </Button>
-        <Button color="secondary" onClick={onDelivery}>
+        <Button variant="secondary" onPress={onDelivery}>
           Please deliver it to me
         </Button>
       </Modal.Buttons>

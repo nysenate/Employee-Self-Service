@@ -45,22 +45,22 @@ export default function ReviewerActionModal({ reviewSummary, setIsOpen }) {
       <Modal.Controls>
         <div className="grid w-full grid-cols-[1fr_auto] items-center gap-6 px-3 py-1.5 sm:justify-center">
           <div className="flex items-center justify-center gap-3">
-            <Button color="success" onClick={() => setApproveDialogOpen(true)}>
+            <Button variant="primary" onPress={() => setApproveDialogOpen(true)}>
               Approve Application
             </Button>
-            <Button color="error" onClick={() => setDisapproveDialogOpen(true)}>
+            <Button variant="destructive" onPress={() => setDisapproveDialogOpen(true)}>
               Disapprove Application
             </Button>
-            <Button color="secondary">Edit Application</Button>
+            <Button variant="secondary">Edit Application</Button>
           </div>
           <div className="flex items-center gap-3">
             <a href={pdfHref} target="_blank" rel="noopener noreferrer">
               Print
             </a>
             <Button
-              color="secondary"
+              variant="secondary"
               className="w-20"
-              onClick={() => setIsOpen(false)}
+              onPress={() => setIsOpen(false)}
             >
               Close
             </Button>

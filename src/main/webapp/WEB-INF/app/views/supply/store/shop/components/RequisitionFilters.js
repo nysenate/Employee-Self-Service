@@ -38,7 +38,7 @@ export default function RequisitionFilters({ filterState, dispatch }) {
       <div className="flex items-baseline justify-between p-2">
         <div className="my-auto">
           <span className="mr-3 font-bold text-purple-500">Destination:</span>
-          <Button variant="text" onClick={() => setOpen(true)}>
+          <Button variant="link" onPress={() => setOpen(true)}>
             [change]
           </Button>
           <br />
@@ -58,10 +58,10 @@ export default function RequisitionFilters({ filterState, dispatch }) {
               onKeyDown={handleKeyDown}
             />
           </label>
-          <Button color="success" onClick={handleSave}>
+          <Button variant="primary" onPress={handleSave}>
             Search
           </Button>
-          <Button color="secondary" className="mx-2" onClick={() => reset()}>
+          <Button variant="secondary" className="mx-2" onPress={() => reset()}>
             Reset
           </Button>
         </div>
@@ -127,10 +127,10 @@ function ChangeDestinationModal({ isOpen, onResolve, onReject }) {
         Would you like to continue?
       </Modal.Body>
       <Modal.Buttons>
-        <Button color="secondary" onClick={onReject}>
+        <Button variant="secondary" onPress={onReject}>
           Cancel
         </Button>
-        <Button color="success" onClick={onResolve}>
+        <Button variant="primary" onPress={onResolve}>
           Yes
         </Button>
       </Modal.Buttons>

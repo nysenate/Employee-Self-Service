@@ -80,8 +80,8 @@ export default function AlertInfoForm({ alertInfo }) {
         <div className="py-3 text-center">
           <Button
             type="submit"
-            color="success"
-            disabled={Object.keys(dirtyFields).length <= 0 || !isValid}
+            variant="primary"
+            isDisabled={Object.keys(dirtyFields).length <= 0 || !isValid}
           >
             Save
           </Button>

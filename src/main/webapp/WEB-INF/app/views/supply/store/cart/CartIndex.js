@@ -96,15 +96,15 @@ export default function CartIndex() {
             />
           </div>
           <Button
-            color="secondary"
-            onClick={() => setIsEmptyCartConfirmationOpen(true)}
+            variant="secondary"
+            onPress={() => setIsEmptyCartConfirmationOpen(true)}
           >
             Empty Cart
           </Button>
           <Link to="/supply/shop" style={{ textDecoration: "none" }}>
-            <Button color="secondary">Continue Browsing</Button>
+            <Button variant="secondary">Continue Browsing</Button>
           </Link>
-          <Button onClick={() => setIsDeliveryMethodModalOpen(true)}>
+          <Button onPress={() => setIsDeliveryMethodModalOpen(true)}>
             Checkout
           </Button>
         </div>

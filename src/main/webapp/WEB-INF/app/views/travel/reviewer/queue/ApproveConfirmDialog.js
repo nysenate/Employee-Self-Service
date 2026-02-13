@@ -67,18 +67,18 @@ export default function ApproveConfirmDialog({
         </div>
       </Modal.Body>
       <Modal.Buttons>
-        <Button onClick={handleApprove} disabled={isPending}>
+        <Button onPress={handleApprove} isDisabled={isPending}>
           Approve
         </Button>
         <Button
-          color="secondary"
-          onClick={() => {
+          variant="secondary"
+          onPress={() => {
             if (!isPending) {
               onOpenChange(false);
               setNote("");
             }
           }}
-          disabled={isPending}
+          isDisabled={isPending}
         >
           Cancel
         </Button>

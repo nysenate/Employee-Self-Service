@@ -19,7 +19,7 @@ export default function ModalNotice({ isOpen, onResolve, title, body }) {
         <div className="max-w-lg">{body}</div>
       </Modal.Body>
       <Modal.Buttons>
-        <Button color="theme" onClick={onResolve}>
+        <Button variant="theme" onPress={onResolve}>
           Okay
         </Button>
       </Modal.Buttons>

@@ -259,10 +259,10 @@ function ManuallyOverrideModal({ isOpen, setIsOpen, emp, assignment, task }) {
         </div>
       </Modal.Body>
       <Modal.Buttons>
-        <Button color="success" onClick={onProceed}>
+        <Button variant="primary" onPress={onProceed}>
           Proceed
         </Button>
-        <Button color="error" onClick={() => setIsOpen(false)}>
+        <Button variant="destructive" onPress={() => setIsOpen(false)}>
           Cancel
         </Button>
       </Modal.Buttons>
@@ -304,10 +304,10 @@ function ManuallyDeactivateModal({ isOpen, setIsOpen, emp, assignment, task }) {
         </div>
       </Modal.Body>
       <Modal.Buttons>
-        <Button color="success" onClick={onProceed}>
+        <Button variant="primary" onPress={onProceed}>
           Proceed
         </Button>
-        <Button color="error" onClick={() => setIsOpen(false)}>
+        <Button variant="destructive" onPress={() => setIsOpen(false)}>
           Cancel
         </Button>
       </Modal.Buttons>

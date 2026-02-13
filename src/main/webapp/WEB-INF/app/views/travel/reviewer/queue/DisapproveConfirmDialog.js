@@ -73,21 +73,21 @@ export default function DisapproveConfirmDialog({
       </Modal.Body>
       <Modal.Buttons>
         <Button
-          color="error"
-          onClick={handleDisapprove}
-          disabled={!canDisapprove}
+          variant="destructive"
+          onPress={handleDisapprove}
+          isDisabled={!canDisapprove}
         >
           Disapprove
         </Button>
         <Button
-          color="secondary"
-          onClick={() => {
+          variant="secondary"
+          onPress={() => {
             if (!isPending) {
               onOpenChange(false);
               setNote("");
             }
           }}
-          disabled={isPending}
+          isDisabled={isPending}
         >
           Cancel
         </Button>

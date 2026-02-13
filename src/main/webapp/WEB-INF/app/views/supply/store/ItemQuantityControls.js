@@ -92,10 +92,10 @@ function QtyWarningModal({ isOpen, onResolve, onReject }) {
         Would you like to continue?
       </Modal.Body>
       <Modal.Buttons>
-        <Button color="secondary" onClick={onReject}>
+        <Button variant="secondary" onPress={onReject}>
           Cancel
         </Button>
-        <Button color="success" onClick={onResolve}>
+        <Button variant="primary" onPress={onResolve}>
           Yes
         </Button>
       </Modal.Buttons>

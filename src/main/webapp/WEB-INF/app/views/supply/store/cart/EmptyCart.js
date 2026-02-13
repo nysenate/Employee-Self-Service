@@ -14,7 +14,7 @@ export default function EmptyCart() {
           <div className={styles.emptyCartMessage}>Your cart is empty.</div>
           <div className={styles.emptyCartContainer}>
             <Link to="/supply/shop" style={{ textDecoration: "none" }}>
-              <Button color="secondary">Continue Browsing</Button>
+              <Button variant="secondary">Continue Browsing</Button>
             </Link>
           </div>
         </div>

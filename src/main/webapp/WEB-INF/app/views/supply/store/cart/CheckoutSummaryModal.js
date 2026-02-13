@@ -26,10 +26,10 @@ export default function CheckoutSummaryModal({ isOpen, setIsOpen, res }) {
       </Modal.Body>
       <Modal.Buttons>
         <Link to="/logout">
-          <Button color="error">Log out of ESS</Button>
+          <Button variant="destructive">Log out of ESS</Button>
         </Link>
         <Link to="/supply/shop">
-          <Button color="success">Back to ESS</Button>
+          <Button variant="primary">Back to ESS</Button>
         </Link>
       </Modal.Buttons>
     </Modal>

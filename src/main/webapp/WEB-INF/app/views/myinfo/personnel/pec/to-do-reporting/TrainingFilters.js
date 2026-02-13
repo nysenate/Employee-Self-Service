@@ -46,9 +46,8 @@ export default function TrainingFilters({ state, dispatch }) {
         </div>
         <div>
           <Button
-            variant="text"
-            color="link"
-            onClick={() => dispatch(clearTrainings())}
+            variant="link"
+            onPress={() => dispatch(clearTrainings())}
           >
             Clear selected trainings
           </Button>

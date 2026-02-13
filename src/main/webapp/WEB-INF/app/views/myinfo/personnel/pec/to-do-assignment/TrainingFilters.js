@@ -1,10 +1,10 @@
 import React from "react";
-import { Button } from "@headlessui/react";
 import { useTrainings } from "app/views/myinfo/personnel/pec/useTrainings";
 import {
   clearTrainings,
   toggleTraining,
 } from "app/views/myinfo/personnel/pec/to-do-reporting/todoReportingActions";
+import Button from "app/components/Button";
 
 export default function TrainingFilters({ state, dispatch }) {
   const trainingsQuery = useTrainings(true);
@@ -17,11 +17,7 @@ export default function TrainingFilters({ state, dispatch }) {
     <div>
       <span className="text-lg font-semibold">Training Filters</span>
       <div className="mt-1">
-        <Button
-          variant="text"
-          color="link"
-          onClick={() => dispatch(clearTrainings())}
-        >
+        <Button variant="link" onPress={() => dispatch(clearTrainings())}>
           Clear selected trainings
         </Button>
         <hr className="my-1" />

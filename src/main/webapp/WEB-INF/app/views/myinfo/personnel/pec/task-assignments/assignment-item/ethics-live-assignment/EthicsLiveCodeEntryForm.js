@@ -125,7 +125,7 @@ export default function EthicsLiveCodeEntryForm({ taskId, onSuccess }) {
 
         <div></div>
         <div className="justify-self-center">
-          <Button type="submit" color="success">
+          <Button type="submit" variant="primary">
             Submit
           </Button>
         </div>

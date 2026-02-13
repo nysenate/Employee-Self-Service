@@ -223,9 +223,9 @@ function TravelAppReviewModal({ reviewSummary, onOpenChange }) {
             Print
           </a>
           <Button
-            color="secondary"
+            variant="secondary"
             className="w-20"
-            onClick={() => onOpenChange(false)}
+            onPress={() => onOpenChange(false)}
           >
             Close
           </Button>

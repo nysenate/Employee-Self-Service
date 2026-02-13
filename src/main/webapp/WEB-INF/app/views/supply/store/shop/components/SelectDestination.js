@@ -59,8 +59,8 @@ export default function SelectDestination() {
         />
         <span className="mx-2">
           <Button
-            onClick={() => setDestination(dirtyDestination)}
-            disabled={!dirtyDestination}
+            onPress={() => setDestination(dirtyDestination)}
+            isDisabled={!dirtyDestination}
           >
             Confirm
           </Button>

@@ -111,9 +111,9 @@ function InactivityModal({ onResolve }) {
       </Modal.Body>
       <Modal.Buttons>
         <Link to="/logout" style={{ textDecoration: "none" }}>
-          <Button color="error">Log out of ESS</Button>
+          <Button variant="destructive">Log out of ESS</Button>
         </Link>
-        <Button color="success" onClick={() => onResolve()}>
+        <Button variant="primary" onPress={() => onResolve()}>
           Continue
         </Button>
       </Modal.Buttons>
