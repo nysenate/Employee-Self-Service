@@ -31,15 +31,17 @@ export default function ApproveConfirmDialog({
     );
   };
 
+  const handleCloseRequest = (nextOpen) => {
+    if (!nextOpen && !isPending) {
+      onOpenChange(false);
+      setNote("");
+    }
+  };
+
   return (
     <Modal
       isOpen={open}
-      onSoftReject={() => {
-        if (!isPending) {
-          onOpenChange(false);
-          setNote("");
-        }
-      }}
+      onOpenChange={handleCloseRequest}
     >
       <Modal.Title>Confirm approval</Modal.Title>
       <Modal.Body>
@@ -72,12 +74,7 @@ export default function ApproveConfirmDialog({
         </Button>
         <Button
           variant="secondary"
-          onPress={() => {
-            if (!isPending) {
-              onOpenChange(false);
-              setNote("");
-            }
-          }}
+          onPress={() => handleCloseRequest(false)}
           isDisabled={isPending}
         >
           Cancel

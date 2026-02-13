@@ -4,22 +4,42 @@ import React from "react";
 
 /**
  * A simple modal for displaying a small confirmation message.
- * @param isOpen
- * @param onResolve
- * @param title
- * @param body
+ * @param {boolean} isOpen
+ * @param {() => void} onClose
+ * @param {React.ReactNode} title
+ * @param {React.ReactNode} body
+ * @param {boolean} [isDismissable=false] Whether click-away/Escape can dismiss the notice.
  * @returns {Element}
- * @constructor
  */
-export default function ModalNotice({ isOpen, onResolve, title, body }) {
+export default function ModalNotice({
+  isOpen,
+  onClose,
+  title,
+  body,
+  isDismissable = false,
+}) {
+  if (process.env.NODE_ENV !== "production" && typeof onClose !== "function") {
+    throw new Error("[ModalNotice] `onClose` callback is required.");
+  }
+
+  const handleOpenChange = (open) => {
+    if (!open) {
+      onClose();
+    }
+  };
+
   return (
-    <Modal isOpen={isOpen}>
+    <Modal
+      isOpen={isOpen}
+      onOpenChange={handleOpenChange}
+      isDismissable={isDismissable}
+    >
       <Modal.Title>{title}</Modal.Title>
       <Modal.Body>
         <div className="max-w-lg">{body}</div>
       </Modal.Body>
       <Modal.Buttons>
-        <Button variant="theme" onPress={onResolve}>
+        <Button variant="theme" onPress={onClose}>
           Okay
         </Button>
       </Modal.Buttons>

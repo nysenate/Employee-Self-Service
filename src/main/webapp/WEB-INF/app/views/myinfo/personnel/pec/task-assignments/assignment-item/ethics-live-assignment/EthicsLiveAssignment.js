@@ -96,7 +96,7 @@ export default function EthicsLiveAssignment({ assignment }) {
 
       <ModalNotice
         isOpen={isSuccessModalOpen}
-        onResolve={onSuccessModalResolved}
+        onClose={onSuccessModalResolved}
         title="Code Submission Complete"
         body="Course codes were successfully submitted"
       />

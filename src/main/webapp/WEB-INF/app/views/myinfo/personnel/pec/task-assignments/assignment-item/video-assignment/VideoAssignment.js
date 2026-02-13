@@ -85,7 +85,7 @@ export default function VideoAssignment({ assignment }) {
 
       <ModalNotice
         isOpen={isSuccessModalOpen}
-        onResolve={onSuccessModalResolved}
+        onClose={onSuccessModalResolved}
         title="Code Submission Complete"
         body="Video codes were successfully submitted"
       />

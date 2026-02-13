@@ -37,15 +37,17 @@ export default function DisapproveConfirmDialog({
     );
   };
 
+  const handleCloseRequest = (nextOpen) => {
+    if (!nextOpen && !isPending) {
+      onOpenChange(false);
+      setNote("");
+    }
+  };
+
   return (
     <Modal
       isOpen={open}
-      onSoftReject={() => {
-        if (!isPending) {
-          onOpenChange(false);
-          setNote("");
-        }
-      }}
+      onOpenChange={handleCloseRequest}
     >
       <Modal.Title>Confirm disapproval</Modal.Title>
       <Modal.Body>
@@ -81,12 +83,7 @@ export default function DisapproveConfirmDialog({
         </Button>
         <Button
           variant="secondary"
-          onPress={() => {
-            if (!isPending) {
-              onOpenChange(false);
-              setNote("");
-            }
-          }}
+          onPress={() => handleCloseRequest(false)}
           isDisabled={isPending}
         >
           Cancel

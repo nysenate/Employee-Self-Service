@@ -76,7 +76,7 @@ export default function ItemCell({ item }) {
 
 function ImagePreviewModal({ item, isOpen, onClose }) {
   return (
-    <Modal isOpen={isOpen} onSoftReject={onClose}>
+    <Modal isOpen={isOpen} onOpenChange={onClose}>
       <Modal.Title>{item.description}</Modal.Title>
       <Modal.Body>
         <img

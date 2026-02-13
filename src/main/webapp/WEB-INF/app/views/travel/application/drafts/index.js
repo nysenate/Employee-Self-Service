@@ -33,6 +33,16 @@ function DraftTable({ drafts }) {
   let rows = Array.isArray(drafts) ? drafts : [];
   const deleteDraft = useMutateDraft();
   const [draftToDelete, setDraftToDelete] = useState(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+  };
+
+  const openDeleteModal = (draft) => {
+    setDraftToDelete(draft);
+    setIsDeleteModalOpen(true);
+  };
 
   const handleContinue = (draft) => {
     navigate(`/travel/applications/new/${draft.id}`);
@@ -43,7 +53,7 @@ function DraftTable({ drafts }) {
       return;
     }
     deleteDraft.mutate(draft.id);
-    setDraftToDelete(null);
+    closeDeleteModal();
   };
 
   return (
@@ -93,7 +103,7 @@ function DraftTable({ drafts }) {
                         variant="secondary"
                         size="icon-sm"
                         aria-label="Delete draft"
-                        onPress={() => setDraftToDelete(row)}
+                        onPress={() => openDeleteModal(row)}
                         isDisabled={deleteDraft.isPending}
                       >
                         <Trash2 />
@@ -107,8 +117,8 @@ function DraftTable({ drafts }) {
         </div>
       </Card>
       <Modal
-        isOpen={Boolean(draftToDelete)}
-        onSoftReject={() => setDraftToDelete(null)}
+        isOpen={isDeleteModalOpen}
+        onOpenChange={setIsDeleteModalOpen}
       >
         <Modal.Title>Delete draft</Modal.Title>
         <Modal.Body>
@@ -140,7 +150,7 @@ function DraftTable({ drafts }) {
           </Button>
           <Button
             variant="secondary"
-            onPress={() => setDraftToDelete(null)}
+            onPress={closeDeleteModal}
             isDisabled={deleteDraft.isPending}
           >
             Cancel

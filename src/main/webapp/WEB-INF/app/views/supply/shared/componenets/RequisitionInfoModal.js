@@ -14,7 +14,14 @@ export default function RequisitionInfoModal({
   }
 
   return (
-    <Modal isOpen={isOpen} onSoftReject={onResolve}>
+    <Modal
+      isOpen={isOpen}
+      onOpenChange={(open) => {
+        if (!open) {
+          onResolve();
+        }
+      }}
+    >
       <Modal.Title>
         <span className="text-xl">
           Requisition #{requisition.requisitionId} requested by{" "}

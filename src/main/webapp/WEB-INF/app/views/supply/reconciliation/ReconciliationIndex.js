@@ -86,7 +86,7 @@ export default function ReconciliationIndex() {
       )}
       <ModalNotice
         isOpen={status === STATUS.SUCCESS}
-        onResolve={() => setStatus(STATUS.TYPING)}
+        onClose={() => setStatus(STATUS.TYPING)}
         title="Success"
         body="The reconciliation was successful!"
       />

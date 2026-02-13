@@ -198,7 +198,8 @@ function TravelAppReviewModal({ reviewSummary, onOpenChange }) {
     return (
       <Modal
         isOpen={Boolean(reviewSummary)}
-        onSoftReject={() => onOpenChange(false)}
+        onOpenChange={onOpenChange}
+        ariaLabel="Travel review details"
       >
         <Modal.Body>
           <LoadingIndicator />
@@ -212,7 +213,8 @@ function TravelAppReviewModal({ reviewSummary, onOpenChange }) {
   return (
     <Modal
       isOpen={Boolean(reviewSummary)}
-      onSoftReject={() => onOpenChange(false)}
+      onOpenChange={onOpenChange}
+      ariaLabel="Travel review details"
     >
       <Modal.Body>
         <TravelAppReviewForm appReview={review} />

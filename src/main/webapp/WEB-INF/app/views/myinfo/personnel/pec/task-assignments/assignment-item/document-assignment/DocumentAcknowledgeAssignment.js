@@ -105,7 +105,7 @@ export default function DocumentAcknowledgeAssignment({ assignment }) {
       />
       <ModalNotice
         isOpen={isSuccessModalOpen}
-        onResolve={onSuccessModalResolved}
+        onClose={onSuccessModalResolved}
         title="Acknowledgement Complete"
         body="You have successfully acknowledged this policy/document."
       />

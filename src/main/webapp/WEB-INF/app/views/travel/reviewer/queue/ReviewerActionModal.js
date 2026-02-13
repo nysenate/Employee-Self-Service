@@ -24,7 +24,8 @@ export default function ReviewerActionModal({ reviewSummary, setIsOpen }) {
     return (
       <Modal
         isOpen={Boolean(reviewSummary)}
-        onSoftReject={() => setIsOpen(false)}
+        onOpenChange={setIsOpen}
+        ariaLabel="Travel review details"
       >
         <Modal.Body>
           <LoadingIndicator />
@@ -37,7 +38,8 @@ export default function ReviewerActionModal({ reviewSummary, setIsOpen }) {
   return (
     <Modal
       isOpen={Boolean(reviewSummary)}
-      onSoftReject={() => setIsOpen(false)}
+      onOpenChange={setIsOpen}
+      ariaLabel="Travel review details"
     >
       <Modal.Body>
         <TravelAppReviewForm appReview={review} />
