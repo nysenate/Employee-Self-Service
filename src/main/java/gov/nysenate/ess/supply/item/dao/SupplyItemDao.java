@@ -36,6 +36,9 @@ public class SupplyItemDao extends SqlBaseDao {
      * Get a set of items from a set of item ids.
      */
     public Set<SupplyItem> getItemsByIds(Set<Integer> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return List.of();
+        }
         MapSqlParameterSource params = new MapSqlParameterSource("ids", ids);
         String sql = OracleSupplyItemQuery.GET_SUPPLY_ITEMS_BY_IDS.getSql(schemaMap());
         Set<SupplyItem> items = new HashSet<>(remoteNamedJdbc.query(sql, params, new SupplyItemRowMapper()));
