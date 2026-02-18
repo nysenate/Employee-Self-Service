@@ -34,8 +34,8 @@ public final class Requisition {
     private final LocalDateTime lastSfmsSyncDateTime;
     private final boolean savedInSfms;
     private final boolean reconciled;
-    private final SyncStatus sfmsSyncStatus;
-    private final Integer sfmsSyncAttempts;
+    private final SyncStatus sfmsSyncStatus ;
+    private final int sfmsSyncAttempts;
     private final SkippedReason sfmsSkippedReason;
 
 
@@ -172,7 +172,7 @@ public final class Requisition {
         return copy().withSfmsSyncStatus(sfmsSyncStatus).build();
     }
 
-    public Requisition setSfmsSyncAttempts(Integer sfmsSyncAttempts) {
+    public Requisition setSfmsSyncAttempts(int sfmsSyncAttempts) {
         return copy().withSfmsSyncAttempts(sfmsSyncAttempts).build();
     }
 
@@ -350,7 +350,7 @@ public final class Requisition {
                 Objects.equals(approvedDateTime, that.approvedDateTime) &&
                 Objects.equals(rejectedDateTime, that.rejectedDateTime) &&
                 Objects.equals(sfmsSyncStatus, that.sfmsSyncStatus) &&
-                Objects.equals(sfmsSyncAttempts, that.sfmsSyncAttempts)
+                sfmsSyncAttempts == that.sfmsSyncAttempts
                 && Objects.equals(sfmsSkippedReason, that.sfmsSkippedReason);
     }
 
@@ -385,8 +385,8 @@ public final class Requisition {
         private LocalDateTime lastSfmsSyncDateTime;
         private boolean savedInSfms;
         private boolean reconciled;
-        private SyncStatus sfmsSyncStatus;
-        private int sfmsSyncAttempts;
+        private SyncStatus sfmsSyncStatus = SyncStatus.PENDING;
+        private int sfmsSyncAttempts = 0;
         private SkippedReason sfmsSkippedReason;
 
         public Builder withRequisitionId(int requisitionId) {
