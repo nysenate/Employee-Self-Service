@@ -1,8 +1,8 @@
-import { Popover, PopoverButton } from "@headlessui/react";
-import { EssPopoverPanel } from "app/components/EssPopover";
+import { EssPopover } from "app/components/EssPopover";
 import { Info } from "lucide-react";
 import React from "react";
 import { cn } from "app/utils/cn";
+import Button from "app/components/Button";
 
 /**
  * Displays an info icon which when clicked will display a popover containing {children}.
@@ -13,22 +13,25 @@ import { cn } from "app/utils/cn";
  */
 export default function InfoPopover({ label, children }) {
   return (
-    <Popover>
-      <PopoverButton
-        as="button"
-        type="button"
-        className={cn(
-          "inline-flex h-4 w-4 items-center justify-center rounded-full p-0",
-          "leading-none text-teal-700 transition hover:bg-teal-50",
-          "focus-visible:ring-2 focus-visible:ring-teal-600 focus-visible:outline-none",
-        )}
-        aria-label={`View ${label}`}
-      >
-        <Info className="h-4 w-4" />
-      </PopoverButton>
-      <EssPopoverPanel anchor="bottom" className="w-[680px] max-w-3xl p-0">
-        <div className="max-h-[70vh] overflow-y-auto p-4">{children}</div>
-      </EssPopoverPanel>
-    </Popover>
+    <EssPopover
+      placement="bottom"
+      trigger={
+        <Button
+          variant="quiet"
+          aria-label={`View ${label}`}
+          aria-haspopup="dialog"
+          className={cn(
+            "h-4 w-4 rounded-full p-0 text-teal-700 hover:bg-teal-50",
+            "focus-visible:ring-teal-600",
+          )}
+        >
+          <Info className="h-4 w-4" />
+        </Button>
+      }
+      className="w-[680px] max-w-3xl"
+      contentClassName="p-0"
+    >
+      <div className="max-h-[70vh] overflow-y-auto p-4">{children}</div>
+    </EssPopover>
   );
 }

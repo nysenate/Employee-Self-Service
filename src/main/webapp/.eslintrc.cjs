@@ -25,10 +25,8 @@ module.exports = {
         "WEB-INF/app/components/**/*.js",
         // Legacy direct imports allowed temporarily while migrating.
         "WEB-INF/app/views/myinfo/personnel/pec/OfficeMultiSelect.js",
-        "WEB-INF/app/views/supply/fulfillment/components/editModal/RequisitionEditModal.js",
         "WEB-INF/app/views/supply/reconciliation/ReconciliationTabs.js",
         "WEB-INF/app/views/supply/store/shop/components/SelectDestination.js",
-        "WEB-INF/app/views/travel/shared/components/InfoPopover.js",
       ],
       rules: {
         "no-restricted-imports": [

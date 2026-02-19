@@ -95,6 +95,7 @@
 @layer base {
     html {
         font-family: var(--font-family-openSans);
+        scrollbar-gutter: stable;
     }
 
     body {

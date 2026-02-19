@@ -3,8 +3,8 @@ import clsx from "clsx";
 
 export default function NotesInput({ register, errors }) {
   return (
-    <div className="mt-4 flex items-baseline justify-center gap-2">
-      <label htmlFor="note" className="font-light">
+    <div className="mt-4 flex items-start justify-center gap-2">
+      <label htmlFor="note" className="pt-1 font-light">
         Note:
       </label>
       <textarea

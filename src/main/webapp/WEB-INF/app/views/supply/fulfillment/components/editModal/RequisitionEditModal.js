@@ -11,9 +11,8 @@ import AddItemInput from "app/views/supply/fulfillment/components/editModal/AddI
 import { useAdvanceRequisition } from "app/views/supply/fulfillment/hooks/useAdvanceRequisition";
 import { useRejectRequisition } from "app/views/supply/fulfillment/hooks/useRejectRequisition";
 import { useUndoRequisition } from "app/views/supply/fulfillment/hooks/useUndoRequisition";
-import { EssPopoverPanel } from "app/components/EssPopover";
+import { EssPopover } from "app/components/EssPopover";
 import Button from "app/components/Button";
-import { Popover, PopoverButton } from "@headlessui/react";
 import PermissionGate from "app/components/PermissionGate";
 
 export default function RequisitionEditModal({
@@ -233,48 +232,51 @@ function AdvanceButton({ status, submitAction, isSubmitting }) {
 }
 
 function RejectButton({ status, submitAction, handleSubmit, isSubmitting }) {
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+
   // Only display reject option if status is currently pending or processing
   if (status === "PENDING" || status === "PROCESSING") {
     return (
-      <Popover className="relative">
-        {({ open, close }) => (
-          <>
-            <PopoverButton as="div">
-              <Button
-                type="button"
-                variant="destructive"
-                isDisabled={isSubmitting}
-                className="w-20"
-              >
-                Reject
-              </Button>
-            </PopoverButton>
-            {open && (
-              <EssPopoverPanel>
-                <div className="">
-                  <div>Are you sure?</div>
-                  <div className="mt-3 flex gap-3">
-                    <Button variant="secondary" onPress={close}>
-                      Cancel
-                    </Button>
-                    <Button
-                      variant="destructive"
-                      type="submit"
-                      onPress={() => {
-                        close();
-                        submitAction.current = "reject";
-                        handleSubmit();
-                      }}
-                    >
-                      Reject
-                    </Button>
-                  </div>
-                </div>
-              </EssPopoverPanel>
-            )}
-          </>
-        )}
-      </Popover>
+      <EssPopover
+        placement="top"
+        showArrow
+        isOpen={isPopoverOpen}
+        onOpenChange={(open) => {
+          if (!isSubmitting) {
+            setIsPopoverOpen(open);
+          }
+        }}
+        trigger={
+          <Button
+            type="button"
+            variant="destructive"
+            isDisabled={isSubmitting}
+            className="w-20"
+          >
+            Reject
+          </Button>
+        }
+      >
+        <div>
+          <div>Are you sure?</div>
+          <div className="mt-3 flex gap-3">
+            <Button variant="secondary" onPress={() => setIsPopoverOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              type="submit"
+              onPress={() => {
+                setIsPopoverOpen(false);
+                submitAction.current = "reject";
+                handleSubmit();
+              }}
+            >
+              Reject
+            </Button>
+          </div>
+        </div>
+      </EssPopover>
     );
   } else {
     return <></>;
