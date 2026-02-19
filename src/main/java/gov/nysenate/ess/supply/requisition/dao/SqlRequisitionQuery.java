@@ -13,9 +13,10 @@ public enum SqlRequisitionQuery implements BasicSqlQuery {
         INSERT_REQUISITION(
         """
             INSERT INTO ${supplySchema}.requisition(current_revision_id, ordered_date_time,
-                processed_date_time, completed_date_time, approved_date_time, rejected_date_time, saved_in_sfms, sfms_sync_status, sfms_sync_attempts, sfms_skipped_reason)
+                processed_date_time, completed_date_time, approved_date_time, rejected_date_time, saved_in_sfms, sfms_sync_status, sfms_sync_attempt_count, sfms_sync_skip_reason)
             VALUES (:revisionId, :orderedDateTime, :processedDateTime, :completedDateTime,
-                :approvedDateTime, :rejectedDateTime, :savedInSfms):sfms_sync_status, :sfms_sync_attempts, :sfms_skipped_reason
+                :approvedDateTime, :rejectedDateTime, :savedInSfms,
+                :sfmsSyncStatus, :sfmsSyncAttempts, :sfmsSkippedReason)
         """),
 
         UPDATE_REQUISITION(
@@ -25,8 +26,8 @@ public enum SqlRequisitionQuery implements BasicSqlQuery {
                 approved_date_time = :approvedDateTime, rejected_date_time = :rejectedDateTime,
                 saved_in_sfms = :savedInSfms,
                 sfms_sync_status = :sfmsSyncStatus,
-                sfms_sync_attempts = :sfmsSyncAttempts,
-                sfms_skipped_reason = :sfmsSkippedReason
+                sfms_sync_attempt_count = :sfmsSyncAttempts,
+                sfms_sync_skip_reason = :sfmsSkippedReason
             WHERE requisition_id = :requisitionId
         """),
 

@@ -64,6 +64,9 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
                 .withState(new PendingState())
                 .withModifiedBy(employeeService.getEmployee(submitRequisitionView.getCustomerId()))
                 .withOrderedDateTime(LocalDateTime.now())
+                .withSfmsSyncStatus(SyncStatus.PENDING)
+                .withSfmsSyncAttempts(0)
+                .withSfmsSkippedReason(null)
                 .build();
         Requisition savedRequisition = requisitionService.submitRequisition(requisition);
         RequisitionView requisitionView = new RequisitionView(savedRequisition);

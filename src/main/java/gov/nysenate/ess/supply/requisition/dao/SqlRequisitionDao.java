@@ -49,6 +49,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
     @Override
     @Transactional(value = "localTxManager")
     public synchronized Requisition saveRequisition(Requisition requisition) {
+
         requisition = requisition.setModifiedDateTime(dateTimeFactory.now());
         // Get the next revision id and set it in the requisition.
         requisition = requisition.setRevisionId(getNextRevisionId());
@@ -204,9 +205,9 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                 .addValue("last_sfms_sync_date_time", requisition.getLastSfmsSyncDateTime().map(SqlBaseDao::toDate).orElse(null))
                 .addValue("savedInSfms", requisition.getSavedInSfms())
                 .addValue("isReconciled", requisition.getReconciled())
-                .addValue("sfms_Sync_Status", requisition.getSfmsSyncStatus())
-                .addValue("sfms_Attempts_Count", requisition.getSfmsSyncAttempts())
-                .addValue("sfms_Skipped_Reason", requisition.getSfmsSkippedReason());
+                .addValue("sfmsSyncStatus", requisition.getSfmsSyncStatus().name())
+                .addValue("sfmsSyncAttempts", requisition.getSfmsSyncAttempts())
+                .addValue("sfmsSkippedReason", requisition.getSfmsSkippedReason());
 
     }
 
