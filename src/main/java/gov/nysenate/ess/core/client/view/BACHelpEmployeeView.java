@@ -31,7 +31,9 @@ public class BACHelpEmployeeView implements ViewObject
             this.email = employee.getEmail();
             this.active = employee.isActive();
             this.workPhone = employee.getWorkPhone();
-            this.location = new LocationView(employee.getWorkLocation());
+            this.location = Optional.ofNullable(employee.getWorkLocation())
+                    .map(LocationView::new)
+                    .orElse(null);
         }
     }
 
