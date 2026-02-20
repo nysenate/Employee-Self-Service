@@ -1,14 +1,32 @@
 import { useLocations } from "app/views/supply/shared/hooks/useLocations";
 import { useSupplyEmployees } from "app/views/supply/fulfillment/hooks/useSupplyEmployees";
 import { Controller } from "react-hook-form";
-import InputAutocomplete from "app/components/InputAutocomplete";
 import { isoToShortDateTime } from "app/utils/dateUtils";
 import { Link } from "react-router-dom";
-import React from "react";
+import React, { useMemo } from "react";
+import ComboBox, { createComboBoxOption } from "app/components/ComboBox";
 
 export default function EditableFields({ requisition, register, control }) {
   const locationQuery = useLocations();
   const supplyEmployeesQuery = useSupplyEmployees();
+
+  const destinationOptions = useMemo(() => {
+    return (locationQuery.data ?? []).map((loc) => {
+      const searchText = [loc.locId, loc.locationDescription]
+        .filter(Boolean)
+        .join(" ");
+
+      return createComboBoxOption({
+        key: loc.locId,
+        textValue: loc.locId,
+        optionLabel: loc.locId,
+        optionDescription: loc.locationDescription || null,
+        data: loc,
+        searchText,
+      });
+    });
+  }, [locationQuery.data]);
+
   return (
     <div className="grid grid-cols-2 gap-2">
       <div className="font-semibold">Status:</div>
@@ -20,11 +38,16 @@ export default function EditableFields({ requisition, register, control }) {
           name="destinationId"
           control={control}
           render={({ field }) => (
-            <InputAutocomplete
-              {...field}
+            <ComboBox
+              ariaLabel="Destination"
               id="destinationId"
               name="destinationId"
-              options={locationQuery.data?.map((loc) => loc.locId)}
+              className="w-full"
+              selectedKey={field.value || null}
+              onSelectionChange={({ key }) => {
+                field.onChange(key ?? "");
+              }}
+              options={destinationOptions}
             />
           )}
         />

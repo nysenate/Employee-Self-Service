@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import InputDebounced from "app/components/InputDebounced";
 import { useItemsMap } from "app/views/supply/shared/hooks/useItems";
 import {
@@ -6,8 +6,8 @@ import {
   setFilter,
 } from "app/views/supply/shared/lib/supplyFilterActions";
 import { useLocations } from "app/views/supply/shared/hooks/useLocations";
-import InputAutocomplete from "app/components/InputAutocomplete";
 import { useIssuers } from "app/views/supply/requisition-history/useIssuers";
+import ComboBox, { createComboBoxOption } from "app/components/ComboBox";
 
 export default function RequisitionHistoryFilters({ filters, dispatch }) {
   const itemsQuery = useItemsMap();
@@ -16,9 +16,41 @@ export default function RequisitionHistoryFilters({ filters, dispatch }) {
 
   const labelClasses = "block font-semibold";
 
-  const selectedDestination =
-    locationQuery.data?.find((loc) => loc.locId === filters.destinationId) ??
-    null;
+  const destinationOptions = useMemo(() => {
+    return (locationQuery.data ?? []).map((loc) => {
+      const searchText = [loc.locId, loc.locationDescription]
+        .filter(Boolean)
+        .join(" ");
+
+      return createComboBoxOption({
+        key: loc.locId,
+        textValue: loc.locId,
+        optionLabel: loc.locId,
+        optionDescription: loc.locationDescription || null,
+        data: loc,
+        searchText,
+      });
+    });
+  }, [locationQuery.data]);
+
+  const selectedCommodityKey =
+    filters.itemId == null || filters.itemId === ""
+      ? null
+      : Number(filters.itemId);
+
+  const commodityOptions = useMemo(() => {
+    const itemsMap = itemsQuery.data;
+    if (!itemsMap) return [];
+
+    return Array.from(itemsMap.values(), (commodity) =>
+      createComboBoxOption({
+        key: commodity.id,
+        textValue: commodity.commodityCode,
+        data: commodity,
+        searchText: commodity.commodityCode,
+      }),
+    );
+  }, [itemsQuery.data]);
 
   return (
     <div className="grid grid-cols-3 gap-4">
@@ -48,41 +80,21 @@ export default function RequisitionHistoryFilters({ filters, dispatch }) {
       </div>
       <div></div>
       <div>
-        <label htmlFor="destinationId" className={labelClasses}>
-          Destination Code
-        </label>
-        <InputAutocomplete
-          id="destinationId"
-          name="destinatioinId"
-          value={selectedDestination}
-          onChange={(value) =>
-            dispatch(setFilter("destinationId", value?.locId))
+        <ComboBox
+          label="Destination Code"
+          selectedKey={filters.destinationId}
+          onSelectionChange={({ key }) =>
+            dispatch(setFilter("destinationId", key))
           }
-          options={locationQuery.data ?? []}
-          displayValue={(loc) => loc?.locId}
-          renderOption={(loc) => (
-            <div>
-              <div>{loc.locId}</div>
-              <div className="text-xs font-light">
-                {loc.locationDescription}
-              </div>
-            </div>
-          )}
-          className="w-44"
+          options={destinationOptions}
         />
       </div>
       <div>
-        <label htmlFor="itemId" className={labelClasses}>
-          Commodity Code
-        </label>
-        <InputAutocomplete
-          id="itemId"
-          name="itemId"
-          value={itemsQuery.data?.get(filters.itemId) || null}
-          onChange={(value) => dispatch(setFilter("itemId", value?.id))}
-          options={Array.from(itemsQuery.data?.values() || [])}
-          displayValue={(item) => item?.commodityCode}
-          className="w-44"
+        <ComboBox
+          label="Commodity Code"
+          selectedKey={selectedCommodityKey}
+          onSelectionChange={({ key }) => dispatch(setFilter("itemId", key))}
+          options={commodityOptions}
         />
       </div>
       <div>
