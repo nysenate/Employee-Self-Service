@@ -257,8 +257,8 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                     .withSavedInSfms(rs.getBoolean("saved_in_sfms"))
                     .withReconciled(rs.getBoolean("is_reconciled"))
                     .withSfmsSyncStatus(SyncStatus.valueOf(rs.getString("sfms_sync_status")))
-                    .withSfmsSyncAttempts(rs.getInt("sfms_sync_attempts") == 0 ? 0 : rs.getInt("sfms_sync_attempts"))
-                    .withSfmsSkippedReason(SkippedReason.valueOf(rs.getString("sfms_skipped_reason")))
+                    .withSfmsSyncAttempts(rs.getInt("sfms_sync_attempt_count") == 0 ? 0 : rs.getInt("sfms_sync_attempt_count"))
+                    .withSfmsSkippedReason(rs.getString("sfms_sync_skip_reason") == null ? null : SkippedReason.valueOf(rs.getString("sfms_sync_skip_reason")))
                     .build();
         }
     }
