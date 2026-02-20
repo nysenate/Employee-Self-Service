@@ -76,16 +76,17 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
     private Requisition saveRequisitionInfo(Requisition requisition) {
         // Try to update
 
-        // sets the sync status depending on what data times are present or null
+
+        // sets the sync status depending on what data times are present or null - removed the complete case since that will happen when we synchronize
+
         if(requisition.getRejectedDateTime().isPresent()) {
-            requisition.setSyncStatus(SyncStatus.SKIPPED);
-            requisition.setSfmsSkippedReason(SkippedReason.REJECTED);
-        }else if(requisition.getApprovedDateTime().isPresent() && requisition.getSavedInSfms()) {
-            requisition.setSyncStatus(SyncStatus.PENDING);
+            requisition = requisition.setSfmsSkippedReason(SkippedReason.REJECTED);
+
+            requisition = requisition.setSyncStatus(SyncStatus.SKIPPED);
         }else if(requisition.getApprovedDateTime().isPresent() && !requisition.getSavedInSfms()) {
-            requisition.setSyncStatus(SyncStatus.ERROR);
+            requisition = requisition.setSyncStatus(SyncStatus.ERROR);
         }else{
-            requisition.setSyncStatus(SyncStatus.PENDING);
+            requisition = requisition.setSyncStatus(SyncStatus.PENDING);
         }
 
         MapSqlParameterSource params = requisitionParams(requisition);
@@ -207,7 +208,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                 .addValue("isReconciled", requisition.getReconciled())
                 .addValue("sfmsSyncStatus", requisition.getSfmsSyncStatus().name())
                 .addValue("sfmsSyncAttempts", requisition.getSfmsSyncAttempts())
-                .addValue("sfmsSkippedReason", requisition.getSfmsSkippedReason());
+                .addValue("sfmsSkippedReason", requisition.getSfmsSkippedReason() == null ? null :requisition.getSfmsSkippedReason().name());
 
     }
 

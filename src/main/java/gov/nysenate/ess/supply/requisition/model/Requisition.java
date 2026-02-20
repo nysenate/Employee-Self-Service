@@ -169,7 +169,7 @@ public final class Requisition {
     }
 
     public Requisition setSyncStatus(SyncStatus syncStatus){
-        return copy().withSfmsSyncStatus(sfmsSyncStatus).build();
+        return copy().withSfmsSyncStatus(syncStatus).build();
     }
 
     public Requisition setSfmsSyncAttempts(int sfmsSyncAttempts) {
