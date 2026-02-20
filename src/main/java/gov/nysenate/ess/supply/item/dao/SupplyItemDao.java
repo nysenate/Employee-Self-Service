@@ -37,7 +37,7 @@ public class SupplyItemDao extends SqlBaseDao {
      */
     public Set<SupplyItem> getItemsByIds(Set<Integer> ids) {
         if (ids == null || ids.isEmpty()) {
-            return List.of();
+            return Set.of();
         }
         MapSqlParameterSource params = new MapSqlParameterSource("ids", ids);
         String sql = OracleSupplyItemQuery.GET_SUPPLY_ITEMS_BY_IDS.getSql(schemaMap());
