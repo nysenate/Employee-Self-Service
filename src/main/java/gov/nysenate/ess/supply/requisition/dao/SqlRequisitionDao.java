@@ -76,22 +76,6 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
     private Requisition saveRequisitionInfo(Requisition requisition) {
         // Try to update
 
-
-        // sets the sync status depending on what data times are present or null - added checks for error and no syncable items since this is where syncStatus is updated except for those 2 cases due to the complexity of
-
-        if(requisition.getSfmsSkippedReason() != null || requisition.getSfmsSyncStatus() != SyncStatus.ERROR) {
-
-            if (requisition.getRejectedDateTime().isPresent()) {
-                requisition = requisition.setSfmsSkippedReason(SkippedReason.REJECTED);
-                requisition = requisition.setSyncStatus(SyncStatus.SKIPPED);
-            } else if (requisition.getApprovedDateTime().isPresent()) {
-                requisition = requisition.setSyncStatus(SyncStatus.COMPLETE);
-
-            } else {
-                requisition = requisition.setSyncStatus(SyncStatus.PENDING);
-            }
-        }
-
         MapSqlParameterSource params = requisitionParams(requisition);
         String sql = SqlRequisitionQuery.UPDATE_REQUISITION.getSql(schemaMap());
         boolean updated = localNamedJdbc.update(sql, params) == 1;
