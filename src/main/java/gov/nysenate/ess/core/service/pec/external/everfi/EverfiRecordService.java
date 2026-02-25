@@ -21,6 +21,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -30,7 +31,7 @@ import static gov.nysenate.ess.core.model.pec.PersonnelTaskType.EVERFI_COURSE;
 
 @Service
 public class EverfiRecordService implements ESSEverfiRecordService {
-    
+
     private EverfiApiClient everfiApiClient;
     private EmployeeDao employeeDao;
     private PersonnelTaskAssignmentDao personnelTaskAssignmentDao;
@@ -129,6 +130,7 @@ public class EverfiRecordService implements ESSEverfiRecordService {
     /**
      * Goes through assignment records and inserts personnel tasks into the database for the proper employees
      * on the certain tasks that we care about from everfi
+     *
      * @param assignmentAndProgresses
      */
     private void handleRecords(List<EverfiAssignmentAndProgress> assignmentAndProgresses) {
@@ -143,7 +145,7 @@ public class EverfiRecordService implements ESSEverfiRecordService {
                 continue;
             }
 
-            if ( !everfiUserService.isEverfiIdIgnored( user.getUuid() ) ) {
+            if (!everfiUserService.isEverfiIdIgnored(user.getUuid())) {
 
                 try {
                     int empID = getEmployeeId(user);
@@ -154,6 +156,11 @@ public class EverfiRecordService implements ESSEverfiRecordService {
                         Integer everfiTaskID = getEverfiTaskID(assignmentID);
                         //There is a max of 1 progress object in the progress array at any point
 
+                        //If the task is not in the assignment map then we don't care. This avoids a lot of error logging
+                        if (everfiTaskID == null) {
+                            continue;
+                        }
+
                         if (!assignmentAndProgress.getProgress().isEmpty()) {
                             EverfiAssignmentProgress progress = assignmentAndProgress.getProgress().get(0);
                             String everfiApiContentID = progress.getContentId();
@@ -162,7 +169,7 @@ public class EverfiRecordService implements ESSEverfiRecordService {
                             //Each progress has a content id which should suggest a certain task.
                             // We check here that the progress and the assignment both correspond to the same task
                             if (everfiTaskID != null && everfiApiContentID != null && databaseRetrievedContentID != null
-                            && everfiApiContentID.equalsIgnoreCase(databaseRetrievedContentID)) {
+                                    && everfiApiContentID.equalsIgnoreCase(databaseRetrievedContentID)) {
 
                                 LocalDateTime completedAt = null; //not completed by default
                                 boolean active = true; //true by default
@@ -188,20 +195,17 @@ public class EverfiRecordService implements ESSEverfiRecordService {
                                 //prevent completed=true & any records where emp_id != update_user_id0
                                 try {
                                     PersonnelTaskAssignment currentTaskAssignment =
-                                            personnelTaskAssignmentDao.getTaskForEmp(empID,everfiTaskID);
+                                            personnelTaskAssignmentDao.getTaskForEmp(empID, everfiTaskID);
 
-                                    if ( currentTaskAssignment.isCompleted() ) {
+                                    if (currentTaskAssignment.isCompleted()) {
+                                        continue;
+                                    } else if (currentTaskAssignment.getUpdateEmpId() != null &&
+                                            currentTaskAssignment.getEmpId() != currentTaskAssignment.getUpdateEmpId()) {
+                                        continue;
+                                    } else if (currentTaskAssignment.wasManuallyOverridden()) {
                                         continue;
                                     }
-                                    else if ( currentTaskAssignment.getUpdateEmpId() != null &&
-                                            currentTaskAssignment.getEmpId() != currentTaskAssignment.getUpdateEmpId() ) {
-                                        continue;
-                                    }
-                                    else if (currentTaskAssignment.wasManuallyOverridden()) {
-                                        continue;
-                                    }
-                                }
-                                catch (PersonnelTaskAssignmentNotFoundEx ex) {
+                                } catch (PersonnelTaskAssignmentNotFoundEx ex) {
                                     //This means they dont have a task to insert so we dont need to do anything
                                 }
 
@@ -234,7 +238,7 @@ public class EverfiRecordService implements ESSEverfiRecordService {
                         }
                     }
                 } catch (Exception e) {
-                    logger.error("Could not pull in Everfi Record for an employee "  + user.toString());
+                    logger.error("Could not pull in Everfi Record for an employee " + user.toString());
                 }
 
             }
@@ -243,6 +247,7 @@ public class EverfiRecordService implements ESSEverfiRecordService {
 
     /**
      * Gets the id of the personnel task that corresponds with the right assignment ID
+     *
      * @param assignmentID
      * @return
      */
@@ -252,6 +257,7 @@ public class EverfiRecordService implements ESSEverfiRecordService {
 
     /**
      * Gets all personnel tasks with the everfi course enum
+     *
      * @return
      */
     private List<PersonnelTask> getEverfiPersonnelTasks() {
