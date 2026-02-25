@@ -20,8 +20,13 @@ import java.util.Optional;
 @Service
 public class SupplyRequisitionService implements RequisitionService {
 
-    @Autowired private RequisitionDao requisitionDao;
-    @Autowired private SupplyEmailService emailService;
+    private final RequisitionDao requisitionDao;
+    private final SupplyEmailService emailService;
+
+    public SupplyRequisitionService(RequisitionDao requisitionDao, SupplyEmailService emailService) {
+        this.requisitionDao = requisitionDao;
+        this.emailService = emailService;
+    }
 
     /** {@inheritDoc} */
     @Override
@@ -64,6 +69,7 @@ public class SupplyRequisitionService implements RequisitionService {
      * Gets the matching requisition from the database, and compares its modified date time
      * with that of the new {@code requisition}. If they do not match then the requisition
      * has been updated by someone else and we should not save it.
+     *
      * @param requisition
      */
     private void checkPessimisticLocking(Requisition requisition) {
@@ -72,8 +78,8 @@ public class SupplyRequisitionService implements RequisitionService {
         if (previousRevision.isPresent()) {
             if (!previousRevision.get().getModifiedDateTime().equals(requisition.getModifiedDateTime())) {
                 throw new ConcurrentRequisitionUpdateException(requisition.getRequisitionId(),
-                                                               requisition.getModifiedDateTime().orElse(null),
-                                                               previousRevision.get().getModifiedDateTime().orElse(null));
+                        requisition.getModifiedDateTime().orElse(null),
+                        previousRevision.get().getModifiedDateTime().orElse(null));
             }
         }
     }

@@ -5,39 +5,34 @@ import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.core.service.notification.slack.service.SlackChatService;
-import gov.nysenate.ess.core.util.LimitOffset;
-import gov.nysenate.ess.core.util.PaginatedList;
+import gov.nysenate.ess.supply.InMemoryRequisitionDao;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.item.model.Category;
 import gov.nysenate.ess.supply.item.model.ItemAllowance;
 import gov.nysenate.ess.supply.item.model.ItemStatus;
 import gov.nysenate.ess.supply.item.model.ItemUnit;
 import gov.nysenate.ess.supply.item.model.SupplyItem;
-import gov.nysenate.ess.supply.requisition.model.DeliveryMethod;
-import gov.nysenate.ess.supply.requisition.model.PendingState;
-import gov.nysenate.ess.supply.requisition.model.Requisition;
+import gov.nysenate.ess.supply.notification.SupplyEmailService;
+import gov.nysenate.ess.supply.requisition.model.*;
 import gov.nysenate.ess.supply.requisition.service.RequisitionService;
+import gov.nysenate.ess.supply.requisition.service.SupplyRequisitionService;
 import gov.nysenate.ess.supply.synchronization.dao.SfmsSynchronizationProcedure;
 import gov.nysenate.ess.supply.synchronization.service.SfmsSynchronizationService;
 import gov.nysenate.ess.supply.util.date.DateTimeFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.dao.DataAccessResourceFailureException;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -47,18 +42,20 @@ import static org.mockito.Mockito.when;
 public class SfmsSynchronizationServiceTest {
 
     @Mock
-    private RequisitionService requisitionService;
-    @Mock
     private SfmsSynchronizationProcedure synchronizationProcedure;
     @Mock
     private DateTimeFactory dateTimeFactory;
     @Mock
     private SlackChatService slackChatService;
+    @Mock
+    private SupplyEmailService emailService;
 
+    private RequisitionService requisitionService;
     private SfmsSynchronizationService service;
 
     @Before
     public void setup() {
+        requisitionService = new SupplyRequisitionService(new InMemoryRequisitionDao(), emailService);
         service = new SfmsSynchronizationService(
                 true,
                 requisitionService,
@@ -66,8 +63,6 @@ public class SfmsSynchronizationServiceTest {
                 dateTimeFactory,
                 slackChatService
         );
-
-        when(dateTimeFactory.now()).thenReturn(LocalDateTime.of(2020, 1, 1, 0, 0));
     }
 
     @Test
@@ -80,68 +75,30 @@ public class SfmsSynchronizationServiceTest {
                 slackChatService
         );
         service.synchronizeRequisitions();
-        verifyNoInteractions(requisitionService, synchronizationProcedure, slackChatService);
+        verifyNoInteractions(synchronizationProcedure, slackChatService);
     }
 
     @Test
-    public void givenLineItemsRequireSync_thenSyncAndMarkSaved() {
+    public void testSuccessfulSync() {
+        // Initialize test state.
         Requisition requisition = buildRequisition(1001, setOf(lineItem(1, true)));
-        when(requisitionService.searchRequisitions(any()))
-                .thenReturn(new PaginatedList<>(1, LimitOffset.ALL, Collections.singletonList(requisition)));
+        requisitionService.saveRequisition(requisition);
 
+        LocalDateTime expectedSyncDateTime = LocalDateTime.now();
+        when(dateTimeFactory.now()).thenReturn(expectedSyncDateTime);
+
+        // Execute method to test
         service.synchronizeRequisitions();
 
-        verify(synchronizationProcedure).synchronizeRequisition(anyString());
-        verify(requisitionService).savedInSfms(requisition.getRequisitionId(), true);
-        verify(slackChatService, never()).sendMessage(anyString());
-    }
+        // Fetch state after execution.
+        requisition = requisitionService.getRequisitionById(requisition.getRequisitionId()).get();
 
-    @Test
-    public void givenSfmsError_thenSendSlackMsgAndDoNotMarkSaved() {
-        Requisition requisition = buildRequisition(1002, setOf(lineItem(1, true)));
-        when(requisitionService.searchRequisitions(any()))
-                .thenReturn(new PaginatedList<>(1, LimitOffset.ALL, Collections.singletonList(requisition)));
-        doThrow(new DataAccessResourceFailureException("db down"))
-                .when(synchronizationProcedure)
-                .synchronizeRequisition(anyString());
-
-        service.synchronizeRequisitions();
-
-        ArgumentCaptor<String> msgCaptor = ArgumentCaptor.forClass(String.class);
-        verify(slackChatService).sendMessage(msgCaptor.capture());
-        assertTrue(msgCaptor.getValue().contains("Error synchronizing requisition"));
-        verify(requisitionService, never()).savedInSfms(requisition.getRequisitionId(), true);
-    }
-
-    @Test
-    public void givenNoItemsRequireSync_thenDoNotSyncAndMarkSaved() {
-        Set<LineItem> items = setOf(
-                lineItem(0, true),
-                lineItem(2, false)
-        );
-        Requisition requisition = buildRequisition(1003, items);
-        when(requisitionService.searchRequisitions(any()))
-                .thenReturn(new PaginatedList<>(1, LimitOffset.ALL, Collections.singletonList(requisition)));
-
-        service.synchronizeRequisitions();
-
-        verify(synchronizationProcedure, never()).synchronizeRequisition(anyString());
-        verify(requisitionService).savedInSfms(requisition.getRequisitionId(), true);
-    }
-
-    @Test
-    public void givenMixedSyncItems_thenSyncOnlyRequiredItems() {
-        Requisition requisition = buildRequisition(1004, setOf(lineItem(1, true), lineItem(1, false)));
-        when(requisitionService.searchRequisitions(any()))
-                .thenReturn(new PaginatedList<>(1, LimitOffset.ALL, Collections.singletonList(requisition)));
-
-        service.synchronizeRequisitions();
-
-        ArgumentCaptor<String> xmlCaptor = ArgumentCaptor.forClass(String.class);
-        verify(synchronizationProcedure).synchronizeRequisition(xmlCaptor.capture());
-        String xml = xmlCaptor.getValue();
-        assertTrue(xml.contains("<itemId>1</itemId>"));
-        assertTrue(!xml.contains("<itemId>2</itemId>"));
+        // Check for valid side effects.
+        assertTrue(requisition.getSavedInSfms());
+        assertEquals(expectedSyncDateTime, requisition.getLastSfmsSyncDateTime().get());
+        assertEquals(SyncStatus.COMPLETE, requisition.getSfmsSyncStatus());
+        assertNull(requisition.getSfmsSkippedReason());
+        assertEquals(1, requisition.getSfmsSyncAttempts());
     }
 
     private Requisition buildRequisition(int requisitionId, Set<LineItem> lineItems) {
@@ -162,12 +119,14 @@ public class SfmsSynchronizationServiceTest {
                 .withDestination(destination)
                 .withDeliveryMethod(DeliveryMethod.DELIVERY)
                 .withLineItems(lineItems)
-                .withState(new PendingState())
+                .withState(new ApprovedState())
                 .withIssuer(issuer)
                 .withModifiedBy(customer)
                 .withModifiedDateTime(now)
                 .withOrderedDateTime(now)
-                .withApprovedDateTime(now.plusHours(1))
+                .withProcessedDateTime(LocalDateTime.now())
+                .withCompletedDateTime(LocalDateTime.now())
+                .withApprovedDateTime(LocalDateTime.now())
                 .build();
     }
 

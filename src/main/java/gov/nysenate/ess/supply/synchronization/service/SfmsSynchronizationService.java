@@ -1,11 +1,9 @@
 package gov.nysenate.ess.supply.synchronization.service;
 
-import com.google.common.collect.Range;
 import gov.nysenate.ess.core.service.notification.slack.service.SlackChatService;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.OutputUtils;
 import gov.nysenate.ess.supply.item.LineItem;
-import gov.nysenate.ess.supply.requisition.dao.RequisitionDao;
 import gov.nysenate.ess.supply.requisition.model.*;
 import gov.nysenate.ess.supply.requisition.service.RequisitionService;
 import gov.nysenate.ess.supply.requisition.view.SfmsRequisitionView;
@@ -38,7 +36,6 @@ public class SfmsSynchronizationService {
     private final SfmsSynchronizationProcedure synchronizationProcedure;
     private final DateTimeFactory dateTimeFactory;
     private final SlackChatService slackChatService;
-    private final RequisitionDao requisitionDao;
 
     @Autowired
     public SfmsSynchronizationService(@Value("${scheduler.supply.sfms_synchronization.enabled}")
@@ -46,13 +43,12 @@ public class SfmsSynchronizationService {
                                       RequisitionService requisitionService,
                                       SfmsSynchronizationProcedure synchronizationProcedure,
                                       DateTimeFactory dateTimeFactory,
-                                      SlackChatService slackChatService, RequisitionDao requisitionDao) {
+                                      SlackChatService slackChatService) {
         this.synchronizationEnabled = synchronizationEnabled;
         this.requisitionService = requisitionService;
         this.synchronizationProcedure = synchronizationProcedure;
         this.dateTimeFactory = dateTimeFactory;
         this.slackChatService = slackChatService;
-        this.requisitionDao = requisitionDao;
     }
 
     /**
@@ -61,13 +57,13 @@ public class SfmsSynchronizationService {
      * Line items of 0 quantity and items not tracked in SFMS are filtered out so they do not get synced.
      * If after filtering, a requisiton has no other line items, it will be marked as synced in supply but will not be synced with SFMS.
      * <p>
-     *     Checks all requisitions, so any errors in previous runs will be
-     *     automatically attempted again in the next run.
+     * Checks all requisitions, so any errors in previous runs will be
+     * automatically attempted again in the next run.
      * </p>
      * <p>
-     *     app.properties configuration:
-     *          - 'scheduler.supply.sfms_synchronization.enabled': boolean, determines if the synchronization process should run.
-     *          - 'scheduler.supply.sfms_synchronization.cron': Spring cron string specifying when the synchronization should run.
+     * app.properties configuration:
+     * - 'scheduler.supply.sfms_synchronization.enabled': boolean, determines if the synchronization process should run.
+     * - 'scheduler.supply.sfms_synchronization.cron': Spring cron string specifying when the synchronization should run.
      * </p>
      */
     @Scheduled(cron = "${scheduler.supply.sfms_synchronization.cron}")
@@ -83,37 +79,34 @@ public class SfmsSynchronizationService {
         }
 
 
-        for(Requisition r : reqs) {
-            if(!filteredReqs.contains(r)) {
-                if(r.getStatus().equals(RequisitionStatus.REJECTED)) {
+        for (Requisition r : reqs) {
+            if (!filteredReqs.contains(r)) {
+                if (r.getStatus().equals(RequisitionStatus.REJECTED)) {
                     r = r.setSfmsSkippedReason(SkippedReason.REJECTED);
                     r = r.setSyncStatus(SyncStatus.SKIPPED);
-                }else if(r.getLineItems().isEmpty() && r.getStatus().equals(RequisitionStatus.REJECTED)) {
+                } else if (r.getLineItems().isEmpty() && r.getStatus().equals(RequisitionStatus.REJECTED)) {
                     r = r.setSfmsSkippedReason(SkippedReason.REJECTED);
                     r = r.setSyncStatus(SyncStatus.SKIPPED);
-                }else if(r.getLineItems().isEmpty()) {
+                } else if (r.getLineItems().isEmpty()) {
                     r = r.setSfmsSkippedReason(SkippedReason.NO_SYNCABLE_ITEMS);
                     r = r.setSyncStatus(SyncStatus.SKIPPED);
                 } else {
                     r = r.setSyncStatus(SyncStatus.PENDING);
                 }
                 System.out.println(r);
-                requisitionDao.saveRequisition(r);
+                requisitionService.saveRequisition(r);
             }
         }
     }
 
     private void syncRequisition(Requisition requisition) {
-
-
         if (requiresSync(requisition)) {
             logger.info("Attempting to synchronize requisition {} with SFMS.", requisition.getRequisitionId());
             try {
-                requisition = requisition.setLastSfmsSyncDateTimeDateTime(LocalDateTime.now());
+                requisition = requisition.setLastSfmsSyncDateTimeDateTime(dateTimeFactory.now());
                 System.out.println("Did we get to the synchronization procedure.");
                 synchronizationProcedure.synchronizeRequisition(OutputUtils.toXml(new SfmsRequisitionView(requisition)));
                 System.out.println("Did we get through the entire saving synchronization procedure.");
-                setAsSynced(requisition);
                 requisition = requisition.setSavedInSfms(true);
                 requisition = requisition.setSyncStatus(SyncStatus.COMPLETE);
             } catch (DataAccessException ex) {
@@ -125,10 +118,9 @@ public class SfmsSynchronizationService {
             } finally {
                 System.out.println(requisition);
                 requisition = requisition.setSfmsSyncAttempts(requisition.getSfmsSyncAttempts() + 1);
-                requisitionDao.saveRequisition(requisition);
+                requisitionService.saveRequisition(requisition);
             }
-        }
-        else {
+        } else {
             logger.info("Requisition {} can skip SFMS sync.", requisition.getRequisitionId());
             setAsSynced(requisition);
         }
@@ -144,6 +136,7 @@ public class SfmsSynchronizationService {
 
     /**
      * Gets all requisitions which have not yet been synced with SFMS.
+     *
      * @return
      */
     private List<Requisition> requisitionsToBeSynced() {
@@ -178,6 +171,7 @@ public class SfmsSynchronizationService {
 
     /**
      * Send error message to slack channel
+     *
      * @param s msg
      */
     private void sendMessageToSlack(String s) {
@@ -200,14 +194,15 @@ public class SfmsSynchronizationService {
      *
      *     <li>Otherwise, it should stay in pending</li>
      * </ul>
+     *
      * @param requisition
      * @returns the requisition with the sync status properly set
      */
     public Requisition assignSyncStatus(Requisition requisition) {
 
-        if(requisition.getLastSfmsSyncDateTime().isPresent() && !requisition.getSavedInSfms()){
+        if (requisition.getLastSfmsSyncDateTime().isPresent() && !requisition.getSavedInSfms()) {
             requisition = requisition.setSyncStatus(SyncStatus.ERROR);
-        }else if(requisition.getLineItems().isEmpty()){
+        } else if (requisition.getLineItems().isEmpty()) {
             requisition = requisition.setSfmsSkippedReason(SkippedReason.NO_SYNCABLE_ITEMS);
             requisition = requisition.setSyncStatus(SyncStatus.SKIPPED);
         } else if (requisition.getRejectedDateTime().isPresent()) {
