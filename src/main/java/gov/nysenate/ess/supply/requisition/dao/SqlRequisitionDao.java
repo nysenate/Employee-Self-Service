@@ -160,7 +160,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
     public void savedInSfms(int requisitionId, boolean succeed) {
         MapSqlParameterSource params = new MapSqlParameterSource("requisitionId", requisitionId);
         params.addValue("succeed", succeed);
-        params.addValue("sfms_sync_status", SyncStatus.COMPLETE);
+        params.addValue("sfms_sync_status", SyncStatus.COMPLETE.name());
         String sql = SqlRequisitionQuery.SET_SAVED_IN_SFMS.getSql(schemaMap());
         localNamedJdbc.update(sql, params);
     }

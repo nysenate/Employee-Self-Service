@@ -5,7 +5,7 @@ import gov.nysenate.ess.core.service.notification.slack.service.SlackChatService
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.OutputUtils;
 import gov.nysenate.ess.supply.item.LineItem;
-import gov.nysenate.ess.supply.requisition.dao.SqlRequisitionDao;
+import gov.nysenate.ess.supply.requisition.dao.RequisitionDao;
 import gov.nysenate.ess.supply.requisition.model.*;
 import gov.nysenate.ess.supply.requisition.service.RequisitionService;
 import gov.nysenate.ess.supply.requisition.view.SfmsRequisitionView;
@@ -38,7 +38,7 @@ public class SfmsSynchronizationService {
     private final SfmsSynchronizationProcedure synchronizationProcedure;
     private final DateTimeFactory dateTimeFactory;
     private final SlackChatService slackChatService;
-    private final SqlRequisitionDao sqlRequisitionDao;
+    private final RequisitionDao requisitionDao;
 
     @Autowired
     public SfmsSynchronizationService(@Value("${scheduler.supply.sfms_synchronization.enabled}")
@@ -46,13 +46,13 @@ public class SfmsSynchronizationService {
                                       RequisitionService requisitionService,
                                       SfmsSynchronizationProcedure synchronizationProcedure,
                                       DateTimeFactory dateTimeFactory,
-                                      SlackChatService slackChatService, SqlRequisitionDao sqlRequisitionDao) {
+                                      SlackChatService slackChatService, RequisitionDao requisitionDao) {
         this.synchronizationEnabled = synchronizationEnabled;
         this.requisitionService = requisitionService;
         this.synchronizationProcedure = synchronizationProcedure;
         this.dateTimeFactory = dateTimeFactory;
         this.slackChatService = slackChatService;
-        this.sqlRequisitionDao = sqlRequisitionDao;
+        this.requisitionDao = requisitionDao;
     }
 
     /**
@@ -81,24 +81,51 @@ public class SfmsSynchronizationService {
         for (Requisition r : filteredReqs) {
             syncRequisition(r);
         }
+
+
+        for(Requisition r : reqs) {
+            if(!filteredReqs.contains(r)) {
+                if(r.getStatus().equals(RequisitionStatus.REJECTED)) {
+                    r = r.setSfmsSkippedReason(SkippedReason.REJECTED);
+                    r = r.setSyncStatus(SyncStatus.SKIPPED);
+                }else if(r.getLineItems().isEmpty() && r.getStatus().equals(RequisitionStatus.REJECTED)) {
+                    r = r.setSfmsSkippedReason(SkippedReason.REJECTED);
+                    r = r.setSyncStatus(SyncStatus.SKIPPED);
+                }else if(r.getLineItems().isEmpty()) {
+                    r = r.setSfmsSkippedReason(SkippedReason.NO_SYNCABLE_ITEMS);
+                    r = r.setSyncStatus(SyncStatus.SKIPPED);
+                } else {
+                    r = r.setSyncStatus(SyncStatus.PENDING);
+                }
+                System.out.println(r);
+                requisitionDao.saveRequisition(r);
+            }
+        }
     }
 
     private void syncRequisition(Requisition requisition) {
+
+
         if (requiresSync(requisition)) {
             logger.info("Attempting to synchronize requisition {} with SFMS.", requisition.getRequisitionId());
             try {
                 requisition = requisition.setLastSfmsSyncDateTimeDateTime(LocalDateTime.now());
+                System.out.println("Did we get to the synchronization procedure.");
                 synchronizationProcedure.synchronizeRequisition(OutputUtils.toXml(new SfmsRequisitionView(requisition)));
+                System.out.println("Did we get through the entire saving synchronization procedure.");
                 setAsSynced(requisition);
-                requisition = assignSyncStatus(requisition);
-                sqlRequisitionDao.saveRequisition(requisition);
+                requisition = requisition.setSavedInSfms(true);
+                requisition = requisition.setSyncStatus(SyncStatus.COMPLETE);
             } catch (DataAccessException ex) {
-
-                sqlRequisitionDao.saveRequisition(requisition);
+                requisition = requisition.setSyncStatus(SyncStatus.ERROR);
                 String msg = "Error synchronizing requisition " + requisition.getRequisitionId()
                         + " with SFMS. Exception is : " + ex.getMessage();
                 logger.error(msg);
                 sendMessageToSlack(msg);
+            } finally {
+                System.out.println(requisition);
+                requisition = requisition.setSfmsSyncAttempts(requisition.getSfmsSyncAttempts() + 1);
+                requisitionDao.saveRequisition(requisition);
             }
         }
         else {
@@ -121,7 +148,7 @@ public class SfmsSynchronizationService {
      */
     private List<Requisition> requisitionsToBeSynced() {
         RequisitionQuery query = new RequisitionQuery()
-                .setStatuses(EnumSet.of(RequisitionStatus.APPROVED))
+                .setStatuses(EnumSet.of(RequisitionStatus.APPROVED, RequisitionStatus.REJECTED))
                 .setFromDateTime(LocalDateTime.of(2016, 1, 1, 0, 0)) // Date before supply was launched, so includes all requisitions.
                 .setToDateTime(dateTimeFactory.now())
                 .setSavedInSfms(false)
