@@ -110,12 +110,12 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
      * @Param Organization, is always senate
      *
      */
-    @RequestMapping(value = "/personnel/task/generate", method = GET)
+    @RequestMapping(value = "/personnel/task/generate", method = POST)
     @ResponseStatus(value = HttpStatus.OK)
     public SimpleResponse runEverfiImport(HttpServletRequest request,
                                           HttpServletResponse response,
                                           @RequestParam(required = false, defaultValue = "1970") String since) {
-//        checkPermission(ADMIN.getPermission());
+        checkPermission(ADMIN.getPermission());
 
         LocalDateTime ldtsince;
 
