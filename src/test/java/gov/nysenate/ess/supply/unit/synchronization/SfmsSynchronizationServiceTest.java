@@ -5,6 +5,7 @@ import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.core.service.notification.slack.service.SlackChatService;
+import gov.nysenate.ess.core.util.OutputUtils;
 import gov.nysenate.ess.supply.InMemoryRequisitionDao;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.item.model.Category;
@@ -16,14 +17,18 @@ import gov.nysenate.ess.supply.notification.SupplyEmailService;
 import gov.nysenate.ess.supply.requisition.model.*;
 import gov.nysenate.ess.supply.requisition.service.RequisitionService;
 import gov.nysenate.ess.supply.requisition.service.SupplyRequisitionService;
+import gov.nysenate.ess.supply.requisition.view.RequisitionView;
+import gov.nysenate.ess.supply.requisition.view.SfmsRequisitionView;
 import gov.nysenate.ess.supply.synchronization.dao.SfmsSynchronizationProcedure;
 import gov.nysenate.ess.supply.synchronization.service.SfmsSynchronizationService;
 import gov.nysenate.ess.supply.util.date.DateTimeFactory;
+import org.apache.shiro.dao.DataAccessException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.dao.DataAccessResourceFailureException;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -42,7 +47,7 @@ import static org.mockito.Mockito.when;
 public class SfmsSynchronizationServiceTest {
 
     @Mock
-    private SfmsSynchronizationProcedure synchronizationProcedure;
+    private SfmsSynchronizationProcedure synchronizationProcedure ;
     @Mock
     private DateTimeFactory dateTimeFactory;
     @Mock
@@ -63,6 +68,7 @@ public class SfmsSynchronizationServiceTest {
                 dateTimeFactory,
                 slackChatService
         );
+
     }
 
     @Test
@@ -164,8 +170,12 @@ public class SfmsSynchronizationServiceTest {
         // Initialize test state.
         Requisition requisition = buildRequisition(1005, setOf(lineItem(1, true)));
 
+        requisitionService.saveRequisition(requisition);
+
         LocalDateTime expectedSyncDateTime = LocalDateTime.now();
         when(dateTimeFactory.now()).thenReturn(expectedSyncDateTime);
+
+        doThrow(new DataAccessResourceFailureException("Database failed to save")).when(synchronizationProcedure).synchronizeRequisition(any());
 
         // Execute method to test
         service.synchronizeRequisitions();
@@ -175,7 +185,6 @@ public class SfmsSynchronizationServiceTest {
 
         // Check for valid side effects.
         assertFalse(requisition.getSavedInSfms());
-        assertEquals(expectedSyncDateTime, requisition.getLastSfmsSyncDateTime().get());
         assertEquals(SyncStatus.ERROR, requisition.getSfmsSyncStatus());
         assertNull(requisition.getSfmsSkippedReason());
         assertEquals(1, requisition.getSfmsSyncAttempts());

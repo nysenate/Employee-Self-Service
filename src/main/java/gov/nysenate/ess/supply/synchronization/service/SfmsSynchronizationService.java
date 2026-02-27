@@ -118,9 +118,6 @@ public class SfmsSynchronizationService {
             logger.info("Attempting to synchronize requisition {} with SFMS.", requisition.getRequisitionId());
             try {
                 requisition = requisition.setLastSfmsSyncDateTimeDateTime(dateTimeFactory.now());
-                if(requisition.getRequisitionId() == 1005){
-                    throw new RuntimeException("Cannot synchronize requisition 1005.");
-                }
                 synchronizationProcedure.synchronizeRequisition(OutputUtils.toXml(new SfmsRequisitionView(requisition)));
                 //setAsSynced(requisition);
                 requisition = requisition.setSavedInSfms(true);
