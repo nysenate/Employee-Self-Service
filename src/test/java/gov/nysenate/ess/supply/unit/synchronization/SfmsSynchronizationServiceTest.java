@@ -101,7 +101,89 @@ public class SfmsSynchronizationServiceTest {
         assertEquals(1, requisition.getSfmsSyncAttempts());
     }
 
-    private Requisition buildRequisition(int requisitionId, Set<LineItem> lineItems) {
+    @Test
+    public void testRejectedSync() {
+        // Initialize test state.
+        Requisition requisition = buildRejectedRequisition(1002, setOf(lineItem(1, false)));
+
+        requisitionService.saveRequisition(requisition);
+
+        // Execute method to test
+        service.synchronizeRequisitions();
+
+        requisition = requisitionService.getRequisitionById(requisition.getRequisitionId()).get();
+
+        assertEquals(SyncStatus.SKIPPED, requisition.getSfmsSyncStatus());
+        assertEquals(SkippedReason.REJECTED, requisition.getSfmsSkippedReason());
+        assertNotNull(requisition.getRejectedDateTime());
+        assertNotNull(requisition.getSfmsSkippedReason());
+        assertEquals(0, requisition.getSfmsSyncAttempts());
+    }
+
+
+    @Test // I remember you said this was an edge case
+    public void test_No_Syncable_Items_And_Rejected_Sync() {
+        // Initialize test state.
+        Requisition requisition = buildRejectedRequisition(1003, setOf(lineItem(1, false)));
+
+        requisitionService.saveRequisition(requisition);
+
+        // Execute method to test
+        service.synchronizeRequisitions();
+
+        requisition = requisitionService.getRequisitionById(requisition.getRequisitionId()).get();
+
+        assertEquals(SyncStatus.SKIPPED, requisition.getSfmsSyncStatus());
+        assertNotNull(requisition.getSfmsSkippedReason());
+        assertEquals(SkippedReason.REJECTED, requisition.getSfmsSkippedReason());
+        assertNotNull(requisition.getRejectedDateTime());
+        assertEquals(0, requisition.getSfmsSyncAttempts());
+    }
+
+    @Test
+    public void test_No_Syncable_Items_Sync() {
+        // Initialize test state.
+        Requisition requisition = buildRequisition(1004, setOf(lineItem(1, false), lineItem(2, false)));
+
+        requisitionService.saveRequisition(requisition);
+
+        // Execute method to test
+        service.synchronizeRequisitions();
+
+        requisition = requisitionService.getRequisitionById(requisition.getRequisitionId()).get();
+
+        assertEquals(SyncStatus.SKIPPED, requisition.getSfmsSyncStatus());
+        assertNotNull(requisition.getSfmsSkippedReason());
+        assertEquals(SkippedReason.NO_SYNCABLE_ITEMS, requisition.getSfmsSkippedReason());
+        assertEquals(0, requisition.getSfmsSyncAttempts());
+
+    }
+
+    @Test // Can't test since I don't know how to exactly
+    public void testErrorSync() {
+        // Initialize test state.
+        Requisition requisition = buildRequisition(1005, setOf(lineItem(1, true)));
+
+        LocalDateTime expectedSyncDateTime = LocalDateTime.now();
+        when(dateTimeFactory.now()).thenReturn(expectedSyncDateTime);
+
+        // Execute method to test
+        service.synchronizeRequisitions();
+
+        // Fetch state after execution.
+        requisition = requisitionService.getRequisitionById(requisition.getRequisitionId()).get();
+
+        // Check for valid side effects.
+        assertFalse(requisition.getSavedInSfms());
+        assertEquals(expectedSyncDateTime, requisition.getLastSfmsSyncDateTime().get());
+        assertEquals(SyncStatus.ERROR, requisition.getSfmsSyncStatus());
+        assertNull(requisition.getSfmsSkippedReason());
+        assertEquals(1, requisition.getSfmsSyncAttempts());
+    }
+
+
+
+        private Requisition buildRequisition(int requisitionId, Set<LineItem> lineItems) {
         Employee customer = new Employee();
         customer.setEmployeeId(10);
 
@@ -120,6 +202,35 @@ public class SfmsSynchronizationServiceTest {
                 .withDeliveryMethod(DeliveryMethod.DELIVERY)
                 .withLineItems(lineItems)
                 .withState(new ApprovedState())
+                .withIssuer(issuer)
+                .withModifiedBy(customer)
+                .withModifiedDateTime(now)
+                .withOrderedDateTime(now)
+                .withProcessedDateTime(LocalDateTime.now())
+                .withCompletedDateTime(LocalDateTime.now())
+                .withApprovedDateTime(LocalDateTime.now())
+                .build();
+    }
+
+    private Requisition buildRejectedRequisition(int requisitionId, Set<LineItem> lineItems) {
+        Employee customer = new Employee();
+        customer.setEmployeeId(11);
+
+        Employee issuer = new Employee();
+        issuer.setEmployeeId(21);
+        issuer.setUid("issuer" + requisitionId);
+
+        Location destination = new Location(new LocationId("A42FB", 'W'));
+        LocalDateTime now = LocalDateTime.of(2021, 1, 1, 0, 0);
+
+        return new Requisition.Builder()
+                .withRequisitionId(requisitionId)
+                .withRevisionId(2)
+                .withCustomer(customer)
+                .withDestination(destination)
+                .withDeliveryMethod(DeliveryMethod.DELIVERY)
+                .withLineItems(lineItems)
+                .withState(new RejectedState())
                 .withIssuer(issuer)
                 .withModifiedBy(customer)
                 .withModifiedDateTime(now)

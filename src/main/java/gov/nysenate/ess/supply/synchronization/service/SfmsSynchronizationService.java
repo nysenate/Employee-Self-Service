@@ -65,6 +65,21 @@ public class SfmsSynchronizationService {
      * - 'scheduler.supply.sfms_synchronization.enabled': boolean, determines if the synchronization process should run.
      * - 'scheduler.supply.sfms_synchronization.cron': Spring cron string specifying when the synchronization should run.
      * </p>
+     *
+     * /**
+     *      * Also sets the sync status depending on the current state of the requisition
+     *      * <p>All cases of the Sync Status's: </p>
+     *      * <ul>
+     *      *     <li>If there was a last sfms sync date and the req wasn't saved in sfms then there must've been an error when syncing</li>
+     *      *
+     *      *     <li>If the req has no line items to sync then it should be skipped for not having syncable items</li
+     *      *     >
+     *      *     <li>If the req has a rejected date time, then it was explicitly skipped</li>
+     *      *
+     *      *     <li>If the req has an approved date time and is saved to sfms then its completed</li>
+     *      *
+     *      *     <li>Otherwise, it should stay in pending</li>
+     *      * </ul>
      */
     @Scheduled(cron = "${scheduler.supply.sfms_synchronization.cron}")
     public void synchronizeRequisitions() {
@@ -84,16 +99,15 @@ public class SfmsSynchronizationService {
                 if (r.getStatus().equals(RequisitionStatus.REJECTED)) {
                     r = r.setSfmsSkippedReason(SkippedReason.REJECTED);
                     r = r.setSyncStatus(SyncStatus.SKIPPED);
-                } else if (r.getLineItems().isEmpty() && r.getStatus().equals(RequisitionStatus.REJECTED)) {
+                } else if (r.getLineItems().isEmpty() && r.getStatus().equals(RequisitionStatus.REJECTED)) { // edge case you explained
                     r = r.setSfmsSkippedReason(SkippedReason.REJECTED);
                     r = r.setSyncStatus(SyncStatus.SKIPPED);
-                } else if (r.getLineItems().isEmpty()) {
+                } else if (lineItemsRequiringSync(r.getLineItems()).isEmpty()) {
                     r = r.setSfmsSkippedReason(SkippedReason.NO_SYNCABLE_ITEMS);
                     r = r.setSyncStatus(SyncStatus.SKIPPED);
                 } else {
                     r = r.setSyncStatus(SyncStatus.PENDING);
                 }
-                System.out.println(r);
                 requisitionService.saveRequisition(r);
             }
         }
@@ -104,9 +118,11 @@ public class SfmsSynchronizationService {
             logger.info("Attempting to synchronize requisition {} with SFMS.", requisition.getRequisitionId());
             try {
                 requisition = requisition.setLastSfmsSyncDateTimeDateTime(dateTimeFactory.now());
-                System.out.println("Did we get to the synchronization procedure.");
+                if(requisition.getRequisitionId() == 1005){
+                    throw new RuntimeException("Cannot synchronize requisition 1005.");
+                }
                 synchronizationProcedure.synchronizeRequisition(OutputUtils.toXml(new SfmsRequisitionView(requisition)));
-                System.out.println("Did we get through the entire saving synchronization procedure.");
+                //setAsSynced(requisition);
                 requisition = requisition.setSavedInSfms(true);
                 requisition = requisition.setSyncStatus(SyncStatus.COMPLETE);
             } catch (DataAccessException ex) {
@@ -116,13 +132,12 @@ public class SfmsSynchronizationService {
                 logger.error(msg);
                 sendMessageToSlack(msg);
             } finally {
-                System.out.println(requisition);
                 requisition = requisition.setSfmsSyncAttempts(requisition.getSfmsSyncAttempts() + 1);
                 requisitionService.saveRequisition(requisition);
             }
         } else {
             logger.info("Requisition {} can skip SFMS sync.", requisition.getRequisitionId());
-            setAsSynced(requisition);
+//            setAsSynced(requisition);
         }
     }
 
@@ -178,43 +193,5 @@ public class SfmsSynchronizationService {
         DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
         Date dateobj = new Date();
         slackChatService.sendMessage(df.format(dateobj) + " Sfms Synchronization Errors: " + s + "\n");
-    }
-
-    /**
-     * sets the sync status depending on the current state of the requisition
-     * <p>All cases of the Sync Status's</p>
-     * <ul>
-     *     <li>If there was a last sfms sync date and the req wasn't saved in sfms then there must've been an error when syncing</li>
-     *
-     *     <li>If the req has no line items to sync then it should be skipped for not having syncable items</li
-     *     >
-     *     <li>If the req has a rejected date time, then it was explicitly skipped</li>
-     *
-     *     <li>If the req has an approved date time and is saved to sfms then its completed</li>
-     *
-     *     <li>Otherwise, it should stay in pending</li>
-     * </ul>
-     *
-     * @param requisition
-     * @returns the requisition with the sync status properly set
-     */
-    public Requisition assignSyncStatus(Requisition requisition) {
-
-        if (requisition.getLastSfmsSyncDateTime().isPresent() && !requisition.getSavedInSfms()) {
-            requisition = requisition.setSyncStatus(SyncStatus.ERROR);
-        } else if (requisition.getLineItems().isEmpty()) {
-            requisition = requisition.setSfmsSkippedReason(SkippedReason.NO_SYNCABLE_ITEMS);
-            requisition = requisition.setSyncStatus(SyncStatus.SKIPPED);
-        } else if (requisition.getRejectedDateTime().isPresent()) {
-            requisition = requisition.setSfmsSkippedReason(SkippedReason.REJECTED);
-            requisition = requisition.setSyncStatus(SyncStatus.SKIPPED);
-        } else if (requisition.getApprovedDateTime().isPresent() && requisition.getSavedInSfms()) {
-            requisition = requisition.setSyncStatus(SyncStatus.COMPLETE);
-            requisition = requisition.setSfmsSyncAttempts(requisition.getSfmsSyncAttempts() + 1);
-        } else {
-            requisition = requisition.setSyncStatus(SyncStatus.PENDING);
-        }
-
-        return requisition;
     }
 }
