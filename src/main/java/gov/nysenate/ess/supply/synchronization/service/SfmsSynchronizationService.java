@@ -7,6 +7,7 @@ import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.requisition.model.*;
 import gov.nysenate.ess.supply.requisition.service.RequisitionService;
 import gov.nysenate.ess.supply.requisition.view.SfmsRequisitionView;
+import gov.nysenate.ess.supply.synchronization.SyncStatuses.ModifySyncStatus;
 import gov.nysenate.ess.supply.synchronization.dao.SfmsSynchronizationProcedure;
 import gov.nysenate.ess.supply.util.date.DateTimeFactory;
 import org.slf4j.Logger;
@@ -66,20 +67,7 @@ public class SfmsSynchronizationService {
      * - 'scheduler.supply.sfms_synchronization.cron': Spring cron string specifying when the synchronization should run.
      * </p>
      *
-     * /**
-     *      * Also sets the sync status depending on the current state of the requisition
-     *      * <p>All cases of the Sync Status's: </p>
-     *      * <ul>
-     *      *     <li>If there was a last sfms sync date and the req wasn't saved in sfms then there must've been an error when syncing</li>
-     *      *
-     *      *     <li>If the req has no line items to sync then it should be skipped for not having syncable items</li
-     *      *     >
-     *      *     <li>If the req has a rejected date time, then it was explicitly skipped</li>
-     *      *
-     *      *     <li>If the req has an approved date time and is saved to sfms then its completed</li>
-     *      *
-     *      *     <li>Otherwise, it should stay in pending</li>
-     *      * </ul>
+     * <p>Also determines the state the Requistion should be on depending on its current state before trying to synchronize.</p>
      */
     @Scheduled(cron = "${scheduler.supply.sfms_synchronization.cron}")
     public void synchronizeRequisitions() {
@@ -96,18 +84,8 @@ public class SfmsSynchronizationService {
 
         for (Requisition r : reqs) {
             if (!filteredReqs.contains(r)) {
-                if (r.getStatus().equals(RequisitionStatus.REJECTED)) {
-                    r = r.setSfmsSkippedReason(SkippedReason.REJECTED);
-                    r = r.setSyncStatus(SyncStatus.SKIPPED);
-                } else if (r.getLineItems().isEmpty() && r.getStatus().equals(RequisitionStatus.REJECTED)) { // edge case you explained
-                    r = r.setSfmsSkippedReason(SkippedReason.REJECTED);
-                    r = r.setSyncStatus(SyncStatus.SKIPPED);
-                } else if (lineItemsRequiringSync(r.getLineItems()).isEmpty()) {
-                    r = r.setSfmsSkippedReason(SkippedReason.NO_SYNCABLE_ITEMS);
-                    r = r.setSyncStatus(SyncStatus.SKIPPED);
-                } else {
-                    r = r.setSyncStatus(SyncStatus.PENDING);
-                }
+                ModifySyncStatus modify = new ModifySyncStatus(this);
+                r = modify.modifySyncStatuses(r);
                 requisitionService.saveRequisition(r);
             }
         }
@@ -181,6 +159,10 @@ public class SfmsSynchronizationService {
                 .collect(Collectors.toSet());
     }
 
+    public Set<LineItem> getLineItemsRequiringSync(Set<LineItem> lineItems){
+        return lineItemsRequiringSync(lineItems);
+    }
+
     /**
      * Send error message to slack channel
      *
@@ -190,5 +172,24 @@ public class SfmsSynchronizationService {
         DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
         Date dateobj = new Date();
         slackChatService.sendMessage(df.format(dateobj) + " Sfms Synchronization Errors: " + s + "\n");
+    }
+
+    public Requisition changeRequisitionBySyncStatus(Requisition r){
+        if (r.getStatus().equals(RequisitionStatus.REJECTED)) {
+            r = r.setSfmsSkippedReason(SkippedReason.REJECTED);
+            r = r.setSyncStatus(SyncStatus.SKIPPED);
+            r = r.setSfmsSyncAttempts(r.getSfmsSyncAttempts() + 1);
+        } else if (r.getLineItems().isEmpty() && r.getStatus().equals(RequisitionStatus.REJECTED)) { // edge case you explained
+            r = r.setSfmsSkippedReason(SkippedReason.REJECTED);
+            r = r.setSyncStatus(SyncStatus.SKIPPED);
+            r = r.setSfmsSyncAttempts(r.getSfmsSyncAttempts() + 1);
+        } else if (lineItemsRequiringSync(r.getLineItems()).isEmpty()) {
+            r = r.setSfmsSkippedReason(SkippedReason.NO_SYNCABLE_ITEMS);
+            r = r.setSyncStatus(SyncStatus.SKIPPED);
+        } else {
+            r = r.setSyncStatus(SyncStatus.PENDING);
+        }
+
+        return r;
     }
 }

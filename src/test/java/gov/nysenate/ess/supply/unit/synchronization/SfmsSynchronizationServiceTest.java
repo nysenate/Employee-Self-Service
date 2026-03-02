@@ -19,6 +19,7 @@ import gov.nysenate.ess.supply.requisition.service.RequisitionService;
 import gov.nysenate.ess.supply.requisition.service.SupplyRequisitionService;
 import gov.nysenate.ess.supply.requisition.view.RequisitionView;
 import gov.nysenate.ess.supply.requisition.view.SfmsRequisitionView;
+import gov.nysenate.ess.supply.synchronization.SyncStatuses.ModifySyncStatus;
 import gov.nysenate.ess.supply.synchronization.dao.SfmsSynchronizationProcedure;
 import gov.nysenate.ess.supply.synchronization.service.SfmsSynchronizationService;
 import gov.nysenate.ess.supply.util.date.DateTimeFactory;
@@ -57,6 +58,7 @@ public class SfmsSynchronizationServiceTest {
     private DummyDateTime dummyDateTime;
     private RequisitionService requisitionService;
     private SfmsSynchronizationService service;
+    private ModifySyncStatus modify;
 
     @Before
     public void setup() {
@@ -113,6 +115,9 @@ public class SfmsSynchronizationServiceTest {
         // Initialize test state.
         Requisition requisition = buildRejectedRequisition(1002, setOf(lineItem(1, false)));
 
+        LocalDateTime expectedSyncDateTime = LocalDateTime.now();
+        dummyDateTime.setDateTime(expectedSyncDateTime);
+
         requisitionService.saveRequisition(requisition);
 
         // Execute method to test
@@ -124,7 +129,7 @@ public class SfmsSynchronizationServiceTest {
         assertEquals(SkippedReason.REJECTED, requisition.getSfmsSkippedReason());
         assertNotNull(requisition.getRejectedDateTime());
         assertNotNull(requisition.getSfmsSkippedReason());
-        assertEquals(0, requisition.getSfmsSyncAttempts());
+        assertEquals(1, requisition.getSfmsSyncAttempts());
     }
 
 
@@ -133,6 +138,9 @@ public class SfmsSynchronizationServiceTest {
         // Initialize test state.
         Requisition requisition = buildRejectedRequisition(1003, setOf(lineItem(1, false)));
 
+        LocalDateTime expectedSyncDateTime = LocalDateTime.now();
+        dummyDateTime.setDateTime(expectedSyncDateTime);
+
         requisitionService.saveRequisition(requisition);
 
         // Execute method to test
@@ -144,13 +152,16 @@ public class SfmsSynchronizationServiceTest {
         assertNotNull(requisition.getSfmsSkippedReason());
         assertEquals(SkippedReason.REJECTED, requisition.getSfmsSkippedReason());
         assertNotNull(requisition.getRejectedDateTime());
-        assertEquals(0, requisition.getSfmsSyncAttempts());
+        assertEquals(1, requisition.getSfmsSyncAttempts());
     }
 
     @Test
     public void test_No_Syncable_Items_Sync() {
         // Initialize test state.
         Requisition requisition = buildRequisition(1004, setOf(lineItem(1, false), lineItem(2, false)));
+
+        LocalDateTime expectedSyncDateTime = LocalDateTime.now();
+        dummyDateTime.setDateTime(expectedSyncDateTime);
 
         requisitionService.saveRequisition(requisition);
 
@@ -229,11 +240,11 @@ public class SfmsSynchronizationServiceTest {
         issuer.setUid("issuer" + requisitionId);
 
         Location destination = new Location(new LocationId("A42FB", 'W'));
-        LocalDateTime now = LocalDateTime.of(2021, 1, 1, 0, 0);
+        LocalDateTime now = LocalDateTime.of(2020, 1, 1, 0, 0);
 
         return new Requisition.Builder()
                 .withRequisitionId(requisitionId)
-                .withRevisionId(2)
+                .withRevisionId(1)
                 .withCustomer(customer)
                 .withDestination(destination)
                 .withDeliveryMethod(DeliveryMethod.DELIVERY)
