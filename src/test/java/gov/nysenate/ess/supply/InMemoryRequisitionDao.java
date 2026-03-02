@@ -9,10 +9,11 @@ import gov.nysenate.ess.supply.requisition.model.RequisitionQuery;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Repository
 public class InMemoryRequisitionDao implements RequisitionDao {
@@ -32,11 +33,22 @@ public class InMemoryRequisitionDao implements RequisitionDao {
 
     @Override
     public PaginatedList<Requisition> searchRequisitions(RequisitionQuery query) {
-        return new PaginatedList<>(
-                requisitionsById.size(),
-                LimitOffset.ALL,
-                requisitionsById.values().stream().collect(Collectors.toList())
-        );
+        List<Requisition> filtered = new ArrayList<>();
+        for (Requisition requisition : requisitionsById.values()) {
+            if (!query.getStatuses().contains(requisition.getStatus())) {
+                continue;
+            }
+            if (!matchesSavedInSfms(query, requisition)) {
+                continue;
+            }
+            if (!matchesDateRange(query, requisition)) {
+                continue;
+            }
+            filtered.add(requisition);
+        }
+        int total = filtered.size();
+        List<Requisition> paged = LimitOffset.limitList(filtered, query.getLimitOffset());
+        return new PaginatedList<>(total, query.getLimitOffset(), paged);
     }
 
     @Override
@@ -53,5 +65,39 @@ public class InMemoryRequisitionDao implements RequisitionDao {
     public void savedInSfms(int requisitionId, boolean succeed) {
         Requisition updated = requisitionsById.get(requisitionId).setSavedInSfms(succeed);
         saveRequisition(updated);
+    }
+
+    private boolean matchesSavedInSfms(RequisitionQuery query, Requisition requisition) {
+        String savedInSfms = query.getSavedInSfms();
+        if ("%".equals(savedInSfms)) {
+            return true;
+        }
+        return requisition.getSavedInSfms() == Boolean.parseBoolean(savedInSfms);
+    }
+
+    private boolean matchesDateRange(RequisitionQuery query, Requisition requisition) {
+        Optional<LocalDateTime> dateValue = getDateFieldValue(query.getDateField(), requisition);
+        if (!dateValue.isPresent()) {
+            return false;
+        }
+        LocalDateTime dateTime = dateValue.get();
+        return !dateTime.isBefore(query.getFromDateTime()) && !dateTime.isAfter(query.getToDateTime());
+    }
+
+    private Optional<LocalDateTime> getDateFieldValue(String dateField, Requisition requisition) {
+        switch (dateField) {
+            case "ordered_date_time":
+                return Optional.of(requisition.getOrderedDateTime());
+            case "processed_date_time":
+                return requisition.getProcessedDateTime();
+            case "completed_date_time":
+                return requisition.getCompletedDateTime();
+            case "approved_date_time":
+                return requisition.getApprovedDateTime();
+            case "rejected_date_time":
+                return requisition.getRejectedDateTime();
+            default:
+                throw new IllegalArgumentException("Unsupported date field: " + dateField);
+        }
     }
 }

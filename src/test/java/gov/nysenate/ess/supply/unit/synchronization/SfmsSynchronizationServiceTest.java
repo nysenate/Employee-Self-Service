@@ -22,6 +22,7 @@ import gov.nysenate.ess.supply.requisition.view.SfmsRequisitionView;
 import gov.nysenate.ess.supply.synchronization.dao.SfmsSynchronizationProcedure;
 import gov.nysenate.ess.supply.synchronization.service.SfmsSynchronizationService;
 import gov.nysenate.ess.supply.util.date.DateTimeFactory;
+import gov.nysenate.ess.supply.util.date.DummyDateTime;
 import org.apache.shiro.dao.DataAccessException;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,25 +48,25 @@ import static org.mockito.Mockito.when;
 public class SfmsSynchronizationServiceTest {
 
     @Mock
-    private SfmsSynchronizationProcedure synchronizationProcedure ;
-    @Mock
-    private DateTimeFactory dateTimeFactory;
+    private SfmsSynchronizationProcedure synchronizationProcedure;
     @Mock
     private SlackChatService slackChatService;
     @Mock
     private SupplyEmailService emailService;
 
+    private DummyDateTime dummyDateTime;
     private RequisitionService requisitionService;
     private SfmsSynchronizationService service;
 
     @Before
     public void setup() {
         requisitionService = new SupplyRequisitionService(new InMemoryRequisitionDao(), emailService);
+        dummyDateTime = new DummyDateTime();
         service = new SfmsSynchronizationService(
                 true,
                 requisitionService,
                 synchronizationProcedure,
-                dateTimeFactory,
+                dummyDateTime,
                 slackChatService
         );
 
@@ -77,7 +78,7 @@ public class SfmsSynchronizationServiceTest {
                 false,
                 requisitionService,
                 synchronizationProcedure,
-                dateTimeFactory,
+                dummyDateTime,
                 slackChatService
         );
         service.synchronizeRequisitions();
@@ -91,7 +92,7 @@ public class SfmsSynchronizationServiceTest {
         requisitionService.saveRequisition(requisition);
 
         LocalDateTime expectedSyncDateTime = LocalDateTime.now();
-        when(dateTimeFactory.now()).thenReturn(expectedSyncDateTime);
+        dummyDateTime.setDateTime(expectedSyncDateTime);
 
         // Execute method to test
         service.synchronizeRequisitions();
@@ -162,7 +163,6 @@ public class SfmsSynchronizationServiceTest {
         assertNotNull(requisition.getSfmsSkippedReason());
         assertEquals(SkippedReason.NO_SYNCABLE_ITEMS, requisition.getSfmsSkippedReason());
         assertEquals(0, requisition.getSfmsSyncAttempts());
-
     }
 
     @Test // Can't test since I don't know how to exactly
@@ -173,7 +173,7 @@ public class SfmsSynchronizationServiceTest {
         requisitionService.saveRequisition(requisition);
 
         LocalDateTime expectedSyncDateTime = LocalDateTime.now();
-        when(dateTimeFactory.now()).thenReturn(expectedSyncDateTime);
+        dummyDateTime.setDateTime(expectedSyncDateTime);
 
         doThrow(new DataAccessResourceFailureException("Database failed to save")).when(synchronizationProcedure).synchronizeRequisition(any());
 
@@ -191,8 +191,7 @@ public class SfmsSynchronizationServiceTest {
     }
 
 
-
-        private Requisition buildRequisition(int requisitionId, Set<LineItem> lineItems) {
+    private Requisition buildRequisition(int requisitionId, Set<LineItem> lineItems) {
         Employee customer = new Employee();
         customer.setEmployeeId(10);
 
