@@ -4,15 +4,10 @@ import gov.nysenate.ess.supply.requisition.model.Requisition;
 import gov.nysenate.ess.supply.requisition.model.RequisitionStatus;
 import gov.nysenate.ess.supply.requisition.model.SkippedReason;
 import gov.nysenate.ess.supply.requisition.model.SyncStatus;
-import gov.nysenate.ess.supply.synchronization.service.SfmsSynchronizationService;
-import org.springframework.context.annotation.Configuration;
 
-@Configuration
 public class ModifySyncStatus {
-    private final SfmsSynchronizationService sfmsService;
 
-    public ModifySyncStatus(SfmsSynchronizationService sfmsService) {
-        this.sfmsService = sfmsService;
+    public ModifySyncStatus() {
     }
 
     /**
@@ -21,17 +16,32 @@ public class ModifySyncStatus {
      * @param req
      * @return
      */
-    public Requisition modifySyncStatuses(Requisition req){
-        if (req.getStatus().equals(RequisitionStatus.REJECTED)) {
-            req = rejectedRequisition(req);
-        } else if (req.getLineItems().isEmpty() && req.getStatus().equals(RequisitionStatus.REJECTED)) { // edge case you explained
+    public Requisition modifySyncStatuses(Requisition req, boolean wasSynchronized) {
+        if(wasSynchronized) {
+            req = successfulRequisition(req);
+        }else if(!req.getLineItems().isEmpty() && !wasSynchronized) {
+            req = erroredRequisition(req);
+        } else if(req.getLineItems().isEmpty() && req.getStatus().equals(RequisitionStatus.REJECTED)){
             req = rejectedAndNoLineItems(req);
-        } else if (sfmsService.getLineItemsRequiringSync(req.getLineItems()).isEmpty()) {
+        } else if (req.getStatus().equals(RequisitionStatus.REJECTED)) {
+            req = rejectedRequisition(req);
+        } else if (req.getLineItems().isEmpty()) {
             req = noSyncableItems(req);
-        } else {
-            req = req.setSyncStatus(SyncStatus.PENDING);
         }
 
+        return req;
+    }
+
+    public Requisition successfulRequisition(Requisition req) {
+        req = req.setSyncStatus(SyncStatus.COMPLETE);
+        req = req.setSfmsSyncAttempts(req.getSfmsSyncAttempts() + 1);
+
+        return req;
+    }
+
+    public Requisition erroredRequisition(Requisition req) {
+        req = req.setSyncStatus(SyncStatus.ERROR);
+        req = req.setSfmsSyncAttempts(req.getSfmsSyncAttempts() + 1);
         return req;
     }
 

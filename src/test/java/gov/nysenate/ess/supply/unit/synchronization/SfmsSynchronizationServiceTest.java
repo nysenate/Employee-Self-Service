@@ -91,10 +91,14 @@ public class SfmsSynchronizationServiceTest {
     public void testSuccessfulSync() {
         // Initialize test state.
         Requisition requisition = buildRequisition(1001, setOf(lineItem(1, true)));
-        requisitionService.saveRequisition(requisition);
 
         LocalDateTime expectedSyncDateTime = LocalDateTime.now();
         dummyDateTime.setDateTime(expectedSyncDateTime);
+
+        requisition = requisition.setLastSfmsSyncDateTimeDateTime(expectedSyncDateTime);
+
+        requisitionService.saveRequisition(requisition);
+
 
         // Execute method to test
         service.synchronizeRequisitions();
@@ -118,7 +122,10 @@ public class SfmsSynchronizationServiceTest {
         LocalDateTime expectedSyncDateTime = LocalDateTime.now();
         dummyDateTime.setDateTime(expectedSyncDateTime);
 
+        requisition = requisition.setLastSfmsSyncDateTimeDateTime(expectedSyncDateTime);
+
         requisitionService.saveRequisition(requisition);
+        //System.out.println(requisition);
 
         // Execute method to test
         service.synchronizeRequisitions();
@@ -256,7 +263,8 @@ public class SfmsSynchronizationServiceTest {
                 .withOrderedDateTime(now)
                 .withProcessedDateTime(LocalDateTime.now())
                 .withCompletedDateTime(LocalDateTime.now())
-                .withApprovedDateTime(LocalDateTime.now())
+                //.withApprovedDateTime(LocalDateTime.now())
+                .withRejectedDateTime(LocalDateTime.now())
                 .build();
     }
 

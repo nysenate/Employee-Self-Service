@@ -75,45 +75,63 @@ public class SfmsSynchronizationService {
         if (!synchronizationEnabled) {
             return;
         }
-        List<Requisition> reqs = requisitionsToBeSynced();
-        List<Requisition> filteredReqs = filterRequisitions(reqs);
-        for (Requisition r : filteredReqs) {
-            syncRequisition(r);
+
+        List<Requisition> originalReqs = requisitionsToBeSynced();
+        List<Requisition> filteredReqs = filterRequisitions(originalReqs);
+
+        for (int i = 0; i < filteredReqs.size(); i++) {
+            Requisition r = filteredReqs.get(i);
+            boolean success = syncRequisition(r);
+            ModifySyncStatus modify = new ModifySyncStatus();
+            r = modify.modifySyncStatuses(r, success);
+
+            Requisition modified = updateOriginalReq(originalReqs.get(i), r, success);
+
+            requisitionService.saveRequisition(modified);
         }
 
-
-        for (Requisition r : reqs) {
-            if (!filteredReqs.contains(r)) {
-                ModifySyncStatus modify = new ModifySyncStatus(this);
-                r = modify.modifySyncStatuses(r);
-                requisitionService.saveRequisition(r);
-            }
-        }
     }
 
-    private void syncRequisition(Requisition requisition) {
+    private boolean syncRequisition(Requisition requisition) {
         if (requiresSync(requisition)) {
             logger.info("Attempting to synchronize requisition {} with SFMS.", requisition.getRequisitionId());
             try {
-                requisition = requisition.setLastSfmsSyncDateTimeDateTime(dateTimeFactory.now());
+                //requisition = requisition.setLastSfmsSyncDateTimeDateTime(dateTimeFactory.now());
                 synchronizationProcedure.synchronizeRequisition(OutputUtils.toXml(new SfmsRequisitionView(requisition)));
-                //setAsSynced(requisition);
-                requisition = requisition.setSavedInSfms(true);
-                requisition = requisition.setSyncStatus(SyncStatus.COMPLETE);
+
             } catch (DataAccessException ex) {
-                requisition = requisition.setSyncStatus(SyncStatus.ERROR);
                 String msg = "Error synchronizing requisition " + requisition.getRequisitionId()
                         + " with SFMS. Exception is : " + ex.getMessage();
                 logger.error(msg);
                 sendMessageToSlack(msg);
-            } finally {
-                requisition = requisition.setSfmsSyncAttempts(requisition.getSfmsSyncAttempts() + 1);
-                requisitionService.saveRequisition(requisition);
+                return false;
             }
-        } else {
-            logger.info("Requisition {} can skip SFMS sync.", requisition.getRequisitionId());
-//            setAsSynced(requisition);
+        }else{
+            return false;
         }
+
+//            setAsSynced(requisition);
+
+        return true;
+    }
+
+
+    /**
+     * <p>Copies all the values from the filtered reqs to the original after all the modifications are done</p>
+     *
+     * @param original - the original req from the db
+     * @param filteredReq - the req that had its line items removed and sync status and everything related updated
+     * @param wasSuccessful - Whether the requisition was saved to sfms or not
+     * @return
+     */
+    public Requisition updateOriginalReq(Requisition original, Requisition filteredReq, boolean wasSuccessful) {
+        original = original.setSyncStatus(filteredReq.getSfmsSyncStatus());
+        original = original.setSfmsSkippedReason(filteredReq.getSfmsSkippedReason());
+        original = original.setSavedInSfms(wasSuccessful);
+
+        original = original.setSfmsSyncAttempts(filteredReq.getSfmsSyncAttempts());
+
+        return original;
     }
 
     private boolean requiresSync(Requisition requisition) {
@@ -135,7 +153,7 @@ public class SfmsSynchronizationService {
                 .setFromDateTime(LocalDateTime.of(2016, 1, 1, 0, 0)) // Date before supply was launched, so includes all requisitions.
                 .setToDateTime(dateTimeFactory.now())
                 .setSavedInSfms(false)
-                .setDateField("approved_date_time")
+                .setDateField("ordered_date_time")
                 .setLimitOffset(LimitOffset.ALL);
 
         return requisitionService.searchRequisitions(query).getResults();
