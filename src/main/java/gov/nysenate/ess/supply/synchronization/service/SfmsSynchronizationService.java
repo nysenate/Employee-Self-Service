@@ -106,11 +106,11 @@ public class SfmsSynchronizationService {
                 sendMessageToSlack(msg);
                 return false;
             }
-        }else{
+        } else {
             return false;
         }
 
-//            setAsSynced(requisition);
+        //setAsSynced(requisition);
 
         return true;
     }
@@ -119,8 +119,8 @@ public class SfmsSynchronizationService {
     /**
      * <p>Copies all the values from the filtered reqs to the original after all the modifications are done</p>
      *
-     * @param original - the original req from the db
-     * @param filteredReq - the req that had its line items removed and sync status and everything related updated
+     * @param original      - the original req from the db
+     * @param filteredReq   - the req that had its line items removed and sync status and everything related updated
      * @param wasSuccessful - Whether the requisition was saved to sfms or not
      * @return
      */
@@ -135,7 +135,7 @@ public class SfmsSynchronizationService {
     }
 
     private boolean requiresSync(Requisition requisition) {
-        return requisition.getLineItems().size() > 0;
+        return requisition.getLineItems().size() > 0 && requisition.getStatus().equals(RequisitionStatus.APPROVED);
     }
 
     private void setAsSynced(Requisition requisition) {
@@ -152,7 +152,7 @@ public class SfmsSynchronizationService {
                 .setStatuses(EnumSet.of(RequisitionStatus.APPROVED, RequisitionStatus.REJECTED))
                 .setFromDateTime(LocalDateTime.of(2016, 1, 1, 0, 0)) // Date before supply was launched, so includes all requisitions.
                 .setToDateTime(dateTimeFactory.now())
-                .setSavedInSfms(false)
+                .setSyncStatus(SyncStatus.PENDING)
                 .setDateField("ordered_date_time")
                 .setLimitOffset(LimitOffset.ALL);
 
@@ -177,10 +177,6 @@ public class SfmsSynchronizationService {
                 .collect(Collectors.toSet());
     }
 
-    public Set<LineItem> getLineItemsRequiringSync(Set<LineItem> lineItems){
-        return lineItemsRequiringSync(lineItems);
-    }
-
     /**
      * Send error message to slack channel
      *
@@ -190,24 +186,5 @@ public class SfmsSynchronizationService {
         DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
         Date dateobj = new Date();
         slackChatService.sendMessage(df.format(dateobj) + " Sfms Synchronization Errors: " + s + "\n");
-    }
-
-    public Requisition changeRequisitionBySyncStatus(Requisition r){
-        if (r.getStatus().equals(RequisitionStatus.REJECTED)) {
-            r = r.setSfmsSkippedReason(SkippedReason.REJECTED);
-            r = r.setSyncStatus(SyncStatus.SKIPPED);
-            r = r.setSfmsSyncAttempts(r.getSfmsSyncAttempts() + 1);
-        } else if (r.getLineItems().isEmpty() && r.getStatus().equals(RequisitionStatus.REJECTED)) { // edge case you explained
-            r = r.setSfmsSkippedReason(SkippedReason.REJECTED);
-            r = r.setSyncStatus(SyncStatus.SKIPPED);
-            r = r.setSfmsSyncAttempts(r.getSfmsSyncAttempts() + 1);
-        } else if (lineItemsRequiringSync(r.getLineItems()).isEmpty()) {
-            r = r.setSfmsSkippedReason(SkippedReason.NO_SYNCABLE_ITEMS);
-            r = r.setSyncStatus(SyncStatus.SKIPPED);
-        } else {
-            r = r.setSyncStatus(SyncStatus.PENDING);
-        }
-
-        return r;
     }
 }

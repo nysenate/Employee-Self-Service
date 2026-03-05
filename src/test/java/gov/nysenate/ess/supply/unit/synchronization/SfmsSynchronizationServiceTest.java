@@ -263,7 +263,6 @@ public class SfmsSynchronizationServiceTest {
                 .withOrderedDateTime(now)
                 .withProcessedDateTime(LocalDateTime.now())
                 .withCompletedDateTime(LocalDateTime.now())
-                //.withApprovedDateTime(LocalDateTime.now())
                 .withRejectedDateTime(LocalDateTime.now())
                 .build();
     }

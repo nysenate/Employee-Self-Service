@@ -5,10 +5,7 @@ import gov.nysenate.ess.core.client.view.EmployeeView;
 import gov.nysenate.ess.core.client.view.LocationView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.supply.item.view.LineItemView;
-import gov.nysenate.ess.supply.requisition.model.DeliveryMethod;
-import gov.nysenate.ess.supply.requisition.model.Requisition;
-import gov.nysenate.ess.supply.requisition.model.RequisitionState;
-import gov.nysenate.ess.supply.requisition.model.RequisitionStatus;
+import gov.nysenate.ess.supply.requisition.model.*;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -44,8 +41,12 @@ public class RequisitionView implements ViewObject {
     protected String lastSfmsSyncDateTime;
 
     protected boolean savedInSfms;
+    protected SyncStatus syncStatus;
+    protected SkippedReason skippedReason;
+    protected int syncAttempts;
 
-    public RequisitionView() {}
+    public RequisitionView() {
+    }
 
     public RequisitionView(Requisition requisition) {
         this.requisitionId = requisition.getRequisitionId();
@@ -54,8 +55,8 @@ public class RequisitionView implements ViewObject {
         this.destination = new LocationView(requisition.getDestination());
         this.deliveryMethod = requisition.getDeliveryMethod().name();
         this.lineItems = requisition.getLineItems().stream()
-                                    .map(LineItemView::new)
-                                    .collect(Collectors.toSet());
+                .map(LineItemView::new)
+                .collect(Collectors.toSet());
         this.specialInstructions = requisition.getSpecialInstructions().orElse(null);
         this.status = requisition.getStatus().toString();
         this.issuer = requisition.getIssuer().map(EmployeeView::new).orElse(null);
@@ -69,6 +70,9 @@ public class RequisitionView implements ViewObject {
         this.rejectedDateTime = dateTimeToString(requisition.getRejectedDateTime());
         this.lastSfmsSyncDateTime = dateTimeToString(requisition.getLastSfmsSyncDateTime());
         this.savedInSfms = requisition.getSavedInSfms();
+        this.syncStatus = requisition.getSfmsSyncStatus();
+        this.skippedReason = requisition.getSfmsSkippedReason();
+        this.syncAttempts = requisition.getSfmsSyncAttempts();
     }
 
     @JsonIgnore
@@ -93,6 +97,9 @@ public class RequisitionView implements ViewObject {
                 .withRejectedDateTime(stringToDateTime(rejectedDateTime))
                 .withLastSfmsSyncDateTimeDateTime(stringToDateTime(lastSfmsSyncDateTime))
                 .withSavedInSfms(savedInSfms)
+                .withSfmsSyncStatus(syncStatus)
+                .withSfmsSkippedReason(skippedReason)
+                .withSfmsSyncAttempts(syncAttempts)
                 .build();
     }
 
@@ -199,6 +206,21 @@ public class RequisitionView implements ViewObject {
     @XmlElement
     public boolean isSavedInSfms() {
         return savedInSfms;
+    }
+
+    @XmlElement
+    public SyncStatus getSyncStatus() {
+        return syncStatus;
+    }
+
+    @XmlElement
+    public SkippedReason getSkippedReason() {
+        return skippedReason;
+    }
+
+    @XmlElement
+    public int getSyncAttempts() {
+        return syncAttempts;
     }
 
     @Override

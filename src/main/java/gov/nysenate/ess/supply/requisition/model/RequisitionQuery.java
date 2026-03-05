@@ -28,6 +28,7 @@ public class RequisitionQuery {
     private LimitOffset limitOffset;
     private OrderBy orderBy;
     private String reconciled;
+    private SyncStatus syncStatus;
 
     public RequisitionQuery() {
         // Set default values
@@ -43,11 +44,12 @@ public class RequisitionQuery {
         this.limitOffset = LimitOffset.TEN;
         this.orderBy = new OrderBy(this.dateField, SortOrder.DESC);
         this.reconciled = WILDCARD;
+        this.syncStatus = SyncStatus.PENDING;
     }
 
     /**
      * Converts "All" to "%".
-     *
+     * <p>
      * This is a temporary fix, until {@code RequisitionRestApiCtrl.searchRequisitions}
      * stops using 'All' params.
      */
@@ -91,13 +93,13 @@ public class RequisitionQuery {
     /**
      * Sets the dateField. Must be a valid date column in the requisition table,
      * throws a {@code IllegalArgumentException} if not.
+     *
      * @param dateField a date column which is filtered by from/to date time.
      */
     public RequisitionQuery setDateField(String dateField) {
         if (DATE_FIELDS.contains(dateField)) {
             this.dateField = dateField;
-        }
-        else {
+        } else {
             throw new IllegalArgumentException("datefield " + dateField +
                     " is not valid. Valid options are " + DATE_FIELDS);
         }
@@ -135,14 +137,19 @@ public class RequisitionQuery {
     }
 
     public RequisitionQuery setReconciled(String reconciled) {
-        if(reconciled != null){
-            if(reconciled.equals("t") || StringUtils.equalsIgnoreCase(reconciled, "true")){
+        if (reconciled != null) {
+            if (reconciled.equals("t") || StringUtils.equalsIgnoreCase(reconciled, "true")) {
                 this.reconciled = "true";
             }
-            if(reconciled.equals("f")|| StringUtils.equalsIgnoreCase(reconciled, "false")){
+            if (reconciled.equals("f") || StringUtils.equalsIgnoreCase(reconciled, "false")) {
                 this.reconciled = "false";
             }
         }
+        return this;
+    }
+
+    public RequisitionQuery setSyncStatus(SyncStatus syncStatus) {
+        this.syncStatus = syncStatus;
         return this;
     }
 
@@ -192,5 +199,9 @@ public class RequisitionQuery {
 
     public String getReconciled() {
         return reconciled;
+    }
+
+    public SyncStatus getSyncStatus() {
+        return syncStatus;
     }
 }
