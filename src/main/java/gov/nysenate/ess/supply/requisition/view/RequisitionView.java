@@ -41,8 +41,8 @@ public class RequisitionView implements ViewObject {
     protected String lastSfmsSyncDateTime;
 
     protected boolean savedInSfms;
-    protected SyncStatus syncStatus;
-    protected SkippedReason skippedReason;
+    protected String syncStatus;
+    protected String skippedReason;
     protected int syncAttempts;
 
     public RequisitionView() {
@@ -70,8 +70,8 @@ public class RequisitionView implements ViewObject {
         this.rejectedDateTime = dateTimeToString(requisition.getRejectedDateTime());
         this.lastSfmsSyncDateTime = dateTimeToString(requisition.getLastSfmsSyncDateTime());
         this.savedInSfms = requisition.getSavedInSfms();
-        this.syncStatus = requisition.getSfmsSyncStatus();
-        this.skippedReason = requisition.getSfmsSkippedReason();
+        this.syncStatus = requisition.getSfmsSyncStatus().name();
+        this.skippedReason = requisition.getSfmsSkippedReason().name();
         this.syncAttempts = requisition.getSfmsSyncAttempts();
     }
 
@@ -97,8 +97,8 @@ public class RequisitionView implements ViewObject {
                 .withRejectedDateTime(stringToDateTime(rejectedDateTime))
                 .withLastSfmsSyncDateTimeDateTime(stringToDateTime(lastSfmsSyncDateTime))
                 .withSavedInSfms(savedInSfms)
-                .withSfmsSyncStatus(syncStatus)
-                .withSfmsSkippedReason(skippedReason)
+                .withSfmsSyncStatus(SyncStatus.valueOf(syncStatus))
+                .withSfmsSkippedReason(SkippedReason.valueOf(skippedReason))
                 .withSfmsSyncAttempts(syncAttempts)
                 .build();
     }
@@ -209,12 +209,12 @@ public class RequisitionView implements ViewObject {
     }
 
     @XmlElement
-    public SyncStatus getSyncStatus() {
+    public String getSyncStatus() {
         return syncStatus;
     }
 
     @XmlElement
-    public SkippedReason getSkippedReason() {
+    public String getSkippedReason() {
         return skippedReason;
     }
 

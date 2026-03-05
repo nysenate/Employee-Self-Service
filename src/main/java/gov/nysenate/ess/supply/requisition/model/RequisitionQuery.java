@@ -28,7 +28,7 @@ public class RequisitionQuery {
     private LimitOffset limitOffset;
     private OrderBy orderBy;
     private String reconciled;
-    private SyncStatus syncStatus;
+    private EnumSet<SyncStatus> syncStatus;
 
     public RequisitionQuery() {
         // Set default values
@@ -44,7 +44,7 @@ public class RequisitionQuery {
         this.limitOffset = LimitOffset.TEN;
         this.orderBy = new OrderBy(this.dateField, SortOrder.DESC);
         this.reconciled = WILDCARD;
-        this.syncStatus = SyncStatus.PENDING;
+        this.syncStatus = EnumSet.allOf(SyncStatus.class);
     }
 
     /**
@@ -148,7 +148,7 @@ public class RequisitionQuery {
         return this;
     }
 
-    public RequisitionQuery setSyncStatus(SyncStatus syncStatus) {
+    public RequisitionQuery setSyncStatus(EnumSet<SyncStatus> syncStatus) {
         this.syncStatus = syncStatus;
         return this;
     }
@@ -201,7 +201,7 @@ public class RequisitionQuery {
         return reconciled;
     }
 
-    public SyncStatus getSyncStatus() {
+    public EnumSet<SyncStatus> getSyncStatuses() {
         return syncStatus;
     }
 }

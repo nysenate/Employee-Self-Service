@@ -152,7 +152,7 @@ public class SfmsSynchronizationService {
                 .setStatuses(EnumSet.of(RequisitionStatus.APPROVED, RequisitionStatus.REJECTED))
                 .setFromDateTime(LocalDateTime.of(2016, 1, 1, 0, 0)) // Date before supply was launched, so includes all requisitions.
                 .setToDateTime(dateTimeFactory.now())
-                .setSyncStatus(SyncStatus.PENDING)
+                .setSyncStatus(EnumSet.of(SyncStatus.PENDING, SyncStatus.ERROR))
                 .setDateField("ordered_date_time")
                 .setLimitOffset(LimitOffset.ALL);
 

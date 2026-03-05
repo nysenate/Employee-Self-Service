@@ -62,7 +62,7 @@ public enum SqlRequisitionQuery implements BasicSqlQuery {
                 WHERE c.destination LIKE :destination AND Coalesce(c.customer_id::text, '') LIKE :customerId
                     AND Coalesce(c.issuing_emp_id::text, '') LIKE :issuerId
                     AND c.revision_id IN (SELECT i.revision_id FROM ${supplySchema}.line_item i WHERE i.item_id::text LIKE :itemId)
-                    AND c.status::text IN (:statuses) AND r.sfms_sync_status::text LIKE :sfms_sync_status OR r.sfms_sync_status::text LIKE 'ERROR' AND c.is_reconciled::text LIKE :isReconciled AND r.
+                    AND c.status::text IN (:statuses) AND r.sfms_sync_status::text in (:sfms_sync_status) AND c.is_reconciled::text LIKE :isReconciled AND r.
             """),
 
     ORDER_HISTORY_PARTIAL(
