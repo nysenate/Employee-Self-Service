@@ -4,7 +4,6 @@ import gov.nysenate.ess.core.service.pec.external.everfi.EverfiApiClient;
 import gov.nysenate.ess.core.util.OutputUtils;
 
 import java.io.IOException;
-import java.util.List;
 
 public class EverfiSingleUserRequest {
 
@@ -20,7 +19,7 @@ public class EverfiSingleUserRequest {
     }
 
     private String endpoint() {
-        return USER_END_POINT.replace(":id",this.UUID);
+        return USER_END_POINT.replace(":id", this.UUID);
     }
 
     public EverfiUser getUser() throws IOException {

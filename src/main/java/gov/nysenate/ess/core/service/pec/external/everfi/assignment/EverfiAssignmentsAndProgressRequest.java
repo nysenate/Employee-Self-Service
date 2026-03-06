@@ -3,8 +3,8 @@ package gov.nysenate.ess.core.service.pec.external.everfi.assignment;
 import gov.nysenate.ess.core.service.pec.external.everfi.EverfiApiClient;
 import gov.nysenate.ess.core.util.OutputUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.util.Assert;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.util.List;

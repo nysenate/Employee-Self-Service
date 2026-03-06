@@ -92,8 +92,7 @@ public class EverfiApiClient {
 
         if (req instanceof HttpPost) {
             ((HttpPost) req).setEntity(new StringEntity(entity));
-        }
-        else if (req instanceof  HttpPatch) {
+        } else if (req instanceof HttpPatch) {
             ((HttpPatch) req).setEntity(new StringEntity(entity));
         }
 
@@ -117,7 +116,7 @@ public class EverfiApiClient {
                         logger.error("Unable to make get request to Everfi. Error authenticating.");
                         retry = false;
                     }
-                } else if (statusCode == RATE_LIMIT_EXCEEDED){
+                } else if (statusCode == RATE_LIMIT_EXCEEDED) {
                     // Increment the retry count and sleep.
                     retryCount++;
                     Thread.sleep(getWaitTimeExp(retryCount));
