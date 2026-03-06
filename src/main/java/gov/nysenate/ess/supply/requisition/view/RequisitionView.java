@@ -71,7 +71,7 @@ public class RequisitionView implements ViewObject {
         this.lastSfmsSyncDateTime = dateTimeToString(requisition.getLastSfmsSyncDateTime());
         this.savedInSfms = requisition.getSavedInSfms();
         this.syncStatus = requisition.getSfmsSyncStatus().name();
-        this.skippedReason = requisition.getSfmsSkippedReason().name();
+        this.skippedReason = requisition.getSfmsSkippedReason() != null ? requisition.getSfmsSkippedReason().name() : null;
         this.syncAttempts = requisition.getSfmsSyncAttempts();
     }
 
@@ -98,7 +98,7 @@ public class RequisitionView implements ViewObject {
                 .withLastSfmsSyncDateTimeDateTime(stringToDateTime(lastSfmsSyncDateTime))
                 .withSavedInSfms(savedInSfms)
                 .withSfmsSyncStatus(SyncStatus.valueOf(syncStatus))
-                .withSfmsSkippedReason(SkippedReason.valueOf(skippedReason))
+                .withSfmsSkippedReason(skippedReason != null ? SkippedReason.valueOf(skippedReason) : null)
                 .withSfmsSyncAttempts(syncAttempts)
                 .build();
     }
