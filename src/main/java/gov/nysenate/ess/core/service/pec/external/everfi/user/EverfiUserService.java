@@ -13,6 +13,7 @@ import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategory
 import gov.nysenate.ess.core.service.pec.external.everfi.user.add.EverfiAddUserRequest;
 import gov.nysenate.ess.core.service.pec.external.everfi.user.update.EverfiUpdateUserRequest;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -441,9 +442,7 @@ public class EverfiUserService {
             Employee emp = employeeDao.getEmployeeById(empId);
 
             String properEmail;
-
-            if (emp.getEmail().endsWith("@nysenate.gov") && everfiUser.getEmail().endsWith("@nysenate.gov")
-                    && !emp.getEmail().equals(everfiUser.getEmail())) {
+            if (emp.isActive() && StringUtils.isNotBlank(emp.getEmail())) {
                 properEmail = emp.getEmail();
             } else {
                 properEmail = everfiUser.getEmail();
