@@ -14,6 +14,7 @@ import gov.nysenate.ess.core.service.pec.external.everfi.user.add.EverfiAddUserR
 import gov.nysenate.ess.core.service.pec.external.everfi.user.update.EverfiUpdateUserRequest;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -440,13 +441,7 @@ public class EverfiUserService {
     private void updateEverfiUserWithEmpData(Integer empId, EverfiUser everfiUser) {
         try {
             Employee emp = employeeDao.getEmployeeById(empId);
-
-            String properEmail;
-            if (emp.isActive() && StringUtils.isNotBlank(emp.getEmail())) {
-                properEmail = emp.getEmail();
-            } else {
-                properEmail = everfiUser.getEmail();
-            }
+            String properEmail = resolveEmail(emp, everfiUser);
 
             //Normalize category labels that the everfi user already has. This prevents null pointer exception
             List<EverfiCategoryLabel> normalizedCategoryLabels = this.categoryService.normalizeUsersCategoryLabel(everfiUser.getUserCategoryLabels());
@@ -461,7 +456,39 @@ public class EverfiUserService {
         } catch (Exception e) {
             logger.warn("error " + e);
         }
+    }
 
+    /**
+     * Determines what email to attach to an EverfiUser.
+     * We prefer to use the employee's senate email whenever possible, but some employees have requested
+     * to use their personal email addresses, in which case we should not override it.
+     *
+     * @return a valid email address or null if neither email is valid.
+     */
+    public String resolveEmail(Employee emp, EverfiUser everfiUser) {
+        boolean employeeEmailUsable = emp.isActive() && EmailValidator.getInstance().isValid(emp.getEmail());
+        boolean everfiEmailUsable = EmailValidator.getInstance().isValid(everfiUser.getEmail());
+
+        if (!everfiEmailUsable) {
+            return employeeEmailUsable ? emp.getEmail() : null;
+        }
+
+        if (looksLikePersonalEmailOverride(everfiUser.getEmail())) {
+            return everfiUser.getEmail();
+        }
+
+        return employeeEmailUsable ? emp.getEmail() : everfiUser.getEmail();
+    }
+
+    /**
+     * Some users have requested to use their personal email in Everfi instead of their senate email.
+     * This is a simple attempt at recognizing those emails.
+     *
+     * @return true if {@code email} may be a personal email address.
+     */
+    private boolean looksLikePersonalEmailOverride(String email) {
+        EmailValidator validator = EmailValidator.getInstance();
+        return validator.isValid(email) && !StringUtils.containsIgnoreCase(email, "@nysenate.gov");
     }
 
     private List<EverfiCategoryLabel> getOrCreateEmpCategoryLabels(Employee emp, EverfiUser user) throws IOException {
