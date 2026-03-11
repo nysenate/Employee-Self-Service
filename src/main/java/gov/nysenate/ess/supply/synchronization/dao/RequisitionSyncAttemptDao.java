@@ -3,23 +3,23 @@ package gov.nysenate.ess.supply.synchronization.dao;
 import gov.nysenate.ess.core.dao.base.BasicSqlQuery;
 import gov.nysenate.ess.core.dao.base.DbVendor;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
-import gov.nysenate.ess.supply.synchronization.model.RequisitionHistory;
+import gov.nysenate.ess.supply.synchronization.model.RequisitionSyncAttempt;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class RequisitionHistoryDao extends SqlBaseDao {
+public class RequisitionSyncAttemptDao extends SqlBaseDao {
 
-    protected void insertRequisitionHistory(RequisitionHistory requisitionHistory) {
+    public void insertRequisitionSyncAttempt(RequisitionSyncAttempt requisitionSyncAttempt) {
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("requisition_history_id", requisitionHistory.getRequisition_history_id())
-                .addValue("requisition_id", requisitionHistory.getRequisition_id())
-                .addValue("sync_attempts", requisitionHistory.getSync_attempts())
-                .addValue("attempt_sync_date", requisitionHistory.getAttempt_sync_date().toString())
-                .addValue("was_successful", requisitionHistory.getWas_successful())
-                .addValue("error_info", requisitionHistory.getError_info() != null ? requisitionHistory.getError_info() : null)
-                .addValue("outcome_sync_status", requisitionHistory.getOutcome_sync_status().name())
-                .addValue("syncable_line_items", requisitionHistory.getSyncable_line_items());
+                .addValue("requisition_history_id", requisitionSyncAttempt.getRequisitionHistoryId())
+                .addValue("requisition_id", requisitionSyncAttempt.getRequisitionId())
+                .addValue("sync_attempts", requisitionSyncAttempt.getSyncAttempts())
+                .addValue("attempt_sync_date", requisitionSyncAttempt.getAttemptSyncDate().toString())
+                .addValue("was_successful", requisitionSyncAttempt.getWasSuccessful())
+                .addValue("error_info", requisitionSyncAttempt.getErrorInfo() != null ? requisitionSyncAttempt.getErrorInfo() : null)
+                .addValue("outcome_sync_status", requisitionSyncAttempt.getOutcomeSyncStatus().name())
+                .addValue("syncable_line_items", requisitionSyncAttempt.getSyncableLineItems());
 
         String sql = SqlReqHistoryQuery.INSERT_REQUISITION_HISTORY.getSql(schemaMap());
 

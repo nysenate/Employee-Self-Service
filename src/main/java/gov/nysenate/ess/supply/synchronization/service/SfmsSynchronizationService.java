@@ -8,7 +8,9 @@ import gov.nysenate.ess.supply.requisition.model.*;
 import gov.nysenate.ess.supply.requisition.service.RequisitionService;
 import gov.nysenate.ess.supply.requisition.view.SfmsRequisitionView;
 import gov.nysenate.ess.supply.synchronization.SyncStatuses.ModifySyncStatus;
+import gov.nysenate.ess.supply.synchronization.dao.RequisitionSyncAttemptDao;
 import gov.nysenate.ess.supply.synchronization.dao.SfmsSynchronizationProcedure;
+import gov.nysenate.ess.supply.synchronization.model.RequisitionSyncAttempt;
 import gov.nysenate.ess.supply.util.date.DateTimeFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +39,7 @@ public class SfmsSynchronizationService {
     private final SfmsSynchronizationProcedure synchronizationProcedure;
     private final DateTimeFactory dateTimeFactory;
     private final SlackChatService slackChatService;
+    private final RequisitionSyncAttemptDao requisitionSyncAttemptDao;
 
     @Autowired
     public SfmsSynchronizationService(@Value("${scheduler.supply.sfms_synchronization.enabled}")
@@ -44,12 +47,14 @@ public class SfmsSynchronizationService {
                                       RequisitionService requisitionService,
                                       SfmsSynchronizationProcedure synchronizationProcedure,
                                       DateTimeFactory dateTimeFactory,
-                                      SlackChatService slackChatService) {
+                                      SlackChatService slackChatService,
+                                      RequisitionSyncAttemptDao requisitionSyncAttemptDao) {
         this.synchronizationEnabled = synchronizationEnabled;
         this.requisitionService = requisitionService;
         this.synchronizationProcedure = synchronizationProcedure;
         this.dateTimeFactory = dateTimeFactory;
         this.slackChatService = slackChatService;
+        this.requisitionSyncAttemptDao = requisitionSyncAttemptDao;
     }
 
     /**
@@ -81,18 +86,22 @@ public class SfmsSynchronizationService {
 
         for (int i = 0; i < filteredReqs.size(); i++) {
             Requisition r = filteredReqs.get(i);
-            boolean success = syncRequisition(r);
+            RequisitionSyncAttempt syncAttempt = new RequisitionSyncAttempt();
+            boolean success = syncRequisition(r, syncAttempt);
             ModifySyncStatus modify = new ModifySyncStatus();
             r = modify.modifySyncStatuses(r, success);
 
             Requisition modified = updateOriginalReq(originalReqs.get(i), r, success);
 
+            syncAttempt = updateSyncAttemptInfo(modified, syncAttempt);
+
             requisitionService.saveRequisition(modified);
+            requisitionSyncAttemptDao.insertRequisitionSyncAttempt(syncAttempt);
         }
 
     }
 
-    private boolean syncRequisition(Requisition requisition) {
+    private boolean syncRequisition(Requisition requisition, RequisitionSyncAttempt syncAttempt) {
         if (requiresSync(requisition)) {
             logger.info("Attempting to synchronize requisition {} with SFMS.", requisition.getRequisitionId());
             try {
@@ -102,6 +111,7 @@ public class SfmsSynchronizationService {
             } catch (DataAccessException ex) {
                 String msg = "Error synchronizing requisition " + requisition.getRequisitionId()
                         + " with SFMS. Exception is : " + ex.getMessage();
+                syncAttempt.setErrorInfo(msg); // Pass by reference to avoid complexity
                 logger.error(msg);
                 sendMessageToSlack(msg);
                 return false;
@@ -113,6 +123,34 @@ public class SfmsSynchronizationService {
         //setAsSynced(requisition);
 
         return true;
+    }
+
+    /**
+     * <p>Updates the syncAttempt with information that will define a recollection of synchronization attempts for a requisition.</p>
+     *
+     * @param modified    - The requisition that has gone through the synchronization process and has key information that is useful in defining the history of a particular requisition.
+     * @param syncAttempt - The requisition history of the object and will contain a record of key information regarding the synchronization process of the requisition.
+     * @return
+     */
+    public RequisitionSyncAttempt updateSyncAttemptInfo(Requisition modified, RequisitionSyncAttempt syncAttempt) {
+        syncAttempt.setRequisitionId(modified.getRequisitionId());
+        syncAttempt.setAttemptSyncDate(LocalDateTime.now());
+        syncAttempt.setSyncAttempts(modified.getSfmsSyncAttempts());
+        syncAttempt.setOutcomeSyncStatus(modified.getSfmsSyncStatus());
+
+        if (modified.getSfmsSyncStatus() == SyncStatus.ERROR) {
+            syncAttempt.setWasSuccessful(false);
+        } else {
+            syncAttempt.setWasSuccessful(true);
+        }
+
+        List<Integer> lineItemIds = new ArrayList<>();
+        for (LineItem lineItem : modified.getLineItems()) {
+            lineItemIds.add(lineItem.getItem().getId());
+        }
+        syncAttempt.setSyncableLineItems(lineItemIds);
+
+        return syncAttempt;
     }
 
 

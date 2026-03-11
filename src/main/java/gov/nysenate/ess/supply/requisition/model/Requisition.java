@@ -34,10 +34,9 @@ public final class Requisition {
     private final LocalDateTime lastSfmsSyncDateTime;
     private final boolean savedInSfms;
     private final boolean reconciled;
-    private final SyncStatus sfmsSyncStatus ;
+    private final SyncStatus sfmsSyncStatus;
     private final int sfmsSyncAttempts;
     private final SkippedReason sfmsSkippedReason;
-
 
 
     private Requisition(Builder builder) {
@@ -145,8 +144,10 @@ public final class Requisition {
         return copy().withModifiedBy(modifiedBy).build();
     }
 
-    /** Modified date time should only be set by the dao layer before saving.
-     * It is used in optimistic locking to ensure multiple updates are not done at once. */
+    /**
+     * Modified date time should only be set by the dao layer before saving.
+     * It is used in optimistic locking to ensure multiple updates are not done at once.
+     */
     public Requisition setModifiedDateTime(LocalDateTime modifiedDateTime) {
         return copy().withModifiedDateTime(modifiedDateTime).build();
     }
@@ -168,7 +169,7 @@ public final class Requisition {
         return copy().withReconciled(reconciled).build();
     }
 
-    public Requisition setSyncStatus(SyncStatus syncStatus){
+    public Requisition setSyncStatus(SyncStatus syncStatus) {
         return copy().withSfmsSyncStatus(syncStatus).build();
     }
 
@@ -264,11 +265,11 @@ public final class Requisition {
         return sfmsSyncStatus;
     }
 
-    public int getSfmsSyncAttempts(){
+    public int getSfmsSyncAttempts() {
         return sfmsSyncAttempts;
     }
 
-    public SkippedReason getSfmsSkippedReason(){
+    public SkippedReason getSfmsSkippedReason() {
         return sfmsSkippedReason;
     }
 
@@ -488,22 +489,22 @@ public final class Requisition {
             return this;
         }
 
-        public Builder withReconciled(boolean reconciled){
+        public Builder withReconciled(boolean reconciled) {
             this.reconciled = reconciled;
             return this;
         }
 
-        public Builder withSfmsSyncStatus(SyncStatus sfmsSyncStatus){
+        public Builder withSfmsSyncStatus(SyncStatus sfmsSyncStatus) {
             this.sfmsSyncStatus = sfmsSyncStatus;
             return this;
         }
 
-        public Builder withSfmsSyncAttempts(int sfmsSyncAttempts){
+        public Builder withSfmsSyncAttempts(int sfmsSyncAttempts) {
             this.sfmsSyncAttempts = sfmsSyncAttempts;
             return this;
         }
 
-        public Builder withSfmsSkippedReason(SkippedReason sfmsSkippedReason){
+        public Builder withSfmsSkippedReason(SkippedReason sfmsSkippedReason) {
             this.sfmsSkippedReason = sfmsSkippedReason;
             return this;
         }
