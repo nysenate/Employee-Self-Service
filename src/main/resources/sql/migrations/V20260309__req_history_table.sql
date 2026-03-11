@@ -1,11 +1,12 @@
-CREATE TABLE requisitions_history
+CREATE TABLE supply.requisition_history
 (
-    req_history_id SERIAL INTEGER,
-    requisition_id INTEGER REFERENCES requisitions(requisition_id),
-    sync_attempts INTEGER UNIQUE(requisition_id, sync_attempts),
-    attempt_sync_date TIMESTAMP,
-    was_successful BOOLEAN,
+    req_history_id      SERIAL PRIMARY KEY,
+    requisition_id      INTEGER REFERENCES supply.requisition (requisition_id),
+    sync_attempts       INTEGER,
+    attempt_sync_date   TIMESTAMP,
+    was_successful      BOOLEAN,
     outcome_sync_status TEXT,
-    error_info TEXT,
-    syncable_line_items INTEGER[]
+    error_info          TEXT,
+    syncable_line_items INTEGER[],
+    UNIQUE (requisition_id, sync_attempts)
 );
