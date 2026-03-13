@@ -3,6 +3,8 @@ package gov.nysenate.ess.core.controller.api.pec;
 import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
+import gov.nysenate.ess.core.dao.pec.everfi.EverfiUserDao;
+import gov.nysenate.ess.core.model.pec.everfi.EverfiUserIDs;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.pec.external.everfi.EverfiRecordService;
 import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategoryService;
@@ -32,6 +34,7 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
     private PersonnelTaskAssignmentDao personnelTaskAssignmentDao;
     private EverfiUserService everfiUserService;
     private EverfiCategoryService everfiCategoryService;
+    private EverfiUserDao everfiUserDao;
     final LocalDateTime jan1970 = LocalDateTime.of(1970, 1, 1, 0, 0, 1);
     final LocalDateTime lastYearJan = LocalDateTime.of(LocalDateTime.now().getYear() - 1, 1, 1, 0, 0, 1);
     final LocalDateTime now = LocalDateTime.now();
@@ -40,11 +43,12 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
 
     @Autowired
     public EverfiApiCtrl(EverfiRecordService everfiRecordService, PersonnelTaskAssignmentDao personnelTaskAssignmentDao,
-                         EverfiUserService everfiUserService, EverfiCategoryService everfiCategoryService) {
+                         EverfiUserService everfiUserService, EverfiCategoryService everfiCategoryService, EverfiUserDao everfiUserDao) {
         this.everfiRecordService = everfiRecordService;
         this.personnelTaskAssignmentDao = personnelTaskAssignmentDao;
         this.everfiUserService = everfiUserService;
         this.everfiCategoryService = everfiCategoryService;
+        this.everfiUserDao = everfiUserDao;
     }
 
     /**
@@ -58,7 +62,6 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
      * (POST)    /api/v1/everfi/manual/user/sync
      *
      * @return String
-     *
      */
     @RequestMapping(value = "/manual/user/sync", method = {POST})
     @ResponseStatus(value = HttpStatus.OK)
@@ -81,7 +84,6 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
      * (GET)    /api/v1/everfi/cache/refresh
      *
      * @return String
-     *
      */
     @RequestMapping(value = "/cache/refresh", method = {GET})
     @ResponseStatus(value = HttpStatus.OK)
@@ -108,7 +110,6 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
      * @return String
      * @Param from, the beginning of the date range needed for the records
      * @Param Organization, is always senate
-     *
      */
     @RequestMapping(value = "/personnel/task/generate", method = POST)
     @ResponseStatus(value = HttpStatus.OK)
@@ -153,7 +154,6 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
      * (POST)    /api/v1/everfi/import/users
      *
      * @return String
-     *
      */
     @RequestMapping(value = "/import/users", method = POST)
     @ResponseStatus(value = HttpStatus.OK)
@@ -180,7 +180,6 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
      * (GET)    /api/v1/everfi/new/emp
      *
      * @return String
-     *
      */
     @RequestMapping(value = "/new/emp", method = {GET})
     @ResponseStatus(value = HttpStatus.OK)
@@ -263,7 +262,11 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
                                                              @PathVariable int empid,
                                                              @PathVariable boolean status) throws Exception {
         checkPermission(ADMIN.getPermission());
-        everfiUserService.changeActiveStatusForUserWithEmpID(empid, status);
+        EverfiUserIDs everfiUserIDs = everfiUserDao.getEverfiUserIDsWithEmpID(empid);
+        if (everfiUserIDs == null) {
+            throw new IllegalArgumentException("Provided 'empid' was not found in the everfi_user_ids table");
+        }
+        everfiUserService.changeActiveStatusForUserWithUUID(everfiUserIDs.getEverfiUUID(), status);
         return new SimpleResponse(true, "Everfi User Active Status Updated",
                 "everfi-user-active-status-update");
     }

@@ -27,6 +27,7 @@ public class EverfiUpdateCategoryLabelRequest {
 
     /**
      * Updates a Everfi Category Label.
+     *
      * @return The updated label or null if an error occurred.
      * @throws IOException
      */

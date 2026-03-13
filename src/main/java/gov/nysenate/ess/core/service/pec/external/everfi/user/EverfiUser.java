@@ -14,20 +14,20 @@ public class EverfiUser {
 
     private List<EverfiCategoryLabel> userCategoryLabels;
 
-   @JsonProperty("id")
+    @JsonProperty("id")
     private String uuid; // Everfi's uuid associated with this user.
     private EverfiUserAttributes attributes;
 
     @SuppressWarnings("unchecked")
     @JsonProperty("relationships")
-    private void unpackNested(Map<String,Object> relationships) {
-        Map<String,Object> catgeoryLabelsJson = (Map<String,Object>) relationships.get("category_labels");
-        List<LinkedHashMap<String,String>> data = (List<LinkedHashMap<String,String>>) catgeoryLabelsJson.get("data");
+    private void unpackNested(Map<String, Object> relationships) {
+        Map<String, Object> catgeoryLabelsJson = (Map<String, Object>) relationships.get("category_labels");
+        List<LinkedHashMap<String, String>> data = (List<LinkedHashMap<String, String>>) catgeoryLabelsJson.get("data");
         ArrayList<EverfiCategoryLabel> everfiCategoryLabels = new ArrayList<>();
-        for (int i=0; i < data.size(); i++) {
-            LinkedHashMap<String,String> turnIntoLabel = (LinkedHashMap<String,String>) data.get(i);
+        for (int i = 0; i < data.size(); i++) {
+            LinkedHashMap<String, String> turnIntoLabel = (LinkedHashMap<String, String>) data.get(i);
             everfiCategoryLabels.add(
-                    new EverfiCategoryLabel( Integer.parseInt(turnIntoLabel.get("id")) , turnIntoLabel.get("type") ) );
+                    new EverfiCategoryLabel(Integer.parseInt(turnIntoLabel.get("id")), turnIntoLabel.get("type")));
         }
         this.userCategoryLabels = everfiCategoryLabels;
     }

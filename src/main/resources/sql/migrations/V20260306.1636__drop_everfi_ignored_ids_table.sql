@@ -1,0 +1,1 @@
+DROP TABLE IF EXISTS ess.ignored_everfi_user_ids;

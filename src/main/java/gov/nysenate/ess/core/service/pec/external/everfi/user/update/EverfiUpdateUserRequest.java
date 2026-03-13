@@ -42,6 +42,7 @@ public class EverfiUpdateUserRequest {
 
     /**
      * Updates the user represented by the feilds in this class.
+     *
      * @return The updated user from Everfi or null if an error occurred.
      * @throws IOException
      */
