@@ -21,7 +21,7 @@ public class ModifySyncStatus {
         if (wasSynchronized) {
             req = successfulRequisition(req);
         } else if (req.getLineItems().isEmpty() && req.getStatus().equals(RequisitionStatus.REJECTED)) {
-            req = rejectedAndNoLineItems(req);
+            req = rejectedRequisition(req);
         } else if (req.getStatus().equals(RequisitionStatus.REJECTED)) {
             req = rejectedRequisition(req);
         } else if (req.getLineItems().isEmpty()) {
@@ -29,14 +29,12 @@ public class ModifySyncStatus {
         } else if (!req.getLineItems().isEmpty() && !wasSynchronized) {
             req = erroredRequisition(req);
         }
-
         return req;
     }
 
     public Requisition successfulRequisition(Requisition req) {
         req = req.setSyncStatus(SyncStatus.COMPLETE);
         req = req.setSfmsSyncAttempts(req.getSfmsSyncAttempts() + 1);
-
         return req;
     }
 
@@ -50,27 +48,13 @@ public class ModifySyncStatus {
     /**
      * <ol>
      * <li>If the req has a rejected status, then it was explicitly skipped</li>
+     * <li>Also, If the req has no line items to sync and was rejected then we will say its skipped and rejected</li>
      * </ol>
      *
      * @param req
      * @return
      */
     public Requisition rejectedRequisition(Requisition req) {
-        req = req.setSfmsSkippedReason(SkippedReason.REJECTED);
-        req = req.setSyncStatus(SyncStatus.SKIPPED);
-        req = req.setSfmsSyncAttempts(req.getSfmsSyncAttempts() + 1);
-        return req;
-    }
-
-    /**
-     * <ol>
-     * <li>If the req has no line items to sync and was rejected then we will say its skipped and rejected</li>
-     * </ol>
-     *
-     * @param req
-     * @return
-     */
-    public Requisition rejectedAndNoLineItems(Requisition req) {
         req = req.setSfmsSkippedReason(SkippedReason.REJECTED);
         req = req.setSyncStatus(SyncStatus.SKIPPED);
         req = req.setSfmsSyncAttempts(req.getSfmsSyncAttempts() + 1);
@@ -88,6 +72,7 @@ public class ModifySyncStatus {
     public Requisition noSyncableItems(Requisition req) {
         req = req.setSfmsSkippedReason(SkippedReason.NO_SYNCABLE_ITEMS);
         req = req.setSyncStatus(SyncStatus.SKIPPED);
+        req = req.setSfmsSyncAttempts(req.getSfmsSyncAttempts() + 1);
         return req;
     }
 

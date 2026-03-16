@@ -86,7 +86,7 @@ public class SfmsSynchronizationService {
             r = modify.modifySyncStatuses(r, success);
 
             Requisition modified = updateOriginalReq(originalReqs.get(i), r, success);
-
+            modified = modified.setLastSfmsSyncDateTimeDateTime(dateTimeFactory.now());
             requisitionService.saveRequisition(modified);
         }
 
@@ -96,7 +96,6 @@ public class SfmsSynchronizationService {
         if (requiresSync(requisition)) {
             logger.info("Attempting to synchronize requisition {} with SFMS.", requisition.getRequisitionId());
             try {
-                //requisition = requisition.setLastSfmsSyncDateTimeDateTime(dateTimeFactory.now());
                 synchronizationProcedure.synchronizeRequisition(OutputUtils.toXml(new SfmsRequisitionView(requisition)));
 
             } catch (DataAccessException ex) {

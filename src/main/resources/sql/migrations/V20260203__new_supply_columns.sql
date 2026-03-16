@@ -20,6 +20,7 @@ SET sfms_sync_status = CASE
                            WHEN approved_date_time IS NOT NULL AND saved_in_sfms IS TRUE THEN 'COMPLETE'
                            WHEN approved_date_time IS NOT NULL AND saved_in_sfms IS FALSE THEN 'PENDING'
                            WHEN rejected_date_time IS NOT NULL THEN 'SKIPPED'
+                           WHEN requisition.last_sfms_sync_date_time IS NOT NULL AND saved_in_sfms IS FALSE THEN 'ERROR'
                            ELSE 'PENDING'
     END
 WHERE requisition.sfms_sync_status = 'PENDING';
