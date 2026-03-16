@@ -12,15 +12,14 @@ public class RequisitionSyncAttemptDao extends SqlBaseDao {
 
     public void insertRequisitionSyncAttempt(RequisitionSyncAttempt requisitionSyncAttempt) {
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("requisition_history_id", requisitionSyncAttempt.getRequisitionHistoryId())
-                .addValue("requisition_id", requisitionSyncAttempt.getRequisitionId())
-                .addValue("sync_attempts", requisitionSyncAttempt.getSyncAttempts())
-                .addValue("attempt_sync_date", requisitionSyncAttempt.getAttemptSyncDate().toString())
-                .addValue("was_successful", requisitionSyncAttempt.getWasSuccessful())
-                .addValue("error_info", requisitionSyncAttempt.getErrorInfo() != null ? requisitionSyncAttempt.getErrorInfo() : null)
-                .addValue("outcome_sync_status", requisitionSyncAttempt.getOutcomeSyncStatus().name())
-                .addValue("syncable_line_items", requisitionSyncAttempt.getSyncableLineItems());
-
+                .addValue("requisitionHistoryId", requisitionSyncAttempt.getRequisitionHistoryId())
+                .addValue("requisitionId", requisitionSyncAttempt.getRequisitionId())
+                .addValue("syncAttempts", requisitionSyncAttempt.getSyncAttempts())
+                .addValue("attemptSyncDate", requisitionSyncAttempt.getAttemptSyncDate())
+                .addValue("wasSuccessful", requisitionSyncAttempt.getWasSuccessful())
+                .addValue("errorInfo", requisitionSyncAttempt.getErrorInfo() != null ? requisitionSyncAttempt.getErrorInfo() : null)
+                .addValue("outcomeSyncStatus", requisitionSyncAttempt.getOutcomeSyncStatus().name())
+                .addValue("syncableLineItems", requisitionSyncAttempt.getSyncableLineItems().toArray(new Integer[0]));
         String sql = SqlReqHistoryQuery.INSERT_REQUISITION_HISTORY.getSql(schemaMap());
 
         localNamedJdbc.update(sql, params);
@@ -28,10 +27,7 @@ public class RequisitionSyncAttemptDao extends SqlBaseDao {
 
     private enum SqlReqHistoryQuery implements BasicSqlQuery {
         INSERT_REQUISITION_HISTORY(
-                "INSERT INTO ${supply.schema} \n" +
-                        "VALUES (:requisition_history_id, :requisition_id, " +
-                        ":sync_attempts, :attempt_sync_date, :was_successful, " +
-                        ":error_info, :outcome_sync_status, :syncable_line_items)"
+                "INSERT INTO ${supplySchema}.requisition_history (requisition_id, sync_attempts, attempt_sync_date, was_successful, outcome_sync_status, error_info, syncable_line_items) VALUES (:requisitionId, :syncAttempts, :attemptSyncDate, :wasSuccessful, :outcomeSyncStatus, :errorInfo, :syncableLineItems::int[])"
         );
 
         private final String sql;
