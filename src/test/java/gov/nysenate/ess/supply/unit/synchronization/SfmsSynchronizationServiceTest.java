@@ -117,7 +117,7 @@ public class SfmsSynchronizationServiceTest {
     @Test
     public void testRejectedSync() {
         // Initialize test state.
-        Requisition requisition = buildRejectedRequisition(1002, setOf(lineItem(1, false)));
+        Requisition requisition = buildRejectedRequisition(1002, setOf(lineItem(1, true)));
 
         LocalDateTime expectedSyncDateTime = LocalDateTime.now();
         dummyDateTime.setDateTime(expectedSyncDateTime);
