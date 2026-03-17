@@ -10,6 +10,7 @@ import gov.nysenate.ess.supply.requisition.view.SfmsRequisitionView;
 import gov.nysenate.ess.supply.synchronization.SyncStatuses.ModifySyncStatus;
 import gov.nysenate.ess.supply.synchronization.dao.RequisitionSyncAttemptDao;
 import gov.nysenate.ess.supply.synchronization.dao.SfmsSynchronizationProcedure;
+import gov.nysenate.ess.supply.synchronization.dao.SyncAttemptDao;
 import gov.nysenate.ess.supply.synchronization.model.RequisitionSyncAttempt;
 import gov.nysenate.ess.supply.util.date.DateTimeFactory;
 import org.slf4j.Logger;
@@ -39,7 +40,7 @@ public class SfmsSynchronizationService {
     private final SfmsSynchronizationProcedure synchronizationProcedure;
     private final DateTimeFactory dateTimeFactory;
     private final SlackChatService slackChatService;
-    private final RequisitionSyncAttemptDao requisitionSyncAttemptDao;
+    private final SyncAttemptDao syncAttemptDao;
 
     @Autowired
     public SfmsSynchronizationService(@Value("${scheduler.supply.sfms_synchronization.enabled}")
@@ -48,13 +49,13 @@ public class SfmsSynchronizationService {
                                       SfmsSynchronizationProcedure synchronizationProcedure,
                                       DateTimeFactory dateTimeFactory,
                                       SlackChatService slackChatService,
-                                      RequisitionSyncAttemptDao requisitionSyncAttemptDao) {
+                                      SyncAttemptDao syncAttemptDao) {
         this.synchronizationEnabled = synchronizationEnabled;
         this.requisitionService = requisitionService;
         this.synchronizationProcedure = synchronizationProcedure;
         this.dateTimeFactory = dateTimeFactory;
         this.slackChatService = slackChatService;
-        this.requisitionSyncAttemptDao = requisitionSyncAttemptDao;
+        this.syncAttemptDao = syncAttemptDao;
     }
 
     /**
@@ -80,7 +81,6 @@ public class SfmsSynchronizationService {
         if (!synchronizationEnabled) {
             return;
         }
-
         List<Requisition> originalReqs = requisitionsToBeSynced();
         List<Requisition> filteredReqs = filterRequisitions(originalReqs);
 
@@ -95,7 +95,8 @@ public class SfmsSynchronizationService {
             syncAttempt = updateSyncAttemptInfo(modified, syncAttempt);
 
             requisitionService.saveRequisition(modified);
-            requisitionSyncAttemptDao.insertRequisitionSyncAttempt(syncAttempt);
+            System.out.println(syncAttempt.getErrorInfo());
+            syncAttemptDao.insertRequisitionSyncAttempt(syncAttempt);
         }
 
     }
@@ -104,7 +105,7 @@ public class SfmsSynchronizationService {
         if (requiresSync(requisition)) {
             logger.info("Attempting to synchronize requisition {} with SFMS.", requisition.getRequisitionId());
             try {
-                if (requisition.getRequisitionId() == 1000045) {
+                if (requisition.getRequisitionId() == 1005) {
                     throw new DataAccessException("Requisition id is supposed to fail for testing purposes") {
                     };
                 }

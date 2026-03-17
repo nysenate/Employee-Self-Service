@@ -7,6 +7,7 @@ import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.core.service.notification.slack.service.SlackChatService;
 import gov.nysenate.ess.core.util.OutputUtils;
 import gov.nysenate.ess.supply.InMemoryRequisitionDao;
+import gov.nysenate.ess.supply.InMemorySyncAttemptDao;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.item.model.Category;
 import gov.nysenate.ess.supply.item.model.ItemAllowance;
@@ -35,9 +36,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.dao.DataAccessResourceFailureException;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -60,7 +59,9 @@ public class SfmsSynchronizationServiceTest {
     private DummyDateTime dummyDateTime;
     private RequisitionService requisitionService;
     private SfmsSynchronizationService service;
-    private RequisitionSyncAttemptDao requisitionSyncAttemptDao;
+
+
+    private final InMemorySyncAttemptDao inMemorySyncAttemptDao = new InMemorySyncAttemptDao();
 
 
     @Before
@@ -73,7 +74,7 @@ public class SfmsSynchronizationServiceTest {
                 synchronizationProcedure,
                 dummyDateTime,
                 slackChatService,
-                requisitionSyncAttemptDao
+                inMemorySyncAttemptDao
         );
 
     }
@@ -86,11 +87,32 @@ public class SfmsSynchronizationServiceTest {
                 synchronizationProcedure,
                 dummyDateTime,
                 slackChatService,
-                requisitionSyncAttemptDao
+                inMemorySyncAttemptDao
         );
-        //service.synchronizeRequisitions();
-        //verifyNoInteractions(synchronizationProcedure, slackChatService);
+        service.synchronizeRequisitions();
+        verifyNoInteractions(synchronizationProcedure, slackChatService);
     }
+
+    public RequisitionSyncAttempt fillRequisitionSyncAttempt(Requisition requisition) {
+        RequisitionSyncAttempt syncAttempt = new RequisitionSyncAttempt();
+
+        if (!requisition.getSfmsSyncStatus().equals(SyncStatus.ERROR)) {
+            syncAttempt.setWasSuccessful(true);
+        } else {
+            syncAttempt.setWasSuccessful(false);
+        }
+        syncAttempt.setRequisitionId(requisition.getRequisitionId());
+        syncAttempt.setSyncAttempts(requisition.getSfmsSyncAttempts());
+        syncAttempt.setOutcomeSyncStatus(requisition.getSfmsSyncStatus());
+        syncAttempt.setAttemptSyncDate(LocalDateTime.now());
+        List<Integer> itemIds = new ArrayList<>();
+        for (LineItem lineItem : requisition.getLineItems()) {
+            itemIds.add(lineItem.getItem().getId());
+        }
+        syncAttempt.setSyncableLineItems(itemIds);
+        return syncAttempt;
+    }
+
 
     @Test
     public void testSuccessfulSync() {
@@ -117,6 +139,16 @@ public class SfmsSynchronizationServiceTest {
         assertEquals(SyncStatus.COMPLETE, requisition.getSfmsSyncStatus());
         assertNull(requisition.getSfmsSkippedReason());
         assertEquals(1, requisition.getSfmsSyncAttempts());
+
+        RequisitionSyncAttempt syncAttempt = fillRequisitionSyncAttempt(requisition);
+
+
+        assertEquals(SyncStatus.COMPLETE, syncAttempt.getOutcomeSyncStatus());
+        assertEquals(syncAttempt.getSyncAttempts(), requisition.getSfmsSyncAttempts());
+        assertTrue(syncAttempt.getWasSuccessful());
+        assertNull(syncAttempt.getErrorInfo());
+        assertEquals(1, syncAttempt.getSyncableLineItems().size());
+        assertEquals(1, inMemorySyncAttemptDao.getSyncAttemptsByReqId(requisition.getRequisitionId()).size());
     }
 
     @Test
@@ -141,7 +173,17 @@ public class SfmsSynchronizationServiceTest {
         assertEquals(SkippedReason.REJECTED, requisition.getSfmsSkippedReason());
         assertNotNull(requisition.getRejectedDateTime());
         assertNotNull(requisition.getSfmsSkippedReason());
-        assertEquals(1, requisition.getSfmsSyncAttempts());
+        assertEquals(0, requisition.getSfmsSyncAttempts());
+
+        RequisitionSyncAttempt syncAttempt = fillRequisitionSyncAttempt(requisition);
+
+        assertEquals(SyncStatus.SKIPPED, syncAttempt.getOutcomeSyncStatus());
+        assertTrue(syncAttempt.getWasSuccessful());
+        assertNull(syncAttempt.getErrorInfo());
+        assertEquals(1, syncAttempt.getSyncableLineItems().size());
+        assertEquals(1, inMemorySyncAttemptDao.getSyncAttemptsByReqId(requisition.getRequisitionId()).size());
+        assertEquals(syncAttempt.getSyncAttempts(), requisition.getSfmsSyncAttempts());
+        assertNotNull(syncAttempt.getAttemptSyncDate());
     }
 
 
@@ -164,7 +206,16 @@ public class SfmsSynchronizationServiceTest {
         assertNotNull(requisition.getSfmsSkippedReason());
         assertEquals(SkippedReason.REJECTED, requisition.getSfmsSkippedReason());
         assertNotNull(requisition.getRejectedDateTime());
-        assertEquals(1, requisition.getSfmsSyncAttempts());
+        assertEquals(0, requisition.getSfmsSyncAttempts());
+
+        RequisitionSyncAttempt syncAttempt = fillRequisitionSyncAttempt(requisition);
+        assertEquals(SyncStatus.SKIPPED, syncAttempt.getOutcomeSyncStatus());
+        assertTrue(syncAttempt.getWasSuccessful());
+        assertNull(syncAttempt.getErrorInfo());
+        assertEquals(1, syncAttempt.getSyncableLineItems().size());
+        assertEquals(syncAttempt.getSyncAttempts(), requisition.getSfmsSyncAttempts());
+        assertNotNull(syncAttempt.getAttemptSyncDate());
+
     }
 
     @Test
@@ -186,6 +237,15 @@ public class SfmsSynchronizationServiceTest {
         assertNotNull(requisition.getSfmsSkippedReason());
         assertEquals(SkippedReason.NO_SYNCABLE_ITEMS, requisition.getSfmsSkippedReason());
         assertEquals(0, requisition.getSfmsSyncAttempts());
+
+        RequisitionSyncAttempt syncAttempt = fillRequisitionSyncAttempt(requisition);
+        assertEquals(SyncStatus.SKIPPED, syncAttempt.getOutcomeSyncStatus());
+        assertTrue(syncAttempt.getWasSuccessful());
+        assertNull(syncAttempt.getErrorInfo());
+        assertEquals(syncAttempt.getSyncAttempts(), requisition.getSfmsSyncAttempts());
+        assertEquals(2, syncAttempt.getSyncableLineItems().size());
+        assertNotNull(syncAttempt.getAttemptSyncDate());
+        assertEquals(syncAttempt.getSyncAttempts(), requisition.getSfmsSyncAttempts());
     }
 
     @Test // Can't test since I don't know how to exactly
@@ -198,8 +258,6 @@ public class SfmsSynchronizationServiceTest {
         LocalDateTime expectedSyncDateTime = LocalDateTime.now();
         dummyDateTime.setDateTime(expectedSyncDateTime);
 
-        doThrow(new DataAccessResourceFailureException("Database failed to save")).when(synchronizationProcedure).synchronizeRequisition(any());
-
         // Execute method to test
         service.synchronizeRequisitions();
 
@@ -211,6 +269,17 @@ public class SfmsSynchronizationServiceTest {
         assertEquals(SyncStatus.ERROR, requisition.getSfmsSyncStatus());
         assertNull(requisition.getSfmsSkippedReason());
         assertEquals(1, requisition.getSfmsSyncAttempts());
+
+        List<RequisitionSyncAttempt> syncAttempt = inMemorySyncAttemptDao.getSyncAttemptsByReqId(requisition.getRequisitionId());
+
+        assertEquals(SyncStatus.ERROR, syncAttempt.get(0).getOutcomeSyncStatus());
+        assertFalse(syncAttempt.isEmpty());
+        assertFalse(syncAttempt.get(0).getWasSuccessful());
+        assertNotNull(syncAttempt.get(0).getErrorInfo());
+        assertEquals(1, syncAttempt.get(0).getSyncableLineItems().size());
+        assertEquals(1, syncAttempt.get(0).getSyncAttempts());
+        assertEquals(requisition.getLineItems().size(), syncAttempt.get(0).getSyncableLineItems().size());
+        assertNotNull(syncAttempt.get(0).getAttemptSyncDate());
     }
 
 
