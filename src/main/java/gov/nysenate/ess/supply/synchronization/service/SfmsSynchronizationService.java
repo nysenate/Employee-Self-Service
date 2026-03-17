@@ -95,7 +95,6 @@ public class SfmsSynchronizationService {
             syncAttempt = updateSyncAttemptInfo(modified, syncAttempt);
 
             requisitionService.saveRequisition(modified);
-            System.out.println(syncAttempt.getErrorInfo());
             syncAttemptDao.insertRequisitionSyncAttempt(syncAttempt);
         }
 
@@ -105,7 +104,7 @@ public class SfmsSynchronizationService {
         if (requiresSync(requisition)) {
             logger.info("Attempting to synchronize requisition {} with SFMS.", requisition.getRequisitionId());
             try {
-                if (requisition.getRequisitionId() == 1005) {
+                if (requisition.getRequisitionId() == 1005 || requisition.getRequisitionId() == 1006) {
                     throw new DataAccessException("Requisition id is supposed to fail for testing purposes") {
                     };
                 }

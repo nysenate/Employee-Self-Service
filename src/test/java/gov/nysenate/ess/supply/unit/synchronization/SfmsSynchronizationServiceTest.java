@@ -282,6 +282,60 @@ public class SfmsSynchronizationServiceTest {
         assertNotNull(syncAttempt.get(0).getAttemptSyncDate());
     }
 
+    @Test // Can't test since I don't know how to exactly
+    public void testMultipleErrorSync() {
+        // Initialize test state.
+        Requisition requisition = buildRequisition(1006, setOf(lineItem(1, true)));
+
+        requisitionService.saveRequisition(requisition);
+
+        LocalDateTime expectedSyncDateTime = LocalDateTime.now();
+        dummyDateTime.setDateTime(expectedSyncDateTime);
+
+        // Execute method to test
+        service.synchronizeRequisitions();
+        service.synchronizeRequisitions();
+        service.synchronizeRequisitions();
+        service.synchronizeRequisitions();
+
+
+        // Fetch state after execution.
+        requisition = requisitionService.getRequisitionById(requisition.getRequisitionId()).get();
+
+        // Check for valid side effects.
+        assertFalse(requisition.getSavedInSfms());
+        assertEquals(SyncStatus.ERROR, requisition.getSfmsSyncStatus());
+        assertNull(requisition.getSfmsSkippedReason());
+        assertEquals(4, requisition.getSfmsSyncAttempts());
+
+        List<RequisitionSyncAttempt> syncAttempt = inMemorySyncAttemptDao.getSyncAttemptsByReqId(requisition.getRequisitionId());
+
+        assertEquals(SyncStatus.ERROR, syncAttempt.get(0).getOutcomeSyncStatus());
+        assertFalse(syncAttempt.isEmpty());
+        assertFalse(syncAttempt.get(0).getWasSuccessful());
+        assertFalse(syncAttempt.get(1).getWasSuccessful());
+        assertFalse(syncAttempt.get(2).getWasSuccessful());
+        assertFalse(syncAttempt.get(3).getWasSuccessful());
+
+        assertNotNull(syncAttempt.get(0).getErrorInfo());
+        assertNotNull(syncAttempt.get(1).getErrorInfo());
+        assertNotNull(syncAttempt.get(2).getErrorInfo());
+        assertNotNull(syncAttempt.get(3).getErrorInfo());
+
+        assertEquals(1, syncAttempt.get(0).getSyncAttempts());
+        assertEquals(2, syncAttempt.get(1).getSyncAttempts());
+        assertEquals(3, syncAttempt.get(2).getSyncAttempts());
+        assertEquals(4, syncAttempt.get(3).getSyncAttempts());
+
+        assertEquals(requisition.getRequisitionId(), syncAttempt.get(0).getRequisitionId());
+        assertEquals(requisition.getRequisitionId(), syncAttempt.get(1).getRequisitionId());
+        assertEquals(requisition.getRequisitionId(), syncAttempt.get(2).getRequisitionId());
+        assertEquals(requisition.getRequisitionId(), syncAttempt.get(3).getRequisitionId());
+
+        assertEquals(4, syncAttempt.size());
+
+    }
+
 
     private Requisition buildRequisition(int requisitionId, Set<LineItem> lineItems) {
         Employee customer = new Employee();
