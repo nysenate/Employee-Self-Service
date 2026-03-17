@@ -333,7 +333,67 @@ public class SfmsSynchronizationServiceTest {
         assertEquals(requisition.getRequisitionId(), syncAttempt.get(3).getRequisitionId());
 
         assertEquals(4, syncAttempt.size());
+    }
 
+    @Test // Can't test since I don't know how to exactly
+    public void testMultipleErrorSyncThenSucceed() {
+        // Initialize test state.
+        Requisition requisition = buildRequisition(1007, setOf(lineItem(1, true)));
+
+        requisitionService.saveRequisition(requisition);
+
+        LocalDateTime expectedSyncDateTime = LocalDateTime.now();
+        dummyDateTime.setDateTime(expectedSyncDateTime);
+
+        // Execute method to test
+        service.synchronizeRequisitions();
+        service.synchronizeRequisitions();
+        service.synchronizeRequisitions();
+        service.synchronizeRequisitions();
+        service.synchronizeRequisitions();
+
+
+        // Fetch state after execution.
+        requisition = requisitionService.getRequisitionById(requisition.getRequisitionId()).get();
+
+        // Check for valid side effects.
+        assertTrue(requisition.getSavedInSfms());
+        assertEquals(SyncStatus.COMPLETE, requisition.getSfmsSyncStatus());
+        assertNull(requisition.getSfmsSkippedReason());
+        assertEquals(5, requisition.getSfmsSyncAttempts());
+
+        List<RequisitionSyncAttempt> syncAttempt = inMemorySyncAttemptDao.getSyncAttemptsByReqId(requisition.getRequisitionId());
+
+        assertEquals(SyncStatus.COMPLETE, syncAttempt.get(4).getOutcomeSyncStatus());
+        assertFalse(syncAttempt.isEmpty());
+        assertFalse(syncAttempt.get(0).getWasSuccessful());
+        assertFalse(syncAttempt.get(1).getWasSuccessful());
+        assertFalse(syncAttempt.get(2).getWasSuccessful());
+        assertFalse(syncAttempt.get(3).getWasSuccessful());
+        assertTrue(syncAttempt.get(4).getWasSuccessful());
+
+
+        assertNotNull(syncAttempt.get(0).getErrorInfo());
+        assertNotNull(syncAttempt.get(1).getErrorInfo());
+        assertNotNull(syncAttempt.get(2).getErrorInfo());
+        assertNotNull(syncAttempt.get(3).getErrorInfo());
+        assertNull(syncAttempt.get(4).getErrorInfo());
+
+
+        assertEquals(1, syncAttempt.get(0).getSyncAttempts());
+        assertEquals(2, syncAttempt.get(1).getSyncAttempts());
+        assertEquals(3, syncAttempt.get(2).getSyncAttempts());
+        assertEquals(4, syncAttempt.get(3).getSyncAttempts());
+        assertEquals(5, syncAttempt.get(4).getSyncAttempts());
+
+
+        assertEquals(requisition.getRequisitionId(), syncAttempt.get(0).getRequisitionId());
+        assertEquals(requisition.getRequisitionId(), syncAttempt.get(1).getRequisitionId());
+        assertEquals(requisition.getRequisitionId(), syncAttempt.get(2).getRequisitionId());
+        assertEquals(requisition.getRequisitionId(), syncAttempt.get(3).getRequisitionId());
+        assertEquals(requisition.getRequisitionId(), syncAttempt.get(4).getRequisitionId());
+
+        assertEquals(5, syncAttempt.size());
     }
 
 
