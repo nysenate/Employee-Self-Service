@@ -350,10 +350,9 @@ public final class Requisition {
                 Objects.equals(completedDateTime, that.completedDateTime) &&
                 Objects.equals(approvedDateTime, that.approvedDateTime) &&
                 Objects.equals(rejectedDateTime, that.rejectedDateTime) &&
-                Objects.equals(lastSfmsSyncDateTime, that.lastSfmsSyncDateTime) &&
                 Objects.equals(sfmsSyncStatus, that.sfmsSyncStatus) &&
-                Objects.equals(sfmsSyncAttempts, that.sfmsSyncAttempts) &&
-                Objects.equals(sfmsSkippedReason, that.sfmsSkippedReason);
+                sfmsSyncAttempts == that.sfmsSyncAttempts
+                && Objects.equals(sfmsSkippedReason, that.sfmsSkippedReason);
     }
 
     @Override

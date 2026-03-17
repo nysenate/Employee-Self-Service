@@ -111,7 +111,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                 .addValue("toDate", toDate(query.getToDateTime()))
                 .addValue("issuerId", query.getIssuerId())
                 .addValue("itemId", query.getItemId())
-                .addValue("sfmsSyncStatus", extractSyncEnumSetParams(query.getSyncStatuses()))
+                .addValue("sfms_sync_status", extractSyncEnumSetParams(query.getSyncStatuses()))
                 .addValue("isReconciled", query.getReconciled());
         String sql = generateSearchQuery(SqlRequisitionQuery.SEARCH_REQUISITIONS_PARTIAL,
                 query.getDateField(), query.getOrderBy(), query.getLimitOffset());
@@ -165,7 +165,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
     public void savedInSfms(int requisitionId, boolean succeed) {
         MapSqlParameterSource params = new MapSqlParameterSource("requisitionId", requisitionId);
         params.addValue("succeed", succeed);
-        params.addValue("sfmsSyncStatus", SyncStatus.COMPLETE.name());
+        params.addValue("sfms_sync_status", SyncStatus.COMPLETE.name());
         String sql = SqlRequisitionQuery.SET_SAVED_IN_SFMS.getSql(schemaMap());
         localNamedJdbc.update(sql, params);
     }
@@ -195,7 +195,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                 .addValue("completedDateTime", requisition.getCompletedDateTime().map(SqlBaseDao::toDate).orElse(null))
                 .addValue("approvedDateTime", requisition.getApprovedDateTime().map(SqlBaseDao::toDate).orElse(null))
                 .addValue("rejectedDateTime", requisition.getRejectedDateTime().map(SqlBaseDao::toDate).orElse(null))
-                .addValue("lastSfmsSyncDateTime", requisition.getLastSfmsSyncDateTime().map(SqlBaseDao::toDate).orElse(null))
+                .addValue("last_sfms_sync_date_time", requisition.getLastSfmsSyncDateTime().map(SqlBaseDao::toDate).orElse(null))
                 .addValue("savedInSfms", requisition.getSavedInSfms())
                 .addValue("isReconciled", requisition.getReconciled())
                 .addValue("sfmsSyncStatus", requisition.getSfmsSyncStatus().name())
@@ -254,7 +254,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                     .withSavedInSfms(rs.getBoolean("saved_in_sfms"))
                     .withReconciled(rs.getBoolean("is_reconciled"))
                     .withSfmsSyncStatus(SyncStatus.valueOf(rs.getString("sfms_sync_status")))
-                    .withSfmsSyncAttempts(rs.getInt("sfms_sync_attempt_count"))
+                    .withSfmsSyncAttempts(rs.getInt("sfms_sync_attempt_count") == 0 ? 0 : rs.getInt("sfms_sync_attempt_count"))
                     .withSfmsSkippedReason(rs.getString("sfms_sync_skip_reason") == null ? null : SkippedReason.valueOf(rs.getString("sfms_sync_skip_reason")))
                     .build();
         }
