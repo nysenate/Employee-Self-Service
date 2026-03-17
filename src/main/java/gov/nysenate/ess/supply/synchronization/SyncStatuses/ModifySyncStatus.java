@@ -26,7 +26,7 @@ public class ModifySyncStatus {
             req = rejectedRequisition(req);
         } else if (req.getLineItems().isEmpty()) {
             req = noSyncableItems(req);
-        } else if (!req.getLineItems().isEmpty() && !wasSynchronized) {
+        } else {
             req = erroredRequisition(req);
         }
         return req;

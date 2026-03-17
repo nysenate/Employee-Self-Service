@@ -93,12 +93,14 @@ public class SfmsSynchronizationService {
     }
 
     private boolean syncRequisition(Requisition requisition) {
+        boolean success = false;
         if (requiresSync(requisition)) {
             logger.info("Attempting to synchronize requisition {} with SFMS.", requisition.getRequisitionId());
             try {
                 synchronizationProcedure.synchronizeRequisition(OutputUtils.toXml(new SfmsRequisitionView(requisition)));
-
+                success = true;
             } catch (DataAccessException ex) {
+                //setAsSynced(requisition, success);
                 String msg = "Error synchronizing requisition " + requisition.getRequisitionId()
                         + " with SFMS. Exception is : " + ex.getMessage();
                 logger.error(msg);
@@ -109,7 +111,7 @@ public class SfmsSynchronizationService {
             return false;
         }
 
-        //setAsSynced(requisition);
+        //setAsSynced(requisition, success);
 
         return true;
     }
@@ -137,8 +139,8 @@ public class SfmsSynchronizationService {
         return requisition.getLineItems().size() > 0 && requisition.getStatus().equals(RequisitionStatus.APPROVED);
     }
 
-    private void setAsSynced(Requisition requisition) {
-        requisitionService.savedInSfms(requisition.getRequisitionId(), true);
+    private void setAsSynced(Requisition requisition, boolean wasSuccessful) {
+        requisitionService.savedInSfms(requisition.getRequisitionId(), wasSuccessful);
     }
 
     /**
