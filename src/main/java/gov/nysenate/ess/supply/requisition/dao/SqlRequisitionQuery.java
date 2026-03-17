@@ -62,7 +62,7 @@ public enum SqlRequisitionQuery implements BasicSqlQuery {
                 WHERE c.destination LIKE :destination AND Coalesce(c.customer_id::text, '') LIKE :customerId
                     AND Coalesce(c.issuing_emp_id::text, '') LIKE :issuerId
                     AND c.revision_id IN (SELECT i.revision_id FROM ${supplySchema}.line_item i WHERE i.item_id::text LIKE :itemId)
-                    AND c.status::text IN (:statuses) AND r.sfms_sync_status::text in (:sfms_sync_status) AND c.is_reconciled::text LIKE :isReconciled AND r.
+                    AND c.status::text IN (:statuses) AND r.sfms_sync_status::text in (:sfmsSyncStatus) AND c.is_reconciled::text LIKE :isReconciled AND r.
             """),
 
     ORDER_HISTORY_PARTIAL(
@@ -82,7 +82,7 @@ public enum SqlRequisitionQuery implements BasicSqlQuery {
     SET_SAVED_IN_SFMS(
             """
                 UPDATE ${supplySchema}.requisition
-                SET saved_in_sfms = :succeed, last_sfms_sync_date_time =  CURRENT_TIMESTAMP, sfms_sync_status = :sfms_sync_status
+                SET saved_in_sfms = :succeed, last_sfms_sync_date_time = CURRENT_TIMESTAMP, sfms_sync_status = :sfmsSyncStatus
                 WHERE requisition_id = :requisitionId
             """),
     SET_RECONCILED(

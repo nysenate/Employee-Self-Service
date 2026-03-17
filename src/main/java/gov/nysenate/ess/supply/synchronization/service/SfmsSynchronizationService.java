@@ -39,7 +39,7 @@ public class SfmsSynchronizationService {
     private final SfmsSynchronizationProcedure synchronizationProcedure;
     private final DateTimeFactory dateTimeFactory;
     private final SlackChatService slackChatService;
-    private final RequisitionSyncAttemptDao requisitionSyncAttemptDao;
+    //private final RequisitionSyncAttemptDao requisitionSyncAttemptDao;
 
     @Autowired
     public SfmsSynchronizationService(@Value("${scheduler.supply.sfms_synchronization.enabled}")
@@ -47,14 +47,14 @@ public class SfmsSynchronizationService {
                                       RequisitionService requisitionService,
                                       SfmsSynchronizationProcedure synchronizationProcedure,
                                       DateTimeFactory dateTimeFactory,
-                                      SlackChatService slackChatService,
-                                      RequisitionSyncAttemptDao requisitionSyncAttemptDao) {
+                                      SlackChatService slackChatService
+    ) {
         this.synchronizationEnabled = synchronizationEnabled;
         this.requisitionService = requisitionService;
         this.synchronizationProcedure = synchronizationProcedure;
         this.dateTimeFactory = dateTimeFactory;
         this.slackChatService = slackChatService;
-        this.requisitionSyncAttemptDao = requisitionSyncAttemptDao;
+        //this.requisitionSyncAttemptDao = requisitionSyncAttemptDao;
     }
 
     /**
@@ -92,29 +92,43 @@ public class SfmsSynchronizationService {
             r = modify.modifySyncStatuses(r, success);
 
             Requisition modified = updateOriginalReq(originalReqs.get(i), r, success);
-            syncAttempt = updateSyncAttemptInfo(modified, syncAttempt);
+            modified = modified.setLastSfmsSyncDateTimeDateTime(dateTimeFactory.now());
+            syncAttempt = fillSyncAttempt(modified, syncAttempt, success);
 
             requisitionService.saveRequisition(modified);
-            requisitionSyncAttemptDao.insertRequisitionSyncAttempt(syncAttempt);
+            System.out.println(syncAttempt);
+            //requisitionSyncAttemptDao.insertRequisitionSyncAttempt(syncAttempt);
         }
 
     }
 
+    private RequisitionSyncAttempt fillSyncAttempt(Requisition req, RequisitionSyncAttempt syncAttempt, boolean wasSuccessfull) {
+        syncAttempt.setSyncAttempts(req.getSfmsSyncAttempts());
+        syncAttempt.setAttemptSyncDate(LocalDateTime.now());
+        syncAttempt.setWasSuccessful(wasSuccessfull);
+        syncAttempt.setOutcomeSyncStatus(req.getSfmsSyncStatus());
+        syncAttempt.setRequisitionId(req.getRequisitionId());
+
+        List<Integer> itemIds = new ArrayList<>();
+        for (LineItem item : req.getLineItems()) {
+            itemIds.add(item.getItem().getId());
+        }
+        syncAttempt.setSyncableLineItems(itemIds);
+
+        return syncAttempt;
+    }
+
     private boolean syncRequisition(Requisition requisition, RequisitionSyncAttempt syncAttempt) {
+        boolean success = false;
         if (requiresSync(requisition)) {
             logger.info("Attempting to synchronize requisition {} with SFMS.", requisition.getRequisitionId());
             try {
-                if (requisition.getRequisitionId() == 1000045) {
-                    throw new DataAccessException("Requisition id is supposed to fail for testing purposes") {
-                    };
-                }
-                //requisition = requisition.setLastSfmsSyncDateTimeDateTime(dateTimeFactory.now());
                 synchronizationProcedure.synchronizeRequisition(OutputUtils.toXml(new SfmsRequisitionView(requisition)));
-
+                success = true;
             } catch (DataAccessException ex) {
                 String msg = "Error synchronizing requisition " + requisition.getRequisitionId()
                         + " with SFMS. Exception is : " + ex.getMessage();
-                syncAttempt.setErrorInfo(msg); // Pass by reference to avoid complexity
+                syncAttempt.setErrorInfo(msg);
                 logger.error(msg);
                 sendMessageToSlack(msg);
                 return false;
@@ -123,37 +137,9 @@ public class SfmsSynchronizationService {
             return false;
         }
 
-        //setAsSynced(requisition);
+        //setAsSynced(requisition, success);
 
         return true;
-    }
-
-    /**
-     * <p>Updates the syncAttempt with information that will define a recollection of synchronization attempts for a requisition.</p>
-     *
-     * @param modified    - The requisition that has gone through the synchronization process and has key information that is useful in defining the history of a particular requisition.
-     * @param syncAttempt - The requisition history of the object and will contain a record of key information regarding the synchronization process of the requisition.
-     * @return
-     */
-    public RequisitionSyncAttempt updateSyncAttemptInfo(Requisition modified, RequisitionSyncAttempt syncAttempt) {
-        syncAttempt.setRequisitionId(modified.getRequisitionId());
-        syncAttempt.setAttemptSyncDate(LocalDateTime.now());
-        syncAttempt.setSyncAttempts(modified.getSfmsSyncAttempts());
-        syncAttempt.setOutcomeSyncStatus(modified.getSfmsSyncStatus());
-
-        if (modified.getSfmsSyncStatus() == SyncStatus.ERROR) {
-            syncAttempt.setWasSuccessful(false);
-        } else {
-            syncAttempt.setWasSuccessful(true);
-        }
-
-        List<Integer> lineItemIds = new ArrayList<>();
-        for (LineItem lineItem : modified.getLineItems()) {
-            lineItemIds.add(lineItem.getItem().getId());
-        }
-        syncAttempt.setSyncableLineItems(lineItemIds);
-
-        return syncAttempt;
     }
 
 
@@ -179,8 +165,8 @@ public class SfmsSynchronizationService {
         return requisition.getLineItems().size() > 0 && requisition.getStatus().equals(RequisitionStatus.APPROVED);
     }
 
-    private void setAsSynced(Requisition requisition) {
-        requisitionService.savedInSfms(requisition.getRequisitionId(), true);
+    private void setAsSynced(Requisition requisition, boolean wasSuccessful) {
+        requisitionService.savedInSfms(requisition.getRequisitionId(), wasSuccessful);
     }
 
     /**
