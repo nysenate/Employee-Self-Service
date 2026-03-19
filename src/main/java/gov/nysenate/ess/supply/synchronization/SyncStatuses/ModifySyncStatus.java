@@ -20,10 +20,8 @@ public class ModifySyncStatus {
     public Requisition modifySyncStatuses(Requisition req, boolean wasSynchronized) {
         if (wasSynchronized) {
             req = successfulRequisition(req);
-        } else if (!req.getLineItems().isEmpty() && !wasSynchronized && req.getStatus().equals(RequisitionStatus.APPROVED)) {
+        } else if (!req.getLineItems().isEmpty() && req.getStatus().equals(RequisitionStatus.APPROVED)) {
             req = erroredRequisition(req);
-        } else if (req.getLineItems().isEmpty() && req.getStatus().equals(RequisitionStatus.REJECTED)) {
-            req = rejectedAndNoLineItems(req);
         } else if (req.getStatus().equals(RequisitionStatus.REJECTED)) {
             req = rejectedRequisition(req);
         } else if (req.getLineItems().isEmpty()) {
@@ -32,6 +30,18 @@ public class ModifySyncStatus {
 
         return req;
     }
+
+//    boolean hasLineItems = !req.getLineItems().isEmpty();
+//    boolean isApproved = req.getStatus().equals(RequisitionStatus.APPROVED);
+//    boolean isRejected = req.getStatus().equals(RequisitionStatus.REJECTED);
+//
+//        if (wasSynchronized) return successfulRequisition(req);
+//        if (hasLineItems && isApproved) return erroredRequisition(req);
+//        if (!hasLineItems && isRejected) return rejectedRequisition(req);
+//        if (isRejected) return rejectedRequisition(req);
+//        if (!hasLineItems) return noSyncableItems(req);
+//
+//        return req;
 
     public Requisition successfulRequisition(Requisition req) {
         req = req.setSyncStatus(SyncStatus.COMPLETE);

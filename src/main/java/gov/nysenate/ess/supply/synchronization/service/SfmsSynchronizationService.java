@@ -12,6 +12,7 @@ import gov.nysenate.ess.supply.synchronization.dao.RequisitionSyncAttemptDao;
 import gov.nysenate.ess.supply.synchronization.dao.SfmsSynchronizationProcedure;
 import gov.nysenate.ess.supply.synchronization.dao.SyncAttemptDao;
 import gov.nysenate.ess.supply.synchronization.model.RequisitionSyncAttempt;
+import gov.nysenate.ess.supply.synchronization.model.RequisitionSyncResult;
 import gov.nysenate.ess.supply.util.date.DateTimeFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,50 +83,89 @@ public class SfmsSynchronizationService {
             return;
         }
         List<Requisition> originalReqs = requisitionsToBeSynced();
-        List<Requisition> filteredReqs = filterRequisitions(originalReqs);
+        //List<Requisition> filteredReqs = filterRequisitions(originalReqs);
+        for (Requisition req : originalReqs) {
 
-        for (int i = 0; i < filteredReqs.size(); i++) {
-            Requisition r = filteredReqs.get(i);
-            RequisitionSyncAttempt syncAttempt = new RequisitionSyncAttempt();
-            boolean success = syncRequisition(r, syncAttempt);
-            ModifySyncStatus modify = new ModifySyncStatus();
-            r = modify.modifySyncStatuses(r, success);
+            RequisitionSyncResult result = syncRequisition(req);
 
-            Requisition modified = updateOriginalReq(originalReqs.get(i), r, success);
-            syncAttempt = updateSyncAttemptInfo(modified, syncAttempt);
-
-            requisitionService.saveRequisition(modified);
-            syncAttemptDao.insertRequisitionSyncAttempt(syncAttempt);
+            requisitionService.saveRequisition(result.getUpdatedRequisition());
+            syncAttemptDao.insertRequisitionSyncAttempt(result.getSyncAttempt());
         }
 
+//        for (int i = 0; i < filteredReqs.size(); i++) {
+//            Requisition r = filteredReqs.get(i);
+//            RequisitionSyncAttempt syncAttempt = new RequisitionSyncAttempt();
+//            boolean success = syncRequisition(r, syncAttempt);
+//            ModifySyncStatus modify = new ModifySyncStatus();
+//            r = modify.modifySyncStatuses(r, success);
+//
+//            Requisition modified = updateOriginalReq(originalReqs.get(i), r, success);
+//            syncAttempt = updateSyncAttemptInfo(modified, syncAttempt);
+//
+//            requisitionService.saveRequisition(modified);
+//            syncAttemptDao.insertRequisitionSyncAttempt(syncAttempt);
+//            //return new RequisitionSyncResult(syncAttempt, modified);
+//        }
     }
 
-    private boolean syncRequisition(Requisition requisition, RequisitionSyncAttempt syncAttempt) {
-        if (requiresSync(requisition)) {
+    public RequisitionSyncResult syncRequisition(Requisition requisition) {
+        boolean wasSuccessful = false;
+        String errorMessage = null;
+        Requisition filteredReq = filterRequisition(requisition);
+
+        if (requiresSync(filteredReq)) {
             logger.info("Attempting to synchronize requisition {} with SFMS.", requisition.getRequisitionId());
             try {
                 if (requisition.getRequisitionId() == 1005 || requisition.getRequisitionId() == 1006 || (requisition.getRequisitionId() == 1007 && requisition.getSfmsSyncAttempts() != 4)) {
                     throw new DataAccessException("Requisition id is supposed to fail for testing purposes") {
                     };
                 }
-                //requisition = requisition.setLastSfmsSyncDateTimeDateTime(dateTimeFactory.now());
-                synchronizationProcedure.synchronizeRequisition(OutputUtils.toXml(new SfmsRequisitionView(requisition)));
 
+                synchronizationProcedure.synchronizeRequisition(OutputUtils.toXml(new SfmsRequisitionView(requisition)));
+                wasSuccessful = true;
             } catch (DataAccessException ex) {
                 String msg = "Error synchronizing requisition " + requisition.getRequisitionId()
                         + " with SFMS. Exception is : " + ex.getMessage();
-                syncAttempt.setErrorInfo(msg); // Pass by reference to avoid complexity
+                errorMessage = msg;
                 logger.error(msg);
                 sendMessageToSlack(msg);
-                return false;
             }
-        } else {
-            return false;
         }
 
-        //setAsSynced(requisition);
+        RequisitionSyncResult result = applySideEffects(wasSuccessful, errorMessage, requisition, filteredReq);
 
-        return true;
+
+        requisitionService.saveRequisition(result.getUpdatedRequisition());
+        syncAttemptDao.insertRequisitionSyncAttempt(result.getSyncAttempt());
+
+        return result;
+    }
+
+    public RequisitionSyncResult applySideEffects(boolean wasSuccessful, String errorMessage, Requisition requisition, Requisition filteredReq) {
+        ModifySyncStatus modify = new ModifySyncStatus();
+        RequisitionSyncAttempt syncAttempt;
+        filteredReq = modify.modifySyncStatuses(filteredReq, wasSuccessful);
+        requisition = updateOriginalReq(requisition, filteredReq, wasSuccessful);
+        syncAttempt = fillRequisitionSyncAttempt(filteredReq, errorMessage, wasSuccessful);
+
+        return new RequisitionSyncResult(syncAttempt, requisition);
+    }
+
+    public RequisitionSyncAttempt fillRequisitionSyncAttempt(Requisition filteredRequisition, String errorMessage, boolean wasSuccessful) {
+        RequisitionSyncAttempt syncAttempt = new RequisitionSyncAttempt();
+
+        syncAttempt.setErrorInfo(errorMessage);
+        syncAttempt.setWasSuccessful(wasSuccessful);
+        syncAttempt.setRequisitionId(filteredRequisition.getRequisitionId());
+        syncAttempt.setSyncAttempts(filteredRequisition.getSfmsSyncAttempts());
+        syncAttempt.setOutcomeSyncStatus(filteredRequisition.getSfmsSyncStatus());
+        syncAttempt.setAttemptSyncDate(dateTimeFactory.now());
+        List<Integer> itemIds = new ArrayList<>();
+        for (LineItem lineItem : filteredRequisition.getLineItems()) {
+            itemIds.add(lineItem.getItem().getId());
+        }
+        syncAttempt.setSyncableLineItems(itemIds);
+        return syncAttempt;
     }
 
     /**
@@ -135,7 +175,7 @@ public class SfmsSynchronizationService {
      * @param syncAttempt - The requisition history of the object and will contain a record of key information regarding the synchronization process of the requisition.
      * @return
      */
-    public RequisitionSyncAttempt updateSyncAttemptInfo(Requisition modified, RequisitionSyncAttempt syncAttempt) {
+    public RequisitionSyncAttempt updateSyncAttemptInfo(Requisition modified, RequisitionSyncAttempt syncAttempt, String errorMessage) {
         syncAttempt.setRequisitionId(modified.getRequisitionId());
         syncAttempt.setAttemptSyncDate(LocalDateTime.now());
         syncAttempt.setSyncAttempts(modified.getSfmsSyncAttempts());
@@ -171,6 +211,7 @@ public class SfmsSynchronizationService {
         original = original.setSavedInSfms(wasSuccessful);
 
         original = original.setSfmsSyncAttempts(filteredReq.getSfmsSyncAttempts());
+        original = original.setLastSfmsSyncDateTimeDateTime(dateTimeFactory.now());
 
         return original;
     }
@@ -209,6 +250,12 @@ public class SfmsSynchronizationService {
         for (Requisition req : requisitions) {
             filtered.add(req.setLineItems(lineItemsRequiringSync(req.getLineItems())));
         }
+        return filtered;
+    }
+
+    private Requisition filterRequisition(Requisition requisitions) {
+        Requisition filtered = requisitions.setLineItems(lineItemsRequiringSync(requisitions.getLineItems()));
+
         return filtered;
     }
 
