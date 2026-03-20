@@ -1,4 +1,4 @@
-CREATE TABLE supply.requisition_history
+CREATE TABLE supply.requisition_sync_attempt
 (
     req_history_id      SERIAL PRIMARY KEY,
     requisition_id      INTEGER REFERENCES supply.requisition (requisition_id),

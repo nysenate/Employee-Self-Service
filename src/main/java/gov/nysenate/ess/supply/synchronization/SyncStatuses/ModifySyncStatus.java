@@ -68,22 +68,10 @@ public class ModifySyncStatus {
     public Requisition rejectedRequisition(Requisition req) {
         req = req.setSfmsSkippedReason(SkippedReason.REJECTED);
         req = req.setSyncStatus(SyncStatus.SKIPPED);
+        req = req.setSfmsSyncAttempts(req.getSfmsSyncAttempts() + 1);
         return req;
     }
 
-    /**
-     * <ol>
-     * <li>If the req has no line items to sync and was rejected then we will say its skipped and rejected</li>
-     * </ol>
-     *
-     * @param req
-     * @return
-     */
-    public Requisition rejectedAndNoLineItems(Requisition req) {
-        req = req.setSfmsSkippedReason(SkippedReason.REJECTED);
-        req = req.setSyncStatus(SyncStatus.SKIPPED);
-        return req;
-    }
 
     /**
      * <ol>
@@ -96,6 +84,7 @@ public class ModifySyncStatus {
     public Requisition noSyncableItems(Requisition req) {
         req = req.setSfmsSkippedReason(SkippedReason.NO_SYNCABLE_ITEMS);
         req = req.setSyncStatus(SyncStatus.SKIPPED);
+        req = req.setSfmsSyncAttempts(req.getSfmsSyncAttempts() + 1);
         return req;
     }
 

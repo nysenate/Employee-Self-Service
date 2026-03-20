@@ -116,10 +116,6 @@ public class SfmsSynchronizationService {
         if (requiresSync(filteredReq)) {
             logger.info("Attempting to synchronize requisition {} with SFMS.", requisition.getRequisitionId());
             try {
-                if (requisition.getRequisitionId() == 1005 || requisition.getRequisitionId() == 1006 || (requisition.getRequisitionId() == 1007 && requisition.getSfmsSyncAttempts() != 4)) {
-                    throw new DataAccessException("Requisition id is supposed to fail for testing purposes") {
-                    };
-                }
 
                 synchronizationProcedure.synchronizeRequisition(OutputUtils.toXml(new SfmsRequisitionView(requisition)));
                 wasSuccessful = true;

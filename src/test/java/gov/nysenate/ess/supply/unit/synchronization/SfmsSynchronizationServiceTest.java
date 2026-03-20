@@ -15,6 +15,7 @@ import gov.nysenate.ess.supply.item.model.ItemStatus;
 import gov.nysenate.ess.supply.item.model.ItemUnit;
 import gov.nysenate.ess.supply.item.model.SupplyItem;
 import gov.nysenate.ess.supply.notification.SupplyEmailService;
+import gov.nysenate.ess.supply.requisition.dao.RequisitionDao;
 import gov.nysenate.ess.supply.requisition.model.*;
 import gov.nysenate.ess.supply.requisition.service.RequisitionService;
 import gov.nysenate.ess.supply.requisition.service.SupplyRequisitionService;
@@ -33,6 +34,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.dao.DataAccessResourceFailureException;
 
@@ -41,10 +43,7 @@ import java.util.*;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 @org.junit.experimental.categories.Category(UnitTest.class)
@@ -123,8 +122,6 @@ public class SfmsSynchronizationServiceTest {
         LocalDateTime expectedSyncDateTime = LocalDateTime.now();
         dummyDateTime.setDateTime(expectedSyncDateTime);
 
-        requisition = requisition.setLastSfmsSyncDateTimeDateTime(expectedSyncDateTime);
-
 
         RequisitionSyncResult result = service.syncRequisition(requisition);
 
@@ -177,21 +174,19 @@ public class SfmsSynchronizationServiceTest {
         LocalDateTime expectedSyncDateTime = LocalDateTime.now();
         dummyDateTime.setDateTime(expectedSyncDateTime);
 
-        requisition = requisition.setLastSfmsSyncDateTimeDateTime(expectedSyncDateTime);
 
         RequisitionSyncResult result = service.syncRequisition(requisition);
 
         assertEquals(expectedSyncDateTime, result.getUpdatedRequisition().getLastSfmsSyncDateTime().get());
         assertEquals(SyncStatus.SKIPPED, result.getUpdatedRequisition().getSfmsSyncStatus());
         assertEquals(SkippedReason.REJECTED, result.getUpdatedRequisition().getSfmsSkippedReason());
-        assertEquals(0, result.getUpdatedRequisition().getSfmsSyncAttempts());
+        assertEquals(1, result.getUpdatedRequisition().getSfmsSyncAttempts());
 
 
         assertEquals(SyncStatus.SKIPPED, result.getSyncAttempt().getOutcomeSyncStatus());
         assertFalse(result.getSyncAttempt().getWasSuccessful());
         assertNull(result.getSyncAttempt().getErrorInfo());
         assertEquals(0, result.getSyncAttempt().getSyncableLineItems().size());
-        assertEquals(result.getSyncAttempt().getSyncAttempts(), requisition.getSfmsSyncAttempts());
         assertNotNull(result.getSyncAttempt().getAttemptSyncDate());
     }
 
@@ -215,7 +210,7 @@ public class SfmsSynchronizationServiceTest {
         assertEquals(SyncStatus.SKIPPED, result.getUpdatedRequisition().getSfmsSyncStatus());
         assertNotNull(result.getUpdatedRequisition().getSfmsSkippedReason());
         assertEquals(SkippedReason.REJECTED, result.getUpdatedRequisition().getSfmsSkippedReason());
-        assertEquals(0, result.getUpdatedRequisition().getSfmsSyncAttempts());
+        assertEquals(1, result.getUpdatedRequisition().getSfmsSyncAttempts());
 
         assertEquals(SyncStatus.SKIPPED, result.getSyncAttempt().getOutcomeSyncStatus());
         assertFalse(result.getSyncAttempt().getWasSuccessful());
@@ -241,16 +236,15 @@ public class SfmsSynchronizationServiceTest {
         assertNotNull(result.getUpdatedRequisition().getSfmsSkippedReason());
         assertEquals(SkippedReason.NO_SYNCABLE_ITEMS, result.getUpdatedRequisition().getSfmsSkippedReason());
         assertNull(result.getSyncAttempt().getErrorInfo());
-        assertEquals(0, result.getUpdatedRequisition().getSfmsSyncAttempts());
+        assertEquals(1, result.getUpdatedRequisition().getSfmsSyncAttempts());
 
 
         assertEquals(SyncStatus.SKIPPED, result.getSyncAttempt().getOutcomeSyncStatus());
         assertFalse(result.getSyncAttempt().getWasSuccessful());
         assertNull(result.getSyncAttempt().getErrorInfo());
-        assertEquals(result.getSyncAttempt().getSyncAttempts(), requisition.getSfmsSyncAttempts());
+        assertEquals(1, result.getSyncAttempt().getSyncAttempts());
         assertEquals(0, result.getSyncAttempt().getSyncableLineItems().size());
         assertNotNull(result.getSyncAttempt().getAttemptSyncDate());
-        assertEquals(result.getSyncAttempt().getSyncAttempts(), requisition.getSfmsSyncAttempts());
     }
 
     @Test // Can't test since I don't know how to exactly
@@ -260,6 +254,8 @@ public class SfmsSynchronizationServiceTest {
 
         LocalDateTime expectedSyncDateTime = LocalDateTime.now();
         dummyDateTime.setDateTime(expectedSyncDateTime);
+
+        doThrow(new DataAccessResourceFailureException("Database failed to save")).when(synchronizationProcedure).synchronizeRequisition(any());
 
         // Execute method to test
         RequisitionSyncResult result = service.syncRequisition(requisition);
@@ -278,6 +274,33 @@ public class SfmsSynchronizationServiceTest {
         assertEquals(expectedSyncDateTime, result.getSyncAttempt().getAttemptSyncDate());
     }
 
+    @Test // Can't test since I don't know how to exactly
+    public void testReqWithZeroQuantitySync() {
+        // Initialize test state.
+        Requisition requisition = buildRequisition(1005, setOf(lineItem(0, true)));
+
+        LocalDateTime expectedSyncDateTime = LocalDateTime.now();
+        dummyDateTime.setDateTime(expectedSyncDateTime);
+
+        // Execute method to test
+        RequisitionSyncResult result = service.syncRequisition(requisition);
+
+        assertEquals(expectedSyncDateTime, result.getUpdatedRequisition().getLastSfmsSyncDateTime().get());
+        assertEquals(SyncStatus.SKIPPED, result.getUpdatedRequisition().getSfmsSyncStatus());
+        assertNotNull(result.getUpdatedRequisition().getSfmsSkippedReason());
+        assertEquals(SkippedReason.NO_SYNCABLE_ITEMS, result.getUpdatedRequisition().getSfmsSkippedReason());
+        assertNull(result.getSyncAttempt().getErrorInfo());
+        assertEquals(1, result.getUpdatedRequisition().getSfmsSyncAttempts());
+
+
+        assertEquals(SyncStatus.SKIPPED, result.getSyncAttempt().getOutcomeSyncStatus());
+        assertFalse(result.getSyncAttempt().getWasSuccessful());
+        assertNull(result.getSyncAttempt().getErrorInfo());
+        assertEquals(1, result.getSyncAttempt().getSyncAttempts());
+        assertEquals(0, result.getSyncAttempt().getSyncableLineItems().size());
+        assertNotNull(result.getSyncAttempt().getAttemptSyncDate());
+    }
+
     @Test // Can't test this due to pessimistic lock issue with modified date time
     public void testMultipleErrorSync() {
         // Initialize test state.
@@ -286,75 +309,95 @@ public class SfmsSynchronizationServiceTest {
         LocalDateTime expectedSyncDateTime = LocalDateTime.now();
         dummyDateTime.setDateTime(expectedSyncDateTime);
 
+        doThrow(new DataAccessResourceFailureException("Database failed to save")).when(synchronizationProcedure).synchronizeRequisition(any());
+
+
         // Execute method to test
         RequisitionSyncResult result = service.syncRequisition(requisition);
         RequisitionSyncResult result1 = service.syncRequisition(result.getUpdatedRequisition());
-        RequisitionSyncResult result2 = service.syncRequisition(requisition);
-        RequisitionSyncResult result3 = service.syncRequisition(requisition);
-        System.out.println(result3.getUpdatedRequisition().getSfmsSyncAttempts());
+        RequisitionSyncResult result2 = service.syncRequisition(result1.getUpdatedRequisition());
+        RequisitionSyncResult result3 = service.syncRequisition(result2.getUpdatedRequisition());
+
+        assertEquals(SyncStatus.ERROR, result3.getUpdatedRequisition().getSfmsSyncStatus());
+        assertEquals(4, result3.getUpdatedRequisition().getSfmsSyncAttempts());
+        assertNull(result3.getUpdatedRequisition().getSfmsSkippedReason());
+        assertEquals(expectedSyncDateTime, result3.getUpdatedRequisition().getLastSfmsSyncDateTime().get());
+
+        assertEquals(SyncStatus.ERROR, result3.getSyncAttempt().getOutcomeSyncStatus());
+        assertFalse(result3.getSyncAttempt().getWasSuccessful());
+        assertNotNull(result3.getSyncAttempt().getErrorInfo());
+        assertEquals(1, result3.getSyncAttempt().getSyncableLineItems().size());
+        assertEquals(4, result3.getSyncAttempt().getSyncAttempts());
+        assertEquals(expectedSyncDateTime, result3.getSyncAttempt().getAttemptSyncDate());
     }
+
 
     @Test // Can't test this due to pessimistic lock issue with modified date time
     public void testMultipleErrorSyncThenSucceed() {
         // Initialize test state.
         Requisition requisition = buildRequisition(1007, setOf(lineItem(1, true)));
 
-        requisitionService.saveRequisition(requisition);
+        LocalDateTime expectedSyncDateTime = LocalDateTime.now();
+        dummyDateTime.setDateTime(expectedSyncDateTime); // Fetch state after execution.
+
+        // Check for valid side effects.
+
+
+        // Execute method to test
+        doThrow(new DataAccessResourceFailureException("Database failed to save")).doThrow(new DataAccessResourceFailureException("Database failed to save")).doThrow(new DataAccessResourceFailureException("Database failed to save")).doThrow(new DataAccessResourceFailureException("Database failed to save")).doNothing().when(synchronizationProcedure).synchronizeRequisition(any());
+
+
+        RequisitionSyncResult result = service.syncRequisition(requisition);
+        RequisitionSyncResult result1 = service.syncRequisition(result.getUpdatedRequisition());
+        RequisitionSyncResult result2 = service.syncRequisition(result1.getUpdatedRequisition());
+        RequisitionSyncResult result3 = service.syncRequisition(result2.getUpdatedRequisition());
+        RequisitionSyncResult result4 = service.syncRequisition(result3.getUpdatedRequisition());
+
+        assertEquals(SyncStatus.COMPLETE, result4.getUpdatedRequisition().getSfmsSyncStatus());
+        assertEquals(5, result4.getUpdatedRequisition().getSfmsSyncAttempts());
+        assertNull(result4.getUpdatedRequisition().getSfmsSkippedReason());
+        assertEquals(expectedSyncDateTime, result4.getUpdatedRequisition().getLastSfmsSyncDateTime().get());
+
+        assertEquals(SyncStatus.COMPLETE, result4.getSyncAttempt().getOutcomeSyncStatus());
+        assertTrue(result4.getSyncAttempt().getWasSuccessful());
+        assertNull(result4.getSyncAttempt().getErrorInfo());
+        assertEquals(1, result4.getSyncAttempt().getSyncableLineItems().size());
+        assertEquals(5, result4.getSyncAttempt().getSyncAttempts());
+        assertEquals(expectedSyncDateTime, result4.getSyncAttempt().getAttemptSyncDate());
+
+        // Fetch state after execution.
+
+        // Check for valid side effects.
+    }
+
+    @Test
+    public void testLineItemsEqualInOriginalAndUpdatedSync() {
+        // Initialize test state.
+        Requisition requisition = buildRequisition(1001, setOf(lineItem(1, true)));
 
         LocalDateTime expectedSyncDateTime = LocalDateTime.now();
         dummyDateTime.setDateTime(expectedSyncDateTime);
 
-        // Execute method to test
-        service.synchronizeRequisitions();
-        service.synchronizeRequisitions();
-        service.synchronizeRequisitions();
-        service.synchronizeRequisitions();
-        service.synchronizeRequisitions();
 
+        RequisitionSyncResult result = service.syncRequisition(requisition);
 
-        // Fetch state after execution.
-        requisition = requisitionService.getRequisitionById(requisition.getRequisitionId()).get();
 
         // Check for valid side effects.
-        assertTrue(requisition.getSavedInSfms());
-        assertEquals(SyncStatus.COMPLETE, requisition.getSfmsSyncStatus());
-        assertNull(requisition.getSfmsSkippedReason());
-        assertEquals(5, requisition.getSfmsSyncAttempts());
 
-        List<RequisitionSyncAttempt> syncAttempt = inMemorySyncAttemptDao.getSyncAttemptsByReqId(requisition.getRequisitionId());
+        List<Integer> originalLineItems = new ArrayList<>();
+        for (LineItem item : requisition.getLineItems()) {
+            originalLineItems.add(item.getItem().getId());
+        }
 
-        assertEquals(SyncStatus.COMPLETE, syncAttempt.get(4).getOutcomeSyncStatus());
-        assertFalse(syncAttempt.isEmpty());
-        assertFalse(syncAttempt.get(0).getWasSuccessful());
-        assertFalse(syncAttempt.get(1).getWasSuccessful());
-        assertFalse(syncAttempt.get(2).getWasSuccessful());
-        assertFalse(syncAttempt.get(3).getWasSuccessful());
-        assertTrue(syncAttempt.get(4).getWasSuccessful());
+        List<Integer> updatedLineItems = new ArrayList<>();
+        for (LineItem item : result.getUpdatedRequisition().getLineItems()) {
+            updatedLineItems.add(item.getItem().getId());
+        }
 
-
-        assertNotNull(syncAttempt.get(0).getErrorInfo());
-        assertNotNull(syncAttempt.get(1).getErrorInfo());
-        assertNotNull(syncAttempt.get(2).getErrorInfo());
-        assertNotNull(syncAttempt.get(3).getErrorInfo());
-        assertNull(syncAttempt.get(4).getErrorInfo());
-
-
-        assertEquals(1, syncAttempt.get(0).getSyncAttempts());
-        assertEquals(2, syncAttempt.get(1).getSyncAttempts());
-        assertEquals(3, syncAttempt.get(2).getSyncAttempts());
-        assertEquals(4, syncAttempt.get(3).getSyncAttempts());
-        assertEquals(5, syncAttempt.get(4).getSyncAttempts());
-
-
-        assertEquals(requisition.getRequisitionId(), syncAttempt.get(0).getRequisitionId());
-        assertEquals(requisition.getRequisitionId(), syncAttempt.get(1).getRequisitionId());
-        assertEquals(requisition.getRequisitionId(), syncAttempt.get(2).getRequisitionId());
-        assertEquals(requisition.getRequisitionId(), syncAttempt.get(3).getRequisitionId());
-        assertEquals(requisition.getRequisitionId(), syncAttempt.get(4).getRequisitionId());
-
-        assertEquals(5, syncAttempt.size());
+        for (int i = 0; i < originalLineItems.size(); i++) {
+            assertEquals(originalLineItems.get(i), updatedLineItems.get(i));
+        }
     }
-
 
     private Requisition buildRequisition(int requisitionId, Set<LineItem> lineItems) {
         Employee customer = new Employee();
