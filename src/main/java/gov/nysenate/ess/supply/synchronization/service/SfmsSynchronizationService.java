@@ -8,7 +8,6 @@ import gov.nysenate.ess.supply.requisition.model.*;
 import gov.nysenate.ess.supply.requisition.service.RequisitionService;
 import gov.nysenate.ess.supply.requisition.view.SfmsRequisitionView;
 import gov.nysenate.ess.supply.synchronization.SyncStatuses.ModifySyncStatus;
-import gov.nysenate.ess.supply.synchronization.dao.RequisitionSyncAttemptDao;
 import gov.nysenate.ess.supply.synchronization.dao.SfmsSynchronizationProcedure;
 import gov.nysenate.ess.supply.synchronization.dao.SyncAttemptDao;
 import gov.nysenate.ess.supply.synchronization.model.RequisitionSyncAttempt;
@@ -131,7 +130,8 @@ public class SfmsSynchronizationService {
         RequisitionSyncResult result = applySideEffects(wasSuccessful, errorMessage, requisition, filteredReq);
 
 
-        requisitionService.saveRequisition(result.getUpdatedRequisition());
+        requisition = requisitionService.saveRequisition(result.getUpdatedRequisition());
+        result.setUpdatedRequisition(requisition);
         syncAttemptDao.insertRequisitionSyncAttempt(result.getSyncAttempt());
 
         return result;

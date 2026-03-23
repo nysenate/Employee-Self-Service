@@ -22,7 +22,7 @@ public class InMemoryRequisitionDao implements RequisitionDao {
 
     @Override
     public Requisition saveRequisition(Requisition requisition) {
-        //requisition = requisition.setModifiedDateTime(LocalDateTime.now());
+        requisition = requisition.setModifiedDateTime(LocalDateTime.now());
         requisitionsById.put(requisition.getRequisitionId(), requisition);
         return requisition;
     }
