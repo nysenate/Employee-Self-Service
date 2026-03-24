@@ -41,6 +41,13 @@
           </compilerArgs>
           <!-- avoid possible encoding issues -->
           <encoding>utf-8</encoding>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>org.projectlombok</groupId>
+              <artifactId>lombok</artifactId>
+              <version>${lombok.version}</version>
+            </path>
+          </annotationProcessorPaths>
         </configuration>
       </plugin>
       <!-- Surefire Plugin -->
@@ -169,6 +176,7 @@
     <jstl.version>1.2</jstl.version>
     <junit.version>4.13.2</junit.version>
     <log4j.version>2.26.0</log4j.version>
+    <lombok.version>1.18.42</lombok.version>
     <mockito.version>5.23.0</mockito.version>
     <oracle.driver.version>19.30.0.0</oracle.driver.version>
     <pdfbox.version>2.0.27</pdfbox.version>
@@ -516,6 +524,13 @@
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
       <version>${guava.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>${lombok.version}</version>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
