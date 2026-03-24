@@ -31,17 +31,6 @@ public class ModifySyncStatus {
         return req;
     }
 
-//    boolean hasLineItems = !req.getLineItems().isEmpty();
-//    boolean isApproved = req.getStatus().equals(RequisitionStatus.APPROVED);
-//    boolean isRejected = req.getStatus().equals(RequisitionStatus.REJECTED);
-//
-//        if (wasSynchronized) return successfulRequisition(req);
-//        if (hasLineItems && isApproved) return erroredRequisition(req);
-//        if (!hasLineItems && isRejected) return rejectedRequisition(req);
-//        if (isRejected) return rejectedRequisition(req);
-//        if (!hasLineItems) return noSyncableItems(req);
-//
-//        return req;
 
     public Requisition successfulRequisition(Requisition req) {
         req = req.setSyncStatus(SyncStatus.COMPLETE);

@@ -29,20 +29,10 @@ public class RequisitionSyncAttemptDao extends SqlBaseDao implements SyncAttempt
         localNamedJdbc.update(sql, params);
     }
 
-    public List<RequisitionSyncAttempt> getSyncAttemptsByReqId(int requisitionId) {
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("reqHistoryId", requisitionId);
-        String sql = SqlReqHistoryQuery.GET_REQUISITION_BY_ID.getSql(schemaMap());
-        return new ArrayList<>();
-    }
 
     private enum SqlReqHistoryQuery implements BasicSqlQuery {
         INSERT_REQUISITION_HISTORY(
                 "INSERT INTO ${supplySchema}.requisition_sync_attempt (requisition_id, sync_attempts, attempt_sync_date, was_successful, outcome_sync_status, error_info, syncable_line_items) VALUES (:requisitionId, :syncAttempts, :attemptSyncDate, :wasSuccessful, :outcomeSyncStatus, :errorInfo, :syncableLineItems::int[])"
-        ),
-
-        GET_REQUISITION_BY_ID(
-                ""
         );
 
         private final String sql;

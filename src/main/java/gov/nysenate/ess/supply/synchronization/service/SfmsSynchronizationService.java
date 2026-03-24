@@ -82,7 +82,6 @@ public class SfmsSynchronizationService {
             return;
         }
         List<Requisition> originalReqs = requisitionsToBeSynced();
-        //List<Requisition> filteredReqs = filterRequisitions(originalReqs);
         for (Requisition req : originalReqs) {
 
             RequisitionSyncResult result = syncRequisition(req);
@@ -91,20 +90,6 @@ public class SfmsSynchronizationService {
             syncAttemptDao.insertRequisitionSyncAttempt(result.getSyncAttempt());
         }
 
-//        for (int i = 0; i < filteredReqs.size(); i++) {
-//            Requisition r = filteredReqs.get(i);
-//            RequisitionSyncAttempt syncAttempt = new RequisitionSyncAttempt();
-//            boolean success = syncRequisition(r, syncAttempt);
-//            ModifySyncStatus modify = new ModifySyncStatus();
-//            r = modify.modifySyncStatuses(r, success);
-//
-//            Requisition modified = updateOriginalReq(originalReqs.get(i), r, success);
-//            syncAttempt = updateSyncAttemptInfo(modified, syncAttempt);
-//
-//            requisitionService.saveRequisition(modified);
-//            syncAttemptDao.insertRequisitionSyncAttempt(syncAttempt);
-//            //return new RequisitionSyncResult(syncAttempt, modified);
-//        }
     }
 
     public RequisitionSyncResult syncRequisition(Requisition requisition) {
@@ -137,6 +122,11 @@ public class SfmsSynchronizationService {
         return result;
     }
 
+    /**
+     * Handles all of the side effects of saving a requisition to sfms db such as getting the sync status, updating the original requisition, and creating a sync attempt for that requisition to see what the outcome of the synchronization procedure was for the given requisition.
+     *
+     * @return
+     */
     public RequisitionSyncResult applySideEffects(boolean wasSuccessful, String errorMessage, Requisition requisition, Requisition filteredReq) {
         ModifySyncStatus modify = new ModifySyncStatus();
         RequisitionSyncAttempt syncAttempt;
@@ -147,6 +137,14 @@ public class SfmsSynchronizationService {
         return new RequisitionSyncResult(syncAttempt, requisition);
     }
 
+    /**
+     * <p>Updates the syncAttempt with information that will define a recollection of synchronization attempts for a requisition.</p>
+     *
+     * @param filteredRequisition - The requisition that has gone through the synchronization process and has key information that is useful in defining the history of a particular requisition.
+     * @param errorMessage        - The error message which may or may not be null depending on if there was an error during synchronizing.
+     * @param wasSuccessful       - the flag which indicates whether the requisition was successfully saved to the SFMS db.
+     * @return
+     */
     public RequisitionSyncAttempt fillRequisitionSyncAttempt(Requisition filteredRequisition, String errorMessage, boolean wasSuccessful) {
         RequisitionSyncAttempt syncAttempt = new RequisitionSyncAttempt();
 
@@ -161,34 +159,6 @@ public class SfmsSynchronizationService {
             itemIds.add(lineItem.getItem().getId());
         }
         syncAttempt.setSyncableLineItems(itemIds);
-        return syncAttempt;
-    }
-
-    /**
-     * <p>Updates the syncAttempt with information that will define a recollection of synchronization attempts for a requisition.</p>
-     *
-     * @param modified    - The requisition that has gone through the synchronization process and has key information that is useful in defining the history of a particular requisition.
-     * @param syncAttempt - The requisition history of the object and will contain a record of key information regarding the synchronization process of the requisition.
-     * @return
-     */
-    public RequisitionSyncAttempt updateSyncAttemptInfo(Requisition modified, RequisitionSyncAttempt syncAttempt, String errorMessage) {
-        syncAttempt.setRequisitionId(modified.getRequisitionId());
-        syncAttempt.setAttemptSyncDate(LocalDateTime.now());
-        syncAttempt.setSyncAttempts(modified.getSfmsSyncAttempts());
-        syncAttempt.setOutcomeSyncStatus(modified.getSfmsSyncStatus());
-
-        if (modified.getSfmsSyncStatus() == SyncStatus.ERROR) {
-            syncAttempt.setWasSuccessful(false);
-        } else {
-            syncAttempt.setWasSuccessful(true);
-        }
-
-        List<Integer> lineItemIds = new ArrayList<>();
-        for (LineItem lineItem : modified.getLineItems()) {
-            lineItemIds.add(lineItem.getItem().getId());
-        }
-        syncAttempt.setSyncableLineItems(lineItemIds);
-
         return syncAttempt;
     }
 
@@ -216,10 +186,6 @@ public class SfmsSynchronizationService {
         return requisition.getLineItems().size() > 0 && requisition.getStatus().equals(RequisitionStatus.APPROVED);
     }
 
-    private void setAsSynced(Requisition requisition) {
-        requisitionService.savedInSfms(requisition.getRequisitionId(), true);
-    }
-
     /**
      * Gets all requisitions which have not yet been synced with SFMS.
      *
@@ -241,14 +207,6 @@ public class SfmsSynchronizationService {
      * Removes line items of 0 quantity and items that are not tracked in inventory from a requisition.
      * These items should not be synchronized with SFMS.
      */
-    private List<Requisition> filterRequisitions(List<Requisition> requisitions) {
-        List<Requisition> filtered = new ArrayList<>();
-        for (Requisition req : requisitions) {
-            filtered.add(req.setLineItems(lineItemsRequiringSync(req.getLineItems())));
-        }
-        return filtered;
-    }
-
     private Requisition filterRequisition(Requisition requisitions) {
         Requisition filtered = requisitions.setLineItems(lineItemsRequiringSync(requisitions.getLineItems()));
 

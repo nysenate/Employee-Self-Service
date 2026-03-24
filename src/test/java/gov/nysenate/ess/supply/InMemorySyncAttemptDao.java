@@ -23,14 +23,4 @@ public class InMemorySyncAttemptDao implements SyncAttemptDao {
         requisitionSyncAttempts.add(requisitionSyncAttempt);
     }
 
-    @Override
-    public List<RequisitionSyncAttempt> getSyncAttemptsByReqId(int requisitionId) {
-        List<RequisitionSyncAttempt> SyncAttemptsList = new ArrayList<>();
-        for (RequisitionSyncAttempt syncAttempt : requisitionSyncAttempts) {
-            if (syncAttempt.getRequisitionId() == requisitionId) {
-                SyncAttemptsList.add(syncAttempt);
-            }
-        }
-        return SyncAttemptsList;
-    }
 }

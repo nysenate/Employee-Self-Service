@@ -8,5 +8,4 @@ import java.util.Optional;
 public interface SyncAttemptDao {
     void insertRequisitionSyncAttempt(RequisitionSyncAttempt requisitionSyncAttempt);
 
-    List<RequisitionSyncAttempt> getSyncAttemptsByReqId(int requisitionId);
 }
