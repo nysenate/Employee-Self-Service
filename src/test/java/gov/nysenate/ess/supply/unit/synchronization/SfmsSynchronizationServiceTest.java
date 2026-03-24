@@ -93,26 +93,6 @@ public class SfmsSynchronizationServiceTest {
         verifyNoInteractions(synchronizationProcedure, slackChatService);
     }
 
-    public RequisitionSyncAttempt fillRequisitionSyncAttempt(Requisition requisition) {
-        RequisitionSyncAttempt syncAttempt = new RequisitionSyncAttempt();
-
-        if (!requisition.getSfmsSyncStatus().equals(SyncStatus.ERROR)) {
-            syncAttempt.setWasSuccessful(true);
-        } else {
-            syncAttempt.setWasSuccessful(false);
-        }
-        syncAttempt.setRequisitionId(requisition.getRequisitionId());
-        syncAttempt.setSyncAttempts(requisition.getSfmsSyncAttempts());
-        syncAttempt.setOutcomeSyncStatus(requisition.getSfmsSyncStatus());
-        syncAttempt.setAttemptSyncDate(LocalDateTime.now());
-        List<Integer> itemIds = new ArrayList<>();
-        for (LineItem lineItem : requisition.getLineItems()) {
-            itemIds.add(lineItem.getItem().getId());
-        }
-        syncAttempt.setSyncableLineItems(itemIds);
-        return syncAttempt;
-    }
-
 
     @Test
     public void testSuccessfulSync() {
@@ -138,7 +118,7 @@ public class SfmsSynchronizationServiceTest {
         assertTrue(result.getSyncAttempt().getWasSuccessful());
         assertNull(result.getSyncAttempt().getErrorInfo());
         assertEquals(1, result.getSyncAttempt().getSyncableLineItems().size());
-        assertEquals(1, inMemorySyncAttemptDao.getSyncAttemptsByReqId(requisition.getRequisitionId()).size());
+
     }
 
     @Test

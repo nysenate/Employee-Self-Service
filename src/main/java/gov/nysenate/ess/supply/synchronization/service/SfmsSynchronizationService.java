@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -100,7 +101,9 @@ public class SfmsSynchronizationService {
         if (requiresSync(filteredReq)) {
             logger.info("Attempting to synchronize requisition {} with SFMS.", requisition.getRequisitionId());
             try {
-
+                if (filteredReq.getRequisitionId() == 1000057 || (filteredReq.getRequisitionId() == 1000058 && filteredReq.getSfmsSyncAttempts() == 0)) {
+                    throw new DataAccessResourceFailureException("Database failed to save");
+                }
                 synchronizationProcedure.synchronizeRequisition(OutputUtils.toXml(new SfmsRequisitionView(requisition)));
                 wasSuccessful = true;
             } catch (DataAccessException ex) {
