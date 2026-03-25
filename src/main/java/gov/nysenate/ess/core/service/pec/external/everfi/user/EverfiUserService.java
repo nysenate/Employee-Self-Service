@@ -35,6 +35,7 @@ public class EverfiUserService {
     private static final int MIN_TEST_ID = 77000;
 
     private final EverfiApiClient everfiApiClient;
+    private final EverfiUserRemoteDao everfiUserRemoteDao;
     private final EmployeeDao employeeDao;
     private final EverfiUserDao everfiUserDao;
     private final SendMailService sendMailService;
@@ -48,9 +49,11 @@ public class EverfiUserService {
 
 
     @Autowired
-    public EverfiUserService(EverfiApiClient everfiApiClient, EmployeeDao employeeDao, EverfiUserDao everfiUserDao,
+    public EverfiUserService(EverfiApiClient everfiApiClient, EverfiUserRemoteDao everfiUserRemoteDao,
+                             EmployeeDao employeeDao, EverfiUserDao everfiUserDao,
                              SendMailService sendMailService, EverfiCategoryService categoryService, @Value("${pec.admin.report.email}") String pecAdminReportEmails) {
         this.everfiApiClient = everfiApiClient;
+        this.everfiUserRemoteDao = everfiUserRemoteDao;
         this.employeeDao = employeeDao;
         this.everfiUserDao = everfiUserDao;
         this.sendMailService = sendMailService;
@@ -176,21 +179,9 @@ public class EverfiUserService {
      */
     public void getEverfiUserIds() {
         try {
-            EverfiUsersRequest request = new EverfiUsersRequest(everfiApiClient, 1, 1000);
-            List<EverfiUser> everfiUsers;
             logger.info("Contacting Everfi for User records");
             this.manualReviewUUIDs.clear();
-
-            while (request != null) {
-                //Contact everfi api
-                everfiUsers = request.getUsers();
-
-                //Process records / insert into db
-                processEverfiUserRecords(everfiUsers);
-
-                //Get next batch of records
-                request = request.next();
-            }
+            everfiUserRemoteDao.forEachPage(this::processEverfiUserRecords);
         } catch (Exception e) {
             logger.error("There was an exception when attempting to import Everfi UUID's");
         }
@@ -334,13 +325,7 @@ public class EverfiUserService {
 
     public void updateAllEverfiUsers() {
         try {
-            EverfiUsersRequest request = new EverfiUsersRequest(everfiApiClient, 1, 1000);
-            List<EverfiUser> everfiUsers;
-
-            while (request != null) {
-                //Contact Everfi api for all users & cycle thru them
-                everfiUsers = request.getUsers();
-
+            everfiUserRemoteDao.forEachPage(everfiUsers -> {
                 for (EverfiUser everfiUser : everfiUsers) {
                     try {
                         updateEverfiUserWithEmpData(getEmployeeId(everfiUser), everfiUser);
@@ -348,10 +333,7 @@ public class EverfiUserService {
                         logger.warn("There was an exception when trying to update an Everfi user with employee data " + e);
                     }
                 }
-
-                //Get next batch of records
-                request = request.next();
-            }
+            });
         } catch (Exception e) {
             logger.error("There was an exception when trying to update all employee records in Everfi");
         }
