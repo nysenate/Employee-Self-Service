@@ -24,6 +24,7 @@ public enum SqlRequisitionQuery implements BasicSqlQuery {
                 UPDATE ${supplySchema}.requisition SET current_revision_id = :revisionId, ordered_date_time = :orderedDateTime,
                     processed_date_time = :processedDateTime, completed_date_time = :completedDateTime,
                     approved_date_time = :approvedDateTime, rejected_date_time = :rejectedDateTime,
+                    last_sfms_sync_date_time = :lastSfmsSyncDateTime,
                     saved_in_sfms = :savedInSfms,
                     sfms_sync_status = :sfmsSyncStatus,
                     sfms_sync_attempt_count = :sfmsSyncAttempts,

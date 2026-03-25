@@ -17,9 +17,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataAccessResourceFailureException;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 
 import java.text.DateFormat;
@@ -84,7 +87,6 @@ public class SfmsSynchronizationService {
         }
         List<Requisition> originalReqs = requisitionsToBeSynced();
         for (Requisition req : originalReqs) {
-
             RequisitionSyncResult result = syncRequisition(req);
 
             requisitionService.saveRequisition(result.getUpdatedRequisition());
@@ -101,9 +103,6 @@ public class SfmsSynchronizationService {
         if (requiresSync(filteredReq)) {
             logger.info("Attempting to synchronize requisition {} with SFMS.", requisition.getRequisitionId());
             try {
-                if (filteredReq.getRequisitionId() == 1000057 || (filteredReq.getRequisitionId() == 1000058 && filteredReq.getSfmsSyncAttempts() == 0)) {
-                    throw new DataAccessResourceFailureException("Database failed to save");
-                }
                 synchronizationProcedure.synchronizeRequisition(OutputUtils.toXml(new SfmsRequisitionView(requisition)));
                 wasSuccessful = true;
             } catch (DataAccessException ex) {
@@ -117,10 +116,8 @@ public class SfmsSynchronizationService {
 
         RequisitionSyncResult result = applySideEffects(wasSuccessful, errorMessage, requisition, filteredReq);
 
-
         requisition = requisitionService.saveRequisition(result.getUpdatedRequisition());
         result.setUpdatedRequisition(requisition);
-        syncAttemptDao.insertRequisitionSyncAttempt(result.getSyncAttempt());
 
         return result;
     }
@@ -136,7 +133,6 @@ public class SfmsSynchronizationService {
         filteredReq = modify.modifySyncStatuses(filteredReq, wasSuccessful);
         requisition = updateOriginalReq(requisition, filteredReq, wasSuccessful);
         syncAttempt = fillRequisitionSyncAttempt(filteredReq, errorMessage, wasSuccessful);
-
         return new RequisitionSyncResult(syncAttempt, requisition);
     }
 
@@ -181,7 +177,6 @@ public class SfmsSynchronizationService {
 
         original = original.setSfmsSyncAttempts(filteredReq.getSfmsSyncAttempts());
         original = original.setLastSfmsSyncDateTimeDateTime(dateTimeFactory.now());
-
         return original;
     }
 

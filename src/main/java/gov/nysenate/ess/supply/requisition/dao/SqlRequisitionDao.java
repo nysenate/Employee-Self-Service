@@ -76,7 +76,6 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
      */
     private Requisition saveRequisitionInfo(Requisition requisition) {
         // Try to update
-
         MapSqlParameterSource params = requisitionParams(requisition);
         String sql = SqlRequisitionQuery.UPDATE_REQUISITION.getSql(schemaMap());
         boolean updated = localNamedJdbc.update(sql, params) == 1;
@@ -195,7 +194,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                 .addValue("completedDateTime", requisition.getCompletedDateTime().map(SqlBaseDao::toDate).orElse(null))
                 .addValue("approvedDateTime", requisition.getApprovedDateTime().map(SqlBaseDao::toDate).orElse(null))
                 .addValue("rejectedDateTime", requisition.getRejectedDateTime().map(SqlBaseDao::toDate).orElse(null))
-                .addValue("last_sfms_sync_date_time", requisition.getLastSfmsSyncDateTime().map(SqlBaseDao::toDate).orElse(null))
+                .addValue("lastSfmsSyncDateTime", requisition.getLastSfmsSyncDateTime().map(SqlBaseDao::toDate).orElse(null))
                 .addValue("savedInSfms", requisition.getSavedInSfms())
                 .addValue("isReconciled", requisition.getReconciled())
                 .addValue("sfmsSyncStatus", requisition.getSfmsSyncStatus().name())
