@@ -33,6 +33,7 @@ import org.apache.shiro.dao.DataAccessException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -97,14 +98,12 @@ public class SfmsSynchronizationServiceTest {
     @Test
     public void testSuccessfulSync() {
         // Initialize test state.
-        Requisition requisition = buildRequisition(1001, setOf(lineItem(1, true)));
+        Requisition requisition = buildRequisition(1001, setOf(requiresSyncItem(1, 1)));
 
         LocalDateTime expectedSyncDateTime = LocalDateTime.now();
         dummyDateTime.setDateTime(expectedSyncDateTime);
 
-
         RequisitionSyncResult result = service.syncRequisition(requisition);
-
 
         // Check for valid side effects.
         assertEquals(expectedSyncDateTime, result.getUpdatedRequisition().getLastSfmsSyncDateTime().get());
@@ -118,18 +117,20 @@ public class SfmsSynchronizationServiceTest {
         assertTrue(result.getSyncAttempt().getWasSuccessful());
         assertNull(result.getSyncAttempt().getErrorInfo());
         assertEquals(1, result.getSyncAttempt().getSyncableLineItems().size());
-
     }
 
     @Test
-    public void testSucessfulSyncWithANonSyncableItem() {
-        Requisition requisition = buildRequisition(1001, setOf(lineItem(1, true), lineItem(2, false)));
+    public void testNonSyncableItemNotSynced() {
+        Requisition requisition = buildRequisition(1001, setOf(requiresSyncItem(1, 1), doesNotRequireSyncItem(2, 1)));
+        ArgumentCaptor<String> requisitionXmlCaptor = ArgumentCaptor.forClass(String.class);
 
         LocalDateTime expectedSyncDateTime = LocalDateTime.now();
         dummyDateTime.setDateTime(expectedSyncDateTime);
 
         // Execute method to test
         RequisitionSyncResult result = service.syncRequisition(requisition);
+        verify(synchronizationProcedure).synchronizeRequisition(requisitionXmlCaptor.capture());
+        String capturedRequisitionXml = requisitionXmlCaptor.getValue();
 
         // Check for valid side effects.
         assertEquals(expectedSyncDateTime, result.getUpdatedRequisition().getLastSfmsSyncDateTime().get());
@@ -144,19 +145,54 @@ public class SfmsSynchronizationServiceTest {
         assertNull(result.getSyncAttempt().getErrorInfo()); // you decide if error info should be null or an empty string when there was no error then enforce consistently
         assertEquals(SyncStatus.COMPLETE, result.getSyncAttempt().getOutcomeSyncStatus());
         assertEquals(new ArrayList<>(List.of(1)), result.getSyncAttempt().getSyncableLineItems());
+
+        assertTrue(capturedRequisitionXml.contains("<itemId>1</itemId>"));
+        assertFalse(capturedRequisitionXml.contains("<itemId>2</itemId>"));
+    }
+
+    @Test
+    public void testZeroQuantityItemsNotSynced() {
+        Requisition requisition = buildRequisition(1001, setOf(requiresSyncItem(1, 1), requiresSyncItem(2, 0)));
+        ArgumentCaptor<String> requisitionXmlCaptor = ArgumentCaptor.forClass(String.class);
+
+        LocalDateTime expectedSyncDateTime = LocalDateTime.now();
+        dummyDateTime.setDateTime(expectedSyncDateTime);
+
+        // Execute method to test
+        RequisitionSyncResult result = service.syncRequisition(requisition);
+        verify(synchronizationProcedure).synchronizeRequisition(requisitionXmlCaptor.capture());
+        String capturedRequisitionXml = requisitionXmlCaptor.getValue();
+
+        // Check for valid side effects.
+        assertEquals(expectedSyncDateTime, result.getUpdatedRequisition().getLastSfmsSyncDateTime().get());
+        assertEquals(SyncStatus.COMPLETE, result.getUpdatedRequisition().getSfmsSyncStatus());
+        assertNull(result.getUpdatedRequisition().getSfmsSkippedReason());
+        assertEquals(1, result.getUpdatedRequisition().getSfmsSyncAttempts());
+
+        assertEquals(1001, result.getSyncAttempt().getRequisitionId());
+        assertEquals(1, result.getSyncAttempt().getSyncAttempts());
+        assertEquals(expectedSyncDateTime, result.getSyncAttempt().getAttemptSyncDate());
+        assertTrue(result.getSyncAttempt().getWasSuccessful());
+        assertNull(result.getSyncAttempt().getErrorInfo()); // you decide if error info should be null or an empty string when there was no error then enforce consistently
+        assertEquals(SyncStatus.COMPLETE, result.getSyncAttempt().getOutcomeSyncStatus());
+        assertEquals(new ArrayList<>(List.of(1)), result.getSyncAttempt().getSyncableLineItems());
+
+        System.out.print(requisitionXmlCaptor);
+        assertTrue(capturedRequisitionXml.contains("<itemId>1</itemId>"));
+        assertFalse(capturedRequisitionXml.contains("<itemId>2</itemId>"));
     }
 
     @Test
     public void testRejectedSync() {
         // Initialize test state.
-        Requisition requisition = buildRejectedRequisition(1002, setOf(lineItem(1, false)));
+        Requisition requisition = buildRejectedRequisition(1002, setOf(requiresSyncItem(2, 1)));
 
         LocalDateTime expectedSyncDateTime = LocalDateTime.now();
         dummyDateTime.setDateTime(expectedSyncDateTime);
 
-
         RequisitionSyncResult result = service.syncRequisition(requisition);
 
+        verify(synchronizationProcedure, never()).synchronizeRequisition(any());
         assertEquals(expectedSyncDateTime, result.getUpdatedRequisition().getLastSfmsSyncDateTime().get());
         assertEquals(SyncStatus.SKIPPED, result.getUpdatedRequisition().getSfmsSyncStatus());
         assertEquals(SkippedReason.REJECTED, result.getUpdatedRequisition().getSfmsSkippedReason());
@@ -166,26 +202,21 @@ public class SfmsSynchronizationServiceTest {
         assertEquals(SyncStatus.SKIPPED, result.getSyncAttempt().getOutcomeSyncStatus());
         assertFalse(result.getSyncAttempt().getWasSuccessful());
         assertNull(result.getSyncAttempt().getErrorInfo());
-        assertEquals(0, result.getSyncAttempt().getSyncableLineItems().size());
+        assertEquals(1, result.getSyncAttempt().getSyncableLineItems().size());
         assertNotNull(result.getSyncAttempt().getAttemptSyncDate());
     }
 
 
-    @Test // I remember you said this was an edge case
+    @Test
     public void test_No_Syncable_Items_And_Rejected_Sync() {
-        // Initialize test state.
-        Requisition requisition = buildRejectedRequisition(1003, setOf(lineItem(1, false)));
+        Requisition requisition = buildRejectedRequisition(1003, setOf(doesNotRequireSyncItem(2, 1)));
 
         LocalDateTime expectedSyncDateTime = LocalDateTime.now();
         dummyDateTime.setDateTime(expectedSyncDateTime);
 
-
-        //requisitionService.saveRequisition(requisition);
-
-        // Execute method to test
         RequisitionSyncResult result = service.syncRequisition(requisition);
 
-
+        verify(synchronizationProcedure, never()).synchronizeRequisition(any());
         assertEquals(expectedSyncDateTime, result.getUpdatedRequisition().getLastSfmsSyncDateTime().get());
         assertEquals(SyncStatus.SKIPPED, result.getUpdatedRequisition().getSfmsSyncStatus());
         assertNotNull(result.getUpdatedRequisition().getSfmsSkippedReason());
@@ -201,23 +232,20 @@ public class SfmsSynchronizationServiceTest {
 
     @Test
     public void test_No_Syncable_Items_Sync() {
-        // Initialize test state.
-        Requisition requisition = buildRequisition(1004, setOf(lineItem(1, false), lineItem(2, false)));
+        Requisition requisition = buildRequisition(1004, setOf(doesNotRequireSyncItem(1, 3), doesNotRequireSyncItem(2, 2)));
 
         LocalDateTime expectedSyncDateTime = LocalDateTime.now();
         dummyDateTime.setDateTime(expectedSyncDateTime);
 
-
-        // Execute method to test
         RequisitionSyncResult result = service.syncRequisition(requisition);
 
+        verify(synchronizationProcedure, never()).synchronizeRequisition(any());
         assertEquals(expectedSyncDateTime, result.getUpdatedRequisition().getLastSfmsSyncDateTime().get());
         assertEquals(SyncStatus.SKIPPED, result.getUpdatedRequisition().getSfmsSyncStatus());
         assertNotNull(result.getUpdatedRequisition().getSfmsSkippedReason());
         assertEquals(SkippedReason.NO_SYNCABLE_ITEMS, result.getUpdatedRequisition().getSfmsSkippedReason());
         assertNull(result.getSyncAttempt().getErrorInfo());
         assertEquals(1, result.getUpdatedRequisition().getSfmsSyncAttempts());
-
 
         assertEquals(SyncStatus.SKIPPED, result.getSyncAttempt().getOutcomeSyncStatus());
         assertFalse(result.getSyncAttempt().getWasSuccessful());
@@ -227,10 +255,10 @@ public class SfmsSynchronizationServiceTest {
         assertNotNull(result.getSyncAttempt().getAttemptSyncDate());
     }
 
-    @Test // Can't test since I don't know how to exactly
+    @Test
     public void testErrorSync() {
         // Initialize test state.
-        Requisition requisition = buildRequisition(1005, setOf(lineItem(1, true)));
+        Requisition requisition = buildRequisition(1005, setOf(requiresSyncItem(1, 1)));
 
         LocalDateTime expectedSyncDateTime = LocalDateTime.now();
         dummyDateTime.setDateTime(expectedSyncDateTime);
@@ -254,10 +282,10 @@ public class SfmsSynchronizationServiceTest {
         assertEquals(expectedSyncDateTime, result.getSyncAttempt().getAttemptSyncDate());
     }
 
-    @Test // Can't test since I don't know how to exactly
+    @Test
     public void testReqWithZeroQuantitySync() {
         // Initialize test state.
-        Requisition requisition = buildRequisition(1005, setOf(lineItem(0, true)));
+        Requisition requisition = buildRequisition(1005, setOf(requiresSyncItem(1, 0)));
 
         LocalDateTime expectedSyncDateTime = LocalDateTime.now();
         dummyDateTime.setDateTime(expectedSyncDateTime);
@@ -265,6 +293,7 @@ public class SfmsSynchronizationServiceTest {
         // Execute method to test
         RequisitionSyncResult result = service.syncRequisition(requisition);
 
+        verify(synchronizationProcedure, never()).synchronizeRequisition(any());
         assertEquals(expectedSyncDateTime, result.getUpdatedRequisition().getLastSfmsSyncDateTime().get());
         assertEquals(SyncStatus.SKIPPED, result.getUpdatedRequisition().getSfmsSyncStatus());
         assertNotNull(result.getUpdatedRequisition().getSfmsSkippedReason());
@@ -284,13 +313,12 @@ public class SfmsSynchronizationServiceTest {
     @Test // Can't test this due to pessimistic lock issue with modified date time
     public void testMultipleErrorSync() {
         // Initialize test state.
-        Requisition requisition = buildRequisition(1006, setOf(lineItem(1, true)));
+        Requisition requisition = buildRequisition(1006, setOf(requiresSyncItem(1, 1)));
 
         LocalDateTime expectedSyncDateTime = LocalDateTime.now();
         dummyDateTime.setDateTime(expectedSyncDateTime);
 
         doThrow(new DataAccessResourceFailureException("Database failed to save")).when(synchronizationProcedure).synchronizeRequisition(any());
-
 
         // Execute method to test
         RequisitionSyncResult result = service.syncRequisition(requisition);
@@ -315,7 +343,7 @@ public class SfmsSynchronizationServiceTest {
     @Test // Can't test this due to pessimistic lock issue with modified date time
     public void testMultipleErrorSyncThenSucceed() {
         // Initialize test state.
-        Requisition requisition = buildRequisition(1007, setOf(lineItem(1, true)));
+        Requisition requisition = buildRequisition(1007, setOf(requiresSyncItem(1, 1)));
 
         LocalDateTime expectedSyncDateTime = LocalDateTime.now();
         dummyDateTime.setDateTime(expectedSyncDateTime); // Fetch state after execution.
@@ -353,7 +381,7 @@ public class SfmsSynchronizationServiceTest {
     @Test
     public void testLineItemsEqualInOriginalAndUpdatedSync() {
         // Initialize test state.
-        Requisition requisition = buildRequisition(1001, setOf(lineItem(1, true)));
+        Requisition requisition = buildRequisition(1001, setOf(requiresSyncItem(1, 1)));
 
         LocalDateTime expectedSyncDateTime = LocalDateTime.now();
         dummyDateTime.setDateTime(expectedSyncDateTime);
@@ -437,12 +465,20 @@ public class SfmsSynchronizationServiceTest {
                 .build();
     }
 
-    private static LineItem lineItem(int quantity, boolean requiresSync) {
+    private static LineItem requiresSyncItem(int itemId, int quantity) {
+        return lineItem(itemId, quantity, true);
+    }
+
+    private static LineItem doesNotRequireSyncItem(int itemId, int quantity) {
+        return lineItem(itemId, quantity, false);
+    }
+
+    private static LineItem lineItem(int itemId, int quantity, boolean requiresSync) {
         ItemStatus status = requiresSync
                 ? new ItemStatus(true, false, true, false)
                 : new ItemStatus(true, true, true, false);
         SupplyItem item = new SupplyItem.Builder()
-                .withId(requiresSync ? 1 : 2)
+                .withId(itemId)
                 .withCommodityCode("X")
                 .withDescription("Test Item")
                 .withStatus(status)

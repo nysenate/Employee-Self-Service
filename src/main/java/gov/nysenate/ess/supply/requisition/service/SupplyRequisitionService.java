@@ -1,17 +1,12 @@
 package gov.nysenate.ess.supply.requisition.service;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.supply.notification.SupplyEmailService;
 import gov.nysenate.ess.supply.requisition.model.Requisition;
 import gov.nysenate.ess.supply.requisition.model.RequisitionQuery;
 import gov.nysenate.ess.supply.requisition.dao.RequisitionDao;
 import gov.nysenate.ess.supply.requisition.exception.ConcurrentRequisitionUpdateException;
-import gov.nysenate.ess.supply.requisition.model.SkippedReason;
-import gov.nysenate.ess.supply.requisition.model.SyncStatus;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -20,11 +15,11 @@ import java.util.Optional;
 @Service
 public class SupplyRequisitionService implements RequisitionService {
 
-    private final RequisitionDao requisitionDao;
+    private final RequisitionDao sqlRequisitionDao;
     private final SupplyEmailService emailService;
 
-    public SupplyRequisitionService(RequisitionDao requisitionDao, SupplyEmailService emailService) {
-        this.requisitionDao = requisitionDao;
+    public SupplyRequisitionService(RequisitionDao sqlRequisitionDao, SupplyEmailService emailService) {
+        this.sqlRequisitionDao = sqlRequisitionDao;
         this.emailService = emailService;
     }
 
@@ -40,7 +35,7 @@ public class SupplyRequisitionService implements RequisitionService {
     @Override
     public synchronized Requisition saveRequisition(Requisition requisition) {
         checkPessimisticLocking(requisition);
-        requisition = requisitionDao.saveRequisition(requisition);
+        requisition = sqlRequisitionDao.saveRequisition(requisition);
         return requisition;
     }
 
@@ -74,7 +69,7 @@ public class SupplyRequisitionService implements RequisitionService {
      */
     private void checkPessimisticLocking(Requisition requisition) {
         // TODO: How to ensure modifiedDateTime is not updated by client?
-        Optional<Requisition> previousRevision = requisitionDao.getRequisitionById(requisition.getRequisitionId());
+        Optional<Requisition> previousRevision = sqlRequisitionDao.getRequisitionById(requisition.getRequisitionId());
         if (previousRevision.isPresent()) {
             if (!previousRevision.get().getModifiedDateTime().equals(requisition.getModifiedDateTime())) {
                 throw new ConcurrentRequisitionUpdateException(requisition.getRequisitionId(),
@@ -86,12 +81,12 @@ public class SupplyRequisitionService implements RequisitionService {
 
     @Override
     public Optional<Requisition> getRequisitionById(int requisitionId) {
-        return requisitionDao.getRequisitionById(requisitionId);
+        return sqlRequisitionDao.getRequisitionById(requisitionId);
     }
 
     @Override
     public PaginatedList<Requisition> searchRequisitions(RequisitionQuery query) {
-        return requisitionDao.searchRequisitions(query);
+        return sqlRequisitionDao.searchRequisitions(query);
     }
 
     /**
@@ -99,17 +94,17 @@ public class SupplyRequisitionService implements RequisitionService {
      */
     @Override
     public PaginatedList<Requisition> searchOrderHistory(RequisitionQuery query) {
-        return requisitionDao.searchOrderHistory(query);
+        return sqlRequisitionDao.searchOrderHistory(query);
     }
 
     @Override
     public ImmutableList<Requisition> getRequisitionHistory(int requisitionId) {
-        return requisitionDao.getRequisitionHistory(requisitionId);
+        return sqlRequisitionDao.getRequisitionHistory(requisitionId);
     }
 
     @Override
     public void savedInSfms(int requisitionId, boolean succeed) {
-        requisitionDao.savedInSfms(requisitionId, succeed);
+        sqlRequisitionDao.savedInSfms(requisitionId, succeed);
     }
 
     @Override

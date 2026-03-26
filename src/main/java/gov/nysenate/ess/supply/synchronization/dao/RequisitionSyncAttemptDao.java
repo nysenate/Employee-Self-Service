@@ -3,8 +3,8 @@ package gov.nysenate.ess.supply.synchronization.dao;
 import gov.nysenate.ess.core.dao.base.BasicSqlQuery;
 import gov.nysenate.ess.core.dao.base.DbVendor;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
-import gov.nysenate.ess.supply.requisition.dao.RequisitionDao;
 import gov.nysenate.ess.supply.synchronization.model.RequisitionSyncAttempt;
+import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
+@Primary
 public class RequisitionSyncAttemptDao extends SqlBaseDao implements SyncAttemptDao {
 
     public void insertRequisitionSyncAttempt(RequisitionSyncAttempt requisitionSyncAttempt) {
