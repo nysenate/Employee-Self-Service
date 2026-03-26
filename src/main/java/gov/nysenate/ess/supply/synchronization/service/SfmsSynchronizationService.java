@@ -116,9 +116,6 @@ public class SfmsSynchronizationService {
 
         RequisitionSyncResult result = applySideEffects(wasSuccessful, errorMessage, requisition, filteredReq);
 
-        requisition = requisitionService.saveRequisition(result.getUpdatedRequisition());
-        result.setUpdatedRequisition(requisition);
-
         return result;
     }
 
