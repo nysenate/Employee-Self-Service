@@ -145,7 +145,7 @@ public class SfmsSynchronizationServiceTest {
         assertNull(result.getSyncAttempt().getErrorInfo()); // you decide if error info should be null or an empty string when there was no error then enforce consistently
         assertEquals(SyncStatus.COMPLETE, result.getSyncAttempt().getOutcomeSyncStatus());
         assertEquals(new ArrayList<>(List.of(1)), result.getSyncAttempt().getSyncableLineItems());
-
+        System.out.println(capturedRequisitionXml);
         assertTrue(capturedRequisitionXml.contains("<itemId>1</itemId>"));
         assertFalse(capturedRequisitionXml.contains("<itemId>2</itemId>"));
     }
@@ -176,6 +176,7 @@ public class SfmsSynchronizationServiceTest {
         assertNull(result.getSyncAttempt().getErrorInfo()); // you decide if error info should be null or an empty string when there was no error then enforce consistently
         assertEquals(SyncStatus.COMPLETE, result.getSyncAttempt().getOutcomeSyncStatus());
         assertEquals(new ArrayList<>(List.of(1)), result.getSyncAttempt().getSyncableLineItems());
+        System.out.println(result.getSyncAttempt().getSyncableLineItems());
 
         System.out.print(requisitionXmlCaptor);
         assertTrue(capturedRequisitionXml.contains("<itemId>1</itemId>"));

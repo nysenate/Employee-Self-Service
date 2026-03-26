@@ -103,7 +103,7 @@ public class SfmsSynchronizationService {
         if (requiresSync(filteredReq)) {
             logger.info("Attempting to synchronize requisition {} with SFMS.", requisition.getRequisitionId());
             try {
-                synchronizationProcedure.synchronizeRequisition(OutputUtils.toXml(new SfmsRequisitionView(requisition)));
+                synchronizationProcedure.synchronizeRequisition(OutputUtils.toXml(new SfmsRequisitionView(filteredReq)));
                 wasSuccessful = true;
             } catch (DataAccessException ex) {
                 String msg = "Error synchronizing requisition " + requisition.getRequisitionId()
