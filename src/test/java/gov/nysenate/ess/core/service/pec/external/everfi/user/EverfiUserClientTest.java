@@ -1,6 +1,7 @@
 package gov.nysenate.ess.core.service.pec.external.everfi.user;
 
 import gov.nysenate.ess.core.annotation.UnitTest;
+import gov.nysenate.ess.core.service.pec.external.everfi.EverfiApiException;
 import gov.nysenate.ess.core.service.pec.external.everfi.EverfiApiClient;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -11,8 +12,10 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
 @Category(UnitTest.class)
-public class EverfiUserRemoteDaoTest {
+public class EverfiUserClientTest {
 
     @Test
     public void fetchAllAggregatesAllPages() throws IOException {
@@ -23,14 +26,30 @@ public class EverfiUserRemoteDaoTest {
                 usersResponse("user-3", null, null)
         ));
 
-        EverfiUserRemoteDao remoteDao = new EverfiUserRemoteDao(everfiApiClient);
+        EverfiUserClient client = new EverfiUserClient(everfiApiClient, new EverfiUserPayloadFactory());
 
-        List<EverfiUser> users = remoteDao.fetchAll(2);
+        List<EverfiUser> users = client.fetchAll(2);
 
         assertEquals(3, users.size());
         assertEquals("user-1", users.get(0).getUuid());
         assertEquals("user-2", users.get(1).getUuid());
         assertEquals("user-3", users.get(2).getUuid());
+    }
+
+    @Test
+    public void findByUuidReturnsNullOnNotFound() throws IOException {
+        EverfiUserClient client = new EverfiUserClient(new NotFoundEverfiApiClient(), new EverfiUserPayloadFactory());
+
+        EverfiUser user = client.findByUuid("missing-user");
+
+        assertNull(user);
+    }
+
+    @Test(expected = EverfiApiException.class)
+    public void findByUuidRethrowsNonNotFoundApiErrors() throws IOException {
+        EverfiUserClient client = new EverfiUserClient(new ErrorEverfiApiClient(), new EverfiUserPayloadFactory());
+
+        client.findByUuid("broken-user");
     }
 
     private static String usersResponse(String firstUuid, String secondUuid, String nextLink) {
@@ -70,6 +89,30 @@ public class EverfiUserRemoteDaoTest {
         @Override
         public String get(String endpoint) {
             return responses.get(endpoint);
+        }
+    }
+
+    private static class NotFoundEverfiApiClient extends EverfiApiClient {
+
+        private NotFoundEverfiApiClient() {
+            super("https://example.com", null, null);
+        }
+
+        @Override
+        public String get(String endpoint) throws IOException {
+            throw new EverfiApiException(404, "Not Found");
+        }
+    }
+
+    private static class ErrorEverfiApiClient extends EverfiApiClient {
+
+        private ErrorEverfiApiClient() {
+            super("https://example.com", null, null);
+        }
+
+        @Override
+        public String get(String endpoint) throws IOException {
+            throw new EverfiApiException(500, "Internal Server Error");
         }
     }
 }

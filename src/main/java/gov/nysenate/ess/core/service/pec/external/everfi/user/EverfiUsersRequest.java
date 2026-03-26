@@ -9,21 +9,21 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.io.IOException;
 import java.util.List;
 
-public class EverfiUsersRequest {
+class EverfiUsersRequest {
 
     private static final String USER_END_POINT = "/v1/admin/users";
-    public static final int DEFAULT_PAGE_SIZE = 100;
-    public static final int MAX_PAGE_SIZE = 100;
+    static final int DEFAULT_PAGE_SIZE = 100;
+    static final int MAX_PAGE_SIZE = 100;
     private final EverfiApiClient everfiClient;
     private final int page;
     private final int limit;
     private EverfiUsersResponse response;
 
-    public EverfiUsersRequest(EverfiApiClient everfiClient) {
+    EverfiUsersRequest(EverfiApiClient everfiClient) {
         this(everfiClient, 1, DEFAULT_PAGE_SIZE);
     }
 
-    public EverfiUsersRequest(EverfiApiClient everfiClient, int page, int limit) {
+    EverfiUsersRequest(EverfiApiClient everfiClient, int page, int limit) {
         Assert.notNull(everfiClient, "everfiClient must not be null");
         Assert.isTrue(page >= 1, "page must be greater than or equal to 1");
         Assert.isTrue(limit >= 1 && limit <= MAX_PAGE_SIZE,
@@ -34,13 +34,13 @@ public class EverfiUsersRequest {
         this.limit = limit;
     }
 
-    public List<EverfiUser> getUsers() throws IOException {
+    List<EverfiUser> getUsers() throws IOException {
         String data = everfiClient.get(endpoint());
         response = OutputUtils.jsonToObject(data, EverfiUsersResponse.class);
         return response.getUsers();
     }
 
-    public EverfiUsersRequest next() {
+    EverfiUsersRequest next() {
         if (response == null) {
             throw new IllegalStateException("'next()' can only be called after a successful call to 'fetch()'");
         }
