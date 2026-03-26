@@ -35,7 +35,7 @@ public final class Requisition {
     private final boolean savedInSfms;
     private final boolean reconciled;
     private final SyncStatus sfmsSyncStatus;
-    private final int sfmsSyncAttempts;
+    private final int syncAttemptCount;
     private final SkippedReason sfmsSkippedReason;
 
 
@@ -61,7 +61,7 @@ public final class Requisition {
         this.savedInSfms = builder.savedInSfms;
         this.reconciled = builder.reconciled;
         this.sfmsSyncStatus = builder.sfmsSyncStatus;
-        this.sfmsSyncAttempts = builder.sfmsSyncAttempts;
+        this.syncAttemptCount = builder.syncAttemptCount;
         this.sfmsSkippedReason = builder.sfmsSkippedReason;
     }
 
@@ -93,7 +93,7 @@ public final class Requisition {
                 .withSavedInSfms(this.savedInSfms)
                 .withReconciled(this.reconciled)
                 .withSfmsSyncStatus(this.sfmsSyncStatus)
-                .withSfmsSyncAttempts(this.sfmsSyncAttempts)
+                .withSyncAttemptCount(this.syncAttemptCount)
                 .withSfmsSkippedReason(this.sfmsSkippedReason);
     }
 
@@ -173,8 +173,8 @@ public final class Requisition {
         return copy().withSfmsSyncStatus(syncStatus).build();
     }
 
-    public Requisition setSfmsSyncAttempts(int sfmsSyncAttempts) {
-        return copy().withSfmsSyncAttempts(sfmsSyncAttempts).build();
+    public Requisition setSyncAttemptCount(int syncAttemptCount) {
+        return copy().withSyncAttemptCount(syncAttemptCount).build();
     }
 
     public Requisition setSfmsSkippedReason(SkippedReason sfmsSkippedReason) {
@@ -265,8 +265,8 @@ public final class Requisition {
         return sfmsSyncStatus;
     }
 
-    public int getSfmsSyncAttempts() {
-        return sfmsSyncAttempts;
+    public int getSyncAttemptCount() {
+        return syncAttemptCount;
     }
 
     public SkippedReason getSfmsSkippedReason() {
@@ -321,7 +321,7 @@ public final class Requisition {
                 ", savedInSfms=" + savedInSfms +
                 ", reconciled=" + reconciled +
                 ", sfmsSyncStatus=" + sfmsSyncStatus +
-                ", sfmsSyncAttempts=" + sfmsSyncAttempts +
+                ", syncAttemptCount=" + syncAttemptCount +
                 ", sfmsSkippedReason=" + sfmsSkippedReason +
                 '}';
     }
@@ -351,7 +351,7 @@ public final class Requisition {
                 Objects.equals(approvedDateTime, that.approvedDateTime) &&
                 Objects.equals(rejectedDateTime, that.rejectedDateTime) &&
                 Objects.equals(sfmsSyncStatus, that.sfmsSyncStatus) &&
-                sfmsSyncAttempts == that.sfmsSyncAttempts
+                syncAttemptCount == that.syncAttemptCount
                 && Objects.equals(sfmsSkippedReason, that.sfmsSkippedReason);
     }
 
@@ -362,7 +362,7 @@ public final class Requisition {
                 specialInstructions, state, issuer, note, modifiedBy, modifiedDateTime, orderedDateTime,
                 processedDateTime, completedDateTime, approvedDateTime, rejectedDateTime, lastSfmsSyncDateTime,
                 savedInSfms, reconciled, sfmsSyncStatus,
-                sfmsSyncAttempts, sfmsSkippedReason);
+                syncAttemptCount, sfmsSkippedReason);
     }
 
     public static class Builder {
@@ -387,7 +387,7 @@ public final class Requisition {
         private boolean savedInSfms;
         private boolean reconciled;
         private SyncStatus sfmsSyncStatus = SyncStatus.PENDING;
-        private int sfmsSyncAttempts = 0;
+        private int syncAttemptCount = 0;
         private SkippedReason sfmsSkippedReason;
 
         public Builder withRequisitionId(int requisitionId) {
@@ -499,8 +499,8 @@ public final class Requisition {
             return this;
         }
 
-        public Builder withSfmsSyncAttempts(int sfmsSyncAttempts) {
-            this.sfmsSyncAttempts = sfmsSyncAttempts;
+        public Builder withSyncAttemptCount(int syncAttemptCount) {
+            this.syncAttemptCount = syncAttemptCount;
             return this;
         }
 

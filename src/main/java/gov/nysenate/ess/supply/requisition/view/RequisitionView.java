@@ -43,7 +43,7 @@ public class RequisitionView implements ViewObject {
     protected boolean savedInSfms;
     protected String syncStatus;
     protected String skippedReason;
-    protected int syncAttempts;
+    protected int syncAttemptCount;
 
     public RequisitionView() {
     }
@@ -72,7 +72,7 @@ public class RequisitionView implements ViewObject {
         this.savedInSfms = requisition.getSavedInSfms();
         this.syncStatus = requisition.getSfmsSyncStatus().name();
         this.skippedReason = requisition.getSfmsSkippedReason() != null ? requisition.getSfmsSkippedReason().name() : null;
-        this.syncAttempts = requisition.getSfmsSyncAttempts();
+        this.syncAttemptCount = requisition.getSyncAttemptCount();
     }
 
     @JsonIgnore
@@ -99,7 +99,7 @@ public class RequisitionView implements ViewObject {
                 .withSavedInSfms(savedInSfms)
                 .withSfmsSyncStatus(SyncStatus.valueOf(syncStatus))
                 .withSfmsSkippedReason(skippedReason != null ? SkippedReason.valueOf(skippedReason) : null)
-                .withSfmsSyncAttempts(syncAttempts)
+                .withSyncAttemptCount(syncAttemptCount)
                 .build();
     }
 
@@ -219,8 +219,8 @@ public class RequisitionView implements ViewObject {
     }
 
     @XmlElement
-    public int getSyncAttempts() {
-        return syncAttempts;
+    public int getSyncAttemptCount() {
+        return syncAttemptCount;
     }
 
     @Override

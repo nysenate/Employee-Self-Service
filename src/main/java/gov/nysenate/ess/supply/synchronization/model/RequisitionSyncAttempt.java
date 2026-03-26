@@ -3,83 +3,87 @@ package gov.nysenate.ess.supply.synchronization.model;
 import gov.nysenate.ess.supply.requisition.model.SyncStatus;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public final class RequisitionSyncAttempt {
-    private int requisitionHistoryId;
+    private int syncAttemptId;
     private int requisitionId;
-    private int syncAttempts;
-    private LocalDateTime attemptSyncDate;
+    private int attemptCount;
+    private LocalDateTime attemptDateTime;
     private boolean wasSuccessful;
-    private String errorInfo;
+    private String errorMsg;
     private SyncStatus outcomeSyncStatus;
-    private List<Integer> syncableLineItems;
+    private List<Integer> syncedItemIds;
 
-
-    public RequisitionSyncAttempt() {
+    public RequisitionSyncAttempt(int requisitionId, int attemptCount, LocalDateTime datetime) {
+        this.requisitionId = requisitionId;
+        this.attemptCount = attemptCount;
+        this.attemptDateTime = datetime;
+        this.syncedItemIds = new ArrayList<>();
     }
 
-    public int getRequisitionHistoryId() {
-        return requisitionHistoryId;
+    public int getSyncAttemptId() {
+        return syncAttemptId;
     }
 
-    public void setRequisitionHistoryId(int requisition_history_id) {
-        this.requisitionHistoryId = requisition_history_id;
+    public void setSyncAttemptId(int syncAttemptId) {
+        this.syncAttemptId = syncAttemptId;
     }
 
     public int getRequisitionId() {
         return requisitionId;
     }
 
-    public void setRequisitionId(int requisition_id) {
-        this.requisitionId = requisition_id;
+    public void setRequisitionId(int requisitionId) {
+        this.requisitionId = requisitionId;
     }
 
-    public int getSyncAttempts() {
-        return syncAttempts;
+    public int getAttemptCount() {
+        return attemptCount;
     }
 
-    public void setSyncAttempts(int sync_attempts) {
-        this.syncAttempts = sync_attempts;
+    public void setAttemptCount(int attemptCount) {
+        this.attemptCount = attemptCount;
     }
 
-    public LocalDateTime getAttemptSyncDate() {
-        return attemptSyncDate;
+    public LocalDateTime getAttemptDateTime() {
+        return attemptDateTime;
     }
 
-    public void setAttemptSyncDate(LocalDateTime attempt_sync_date) {
-        this.attemptSyncDate = attempt_sync_date;
+    public void setAttemptDateTime(LocalDateTime attemptDateTime) {
+        this.attemptDateTime = attemptDateTime;
     }
 
     public boolean getWasSuccessful() {
         return wasSuccessful;
     }
 
-    public void setWasSuccessful(boolean was_successful) {
-        this.wasSuccessful = was_successful;
+    public void setWasSuccessful(boolean wasSuccessful) {
+        this.wasSuccessful = wasSuccessful;
     }
 
-    public String getErrorInfo() {
-        return errorInfo;
+    public String getErrorMsg() {
+        return errorMsg;
     }
 
-    public void setErrorInfo(String error_info) {
-        this.errorInfo = error_info;
+    public void setErrorMsg(String errorMsg) {
+        this.errorMsg = errorMsg;
     }
 
     public SyncStatus getOutcomeSyncStatus() {
         return outcomeSyncStatus;
     }
 
-    public void setOutcomeSyncStatus(SyncStatus outcome_sync_status) {
-        this.outcomeSyncStatus = outcome_sync_status;
+    public void setOutcomeSyncStatus(SyncStatus outcomeSyncStatus) {
+        this.outcomeSyncStatus = outcomeSyncStatus;
     }
 
-    public List<Integer> getSyncableLineItems() {
-        return syncableLineItems;
+    public List<Integer> getSyncedItemIds() {
+        return syncedItemIds;
     }
 
-    public void setSyncableLineItems(List<Integer> syncable_line_items) {
-        this.syncableLineItems = syncable_line_items;
+    public void setSyncedItemIds(List<Integer> syncedItemIds) {
+        this.syncedItemIds = syncedItemIds;
     }
 }

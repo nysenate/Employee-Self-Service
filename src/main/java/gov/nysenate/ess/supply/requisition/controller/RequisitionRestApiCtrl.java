@@ -65,7 +65,7 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
                 .withModifiedBy(employeeService.getEmployee(submitRequisitionView.getCustomerId()))
                 .withOrderedDateTime(LocalDateTime.now())
                 .withSfmsSyncStatus(SyncStatus.PENDING)
-                .withSfmsSyncAttempts(0)
+                .withSyncAttemptCount(0)
                 .withSfmsSkippedReason(null)
                 .build();
         Requisition savedRequisition = requisitionService.submitRequisition(requisition);
@@ -83,6 +83,7 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
 
     /**
      * Saves changes made to a requisition without processing it to the next state.
+     *
      * @param id
      * @param requisitionView
      */
@@ -98,6 +99,7 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
 
     /**
      * Process requisition and save any changes made.
+     *
      * @param id
      * @param requisitionView
      */
@@ -119,6 +121,7 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
 
     /**
      * Undo a processing step on a requisition and save the changes.
+     *
      * @param id
      * @param requisitionView
      */
@@ -135,6 +138,7 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
 
     /**
      * Reject a requisition.
+     *
      * @param id
      * @param requisitionView
      */
@@ -152,22 +156,22 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
      * Searches for requisitions, returning all that match the given parameters.
      * Only include parameters you wish to filter for.
      * This endpoint is restricted to supply employees.
-     *
-     *      GET: /api/v1/supply/requisitions.json
-     *
+     * <p>
+     * GET: /api/v1/supply/requisitions.json
+     * <p>
      * Optional Params:
-     *      location: string - A location id string matching a requisitions destination, e.g A42FB-W.
-     *      customerId: string - Searches for requisitions ordered by this employee id.
-     *      status: string[] - Searches for requisitions with one of the given {@code RequisitionStatuses}.
-     *      from: string - An ISO date to search from e.g. "2017-08-18T23:59:59"
-     *      to: string - An ISO date to search to. e.g. "2017-08-18T23:59:59"
-     *      issueId: string - Searches for requisitions issued by this employee id.
-     *      dateField: string - The field to filter by with {@code from} and {@code to}.
-     *                  Must be one of: "ordered_date_time", "processed_date_time", "completed_date_time",
-     *                                  "approved_date_time", "rejected_date_time"
-     *      savedInSfms: string - Searches for requisitions based on if they are saved in sfms.
-     *                  Must be one of: "true", "false"
-     *      itemId: string - Searches for requisitions containing this item id.
+     * location: string - A location id string matching a requisitions destination, e.g A42FB-W.
+     * customerId: string - Searches for requisitions ordered by this employee id.
+     * status: string[] - Searches for requisitions with one of the given {@code RequisitionStatuses}.
+     * from: string - An ISO date to search from e.g. "2017-08-18T23:59:59"
+     * to: string - An ISO date to search to. e.g. "2017-08-18T23:59:59"
+     * issueId: string - Searches for requisitions issued by this employee id.
+     * dateField: string - The field to filter by with {@code from} and {@code to}.
+     * Must be one of: "ordered_date_time", "processed_date_time", "completed_date_time",
+     * "approved_date_time", "rejected_date_time"
+     * savedInSfms: string - Searches for requisitions based on if they are saved in sfms.
+     * Must be one of: "true", "false"
+     * itemId: string - Searches for requisitions containing this item id.
      */
     // TODO: remove 'All' params, if we want all for a param we should not send it and it will not filter by that param.
     @RequestMapping("")
@@ -202,27 +206,27 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
 
         PaginatedList<Requisition> results = requisitionService.searchRequisitions(query);
         List<RequisitionView> resultViews = results.getResults().stream()
-                                                   .map(RequisitionView::new)
-                                                   .collect(Collectors.toList());
+                .map(RequisitionView::new)
+                .collect(Collectors.toList());
         return ListViewResponse.of(resultViews, results.getTotal(), results.getLimOff());
     }
 
     /**
      * Returns a collections of requisitions ordered by an employee or with a specified destination.
-     *
-     *      GET: /api/v1/supply/orderHistory.json
-     *
+     * <p>
+     * GET: /api/v1/supply/orderHistory.json
+     * <p>
      * Required Params:
-     *      location: string - The locationId of the destination to search for. e.g. "A42FB-W"
-     *      customerId: int - The employeeId of the customer to search for.
-     *
+     * location: string - The locationId of the destination to search for. e.g. "A42FB-W"
+     * customerId: int - The employeeId of the customer to search for.
+     * <p>
      * Optional Params:
-     *      status: string[] - Only return requisitions with a requisition status of one of these.
-     *      from: string - An ISO date string representing the from date time to search from.
-     *      to: string - An ISO date string representing the to date time to search to.
-     *      dateField: string - The date field to filter by with {@code from} and {@code to}.
-     *                  Must be one of: "ordered_date_time", "processed_date_time", "completed_date_time",
-     *                                  "approved_date_time", "rejected_date_time"
+     * status: string[] - Only return requisitions with a requisition status of one of these.
+     * from: string - An ISO date string representing the from date time to search from.
+     * to: string - An ISO date string representing the to date time to search to.
+     * dateField: string - The date field to filter by with {@code from} and {@code to}.
+     * Must be one of: "ordered_date_time", "processed_date_time", "completed_date_time",
+     * "approved_date_time", "rejected_date_time"
      */
     @RequestMapping("/orderHistory")
     public BaseResponse orderHistory(@RequestParam String location,
@@ -249,8 +253,8 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
                 .setOrderBy(new OrderBy(dateField, SortOrder.DESC));
         PaginatedList<Requisition> results = requisitionService.searchOrderHistory(query);
         List<RequisitionView> resultViews = results.getResults().stream()
-                                                   .map(RequisitionView::new)
-                                                   .collect(Collectors.toList());
+                .map(RequisitionView::new)
+                .collect(Collectors.toList());
         return ListViewResponse.of(resultViews, results.getTotal(), results.getLimOff());
     }
 
@@ -270,6 +274,7 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
      * Checks that a user can view an individual requisition.
      * User can view if they are the customer or the requisition destination
      * is the user's work location.
+     *
      * @param requisition The requisition being requested.
      */
     private void checkViewRequisitionPermissions(Requisition requisition) {

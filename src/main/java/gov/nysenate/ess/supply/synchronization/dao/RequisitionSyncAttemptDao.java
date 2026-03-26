@@ -8,23 +8,19 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Repository
 @Primary
 public class RequisitionSyncAttemptDao extends SqlBaseDao implements SyncAttemptDao {
 
     public void insertRequisitionSyncAttempt(RequisitionSyncAttempt requisitionSyncAttempt) {
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("requisitionHistoryId", requisitionSyncAttempt.getRequisitionHistoryId())
                 .addValue("requisitionId", requisitionSyncAttempt.getRequisitionId())
-                .addValue("syncAttempts", requisitionSyncAttempt.getSyncAttempts())
-                .addValue("attemptSyncDate", requisitionSyncAttempt.getAttemptSyncDate())
+                .addValue("attemptCount", requisitionSyncAttempt.getAttemptCount())
+                .addValue("attemptDateTime", requisitionSyncAttempt.getAttemptDateTime())
                 .addValue("wasSuccessful", requisitionSyncAttempt.getWasSuccessful())
-                .addValue("errorInfo", requisitionSyncAttempt.getErrorInfo() != null ? requisitionSyncAttempt.getErrorInfo() : null)
+                .addValue("errorMsg", requisitionSyncAttempt.getErrorMsg() != null ? requisitionSyncAttempt.getErrorMsg() : null)
                 .addValue("outcomeSyncStatus", requisitionSyncAttempt.getOutcomeSyncStatus().name())
-                .addValue("syncableLineItems", requisitionSyncAttempt.getSyncableLineItems().toArray(new Integer[0]));
+                .addValue("syncedItemIds", requisitionSyncAttempt.getSyncedItemIds().toArray(new Integer[0]));
         String sql = SqlReqHistoryQuery.INSERT_REQUISITION_HISTORY.getSql(schemaMap());
 
         localNamedJdbc.update(sql, params);
@@ -33,7 +29,27 @@ public class RequisitionSyncAttemptDao extends SqlBaseDao implements SyncAttempt
 
     private enum SqlReqHistoryQuery implements BasicSqlQuery {
         INSERT_REQUISITION_HISTORY(
-                "INSERT INTO ${supplySchema}.requisition_sync_attempt (requisition_id, sync_attempts, attempt_sync_date, was_successful, outcome_sync_status, error_info, syncable_line_items) VALUES (:requisitionId, :syncAttempts, :attemptSyncDate, :wasSuccessful, :outcomeSyncStatus, :errorInfo, :syncableLineItems::int[])"
+                """
+                INSERT INTO ${supplySchema}.requisition_sync_attempt
+                    (
+                        requisition_id,
+                        attempt_count,
+                        attempt_date_time,
+                        was_successful,
+                        outcome_sync_status,
+                        error_msg,
+                        synced_item_ids
+                    )
+                VALUES (
+                    :requisitionId,
+                    :attemptCount,
+                    :attemptDateTime,
+                    :wasSuccessful,
+                    :outcomeSyncStatus,
+                    :errorMsg,
+                    :syncedItemIds::int[]
+                )
+                """
         );
 
         private final String sql;

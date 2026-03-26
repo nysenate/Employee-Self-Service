@@ -1,16 +1,11 @@
 package gov.nysenate.ess.supply;
 
-import gov.nysenate.ess.supply.item.LineItem;
-import gov.nysenate.ess.supply.requisition.model.Requisition;
 import gov.nysenate.ess.supply.synchronization.dao.SyncAttemptDao;
 import gov.nysenate.ess.supply.synchronization.model.RequisitionSyncAttempt;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public class InMemorySyncAttemptDao implements SyncAttemptDao {
@@ -19,7 +14,7 @@ public class InMemorySyncAttemptDao implements SyncAttemptDao {
 
     @Override
     public void insertRequisitionSyncAttempt(RequisitionSyncAttempt requisitionSyncAttempt) {
-        requisitionSyncAttempt.setRequisitionHistoryId(serialId++);
+        requisitionSyncAttempt.setSyncAttemptId(serialId++);
         requisitionSyncAttempts.add(requisitionSyncAttempt);
     }
 

@@ -6,15 +6,7 @@ ALTER TABLE supply.requisition
     ADD COLUMN sfms_sync_skip_reason   TEXT DEFAULT NULL;
 
 
--- Logic for backfilling:
-
--- Pending: any status that doesn't fit the conditions below and isn't approved yet
-
--- Complete: approved and sync flag is true
-
--- Skipped: rejected time is not null
-
--- Error: approved but saved_in_sfms is false
+-- Backfill existing data:
 UPDATE supply.requisition
 SET sfms_sync_status = CASE
                            WHEN requisition.last_sfms_sync_date_time IS NOT NULL AND saved_in_sfms IS FALSE THEN 'ERROR'
