@@ -82,15 +82,15 @@ public class EverfiUserService {
                     generateEmployeeListString(inactiveEmployees) + "\n\n Some of these users above may have already been deactivated prior to this run");
 
             for (Employee employee : inactiveEmployees) {
-                EverfiEmployeeMapping everfiUserID = everfiEmployeeMappingDao.getEverfiUserIDsWithEmpID(employee.getEmployeeId());
-                if (everfiUserID == null) {
-                    logger.warn(
-                            "Couldn't change active status for user. Submitted EMP ID {} does not match any employee in the Everfi UUID records table",
-                            employee.getEmployeeId()
-                    );
-                    continue;
-                }
-                deactivateUser(everfiUserID);
+                everfiEmployeeMappingDao.findByEmpId(employee.getEmployeeId()).ifPresentOrElse(
+                        this::deactivateUser,
+                        () -> {
+                            logger.warn(
+                                    "Couldn't change active status for user. Submitted EMP ID {} does not match any employee in the Everfi UUID records table",
+                                    employee.getEmployeeId()
+                            );
+                        }
+                );
             }
             logger.info("Completed Everfi Deactivation process for inactive employees");
         } catch (Exception e) {
@@ -98,19 +98,23 @@ public class EverfiUserService {
         }
     }
 
-    public void changeActiveStatusForUserWithUUID(String submittedUUID, boolean status) {
-        try { //Ensure UUID is an everfi UUID
-            EverfiEmployeeMapping everfiUserID = everfiEmployeeMappingDao.getEverfiUserIDsWithEverfiUUID(submittedUUID);
-            if (everfiUserID == null) {
+    public void changeActiveStatusForUserWithUUID(String submittedUuid, boolean status) {
+        try {
+            Optional<EverfiEmployeeMapping> mappingOpt = everfiEmployeeMappingDao.findByEverfiUuid(submittedUuid);
+
+            if (mappingOpt.isEmpty()) {
                 logger.warn("Couldn't change active status for user. Submitted UUID does not match any employee in the Everfi records table");
+                return;
             }
+
+            EverfiEmployeeMapping mapping = mappingOpt.get();
             if (status) {
-                reactivateUser(everfiUserID);
+                reactivateUser(mapping);
             } else {
-                deactivateUser(everfiUserID);
+                deactivateUser(mapping);
             }
         } catch (Exception e) {
-            logger.error("An error occurred when changing the active status for a user " + submittedUUID, e);
+            logger.error("An error occurred when changing the active status for a user " + submittedUuid, e);
         }
     }
 
@@ -133,7 +137,7 @@ public class EverfiUserService {
             for (Employee completeNewEmp : completeNewEmployees) {
 
                 EverfiEmployeeMapping potentialEverfiUserID =
-                        everfiEmployeeMappingDao.getEverfiUserIDsWithEmpID(completeNewEmp.getEmployeeId());
+                        everfiEmployeeMappingDao.findByEmpId(completeNewEmp.getEmployeeId()).orElse(null);
 
                 if (potentialEverfiUserID == null && completeNewEmp.getEmail() == null) {
                     logger.info(completeNewEmp.getFullName() + " " + completeNewEmp.getEmployeeId() + " has not been added to Everfi and has a null email so they will be skipped");
@@ -184,7 +188,7 @@ public class EverfiUserService {
 
     private void deactivateUser(EverfiEmployeeMapping everfiUserID) {
         try {
-            EverfiUser everfiUser = everfiUserClient.findByUuid(everfiUserID.getEverfiUuid());
+            EverfiUser everfiUser = everfiUserClient.findByUuid(everfiUserID.everfiUuid());
 
             if (!everfiUser.isActive()) {
                 // User is already deactivated in Everfi.
@@ -221,13 +225,13 @@ public class EverfiUserService {
                     .active(false)
                     .build());
         } catch (Exception e) {
-            logger.error("There was an exception when trying to deactivate user with everfiId: " + everfiUserID.getEverfiUuid());
+            logger.error("There was an exception when trying to deactivate user with everfiId: " + everfiUserID.everfiUuid());
         }
     }
 
     private void reactivateUser(EverfiEmployeeMapping everfiUserID) {
         try {
-            EverfiUser everfiUser = everfiUserClient.findByUuid(everfiUserID.getEverfiUuid());
+            EverfiUser everfiUser = everfiUserClient.findByUuid(everfiUserID.everfiUuid());
 
             //normalize category labels
             //Normalize labels that the everfi user already has. This prevents null pointer exception
@@ -266,7 +270,7 @@ public class EverfiUserService {
                     .active(true)
                     .build());
         } catch (Exception e) {
-            logger.error("There was an exception when trying to reactivate user with everfiId: " + everfiUserID.getEverfiUuid());
+            logger.error("There was an exception when trying to reactivate user with everfiId: " + everfiUserID.everfiUuid());
         }
     }
 
@@ -329,7 +333,7 @@ public class EverfiUserService {
                         .categoryLabels(getOrCreateEmpCategoryLabels(emp, null))
                         .build());
                 if (newestEverfiUser != null) {
-                    everfiEmployeeMappingDao.insertEverfiUserIDs(newestEverfiUser.getUuid(), emp.getEmployeeId());
+                    everfiEmployeeMappingDao.insert(new EverfiEmployeeMapping(emp.getEmployeeId(), newestEverfiUser.getUuid()));
                 } else {
                     logger.error("Something odd happened when adding " + emp.getEmployeeId() + " to Everfi. Add User request was executed but returned null");
                 }
@@ -371,7 +375,7 @@ public class EverfiUserService {
                 Integer empId = getEmployeeId(everfiUser);
 
                 if (isValid(empId)) {
-                    everfiEmployeeMappingDao.insertEverfiUserIDs(everfiUser.getUuid(), empId);
+                    everfiEmployeeMappingDao.insert(new EverfiEmployeeMapping(empId, everfiUser.getUuid()));
                 } else {
                     logger.warn("Everfi user with UUID " + everfiUser.getUuid() + " empid " + empId + " was improperly retrieved");
                 }

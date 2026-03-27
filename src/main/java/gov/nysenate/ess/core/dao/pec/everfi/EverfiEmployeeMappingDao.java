@@ -2,40 +2,43 @@ package gov.nysenate.ess.core.dao.pec.everfi;
 
 import gov.nysenate.ess.core.model.pec.everfi.EverfiEmployeeMapping;
 
+import java.util.List;
+import java.util.Optional;
+
 
 public interface EverfiEmployeeMappingDao {
 
     /**
-     * Get an {@Link EverfiUserIDs} for a given empID
+     * Get all Everfi employee mappings.
      *
-     * @param empID
      * @return
      */
-    EverfiEmployeeMapping getEverfiUserIDsWithEmpID(int empID);
+    List<EverfiEmployeeMapping> findAll();
 
     /**
-     * Get an {@Link EverfiUserIDs} for a given everfiUUID
+     * Get an {@link EverfiEmployeeMapping} for a given empId
      *
-     * @param everfiUUID
+     * @param empId
      * @return
      */
-    EverfiEmployeeMapping getEverfiUserIDsWithEverfiUUID(String everfiUUID);
+    Optional<EverfiEmployeeMapping> findByEmpId(int empId);
 
     /**
-     * Insert an everfi UUID - emp ID pair
+     * Get an {@link EverfiEmployeeMapping} for a given everfiUuid
      *
-     * @param everfiUUID
-     * @param empID
+     * @param everfiUuid
      * @return
      */
-    int insertEverfiUserIDs(String everfiUUID, Integer empID);
+    Optional<EverfiEmployeeMapping> findByEverfiUuid(String everfiUuid);
 
     /**
-     * Returns a count of all ID's in the DB. Useful for correction logic
+     * Insert an {@link EverfiEmployeeMapping}
      *
+     * @param mapping
      * @return
      */
-    int everfiUserIDCount();
+    int insert(EverfiEmployeeMapping mapping);
+
 }
 
 

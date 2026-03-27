@@ -1,28 +1,17 @@
 package gov.nysenate.ess.core.model.pec.everfi;
 
-public class EverfiEmployeeMapping {
+import org.jetbrains.annotations.NotNull;
+import org.springframework.util.Assert;
 
-    private Integer empId;
-    private String everfiUuid;
+/**
+ * Maps an employee's id to their associated Everfi UUID.
+ *
+ * @param employeeId
+ * @param everfiUuid
+ */
+public record EverfiEmployeeMapping(int employeeId, @NotNull String everfiUuid) {
 
-    public EverfiEmployeeMapping(Integer empId, String everfiUuid) {
-        this.empId = empId;
-        this.everfiUuid = everfiUuid;
-    }
-
-    public Integer getEmpId() {
-        return empId;
-    }
-
-    public void setEmpId(Integer empId) {
-        this.empId = empId;
-    }
-
-    public String getEverfiUuid() {
-        return everfiUuid;
-    }
-
-    public void setEverfiUuid(String everfiUuid) {
-        this.everfiUuid = everfiUuid;
+    public EverfiEmployeeMapping {
+        Assert.hasText(everfiUuid, "everfiUuid must not be empty");
     }
 }

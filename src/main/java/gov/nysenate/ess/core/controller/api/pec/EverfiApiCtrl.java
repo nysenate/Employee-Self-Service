@@ -262,11 +262,10 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
                                                              @PathVariable int empid,
                                                              @PathVariable boolean status) throws Exception {
         checkPermission(ADMIN.getPermission());
-        EverfiEmployeeMapping everfiEmployeeMapping = everfiEmployeeMappingDao.getEverfiUserIDsWithEmpID(empid);
-        if (everfiEmployeeMapping == null) {
-            throw new IllegalArgumentException("Provided 'empid' was not found in the everfi_user_ids table");
-        }
-        everfiUserService.changeActiveStatusForUserWithUUID(everfiEmployeeMapping.getEverfiUuid(), status);
+        EverfiEmployeeMapping everfiEmployeeMapping = everfiEmployeeMappingDao.findByEmpId(empid).orElseThrow(
+                () -> new IllegalArgumentException("Provided 'empid' was not found in the everfi_user_ids table")
+        );
+        everfiUserService.changeActiveStatusForUserWithUUID(everfiEmployeeMapping.everfiUuid(), status);
         return new SimpleResponse(true, "Everfi User Active Status Updated",
                 "everfi-user-active-status-update");
     }

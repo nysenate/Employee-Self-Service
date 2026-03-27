@@ -183,7 +183,7 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
     }
 
     private void checkEverfiRecords(int taskID, int empID) {
-        EverfiEmployeeMapping everfiEmployeeMapping = everfiEmployeeMappingDao.getEverfiUserIDsWithEmpID(empID);
+        EverfiEmployeeMapping everfiEmployeeMapping = everfiEmployeeMappingDao.findByEmpId(empID).orElse(null);
         Employee employee = employeeDao.getEmployeeById(empID);
         String subject = "PERSONNEL MANUAL EVERFI UPLOAD FOR " + employee.getFullName() + ", " + employee.getEmployeeId();
 
