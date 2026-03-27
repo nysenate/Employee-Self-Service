@@ -1,7 +1,7 @@
 package gov.nysenate.ess.core.dao.pec.everfi;
 
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
-import gov.nysenate.ess.core.model.pec.everfi.EverfiUserIDs;
+import gov.nysenate.ess.core.model.pec.everfi.EverfiEmployeeMapping;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
@@ -14,20 +14,20 @@ import static gov.nysenate.ess.core.dao.pec.everfi.SqlEverfiUserQuery.*;
 
 
 @Repository
-public class SqlEverfiUserDao extends SqlBaseDao implements EverfiUserDao {
+public class SqlEverfiEmployeeMappingDao extends SqlBaseDao implements EverfiEmployeeMappingDao {
 
     @Override
-    public EverfiUserIDs getEverfiUserIDsWithEmpID(int empID) {
+    public EverfiEmployeeMapping getEverfiUserIDsWithEmpID(int empID) {
         try {
-            List<EverfiUserIDs> everfiUserIDsList = localNamedJdbc.query(
+            List<EverfiEmployeeMapping> everfiEmployeeMappingList = localNamedJdbc.query(
                     SELECT_EMP_BY_EMP_ID.getSql(schemaMap()),
                     new MapSqlParameterSource("emp_id", empID),
                     everfiUserIDsRowMapper
             );
-            if (everfiUserIDsList.isEmpty() || everfiUserIDsList == null) {
+            if (everfiEmployeeMappingList.isEmpty() || everfiEmployeeMappingList == null) {
                 return null;
             } else {
-                return everfiUserIDsList.get(0);
+                return everfiEmployeeMappingList.get(0);
             }
         } catch (EmptyResultDataAccessException e) {
             return null;
@@ -35,7 +35,7 @@ public class SqlEverfiUserDao extends SqlBaseDao implements EverfiUserDao {
     }
 
     @Override
-    public EverfiUserIDs getEverfiUserIDsWithEverfiUUID(String everfiUUID) {
+    public EverfiEmployeeMapping getEverfiUserIDsWithEverfiUUID(String everfiUUID) {
         try {
             return localNamedJdbc.queryForObject(
                     SELECT_EMP_BY_EVERFI_ID.getSql(schemaMap()),
@@ -61,8 +61,8 @@ public class SqlEverfiUserDao extends SqlBaseDao implements EverfiUserDao {
                 COUNT_EVERFI_USER_IDS.getSql(schemaMap()), Integer.class);
     }
 
-    private static final RowMapper<EverfiUserIDs> everfiUserIDsRowMapper = (rs, rowNum) ->
-            new EverfiUserIDs(
+    private static final RowMapper<EverfiEmployeeMapping> everfiUserIDsRowMapper = (rs, rowNum) ->
+            new EverfiEmployeeMapping(
                     rs.getInt("emp_id"),
                     rs.getString("everfi_uuid")
             );

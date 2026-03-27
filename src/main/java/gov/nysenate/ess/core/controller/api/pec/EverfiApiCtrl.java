@@ -3,8 +3,8 @@ package gov.nysenate.ess.core.controller.api.pec;
 import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
-import gov.nysenate.ess.core.dao.pec.everfi.EverfiUserDao;
-import gov.nysenate.ess.core.model.pec.everfi.EverfiUserIDs;
+import gov.nysenate.ess.core.dao.pec.everfi.EverfiEmployeeMappingDao;
+import gov.nysenate.ess.core.model.pec.everfi.EverfiEmployeeMapping;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.pec.external.everfi.EverfiRecordService;
 import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategoryService;
@@ -34,7 +34,7 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
     private PersonnelTaskAssignmentDao personnelTaskAssignmentDao;
     private EverfiUserService everfiUserService;
     private EverfiCategoryService everfiCategoryService;
-    private EverfiUserDao everfiUserDao;
+    private EverfiEmployeeMappingDao everfiEmployeeMappingDao;
     final LocalDateTime jan1970 = LocalDateTime.of(1970, 1, 1, 0, 0, 1);
     final LocalDateTime lastYearJan = LocalDateTime.of(LocalDateTime.now().getYear() - 1, 1, 1, 0, 0, 1);
     final LocalDateTime now = LocalDateTime.now();
@@ -43,12 +43,12 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
 
     @Autowired
     public EverfiApiCtrl(EverfiRecordService everfiRecordService, PersonnelTaskAssignmentDao personnelTaskAssignmentDao,
-                         EverfiUserService everfiUserService, EverfiCategoryService everfiCategoryService, EverfiUserDao everfiUserDao) {
+                         EverfiUserService everfiUserService, EverfiCategoryService everfiCategoryService, EverfiEmployeeMappingDao everfiEmployeeMappingDao) {
         this.everfiRecordService = everfiRecordService;
         this.personnelTaskAssignmentDao = personnelTaskAssignmentDao;
         this.everfiUserService = everfiUserService;
         this.everfiCategoryService = everfiCategoryService;
-        this.everfiUserDao = everfiUserDao;
+        this.everfiEmployeeMappingDao = everfiEmployeeMappingDao;
     }
 
     /**
@@ -262,11 +262,11 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
                                                              @PathVariable int empid,
                                                              @PathVariable boolean status) throws Exception {
         checkPermission(ADMIN.getPermission());
-        EverfiUserIDs everfiUserIDs = everfiUserDao.getEverfiUserIDsWithEmpID(empid);
-        if (everfiUserIDs == null) {
+        EverfiEmployeeMapping everfiEmployeeMapping = everfiEmployeeMappingDao.getEverfiUserIDsWithEmpID(empid);
+        if (everfiEmployeeMapping == null) {
             throw new IllegalArgumentException("Provided 'empid' was not found in the everfi_user_ids table");
         }
-        everfiUserService.changeActiveStatusForUserWithUUID(everfiUserIDs.getEverfiUUID(), status);
+        everfiUserService.changeActiveStatusForUserWithUUID(everfiEmployeeMapping.getEverfiUuid(), status);
         return new SimpleResponse(true, "Everfi User Active Status Updated",
                 "everfi-user-active-status-update");
     }

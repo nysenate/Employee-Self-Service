@@ -5,14 +5,14 @@ import com.google.common.collect.Range;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
-import gov.nysenate.ess.core.dao.pec.everfi.EverfiUserDao;
+import gov.nysenate.ess.core.dao.pec.everfi.EverfiEmployeeMappingDao;
 import gov.nysenate.ess.core.dao.pec.task.PersonnelTaskDao;
 import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignmentGroup;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
-import gov.nysenate.ess.core.model.pec.everfi.EverfiUserIDs;
+import gov.nysenate.ess.core.model.pec.everfi.EverfiEmployeeMapping;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.transaction.TransactionCode;
 import gov.nysenate.ess.core.model.transaction.TransactionHistory;
@@ -51,7 +51,7 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
     private final EverfiUserService everfiUserService;
     private final SendMailService sendMailService;
     private final PersonnelTaskDao personnelTaskDao;
-    private final EverfiUserDao everfiUserDao;
+    private final EverfiEmployeeMappingDao everfiEmployeeMappingDao;
     private final EmployeeDao employeeDao;
     private final PersonnelTaskAssignmentDao assignmentDao;
     private final List<String> pecAdminReportEmails;
@@ -60,7 +60,7 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
     private final List<GroupTaskAssigner> groupTaskAssigners;
 
     public EssPersonnelTaskAssigner(EmployeeInfoService empInfoService,
-                                    EmpTransactionService transactionService, SendMailService sendMailService, EverfiUserDao everfiUserDao,
+                                    EmpTransactionService transactionService, SendMailService sendMailService, EverfiEmployeeMappingDao everfiEmployeeMappingDao,
                                     List<GroupTaskAssigner> groupTaskAssigners,
                                     PersonnelTaskDao personnelTaskDao,
                                     PersonnelTaskAssignmentDao assignmentDao,
@@ -68,7 +68,7 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
         this.empInfoService = empInfoService;
         this.transactionService = transactionService;
         this.sendMailService = sendMailService;
-        this.everfiUserDao = everfiUserDao;
+        this.everfiEmployeeMappingDao = everfiEmployeeMappingDao;
         this.groupTaskAssigners = groupTaskAssigners;
         this.personnelTaskDao = personnelTaskDao;
         this.assignmentDao = assignmentDao;
@@ -173,8 +173,7 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
         PersonnelTask task = personnelTaskDao.getPersonnelTask(taskID);
         if (task.getTaskType() == PersonnelTaskType.EVERFI_COURSE) {
             checkEverfiRecords(taskID, empID);
-        }
-        else if (task.getTaskType() == PersonnelTaskType.KNOWBE4_COURSE) {
+        } else if (task.getTaskType() == PersonnelTaskType.KNOWBE4_COURSE) {
             reportKnowBe4MaunalAssignment(taskID, empID);
         }
         personnelTaskDao.insertPersonnelAssignedTask(empID, updateEmpID, taskID);
@@ -184,7 +183,7 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
     }
 
     private void checkEverfiRecords(int taskID, int empID) {
-        EverfiUserIDs everfiUserIDs = everfiUserDao.getEverfiUserIDsWithEmpID(empID);
+        EverfiEmployeeMapping everfiEmployeeMapping = everfiEmployeeMappingDao.getEverfiUserIDsWithEmpID(empID);
         Employee employee = employeeDao.getEmployeeById(empID);
         String subject = "PERSONNEL MANUAL EVERFI UPLOAD FOR " + employee.getFullName() + ", " + employee.getEmployeeId();
 
@@ -194,7 +193,7 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
             sendEmailToPecAdminReportEmails(subject, employee.getFullName() + " needs their email updated in SFMS and their account created in Everfi + task assigned to them");
         }
         //check if they exist in Everfi.
-        else if (everfiUserIDs == null) {
+        else if (everfiEmployeeMapping == null) {
             logger.info("Employee: " + employee.getEmail() + " has an email but has not been uploaded to Everfi");
             everfiUserService.addEmployeesToEverfi(Arrays.asList(employee));
             sendEmailToPecAdminReportEmails(subject, "ESS has attempted to create an Everfi account for " + employee.getFullName() + ". The account will be under the email " + employee.getEmail());
@@ -217,72 +216,72 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
     }
 
 
-private void sendEmailToPecAdminReportEmails(String subject, String html) {
-    for (String email : this.pecAdminReportEmails) {
-        sendEmail(email, subject, html);
-    }
-}
-
-private void sendEmail(String to, String subject, String html) {
-    try {
-        sendMailService.sendMessage(StringUtils.trim(to), subject, html);
-    } catch (Exception e) {
-        logger.error("There was an error trying to send the Everfi report email ", e.getMessage());
-    }
-}
-
-private String generateEmployeeListString(List<Employee> emps) {
-    StringBuilder employeeListDetails = new StringBuilder();
-    for (Employee employee : emps) {
-        employeeListDetails.append(" NAME: ").append(employee.getFullName())
-                .append(" EMAIL: ").append(employee.getEmail()).append(" EMPID: ")
-                .append(employee.getEmployeeId()).append("<br>\n");
-    }
-
-    if (employeeListDetails.isEmpty()) {
-        employeeListDetails = new StringBuilder("There are no employees to perform this operation on");
-    }
-    return employeeListDetails.toString();
-}
-
-private PersonnelTaskType getPersonnelTaskType(PersonnelTaskAssignment assignment, List<PersonnelTask> personnelTasks) {
-    PersonnelTaskType type = null;
-    for (PersonnelTask task : personnelTasks) {
-        if (assignment.getTaskId() == task.getTaskId() && task.getTaskType() == PersonnelTaskType.MOODLE_COURSE) {
-            type = PersonnelTaskType.MOODLE_COURSE;
-        } else if (assignment.getTaskId() == task.getTaskId() && task.getTaskType() == PersonnelTaskType.ETHICS_LIVE_COURSE) {
-            type = PersonnelTaskType.ETHICS_LIVE_COURSE;
+    private void sendEmailToPecAdminReportEmails(String subject, String html) {
+        for (String email : this.pecAdminReportEmails) {
+            sendEmail(email, subject, html);
         }
     }
-    return type;
-}
 
-/**
- * Detect transaction posts for new or reappointed employees and assign tasks to the employees.
- *
- * @param txUpdateEvent {@link TransactionHistoryUpdateEvent}
- */
-@Subscribe
-public void assignTasksToNewEmps(TransactionHistoryUpdateEvent txUpdateEvent) {
-    txUpdateEvent.getTransRecs().stream()
-            .filter(rec -> newEmpCodes.contains(rec.getTransCode()))
-            .map(TransactionRecord::getEmployeeId)
-            .distinct()
-            .forEach(empId -> assignTasks(empId, true));
-}
-
-/* --- Internal Methods --- */
-
-/**
- * Determine if the employee is eligible for task assignment.
- */
-private boolean needsTaskAssignment(int empId) {
-    if (empInfoService.getEmployee(empId).isSenator()) {
-        return false;
+    private void sendEmail(String to, String subject, String html) {
+        try {
+            sendMailService.sendMessage(StringUtils.trim(to), subject, html);
+        } catch (Exception e) {
+            logger.error("There was an error trying to send the Everfi report email ", e.getMessage());
+        }
     }
-    TransactionHistory transHistory = transactionService.getTransHistory(empId);
-    Range<LocalDate> presentAndFuture = Range.atLeast(LocalDate.now());
-    // They are eligible if they are currently active, or will be active in the future.
-    return transHistory.getActiveDates().intersects(presentAndFuture);
-}
+
+    private String generateEmployeeListString(List<Employee> emps) {
+        StringBuilder employeeListDetails = new StringBuilder();
+        for (Employee employee : emps) {
+            employeeListDetails.append(" NAME: ").append(employee.getFullName())
+                    .append(" EMAIL: ").append(employee.getEmail()).append(" EMPID: ")
+                    .append(employee.getEmployeeId()).append("<br>\n");
+        }
+
+        if (employeeListDetails.isEmpty()) {
+            employeeListDetails = new StringBuilder("There are no employees to perform this operation on");
+        }
+        return employeeListDetails.toString();
+    }
+
+    private PersonnelTaskType getPersonnelTaskType(PersonnelTaskAssignment assignment, List<PersonnelTask> personnelTasks) {
+        PersonnelTaskType type = null;
+        for (PersonnelTask task : personnelTasks) {
+            if (assignment.getTaskId() == task.getTaskId() && task.getTaskType() == PersonnelTaskType.MOODLE_COURSE) {
+                type = PersonnelTaskType.MOODLE_COURSE;
+            } else if (assignment.getTaskId() == task.getTaskId() && task.getTaskType() == PersonnelTaskType.ETHICS_LIVE_COURSE) {
+                type = PersonnelTaskType.ETHICS_LIVE_COURSE;
+            }
+        }
+        return type;
+    }
+
+    /**
+     * Detect transaction posts for new or reappointed employees and assign tasks to the employees.
+     *
+     * @param txUpdateEvent {@link TransactionHistoryUpdateEvent}
+     */
+    @Subscribe
+    public void assignTasksToNewEmps(TransactionHistoryUpdateEvent txUpdateEvent) {
+        txUpdateEvent.getTransRecs().stream()
+                .filter(rec -> newEmpCodes.contains(rec.getTransCode()))
+                .map(TransactionRecord::getEmployeeId)
+                .distinct()
+                .forEach(empId -> assignTasks(empId, true));
+    }
+
+    /* --- Internal Methods --- */
+
+    /**
+     * Determine if the employee is eligible for task assignment.
+     */
+    private boolean needsTaskAssignment(int empId) {
+        if (empInfoService.getEmployee(empId).isSenator()) {
+            return false;
+        }
+        TransactionHistory transHistory = transactionService.getTransHistory(empId);
+        Range<LocalDate> presentAndFuture = Range.atLeast(LocalDate.now());
+        // They are eligible if they are currently active, or will be active in the future.
+        return transHistory.getActiveDates().intersects(presentAndFuture);
+    }
 }
