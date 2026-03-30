@@ -13,9 +13,9 @@ public enum SqlRequisitionQuery implements BasicSqlQuery {
     INSERT_REQUISITION(
             """
                 INSERT INTO ${supplySchema}.requisition(current_revision_id, ordered_date_time,
-                    processed_date_time, completed_date_time, approved_date_time, rejected_date_time, saved_in_sfms, sfms_sync_status, sfms_sync_attempt_count, sfms_sync_skip_reason)
+                    processed_date_time, completed_date_time, approved_date_time, rejected_date_time, sfms_sync_status, sfms_sync_attempt_count, sfms_sync_skip_reason)
                 VALUES (:revisionId, :orderedDateTime, :processedDateTime, :completedDateTime,
-                    :approvedDateTime, :rejectedDateTime, :savedInSfms,
+                    :approvedDateTime, :rejectedDateTime,
                     :sfmsSyncStatus, :syncAttemptCount, :sfmsSkippedReason)
             """),
 
@@ -25,7 +25,6 @@ public enum SqlRequisitionQuery implements BasicSqlQuery {
                     processed_date_time = :processedDateTime, completed_date_time = :completedDateTime,
                     approved_date_time = :approvedDateTime, rejected_date_time = :rejectedDateTime,
                     last_sfms_sync_date_time = :lastSfmsSyncDateTime,
-                    saved_in_sfms = :savedInSfms,
                     sfms_sync_status = :sfmsSyncStatus,
                     sfms_sync_attempt_count = :syncAttemptCount,
                     sfms_sync_skip_reason = :sfmsSkippedReason
@@ -83,7 +82,7 @@ public enum SqlRequisitionQuery implements BasicSqlQuery {
     SET_SAVED_IN_SFMS(
             """
                 UPDATE ${supplySchema}.requisition
-                SET saved_in_sfms = :succeed, last_sfms_sync_date_time =  CURRENT_TIMESTAMP, sfms_sync_status = :sfmsSyncStatus
+                SET last_sfms_sync_date_time =  CURRENT_TIMESTAMP, sfms_sync_status = :sfmsSyncStatus
                 WHERE requisition_id = :requisitionId
             """),
     SET_RECONCILED(

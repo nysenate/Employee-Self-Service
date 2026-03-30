@@ -15,6 +15,7 @@ public class RequisitionSyncAttemptDao extends SqlBaseDao implements SyncAttempt
     public void insertRequisitionSyncAttempt(RequisitionSyncAttempt requisitionSyncAttempt) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("requisitionId", requisitionSyncAttempt.getRequisitionId())
+                .addValue("revisionId", requisitionSyncAttempt.getRevisionId())
                 .addValue("attemptCount", requisitionSyncAttempt.getAttemptCount())
                 .addValue("attemptDateTime", requisitionSyncAttempt.getAttemptDateTime())
                 .addValue("wasSuccessful", requisitionSyncAttempt.getWasSuccessful())
@@ -33,6 +34,7 @@ public class RequisitionSyncAttemptDao extends SqlBaseDao implements SyncAttempt
                 INSERT INTO ${supplySchema}.requisition_sync_attempt
                     (
                         requisition_id,
+                        revision_id,
                         attempt_count,
                         attempt_date_time,
                         was_successful,
@@ -42,6 +44,7 @@ public class RequisitionSyncAttemptDao extends SqlBaseDao implements SyncAttempt
                     )
                 VALUES (
                     :requisitionId,
+                    :revisionId,
                     :attemptCount,
                     :attemptDateTime,
                     :wasSuccessful,

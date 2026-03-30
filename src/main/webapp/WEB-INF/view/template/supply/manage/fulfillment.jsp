@@ -41,7 +41,8 @@
       <tr ng-repeat="requisition in data.reqs.pending | orderBy:'requisitionId':true"
           ng-class="calculateHighlighting(requisition)"
           ng-click="setRequisitionSearchParam(requisition.requisitionId)">
-        <td ng-class="{'supply-pickup-icon': requisition.deliveryMethod === 'PICKUP'}" ng-attr-title="{{requisition.deliveryMethod}}"></td>
+        <td ng-class="{'supply-pickup-icon': requisition.deliveryMethod === 'PICKUP'}"
+            ng-attr-title="{{requisition.deliveryMethod}}"></td>
         <td>{{requisition.requisitionId}}</td>
         <td>{{requisition.destination.locId}}</td>
         <td>{{requisition.customer.lastName}}</td>
@@ -186,8 +187,8 @@
         <td>{{distinctItemQuantity(requisition)}}</td>
         <td>{{requisition.approvedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
         <td>{{requisition.issuer.lastName}}</td>
-        <td><span class="tick" ng-show="requisition.lastSfmsSyncDateTime && requisition.savedInSfms"></span>
-          <span class="cross"  ng-show="requisition.lastSfmsSyncDateTime && !requisition.savedInSfms"></span></td>
+        <td><span class="tick" ng-show="requisition.sfmsSyncStatus"></span>
+          <span class="cross" ng-show="requisition.sfmsSyncStatus"></span></td>
       </tr>
       </tbody>
     </table>

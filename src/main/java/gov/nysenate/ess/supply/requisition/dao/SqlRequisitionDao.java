@@ -99,6 +99,12 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
         return results.size() == 1 ? Optional.of(results.get(0)) : Optional.empty();
     }
 
+    public void saveRequisitionMetadata(Requisition requisition) {
+        MapSqlParameterSource params = requisitionParams(requisition);
+        String sql = SqlRequisitionQuery.UPDATE_REQUISITION.getSql();
+        localNamedJdbc.update(sql, params);
+    }
+
     @Override
     public synchronized PaginatedList<Requisition> searchRequisitions(RequisitionQuery query) {
 
@@ -161,9 +167,8 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
     }
 
     @Override
-    public void savedInSfms(int requisitionId, boolean succeed) {
+    public void savedInSfms(int requisitionId) {
         MapSqlParameterSource params = new MapSqlParameterSource("requisitionId", requisitionId);
-        params.addValue("succeed", succeed);
         params.addValue("sfmsSyncStatus", SyncStatus.COMPLETE.name());
         String sql = SqlRequisitionQuery.SET_SAVED_IN_SFMS.getSql(schemaMap());
         localNamedJdbc.update(sql, params);
@@ -195,7 +200,6 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                 .addValue("approvedDateTime", requisition.getApprovedDateTime().map(SqlBaseDao::toDate).orElse(null))
                 .addValue("rejectedDateTime", requisition.getRejectedDateTime().map(SqlBaseDao::toDate).orElse(null))
                 .addValue("lastSfmsSyncDateTime", requisition.getLastSfmsSyncDateTime().map(SqlBaseDao::toDate).orElse(null))
-                .addValue("savedInSfms", requisition.getSavedInSfms())
                 .addValue("isReconciled", requisition.getReconciled())
                 .addValue("sfmsSyncStatus", requisition.getSfmsSyncStatus().name())
                 .addValue("syncAttemptCount", requisition.getSyncAttemptCount())
@@ -250,7 +254,6 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                     .withApprovedDateTime(getLocalDateTimeFromRs(rs, "approved_date_time"))
                     .withRejectedDateTime(getLocalDateTimeFromRs(rs, "rejected_date_time"))
                     .withLastSfmsSyncDateTimeDateTime(getLocalDateTimeFromRs(rs, "last_sfms_sync_date_time"))
-                    .withSavedInSfms(rs.getBoolean("saved_in_sfms"))
                     .withReconciled(rs.getBoolean("is_reconciled"))
                     .withSfmsSyncStatus(SyncStatus.valueOf(rs.getString("sfms_sync_status")))
                     .withSyncAttemptCount(rs.getInt("sfms_sync_attempt_count") == 0 ? 0 : rs.getInt("sfms_sync_attempt_count"))

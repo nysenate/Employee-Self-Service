@@ -9,6 +9,7 @@ import java.util.List;
 public final class RequisitionSyncAttempt {
     private int syncAttemptId;
     private int requisitionId;
+    private int revisionId;
     private int attemptCount;
     private LocalDateTime attemptDateTime;
     private boolean wasSuccessful;
@@ -37,6 +38,14 @@ public final class RequisitionSyncAttempt {
 
     public void setRequisitionId(int requisitionId) {
         this.requisitionId = requisitionId;
+    }
+
+    public void setRevisionId(int revisionId) {
+        this.revisionId = revisionId;
+    }
+    
+    public int getRevisionId() {
+        return revisionId;
     }
 
     public int getAttemptCount() {

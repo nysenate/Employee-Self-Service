@@ -40,7 +40,6 @@ public class RequisitionView implements ViewObject {
     protected String rejectedDateTime;
     protected String lastSfmsSyncDateTime;
 
-    protected boolean savedInSfms;
     protected String syncStatus;
     protected String skippedReason;
     protected int syncAttemptCount;
@@ -69,7 +68,6 @@ public class RequisitionView implements ViewObject {
         this.approvedDateTime = dateTimeToString(requisition.getApprovedDateTime());
         this.rejectedDateTime = dateTimeToString(requisition.getRejectedDateTime());
         this.lastSfmsSyncDateTime = dateTimeToString(requisition.getLastSfmsSyncDateTime());
-        this.savedInSfms = requisition.getSavedInSfms();
         this.syncStatus = requisition.getSfmsSyncStatus().name();
         this.skippedReason = requisition.getSfmsSkippedReason() != null ? requisition.getSfmsSkippedReason().name() : null;
         this.syncAttemptCount = requisition.getSyncAttemptCount();
@@ -96,7 +94,6 @@ public class RequisitionView implements ViewObject {
                 .withApprovedDateTime(stringToDateTime(approvedDateTime))
                 .withRejectedDateTime(stringToDateTime(rejectedDateTime))
                 .withLastSfmsSyncDateTimeDateTime(stringToDateTime(lastSfmsSyncDateTime))
-                .withSavedInSfms(savedInSfms)
                 .withSfmsSyncStatus(SyncStatus.valueOf(syncStatus))
                 .withSfmsSkippedReason(skippedReason != null ? SkippedReason.valueOf(skippedReason) : null)
                 .withSyncAttemptCount(syncAttemptCount)
@@ -201,11 +198,6 @@ public class RequisitionView implements ViewObject {
     @XmlElement
     public String getLastSfmsSyncDateTime() {
         return lastSfmsSyncDateTime;
-    }
-
-    @XmlElement
-    public boolean isSavedInSfms() {
-        return savedInSfms;
     }
 
     @XmlElement

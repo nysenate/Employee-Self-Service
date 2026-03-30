@@ -182,7 +182,7 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
                                            @RequestParam(required = false) String to,
                                            @RequestParam(defaultValue = "All", required = false) String issuerId,
                                            @RequestParam(required = false) String dateField,
-                                           @RequestParam(defaultValue = "All", required = false) String savedInSfms,
+                                           @RequestParam(defaultValue = "All", required = false) String syncStatus,
                                            @RequestParam(defaultValue = "All", required = false) String itemId,
                                            @RequestParam(required = false) String reconciled,
                                            WebRequest webRequest) {
@@ -196,7 +196,7 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
                 .setFromDateTime(getFromDateTime(from))
                 .setToDateTime(getToDateTime(to))
                 .setDateField(dateField)
-                .setSavedInSfms(savedInSfms)
+                .setSyncStatus(getSyncStatusEnumSet(SyncStatus.valueOf(syncStatus)))
                 .setIssuerId(issuerId)
                 .setItemId(itemId)
                 .setReconciled(reconciled)
@@ -311,6 +311,10 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
      */
     private EnumSet<RequisitionStatus> getStatusEnumSet(String[] status) {
         return status == null ? EnumSet.allOf(RequisitionStatus.class) : getEnumSetFromStringArray(status);
+    }
+
+    private EnumSet<SyncStatus> getSyncStatusEnumSet(SyncStatus syncStatus) {
+        return syncStatus == null ? EnumSet.allOf(SyncStatus.class) : EnumSet.of(syncStatus);
     }
 
     private EnumSet<RequisitionStatus> getEnumSetFromStringArray(String[] status) {

@@ -6,6 +6,7 @@ import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.supply.requisition.dao.RequisitionDao;
 import gov.nysenate.ess.supply.requisition.model.Requisition;
 import gov.nysenate.ess.supply.requisition.model.RequisitionQuery;
+import gov.nysenate.ess.supply.requisition.model.SyncStatus;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -25,6 +26,11 @@ public class InMemoryRequisitionDao implements RequisitionDao {
         requisition = requisition.setModifiedDateTime(LocalDateTime.now());
         requisitionsById.put(requisition.getRequisitionId(), requisition);
         return requisition;
+    }
+
+    @Override
+    public void saveRequisitionMetadata(Requisition requisition) {
+        return;
     }
 
     @Override
@@ -63,17 +69,12 @@ public class InMemoryRequisitionDao implements RequisitionDao {
     }
 
     @Override
-    public void savedInSfms(int requisitionId, boolean succeed) {
-        Requisition updated = requisitionsById.get(requisitionId).setSavedInSfms(succeed);
-        saveRequisition(updated);
+    public void savedInSfms(int requisitionId) {
+        return;
     }
 
     private boolean matchesSavedInSfms(RequisitionQuery query, Requisition requisition) {
-        String savedInSfms = query.getSavedInSfms();
-        if ("%".equals(savedInSfms)) {
-            return true;
-        }
-        return requisition.getSavedInSfms() == Boolean.parseBoolean(savedInSfms);
+        return requisition.getSfmsSyncStatus().equals(SyncStatus.COMPLETE);
     }
 
     private boolean matchesDateRange(RequisitionQuery query, Requisition requisition) {

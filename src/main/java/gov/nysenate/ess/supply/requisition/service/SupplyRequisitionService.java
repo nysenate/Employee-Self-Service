@@ -32,6 +32,10 @@ public class SupplyRequisitionService implements RequisitionService {
         return requisition;
     }
 
+    public void saveRequisitionMetadata(Requisition requisition) {
+        sqlRequisitionDao.saveRequisitionMetadata(requisition);
+    }
+
     @Override
     public synchronized Requisition saveRequisition(Requisition requisition) {
         checkPessimisticLocking(requisition);
@@ -103,8 +107,8 @@ public class SupplyRequisitionService implements RequisitionService {
     }
 
     @Override
-    public void savedInSfms(int requisitionId, boolean succeed) {
-        sqlRequisitionDao.savedInSfms(requisitionId, succeed);
+    public void savedInSfms(int requisitionId) {
+        sqlRequisitionDao.savedInSfms(requisitionId);
     }
 
     @Override

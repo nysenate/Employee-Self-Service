@@ -83,7 +83,7 @@ public class SfmsSynchronizationService {
         List<Requisition> reqsPendingSync = requisitionsToBeSynced();
         for (Requisition req : reqsPendingSync) {
             RequisitionSyncResult result = syncRequisition(req);
-            requisitionService.saveRequisition(result.updatedRequisition());
+            requisitionService.saveRequisitionMetadata(result.updatedRequisition());
             syncAttemptDao.insertRequisitionSyncAttempt(result.syncAttempt());
         }
     }
@@ -163,6 +163,7 @@ public class SfmsSynchronizationService {
     private Requisition applyAttemptMetadata(Requisition req, RequisitionSyncAttempt attempt) {
         req = req.setSyncAttemptCount(attempt.getAttemptCount());
         req = req.setLastSfmsSyncDateTimeDateTime(attempt.getAttemptDateTime());
+        attempt.setRevisionId(req.getRevisionId());
         return req;
     }
 

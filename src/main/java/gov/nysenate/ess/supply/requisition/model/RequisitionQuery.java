@@ -22,7 +22,6 @@ public class RequisitionQuery {
     private LocalDateTime fromDateTime;
     private LocalDateTime toDateTime;
     private String dateField;
-    private String savedInSfms;
     private String issuerId;
     private String itemId;
     private LimitOffset limitOffset;
@@ -38,7 +37,6 @@ public class RequisitionQuery {
         this.fromDateTime = LocalDateTime.now().minusMonths(1);
         this.toDateTime = LocalDateTime.now();
         this.dateField = "ordered_date_time";
-        this.savedInSfms = WILDCARD;
         this.issuerId = WILDCARD;
         this.itemId = WILDCARD;
         this.limitOffset = LimitOffset.TEN;
@@ -106,15 +104,6 @@ public class RequisitionQuery {
         return this;
     }
 
-    public RequisitionQuery setSavedInSfms(boolean savedInSfms) {
-        this.savedInSfms = String.valueOf(savedInSfms);
-        return this;
-    }
-
-    public RequisitionQuery setSavedInSfms(String savedInSfms) {
-        this.savedInSfms = savedInSfms;
-        return this;
-    }
 
     public RequisitionQuery setIssuerId(String issuerId) {
         this.issuerId = issuerId;
@@ -175,10 +164,6 @@ public class RequisitionQuery {
 
     public String getDateField() {
         return dateField;
-    }
-
-    public String getSavedInSfms() {
-        return useWildcard(savedInSfms);
     }
 
     public String getIssuerId() {

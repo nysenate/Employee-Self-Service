@@ -32,7 +32,6 @@ public final class Requisition {
     private final LocalDateTime approvedDateTime;
     private final LocalDateTime rejectedDateTime;
     private final LocalDateTime lastSfmsSyncDateTime;
-    private final boolean savedInSfms;
     private final boolean reconciled;
     private final SyncStatus sfmsSyncStatus;
     private final int syncAttemptCount;
@@ -58,7 +57,6 @@ public final class Requisition {
         this.approvedDateTime = builder.approvedDateTime;
         this.rejectedDateTime = builder.rejectedDateTime;
         this.lastSfmsSyncDateTime = builder.lastSfmsSyncDateTime;
-        this.savedInSfms = builder.savedInSfms;
         this.reconciled = builder.reconciled;
         this.sfmsSyncStatus = builder.sfmsSyncStatus;
         this.syncAttemptCount = builder.syncAttemptCount;
@@ -90,7 +88,6 @@ public final class Requisition {
                 .withApprovedDateTime(this.approvedDateTime)
                 .withRejectedDateTime(this.rejectedDateTime)
                 .withLastSfmsSyncDateTimeDateTime(this.lastSfmsSyncDateTime)
-                .withSavedInSfms(this.savedInSfms)
                 .withReconciled(this.reconciled)
                 .withSfmsSyncStatus(this.sfmsSyncStatus)
                 .withSyncAttemptCount(this.syncAttemptCount)
@@ -160,10 +157,6 @@ public final class Requisition {
         return copy().withLastSfmsSyncDateTimeDateTime(lastSfmsSyncDateTime).build();
     }
 
-
-    public Requisition setSavedInSfms(boolean savedInSfms) {
-        return copy().withSavedInSfms(savedInSfms).build();
-    }
 
     public Requisition setReconiled(boolean reconciled) {
         return copy().withReconciled(reconciled).build();
@@ -253,10 +246,6 @@ public final class Requisition {
         return Optional.ofNullable(lastSfmsSyncDateTime);
     }
 
-    public boolean getSavedInSfms() {
-        return savedInSfms;
-    }
-
     public boolean getReconciled() {
         return reconciled;
     }
@@ -318,7 +307,6 @@ public final class Requisition {
                 ", approvedDateTime=" + approvedDateTime +
                 ", rejectedDateTime=" + rejectedDateTime +
                 ", lastSfmsSyncDateTime=" + lastSfmsSyncDateTime +
-                ", savedInSfms=" + savedInSfms +
                 ", reconciled=" + reconciled +
                 ", sfmsSyncStatus=" + sfmsSyncStatus +
                 ", syncAttemptCount=" + syncAttemptCount +
@@ -333,7 +321,6 @@ public final class Requisition {
         Requisition that = (Requisition) o;
         return requisitionId == that.requisitionId &&
                 revisionId == that.revisionId &&
-                savedInSfms == that.savedInSfms &&
                 reconciled == that.reconciled &&
                 Objects.equals(customer, that.customer) &&
                 Objects.equals(destination, that.destination) &&
@@ -360,8 +347,7 @@ public final class Requisition {
 
         return Objects.hash(requisitionId, revisionId, customer, destination, deliveryMethod, lineItems,
                 specialInstructions, state, issuer, note, modifiedBy, modifiedDateTime, orderedDateTime,
-                processedDateTime, completedDateTime, approvedDateTime, rejectedDateTime, lastSfmsSyncDateTime,
-                savedInSfms, reconciled, sfmsSyncStatus,
+                processedDateTime, completedDateTime, approvedDateTime, rejectedDateTime, lastSfmsSyncDateTime, reconciled, sfmsSyncStatus,
                 syncAttemptCount, sfmsSkippedReason);
     }
 
@@ -384,7 +370,6 @@ public final class Requisition {
         private LocalDateTime approvedDateTime;
         private LocalDateTime rejectedDateTime;
         private LocalDateTime lastSfmsSyncDateTime;
-        private boolean savedInSfms;
         private boolean reconciled;
         private SyncStatus sfmsSyncStatus = SyncStatus.PENDING;
         private int syncAttemptCount = 0;
@@ -481,11 +466,6 @@ public final class Requisition {
 
         public Builder withRejectedDateTime(LocalDateTime rejectedDateTime) {
             this.rejectedDateTime = rejectedDateTime;
-            return this;
-        }
-
-        public Builder withSavedInSfms(boolean savedInSfms) {
-            this.savedInSfms = savedInSfms;
             return this;
         }
 
