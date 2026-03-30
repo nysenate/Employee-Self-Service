@@ -1,0 +1,1 @@
+ALTER TABLE supply.requisition DROP COLUMN saved_in_sfms
