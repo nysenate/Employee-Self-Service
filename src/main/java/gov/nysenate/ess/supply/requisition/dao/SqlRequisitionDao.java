@@ -166,14 +166,6 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
         return ImmutableList.copyOf(requisitions);
     }
 
-    @Override
-    public void savedInSfms(int requisitionId) {
-        MapSqlParameterSource params = new MapSqlParameterSource("requisitionId", requisitionId);
-        params.addValue("sfmsSyncStatus", SyncStatus.COMPLETE.name());
-        String sql = SqlRequisitionQuery.SET_SAVED_IN_SFMS.getSql(schemaMap());
-        localNamedJdbc.update(sql, params);
-    }
-
     public void reconcile(int requisitionId, boolean reconciled) {
         MapSqlParameterSource params = new MapSqlParameterSource("requisitionId", requisitionId);
         params.addValue("reconciled", reconciled);

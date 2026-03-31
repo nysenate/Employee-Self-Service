@@ -79,12 +79,6 @@ public enum SqlRequisitionQuery implements BasicSqlQuery {
                 ON r.requisition_id = c.requisition_id
                 WHERE r.requisition_id = :requisitionId
             """),
-    SET_SAVED_IN_SFMS(
-            """
-                UPDATE ${supplySchema}.requisition
-                SET last_sfms_sync_date_time =  CURRENT_TIMESTAMP, sfms_sync_status = :sfmsSyncStatus
-                WHERE requisition_id = :requisitionId
-            """),
     SET_RECONCILED(
             """
                 UPDATE ${supplySchema}.requisition

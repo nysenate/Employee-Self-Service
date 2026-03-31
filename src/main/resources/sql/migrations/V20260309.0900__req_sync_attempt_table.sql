@@ -2,7 +2,7 @@ CREATE TABLE supply.requisition_sync_attempt
 (
     sync_attempt_id     SERIAL PRIMARY KEY,
     requisition_id      INTEGER REFERENCES supply.requisition (requisition_id),
-    revision_id         Integer REFERENCES supply.requisition (requisition_id),
+    revision_id         Integer REFERENCES supply.requisition_content (revision_id),
     attempt_count       INTEGER,
     attempt_date_time   TIMESTAMP,
     was_successful      BOOLEAN,

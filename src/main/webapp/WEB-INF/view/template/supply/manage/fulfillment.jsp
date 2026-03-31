@@ -187,8 +187,8 @@
         <td>{{distinctItemQuantity(requisition)}}</td>
         <td>{{requisition.approvedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
         <td>{{requisition.issuer.lastName}}</td>
-        <td><span class="tick" ng-show="requisition.sfmsSyncStatus"></span>
-          <span class="cross" ng-show="requisition.sfmsSyncStatus"></span></td>
+        <td><span class="tick" ng-show="requisition.syncStatus === 'COMPLETE'"></span>
+          <span class="cross" ng-show="requisition.syncStatus !== 'COMPLETE'"></span></td>
       </tr>
       </tbody>
     </table>

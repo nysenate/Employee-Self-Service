@@ -107,11 +107,6 @@ public class SupplyRequisitionService implements RequisitionService {
     }
 
     @Override
-    public void savedInSfms(int requisitionId) {
-        sqlRequisitionDao.savedInSfms(requisitionId);
-    }
-
-    @Override
     public Requisition reconcileRequisition(Requisition requisition) {
         requisition = requisition.setReconiled(true);
         return saveRequisition(requisition);

@@ -68,10 +68,6 @@ public class InMemoryRequisitionDao implements RequisitionDao {
         return null;
     }
 
-    @Override
-    public void savedInSfms(int requisitionId) {
-        return;
-    }
 
     private boolean matchesSavedInSfms(RequisitionQuery query, Requisition requisition) {
         return requisition.getSfmsSyncStatus().equals(SyncStatus.COMPLETE);
