@@ -69,7 +69,6 @@ public class KnowBe4RecordService {
 
         for (KnowBe4AssignmentID knowBe4AssignmentID : this.knowBe4AssignmentIDList ) {
             PersonnelTask task = personnelTaskDao.getPersonnelTask(knowBe4AssignmentID.getTaskID());
-            if (task.isActive()) {
 
                 KnowBe4GetAllTrainingEnrollmentsRequest knowBe4RecordsRequest =
                         new KnowBe4GetAllTrainingEnrollmentsRequest(knowBe4AssignmentID.getID(), apiClient, 1);
@@ -101,7 +100,6 @@ public class KnowBe4RecordService {
                     }
 
                 }
-            }
         }
         logger.info("Finished Processing KnowBe4 assignment records");
     }
