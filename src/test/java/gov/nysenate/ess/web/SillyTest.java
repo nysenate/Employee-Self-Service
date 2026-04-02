@@ -4,6 +4,7 @@ import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.dao.security.authentication.LdapAuthDao;
 import gov.nysenate.ess.core.model.auth.SenateLdapPerson;
 import gov.nysenate.ess.core.model.personnel.Employee;
+import gov.nysenate.ess.core.service.pec.external.everfi.sync.EverfiUserSyncService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
@@ -22,4 +23,12 @@ import java.util.Set;
 
 public class SillyTest extends BaseTest {
     private static final Logger logger = LoggerFactory.getLogger(SillyTest.class);
+
+    @Autowired
+    private EverfiUserSyncService everfiUserSyncService;
+
+    @Test
+    public void testSync() {
+        everfiUserSyncService.syncUsers(true, true);
+    }
 }

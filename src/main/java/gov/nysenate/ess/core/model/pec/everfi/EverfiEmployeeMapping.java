@@ -12,6 +12,7 @@ import org.springframework.util.Assert;
 public record EverfiEmployeeMapping(int employeeId, @NotNull String everfiUuid) {
 
     public EverfiEmployeeMapping {
+        Assert.isTrue(employeeId > 0, "employeeId must be greater than zero");
         Assert.hasText(everfiUuid, "everfiUuid must not be empty");
     }
 }
