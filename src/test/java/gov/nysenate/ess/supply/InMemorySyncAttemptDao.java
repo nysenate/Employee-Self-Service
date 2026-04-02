@@ -1,5 +1,6 @@
 package gov.nysenate.ess.supply;
 
+import gov.nysenate.ess.supply.requisition.model.Requisition;
 import gov.nysenate.ess.supply.synchronization.dao.SyncAttemptDao;
 import gov.nysenate.ess.supply.synchronization.model.RequisitionSyncAttempt;
 import org.springframework.stereotype.Repository;
@@ -16,6 +17,11 @@ public class InMemorySyncAttemptDao implements SyncAttemptDao {
     public void insertRequisitionSyncAttempt(RequisitionSyncAttempt requisitionSyncAttempt) {
         requisitionSyncAttempt.setSyncAttemptId(serialId++);
         requisitionSyncAttempts.add(requisitionSyncAttempt);
+    }
+
+    @Override
+    public List<RequisitionSyncAttempt> findByRequisitionId(Requisition requisition) {
+        return List.of();
     }
 
 }
