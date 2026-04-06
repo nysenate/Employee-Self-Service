@@ -101,7 +101,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
 
     public void saveRequisitionMetadata(Requisition requisition) {
         MapSqlParameterSource params = requisitionParams(requisition);
-        String sql = SqlRequisitionQuery.UPDATE_REQUISITION.getSql();
+        String sql = SqlRequisitionQuery.UPDATE_REQUISITION.getSql(schemaMap());
         localNamedJdbc.update(sql, params);
     }
 

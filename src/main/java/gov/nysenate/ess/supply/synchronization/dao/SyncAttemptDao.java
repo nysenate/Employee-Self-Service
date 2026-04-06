@@ -9,5 +9,5 @@ import java.util.Optional;
 public interface SyncAttemptDao {
     void insertRequisitionSyncAttempt(RequisitionSyncAttempt requisitionSyncAttempt);
 
-    List<RequisitionSyncAttempt> findByRequisitionId(Requisition requisition);
+    List<RequisitionSyncAttempt> findByRequisitionId(int requisitionId);
 }

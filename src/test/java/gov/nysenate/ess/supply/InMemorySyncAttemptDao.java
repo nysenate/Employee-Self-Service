@@ -20,7 +20,7 @@ public class InMemorySyncAttemptDao implements SyncAttemptDao {
     }
 
     @Override
-    public List<RequisitionSyncAttempt> findByRequisitionId(Requisition requisition) {
+    public List<RequisitionSyncAttempt> findByRequisitionId(int requisitionId) {
         return List.of();
     }
 
