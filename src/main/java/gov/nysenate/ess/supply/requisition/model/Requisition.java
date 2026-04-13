@@ -7,7 +7,6 @@ import gov.nysenate.ess.supply.item.LineItem;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -33,8 +32,11 @@ public final class Requisition {
     private final LocalDateTime approvedDateTime;
     private final LocalDateTime rejectedDateTime;
     private final LocalDateTime lastSfmsSyncDateTime;
-    private final boolean savedInSfms;
     private final boolean reconciled;
+    private final SyncStatus sfmsSyncStatus;
+    private final int syncAttemptCount;
+    private final SkippedReason sfmsSkippedReason;
+
 
     private Requisition(Builder builder) {
         this.requisitionId = builder.requisitionId;
@@ -55,8 +57,10 @@ public final class Requisition {
         this.approvedDateTime = builder.approvedDateTime;
         this.rejectedDateTime = builder.rejectedDateTime;
         this.lastSfmsSyncDateTime = builder.lastSfmsSyncDateTime;
-        this.savedInSfms = builder.savedInSfms;
         this.reconciled = builder.reconciled;
+        this.sfmsSyncStatus = builder.sfmsSyncStatus;
+        this.syncAttemptCount = builder.syncAttemptCount;
+        this.sfmsSkippedReason = builder.sfmsSkippedReason;
     }
 
     /**
@@ -84,8 +88,10 @@ public final class Requisition {
                 .withApprovedDateTime(this.approvedDateTime)
                 .withRejectedDateTime(this.rejectedDateTime)
                 .withLastSfmsSyncDateTimeDateTime(this.lastSfmsSyncDateTime)
-                .withSavedInSfms(this.savedInSfms)
-                .withReconciled(this.reconciled);
+                .withReconciled(this.reconciled)
+                .withSfmsSyncStatus(this.sfmsSyncStatus)
+                .withSyncAttemptCount(this.syncAttemptCount)
+                .withSfmsSkippedReason(this.sfmsSkippedReason);
     }
 
     /**
@@ -135,8 +141,10 @@ public final class Requisition {
         return copy().withModifiedBy(modifiedBy).build();
     }
 
-    /** Modified date time should only be set by the dao layer before saving.
-     * It is used in optimistic locking to ensure multiple updates are not done at once. */
+    /**
+     * Modified date time should only be set by the dao layer before saving.
+     * It is used in optimistic locking to ensure multiple updates are not done at once.
+     */
     public Requisition setModifiedDateTime(LocalDateTime modifiedDateTime) {
         return copy().withModifiedDateTime(modifiedDateTime).build();
     }
@@ -150,12 +158,20 @@ public final class Requisition {
     }
 
 
-    public Requisition setSavedInSfms(boolean savedInSfms) {
-        return copy().withSavedInSfms(savedInSfms).build();
-    }
-
     public Requisition setReconiled(boolean reconciled) {
         return copy().withReconciled(reconciled).build();
+    }
+
+    public Requisition setSyncStatus(SyncStatus syncStatus) {
+        return copy().withSfmsSyncStatus(syncStatus).build();
+    }
+
+    public Requisition setSyncAttemptCount(int syncAttemptCount) {
+        return copy().withSyncAttemptCount(syncAttemptCount).build();
+    }
+
+    public Requisition setSfmsSkippedReason(SkippedReason sfmsSkippedReason) {
+        return copy().withSfmsSkippedReason(sfmsSkippedReason).build();
     }
 
     public int getRequisitionId() {
@@ -230,12 +246,20 @@ public final class Requisition {
         return Optional.ofNullable(lastSfmsSyncDateTime);
     }
 
-    public boolean getSavedInSfms() {
-        return savedInSfms;
-    }
-
     public boolean getReconciled() {
         return reconciled;
+    }
+
+    public SyncStatus getSfmsSyncStatus() {
+        return sfmsSyncStatus;
+    }
+
+    public int getSyncAttemptCount() {
+        return syncAttemptCount;
+    }
+
+    public SkippedReason getSfmsSkippedReason() {
+        return sfmsSkippedReason;
     }
 
     /**
@@ -283,8 +307,10 @@ public final class Requisition {
                 ", approvedDateTime=" + approvedDateTime +
                 ", rejectedDateTime=" + rejectedDateTime +
                 ", lastSfmsSyncDateTime=" + lastSfmsSyncDateTime +
-                ", savedInSfms=" + savedInSfms +
                 ", reconciled=" + reconciled +
+                ", sfmsSyncStatus=" + sfmsSyncStatus +
+                ", syncAttemptCount=" + syncAttemptCount +
+                ", sfmsSkippedReason=" + sfmsSkippedReason +
                 '}';
     }
 
@@ -295,7 +321,6 @@ public final class Requisition {
         Requisition that = (Requisition) o;
         return requisitionId == that.requisitionId &&
                 revisionId == that.revisionId &&
-                savedInSfms == that.savedInSfms &&
                 reconciled == that.reconciled &&
                 Objects.equals(customer, that.customer) &&
                 Objects.equals(destination, that.destination) &&
@@ -312,7 +337,9 @@ public final class Requisition {
                 Objects.equals(completedDateTime, that.completedDateTime) &&
                 Objects.equals(approvedDateTime, that.approvedDateTime) &&
                 Objects.equals(rejectedDateTime, that.rejectedDateTime) &&
-                Objects.equals(lastSfmsSyncDateTime, that.lastSfmsSyncDateTime);
+                Objects.equals(sfmsSyncStatus, that.sfmsSyncStatus) &&
+                syncAttemptCount == that.syncAttemptCount
+                && Objects.equals(sfmsSkippedReason, that.sfmsSkippedReason);
     }
 
     @Override
@@ -320,8 +347,8 @@ public final class Requisition {
 
         return Objects.hash(requisitionId, revisionId, customer, destination, deliveryMethod, lineItems,
                 specialInstructions, state, issuer, note, modifiedBy, modifiedDateTime, orderedDateTime,
-                processedDateTime, completedDateTime, approvedDateTime, rejectedDateTime, lastSfmsSyncDateTime,
-                savedInSfms, reconciled);
+                processedDateTime, completedDateTime, approvedDateTime, rejectedDateTime, lastSfmsSyncDateTime, reconciled, sfmsSyncStatus,
+                syncAttemptCount, sfmsSkippedReason);
     }
 
     public static class Builder {
@@ -343,8 +370,10 @@ public final class Requisition {
         private LocalDateTime approvedDateTime;
         private LocalDateTime rejectedDateTime;
         private LocalDateTime lastSfmsSyncDateTime;
-        private boolean savedInSfms;
         private boolean reconciled;
+        private SyncStatus sfmsSyncStatus = SyncStatus.PENDING;
+        private int syncAttemptCount = 0;
+        private SkippedReason sfmsSkippedReason;
 
         public Builder withRequisitionId(int requisitionId) {
             this.requisitionId = requisitionId;
@@ -440,13 +469,23 @@ public final class Requisition {
             return this;
         }
 
-        public Builder withSavedInSfms(boolean savedInSfms) {
-            this.savedInSfms = savedInSfms;
+        public Builder withReconciled(boolean reconciled) {
+            this.reconciled = reconciled;
             return this;
         }
 
-        public Builder withReconciled(boolean reconciled){
-            this.reconciled = reconciled;
+        public Builder withSfmsSyncStatus(SyncStatus sfmsSyncStatus) {
+            this.sfmsSyncStatus = sfmsSyncStatus;
+            return this;
+        }
+
+        public Builder withSyncAttemptCount(int syncAttemptCount) {
+            this.syncAttemptCount = syncAttemptCount;
+            return this;
+        }
+
+        public Builder withSfmsSkippedReason(SkippedReason sfmsSkippedReason) {
+            this.sfmsSkippedReason = sfmsSkippedReason;
             return this;
         }
 
