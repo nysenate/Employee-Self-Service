@@ -169,8 +169,7 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
      * dateField: string - The field to filter by with {@code from} and {@code to}.
      * Must be one of: "ordered_date_time", "processed_date_time", "completed_date_time",
      * "approved_date_time", "rejected_date_time"
-     * savedInSfms: string - Searches for requisitions based on if they are saved in sfms.
-     * Must be one of: "true", "false"
+     * syncStatus: string[] - One or more syncStatus to include in results.
      * itemId: string - Searches for requisitions containing this item id.
      */
     // TODO: remove 'All' params, if we want all for a param we should not send it and it will not filter by that param.
@@ -314,7 +313,6 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
     }
 
     private EnumSet<SyncStatus> getSyncStatusEnumSet(String[] syncStatus) {
-
         return syncStatus == null ? EnumSet.allOf(SyncStatus.class) : getSyncStatusEnumSetFromStringArray(syncStatus);
     }
 

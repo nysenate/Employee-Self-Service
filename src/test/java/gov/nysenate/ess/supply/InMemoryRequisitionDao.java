@@ -45,7 +45,7 @@ public class InMemoryRequisitionDao implements RequisitionDao {
             if (!query.getStatuses().contains(requisition.getStatus())) {
                 continue;
             }
-            if (!matchesSavedInSfms(query, requisition)) {
+            if (!syncStatusComplete(query, requisition)) {
                 continue;
             }
             if (!matchesDateRange(query, requisition)) {
@@ -69,7 +69,7 @@ public class InMemoryRequisitionDao implements RequisitionDao {
     }
 
 
-    private boolean matchesSavedInSfms(RequisitionQuery query, Requisition requisition) {
+    private boolean syncStatusComplete(RequisitionQuery query, Requisition requisition) {
         return requisition.getSfmsSyncStatus().equals(SyncStatus.COMPLETE);
     }
 

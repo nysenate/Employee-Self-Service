@@ -17,8 +17,9 @@ public final class RequisitionSyncAttempt {
     private SyncStatus outcomeSyncStatus;
     private List<Integer> syncedItemIds;
 
-    public RequisitionSyncAttempt(int requisitionId, int attemptCount, LocalDateTime datetime) {
+    public RequisitionSyncAttempt(int requisitionId, int revisionId, int attemptCount, LocalDateTime datetime) {
         this.requisitionId = requisitionId;
+        this.revisionId = revisionId;
         this.attemptCount = attemptCount;
         this.attemptDateTime = datetime;
         this.syncedItemIds = new ArrayList<>();
@@ -43,7 +44,7 @@ public final class RequisitionSyncAttempt {
     public void setRevisionId(int revisionId) {
         this.revisionId = revisionId;
     }
-    
+
     public int getRevisionId() {
         return revisionId;
     }

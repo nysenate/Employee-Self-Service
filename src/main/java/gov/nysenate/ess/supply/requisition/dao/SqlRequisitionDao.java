@@ -99,6 +99,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
         return results.size() == 1 ? Optional.of(results.get(0)) : Optional.empty();
     }
 
+    @Override
     public void saveRequisitionMetadata(Requisition requisition) {
         MapSqlParameterSource params = requisitionParams(requisition);
         String sql = SqlRequisitionQuery.UPDATE_REQUISITION.getSql(schemaMap());

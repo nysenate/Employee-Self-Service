@@ -6,11 +6,9 @@
   <div>
     <h3 class="content-info">
       <span ng-class="{'supply-pickup-icon': requisition.deliveryMethod === 'PICKUP'}"> </span>
-      <span ng-if="requisition.status === 'REJECTED' && requisition.syncStatus === 'REJECTED' ">Rejected</span>
-      <span
-          ng-if="requisition.status === 'APPROVED' && requisition.syncStatus !== 'ERROR' ">Sync Failed</span>
-      <span
-          ng-if="requisition.status === 'APPROVED' && requisition.syncStatus === 'COMPLETE' ">Approved</span>
+      <span ng-if="requisition.status === 'REJECTED'">Rejected</span>
+      <span ng-if="requisition.status === 'APPROVED' && requisition.syncStatus === 'ERROR' ">Sync Failed</span>
+      <span ng-if="requisition.status === 'APPROVED' && requisition.syncStatus !== 'ERROR' ">Approved</span>
       Requisition {{requisition.requisitionId}} Requested By {{requisition.customer.firstName}}
       {{requisition.customer.initial}} {{requisition.customer.lastName}}</h3>
   </div>

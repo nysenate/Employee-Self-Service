@@ -42,11 +42,12 @@ public class RequisitionSyncAttemptDao extends SqlBaseDao implements SyncAttempt
         String sql = SqlReqHistoryQuery.FIND_BY_REQUISITION_ID.getSql(schemaMap());
 
         List<RequisitionSyncAttempt> results = localNamedJdbc.query(sql, params, (ResultSet rs, int rowNum) -> {
-            RequisitionSyncAttempt syncAttempt = new RequisitionSyncAttempt(rs.getInt("requisition_id"), rs.getInt("attempt_count"), rs.getTimestamp("attempt_date_time").toLocalDateTime());
+            RequisitionSyncAttempt syncAttempt = new RequisitionSyncAttempt(
+                    rs.getInt("requisition_id"), rs.getInt("revision_id"),
+                    rs.getInt("attempt_count"), rs.getTimestamp("attempt_date_time").toLocalDateTime());
             syncAttempt.setWasSuccessful(rs.getBoolean("was_successful"));
             syncAttempt.setErrorMsg(rs.getString("error_msg"));
             syncAttempt.setOutcomeSyncStatus(SyncStatus.valueOf(rs.getString("outcome_sync_status")));
-            syncAttempt.setRevisionId(rs.getInt("revision_id"));
 
             Array sqlArray = rs.getArray("synced_item_ids");
             Integer[] array = (Integer[]) sqlArray.getArray();

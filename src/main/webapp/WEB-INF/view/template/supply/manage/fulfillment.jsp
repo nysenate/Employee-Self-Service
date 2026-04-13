@@ -187,8 +187,9 @@
         <td>{{distinctItemQuantity(requisition)}}</td>
         <td>{{requisition.approvedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
         <td>{{requisition.issuer.lastName}}</td>
-        <td><span class="tick" ng-show="requisition.syncStatus === 'COMPLETE'"></span>
-          <span class="cross" ng-show="requisition.syncStatus !== 'COMPLETE'"></span></td>
+        <td><span class="tick"
+                  ng-show="requisition.syncStatus === 'COMPLETE' || requisition.syncStatus === 'SKIPPED'"></span>
+          <span class="cross" ng-show="requisition.syncStatus === 'ERROR'"></span></td>
       </tr>
       </tbody>
     </table>

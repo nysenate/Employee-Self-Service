@@ -20,11 +20,6 @@ public class RequisitionSyncAttemptService {
     }
 
     public List<RequisitionSyncAttempt> getSyncAttemptsByReqId(int requisitionId) {
-//        Requisition requisition = requisitionService.getRequisitionById(requisitionId).orElse(null);
-//        System.out.println(requisitionService.getRequisitionById(requisitionId));
-//        if (requisition == null) {
-//            return Collections.emptyList();
-//        }
         return syncAttemptDao.findByRequisitionId(requisitionId);
     }
 }

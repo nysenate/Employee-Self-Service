@@ -58,10 +58,10 @@ public class SfmsSynchronizationService {
     }
 
     /**
-     * Inserts supply requisition line items into SFMS for all approved requisitions where savedInSfms = <code>false</code>.
-     * On success, savedInSfms gets set to <code>true</code>.
-     * Line items of 0 quantity and items not tracked in SFMS are filtered out so they do not get synced.
-     * If after filtering, a requisiton has no other line items, it will be marked as synced in supply but will not be synced with SFMS.
+     * Updates inventory counts in SFMS for each completed Requisition.
+     * <p>
+     * Line items of 0 quantity and items not tracked in SFMS are stripped out because
+     * they are not tracked in the SFMS inventory.
      * <p>
      * Checks all requisitions, so any errors in previous runs will be
      * automatically attempted again in the next run.
@@ -71,8 +71,6 @@ public class SfmsSynchronizationService {
      * - 'scheduler.supply.sfms_synchronization.enabled': boolean, determines if the synchronization process should run.
      * - 'scheduler.supply.sfms_synchronization.cron': Spring cron string specifying when the synchronization should run.
      * </p>
-     *
-     * <p>Also determines the state the Requistion should be on depending on its current state before trying to synchronize.</p>
      */
     @Scheduled(cron = "${scheduler.supply.sfms_synchronization.cron}")
     public void synchronizeRequisitions() {
@@ -95,6 +93,7 @@ public class SfmsSynchronizationService {
     public RequisitionSyncResult syncRequisition(Requisition requisition) {
         RequisitionSyncAttempt attempt = new RequisitionSyncAttempt(
                 requisition.getRequisitionId(),
+                requisition.getRevisionId(),
                 requisition.getSyncAttemptCount() + 1,
                 dateTimeFactory.now()
         );
@@ -163,7 +162,6 @@ public class SfmsSynchronizationService {
     private Requisition applyAttemptMetadata(Requisition req, RequisitionSyncAttempt attempt) {
         req = req.setSyncAttemptCount(attempt.getAttemptCount());
         req = req.setLastSfmsSyncDateTimeDateTime(attempt.getAttemptDateTime());
-        attempt.setRevisionId(req.getRevisionId());
         return req;
     }
 
