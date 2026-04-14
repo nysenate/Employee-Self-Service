@@ -1,10 +1,8 @@
 package gov.nysenate.ess.travel.provider.gsa;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nysenate.ess.core.util.HttpUtils;
-import gov.nysenate.ess.travel.provider.gsa.model.GsaInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +12,6 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.Month;
-import java.util.List;
 import java.util.Map;
 
 @Service
@@ -26,7 +23,7 @@ public class GsaBatchResponseService {
     private final GsaBatchResponseDao gsaBatchResponseDao;
 
     @Value("${travel.gsa.api.url_path}") private String apiUrl;
-    @Value("${travel.gsa.api.url_base}") private String hostUrl;
+    @Value("${travel.gsa.api.url_base}")private String hostUrl;
     private String limit = "&limit=";
 
 
@@ -42,10 +39,6 @@ public class GsaBatchResponseService {
 //    @Scheduled(cron = "${gsa.cron.data:0 0 0 1 * *}")
     public void scheduledCycleThroughGsaInfo() throws IOException {
         cycleThroughGsaInfo();
-    }
-
-    public void saveGsaData(List<GsaInfo> archivedGsaData) throws JsonProcessingException {
-        gsaBatchResponseDao.insertGsaArchiveData(archivedGsaData);
     }
 
     public boolean cycleThroughGsaInfo() throws IOException {
@@ -64,7 +57,7 @@ public class GsaBatchResponseService {
             while (offset < total) {
                 logger.info("Processing batch at offset: " + offset + " out of total: " + total);
                 urlString = hostUrl + nextBatchUrl;
-                String result = HttpUtils.urlToString(urlString);
+                String result = HttpUtils.urlToString(urlString );
                 nextBatchUrl = parseBatchGsaResponse(result);
                 offset = offset + batchNumber;
             }
