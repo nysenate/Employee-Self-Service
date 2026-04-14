@@ -7,7 +7,6 @@ import java.util.Map;
 public class GsaInfo {
     private String city;
     private String county;
-    private String sourceFile;
     private Map<Month, BigDecimal> lodgingRates;
     private int fiscalYear;
     private int zipCode;
@@ -15,14 +14,6 @@ public class GsaInfo {
 
     public GsaInfo() {
 
-    }
-
-    public String getSourceFile() {
-        return sourceFile;
-    }
-
-    public void setSourceFile(String sourceFile) {
-        this.sourceFile = sourceFile;
     }
 
     public Map<Month, BigDecimal> getLodgingRates() {

@@ -52,11 +52,10 @@ public class SqlGsaBatchResponseDao extends SqlBaseDao implements GsaBatchRespon
                 MapSqlParameterSource params = new MapSqlParameterSource()
                         .addValue("fiscalYear", gsaInfo.getFiscalYear())
                         .addValue("zipcode", gsaInfo.getZipCode())
-                        .addValue("city", gsaInfo.getCity())
-                        .addValue("county", gsaInfo.getCounty())
+                        .addValue("city", gsaInfo.getCity() != null ? gsaInfo.getCity() : "")
+                        .addValue("county", gsaInfo.getCounty() != null ? gsaInfo.getCounty() : "")
                         .addValue("mealTier", gsaInfo.getMeals())
-                        .addValue("lodgingRates", objectMapper.writeValueAsString(new HashMap<>()))
-                        .addValue("sourceFile", gsaInfo.getSourceFile());
+                        .addValue("lodgingRates", objectMapper.writeValueAsString(new HashMap<>()));
 
                 //List<GsaResponse> gsaResponseList = localNamedJdbc.query(SqlGsaBatchResponseQuery.GET_GSA_DATA.getSql(), params, new GsaInfoRowMapper());
 
@@ -106,9 +105,9 @@ public class SqlGsaBatchResponseDao extends SqlBaseDao implements GsaBatchRespon
         INSERT_GSA_DATA("insert into travel.gsa_data (fiscalYear, zipcode, mealTier, lodgingRates, city, county)\n" +
                 "    values (:fiscalYear, :zipcode, :mealTier, :lodgingRates, :city, :county);"),
 
-        INSERT_GSA_ARCHIVE_DATA("INSERT INTO travel.gsa_archive (fiscalYear, zipcode, mealtier, lodgingRates, city, county, source_file)\n" +
-                " VALUES (:fiscalYear, :zipcode, :mealTier, :lodgingRates, :city, :county, :sourceFile)" +
-                " ON CONFLICT (city, county, fiscalYear, zipcode, source_file) DO NOTHING;"),
+        INSERT_GSA_ARCHIVE_DATA("INSERT INTO travel.gsa_archive (fiscalYear, zipcode, mealtier, lodgingRates, city, county)\n" +
+                " VALUES (:fiscalYear, :zipcode, :mealTier, :lodgingRates, :city, :county)" +
+                " ON CONFLICT (city, county, fiscalYear, zipcode) DO NOTHING;"),
 
         UPDATE_GSA_DATA("update travel.gsa_data\n" +
                 "    set mealTier = :mealTier, lodgingRates = :lodgingRates\n" +

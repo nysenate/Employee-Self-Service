@@ -59,18 +59,12 @@ public class GsaCtrl extends BaseRestApiCtrl {
                     if (parts[1].equals("District of Columbia")) {
                         gsaZipCode.setCity(parts[1]);
                         gsaZipCode.setCounty(parts[2]);
-                        gsaZipCode.setZipCode(Integer.parseInt(parts[9]));
-                        gsaZipCode.setFiscalYear(Integer.parseInt(parts[10]));
                         gsaZipCode.setMeals(Integer.parseInt(parts[parts.length - 1]));
                     } else if (parts[2].isEmpty() && !parts[1].contains("Standard Rate") && parts[4].isEmpty()) {
                         gsaZipCode.setCity(parts[1]);
                         gsaZipCode.setCounty(null);
-                        gsaZipCode.setFiscalYear(Integer.parseInt(parts[5]));
-                        gsaZipCode.setZipCode(Integer.parseInt(parts[6]));
                         gsaZipCode.setMeals(Integer.parseInt(parts[parts.length - 1]));
                     } else if (Integer.parseInt(parts[0]) == 0) {
-                        gsaZipCode.setZipCode(Integer.parseInt(parts[5]));
-                        gsaZipCode.setFiscalYear(Integer.parseInt(parts[6]));
                         gsaZipCode.setMeals(Integer.parseInt(parts[parts.length - 1]));
                         gsaZipCode.setCounty(null);
                         gsaZipCode.setCity(null);
@@ -78,15 +72,14 @@ public class GsaCtrl extends BaseRestApiCtrl {
                         gsaZipCode.setCity(parts[1]);
                         gsaZipCode.setCounty(parts[2] + "," + parts[3]);
                         gsaZipCode.setMeals(Integer.parseInt(parts[parts.length - 1]));
-                        if (parts.length == 21) {
-                            gsaZipCode.setZipCode(Integer.parseInt(parts[6]));
-                            gsaZipCode.setFiscalYear(Integer.parseInt(parts[7]));
-                        } else if (parts.length == 22) {
-                            gsaZipCode.setZipCode(Integer.parseInt(parts[7]));
-                            gsaZipCode.setFiscalYear(Integer.parseInt(parts[8]));
+                    }
+                    for (int i = parts.length - 1; i >= 0; i--) {
+                        if (parts[i].length() == 4) {
+                            gsaZipCode.setFiscalYear(Integer.parseInt(parts[i]));
+                            gsaZipCode.setZipCode(Integer.parseInt(parts[i - 1]));
+                            break;
                         }
                     }
-                    gsaZipCode.setSourceFile(file.getName());
                     gsaZipCode.setLodgingRates(new HashMap<>());
                     allZipCodes.add(gsaZipCode);
                 }
