@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -22,7 +23,7 @@ public class SupplyItemDaoIT extends BaseTest {
     @Autowired
     private SupplyItemDao itemDao;
 
-    private void assertItemRestrictionsInitialized(List<SupplyItem> items) {
+    private void assertItemRestrictionsInitialized(Collection<SupplyItem> items) {
         for (SupplyItem item : items) {
             if (item.getId() == 1542) {
                 assertTrue(item.isRestricted());
@@ -32,14 +33,14 @@ public class SupplyItemDaoIT extends BaseTest {
 
     @Test
     public void canGetItems() {
-        List<SupplyItem> items = itemDao.getSupplyItems();
+        Set<SupplyItem> items = itemDao.getSupplyItems();
         assertTrue(items.size() > 0);
         assertItemRestrictionsInitialized(items);
     }
 
     @Test
     public void canGetItemsById() {
-        List<SupplyItem> items = itemDao.getItemsByIds(Sets.newHashSet(1542, 111));
+        Set<SupplyItem> items = itemDao.getItemsByIds(Sets.newHashSet(1542, 111));
         assertTrue(items.size() > 0);
         assertItemRestrictionsInitialized(items);
     }

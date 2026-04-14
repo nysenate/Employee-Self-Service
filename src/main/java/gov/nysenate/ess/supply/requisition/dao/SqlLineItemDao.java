@@ -127,7 +127,7 @@ public class SqlLineItemDao extends SqlBaseDao {
         }
 
         Set<LineItem> getResults() {
-            List<SupplyItem> items = itemDao.getItemsByIds(itemIdToCounts.keySet());
+            Set<SupplyItem> items = itemDao.getItemsByIds(itemIdToCounts.keySet());
             TreeSet<LineItem> lineItems = new TreeSet<>(alphabeticalItemDesc);
             for (SupplyItem item : items) {
                 lineItems.add(new LineItem(item, itemIdToCounts.get(item.getId())));

@@ -160,7 +160,12 @@
         </h3>
         <div class="confirmation-message">
           <p>
-            Warning: You are attempting to assign a task to an employee
+            <b>
+            Tasks that rely on external services (Everfi & KnowBe4) must be assigned on their platforms. ESS CANNOT assign tasks on their platforms!
+            </b>
+          </p>
+          <p>
+            <b>Warning: You are attempting to assign a task to an employee</b>
             <br>
             {{getOverrideTaskEmpName()}}
             <br> for task <br>

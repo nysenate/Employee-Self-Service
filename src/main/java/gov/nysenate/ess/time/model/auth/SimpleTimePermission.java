@@ -31,6 +31,9 @@ public enum SimpleTimePermission {
     /** Granted to select personnel employees, allowing them to view complete employee data */
     PERSONNEL_PAGES("time:personnel-pages"),
 
+    /** Granted to annual employees allowing them to create and view requests for time off*/
+    TIME_OFF_REQUEST_PAGES("time:time-off-request-page"),
+
     /* --- Admin Permissions --- */
 
     /** Allows full use of the time record manager to create / modify records */

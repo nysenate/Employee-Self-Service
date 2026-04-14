@@ -24,11 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 
-import java.util.TreeSet;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -59,7 +55,7 @@ public class SupplyItemRestApiCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping(value = "", params = "!locId")
     public BaseResponse getAllSupplyItems() {
-        List<SupplyItem> items = supplyItemService.getAllItems();
+        Set<SupplyItem> items = supplyItemService.getAllItems();
         var itemViews = items.stream().map(SupplyItemView::new).collect(Collectors.toList());
         return ListViewResponse.of(itemViews);
     }
@@ -82,7 +78,7 @@ public class SupplyItemRestApiCtrl extends BaseRestApiCtrl {
         Set<String> categoriesList = Set.of(categories);
         LimitOffset limitOffset = getLimitOffset(webRequest, 16);
 
-        List<SupplyItem> items;
+        Set<SupplyItem> items;
         if (getSubject().isPermitted(SupplyPermission.SUPPLY_EMPLOYEE.getPermission())) {
             // Supply employees can order any item regardless of location.
             items = supplyItemService.getAllItems();
@@ -113,7 +109,7 @@ public class SupplyItemRestApiCtrl extends BaseRestApiCtrl {
             throw new InvalidRequestParamEx(locId, "locId", "String",
                     "locId must represent a valid location with the format: locCode-locType. e.g. A42FB-W");
         }
-        List<SupplyItem> items;
+        Set<SupplyItem> items;
         if (getSubject().isPermitted(SupplyPermission.SUPPLY_EMPLOYEE.getPermission())) {
             // Supply employees can order any item regardless of location.
             items = supplyItemService.getAllItems();
@@ -143,7 +139,7 @@ public class SupplyItemRestApiCtrl extends BaseRestApiCtrl {
             throw new InvalidRequestParamEx(locId, "locId", "String", "locId must represent a valid location with the format: locCode-locType. e.g. A42FB-W");
         }
 
-        List<SupplyItem> items = supplyItemDao.getSupplyItems();
+        Set<SupplyItem> items = supplyItemDao.getSupplyItems();
         if (getSubject().isPermitted(SupplyPermission.SUPPLY_EMPLOYEE.getPermission())) {
             // Supply staff are allowed to order all items at any location.
             return sortedItemViews(items);
@@ -152,7 +148,7 @@ public class SupplyItemRestApiCtrl extends BaseRestApiCtrl {
         }
     }
 
-    private ListViewResponse<SupplyItemView> sortedItemViews(List<SupplyItem> items) {
+    private ListViewResponse<SupplyItemView> sortedItemViews(Collection<SupplyItem> items) {
         return ListViewResponse.of(items.stream()
                 .map(SupplyItemView::new)
                 .sorted()

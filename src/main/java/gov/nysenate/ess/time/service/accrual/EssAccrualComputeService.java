@@ -112,7 +112,7 @@ public class EssAccrualComputeService implements AccrualComputeService {
         // If the pay period is the first of its year or is the first pay period,
         // we can get the accrual usage record for the pay period
         // but set all usage to 0 to ignore time entered during that period
-        if (lastAccruals == null || payPeriod.isStartOfYearSplit()) {
+        if (lastAccruals == null || payPeriod.isStartOfYear()) {
             referenceSummary = new AccrualSummary(currentAccruals);
 
             // Remove accrued hours as they are not available until next period
@@ -282,7 +282,7 @@ public class EssAccrualComputeService implements AccrualComputeService {
              *  Accrual Summary instead of passing in its year so that it would
              *  be easier to obtain other information from it if needed.
              */
-            computeGapPeriodAccruals(period, accrualState, empTrans,  lastAnnualAccSummary,
+            computeGapPeriodAccruals(period, accrualState, empTrans, lastAnnualAccSummary,
                     timeRecords, periodUsages, accrualAllowedDates, expectedHourDates, countRemainingPeriod);
 
             if (countRemainingPeriod) {
@@ -472,9 +472,8 @@ public class EssAccrualComputeService implements AccrualComputeService {
         BigDecimal minTotalHours = BigDecimal.ZERO;
         if (!transHistory.getEffectiveMinHours(initialRange).isEmpty()) {
             minTotalHours = transHistory.getEffectiveMinHours(initialRange).firstEntry().getValue();
-        }
-        else if (!transHistory.getEffectiveMinHours( transHistory.getActiveDates().span() ).isEmpty()){
-            minTotalHours = transHistory.getEffectiveMinHours( transHistory.getActiveDates().span() ).lastEntry().getValue(); //NUMINTOTHRS apt rtp
+        } else if (!transHistory.getEffectiveMinHours(transHistory.getActiveDates().span()).isEmpty()) {
+            minTotalHours = transHistory.getEffectiveMinHours(transHistory.getActiveDates().span()).lastEntry().getValue(); //NUMINTOTHRS apt rtp
         }
 
         accrualState.setNumintotend(accrualDao.getBasisForSAPersonalTime(transHistory.getEmployeeId()));
@@ -530,7 +529,7 @@ public class EssAccrualComputeService implements AccrualComputeService {
         accrualState.setExpectedDates(expectedPeriodDates);
 
         // If pay period is start of new year perform necessary adjustments to the accruals.
-        if (gapPeriod.isStartOfYearSplit()) {
+        if (gapPeriod.isStartOfYear()) {
 
             // Setting to the whole year. It's easier to simply set. If employee terms within year that may change
             accrualState.setBeginDate(gapPeriod.getStartDate().with(firstDayOfYear()));
@@ -548,8 +547,7 @@ public class EssAccrualComputeService implements AccrualComputeService {
              */
             if (lastAnnualAccSummary.getYear() < gapPeriod.getYear()) {
                 accrualState.setPriorYearDonations(donationService.getHoursDonated(transHistory.getEmployeeId(), gapPeriod.getYear() - 1));
-            }
-            else {
+            } else {
                 /** Pass a zero value for prior year donations if current
                  * Annual Master Record exists so it's effectively not used
                  * */
@@ -590,7 +588,8 @@ public class EssAccrualComputeService implements AccrualComputeService {
             accrualState.incrementAccrualsEarned();
         }
         // Adjust the year to date hours expected
-        accrualState.incrementYtdHoursExpected();
+        ExpectedHours expectedHours = expHoursService.getExpectedHours(transHistory.getEmployeeId(), gapPeriodRange);
+        accrualState.setYtdHoursExpected(expectedHours.getYtdHoursExpected().add(expectedHours.getPeriodHoursExpected()));
     }
 
     /**

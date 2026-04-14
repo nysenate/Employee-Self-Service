@@ -6,6 +6,7 @@ import gov.nysenate.ess.core.dao.pec.task.PersonnelTaskDao;
 import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
+import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.personnel.EmployeeNotFoundEx;
 import gov.nysenate.ess.core.service.pec.external.everfi.assignment.EverfiAssignmentAndProgress;
 import gov.nysenate.ess.core.service.pec.external.everfi.assignment.EverfiAssignmentProgress;
@@ -30,7 +31,7 @@ import static gov.nysenate.ess.core.model.pec.PersonnelTaskType.EVERFI_COURSE;
 
 @Service
 public class EverfiRecordService implements ESSEverfiRecordService {
-    
+
     private EverfiApiClient everfiApiClient;
     private EmployeeDao employeeDao;
     private PersonnelTaskAssignmentDao personnelTaskAssignmentDao;
@@ -107,6 +108,7 @@ public class EverfiRecordService implements ESSEverfiRecordService {
     private int getEmployeeId(EverfiAssignmentUser everfiAssignmentUser) throws EmployeeNotFoundEx {
         int empid = 99999;
 
+
         if (everfiAssignmentUser.employeeId != null && !everfiAssignmentUser.employeeId.isEmpty()) {
             try {
                 empid = employeeDao.getEmployeeById(Integer.parseInt(everfiAssignmentUser.employeeId)).getEmployeeId();
@@ -129,6 +131,7 @@ public class EverfiRecordService implements ESSEverfiRecordService {
     /**
      * Goes through assignment records and inserts personnel tasks into the database for the proper employees
      * on the certain tasks that we care about from everfi
+     *
      * @param assignmentAndProgresses
      */
     private void handleRecords(List<EverfiAssignmentAndProgress> assignmentAndProgresses) {
@@ -136,113 +139,123 @@ public class EverfiRecordService implements ESSEverfiRecordService {
         List<PersonnelTask> everfiPersonnelTasks = getEverfiPersonnelTasks();
 
         for (EverfiAssignmentAndProgress assignmentAndProgress : assignmentAndProgresses) {
-
             EverfiAssignmentUser user = assignmentAndProgress.getUser();
 
-            if (!user.active) {
+            if (!user.active || !employeeExistsAndActive(user.getEmployeeId())) {
+                // Everfi user is inactive or cannot find a valid corresponding user in SFMS -> skip.
                 continue;
             }
 
-            if ( !everfiUserService.isEverfiIdIgnored( user.getUuid() ) ) {
+            try {
+                int empID = user.getEmployeeId();
+                //assignment id from the json object
+                int assignmentID = assignmentAndProgress.getAssignment().getId();
+                //this is personnel taskid that should correspond with the everfi assignment id
+                Integer everfiTaskID = getEverfiTaskID(assignmentID);
+                //There is a max of 1 progress object in the progress array at any point
 
-                try {
-                    int empID = getEmployeeId(user);
-                    if (empID < 77000 && empID != 0) {
-                        //assignment id from the json object
-                        int assignmentID = assignmentAndProgress.getAssignment().getId();
-                        //this is personnel taskid that should correspond with the everfi assignment id
-                        Integer everfiTaskID = getEverfiTaskID(assignmentID);
-                        //There is a max of 1 progress object in the progress array at any point
+                //If the task is not in the assignment map then we don't care. This avoids a lot of error logging
+                if (everfiTaskID == null) {
+                    continue;
+                }
+                if (assignmentAndProgress.getProgress().isEmpty()) {
+                    continue;
+                }
 
-                        if (!assignmentAndProgress.getProgress().isEmpty()) {
-                            EverfiAssignmentProgress progress = assignmentAndProgress.getProgress().get(0);
-                            String everfiApiContentID = progress.getContentId();
-                            String databaseRetrievedContentID = everfiContentIDMap.get(everfiTaskID);
+                EverfiAssignmentProgress progress = assignmentAndProgress.getProgress().get(0);
+                String everfiApiContentID = progress.getContentId();
+                String databaseRetrievedContentID = everfiContentIDMap.get(everfiTaskID);
 
-                            //Each progress has a content id which should suggest a certain task.
-                            // We check here that the progress and the assignment both correspond to the same task
-                            if (everfiTaskID != null && everfiApiContentID != null && databaseRetrievedContentID != null
-                            && everfiApiContentID.equalsIgnoreCase(databaseRetrievedContentID)) {
+                //Each progress has a content id which should suggest a certain task.
+                // We check here that the progress and the assignment both correspond to the same task
+                if (everfiApiContentID != null && databaseRetrievedContentID != null
+                        && everfiApiContentID.equalsIgnoreCase(databaseRetrievedContentID)) {
 
-                                LocalDateTime completedAt = null; //not completed by default
-                                boolean active = true; //true by default
+                    LocalDateTime completedAt = null; //not completed by default
+                    boolean active = true; //true by default
 
-                                try {
-                                    completedAt = progress.getCompletedAt().toLocalDateTime();
+                    try {
+                        completedAt = progress.getCompletedAt().toLocalDateTime();
 
-                                    //for loop to get task active status
-                                    for (PersonnelTask everfiPersonnelTask : everfiPersonnelTasks) {
-                                        if (everfiPersonnelTask.getTaskId() == everfiTaskID) {
-                                            active = everfiPersonnelTask.isActive();
-                                            if (assignmentAndProgress.getAssignmentStatus().contains("unassigned")) {
-                                                active = false;
-                                            }
-                                        }
-                                    }
-                                } catch (NullPointerException e) {
-                                    //Do nothing completedAt is already null
-                                }
-                                boolean completed = progress.getContentStatus().equals("completed");
-
-                                //check to see if assignment exists and then if modified at all
-                                //prevent completed=true & any records where emp_id != update_user_id0
-                                try {
-                                    PersonnelTaskAssignment currentTaskAssignment =
-                                            personnelTaskAssignmentDao.getTaskForEmp(empID,everfiTaskID);
-
-                                    if ( currentTaskAssignment.isCompleted() ) {
-                                        continue;
-                                    }
-                                    else if ( currentTaskAssignment.getUpdateEmpId() != null &&
-                                            currentTaskAssignment.getEmpId() != currentTaskAssignment.getUpdateEmpId() ) {
-                                        continue;
-                                    }
-                                    else if (currentTaskAssignment.wasManuallyOverridden()) {
-                                        continue;
-                                    }
-                                }
-                                catch (PersonnelTaskAssignmentNotFoundEx ex) {
-                                    //This means they dont have a task to insert so we dont need to do anything
-                                }
-
-                                PersonnelTaskAssignment taskToInsert = new PersonnelTaskAssignment(
-                                        everfiTaskID,
-                                        empID,
-                                        empID,
-                                        completedAt,
-                                        completed,
-                                        active,
-                                        LocalDateTime.now(),
-                                        null
-                                );
-                                personnelTaskAssignmentDao.updateAssignment(taskToInsert);
-
-                                if (everfi_2020_harassment_task_id == everfiTaskID) {
-                                    PersonnelTaskAssignment ackDocCompletionTask = new PersonnelTaskAssignment(
-                                            ack_2020_harassment_task_id,
-                                            empID,
-                                            empID,
-                                            completedAt,
-                                            true,
-                                            active,
-                                            LocalDateTime.now(),
-                                            null
-                                    );
-                                    personnelTaskAssignmentDao.updateAssignment(ackDocCompletionTask);
+                        //for loop to get task active status
+                        for (PersonnelTask everfiPersonnelTask : everfiPersonnelTasks) {
+                            if (everfiPersonnelTask.getTaskId() == everfiTaskID) {
+                                active = everfiPersonnelTask.isActive();
+                                if (assignmentAndProgress.getAssignmentStatus().contains("unassigned")) {
+                                    active = false;
                                 }
                             }
                         }
+                    } catch (NullPointerException e) {
+                        //Do nothing completedAt is already null
                     }
-                } catch (Exception e) {
-                    logger.error("Could not pull in Everfi Record for an employee "  + user.toString());
-                }
+                    boolean completed = progress.getContentStatus().equals("completed");
 
+                    //check to see if assignment exists and then if modified at all
+                    //prevent completed=true & any records where emp_id != update_user_id0
+                    try {
+                        PersonnelTaskAssignment currentTaskAssignment =
+                                personnelTaskAssignmentDao.getTaskForEmp(empID, everfiTaskID);
+
+                        if (currentTaskAssignment.isCompleted()) {
+                            continue;
+                        } else if (currentTaskAssignment.getUpdateEmpId() != null &&
+                                currentTaskAssignment.getEmpId() != currentTaskAssignment.getUpdateEmpId()) {
+                            continue;
+                        } else if (currentTaskAssignment.wasManuallyOverridden()) {
+                            continue;
+                        }
+                    } catch (PersonnelTaskAssignmentNotFoundEx ex) {
+                        //This means they dont have a task to insert so we dont need to do anything
+                    }
+
+                    PersonnelTaskAssignment taskToInsert = new PersonnelTaskAssignment(
+                            everfiTaskID,
+                            empID,
+                            empID,
+                            completedAt,
+                            completed,
+                            active,
+                            LocalDateTime.now(),
+                            null
+                    );
+                    personnelTaskAssignmentDao.updateAssignment(taskToInsert);
+
+                    if (everfi_2020_harassment_task_id == everfiTaskID) {
+                        PersonnelTaskAssignment ackDocCompletionTask = new PersonnelTaskAssignment(
+                                ack_2020_harassment_task_id,
+                                empID,
+                                empID,
+                                completedAt,
+                                true,
+                                active,
+                                LocalDateTime.now(),
+                                null
+                        );
+                        personnelTaskAssignmentDao.updateAssignment(ackDocCompletionTask);
+                    }
+                }
+            } catch (Exception e) {
+                logger.error("Could not pull in Everfi Record for an employee " + user.toString());
             }
+
+        }
+    }
+
+    // Returns true if an employee exists in SFMS with this employee id and is active. false otherwise.
+    private boolean employeeExistsAndActive(int empId) {
+        try {
+            Employee emp = employeeDao.getEmployeeById(empId);
+            return emp.isActive();
+        } catch (EmployeeNotFoundEx ex) {
+            logger.info("EmployeeId {} has an active record in Everfi but is not found or inactive in SFMS.", empId);
+            return false;
         }
     }
 
     /**
      * Gets the id of the personnel task that corresponds with the right assignment ID
+     *
      * @param assignmentID
      * @return
      */
@@ -252,6 +265,7 @@ public class EverfiRecordService implements ESSEverfiRecordService {
 
     /**
      * Gets all personnel tasks with the everfi course enum
+     *
      * @return
      */
     private List<PersonnelTask> getEverfiPersonnelTasks() {

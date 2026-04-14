@@ -11,11 +11,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.TreeMap;
 
+@Service
 class CachedAnnualAccrualService extends EmployeeEhCache<CachedAnnualAccrualService.AnnualAccCacheTree> {
     private static final Logger logger = LoggerFactory.getLogger(CachedAnnualAccrualService.class);
     private final AccrualDao accrualDao;
@@ -66,7 +68,6 @@ class CachedAnnualAccrualService extends EmployeeEhCache<CachedAnnualAccrualServ
 
     @Scheduled(fixedDelayString = "${cache.poll.delay.accruals:60000}")
     private void updateAnnualAccCache() {
-        logger.info("Checking for annual accrual record updates since {}", lastUpdateDateTime);
         List<AnnualAccSummary> updatedAnnualAccs = accrualDao.getAnnualAccsUpdatedSince(lastUpdateDateTime);
         for (var summary : updatedAnnualAccs) {
             var tree = cache.get(summary.getEmpId());
@@ -76,6 +77,8 @@ class CachedAnnualAccrualService extends EmployeeEhCache<CachedAnnualAccrualServ
         }
         lastUpdateDateTime = updatedAnnualAccs.stream().map(AnnualAccSummary::getUpdateDate)
                 .max(LocalDateTime::compareTo).orElse(lastUpdateDateTime);
-        logger.info("Refreshed cache with {} updated annual accrual records", updatedAnnualAccs.size());
+        if (!updatedAnnualAccs.isEmpty()) {
+            logger.info("Refreshed cache with {} updated annual accrual records", updatedAnnualAccs.size());
+        }
     }
 }

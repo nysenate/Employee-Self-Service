@@ -25,6 +25,7 @@ public enum ErrorCode {
     TIME_RECORD_NOT_FOUND(103, "The requested time record was not found"),
     CANNOT_CREATE_NEW_RECORD(104, "Time record creation is not allowed for given pay period"),
     ERROR_SUBMITTING_TIME_DONATION(105, "An error occurred, the submission was not made."),
+    TIME_OFF_REQUEST_NOT_FOUND(106, "The requested time off request was not found"),
 
     /** Supply Errors */
     REQUISITION_UPDATE_CONFLICT(201, "The provided requisition was out of date."),

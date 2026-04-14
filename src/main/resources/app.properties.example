@@ -17,9 +17,6 @@ data.travel.attachments.dir = travel_request_attachments/
 # Subdirectory where log files are stored (needs "tomcat" ownership)
 data.log_subdir = log/
 
-# Subdirectory where intern rejuection CSV files are stored (needs "tomcat" ownership)
-data.intern_subdir = intern/
-
 # --- Domain Configuration ----------------------------------------------------
 
 # The domain URL and context path that ESS is hosted on (used for generating
@@ -63,6 +60,12 @@ restrict.department.whitelist =
 
 # Allow these ip addresses to access the API without logging in.
 auth.api.ip.whitelist = ^$
+
+# BACHelp Integration Authentication
+# Set to true to enable API key authentication for BACHelp integration endpoints
+auth.bachelp.enabled = false
+# API key for BACHelp system integration (minimum 32 characters recommended)
+auth.bachelp.api.key =
 
 # --- Database Configuration --------------------------------------------------
 
@@ -149,7 +152,8 @@ cache.cron.holiday = 0 0 0 * * *
 cache.cron.period = 0 0 0 * * *
 cache.cron.location = 0 0 0 * * *
 cache.cron.task = 0 0 0 * * *
-cache.cron.empid = 0 0 * * * *
+cache.cron.empId = 0 0 * * * *
+cache.cron.employee = 0 0 0 * * *
 
 # Travel Mileage Rate refresh
 refresh.mileage.rate.cron = 0 0 0 * * *
@@ -299,14 +303,14 @@ legethics.url =
 legethics.api.path =
 legethics.key =
 
-pec.import.harassment_2019_video_task_id =
-pec.import.ethics_2018_video_task_id =
-pec.import.ethics_2020_video_task_id =
-pec.everfi.2020_harassment_task_id =
-pec.everfi.2021_harassment_task_id =
-pec.everfi.2022_new_user_task_id =
-pec.2020_sexual_harassment_ack_task_id =
-pec.import.ethics_2021_video_task_id =
+pec.import.harassment_2019_video_task_id = 0
+pec.import.ethics_2018_video_task_id = 0
+pec.import.ethics_2020_video_task_id = 0
+pec.everfi.2020_harassment_task_id = 0
+pec.everfi.2021_harassment_task_id = 0
+pec.everfi.2022_new_user_task_id = 0
+pec.2020_sexual_harassment_ack_task_id = 0
+pec.import.ethics_2021_video_task_id = 0
 
 
 # --- PEC Everfi Config --------------------------------------------------
@@ -365,18 +369,19 @@ scheduler.everfi.user.update.cron = 0 0 23 * * *
 #Schedules when the Department category label is updated. Should be done before users are updated
 scheduler.everfi.category.update.cron = 0 0 22 * * *
 
+#Default of every hour on the top of the hour to pull KnowBe4 records
+scheduler.knowbe4.task.sync.cron = 0 0 * * * *
+
 #The schedule for personnel task assigment. (Default every day at 1AM)
 scheduler.personnel_task.assignment.cron = 0 0 3 * * *
 
 
 # --- Report Email Configuration -----------------------------------------------------
 #Supports comma-separated emails
-everfi.report.email =
+pec.admin.report.emails =
 
 #Supports comma-separated emails
 pec.code.admin.emails =
-
-internship.email =
 
 # --- Front End Configuration -----------------------------------------------------------
 

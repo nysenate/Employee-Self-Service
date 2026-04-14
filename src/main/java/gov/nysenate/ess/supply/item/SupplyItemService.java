@@ -28,7 +28,7 @@ public class SupplyItemService {
      *
      * @return
      */
-    public List<SupplyItem> getAllItems() {
+    public Set<SupplyItem> getAllItems() {
         return supplyItemDao.getSupplyItems();
     }
 
@@ -38,8 +38,8 @@ public class SupplyItemService {
      * @param locId
      * @return
      */
-    public List<SupplyItem> getItems(LocationId locId) {
-        List<SupplyItem> items = getAllItems();
+    public Set<SupplyItem> getItems(LocationId locId) {
+        Set<SupplyItem> items = getAllItems();
         return OrderableItems.forItemsAndLoc(items, locId);
     }
 
@@ -54,14 +54,14 @@ public class SupplyItemService {
      * @return
      */
     public PaginatedList<SupplyItem> filterItems(
-            List<SupplyItem> items,
+            Set<SupplyItem> items,
             Set<String> categoryNames,
             String term,
             String sort,
             LimitOffset limitOffset) {
         items = ItemFilters.byCategories(items, categoryNames);
         items = ItemFilters.byTerm(items, term);
-        items = ItemFilters.bySort(items, sort);
-        return ItemFilters.byLimitOffset(items, limitOffset);
+        List<SupplyItem> sortedItems = ItemFilters.bySort(items, sort);
+        return ItemFilters.byLimitOffset(sortedItems, limitOffset);
     }
 }

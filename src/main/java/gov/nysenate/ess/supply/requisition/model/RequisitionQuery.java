@@ -27,8 +27,8 @@ public class RequisitionQuery {
     private String itemId;
     private LimitOffset limitOffset;
     private OrderBy orderBy;
-    private Boolean savedInSfms;
     private Boolean reconciled;
+    private EnumSet<SyncStatus> syncStatus;
 
     public RequisitionQuery() {
         // Set default values
@@ -38,12 +38,12 @@ public class RequisitionQuery {
         this.fromDateTime = LocalDateTime.now().minusMonths(1);
         this.toDateTime = LocalDateTime.now();
         this.dateField = "ordered_date_time";
-        this.savedInSfms = null;
         this.issuerId = WILDCARD;
-        this.itemId = null;
+        this.itemId = WILDCARD;
         this.limitOffset = LimitOffset.TEN;
         this.orderBy = new OrderBy(this.dateField, SortOrder.DESC);
         this.reconciled = null;
+        this.syncStatus = EnumSet.allOf(SyncStatus.class);
     }
 
     /**
@@ -105,10 +105,6 @@ public class RequisitionQuery {
         return this;
     }
 
-    public RequisitionQuery setSavedInSfms(Boolean savedInSfms) {
-        this.savedInSfms = savedInSfms;
-        return this;
-    }
 
     public RequisitionQuery setIssuerId(String issuerId) {
         this.issuerId = issuerId;
@@ -132,6 +128,11 @@ public class RequisitionQuery {
 
     public RequisitionQuery setReconciled(@Nullable Boolean reconciled) {
         this.reconciled = reconciled;
+        return this;
+    }
+
+    public RequisitionQuery setSyncStatus(EnumSet<SyncStatus> syncStatus) {
+        this.syncStatus = syncStatus;
         return this;
     }
 
@@ -159,16 +160,12 @@ public class RequisitionQuery {
         return dateField;
     }
 
-    public Boolean getSavedInSfms() {
-        return savedInSfms;
-    }
-
     public String getIssuerId() {
         return useWildcard(issuerId);
     }
 
     public String getItemId() {
-        return itemId;
+        return useWildcard(itemId);
     }
 
     public LimitOffset getLimitOffset() {
@@ -181,5 +178,9 @@ public class RequisitionQuery {
 
     public Boolean getReconciled() {
         return reconciled;
+    }
+
+    public EnumSet<SyncStatus> getSyncStatuses() {
+        return syncStatus;
     }
 }

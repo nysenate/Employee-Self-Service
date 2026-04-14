@@ -55,6 +55,30 @@
                 src="${ctxPath}/assets/js/src/time/accrual/donation-modal.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/time/accrual/donation-continue-modal.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/time/accrual/time-off-request-list-directive.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/time/accrual/time-off-request.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/time/accrual/time-off-request-list-service.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/time/accrual/time-off-request-filters.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/time/accrual/time-off-request-history-directive.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/time/accrual/employee-time-off-requests.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/time/accrual/time-off-request-approval-directive.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/time/accrual/time-off-request-view-directive.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/time/accrual/new-time-off-request.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/time/accrual/single-time-off-request.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/time/accrual/time-off-request-review-modals.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/time/accrual/time-off-request-validation-service.js?v=${releaseVersion}"></script>
 
         <!-- Allowances -->
         <script type="text/javascript"

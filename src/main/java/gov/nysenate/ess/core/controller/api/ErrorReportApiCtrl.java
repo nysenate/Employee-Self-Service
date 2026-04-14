@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.time.LocalDateTime;
@@ -38,8 +37,6 @@ public class ErrorReportApiCtrl extends BaseRestApiCtrl {
     private final SendMailService sendMailService;
     private final EmployeeInfoService employeeInfoService;
 
-    @Value("${report.email}")
-    private String reportEmail;
     @Value("${freemarker.core.templates.error_report:error_report.ftlh}")
     private String emailTemplateName;
     @Resource(name = "jsonObjectMapper")
@@ -61,8 +58,7 @@ public class ErrorReportApiCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/error", method = RequestMethod.POST, consumes = "application/json")
     public SimpleResponse report(@RequestBody ErrorReport errorReport) {
         try {
-            MimeMessage message = getErrorMessage(errorReport);
-            sendMailService.send(message);
+            sendErrorMessage(errorReport);
         } catch (Exception e) {
             logger.error("Exception occurred during processing of error report submission!", e);
             return new SimpleResponse(false, e.getMessage(), e.getClass().getSimpleName());
@@ -73,11 +69,11 @@ public class ErrorReportApiCtrl extends BaseRestApiCtrl {
 
     /* --- Internal Methods --- */
 
-    private MimeMessage getErrorMessage(ErrorReport errorReport) throws JsonProcessingException {
+    private void sendErrorMessage(ErrorReport errorReport) throws JsonProcessingException {
         Employee employee = employeeInfoService.getEmployee(errorReport.getUser());
         String subject = subjectPrefix + employee.getFullName();
         String message = getMessageBody(errorReport, employee);
-        return sendMailService.newHtmlMessage(reportEmail, subject, message);
+        sendMailService.sendHTMLMessageToReportEmails(subject, message);
     }
 
     private String getMessageBody(ErrorReport errorReport, Employee employee) throws JsonProcessingException {

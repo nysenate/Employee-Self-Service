@@ -140,6 +140,26 @@ essApp.config(function ($routeProvider, $locationProvider) {
         templateUrl: ctxPath + '/template/time/accrual/emp-history'
     });
 
+    $routeProvider.when(ctxPath + '/time/accrual/time-off-request', {
+        templateUrl: ctxPath + '/template/time/accrual/time-off-request'
+    });
+
+    $routeProvider.when( ctxPath + '/time/accrual/time-off-request/new', {
+        templateUrl: ctxPath + '/template/time/accrual/new-time-off-request'
+    });
+
+    $routeProvider.when( ctxPath + '/time/accrual/time-off-request/:requestId', {
+        templateUrl: ctxPath + '/template/time/accrual/single-time-off-request'
+    });
+
+    $routeProvider.when(ctxPath + '/time/accrual/emp-time-off-requests', {
+        templateUrl: ctxPath + '/template/time/accrual/emp-time-off-requests'
+    });
+
+    $routeProvider.when(ctxPath + '/time/accrual/emp-time-off-request-history', {
+        templateUrl: ctxPath + '/template/time/accrual/emp-time-off-request-history'
+    });
+
     $routeProvider.when(ctxPath + '/time/accrual/emp-projections', {
         templateUrl: ctxPath + '/template/time/accrual/emp-projections'
     });

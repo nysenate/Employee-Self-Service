@@ -72,7 +72,7 @@ public class EssIpAuthzRealm extends AuthorizingRealm {
                     "This is expected when logging in through the UI.");
         }
         catch (Exception ex) {
-            logger.error("An error occurred during Ip Authorization.");
+            logger.error("An error occurred during Ip Authorization.", ex);
         }
         return authInfo;
     }

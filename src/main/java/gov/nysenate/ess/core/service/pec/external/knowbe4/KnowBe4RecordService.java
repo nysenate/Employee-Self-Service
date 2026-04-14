@@ -9,6 +9,7 @@ import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
 import gov.nysenate.ess.core.model.pec.knowbe4.KnowBe4AssignmentID;
 import gov.nysenate.ess.core.service.pec.external.knowbe4.assignment.KnowBe4AssignmentAndProgress;
 import gov.nysenate.ess.core.service.pec.external.knowbe4.assignment.KnowBe4AssignmentAndProgressResponse;
+import gov.nysenate.ess.core.service.pec.external.knowbe4.assignment.KnowBe4AssignmentUser;
 import gov.nysenate.ess.core.service.pec.external.knowbe4.assignment.KnowBe4GetAllTrainingEnrollmentsRequest;
 import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
 import org.slf4j.Logger;
@@ -20,7 +21,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -56,7 +56,7 @@ public class KnowBe4RecordService {
         this.knowBe4AssignmentIDList = personnelTaskDao.getKnowBe4AssignmentIDs();
     }
 
-    @Scheduled(cron = "${scheduler.everfi.task.sync.cron}") //At the top of every hour every day
+    @Scheduled(cron = "${scheduler.knowbe4.task.sync.cron}") //At the top of every hour every day
     public void getUpdatesFromKnowBe4() throws IOException {
         if (knowBe4SyncEnabled) {
             refreshCaches();
@@ -69,10 +69,9 @@ public class KnowBe4RecordService {
 
         for (KnowBe4AssignmentID knowBe4AssignmentID : this.knowBe4AssignmentIDList ) {
             PersonnelTask task = personnelTaskDao.getPersonnelTask(knowBe4AssignmentID.getTaskID());
-            if (task.isActive()) {
 
                 KnowBe4GetAllTrainingEnrollmentsRequest knowBe4RecordsRequest =
-                        new KnowBe4GetAllTrainingEnrollmentsRequest(knowBe4AssignmentID.getID(), apiClient, 1);
+                        new KnowBe4GetAllTrainingEnrollmentsRequest(knowBe4AssignmentID.getID(), apiClient, "true");
 
                 KnowBe4AssignmentAndProgressResponse response = knowBe4RecordsRequest.fetch();
 
@@ -80,7 +79,7 @@ public class KnowBe4RecordService {
 
                 while (assignmentAndProgressList != null) {
 
-                    logger.info("Currently Processing KB4 response Page: " + response.getPage());
+                    logger.info("Currently Processing KB4 Task " + task.getTaskId() + "-" + knowBe4AssignmentID.getID() + " response Page: " + response.getCusorValue());
 
                     if (assignmentAndProgressList.isEmpty()) {
                         logger.error("No KnowBe4 assignment records found for: {}", knowBe4AssignmentID );
@@ -89,26 +88,30 @@ public class KnowBe4RecordService {
 
                     processRecords(assignmentAndProgressList);
 
-                    knowBe4RecordsRequest = knowBe4RecordsRequest.next(response);
+                    if (response.getNextCursor() != null) {
+                        knowBe4RecordsRequest = knowBe4RecordsRequest.next(response);
 
-                    response = knowBe4RecordsRequest.fetch();
+                        response = knowBe4RecordsRequest.fetch();
 
-                    if (response != null) {
-                        assignmentAndProgressList = response.getAssignmentsAndProgress();
+                        if (response != null) {
+                            assignmentAndProgressList = response.getAssignmentsAndProgress();
+                        }
+                        else {
+                            assignmentAndProgressList = null;
+                        }
                     }
                     else {
                         assignmentAndProgressList = null;
                     }
 
                 }
-            }
         }
         logger.info("Finished Processing KnowBe4 assignment records");
     }
 
     private void processRecords(List<KnowBe4AssignmentAndProgress> assignmentAndProgressList) {
         for (KnowBe4AssignmentAndProgress assignmentAndProgress : assignmentAndProgressList) {
-            int knowBe4UserEmpId = resolveEmailToEmployeeId( assignmentAndProgress.getUser().getEmail() );
+            int knowBe4UserEmpId = resolveEmployee( assignmentAndProgress.getUser() );
             if ( knowBe4UserEmpId != -1 ) {
 
                 Integer knowBe4TaskID = getKnowbe4TaskID(assignmentAndProgress.getCampaign_id());
@@ -167,12 +170,20 @@ public class KnowBe4RecordService {
 
     }
 
-    private int resolveEmailToEmployeeId(String email) {
+    private int resolveEmployee(KnowBe4AssignmentUser assignmentUser) {
         int empid = -1;
+
         try {
-            empid = employeeDao.getEmployeeByEmail(email).getEmployeeId();
+            empid = employeeDao.getEmployeeById(Integer.parseInt(assignmentUser.getEmployee_number())).getEmployeeId();
+            return empid;
         } catch (Exception e) {
-            logger.error("Problem with KnowBe4 email : " + e.getMessage());
+            logger.debug("Problem with KnowBe4 empid : " + e.getMessage());
+        }
+
+        try {
+            empid = employeeDao.getEmployeeByEmail(assignmentUser.getEmail()).getEmployeeId();
+        } catch (Exception e) {
+            logger.debug("Problem with KnowBe4 email : " + e.getMessage());
         }
         return empid;
     }

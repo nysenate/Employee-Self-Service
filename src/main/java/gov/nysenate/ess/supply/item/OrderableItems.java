@@ -34,10 +34,10 @@ public class OrderableItems {
      * are allowed to be ordered from <code>locId</code> and were present in the <code>items</code> parameter.
      * Returns an empty set if <code>items</code> is <code>null</code> or empty.
      */
-    public static ImmutableList<SupplyItem> forItemsAndLoc(Collection<SupplyItem> items, LocationId locId) {
+    public static ImmutableSet<SupplyItem> forItemsAndLoc(Collection<SupplyItem> items, LocationId locId) {
         return forItems(items).stream()
                 .filter(i -> allowedToOrder(i, locId))
-                .collect(Collectors.collectingAndThen(Collectors.toList(), ImmutableList::copyOf));
+                .collect(Collectors.collectingAndThen(Collectors.toList(), ImmutableSet::copyOf));
     }
 
     private static boolean allowedToOrder(SupplyItem item, LocationId locId) {

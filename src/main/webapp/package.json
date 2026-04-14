@@ -47,10 +47,14 @@
     "zod": "^4.1.12"
   },
   "scripts": {
+    "postinstall": "bower install && grunt compile",
     "build": "NODE_ENV='production' webpack",
     "dev": "webpack serve",
     "lint": "eslint WEB-INF/app --ext .js",
     "postinstall": "npm run build && bower install && grunt compile"
+  },
+  "volta": {
+    "node": "20.12.0"
   },
   "babel": {
     "presets": [

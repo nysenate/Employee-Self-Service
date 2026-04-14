@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
@@ -40,6 +41,7 @@ import static gov.nysenate.ess.time.model.attendance.TimeRecordAction.SUBMIT;
 import static gov.nysenate.ess.time.model.attendance.TimeRecordStatus.APPROVED;
 import static java.util.stream.Collectors.toList;
 
+@Service
 public class CachedTimeRecordService
         extends EmployeeEhCache<TimeRecordCacheCollection>
         implements TimeRecordService {
@@ -279,7 +281,6 @@ public class CachedTimeRecordService
     @Scheduled(fixedDelayString = "${cache.poll.delay.timerecords:60000}")
     @Override
     public void syncTimeRecords() {
-        logger.info("Checking for time record updates since {}", lastUpdateTime);
         Range<LocalDateTime> updateRange = Range.openClosed(lastUpdateTime, LocalDateTime.now());
         List<TimeRecord> updatedTRecs = timeRecordDao.getUpdatedRecords(updateRange);
         lastUpdateTime = updatedTRecs.stream()
@@ -287,7 +288,9 @@ public class CachedTimeRecordService
                 .map(TimeRecord::getOverallUpdateDate)
                 .max(LocalDateTime::compareTo)
                 .orElse(lastUpdateTime);
-        logger.info("Refreshed cache with {} updated time records", updatedTRecs.size());
+        if (!updatedTRecs.isEmpty()) {
+            logger.info("Refreshed cache with {} updated time records", updatedTRecs.size());
+        }
     }
 
     /* --- Internal Methods --- */

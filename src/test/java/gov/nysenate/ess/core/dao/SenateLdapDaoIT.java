@@ -6,13 +6,18 @@ import gov.nysenate.ess.core.annotation.TestDependsOnDatabase;
 import gov.nysenate.ess.core.dao.security.authentication.LdapAuthDao;
 import gov.nysenate.ess.core.model.auth.SenateLdapPerson;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.rules.Timeout;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.ldap.AuthenticationException;
 import org.springframework.ldap.NameNotFoundException;
+import org.springframework.test.context.TestPropertySource;
 
 import javax.naming.Name;
 import javax.naming.ldap.LdapName;
@@ -24,6 +29,10 @@ import static org.junit.Assert.assertNotNull;
 @Category({IntegrationTest.class, TestDependsOnDatabase.class})
 public class SenateLdapDaoIT extends BaseTest
 {
+
+    @Rule
+    public Timeout globalTimeout = Timeout.seconds(15);
+    
     @Autowired LdapAuthDao ldapAuthDao;
 
     @Value("${test.ldap.valid.uid}") private String validUid;

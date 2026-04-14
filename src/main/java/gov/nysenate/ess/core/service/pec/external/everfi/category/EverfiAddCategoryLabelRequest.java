@@ -11,7 +11,7 @@ import java.io.IOException;
 
 /**
  * A request to add a new category label in Everfi.
- *
+ * <p>
  * This class's functionality should not be used directly. To add a label, use {@link EverfiCategoryService}.
  */
 class EverfiAddCategoryLabelRequest {
@@ -24,7 +24,7 @@ class EverfiAddCategoryLabelRequest {
     /**
      * @param client
      * @param categoryId The id of the category this label should belong to.
-     * @param labelName The name this label should have.
+     * @param labelName  The name this label should have.
      */
     EverfiAddCategoryLabelRequest(EverfiApiClient client, int categoryId, String labelName) {
         this.client = client;
@@ -34,6 +34,7 @@ class EverfiAddCategoryLabelRequest {
 
     /**
      * Adds a category label to a category in Everfi.
+     *
      * @return The newly added CategoryLabel or null if an error occurred.
      * @throws IOException
      */

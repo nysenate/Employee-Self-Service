@@ -75,7 +75,7 @@ public class KnowBe4ApiCtrl extends BaseRestApiCtrl {
      *
      * @return String
      * */
-    @RequestMapping(value = "/personnel/task/generate", method = GET)
+    @RequestMapping(value = "/personnel/task/generate", method = POST)
     @ResponseStatus(value = HttpStatus.OK)
     public SimpleResponse runKnowBe4Import(HttpServletRequest request,
                                           HttpServletResponse response) {

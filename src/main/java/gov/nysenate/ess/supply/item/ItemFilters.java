@@ -9,25 +9,25 @@ import java.util.stream.Collectors;
 
 public class ItemFilters {
 
-    public static List<SupplyItem> byCategories(List<SupplyItem> items, Set<String> categoryNames) {
+    public static Set<SupplyItem> byCategories(Set<SupplyItem> items, Set<String> categoryNames) {
         if (categoryNames.isEmpty()) {
             return items;
         }
         return items.stream()
                 .filter(i -> categoryNames.contains(i.getCategory().getName()))
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
-    public static List<SupplyItem> byTerm(List<SupplyItem> items, String term) {
+    public static Set<SupplyItem> byTerm(Set<SupplyItem> items, String term) {
         if (term.isEmpty()) {
             return items;
         }
         return items.stream()
                 .filter(i -> i.getDescription().toUpperCase().contains(term.toUpperCase()))
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
-    public static List<SupplyItem> bySort(List<SupplyItem> items, String sort) {
+    public static List<SupplyItem> bySort(Collection<SupplyItem> items, String sort) {
         List<SupplyItem> sortedList = new ArrayList<>(items);
         if (sort.equalsIgnoreCase("Category")) {
             Collections.sort(sortedList, Comparator.comparing(SupplyItem::getCategory));

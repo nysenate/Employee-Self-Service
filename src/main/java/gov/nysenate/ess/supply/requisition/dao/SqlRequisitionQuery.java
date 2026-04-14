@@ -7,47 +7,47 @@ import gov.nysenate.ess.core.util.OrderBy;
 
 public enum SqlRequisitionQuery implements BasicSqlQuery {
     GET_NEXT_REVISION_ID(
-            """
-            SELECT nextval('${supplySchema}.requisition_content_revision_id_seq'::regclass)
-            """
+            "SELECT nextval('${supplySchema}.requisition_content_revision_id_seq'::regclass)"
     ),
+
     INSERT_REQUISITION(
             """
-            INSERT INTO ${supplySchema}.requisition(current_revision_id, ordered_date_time,
-                processed_date_time, completed_date_time, approved_date_time, rejected_date_time, saved_in_sfms)
-            VALUES (:revisionId, :orderedDateTime, :processedDateTime, :completedDateTime,
-                :approvedDateTime, :rejectedDateTime, :savedInSfms)
-            """
-    ),
+                INSERT INTO ${supplySchema}.requisition(current_revision_id, ordered_date_time,
+                    processed_date_time, completed_date_time, approved_date_time, rejected_date_time, sfms_sync_status, sfms_sync_attempt_count, sfms_sync_skip_reason)
+                VALUES (:revisionId, :orderedDateTime, :processedDateTime, :completedDateTime,
+                    :approvedDateTime, :rejectedDateTime,
+                    :sfmsSyncStatus, :syncAttemptCount, :sfmsSkippedReason)
+            """),
+
     UPDATE_REQUISITION(
             """
-            UPDATE ${supplySchema}.requisition SET current_revision_id = :revisionId, ordered_date_time = :orderedDateTime,
-                processed_date_time = :processedDateTime, completed_date_time = :completedDateTime,
-                approved_date_time = :approvedDateTime, rejected_date_time = :rejectedDateTime,
-                saved_in_sfms = :savedInSfms
-            WHERE requisition_id = :requisitionId
-            """
-    ),
+                UPDATE ${supplySchema}.requisition SET current_revision_id = :revisionId, ordered_date_time = :orderedDateTime,
+                    processed_date_time = :processedDateTime, completed_date_time = :completedDateTime,
+                    approved_date_time = :approvedDateTime, rejected_date_time = :rejectedDateTime,
+                    last_sfms_sync_date_time = :lastSfmsSyncDateTime,
+                    sfms_sync_status = :sfmsSyncStatus,
+                    sfms_sync_attempt_count = :syncAttemptCount,
+                    sfms_sync_skip_reason = :sfmsSkippedReason
+                WHERE requisition_id = :requisitionId
+            """),
+
     /** Never insert the revision id, let it auto increment. */
     INSERT_REQUISITION_CONTENT(
             """
-            INSERT INTO ${supplySchema}.requisition_content(requisition_id, revision_id, destination, status,
-                issuing_emp_id, note, customer_id, modified_by_id, modified_date_time, special_instructions,
-                delivery_method, is_reconciled)
-            VALUES (:requisitionId, :revisionId, :destination, :status::${supplySchema}.requisition_status,
-                :issuerId, :note, :customerId, :modifiedBy, :modifiedDateTime, :specialInstructions,
-                :deliveryMethod::${supplySchema}.delivery_method, :isReconciled)
-            """
-    ),
+                INSERT INTO ${supplySchema}.requisition_content(requisition_id, revision_id, destination, status,
+                    issuing_emp_id, note, customer_id, modified_by_id, modified_date_time, special_instructions,
+                    delivery_method, is_reconciled)
+                VALUES (:requisitionId, :revisionId, :destination, :status::${supplySchema}.requisition_status,
+                    :issuerId, :note, :customerId, :modifiedBy, :modifiedDateTime, :specialInstructions,
+                    :deliveryMethod::${supplySchema}.delivery_method, :isReconciled)
+            """),
+
     GET_REQUISITION_BY_ID(
             """
-            SELECT *
-            FROM ${supplySchema}.requisition r
-            INNER JOIN ${supplySchema}.requisition_content c
+                SELECT * from ${supplySchema}.requisition r INNER JOIN ${supplySchema}.requisition_content c
                 ON r.current_revision_id = c.revision_id
-            WHERE r.requisition_id = :requisitionId
-            """
-    ),
+                WHERE r.requisition_id = :requisitionId
+            """),
 
     SEARCH_REQUISITIONS_GET_IDS(
             """
@@ -61,58 +61,42 @@ public enum SqlRequisitionQuery implements BasicSqlQuery {
                 AND 
             """
     ),
+
     /**
      * Must use {@link SqlRequisitionDao#generateSearchQuery(SqlRequisitionQuery, String, OrderBy, LimitOffset) generateSearchQuery}
      * to complete partial queries.
      */
     SEARCH_REQUISITIONS_PARTIAL(
             """
-            SELECT *, count(*) OVER() as total_rows
-            FROM ${supplySchema}.requisition as r
-            INNER JOIN ${supplySchema}.requisition_content as c 
-                ON r.current_revision_id = c.revision_id
-            WHERE c.destination LIKE :destination 
-                AND Coalesce(c.customer_id::text, '') LIKE :customerId
-                AND Coalesce(c.issuing_emp_id::text, '') LIKE :issuerId
-                AND (:itemId IS NULL OR c.revision_id IN (SELECT i.revision_id FROM supply.line_item i WHERE i.item_id = :itemId))
-                AND c.status::text IN (:statuses)
-                AND (:savedInSfms IS NULL OR r.saved_in_sfms = :savedInSfms)
-                AND (:isReconciled IS NULL OR c.is_reconciled = :isReconciled)
-                AND r.
-            """
-    ),
+                SELECT *, count(*) OVER() as total_rows
+                FROM ${supplySchema}.requisition as r
+                INNER JOIN ${supplySchema}.requisition_content as c ON r.current_revision_id = c.revision_id
+                WHERE c.destination LIKE :destination AND Coalesce(c.customer_id::text, '') LIKE :customerId
+                    AND Coalesce(c.issuing_emp_id::text, '') LIKE :issuerId
+                    AND c.revision_id IN (SELECT i.revision_id FROM ${supplySchema}.line_item i WHERE i.item_id::text LIKE :itemId)
+                    AND c.status::text IN (:statuses) AND r.sfms_sync_status::text in (:sfmsSyncStatus) AND c.is_reconciled::text LIKE :isReconciled AND r.
+            """),
+
     ORDER_HISTORY_PARTIAL(
             """
-            SELECT *, count(*) OVER() as total_rows
-            FROM ${supplySchema}.requisition as r
-            INNER JOIN ${supplySchema}.requisition_content as c
-                ON r.current_revision_id = c.revision_id
-            WHERE (c.destination = :destination OR Coalesce(c.customer_id::text, '') LIKE :customerId)
-                AND c.status::text IN (:statuses) AND r.
-            """
-    ),
+                SELECT *, count(*) OVER() as total_rows
+                FROM ${supplySchema}.requisition as r
+                INNER JOIN ${supplySchema}.requisition_content as c ON r.current_revision_id = c.revision_id
+                WHERE (c.destination = :destination OR Coalesce(c.customer_id::text, '') LIKE :customerId)
+                    AND c.status::text IN (:statuses) AND r.
+            """),
     GET_REQUISITION_HISTORY(
             """
-            SELECT * from ${supplySchema}.requisition r
-            INNER JOIN ${supplySchema}.requisition_content c
+                SELECT * from ${supplySchema}.requisition r INNER JOIN ${supplySchema}.requisition_content c
                 ON r.requisition_id = c.requisition_id
-            WHERE r.requisition_id = :requisitionId
-            """
-    ),
-    SET_SAVED_IN_SFMS(
-            """
-            UPDATE ${supplySchema}.requisition
-            SET saved_in_sfms = :succeed, last_sfms_sync_date_time =  CURRENT_TIMESTAMP
-            WHERE requisition_id = :requisitionId
-            """
-    ),
+                WHERE r.requisition_id = :requisitionId
+            """),
     SET_RECONCILED(
             """
-            UPDATE ${supplySchema}.requisition
-            SET reconciled = :reconciled
-            WHERE requisition_id = :requisitionId
-            """
-    );
+                UPDATE ${supplySchema}.requisition
+                SET reconciled = :reconciled
+                WHERE requisition_id = :requisitionId
+            """);
 
     private final String sql;
 

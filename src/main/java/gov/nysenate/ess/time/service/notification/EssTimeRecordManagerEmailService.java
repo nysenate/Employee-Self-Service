@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.time.LocalDateTime;
@@ -24,8 +23,6 @@ public class EssTimeRecordManagerEmailService implements TimeRecordManagerEmailS
 
     @Autowired private SendMailService sendMailService;
     @Autowired private Configuration freemarkerCfg;
-
-    @Value("${report.email}") private String reportEmail;
 
     @Value("${freemarker.time.templates.trm_error:trm_error.ftlh}")
     private String errorEmailTemplateName;
@@ -41,13 +38,10 @@ public class EssTimeRecordManagerEmailService implements TimeRecordManagerEmailS
             return;
         }
 
-        String to = reportEmail;
         String subject = reminderEmailSubject + exceptions.size();
         String body = getErrorEmailBody(exceptions);
 
-        MimeMessage message = sendMailService.newHtmlMessage(to, subject, body);
-
-        sendMailService.send(message);
+        sendMailService.sendHTMLMessageToReportEmails(subject, body);
     }
 
     /* --- Internal Methods --- */

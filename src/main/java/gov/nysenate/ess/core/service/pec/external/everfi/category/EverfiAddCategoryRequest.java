@@ -11,7 +11,7 @@ import java.io.IOException;
 
 /**
  * Request to add a new Category in Everfi.
- *
+ * <p>
  * This class's functionality should not be used directly. To add a category, use {@link EverfiCategoryService}.
  */
 class EverfiAddCategoryRequest {

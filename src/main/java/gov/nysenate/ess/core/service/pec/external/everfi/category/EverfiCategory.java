@@ -51,6 +51,7 @@ public class EverfiCategory {
 
     /**
      * Manually extract 'attributes.name' from the json to the name field.
+     *
      * @param attributes
      */
     @JsonProperty("attributes")

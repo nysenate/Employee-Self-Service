@@ -64,6 +64,9 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
                 .withState(new PendingState())
                 .withModifiedBy(employeeService.getEmployee(submitRequisitionView.getCustomerId()))
                 .withOrderedDateTime(LocalDateTime.now())
+                .withSfmsSyncStatus(SyncStatus.PENDING)
+                .withSyncAttemptCount(0)
+                .withSfmsSkippedReason(null)
                 .build();
         Requisition savedRequisition = requisitionService.submitRequisition(requisition);
         RequisitionView requisitionView = new RequisitionView(savedRequisition);
@@ -174,8 +177,7 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
      * dateField: string - The field to filter by with {@code from} and {@code to}.
      * Must be one of: "ordered_date_time", "processed_date_time", "completed_date_time",
      * "approved_date_time", "rejected_date_time"
-     * savedInSfms: string - Searches for requisitions based on if they are saved in sfms.
-     * Must be one of: "true", "false"
+     * syncStatus: string[] - One or more syncStatus to include in results.
      * itemId: string - Searches for requisitions containing this item id.
      */
     // TODO: remove 'All' params, if we want all for a param we should not send it and it will not filter by that param.
@@ -187,16 +189,11 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
                                            @RequestParam(required = false) String to,
                                            @RequestParam(defaultValue = "All", required = false) String issuerId,
                                            @RequestParam(required = false) String dateField,
-                                           @RequestParam(required = false) Boolean savedInSfms,
+                                           @RequestParam(required = false) String[] syncStatus,
                                            @RequestParam(defaultValue = "All", required = false) String itemId,
                                            @RequestParam(required = false) Boolean reconciled,
                                            WebRequest webRequest) {
         checkPermission(RequisitionPermission.forAll(RequestMethod.GET));
-
-        // Convert All values to null.
-        if (itemId.equals("All")) {
-            itemId = null;
-        }
 
         dateField = dateField == null ? "ordered_date_time" : dateField;
         RequisitionQuery query = new RequisitionQuery()
@@ -206,7 +203,7 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
                 .setFromDateTime(getFromDateTime(from))
                 .setToDateTime(getToDateTime(to))
                 .setDateField(dateField)
-                .setSavedInSfms(savedInSfms)
+                .setSyncStatus(getSyncStatusEnumSet(syncStatus))
                 .setIssuerId(issuerId)
                 .setItemId(itemId)
                 .setReconciled(reconciled)
@@ -321,6 +318,18 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
      */
     private EnumSet<RequisitionStatus> getStatusEnumSet(String[] status) {
         return status == null ? EnumSet.allOf(RequisitionStatus.class) : getEnumSetFromStringArray(status);
+    }
+
+    private EnumSet<SyncStatus> getSyncStatusEnumSet(String[] syncStatus) {
+        return syncStatus == null ? EnumSet.allOf(SyncStatus.class) : getSyncStatusEnumSetFromStringArray(syncStatus);
+    }
+
+    private EnumSet<SyncStatus> getSyncStatusEnumSetFromStringArray(String[] syncStatus) {
+        List<SyncStatus> statusList = new ArrayList<>();
+        for (String s : syncStatus) {
+            statusList.add(SyncStatus.valueOf(s));
+        }
+        return EnumSet.copyOf(statusList);
     }
 
     private EnumSet<RequisitionStatus> getEnumSetFromStringArray(String[] status) {

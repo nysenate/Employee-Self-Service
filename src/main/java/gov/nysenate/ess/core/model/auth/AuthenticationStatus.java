@@ -14,7 +14,9 @@ public enum AuthenticationStatus
     EXPIRED_CREDENTIALS(false, "The account is expired."),
     DISABLED_ACCOUNT(false, "The account is disabled."),
     FAILURE(false, "Sorry, the username or password is not recognized."),
-    ERROR(false, "An error occurred during authentication.");
+    ERROR(false, "An error occurred during authentication."),
+    BACHELP_MISSING_API_KEY(false, "Missing BACHelp API key header"),
+    BACHELP_INVALID_API_KEY(false, "Invalid BACHelp API key");
 
     private final boolean authenticated;
     private final String statusMessage;

@@ -12,8 +12,7 @@ import java.util.Objects;
 /**
  * Contains the date information for a single pay period.
  */
-public class PayPeriod implements Comparable<PayPeriod>
-{
+public class PayPeriod implements Comparable<PayPeriod> {
     /** The expected number of days in a full pay period. */
     public static final int DEFAULT_PAY_PERIOD_DAYS = 14;
 
@@ -34,7 +33,8 @@ public class PayPeriod implements Comparable<PayPeriod>
 
     /* --- Constructors --- */
 
-    public PayPeriod() {}
+    public PayPeriod() {
+    }
 
     public PayPeriod(PayPeriodType type, LocalDate startDate, LocalDate endDate, String payPeriodNum, boolean active) {
         this.type = type;
@@ -44,10 +44,11 @@ public class PayPeriod implements Comparable<PayPeriod>
         this.active = active;
     }
 
-/* --- Functional Getters/Setters --- */
+    /* --- Functional Getters/Setters --- */
 
     /**
      * Returns the number of days between the start date and end date (inclusive) of this pay period.
+     *
      * @return int
      */
     public int getNumDaysInPeriod() {
@@ -58,12 +59,13 @@ public class PayPeriod implements Comparable<PayPeriod>
             return (int) ChronoUnit.DAYS.between(startDate, endDate.plusDays(1));
         }
         throw new IllegalStateException("Start date and/or end date is null. " +
-                                        "Cannot compute number of pay period days");
+                "Cannot compute number of pay period days");
     }
 
     /**
      * Returns the number of week days between the start date and end date (inclusive) of this pay period,
      * that fall within the given active dates date range
+     *
      * @return int
      */
     public int getNumWeekDaysInPeriod(Range<LocalDate> activeDates) {
@@ -88,9 +90,9 @@ public class PayPeriod implements Comparable<PayPeriod>
     }
 
     /**
+     * @return int
      * @see #getNumWeekDaysInPeriod(Range)
      * Overload that assumes all days in period are active dates
-     * @return int
      */
     public int getNumWeekDaysInPeriod() {
         return getNumWeekDaysInPeriod(Range.all());
@@ -116,6 +118,15 @@ public class PayPeriod implements Comparable<PayPeriod>
         return startDate.getDayOfYear() == 1 && getNumDaysInPeriod() != DEFAULT_PAY_PERIOD_DAYS;
     }
 
+    /**
+     * Indicates if this pay period is a start of year
+     *
+     * @return boolean - true if this marks a start of year split pay period.
+     */
+    public boolean isStartOfYear() {
+        return startDate.getDayOfYear() == 1;
+    }
+
     public Range<LocalDate> getDateRange() {
         if (startDate != null && endDate != null) {
             return Range.closedOpen(startDate, endDate.plusDays(1));
@@ -125,6 +136,7 @@ public class PayPeriod implements Comparable<PayPeriod>
 
     /**
      * Returns the year this pay period ends on.
+     *
      * @return int
      */
     public int getYear() {
@@ -168,10 +180,10 @@ public class PayPeriod implements Comparable<PayPeriod>
         if (obj == null || getClass() != obj.getClass()) return false;
         final PayPeriod other = (PayPeriod) obj;
         return Objects.equals(this.type, other.type) &&
-               Objects.equals(this.startDate, other.startDate) &&
-               Objects.equals(this.endDate, other.endDate) &&
-               Objects.equals(this.payPeriodNum, other.payPeriodNum) &&
-               Objects.equals(this.active, other.active);
+                Objects.equals(this.startDate, other.startDate) &&
+                Objects.equals(this.endDate, other.endDate) &&
+                Objects.equals(this.payPeriodNum, other.payPeriodNum) &&
+                Objects.equals(this.active, other.active);
     }
 
     @Override
@@ -183,10 +195,10 @@ public class PayPeriod implements Comparable<PayPeriod>
     @Override
     public int compareTo(PayPeriod o) {
         return ComparisonChain.start()
-            .compare(this.getStartDate(), o.getStartDate())
-            .compare(this.getEndDate(), o.getEndDate())
-            .compareFalseFirst(this.isActive(), o.isActive())
-            .result();
+                .compare(this.getStartDate(), o.getStartDate())
+                .compare(this.getEndDate(), o.getEndDate())
+                .compareFalseFirst(this.isActive(), o.isActive())
+                .result();
     }
 
     /* --- Basic Getters/Setters --- */

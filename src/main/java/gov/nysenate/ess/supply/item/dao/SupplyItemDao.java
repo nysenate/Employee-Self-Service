@@ -22,9 +22,9 @@ public class SupplyItemDao extends SqlBaseDao {
         this.itemRestrictionDao = itemRestrictionDao;
     }
 
-    public List<SupplyItem> getSupplyItems() {
+    public Set<SupplyItem> getSupplyItems() {
         String sql = OracleSupplyItemQuery.GET_ALL_SUPPLY_ITEMS.getSql(schemaMap(), new OrderBy("CDCOMMODITY", SortOrder.ASC));
-        List<SupplyItem> items = new ArrayList<>(remoteNamedJdbc.query(sql, new SupplyItemRowMapper()));
+        Set<SupplyItem> items = new HashSet<>(remoteNamedJdbc.query(sql, new SupplyItemRowMapper()));
         applyItemRestrictions(items);
         return items;
     }
@@ -32,10 +32,13 @@ public class SupplyItemDao extends SqlBaseDao {
     /**
      * Get a set of items from a set of item ids.
      */
-    public List<SupplyItem> getItemsByIds(Set<Integer> ids) {
+    public Set<SupplyItem> getItemsByIds(Set<Integer> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return Set.of();
+        }
         MapSqlParameterSource params = new MapSqlParameterSource("ids", ids);
         String sql = OracleSupplyItemQuery.GET_SUPPLY_ITEMS_BY_IDS.getSql(schemaMap());
-        List<SupplyItem> items = new ArrayList<>(remoteNamedJdbc.query(sql, params, new SupplyItemRowMapper()));
+        Set<SupplyItem> items = new HashSet<>(remoteNamedJdbc.query(sql, params, new SupplyItemRowMapper()));
         applyItemRestrictions(items);
         return items;
     }
@@ -55,7 +58,7 @@ public class SupplyItemDao extends SqlBaseDao {
         }
     }
 
-    private void applyItemRestrictions(List<SupplyItem> items) {
+    private void applyItemRestrictions(Set<SupplyItem> items) {
         Map<Integer, ItemRestriction> restrictions = itemRestrictionDao.getItemRestrictions();
         for (SupplyItem item : items) {
             ItemRestriction restriction = restrictions.get(item.getId());
