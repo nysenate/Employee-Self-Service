@@ -1,10 +1,14 @@
 package gov.nysenate.ess.core.service.pec.external.knowbe4.assignment;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 
 public class KnowBe4AssignmentAndProgressResponse {
 
-    private int page;
+    private String cusorValue;
+
+    private String nextCursor;
 
     private List<KnowBe4AssignmentAndProgress> assignments;
 
@@ -18,12 +22,20 @@ public class KnowBe4AssignmentAndProgressResponse {
         return assignments;
     }
 
-    public int getPage() {
-        return page;
+    public String getCusorValue() {
+        return cusorValue;
     }
 
-    public void setPage(int page) {
-        this.page = page;
+    public void setCusorValue(String cusorValue) {
+        this.cusorValue = cusorValue;
+    }
+
+    public String getNextCursor() {
+        return nextCursor;
+    }
+
+    public void setNextCursor(String nextCursor) {
+        this.nextCursor = nextCursor;
     }
 
     public List<KnowBe4AssignmentAndProgress> getAssignments() {

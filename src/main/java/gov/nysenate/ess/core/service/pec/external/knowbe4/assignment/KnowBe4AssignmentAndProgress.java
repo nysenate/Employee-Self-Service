@@ -36,6 +36,7 @@ public class KnowBe4AssignmentAndProgress {
     @JsonProperty("status")
     private String status;
 
+    @JsonProperty("time_spent")
     private Integer time_spent;
 
     @JsonProperty("policy_acknowledged")
