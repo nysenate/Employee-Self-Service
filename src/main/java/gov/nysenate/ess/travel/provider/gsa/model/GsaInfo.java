@@ -9,7 +9,7 @@ public class GsaInfo {
     private String county;
     private Map<Month, BigDecimal> lodgingRates;
     private int fiscalYear;
-    private int zipCode;
+    private String zipCode;
     private int meals;
 
     public GsaInfo() {
@@ -48,11 +48,11 @@ public class GsaInfo {
         this.fiscalYear = fiscalYear;
     }
 
-    public int getZipCode() {
+    public String getZipCode() {
         return zipCode;
     }
 
-    public void setZipCode(int zipCode) {
+    public void setZipCode(String zipCode) {
         this.zipCode = zipCode;
     }
 

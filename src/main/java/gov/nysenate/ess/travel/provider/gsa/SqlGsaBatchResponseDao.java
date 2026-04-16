@@ -18,7 +18,6 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Month;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -55,16 +54,23 @@ public class SqlGsaBatchResponseDao extends SqlBaseDao implements GsaBatchRespon
                         .addValue("city", gsaInfo.getCity() != null ? gsaInfo.getCity() : "")
                         .addValue("county", gsaInfo.getCounty() != null ? gsaInfo.getCounty() : "")
                         .addValue("mealTier", gsaInfo.getMeals())
-                        .addValue("lodgingRates", objectMapper.writeValueAsString(new HashMap<>()));
+                        .addValue("lodgingRates", objectMapper.writeValueAsString(gsaInfo.getLodgingRates()));
 
-                //List<GsaResponse> gsaResponseList = localNamedJdbc.query(SqlGsaBatchResponseQuery.GET_GSA_DATA.getSql(), params, new GsaInfoRowMapper());
-
-                //params.addValue("lodgingRates", objectMapper.writeValueAsString(gsaResponseList.get(0).getLodgingRates()));
                 localNamedJdbc.update(SqlGsaBatchResponseQuery.INSERT_GSA_ARCHIVE_DATA.getSql(), params);
             } catch (DataAccessException e) {
                 System.out.println(e.getMessage());
             }
         }
+    }
+
+    public GsaResponse getGsaRow(String zip5) throws DataAccessException {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("zipcode", zip5);
+        System.out.println(zip5);
+        String sql = SqlGsaBatchResponseQuery.GET_ARCHIVED_GSA_DATA.getSql();
+
+        List<GsaResponse> gsaResponseList = localNamedJdbc.query(sql, params, new GsaInfoRowMapper());
+        return gsaResponseList.get(0);
     }
 
     private void updateGsaData(GsaResponse gsaResponse) throws JsonProcessingException {
@@ -86,7 +92,6 @@ public class SqlGsaBatchResponseDao extends SqlBaseDao implements GsaBatchRespon
         if (gsaResponseList.isEmpty() || gsaResponseList == null) {
             List<GsaResponse> getGsaResponseCity = localNamedJdbc.query(SqlGsaBatchResponseQuery.GET_GSA_DATA.getSql(), params, new GsaInfoRowMapper());
 
-            params.addValue("city", getGsaResponseCity.get(0).getCity());
             List<GsaResponse> gsaArchivedList = localNamedJdbc.query(SqlGsaBatchResponseQuery.GET_ARCHIVED_GSA_DATA.getSql(), params, new GsaInfoRowMapper());
 
             if (gsaArchivedList.isEmpty() || gsaArchivedList == null) {
@@ -115,7 +120,7 @@ public class SqlGsaBatchResponseDao extends SqlBaseDao implements GsaBatchRespon
 
         GET_GSA_DATA("select * from travel.gsa_data where zipcode = :zipcode and fiscalYear = :fiscalYear;"),
 
-        GET_ARCHIVED_GSA_DATA("SELECT * FROM travel.gsa_archive WHERE city = :city AND zipcode = :zipcode AND fiscalYear = :fiscalYear"),
+        GET_ARCHIVED_GSA_DATA("SELECT * FROM travel.gsa_archive WHERE zipcode = :zipcode"),
         ;
 
         private final String sql;

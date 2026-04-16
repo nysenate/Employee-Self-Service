@@ -1,22 +1,25 @@
 package gov.nysenate.ess.travel.provider.gsa;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.nysenate.ess.core.client.view.base.StringView;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.auth.SimpleEssPermission;
 import gov.nysenate.ess.travel.provider.gsa.model.GsaInfo;
+import gov.nysenate.ess.travel.utils.Dollars;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,18 +31,19 @@ public class GsaCtrl extends BaseRestApiCtrl {
     private GsaBatchResponseService gsaBatchResponseService;
     private GsaApi gsaApi;
     private GsaAllowanceService gsaAllowanceService;
+    private GsaLocalAllowanceService gsaLocalAllowanceService;
 
     @Autowired
-    public GsaCtrl(GsaBatchResponseService gsaBatchResponseService, GsaApi gsaApi, GsaAllowanceService gsaAllowanceService) {
+    public GsaCtrl(GsaBatchResponseService gsaBatchResponseService, GsaApi gsaApi, GsaAllowanceService gsaAllowanceService, GsaLocalAllowanceService gsaLocalAllowanceService) {
         this.gsaBatchResponseService = gsaBatchResponseService;
         this.gsaApi = gsaApi;
         this.gsaAllowanceService = gsaAllowanceService;
+        this.gsaLocalAllowanceService = gsaLocalAllowanceService;
     }
 
     @RequestMapping(value = "/backup")
     public void backup() throws IOException {
         List<GsaInfo> allZipCodes = new ArrayList<>();
-        int c = 0;
         String backup = "/home/nystech/Senate_Code/Employee-Self-Service/src/main/java/gov/nysenate/ess/travel/provider/gsa/backup/";
         String archive = "/home/nystech/Senate_Code/Employee-Self-Service/src/main/java/gov/nysenate/ess/travel/provider/gsa/archive/";
 
@@ -76,11 +80,25 @@ public class GsaCtrl extends BaseRestApiCtrl {
                     for (int i = parts.length - 1; i >= 0; i--) {
                         if (parts[i].length() == 4) {
                             gsaZipCode.setFiscalYear(Integer.parseInt(parts[i]));
-                            gsaZipCode.setZipCode(Integer.parseInt(parts[i - 1]));
+                            gsaZipCode.setZipCode(parts[i - 1]);
                             break;
                         }
                     }
-                    gsaZipCode.setLodgingRates(new HashMap<>());
+                    HashMap<Month, BigDecimal> lodgingRates = new HashMap<>();
+                    lodgingRates.put(Month.SEPTEMBER, new BigDecimal(parts[parts.length - 2]));
+                    lodgingRates.put(Month.AUGUST, new BigDecimal(parts[parts.length - 3]));
+                    lodgingRates.put(Month.JULY, new BigDecimal(parts[parts.length - 4]));
+                    lodgingRates.put(Month.JUNE, new BigDecimal(parts[parts.length - 5]));
+                    lodgingRates.put(Month.MAY, new BigDecimal(parts[parts.length - 6]));
+                    lodgingRates.put(Month.APRIL, new BigDecimal(parts[parts.length - 7]));
+                    lodgingRates.put(Month.MARCH, new BigDecimal(parts[parts.length - 8]));
+                    lodgingRates.put(Month.FEBRUARY, new BigDecimal(parts[parts.length - 9]));
+                    lodgingRates.put(Month.JANUARY, new BigDecimal(parts[parts.length - 10]));
+                    lodgingRates.put(Month.DECEMBER, new BigDecimal(parts[parts.length - 11]));
+                    lodgingRates.put(Month.NOVEMBER, new BigDecimal(parts[parts.length - 12]));
+                    lodgingRates.put(Month.OCTOBER, new BigDecimal(parts[parts.length - 13]));
+
+                    gsaZipCode.setLodgingRates(lodgingRates);
                     allZipCodes.add(gsaZipCode);
                 }
                 gsaBatchResponseService.saveGsaData(allZipCodes);
@@ -90,6 +108,16 @@ public class GsaCtrl extends BaseRestApiCtrl {
             }
         }
 
+    }
+
+    @GetMapping(value = "/lodgingRates")
+    public Dollars getLodgingRates(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date, String zip5) throws JsonProcessingException {
+        return gsaLocalAllowanceService.fetchLodgingRate(date, zip5);
+    }
+
+    @GetMapping(value = "/meals")
+    public String getMeals(@RequestParam String zip5) throws JsonProcessingException {
+        return gsaLocalAllowanceService.fetchMealsRate(zip5);
     }
 
     @RequestMapping(value = "/batch")

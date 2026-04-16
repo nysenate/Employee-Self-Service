@@ -5,11 +5,11 @@ CREATE TABLE travel.gsa_archive
     lodgingRates VARCHAR,
     county       TEXT,
     fiscalYear   INTEGER,
-    zipcode      INTEGER,
+    zipcode      TEXT,
     mealTier     INTEGER,
 
     UNIQUE (city, county, fiscalYear, zipcode)
 );
 
-CREATE INDEX gsa_archive_idx ON travel.gsa_archive (city, zipcode, fiscalYear);
+CREATE INDEX gsa_archive_idx ON travel.gsa_archive (zipcode, fiscalYear);
 
