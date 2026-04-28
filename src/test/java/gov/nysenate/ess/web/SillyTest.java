@@ -4,6 +4,8 @@ import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.dao.security.authentication.LdapAuthDao;
 import gov.nysenate.ess.core.model.auth.SenateLdapPerson;
 import gov.nysenate.ess.core.model.personnel.Employee;
+import gov.nysenate.ess.core.service.pec.external.everfi.sync.EverfiUserSyncLoader;
+import gov.nysenate.ess.core.service.pec.external.everfi.sync.SyncReportRenderer;
 import gov.nysenate.ess.core.service.pec.external.everfi.sync.EverfiUserSyncService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import org.apache.commons.lang3.StringUtils;
@@ -29,6 +31,31 @@ public class SillyTest extends BaseTest {
 
     @Test
     public void testSync() {
-        everfiUserSyncService.syncUsers(true, true);
+        var run = everfiUserSyncService.syncUsers(true);
+        logger.info(new SyncReportRenderer(run).toText(true));
+    }
+
+    @Ignore
+    @Test
+    public void printRemoteUserCategoryLabels() {
+        Set<RemoteUser> remoteUsers = everfiUserSyncLoader.loadRemoteUsers().remoteUsers();
+        logger.info("Total remote users: {}", remoteUsers.size());
+
+        for (RemoteUser user : remoteUsers) {
+            List<EverfiCategoryLabel> labels = user.categoryLabels();
+            logger.info("User {} ({}) - {} label(s):", user.remoteEmail(), user.remoteUuid(), labels.size());
+            for (EverfiCategoryLabel label : labels) {
+                logger.info("  category='{}' label='{}'", label.getCategoryName(), label.getLabelName());
+            }
+
+            List<EverfiCategoryLabel> uploadListLabels = labels.stream()
+                    .filter(l -> "Upload List".equals(l.getCategoryName()))
+                    .collect(Collectors.toList());
+            if (uploadListLabels.size() > 1) {
+                logger.warn("  *** MULTIPLE UPLOAD LIST LABELS ({}) for user {}: {}", uploadListLabels.size(),
+                        user.remoteEmail(),
+                        uploadListLabels.stream().map(EverfiCategoryLabel::getLabelName).collect(Collectors.joining(", ")));
+            }
+        }
     }
 }

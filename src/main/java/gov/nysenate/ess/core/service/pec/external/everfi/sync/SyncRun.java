@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  * Final output of a single sync run — every {@link SyncResult} produced, plus the mode and timestamp.
- * Consumed by {@link EverfiUserSyncReport} to render the admin email.
+ * Consumed by {@link SyncReportRenderer} to render the admin email.
  */
 public record SyncRun(List<SyncResult> results, boolean dryRun, LocalDateTime ranAt) {
 

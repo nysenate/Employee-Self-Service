@@ -14,14 +14,14 @@ import java.util.List;
  * Emails the rendered sync report to the configured PEC admin distribution list.
  */
 @Service
-public class EverfiUserSyncReportService {
+public class SyncReportMailer {
 
     private static final DateTimeFormatter SUBJECT_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
 
     private final List<String> pecAdminReportEmails;
     private final SendMailService sendMailService;
 
-    public EverfiUserSyncReportService(
+    public SyncReportMailer(
             @Value("${pec.admin.report.emails}") String pecAdminReportEmails,
             SendMailService sendMailService
     ) {
@@ -29,12 +29,11 @@ public class EverfiUserSyncReportService {
         this.sendMailService = sendMailService;
     }
 
-    public void sendSyncRunToPecAdmin(SyncRun run) {
+    void sendSyncRunToPecAdmin(SyncRun run) {
         var subject = SUBJECT_DATE_FORMAT.format(run.ranAt())
                 + " Everfi User Sync Report - "
                 + (run.dryRun() ? "DRY RUN" : "LIVE RUN");
-        var report = new EverfiUserSyncReport(run, true);
-        var html = report.generateHtml();
+        var html = new SyncReportRenderer(run).toHtml(true);
 
         var messages = new ArrayList<MimeMessage>();
         for (var email : pecAdminReportEmails) {

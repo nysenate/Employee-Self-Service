@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(HierarchicalContextRunner.class)
 @Category(UnitTest.class)
-public class EverfiUserSyncReportTest {
+public class SyncReportRendererTest {
 
     @Test
     public void generate_includesHeaderSummaryAndKeyActionSections() {
@@ -109,7 +109,7 @@ public class EverfiUserSyncReportTest {
                 SyncResult.error(updateError, "update failed")
         ), true, LocalDateTime.of(2026, 4, 22, 13, 45, 0));
 
-        String report = new EverfiUserSyncReport(run).generate();
+        String report = new SyncReportRenderer(run).toText();
 
         assertThat(report).contains("2026-04-22 13:45:00  |  Mode: DRY RUN");
         assertThat(report).contains("Skip", "1");
@@ -150,7 +150,7 @@ public class EverfiUserSyncReportTest {
 
         SyncRun run = new SyncRun(List.of(SyncResult.success(update)), false,
                 LocalDateTime.of(2026, 4, 22, 13, 45, 0));
-        String report = new EverfiUserSyncReport(run, true).generate();
+        String report = new SyncReportRenderer(run).toText(true);
 
         assertThat(report).contains("UPDATED USERS  (1 succeeded, 0 errors)");
         assertThat(report).contains("first_name:   \"JOHN\" -> \"John\"");
@@ -174,7 +174,7 @@ public class EverfiUserSyncReportTest {
 
         SyncRun run = new SyncRun(List.of(SyncResult.success(reactivate)), false,
                 LocalDateTime.of(2026, 4, 22, 13, 45, 0));
-        String report = new EverfiUserSyncReport(run, true).generate();
+        String report = new SyncReportRenderer(run).toText(true);
 
         assertThat(report).contains("REACTIVATED USERS  (1 succeeded, 0 errors)");
         assertThat(report).contains("active:       false -> true");
@@ -201,7 +201,7 @@ public class EverfiUserSyncReportTest {
 
         SyncRun run = new SyncRun(List.of(SyncResult.success(create)), false,
                 LocalDateTime.of(2026, 4, 22, 13, 45, 0));
-        String report = new EverfiUserSyncReport(run, true).generate();
+        String report = new SyncReportRenderer(run).toText(true);
 
         assertThat(report).contains("CREATED USERS  (1 succeeded, 0 errors)");
         assertThat(report).contains("labels:       Upload List: Apr 22 2026");
@@ -238,7 +238,7 @@ public class EverfiUserSyncReportTest {
                 SyncResult.skipped(plainSkip)
         ), true, LocalDateTime.of(2026, 4, 22, 13, 45, 0));
 
-        String report = new EverfiUserSyncReport(run).generate();
+        String report = new SyncReportRenderer(run).toText();
 
         assertThat(report).contains("SKIPPED USERS WITH ISSUES  (2)");
         assertThat(report).contains("11", "Blocked, Create", "CREATE blocked", "Missing local email");

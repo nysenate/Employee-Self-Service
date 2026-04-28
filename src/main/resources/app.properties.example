@@ -339,6 +339,10 @@ scheduler.moodle.sync.enabled = false
 #Determines whether or not we automatically scrape from Everfi
 scheduler.everfi.sync.enabled = false
 
+# If enabled, scheduled Everfi user syncs will plan and report changes without
+# applying Everfi user updates or local employee mapping writes.
+everfi.user.sync.dry-run.enabled = true
+
 #Determines whether or not we automatically pull in records from KnowBe4
 scheduler.knowbe4.sync.enabled = false
 

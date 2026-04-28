@@ -5,6 +5,9 @@ import gov.nysenate.ess.core.annotation.UnitTest;
 import gov.nysenate.ess.core.dao.pec.everfi.EverfiEmployeeMappingDao;
 import gov.nysenate.ess.core.model.pec.everfi.EverfiEmployeeMapping;
 import gov.nysenate.ess.core.model.personnel.Employee;
+import gov.nysenate.ess.core.model.personnel.ResponsibilityCenter;
+import gov.nysenate.ess.core.model.personnel.ResponsibilityHead;
+import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategory;
 import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategoryLabel;
 import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategoryService;
 import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUser;
@@ -19,6 +22,7 @@ import org.junit.experimental.categories.Category;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -212,6 +216,128 @@ public class EverfiUserSyncLoaderTest {
                 .hasCauseInstanceOf(IOException.class);
     }
 
+    @Test
+    public void bootstrapDepartmentLabels_dryRun_doesNotTouchCategoryService() {
+        EverfiCategoryService throwingCategoryService = new StubEverfiCategoryService() {
+            @Override
+            public EverfiCategory getCategory(String name) throws IOException {
+                throw new IOException("should not be called on dry run");
+            }
+        };
+        EverfiUserSyncLoader loader = new EverfiUserSyncLoader(
+                new StubEmployeeInfoService(Set.of(employee(1, "ABC"))),
+                new StubEverfiUserClient(List.of()),
+                new StubEverfiEmployeeMappingDao(List.of()),
+                throwingCategoryService
+        );
+
+        loader.bootstrapDepartmentLabels(true);
+    }
+
+    @Test
+    public void bootstrapDepartmentLabels_liveRun_createsMissingLabels() {
+        var categoryService = new RecordingDepartmentCategoryService(
+                new EverfiCategory(1, "Department", List.of(new EverfiCategoryLabel(10, "EXISTING"))));
+        EverfiUserSyncLoader loader = new EverfiUserSyncLoader(
+                new StubEmployeeInfoService(Set.of(employee(1, "EXISTING"), employee(2, "NEW_DEPT"))),
+                new StubEverfiUserClient(List.of()),
+                new StubEverfiEmployeeMappingDao(List.of()),
+                categoryService
+        );
+
+        loader.bootstrapDepartmentLabels(false);
+
+        assertThat(categoryService.createdLabels).containsExactly("NEW_DEPT");
+    }
+
+    @Test
+    public void bootstrapDepartmentLabels_liveRun_noMissingLabels_doesNotCreate() {
+        var categoryService = new RecordingDepartmentCategoryService(
+                new EverfiCategory(1, "Department", List.of(new EverfiCategoryLabel(10, "EXISTING"))));
+        EverfiUserSyncLoader loader = new EverfiUserSyncLoader(
+                new StubEmployeeInfoService(Set.of(employee(1, "EXISTING"))),
+                new StubEverfiUserClient(List.of()),
+                new StubEverfiEmployeeMappingDao(List.of()),
+                categoryService
+        );
+
+        loader.bootstrapDepartmentLabels(false);
+
+        assertThat(categoryService.createdLabels).isEmpty();
+    }
+
+    @Test
+    public void bootstrapDepartmentLabels_liveRun_filtersNullAndLiteralNullRespCodes() {
+        var categoryService = new RecordingDepartmentCategoryService(
+                new EverfiCategory(1, "Department", List.of()));
+        EverfiUserSyncLoader loader = new EverfiUserSyncLoader(
+                new StubEmployeeInfoService(Set.of(
+                        employee(1, null),
+                        employee(2, "null"),
+                        employee(3, "VALID")
+                )),
+                new StubEverfiUserClient(List.of()),
+                new StubEverfiEmployeeMappingDao(List.of()),
+                categoryService
+        );
+
+        loader.bootstrapDepartmentLabels(false);
+
+        assertThat(categoryService.createdLabels).containsExactly("VALID");
+    }
+
+    @Test
+    public void bootstrapDepartmentLabels_departmentCategoryMissing_throwsLoadException() {
+        EverfiCategoryService categoryService = new StubEverfiCategoryService() {
+            @Override
+            public EverfiCategory getCategory(String name) { return null; }
+        };
+        EverfiUserSyncLoader loader = new EverfiUserSyncLoader(
+                new StubEmployeeInfoService(Set.of(employee(1, "ABC"))),
+                new StubEverfiUserClient(List.of()),
+                new StubEverfiEmployeeMappingDao(List.of()),
+                categoryService
+        );
+
+        assertThatThrownBy(() -> loader.bootstrapDepartmentLabels(false))
+                .isInstanceOf(EverfiUserSyncLoadException.class)
+                .hasMessage("Failed to bootstrap department category labels.");
+    }
+
+    @Test
+    public void bootstrapDepartmentLabels_wrapsException() {
+        EverfiCategoryService categoryService = new StubEverfiCategoryService() {
+            @Override
+            public EverfiCategory getCategory(String name) throws IOException {
+                throw new IOException("api error");
+            }
+        };
+        EverfiUserSyncLoader loader = new EverfiUserSyncLoader(
+                new StubEmployeeInfoService(Set.of(employee(1, "ABC"))),
+                new StubEverfiUserClient(List.of()),
+                new StubEverfiEmployeeMappingDao(List.of()),
+                categoryService
+        );
+
+        assertThatThrownBy(() -> loader.bootstrapDepartmentLabels(false))
+                .isInstanceOf(EverfiUserSyncLoadException.class)
+                .hasMessage("Failed to bootstrap department category labels.")
+                .hasCauseInstanceOf(IOException.class);
+    }
+
+    private static Employee employee(int id, String respCenterHeadCode) {
+        Employee emp = new Employee();
+        emp.setEmployeeId(id);
+        if (respCenterHeadCode != null) {
+            ResponsibilityHead head = new ResponsibilityHead();
+            head.setCode(respCenterHeadCode);
+            ResponsibilityCenter center = new ResponsibilityCenter();
+            center.setHead(head);
+            emp.setRespCenter(center);
+        }
+        return emp;
+    }
+
     private static <T> T assertOne(Set<T> set) {
         assertThat(set).hasSize(1);
         return set.iterator().next();
@@ -382,6 +508,24 @@ public class EverfiUserSyncLoaderTest {
     private static class StubEverfiCategoryService extends EverfiCategoryService {
         private StubEverfiCategoryService() {
             super(null, null, null);
+        }
+    }
+
+    private static class RecordingDepartmentCategoryService extends StubEverfiCategoryService {
+        private final EverfiCategory departmentCategory;
+        final List<String> createdLabels = new ArrayList<>();
+
+        private RecordingDepartmentCategoryService(EverfiCategory departmentCategory) {
+            this.departmentCategory = departmentCategory;
+        }
+
+        @Override
+        public EverfiCategory getCategory(String name) { return departmentCategory; }
+
+        @Override
+        public EverfiCategoryLabel createDepartmentLabel(String name) {
+            createdLabels.add(name);
+            return new EverfiCategoryLabel(99, name);
         }
     }
 

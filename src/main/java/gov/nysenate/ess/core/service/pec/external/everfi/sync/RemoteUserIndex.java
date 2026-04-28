@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
  * <p>Building the index throws {@link IllegalStateException} if two remote users share a mapping
  * entry for the same employee ID — that's a data invariant the rest of the planner relies on.
  */
-public record RemoteUserIndex(
+record RemoteUserIndex(
         /**
          * Remote users with a formal mapping entry — one per employee ID.
          */

@@ -8,6 +8,8 @@ import gov.nysenate.ess.core.model.pec.everfi.EverfiEmployeeMapping;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.pec.external.everfi.EverfiRecordService;
 import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategoryService;
+import gov.nysenate.ess.core.service.pec.external.everfi.sync.EverfiUserSyncJobResult;
+import gov.nysenate.ess.core.service.pec.external.everfi.sync.EverfiUserSyncJobService;
 import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +37,7 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
     private EverfiUserService everfiUserService;
     private EverfiCategoryService everfiCategoryService;
     private EverfiEmployeeMappingDao everfiEmployeeMappingDao;
+    private EverfiUserSyncJobService everfiUserSyncJobService;
     final LocalDateTime jan1970 = LocalDateTime.of(1970, 1, 1, 0, 0, 1);
     final LocalDateTime lastYearJan = LocalDateTime.of(LocalDateTime.now().getYear() - 1, 1, 1, 0, 0, 1);
     final LocalDateTime now = LocalDateTime.now();
@@ -43,12 +46,14 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
 
     @Autowired
     public EverfiApiCtrl(EverfiRecordService everfiRecordService, PersonnelTaskAssignmentDao personnelTaskAssignmentDao,
-                         EverfiUserService everfiUserService, EverfiCategoryService everfiCategoryService, EverfiEmployeeMappingDao everfiEmployeeMappingDao) {
+                         EverfiUserService everfiUserService, EverfiCategoryService everfiCategoryService, EverfiEmployeeMappingDao everfiEmployeeMappingDao,
+                         EverfiUserSyncJobService everfiUserSyncJobService) {
         this.everfiRecordService = everfiRecordService;
         this.personnelTaskAssignmentDao = personnelTaskAssignmentDao;
         this.everfiUserService = everfiUserService;
         this.everfiCategoryService = everfiCategoryService;
         this.everfiEmployeeMappingDao = everfiEmployeeMappingDao;
+        this.everfiUserSyncJobService = everfiUserSyncJobService;
     }
 
     /**
@@ -70,6 +75,30 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
         checkPermission(ADMIN.getPermission());
         everfiUserService.runUpdateMethods();
         return new SimpleResponse(true, "Everfi Manual User Sync", "everfi-manual-user-sync");
+    }
+
+    /**
+     * Everfi - Run User Sync
+     * ---------------------------------------
+     * <p>
+     * Executes the load-plan-execute Everfi user sync pipeline and returns whether it completed
+     * successfully. Defaults to a dry run and sends the detailed report email to PEC admins.
+     * <p>
+     * Usage:
+     * (POST)    /api/v1/everfi/sync/users
+     * (POST)    /api/v1/everfi/sync/users?dryRun=false
+     * (POST)    /api/v1/everfi/sync/users?sendReportEmail=false
+     *
+     * @return {@link SimpleResponse}
+     */
+    @RequestMapping(value = "/sync/users", method = {POST})
+    @ResponseStatus(value = HttpStatus.OK)
+    public SimpleResponse runUserSync(
+            @RequestParam(required = false, defaultValue = "true") boolean dryRun,
+            @RequestParam(required = false, defaultValue = "true") boolean sendReportEmail) {
+        checkPermission(ADMIN.getPermission());
+        EverfiUserSyncJobResult result = everfiUserSyncJobService.runUserSync(dryRun, sendReportEmail);
+        return new SimpleResponse(result.success(), result.message(), "everfi-sync-run");
     }
 
     /**

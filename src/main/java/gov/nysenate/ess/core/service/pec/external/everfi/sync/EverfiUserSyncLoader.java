@@ -3,6 +3,7 @@ package gov.nysenate.ess.core.service.pec.external.everfi.sync;
 import gov.nysenate.ess.core.dao.pec.everfi.EverfiEmployeeMappingDao;
 import gov.nysenate.ess.core.model.pec.everfi.EverfiEmployeeMapping;
 import gov.nysenate.ess.core.model.personnel.Employee;
+import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategory;
 import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategoryLabel;
 import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategoryService;
 import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUser;
@@ -34,7 +35,7 @@ public class EverfiUserSyncLoader {
      * @param empIdsWithUnmatchedMappings employee IDs whose mapping row points at a UUID no longer in Everfi —
      *                                    must not be routed to CREATE (would duplicate the mapping)
      */
-    public record RemoteLoadResult(Set<RemoteUser> remoteUsers, Set<Integer> empIdsWithUnmatchedMappings) {}
+    record RemoteLoadResult(Set<RemoteUser> remoteUsers, Set<Integer> empIdsWithUnmatchedMappings) {}
 
     private final EmployeeInfoService employeeInfoService;
     private final EverfiUserClient everfiUserClient;
@@ -53,10 +54,42 @@ public class EverfiUserSyncLoader {
     }
 
     /**
+     * Ensures every employee's {@code respCenterHeadCode} has a corresponding Department label in Everfi,
+     * creating any that are missing. Skipped on dry runs — no remote writes occur.
+     * Throws {@link EverfiUserSyncLoadException} on any failure so the pipeline aborts before planning.
+     */
+    void bootstrapDepartmentLabels(boolean dryRun) {
+        if (dryRun) return;
+        try {
+            EverfiCategory departmentCategory = categoryService.getCategory("Department");
+            if (departmentCategory == null) {
+                throw new IllegalStateException("\"Department\" category not found in Everfi.");
+            }
+            Set<String> existingLabelNames = departmentCategory.getLabels().stream()
+                    .map(EverfiCategoryLabel::getLabelName)
+                    .collect(Collectors.toSet());
+
+            Set<Employee> employees = employeeInfoService.getAllEmployees(true);
+            List<String> missingCodes = employees.stream()
+                    .map(Employee::getRespCenterHeadCode)
+                    .filter(code -> code != null && !code.equals("null"))
+                    .distinct()
+                    .filter(code -> !existingLabelNames.contains(code))
+                    .toList();
+
+            for (String code : missingCodes) {
+                categoryService.createDepartmentLabel(code);
+            }
+        } catch (IOException | RuntimeException ex) {
+            throw new EverfiUserSyncLoadException("Failed to bootstrap department category labels.", ex);
+        }
+    }
+
+    /**
      * Loads a set of Users who should be active in Everfi, including their category labels
      * (Attended Live, Department, Role) derived from employee data.
      */
-    public Set<DesiredUser> loadDesiredUsers() {
+    Set<DesiredUser> loadDesiredUsers() {
         try {
             Set<Employee> employees = employeeInfoService.getAllEmployees(true);
             Set<DesiredUser> result = new HashSet<>();
@@ -79,7 +112,7 @@ public class EverfiUserSyncLoader {
      * Load the current representation of remote Everfi users, with normalized category labels.
      * Also detects local mapping rows whose UUID is absent from the remote snapshot.
      */
-    public RemoteLoadResult loadRemoteUsers() {
+    RemoteLoadResult loadRemoteUsers() {
         try {
             Map<String, EverfiEmployeeMapping> mappingsByUuid = everfiEmployeeMappingDao.findAll().stream()
                     .collect(Collectors.toUnmodifiableMap(EverfiEmployeeMapping::everfiUuid, Function.identity()));
@@ -118,7 +151,7 @@ public class EverfiUserSyncLoader {
      * Must only be called on a live run with at least one CREATE — dry runs must not create labels
      * as a side effect.
      */
-    public EverfiCategoryLabel loadOrCreateTodaysUploadListLabel() {
+    EverfiCategoryLabel loadOrCreateTodaysUploadListLabel() {
         try {
             EverfiCategoryLabel label = categoryService.getUploadListLabel(LocalDate.now());
             if (label == null) {

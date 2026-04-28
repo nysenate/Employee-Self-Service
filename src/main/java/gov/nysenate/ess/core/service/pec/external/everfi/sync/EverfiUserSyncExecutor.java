@@ -58,7 +58,7 @@ public class EverfiUserSyncExecutor {
      * Executes every action in order and returns a result per action. {@code uploadListLabel} is only
      * needed when at least one CREATE will run live; pass null otherwise.
      */
-    public List<SyncResult> executeAll(List<PlannedAction> actions,
+    List<SyncResult> executeAll(List<PlannedAction> actions,
                                        @Nullable EverfiCategoryLabel uploadListLabel,
                                        boolean dryRun) {
         List<SyncResult> results = new ArrayList<>();

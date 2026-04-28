@@ -34,6 +34,7 @@ public class EverfiUserSyncServiceTest {
 
         SyncRun run = service.syncUsers(true);
 
+        assertThat(loader.bootstrapDepartmentLabelsCalls).isEqualTo(1);
         assertThat(loader.loadDesiredUsersCalls).isEqualTo(1);
         assertThat(loader.loadRemoteUsersCalls).isEqualTo(1);
         assertThat(loader.loadOrCreateTodaysUploadListLabelCalls).isEqualTo(0);
@@ -122,6 +123,7 @@ public class EverfiUserSyncServiceTest {
         private final Set<DesiredUser> desiredUsers;
         private final Set<RemoteUser> remoteUsers;
         private final EverfiCategoryLabel labelToReturn;
+        private int bootstrapDepartmentLabelsCalls;
         private int loadDesiredUsersCalls;
         private int loadRemoteUsersCalls;
         private int loadOrCreateTodaysUploadListLabelCalls;
@@ -132,6 +134,11 @@ public class EverfiUserSyncServiceTest {
             this.desiredUsers = desiredUsers;
             this.remoteUsers = remoteUsers;
             this.labelToReturn = labelToReturn;
+        }
+
+        @Override
+        public void bootstrapDepartmentLabels(boolean dryRun) {
+            bootstrapDepartmentLabelsCalls++;
         }
 
         @Override

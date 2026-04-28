@@ -42,7 +42,7 @@ public class EverfiUserSyncPlanner {
      * candidate remotes for the same employee can produce additional FLAG entries beyond that base.
      * Pure: same inputs → same output, no IO.
      */
-    public List<PlannedAction> plan(@NotNull Set<DesiredUser> desiredUsers, @NotNull RemoteUserIndex remoteUserIndex) {
+    List<PlannedAction> plan(@NotNull Set<DesiredUser> desiredUsers, @NotNull RemoteUserIndex remoteUserIndex) {
         List<PlannedAction> plannedActions = new ArrayList<>();
         Set<Integer> desiredEmployeeIds = desiredUsers.stream().map(DesiredUser::employeeId).collect(Collectors.toSet());
 

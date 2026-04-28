@@ -5,13 +5,14 @@
  * <h2>Pipeline stages</h2>
  * <ol>
  *   <li><b>Load</b> ({@link gov.nysenate.ess.core.service.pec.external.everfi.sync.EverfiUserSyncLoader}) —
- *       fetch desired users from local employee data and remote users from Everfi, enriched with our mapping table.</li>
+ *       bootstrap any missing Everfi Department category labels, then fetch desired users from local employee data
+ *       and remote users from Everfi, enriched with our mapping table.</li>
  *   <li><b>Plan</b> ({@link gov.nysenate.ess.core.service.pec.external.everfi.sync.EverfiUserSyncPlanner}) —
  *       classify each employee/remote into a {@link gov.nysenate.ess.core.service.pec.external.everfi.sync.PlannedAction}.
  *       The planner is the home of the business rules; the rest of the pipeline is mechanical.</li>
  *   <li><b>Execute</b> ({@link gov.nysenate.ess.core.service.pec.external.everfi.sync.EverfiUserSyncExecutor}) —
  *       carry out planned actions against the Everfi API and the local mapping table. Honours dry-run.</li>
- *   <li><b>Report</b> ({@link gov.nysenate.ess.core.service.pec.external.everfi.sync.EverfiUserSyncReport}) —
+ *   <li><b>Report</b> ({@link gov.nysenate.ess.core.service.pec.external.everfi.sync.SyncReportRenderer}) —
  *       render a human-readable summary; emailed to PEC admins after each scheduled run.</li>
  * </ol>
  *

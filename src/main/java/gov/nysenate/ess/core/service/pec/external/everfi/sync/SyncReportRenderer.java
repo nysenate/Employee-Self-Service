@@ -13,49 +13,47 @@ import java.util.stream.Collectors;
  * section for issues that need human follow-up. {@code detailed} mode adds a per-record diff showing
  * exactly which fields/labels would change.
  */
-public class EverfiUserSyncReport {
+class SyncReportRenderer {
 
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final String DIVIDER = "=".repeat(60);
     private static final String SUB_DIVIDER = "-".repeat(40);
 
     private final SyncRun run;
-    private final boolean detailed;
 
-    public EverfiUserSyncReport(SyncRun run) {
-        this(run, false);
-    }
-
-    public EverfiUserSyncReport(SyncRun run, boolean detailed) {
+    public SyncReportRenderer(SyncRun run) {
         this.run = run;
-        this.detailed = detailed;
     }
 
-    public String generate() {
-        return generateText();
+    public String toText() {
+        return toText(false);
     }
 
-    public String generateText() {
+    public String toText(boolean detailed) {
         var sb = new StringBuilder();
         appendHeader(sb);
         appendSummary(sb);
-        appendReactivateSection(sb);
-        appendCreateSection(sb);
+        appendReactivateSection(sb, detailed);
+        appendCreateSection(sb, detailed);
         appendDeactivateSection(sb);
         appendSkippedIssueSection(sb);
-        appendUpdateSection(sb);
+        appendUpdateSection(sb, detailed);
         appendFlaggedSection(sb);
         return sb.toString();
     }
 
-    public String generateHtml() {
+    public String toHtml() {
+        return toHtml(false);
+    }
+
+    public String toHtml(boolean detailed) {
         return """
-                <html>
-                <body style="margin:0; padding:16px; font-family: Arial, sans-serif;">
-                <pre style="font-family: Consolas, Menlo, Monaco, 'Courier New', monospace; font-size: 13px; line-height: 1.4; white-space: pre-wrap; margin: 0;">%s</pre>
-                </body>
-                </html>
-                """.formatted(escapeHtml(generateText()));
+               <html>
+               <body style="margin:0; padding:16px; font-family: Arial, sans-serif;">
+               <pre style="font-family: Consolas, Menlo, Monaco, 'Courier New', monospace; font-size: 13px; line-height: 1.4; white-space: pre-wrap; margin: 0;">%s</pre>
+               </body>
+               </html>
+               """.formatted(escapeHtml(toText(detailed)));
     }
 
     private void appendHeader(StringBuilder sb) {
@@ -71,11 +69,11 @@ public class EverfiUserSyncReport {
     private void appendSummary(StringBuilder sb) {
         sb.append("SUMMARY\n");
         sb.append(SUB_DIVIDER).append("\n");
+        appendSummaryRow(sb, "Reactivate", SyncAction.REACTIVATE);
+        appendSummaryRow(sb, "Create", SyncAction.CREATE);
+        appendSummaryRow(sb, "Deactivate", SyncAction.DEACTIVATE);
         appendSummaryRow(sb, "Skip", SyncAction.SKIP);
         appendSummaryRow(sb, "Update", SyncAction.UPDATE);
-        appendSummaryRow(sb, "Deactivate", SyncAction.DEACTIVATE);
-        appendSummaryRow(sb, "Create", SyncAction.CREATE);
-        appendSummaryRow(sb, "Reactivate", SyncAction.REACTIVATE);
         appendSummaryRow(sb, "Flag", SyncAction.FLAG);
         sb.append(SUB_DIVIDER).append("\n");
         sb.append(String.format("  %-12s %4d%n", "Total", run.results().size()));
@@ -93,7 +91,7 @@ public class EverfiUserSyncReport {
         sb.append("\n");
     }
 
-    private void appendUpdateSection(StringBuilder sb) {
+    private void appendUpdateSection(StringBuilder sb, boolean detailed) {
         var updates = filterByAction(SyncAction.UPDATE);
         if (updates.isEmpty()) return;
 
@@ -132,7 +130,7 @@ public class EverfiUserSyncReport {
         sb.append("\n");
     }
 
-    private void appendCreateSection(StringBuilder sb) {
+    private void appendCreateSection(StringBuilder sb, boolean detailed) {
         var creates = filterByAction(SyncAction.CREATE);
         if (creates.isEmpty()) return;
 
@@ -207,7 +205,7 @@ public class EverfiUserSyncReport {
         sb.append("\n");
     }
 
-    private void appendReactivateSection(StringBuilder sb) {
+    private void appendReactivateSection(StringBuilder sb, boolean detailed) {
         var reactivates = filterByAction(SyncAction.REACTIVATE);
         if (reactivates.isEmpty()) return;
 

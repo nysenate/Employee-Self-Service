@@ -34,6 +34,7 @@ public class EverfiUserSyncService {
      * raised during the load and plan stages.
      */
     public SyncRun syncUsers(boolean dryRun) {
+        loader.bootstrapDepartmentLabels(dryRun);
         var desiredUsers = loader.loadDesiredUsers();
         var remoteLoadResult = loader.loadRemoteUsers();
 
