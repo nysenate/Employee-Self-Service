@@ -16,6 +16,9 @@ public class KnowBe4AssignmentUser {
     @JsonProperty("email")
     String email;
 
+    @JsonProperty("employee_number")
+    String employee_number;
+
     public KnowBe4AssignmentUser() {}
 
     public Integer getId() {
@@ -48,5 +51,13 @@ public class KnowBe4AssignmentUser {
 
     public void setFirst_name(String first_name) {
         this.first_name = first_name;
+    }
+
+    public String getEmployee_number() {
+        return employee_number;
+    }
+
+    public void setEmployee_number(String employee_number) {
+        this.employee_number = employee_number;
     }
 }

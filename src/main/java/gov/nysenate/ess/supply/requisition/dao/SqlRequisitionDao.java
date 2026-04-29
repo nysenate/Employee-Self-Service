@@ -49,6 +49,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
     @Override
     @Transactional(value = "localTxManager")
     public synchronized Requisition saveRequisition(Requisition requisition) {
+
         requisition = requisition.setModifiedDateTime(dateTimeFactory.now());
         // Get the next revision id and set it in the requisition.
         requisition = requisition.setRevisionId(getNextRevisionId());
@@ -70,6 +71,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
     /**
      * Saves Requisition global information to the requisition table.
      * Updates the row if it exists, otherwise inserts a new row.
+     *
      * @return the requisition with its requisitionId set.
      */
     private Requisition saveRequisitionInfo(Requisition requisition) {
@@ -98,7 +100,15 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
     }
 
     @Override
+    public void saveRequisitionMetadata(Requisition requisition) {
+        MapSqlParameterSource params = requisitionParams(requisition);
+        String sql = SqlRequisitionQuery.UPDATE_REQUISITION.getSql(schemaMap());
+        localNamedJdbc.update(sql, params);
+    }
+
+    @Override
     public synchronized PaginatedList<Requisition> searchRequisitions(RequisitionQuery query) {
+
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("destination", query.getDestination())
                 .addValue("customerId", query.getCustomerId())
@@ -107,7 +117,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                 .addValue("toDate", toDate(query.getToDateTime()))
                 .addValue("issuerId", query.getIssuerId())
                 .addValue("itemId", query.getItemId())
-                .addValue("savedInSfms", query.getSavedInSfms())
+                .addValue("sfmsSyncStatus", extractSyncEnumSetParams(query.getSyncStatuses()))
                 .addValue("isReconciled", query.getReconciled());
         String sql = generateSearchQuery(SqlRequisitionQuery.SEARCH_REQUISITIONS_PARTIAL,
                 query.getDateField(), query.getOrderBy(), query.getLimitOffset());
@@ -117,8 +127,10 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
         return paginatedRowHandler.getList();
     }
 
-    /** Dynamically generates query date range filter using the supplied {@code dateField}.
-     * Then completes the query by adding Order by and Limit Offset information. */
+    /**
+     * Dynamically generates query date range filter using the supplied {@code dateField}.
+     * Then completes the query by adding Order by and Limit Offset information.
+     */
     private String generateSearchQuery(SqlRequisitionQuery baseSearchQuery, String dateField, OrderBy orderBy, LimitOffset limoff) {
         String sql = baseSearchQuery.getSql(schemaMap()) + dateField + " BETWEEN :fromDate AND :toDate";
         sql = SqlQueryUtils.withOrderByClause(sql, orderBy);
@@ -127,6 +139,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
 
     /**
      * {@inheritDoc}
+     *
      * @param query
      */
     @Override
@@ -150,19 +163,11 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
     public ImmutableList<Requisition> getRequisitionHistory(int requisitionId) {
         MapSqlParameterSource params = new MapSqlParameterSource("requisitionId", requisitionId);
         String sql = SqlRequisitionQuery.GET_REQUISITION_HISTORY.getSql(schemaMap(), new OrderBy("modified_date_time", SortOrder.ASC));
-        List<Requisition> requisitions =  localNamedJdbc.query(sql, params, new RequisitionRowMapper(employeeInfoService, locationService, lineItemDao));
+        List<Requisition> requisitions = localNamedJdbc.query(sql, params, new RequisitionRowMapper(employeeInfoService, locationService, lineItemDao));
         return ImmutableList.copyOf(requisitions);
     }
 
-    @Override
-    public void savedInSfms(int requisitionId, boolean succeed) {
-        MapSqlParameterSource params = new MapSqlParameterSource("requisitionId", requisitionId);
-        params.addValue("succeed", succeed);
-        String sql = SqlRequisitionQuery.SET_SAVED_IN_SFMS.getSql(schemaMap());
-        localNamedJdbc.update(sql, params);
-    }
-
-    public void reconcile(int requisitionId, boolean reconciled){
+    public void reconcile(int requisitionId, boolean reconciled) {
         MapSqlParameterSource params = new MapSqlParameterSource("requisitionId", requisitionId);
         params.addValue("reconciled", reconciled);
         String sql = SqlRequisitionQuery.SET_RECONCILED.getSql(schemaMap());
@@ -187,14 +192,21 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                 .addValue("completedDateTime", requisition.getCompletedDateTime().map(SqlBaseDao::toDate).orElse(null))
                 .addValue("approvedDateTime", requisition.getApprovedDateTime().map(SqlBaseDao::toDate).orElse(null))
                 .addValue("rejectedDateTime", requisition.getRejectedDateTime().map(SqlBaseDao::toDate).orElse(null))
-                .addValue("last_sfms_sync_date_time", requisition.getLastSfmsSyncDateTime().map(SqlBaseDao::toDate).orElse(null))
-                .addValue("savedInSfms", requisition.getSavedInSfms())
-                .addValue("isReconciled", requisition.getReconciled());
+                .addValue("lastSfmsSyncDateTime", requisition.getLastSfmsSyncDateTime().map(SqlBaseDao::toDate).orElse(null))
+                .addValue("isReconciled", requisition.getReconciled())
+                .addValue("sfmsSyncStatus", requisition.getSfmsSyncStatus().name())
+                .addValue("syncAttemptCount", requisition.getSyncAttemptCount())
+                .addValue("sfmsSkippedReason", requisition.getSfmsSkippedReason() == null ? null : requisition.getSfmsSkippedReason().name());
+
     }
 
     /** Convert an EnumSet into a Set containing each enum's name. */
     private Set<String> extractEnumSetParams(EnumSet<RequisitionStatus> statuses) {
         return statuses.stream().map(Enum::name).collect(Collectors.toSet());
+    }
+
+    private Set<String> extractSyncEnumSetParams(EnumSet<SyncStatus> syncStatuses) {
+        return syncStatuses.stream().map(Enum::name).collect(Collectors.toSet());
     }
 
     private int getNextRevisionId() {
@@ -208,7 +220,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
         private final SqlLineItemDao lineItemDao;
 
         protected RequisitionRowMapper(EmployeeInfoService employeeInfoService, LocationService locationService,
-                                    SqlLineItemDao lineItemDao) {
+                                       SqlLineItemDao lineItemDao) {
             this.employeeInfoService = employeeInfoService;
             this.locationService = locationService;
             this.lineItemDao = lineItemDao;
@@ -235,8 +247,10 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                     .withApprovedDateTime(getLocalDateTimeFromRs(rs, "approved_date_time"))
                     .withRejectedDateTime(getLocalDateTimeFromRs(rs, "rejected_date_time"))
                     .withLastSfmsSyncDateTimeDateTime(getLocalDateTimeFromRs(rs, "last_sfms_sync_date_time"))
-                    .withSavedInSfms(rs.getBoolean("saved_in_sfms"))
                     .withReconciled(rs.getBoolean("is_reconciled"))
+                    .withSfmsSyncStatus(SyncStatus.valueOf(rs.getString("sfms_sync_status")))
+                    .withSyncAttemptCount(rs.getInt("sfms_sync_attempt_count") == 0 ? 0 : rs.getInt("sfms_sync_attempt_count"))
+                    .withSfmsSkippedReason(rs.getString("sfms_sync_skip_reason") == null ? null : SkippedReason.valueOf(rs.getString("sfms_sync_skip_reason")))
                     .build();
         }
     }

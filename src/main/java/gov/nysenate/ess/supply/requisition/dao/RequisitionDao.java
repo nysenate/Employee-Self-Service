@@ -11,6 +11,8 @@ public interface RequisitionDao {
 
     Requisition saveRequisition(Requisition requisition);
 
+    void saveRequisitionMetadata(Requisition requisition);
+
     Optional<Requisition> getRequisitionById(int requisitionId);
 
     PaginatedList<Requisition> searchRequisitions(RequisitionQuery query);
@@ -26,8 +28,4 @@ public interface RequisitionDao {
 
     ImmutableList<Requisition> getRequisitionHistory(int requisitionId);
 
-    /**
-     * Marks a requisition as saved in SFMS.
-     */
-    void savedInSfms(int requisitionId, boolean succeed);
 }

@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
  */
 public class DummyDateTime implements DateTimeFactory {
 
-    private LocalDateTime dateTime;
+    private LocalDateTime dateTime = LocalDateTime.now();
 
     @Override
     public LocalDateTime now() {
