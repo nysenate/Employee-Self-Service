@@ -2,10 +2,12 @@ package gov.nysenate.ess.web.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nysenate.ess.core.config.CoreConfig;
+import gov.nysenate.ess.core.util.OutputUtils;
 import gov.nysenate.ess.web.util.AsciiArt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
@@ -17,13 +19,16 @@ import org.springframework.http.converter.support.AllEncompassingFormHttpMessage
 import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 import org.springframework.http.converter.xml.SourceHttpMessageConverter;
 import org.springframework.web.multipart.MultipartResolver;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+import org.springframework.web.multipart.support.StandardServletMultipartResolver;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,7 +38,15 @@ import java.util.List;
  */
 @Configuration
 @EnableWebMvc
-@ComponentScan("gov.nysenate.ess.web")
+@ComponentScan(
+        basePackages = {"gov.nysenate.ess.core", "gov.nysenate.ess.time", "gov.nysenate.ess.supply",
+                "gov.nysenate.ess.travel", "gov.nysenate.ess.web"},
+        useDefaultFilters = false,
+        includeFilters = @ComponentScan.Filter(
+                type = FilterType.ANNOTATION,
+                classes = {Controller.class, RestController.class, ControllerAdvice.class}
+        )
+)
 @Profile({"test", "dev", "prod"})
 @Import({CoreConfig.class, SecurityConfig.class})
 public class WebApplicationConfig implements WebMvcConfigurer
@@ -44,7 +57,8 @@ public class WebApplicationConfig implements WebMvcConfigurer
     private ObjectMapper xmlObjectMapper;
 
     @Autowired
-    public WebApplicationConfig(ObjectMapper jsonObjectMapper, ObjectMapper xmlObjectMapper) {
+    public WebApplicationConfig(@Qualifier("jsonObjectMapper") ObjectMapper jsonObjectMapper,
+                                @Qualifier("xmlObjectMapper") ObjectMapper xmlObjectMapper) {
         this.jsonObjectMapper = jsonObjectMapper;
         this.xmlObjectMapper = xmlObjectMapper;
     }
@@ -137,9 +151,7 @@ public class WebApplicationConfig implements WebMvcConfigurer
      */
     @Bean
     public MultipartResolver multipartResolver() {
-        CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
-        multipartResolver.setMaxUploadSize(10485760); // 10MB
-        multipartResolver.setMaxUploadSizePerFile(5242880); // 5MB
+        StandardServletMultipartResolver multipartResolver = new StandardServletMultipartResolver();
         return multipartResolver;
     }
 }

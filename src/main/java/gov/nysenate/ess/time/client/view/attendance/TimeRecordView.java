@@ -5,8 +5,8 @@ import gov.nysenate.ess.core.client.view.EmployeeView;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.time.model.attendance.TimeRecord;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 import java.util.stream.Collectors;
 

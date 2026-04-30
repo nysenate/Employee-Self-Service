@@ -7,12 +7,13 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.servlet.DispatcherServlet;
 
-import javax.servlet.DispatcherType;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletRegistration;
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.MultipartConfigElement;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletRegistration;
 import java.util.EnumSet;
 
-import static javax.servlet.DispatcherType.*;
+import static jakarta.servlet.DispatcherType.*;
 
 /**
  * Java based Spring configuration. This implementation is responsible for creating
@@ -23,6 +24,9 @@ import static javax.servlet.DispatcherType.*;
 public class WebInitializer implements WebApplicationInitializer
 {
     protected static String DISPATCHER_SERVLET_NAME = "ess";
+    private static final long MAX_UPLOAD_SIZE = 10 * 1024 * 1024;
+    private static final long MAX_UPLOAD_SIZE_PER_FILE = 5 * 1024 * 1024;
+    private static final int FILE_SIZE_THRESHOLD = 0;
 
     /**
      * Bootstraps the web application. This method is invoked automatically by Spring.
@@ -56,6 +60,12 @@ public class WebInitializer implements WebApplicationInitializer
         dispatcher = servletContext.addServlet(DISPATCHER_SERVLET_NAME, new DispatcherServlet(dispatcherContext));
         dispatcher.setLoadOnStartup(1);
         dispatcher.addMapping("/");
+        dispatcher.setMultipartConfig(new MultipartConfigElement(
+                null,
+                MAX_UPLOAD_SIZE,
+                MAX_UPLOAD_SIZE_PER_FILE,
+                FILE_SIZE_THRESHOLD
+        ));
 
         /** Register the Apache Shiro web security filter using the 'shiroFilter' bean as the implementation. */
         DelegatingFilterProxy shiroFilter = new DelegatingFilterProxy("shiroFilter", dispatcherContext);

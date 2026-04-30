@@ -25,7 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.request.WebRequest;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -37,7 +37,7 @@ public class BaseRestApiCtrl
 {
     private static final Logger logger = LoggerFactory.getLogger(BaseRestApiCtrl.class);
 
-    public static final String REST_PATH = "/api/v1/";
+    public static final String REST_PATH = "/api/v1";
     
     public static final String ADMIN_REST_PATH = REST_PATH + "admin";
 

@@ -4,8 +4,8 @@ import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.time.model.allowances.AllowanceUsage;
 import gov.nysenate.ess.core.client.view.base.ListView;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.math.BigDecimal;
 import java.util.stream.Collectors;
 

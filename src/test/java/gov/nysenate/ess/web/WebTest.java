@@ -22,7 +22,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.web.context.WebApplicationContext;
 
-import javax.servlet.http.Cookie;
+import jakarta.servlet.http.Cookie;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
@@ -53,8 +53,8 @@ public abstract class WebTest extends BaseTest
     @Before
     public void setup() {
         logger.info("Setting up WebTest with Shiro filter integration");
-        
-        // Get the Shiro filter from the application context  
+
+        // Get the Shiro filter from the application context
         AbstractShiroFilter shiroFilter = wac.getBean("shiroFilter", AbstractShiroFilter.class);
         logger.info("Got shiroFilter: {}", shiroFilter.getClass().getName());
 
@@ -73,7 +73,7 @@ public abstract class WebTest extends BaseTest
         Employee anyEmp = empInfoService.getEmployee(anyEmpId);
         testUid = anyEmp.getUid();
     }
-    
+
     @After
     public void cleanup() {
         // Clean up the authenticated session after each test
@@ -82,31 +82,31 @@ public abstract class WebTest extends BaseTest
             authenticatedSession = null;
         }
     }
-    
+
     /**
      * Performs login via MockMvc POST to /login and stores the authenticated session.
      * This creates a real authenticated session that can be used in subsequent requests.
-     * 
+     *
      * @param username Username for login
      * @param password Password for login
      */
     protected void loginUser(String username, String password) throws Exception {
         logger.info("Performing login for user: {}", username);
-        
+
         // Create a new session for this login
         MockHttpSession session = new MockHttpSession();
-        
+
         MvcResult loginResult = mockMvc.perform(post("/login")
                 .param("username", username)
                 .param("password", password)
                 .session(session))
                 .andReturn();
-        
+
         // Store the session for subsequent requests
         this.authenticatedSession = (MockHttpSession) loginResult.getRequest().getSession();
         logger.info("Login completed for user: {}", username);
     }
-    
+
     /**
      * Convenience method for tests that need authenticated access.
      * Uses test credentials that should work in development environments.
@@ -117,11 +117,11 @@ public abstract class WebTest extends BaseTest
             loginUser(testUid, masterPass);
         }
     }
-    
+
     /**
      * Performs an authenticated request using MockMvc with the authenticated session.
      * Automatically performs login if not already authenticated.
-     * 
+     *
      * @param requestBuilder The request to perform
      * @return ResultActions for further assertions
      */

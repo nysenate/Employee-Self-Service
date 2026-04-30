@@ -1,6 +1,8 @@
 package gov.nysenate.ess.core.config;
 
 import com.mchange.v2.c3p0.AbstractComboPooledDataSource;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Role;
 
 import javax.naming.Referenceable;
 import java.io.*;
@@ -9,6 +11,7 @@ import java.util.Optional;
 /**
  * This class is copied nearly exactly from ComboPooledDataSource, except with an overridden close method.
  */
+@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 public class ESSComboPooledDataSource extends AbstractComboPooledDataSource implements Serializable, Referenceable {
     public ESSComboPooledDataSource() {
         super();

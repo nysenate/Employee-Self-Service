@@ -11,7 +11,7 @@ import gov.nysenate.ess.travel.notifications.email.events.TravelPendingReviewEma
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.mail.internet.MimeMessage;
+import jakarta.mail.internet.MimeMessage;
 import java.util.HashSet;
 import java.util.Set;
 

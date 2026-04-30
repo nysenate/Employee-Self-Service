@@ -1,6 +1,6 @@
 package gov.nysenate.ess.core.client.response.base;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "response")
 public class SimpleResponse extends BaseResponse

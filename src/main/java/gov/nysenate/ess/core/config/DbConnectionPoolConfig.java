@@ -3,12 +3,15 @@ package gov.nysenate.ess.core.config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Role;
 
 import java.beans.PropertyVetoException;
 
 @Configuration
+@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 public class DbConnectionPoolConfig
 {
     private static final Logger logger = LoggerFactory.getLogger(DbConnectionPoolConfig.class);
@@ -33,6 +36,7 @@ public class DbConnectionPoolConfig
      * Configures and returns the local data source.
      * @return ComboPooledDataSource
      */
+    @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
     @Bean(destroyMethod = "close", name = "localDataSource")
     public ESSComboPooledDataSource localDataSource() {
         ESSComboPooledDataSource cpds = getComboPooledDataSource(dbLocalType, dbLocalHost, dbLocalName, dbLocalDriver,
@@ -51,6 +55,7 @@ public class DbConnectionPoolConfig
      * Configures and returns the remote data source.
      * @return ComboPooledDataSource
      */
+    @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
     @Bean(destroyMethod = "close", name = "remoteDataSource")
     public ESSComboPooledDataSource remoteDataSource() {
         ESSComboPooledDataSource cpds = getComboPooledDataSource(dbRemoteType, dbRemoteHost, dbRemoteName, dbRemoteDriver,

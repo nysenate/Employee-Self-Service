@@ -2,7 +2,7 @@ package gov.nysenate.ess.web.security.xsrf;
 
 import gov.nysenate.ess.core.annotation.IntegrationTest;
 import gov.nysenate.ess.web.WebTest;
-import org.apache.shiro.codec.Base64;
+import org.apache.shiro.lang.codec.Base64;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;

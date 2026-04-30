@@ -7,6 +7,7 @@ import gov.nysenate.ess.web.security.session.SessionTimeoutDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,10 +16,10 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 /**
  * This class uses to maintaining heart-beating.
- *
+ * <p>
  * Provides an api method that can be used by the front end to track
  * the user's session timeout and keep the session alive.
- *
+ * <p>
  * Created by Chenguang He on 6/30/2016.
  * Modified by Sam Stouffer on 3/7/2018
  */
@@ -35,7 +36,7 @@ public class SessionPingApiCtrl extends BaseRestApiCtrl {
         this.sessionTimeoutDao = sessionTimeoutDao;
     }
 
-    @RequestMapping(value = "/ping", method = POST)
+    @PostMapping("/ping")
     public PingResponse ping(@RequestParam boolean active) {
         if (active || isTimeoutExempt()) {
             sessionTimeoutDao.registerActivePing();

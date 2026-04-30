@@ -9,9 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.*;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+
 import java.io.IOException;
 
 /**
@@ -19,8 +20,7 @@ import java.io.IOException;
  * by jsp templates.
  */
 @Component("commonAttributeFilter")
-public class CommonAttributeFilter implements Filter
-{
+public class CommonAttributeFilter implements Filter {
 
     private static final Logger logger = LoggerFactory.getLogger(CommonAttributeFilter.class);
 
@@ -65,7 +65,6 @@ public class CommonAttributeFilter implements Filter
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-        logger.trace("CommonAttributeFilter processing url {}", httpServletRequest.getRequestURI());
         if (((HttpServletRequest) request).getSession().isNew())
             return;
         if (((HttpServletRequest) request).getSession() == null)
@@ -122,9 +121,11 @@ public class CommonAttributeFilter implements Filter
 
     /** Life-cycle is maintained by Spring. The init method is not used. */
     @Override
-    public void init(FilterConfig filterConfig) {}
+    public void init(FilterConfig filterConfig) {
+    }
 
     /** Life-cycle is maintained by Spring. The destroy method is not used. */
     @Override
-    public void destroy() {}
+    public void destroy() {
+    }
 }

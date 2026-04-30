@@ -2,12 +2,10 @@ package gov.nysenate.ess.time.client.view.accrual;
 
 import gov.nysenate.ess.core.client.view.PayPeriodView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
-import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.time.model.accrual.AccrualsAvailable;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.math.BigDecimal;
 
 @XmlRootElement(name = "AccrualsAvailable")

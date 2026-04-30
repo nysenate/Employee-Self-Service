@@ -15,7 +15,6 @@ import org.apache.catalina.connector.ClientAbortException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.UnauthenticatedException;
-import org.apache.shiro.authz.UnauthorizedException;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,8 +29,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.context.request.async.AsyncRequestNotUsableException;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.Optional;
 
 import static gov.nysenate.ess.core.util.OutputUtils.toJson;
@@ -49,6 +50,10 @@ public class ExceptionApiCtrl extends BaseRestApiCtrl {
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
     protected ErrorResponse handleUnknownError(Exception ex) {
+        if (isClientDisconnect(ex)) {
+            logger.debug("Client disconnected before response completed", ex);
+            return null;
+        }
         logger.error("Caught unhandled servlet exception:\n{}", ExceptionUtils.getStackTrace(ex));
         return new ErrorResponse(ErrorCode.APPLICATION_ERROR);
     }
@@ -122,6 +127,11 @@ public class ExceptionApiCtrl extends BaseRestApiCtrl {
         logger.debug("Client aborted", ex);
     }
 
+    @ExceptionHandler(AsyncRequestNotUsableException.class)
+    public void handleAsyncRequestNotUsableException(AsyncRequestNotUsableException ex) {
+        logger.debug("Client disconnected before async response completed", ex);
+    }
+
     @ResponseStatus(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
     @ResponseBody
@@ -154,5 +164,14 @@ public class ExceptionApiCtrl extends BaseRestApiCtrl {
         String url = HttpResponseUtils.getFullUrl(request);
         logger.warn("{} access attempt - user: {} url:{}", status, subject.getPrincipal(), url);
         return new AuthorizationResponse(status, subject, url);
+    }
+
+    private boolean isClientDisconnect(Throwable ex) {
+        Throwable rootCause = ExceptionUtils.getRootCause(ex);
+        Throwable cause = rootCause != null ? rootCause : ex;
+        return ex instanceof ClientAbortException
+                || ex instanceof AsyncRequestNotUsableException
+                || cause instanceof ClientAbortException
+                || cause instanceof IOException && "Broken pipe".equalsIgnoreCase(cause.getMessage());
     }
 }
