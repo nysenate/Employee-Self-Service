@@ -11,6 +11,7 @@ import jakarta.servlet.DispatcherType;
 import jakarta.servlet.MultipartConfigElement;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletRegistration;
+
 import java.util.EnumSet;
 
 import static jakarta.servlet.DispatcherType.*;
@@ -21,8 +22,7 @@ import static jakarta.servlet.DispatcherType.*;
  * Note that this class is functionally equivalent to a web.xml configuration but we try
  * to do as much in Java to reduce complexity.
  */
-public class WebInitializer implements WebApplicationInitializer
-{
+public class WebInitializer implements WebApplicationInitializer {
     protected static String DISPATCHER_SERVLET_NAME = "ess";
     private static final long MAX_UPLOAD_SIZE = 10 * 1024 * 1024;
     private static final long MAX_UPLOAD_SIZE_PER_FILE = 5 * 1024 * 1024;
@@ -30,7 +30,7 @@ public class WebInitializer implements WebApplicationInitializer
 
     /**
      * Bootstraps the web application. This method is invoked automatically by Spring.
-     *
+     * <p>
      * You might notice that all the filters are registered via a DelegatingFilterProxy. This
      * is simply because we instantiate all the filter implementations as Spring beans and we
      * want Spring to control the lifecycle of these beans. If they were declared without this
@@ -72,16 +72,16 @@ public class WebInitializer implements WebApplicationInitializer
         shiroFilter.setTargetFilterLifecycle(true);
         EnumSet<DispatcherType> dispatcherTypes = EnumSet.of(REQUEST, FORWARD, INCLUDE);
         servletContext.addFilter("shiroFilter", shiroFilter)
-                      .addMappingForUrlPatterns(dispatcherTypes, false, "/*");
+                .addMappingForUrlPatterns(dispatcherTypes, false, "/*");
 
         /** Registers the CommonAttributeFilter which sets request attributes for JSP pages. */
         DelegatingFilterProxy commonAttributeFilter = new DelegatingFilterProxy("commonAttributeFilter", dispatcherContext);
         servletContext.addFilter("commonAttributeFilter", commonAttributeFilter)
-                      .addMappingForUrlPatterns(EnumSet.of(FORWARD), false, "/*");
+                .addMappingForUrlPatterns(EnumSet.of(FORWARD), false, "/*");
 
         /** Registers the restApiFilter which affects all REST API calls. */
         DelegatingFilterProxy restApiFilter = new DelegatingFilterProxy("restApiFilter", dispatcherContext);
         servletContext.addFilter("restApiFilter", restApiFilter)
-                .addMappingForUrlPatterns(EnumSet.of(REQUEST, FORWARD, INCLUDE), false, BaseRestApiCtrl.REST_PATH + "*");
+                .addMappingForUrlPatterns(EnumSet.of(REQUEST, FORWARD, INCLUDE), false, BaseRestApiCtrl.REST_PATH + "/*");
     }
 }
