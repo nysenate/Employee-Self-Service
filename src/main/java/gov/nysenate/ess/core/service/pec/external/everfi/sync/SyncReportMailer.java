@@ -1,10 +1,10 @@
 package gov.nysenate.ess.core.service.pec.external.everfi.sync;
 
 import gov.nysenate.ess.core.service.mail.SendMailService;
+import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.mail.internet.MimeMessage;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
