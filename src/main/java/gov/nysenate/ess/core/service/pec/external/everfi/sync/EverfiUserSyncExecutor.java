@@ -8,7 +8,9 @@ import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUpdateUserCo
 import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUser;
 import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUserClient;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -79,33 +81,27 @@ public class EverfiUserSyncExecutor {
                                      @Nullable EverfiCategoryLabel uploadListLabel,
                                      boolean dryRun) {
         var desired = action.requireDesired();
-        try {
-            if (!dryRun) {
-                EverfiUser everfiUser = everfiUserClient.addUser(new EverfiAddUserCommand(
-                        desired.employeeId(),
-                        desired.firstName(),
-                        desired.lastName(),
-                        desired.email(),
-                        categoryLabelsForCreate(desired.categoryLabels(), uploadListLabel)
-                ));
-                everfiEmployeeMappingDao.insert(new EverfiEmployeeMapping(
-                        desired.employeeId(),
-                        everfiUser.getUuid()
-                ));
-            }
-            return SyncResult.success(action);
-        } catch (IOException e) {
-            return SyncResult.error(action, e.getMessage());
-        }
+        return executeSafely(action, dryRun, () -> {
+            EverfiUser everfiUser = everfiUserClient.addUser(new EverfiAddUserCommand(
+                    desired.employeeId(),
+                    desired.firstName(),
+                    desired.lastName(),
+                    desired.email(),
+                    categoryLabelsForCreate(desired.categoryLabels(), uploadListLabel)
+            ));
+            everfiEmployeeMappingDao.insert(new EverfiEmployeeMapping(
+                    desired.employeeId(),
+                    requireEverfiUuid(everfiUser)
+            ));
+        });
     }
 
     private SyncResult executeUpdate(PlannedAction action, boolean dryRun) {
         var desired = action.requireDesired();
         var remote = action.requireRemote();
         var mapping = action.requireRemoteMapping();
-        try {
-            if (!dryRun) {
-                everfiUserClient.updateUser(EverfiUpdateUserCommand.builder()
+        return executeSafely(action, dryRun, () ->
+                requireEverfiResponse(everfiUserClient.updateUser(EverfiUpdateUserCommand.builder()
                         .uuid(mapping.everfiUuid())
                         .employeeId(mapping.employeeId())
                         .firstName(desired.firstName())
@@ -113,12 +109,7 @@ public class EverfiUserSyncExecutor {
                         .email(resolveUpdateEmail(desired, remote))
                         .active(true)
                         .categoryLabels(categoryLabelsForUpdate(desired.categoryLabels(), remote))
-                        .build());
-            }
-            return SyncResult.success(action);
-        } catch (IOException e) {
-            return SyncResult.error(action, e.getMessage());
-        }
+                        .build())));
     }
 
     private SyncResult executeReactivate(PlannedAction action, boolean dryRun) {
@@ -128,9 +119,8 @@ public class EverfiUserSyncExecutor {
         if (desired.email() == null) {
             return SyncResult.error(action, "Cannot reactivate user without email");
         }
-        try {
-            if (!dryRun) {
-                everfiUserClient.updateUser(EverfiUpdateUserCommand.builder()
+        return executeSafely(action, dryRun, () ->
+                requireEverfiResponse(everfiUserClient.updateUser(EverfiUpdateUserCommand.builder()
                         .uuid(mapping.everfiUuid())
                         .employeeId(mapping.employeeId())
                         .firstName(desired.firstName())
@@ -138,21 +128,15 @@ public class EverfiUserSyncExecutor {
                         .email(desired.email())
                         .active(true)
                         .categoryLabels(categoryLabelsForUpdate(desired.categoryLabels(), remote))
-                        .build());
-            }
-            return SyncResult.success(action);
-        } catch (IOException e) {
-            return SyncResult.error(action, e.getMessage());
-        }
+                        .build())));
     }
 
     private SyncResult executeDeactivate(PlannedAction action, boolean dryRun) {
         var remote = action.requireRemote();
         var mapping = action.requireRemoteMapping();
         String email = deactivatedEmail(mapping.employeeId());
-        try {
-            if (!dryRun) {
-                everfiUserClient.updateUser(EverfiUpdateUserCommand.builder()
+        return executeSafely(action, dryRun, () ->
+                requireEverfiResponse(everfiUserClient.updateUser(EverfiUpdateUserCommand.builder()
                         .uuid(mapping.everfiUuid())
                         .employeeId(mapping.employeeId())
                         .firstName(remote.remoteFirstName())
@@ -160,12 +144,7 @@ public class EverfiUserSyncExecutor {
                         .email(email)
                         .active(false)
                         .categoryLabels(remote.categoryLabels())
-                        .build());
-            }
-            return SyncResult.success(action);
-        } catch (IOException e) {
-            return SyncResult.error(action, e.getMessage());
-        }
+                        .build())));
     }
 
     private List<EverfiCategoryLabel> categoryLabelsForCreate(List<EverfiCategoryLabel> desiredLabels,
@@ -201,5 +180,32 @@ public class EverfiUserSyncExecutor {
 
     private String deactivatedEmail(int employeeId) {
         return "deactivated-" + employeeId + DEACTIVATED_EMAIL_DOMAIN;
+    }
+
+    private SyncResult executeSafely(PlannedAction action, boolean dryRun, SyncWrite syncWrite) {
+        try {
+            if (!dryRun) {
+                syncWrite.run();
+            }
+            return SyncResult.success(action);
+        } catch (IOException | IllegalArgumentException | NullPointerException | DataAccessException e) {
+            return SyncResult.error(action, e.getMessage());
+        }
+    }
+
+    private EverfiUser requireEverfiResponse(@Nullable EverfiUser everfiUser) {
+        Assert.notNull(everfiUser, "Everfi API returned null user");
+        return everfiUser;
+    }
+
+    private String requireEverfiUuid(@Nullable EverfiUser everfiUser) {
+        String uuid = requireEverfiResponse(everfiUser).getUuid();
+        Assert.hasText(uuid, "Everfi API returned user without uuid");
+        return uuid;
+    }
+
+    @FunctionalInterface
+    private interface SyncWrite {
+        void run() throws IOException;
     }
 }

@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import jakarta.mail.internet.MimeMessage;
 import java.io.IOException;
@@ -195,33 +196,28 @@ public class EverfiUserService {
                 return;
             }
 
-            //normalize category labels
-            //Normalize labels that the everfi user already has. This prevents null pointer exception
-            List<EverfiCategoryLabel> normalizedCategoryLabels = this.categoryService.normalizeUsersCategoryLabel(everfiUser.getUserCategoryLabels());
-            everfiUser.setUserCategoryLabels(normalizedCategoryLabels);
-
             logger.info("Beginning deactivation of " + everfiUser.getFirstName() + " " + everfiUser.getLastName() + " " + everfiUser.getUuid());
             //Change email
             EverfiUser changedEmailUser = everfiUserClient.updateUser(EverfiUpdateUserCommand.builder()
                     .uuid(everfiUser.getUuid())
-                    .employeeId(everfiUser.getEmployeeId())
+                    .employeeId(requireEverfiEmployeeId(everfiUser))
                     .firstName(everfiUser.getFirstName())
                     .lastName(everfiUser.getLastName())
                     .email(everfiUser.getEmail() + "x")
                     .ssoId(null)
-                    .categoryLabels(everfiUser.getUserCategoryLabels())
+                    .categoryLabels(everfiUser.getCategoryLabels())
                     .active(true)
                     .build());
 
             //Set them to inactive
             everfiUserClient.updateUser(EverfiUpdateUserCommand.builder()
                     .uuid(changedEmailUser.getUuid())
-                    .employeeId(changedEmailUser.getEmployeeId())
+                    .employeeId(requireEverfiEmployeeId(changedEmailUser))
                     .firstName(changedEmailUser.getFirstName())
                     .lastName(changedEmailUser.getLastName())
                     .email(changedEmailUser.getEmail())
                     .ssoId(null)
-                    .categoryLabels(changedEmailUser.getUserCategoryLabels())
+                    .categoryLabels(changedEmailUser.getCategoryLabels())
                     .active(false)
                     .build());
         } catch (Exception e) {
@@ -233,21 +229,16 @@ public class EverfiUserService {
         try {
             EverfiUser everfiUser = everfiUserClient.findByUuid(everfiUserID.everfiUuid());
 
-            //normalize category labels
-            //Normalize labels that the everfi user already has. This prevents null pointer exception
-            List<EverfiCategoryLabel> normalizedCategoryLabels = this.categoryService.normalizeUsersCategoryLabel(everfiUser.getUserCategoryLabels());
-            everfiUser.setUserCategoryLabels(normalizedCategoryLabels);
-
             logger.info("Reactivating of " + everfiUser.getFirstName() + " " + everfiUser.getLastName() + " " + everfiUser.getUuid());
             //Set them to true
             EverfiUser nowActiveUser = everfiUserClient.updateUser(EverfiUpdateUserCommand.builder()
                     .uuid(everfiUser.getUuid())
-                    .employeeId(everfiUser.getEmployeeId())
+                    .employeeId(requireEverfiEmployeeId(everfiUser))
                     .firstName(everfiUser.getFirstName())
                     .lastName(everfiUser.getLastName())
                     .email(everfiUser.getEmail())
                     .ssoId(null)
-                    .categoryLabels(everfiUser.getUserCategoryLabels())
+                    .categoryLabels(everfiUser.getCategoryLabels())
                     .active(true)
                     .build());
 
@@ -261,12 +252,12 @@ public class EverfiUserService {
             //change email back
             everfiUserClient.updateUser(EverfiUpdateUserCommand.builder()
                     .uuid(nowActiveUser.getUuid())
-                    .employeeId(nowActiveUser.getEmployeeId())
+                    .employeeId(requireEverfiEmployeeId(nowActiveUser))
                     .firstName(nowActiveUser.getFirstName())
                     .lastName(nowActiveUser.getLastName())
                     .email(changedEmail)
                     .ssoId(null)
-                    .categoryLabels(nowActiveUser.getUserCategoryLabels())
+                    .categoryLabels(nowActiveUser.getCategoryLabels())
                     .active(true)
                     .build());
         } catch (Exception e) {
@@ -415,14 +406,21 @@ public class EverfiUserService {
     }
 
     private Integer getEmpIdById(EverfiUser everfiUser) {
-        int everfiUserEmpID = everfiUser.getEmployeeId();
-        if (everfiUserEmpID != 0) {
+        Integer everfiUserEmpID = everfiUser.getEmployeeId();
+        if (everfiUserEmpID != null) {
             try {
                 return employeeDao.getEmployeeById(everfiUserEmpID).getEmployeeId();
             } catch (Exception ignored) {
             }
         }
         return null;
+    }
+
+    private int requireEverfiEmployeeId(EverfiUser everfiUser) {
+        Integer employeeId = everfiUser.getEmployeeId();
+        Assert.notNull(employeeId, "Everfi user is missing employeeId");
+        Assert.isTrue(employeeId > 0, "Everfi user employeeId must be greater than 0");
+        return employeeId;
     }
 
     private Integer getEmpIdByEmail(EverfiUser everfiUser) {
@@ -445,10 +443,6 @@ public class EverfiUserService {
         try {
             Employee emp = employeeDao.getEmployeeById(empId);
             String properEmail = resolveEmail(emp, everfiUser);
-
-            //Normalize category labels that the everfi user already has. This prevents null pointer exception
-            List<EverfiCategoryLabel> normalizedCategoryLabels = this.categoryService.normalizeUsersCategoryLabel(everfiUser.getUserCategoryLabels());
-            everfiUser.setUserCategoryLabels(normalizedCategoryLabels);
 
             everfiUserClient.updateUser(EverfiUpdateUserCommand.builder()
                     .uuid(everfiUser.getUuid())
@@ -527,7 +521,7 @@ public class EverfiUserService {
      * Note: if user is null, a new Upload List will be created.
      */
     private EverfiCategoryLabel getOrCreateUploadListLabel(EverfiUser user) throws IOException {
-        EverfiCategoryLabel label = categoryService.getUserUploadListLabel(user);
+        EverfiCategoryLabel label = user == null ? null : categoryService.findUploadListLabel(user.getCategoryLabels());
         if (label == null) {
             // user was null or user does not have a Upload List label.
 

@@ -2,38 +2,36 @@ package gov.nysenate.ess.core.service.pec.external.everfi.sync;
 
 import de.bechte.junit.runners.context.HierarchicalContextRunner;
 import gov.nysenate.ess.core.annotation.UnitTest;
-import gov.nysenate.ess.core.dao.pec.everfi.EverfiEmployeeMappingDao;
 import gov.nysenate.ess.core.model.pec.everfi.EverfiEmployeeMapping;
 import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategoryLabel;
 import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiAddUserCommand;
 import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUpdateUserCommand;
-import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUser;
-import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUserClient;
-import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUserPayloadFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
+import org.springframework.dao.DataAccessResourceFailureException;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static gov.nysenate.ess.core.service.pec.external.everfi.sync.EverfiUserSyncExecutorTestSupport.createAction;
+import static gov.nysenate.ess.core.service.pec.external.everfi.sync.EverfiUserSyncExecutorTestSupport.desiredUser;
+import static gov.nysenate.ess.core.service.pec.external.everfi.sync.EverfiUserSyncExecutorTestSupport.label;
+import static gov.nysenate.ess.core.service.pec.external.everfi.sync.EverfiUserSyncExecutorTestSupport.remoteUser;
 
 @RunWith(HierarchicalContextRunner.class)
 @Category(UnitTest.class)
 public class EverfiUserSyncExecutorTest {
 
-    private RecordingEverfiUserClient userClient;
-    private RecordingEverfiEmployeeMappingDao mappingDao;
+    private EverfiUserSyncExecutorTestSupport.RecordingEverfiUserClient userClient;
+    private EverfiUserSyncExecutorTestSupport.RecordingEverfiEmployeeMappingDao mappingDao;
     private EverfiUserSyncExecutor executor;
 
     @Before
     public void setup() {
-        userClient = new RecordingEverfiUserClient(new TestEverfiUser("everfi-uuid-1", "user@nysenate.gov"));
-        mappingDao = new RecordingEverfiEmployeeMappingDao();
+        userClient = EverfiUserSyncExecutorTestSupport.recordingUserClient();
+        mappingDao = EverfiUserSyncExecutorTestSupport.recordingMappingDao();
         executor = new EverfiUserSyncExecutor(userClient, mappingDao);
     }
 
@@ -83,13 +81,75 @@ public class EverfiUserSyncExecutorTest {
 
         @Test
         public void onError_returnsError() {
-            executor = new EverfiUserSyncExecutor(FailingEverfiUserClient.failingOnCreate(), mappingDao);
+            executor = new EverfiUserSyncExecutor(
+                    EverfiUserSyncExecutorTestSupport.FailingEverfiUserClient.failingOnCreate(),
+                    mappingDao
+            );
             PlannedAction action = createAction();
 
             List<SyncResult> results = executor.executeAll(List.of(action), null, false);
 
             assertNoWrites();
             assertResults(results, SyncResult.error(action, "Error making Everfi request"));
+        }
+
+        @Test
+        public void missingFirstName_returnsError() {
+            PlannedAction action = new PlannedAction(
+                    SyncAction.CREATE,
+                    desiredUser().firstName(" ").build(),
+                    null,
+                    List.of()
+            );
+
+            List<SyncResult> results = executor.executeAll(List.of(action), null, false);
+
+            assertNoWrites();
+            assertResults(results, SyncResult.error(action, "firstName must not be empty"));
+        }
+
+        @Test
+        public void nullEverfiUserResponse_returnsError() {
+            executor = new EverfiUserSyncExecutor(
+                    new EverfiUserSyncExecutorTestSupport.RecordingEverfiUserClient(null),
+                    mappingDao
+            );
+            PlannedAction action = createAction();
+
+            List<SyncResult> results = executor.executeAll(List.of(action), null, false);
+
+            assertNoUpdatedUserWrite();
+            assertThat(mappingDao.insertedMappings).isEmpty();
+            assertResults(results, SyncResult.error(action, "Everfi API returned null user"));
+        }
+
+        @Test
+        public void nullEverfiUuid_returnsError() {
+            executor = new EverfiUserSyncExecutor(
+                    new EverfiUserSyncExecutorTestSupport.RecordingEverfiUserClient(
+                            new EverfiUserSyncExecutorTestSupport.TestEverfiUser(null, "user@nysenate.gov")
+                    ),
+                    mappingDao
+            );
+            PlannedAction action = createAction();
+
+            List<SyncResult> results = executor.executeAll(List.of(action), null, false);
+
+            assertNoUpdatedUserWrite();
+            assertThat(mappingDao.insertedMappings).isEmpty();
+            assertResults(results, SyncResult.error(action, "Everfi API returned user without uuid"));
+        }
+
+        @Test
+        public void mappingInsertFailure_returnsError() {
+            mappingDao.failInsertWith(new DataAccessResourceFailureException("Failed to insert mapping"));
+            PlannedAction action = createAction();
+
+            List<SyncResult> results = executor.executeAll(List.of(action), null, false);
+
+            assertNoUpdatedUserWrite();
+            assertThat(mappingDao.insertedMappings).isEmpty();
+            assertResults(results, SyncResult.error(action, "Failed to insert mapping"));
         }
     }
 
@@ -245,7 +305,10 @@ public class EverfiUserSyncExecutorTest {
 
         @Test
         public void onError_returnsError() {
-            executor = new EverfiUserSyncExecutor(FailingEverfiUserClient.failingOnUpdate(), mappingDao);
+            executor = new EverfiUserSyncExecutor(
+                    EverfiUserSyncExecutorTestSupport.FailingEverfiUserClient.failingOnUpdate(),
+                    mappingDao
+            );
             PlannedAction action = new PlannedAction(
                     SyncAction.UPDATE,
                     desiredUser().build(),
@@ -257,6 +320,40 @@ public class EverfiUserSyncExecutorTest {
 
             assertNoWrites();
             assertResults(results, SyncResult.error(action, "Error making Everfi request"));
+        }
+
+        @Test
+        public void missingLastName_returnsError() {
+            PlannedAction action = new PlannedAction(
+                    SyncAction.UPDATE,
+                    desiredUser().lastName(" ").build(),
+                    remoteUser().build(),
+                    List.of()
+            );
+
+            List<SyncResult> results = executor.executeAll(List.of(action), null, false);
+
+            assertNoWrites();
+            assertResults(results, SyncResult.error(action, "lastName must not be empty"));
+        }
+
+        @Test
+        public void nullEverfiResponse_returnsError() {
+            executor = new EverfiUserSyncExecutor(
+                    new EverfiUserSyncExecutorTestSupport.FailingEverfiUserClient(false, false),
+                    mappingDao
+            );
+            PlannedAction action = new PlannedAction(
+                    SyncAction.UPDATE,
+                    desiredUser().build(),
+                    remoteUser().build(),
+                    List.of()
+            );
+
+            List<SyncResult> results = executor.executeAll(List.of(action), null, false);
+
+            assertNoWrites();
+            assertResults(results, SyncResult.error(action, "Everfi API returned null user"));
         }
     }
 
@@ -389,7 +486,10 @@ public class EverfiUserSyncExecutorTest {
 
         @Test
         public void onError_returnsError() {
-            executor = new EverfiUserSyncExecutor(FailingEverfiUserClient.failingOnUpdate(), mappingDao);
+            executor = new EverfiUserSyncExecutor(
+                    EverfiUserSyncExecutorTestSupport.FailingEverfiUserClient.failingOnUpdate(),
+                    mappingDao
+            );
             PlannedAction action = new PlannedAction(
                     SyncAction.REACTIVATE,
                     desiredUser().build(),
@@ -474,7 +574,10 @@ public class EverfiUserSyncExecutorTest {
 
         @Test
         public void onError_returnsError() {
-            executor = new EverfiUserSyncExecutor(FailingEverfiUserClient.failingOnUpdate(), mappingDao);
+            executor = new EverfiUserSyncExecutor(
+                    EverfiUserSyncExecutorTestSupport.FailingEverfiUserClient.failingOnUpdate(),
+                    mappingDao
+            );
             PlannedAction action = new PlannedAction(
                     SyncAction.DEACTIVATE, null, remoteUser().build(), List.of());
 
@@ -482,6 +585,36 @@ public class EverfiUserSyncExecutorTest {
 
             assertNoWrites();
             assertResults(results, SyncResult.error(action, "Error making Everfi request"));
+        }
+
+        @Test
+        public void missingRemoteFirstName_returnsError() {
+            PlannedAction action = new PlannedAction(
+                    SyncAction.DEACTIVATE,
+                    null,
+                    remoteUser().remoteFirstName(" ").build(),
+                    List.of()
+            );
+
+            List<SyncResult> results = executor.executeAll(List.of(action), null, false);
+
+            assertNoWrites();
+            assertResults(results, SyncResult.error(action, "firstName must not be empty"));
+        }
+
+        @Test
+        public void missingRemoteLastName_returnsError() {
+            PlannedAction action = new PlannedAction(
+                    SyncAction.DEACTIVATE,
+                    null,
+                    remoteUser().remoteLastName(" ").build(),
+                    List.of()
+            );
+
+            List<SyncResult> results = executor.executeAll(List.of(action), null, false);
+
+            assertNoWrites();
+            assertResults(results, SyncResult.error(action, "lastName must not be empty"));
         }
     }
 
@@ -502,35 +635,37 @@ public class EverfiUserSyncExecutorTest {
         );
     }
 
-    // --- helpers ---
+    @Test
+    public void errorOnOneAction_doesNotAbortLaterActions() {
+        PlannedAction create = new PlannedAction(
+                SyncAction.CREATE,
+                desiredUser().firstName(null).build(),
+                null,
+                List.of()
+        );
+        PlannedAction update = new PlannedAction(
+                SyncAction.UPDATE,
+                desiredUser().firstName("Updated").build(),
+                remoteUser().build(),
+                List.of()
+        );
 
-    private PlannedAction createAction() {
-        return new PlannedAction(SyncAction.CREATE, desiredUser().build(), null, List.of());
-    }
+        List<SyncResult> results = executor.executeAll(List.of(create, update), null, false);
 
-    private DesiredUser.DesiredUserBuilder desiredUser() {
-        return DesiredUser.builder()
+        assertThat(userClient.updatedUserCommand).isEqualTo(EverfiUpdateUserCommand.builder()
+                .uuid("everfi-uuid-1")
                 .employeeId(1)
+                .firstName("Updated")
+                .lastName("User")
                 .email("user@nysenate.gov")
-                .firstName("Test")
-                .lastName("User");
-    }
-
-    private RemoteUser.RemoteUserBuilder remoteUser() {
-        return RemoteUser.builder()
-                .mapping(new EverfiEmployeeMapping(1, "everfi-uuid-1"))
-                .remoteUuid("everfi-uuid-1")
-                .remoteEmployeeId(1)
-                .remoteActive(true)
-                .remoteFirstName("Test")
-                .remoteLastName("User")
-                .remoteEmail("user@nysenate.gov");
-    }
-
-    private static EverfiCategoryLabel label(int labelId, String categoryName, String labelName) {
-        EverfiCategoryLabel l = new EverfiCategoryLabel(labelId, labelName);
-        l.setCategoryName(categoryName);
-        return l;
+                .active(true)
+                .categoryLabels(List.of())
+                .build());
+        assertThat(mappingDao.insertedMappings).isEmpty();
+        assertThat(results).containsExactly(
+                SyncResult.error(create, "firstName must not be empty"),
+                SyncResult.success(update)
+        );
     }
 
     private void assertNoWrites() {
@@ -549,101 +684,5 @@ public class EverfiUserSyncExecutorTest {
 
     private void assertResults(List<SyncResult> actualResults, SyncResult... expectedResults) {
         assertThat(actualResults).containsExactly(expectedResults);
-    }
-
-    // --- fakes ---
-
-    private static class RecordingEverfiUserClient extends EverfiUserClient {
-        private EverfiAddUserCommand addedUserCommand;
-        private EverfiUpdateUserCommand updatedUserCommand;
-        private final EverfiUser userToReturn;
-
-        private RecordingEverfiUserClient(EverfiUser userToReturn) {
-            super(null, new EverfiUserPayloadFactory());
-            this.userToReturn = userToReturn;
-        }
-
-        @Override
-        public EverfiUser addUser(EverfiAddUserCommand command) {
-            this.addedUserCommand = command;
-            return userToReturn;
-        }
-
-        @Override
-        public EverfiUser updateUser(EverfiUpdateUserCommand command) {
-            this.updatedUserCommand = command;
-            return userToReturn;
-        }
-    }
-
-    private static class FailingEverfiUserClient extends EverfiUserClient {
-        private final boolean failAddUser;
-        private final boolean failUpdateUser;
-
-        private FailingEverfiUserClient(boolean failAddUser, boolean failUpdateUser) {
-            super(null, null);
-            this.failAddUser = failAddUser;
-            this.failUpdateUser = failUpdateUser;
-        }
-
-        private static FailingEverfiUserClient failingOnCreate() {
-            return new FailingEverfiUserClient(true, false);
-        }
-
-        private static FailingEverfiUserClient failingOnUpdate() {
-            return new FailingEverfiUserClient(false, true);
-        }
-
-        @Override
-        public EverfiUser addUser(EverfiAddUserCommand command) throws IOException {
-            if (failAddUser) throw new IOException("Error making Everfi request");
-            return null;
-        }
-
-        @Override
-        public EverfiUser updateUser(EverfiUpdateUserCommand command) throws IOException {
-            if (failUpdateUser) throw new IOException("Error making Everfi request");
-            return null;
-        }
-    }
-
-    private static class RecordingEverfiEmployeeMappingDao implements EverfiEmployeeMappingDao {
-        private final List<EverfiEmployeeMapping> insertedMappings = new ArrayList<>();
-
-        @Override
-        public List<EverfiEmployeeMapping> findAll() { throw unsupported(); }
-
-        @Override
-        public Optional<EverfiEmployeeMapping> findByEmpId(int empId) { throw unsupported(); }
-
-        @Override
-        public Optional<EverfiEmployeeMapping> findByEverfiUuid(String everfiUuid) { throw unsupported(); }
-
-        @Override
-        public int insert(EverfiEmployeeMapping mapping) {
-            insertedMappings.add(mapping);
-            return 1;
-        }
-    }
-
-    private static UnsupportedOperationException unsupported() {
-        return new UnsupportedOperationException("Not needed for this test.");
-    }
-
-    private static class TestEverfiUser extends EverfiUser {
-        private final String uuid;
-        private final String email;
-
-        private TestEverfiUser(String uuid, String email) {
-            this.uuid = uuid;
-            this.email = email;
-        }
-
-        @Override public String getUuid()       { return uuid; }
-        @Override public int getEmployeeId()    { return 1; }
-        @Override public boolean isActive()     { return true; }
-        @Override public String getEmail()      { return email; }
-        @Override public String getFirstName()  { return "Test"; }
-        @Override public String getLastName()   { return "User"; }
     }
 }

@@ -17,6 +17,8 @@ import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.personnel.EmployeeSearchBuilder;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.PaginatedList;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -32,6 +34,18 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Category(UnitTest.class)
 public class EverfiUserSyncLoaderTest {
+
+    private static TestLoggerControl logControl;
+
+    @BeforeClass
+    public static void suppressExpectedWarningLogs() {
+        logControl = TestLoggerControl.suppress(EverfiUserSyncLoader.class);
+    }
+
+    @AfterClass
+    public static void restoreLoggerLevel() {
+        logControl.restore();
+    }
 
     @Test
     public void loadDesiredUsersWrapsLocalLoadFailure() {
@@ -107,6 +121,20 @@ public class EverfiUserSyncLoaderTest {
         Set<RemoteUser> remoteUsers = loader.loadRemoteUsers().remoteUsers();
 
         assertThat(assertOne(remoteUsers).mapping()).isEqualTo(mapping);
+    }
+
+    @Test
+    public void loadRemoteUsers_preservesMissingRemoteEmployeeIdAsNull() {
+        EverfiUserSyncLoader loader = new EverfiUserSyncLoader(
+                new StubEmployeeInfoService(Set.of()),
+                new StubEverfiUserClient(List.of(everfiUser("everfi-1", "user@example.com", null))),
+                new StubEverfiEmployeeMappingDao(List.of()),
+                null
+        );
+
+        Set<RemoteUser> remoteUsers = loader.loadRemoteUsers().remoteUsers();
+
+        assertThat(assertOne(remoteUsers).remoteEmployeeId()).isNull();
     }
 
     @Test
@@ -344,7 +372,11 @@ public class EverfiUserSyncLoaderTest {
     }
 
     private static EverfiUser everfiUser(String uuid, String email) {
-        return new TestEverfiUser(uuid, email);
+        return everfiUser(uuid, email, 123);
+    }
+
+    private static EverfiUser everfiUser(String uuid, String email, Integer employeeId) {
+        return new TestEverfiUser(uuid, email, employeeId);
     }
 
     private static class StubEmployeeInfoService implements EmployeeInfoService {
@@ -416,7 +448,7 @@ public class EverfiUserSyncLoaderTest {
         private final List<EverfiUser> users;
 
         private StubEverfiUserClient(List<EverfiUser> users) {
-            super(null, new EverfiUserPayloadFactory());
+            super(null, new EverfiUserPayloadFactory(), null);
             this.users = users;
         }
 
@@ -428,7 +460,7 @@ public class EverfiUserSyncLoaderTest {
 
     private static class FailingEverfiUserClient extends EverfiUserClient {
         private FailingEverfiUserClient() {
-            super(null, new EverfiUserPayloadFactory());
+            super(null, new EverfiUserPayloadFactory(), null);
         }
 
         @Override
@@ -440,10 +472,12 @@ public class EverfiUserSyncLoaderTest {
     private static class TestEverfiUser extends EverfiUser {
         private final String uuid;
         private final String email;
+        private final Integer employeeId;
 
-        private TestEverfiUser(String uuid, String email) {
+        private TestEverfiUser(String uuid, String email, Integer employeeId) {
             this.uuid = uuid;
             this.email = email;
+            this.employeeId = employeeId;
         }
 
         @Override
@@ -452,8 +486,8 @@ public class EverfiUserSyncLoaderTest {
         }
 
         @Override
-        public int getEmployeeId() {
-            return 123;
+        public Integer getEmployeeId() {
+            return employeeId;
         }
 
         @Override

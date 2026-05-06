@@ -7,7 +7,7 @@ public enum SqlEverfiUserQuery implements BasicSqlQuery {
 
     INSERT_MAPPING(
             """
-            INSERT INTO ${essSchema}.everfi_user_ids
+            INSERT INTO ${essSchema}.everfi_employee_mapping
                 (everfi_uuid, emp_id)
             VALUES
                 (:everfiUuid, :employeeId)
@@ -16,21 +16,21 @@ public enum SqlEverfiUserQuery implements BasicSqlQuery {
     SELECT_ALL_MAPPINGS(
             """
             SELECT *
-            FROM ${essSchema}.everfi_user_ids
+            FROM ${essSchema}.everfi_employee_mapping
             """),
 
     SELECT_MAPPING_BY_EMP_ID(
             """
             SELECT *
-            FROM ${essSchema}.everfi_user_ids
+            FROM ${essSchema}.everfi_employee_mapping
             WHERE emp_id = :employeeId
             """),
 
     SELECT_MAPPING_BY_UUID(
             """
             SELECT *
-            FROM ${essSchema}.everfi_user_ids
-            WHERE everfi_uuid = :everfi_UUID
+            FROM ${essSchema}.everfi_employee_mapping
+            WHERE everfi_uuid = :everfiUuid
             """);
 
     private final String sql;

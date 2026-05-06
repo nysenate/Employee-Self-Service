@@ -3,7 +3,6 @@ package gov.nysenate.ess.core.service.pec.external.everfi.category;
 import gov.nysenate.ess.core.dao.personnel.rch.ResponsibilityHeadDao;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.pec.external.everfi.EverfiApiClient;
-import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUser;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import org.apache.shiro.util.CollectionUtils;
 import org.slf4j.Logger;
@@ -140,53 +139,59 @@ public class EverfiCategoryService {
     }
 
     /**
-     * Get an EverfiUsers "Upload List" category label.
+     * Find the "Upload List" label in a list of category labels.
      *
-     * @param user
-     * @return The users "Upload List" category label or null if they don't have one.
+     * @param labels the labels to search; typically the hydrated labels on an Everfi user
+     * @return the matching label, or null if none of the labels belong to the Upload List category
      */
-    public EverfiCategoryLabel getUserUploadListLabel(EverfiUser user) {
-        if (user == null) {
+    public EverfiCategoryLabel findUploadListLabel(List<EverfiCategoryLabel> labels) {
+        if (labels == null) {
             return null;
         }
-        for (EverfiCategoryLabel label : user.getUserCategoryLabels()) {
-            if (label.getCategoryName().equals(UPLOAD_LIST)) {
+        for (EverfiCategoryLabel label : labels) {
+            if (UPLOAD_LIST.equals(label.getCategoryName())) {
                 return label;
             }
         }
         return null;
     }
 
-
-    public List<EverfiCategoryLabel> normalizeUsersCategoryLabel(List<EverfiCategoryLabel> originalLabels) throws IOException {
-        if (originalLabels == null) {
+    /**
+     * Replaces sparse label references (typically those parsed from an Everfi user response,
+     * which carry only the label id) with fully populated labels by joining against the cached
+     * category list. Labels whose ids are not present in the cache are dropped.
+     *
+     * @return the hydrated labels, or null if no input label could be hydrated
+     */
+    public List<EverfiCategoryLabel> hydrateLabels(List<EverfiCategoryLabel> sparseLabels) throws IOException {
+        if (sparseLabels == null) {
             return null;
         }
-        ArrayList<EverfiCategoryLabel> normalizedLabels = new ArrayList<>();
-        for (EverfiCategoryLabel userCatLabel : originalLabels) {
-            EverfiCategoryLabel everfiCategoryLabel = findLabelInCategories(userCatLabel.getLabelId());
-            if (everfiCategoryLabel != null) {
-                userCatLabel.setCategoryId(everfiCategoryLabel.getCategoryId());
-                userCatLabel.setCategoryName(everfiCategoryLabel.getCategoryName());
-                userCatLabel.setLabelName(everfiCategoryLabel.getLabelName());
-                normalizedLabels.add(userCatLabel);
+        ArrayList<EverfiCategoryLabel> hydrated = new ArrayList<>();
+        for (EverfiCategoryLabel sparseLabel : sparseLabels) {
+            EverfiCategoryLabel cachedLabel = findLabel(sparseLabel.getLabelId());
+            if (cachedLabel != null) {
+                sparseLabel.setCategoryId(cachedLabel.getCategoryId());
+                sparseLabel.setCategoryName(cachedLabel.getCategoryName());
+                sparseLabel.setLabelName(cachedLabel.getLabelName());
+                hydrated.add(sparseLabel);
             }
         }
 
-        if (normalizedLabels.isEmpty()) {
+        if (hydrated.isEmpty()) {
             return null;
         } else {
-            return normalizedLabels;
+            return hydrated;
         }
     }
 
-    public EverfiCategoryLabel findLabelInCategories(int labelID) throws IOException {
+    public EverfiCategoryLabel findLabel(int labelId) throws IOException {
         if (this.categories == null) {
             loadCategories();
         }
         for (EverfiCategory everfiCategory : this.categories) {
             for (EverfiCategoryLabel categoryLabel : everfiCategory.getLabels()) {
-                if (categoryLabel.getLabelId() == labelID) {
+                if (categoryLabel.getLabelId() == labelId) {
                     return categoryLabel;
                 }
             }

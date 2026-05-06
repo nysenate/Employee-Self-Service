@@ -41,6 +41,50 @@ public class EverfiUserSyncPlannerTest {
         }
 
         @Test
+        public void andNoFirstName_skips() {
+            DesiredUser d = desiredUser()
+                    .firstName(" ")
+                    .build();
+
+            assertPlan(
+                    Set.of(d),
+                    Set.of(),
+                    action(SyncAction.SKIP, d, null, SyncIssue.MISSING_FIRST_NAME)
+            );
+        }
+
+        @Test
+        public void andNoLastName_skips() {
+            DesiredUser d = desiredUser()
+                    .lastName(" ")
+                    .build();
+
+            assertPlan(
+                    Set.of(d),
+                    Set.of(),
+                    action(SyncAction.SKIP, d, null, SyncIssue.MISSING_LAST_NAME)
+            );
+        }
+
+        @Test
+        public void andMultipleMissingIdentityFields_skipsWithAllIssues() {
+            DesiredUser d = desiredUser()
+                    .email(null)
+                    .firstName(" ")
+                    .lastName(" ")
+                    .build();
+
+            assertPlan(
+                    Set.of(d),
+                    Set.of(),
+                    action(SyncAction.SKIP, d, null,
+                            SyncIssue.MISSING_EMAIL,
+                            SyncIssue.MISSING_FIRST_NAME,
+                            SyncIssue.MISSING_LAST_NAME)
+            );
+        }
+
+        @Test
         public void andNoCandidateRemotes_creates() {
             DesiredUser d = desiredUser().build();
             assertPlan(
@@ -211,6 +255,59 @@ public class EverfiUserSyncPlannerTest {
                     Set.of(desired),
                     Set.of(remote),
                     action(SyncAction.SKIP, desired, remote, SyncIssue.MISSING_EMAIL)
+            );
+        }
+
+        @Test
+        public void withNullFirstName_skipsAndFlagsMissingFirstName() {
+            DesiredUser desired = desiredUser()
+                    .firstName(" ")
+                    .build();
+            RemoteUser remote = authoritativeRemote()
+                    .remoteFirstName("remote")
+                    .build();
+
+            assertPlan(
+                    Set.of(desired),
+                    Set.of(remote),
+                    action(SyncAction.SKIP, desired, remote, SyncIssue.MISSING_FIRST_NAME)
+            );
+        }
+
+        @Test
+        public void withNullLastName_skipsAndFlagsMissingLastName() {
+            DesiredUser desired = desiredUser()
+                    .lastName(" ")
+                    .build();
+            RemoteUser remote = authoritativeRemote()
+                    .remoteLastName("remote")
+                    .build();
+
+            assertPlan(
+                    Set.of(desired),
+                    Set.of(remote),
+                    action(SyncAction.SKIP, desired, remote, SyncIssue.MISSING_LAST_NAME)
+            );
+        }
+
+        @Test
+        public void withMissingEmailAndFirstName_skipsWithBothIssuesBeforeUpdateOrReactivate() {
+            DesiredUser desired = desiredUser()
+                    .email(null)
+                    .firstName(" ")
+                    .build();
+            RemoteUser remote = authoritativeRemote()
+                    .remoteActive(false)
+                    .remoteEmail("remote@nysenate.gov")
+                    .remoteFirstName("remote")
+                    .build();
+
+            assertPlan(
+                    Set.of(desired),
+                    Set.of(remote),
+                    action(SyncAction.SKIP, desired, remote,
+                            SyncIssue.MISSING_EMAIL,
+                            SyncIssue.MISSING_FIRST_NAME)
             );
         }
 

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nysenate.ess.core.service.pec.external.everfi.EverfiApiException;
 import gov.nysenate.ess.core.service.pec.external.everfi.EverfiApiClient;
+import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategoryLabel;
+import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategoryService;
 import gov.nysenate.ess.core.util.OutputUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -23,10 +25,14 @@ public class EverfiUserClient {
 
     private final EverfiApiClient everfiApiClient;
     private final EverfiUserPayloadFactory payloadFactory;
+    private final EverfiCategoryService categoryService;
 
-    public EverfiUserClient(EverfiApiClient everfiApiClient, EverfiUserPayloadFactory payloadFactory) {
+    public EverfiUserClient(EverfiApiClient everfiApiClient,
+                            EverfiUserPayloadFactory payloadFactory,
+                            EverfiCategoryService categoryService) {
         this.everfiApiClient = everfiApiClient;
         this.payloadFactory = payloadFactory;
+        this.categoryService = categoryService;
     }
 
     public List<EverfiUser> fetchAll() throws IOException {
@@ -48,7 +54,11 @@ public class EverfiUserClient {
 
         EverfiUsersRequest request = new EverfiUsersRequest(everfiApiClient, 1, pageSize);
         while (request != null) {
-            pageConsumer.accept(request.getUsers());
+            List<EverfiUser> page = request.getUsers();
+            for (EverfiUser user : page) {
+                hydrateLabels(user);
+            }
+            pageConsumer.accept(page);
             request = request.next();
         }
     }
@@ -92,6 +102,30 @@ public class EverfiUserClient {
         ObjectMapper mapper = OutputUtils.jsonMapper;
         JsonNode rootNode = mapper.readTree(data);
         JsonNode userNode = rootNode.get("data");
-        return userNode == null ? null : mapper.treeToValue(userNode, EverfiUser.class);
+        if (userNode == null) {
+            return null;
+        }
+        EverfiUser user = mapper.treeToValue(userNode, EverfiUser.class);
+        hydrateLabels(user);
+        return user;
+    }
+
+    /**
+     * Replaces the sparse label refs Everfi returns (id-only, name = JSON:API resource type)
+     * with fully populated labels by joining against the cached category list. Labels whose ids
+     * are not present in the cache are dropped — they belong to a category the local view doesn't
+     * know about and we can't describe them meaningfully.
+     */
+    private void hydrateLabels(EverfiUser user) throws IOException {
+        if (user == null) {
+            return;
+        }
+        List<EverfiCategoryLabel> raw = user.getCategoryLabels();
+        if (raw == null || raw.isEmpty()) {
+            user.setCategoryLabels(List.of());
+            return;
+        }
+        List<EverfiCategoryLabel> hydrated = categoryService.hydrateLabels(raw);
+        user.setCategoryLabels(hydrated != null ? hydrated : List.of());
     }
 }

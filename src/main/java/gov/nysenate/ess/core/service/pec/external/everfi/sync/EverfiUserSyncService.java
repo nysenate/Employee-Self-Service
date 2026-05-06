@@ -8,6 +8,10 @@ import org.springframework.stereotype.Service;
 /**
  * Orchestrates a single end-to-end sync run: load → plan → execute.
  * See {@code package-info.java} for the pipeline overview and ubiquitous language.
+ *
+ * <p>Package-private on purpose: callers should enter through
+ * {@link EverfiUserSyncJobService#runUserSync(boolean, boolean)} so scheduling/manual runs share
+ * the same synchronized guard and reporting behavior.
  */
 @Service
 public class EverfiUserSyncService {
@@ -33,7 +37,7 @@ public class EverfiUserSyncService {
      * the returned {@link SyncRun} still reflects what would have happened — including any errors
      * raised during the load and plan stages.
      */
-    public SyncRun syncUsers(boolean dryRun) {
+    SyncRun syncUsers(boolean dryRun) {
         loader.bootstrapDepartmentLabels(dryRun);
         var desiredUsers = loader.loadDesiredUsers();
         var remoteLoadResult = loader.loadRemoteUsers();

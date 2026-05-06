@@ -9,6 +9,9 @@ import org.springframework.stereotype.Service;
 /**
  * Scheduled entrypoint for the sync. Runs once daily when {@code scheduler.everfi.sync.enabled}
  * is true and emails the resulting report to PEC admins.
+ *
+ * <p>This service is the serialized entrypoint for sync execution. Manual and scheduled runs must
+ * both come through {@link #runUserSync(boolean, boolean)} so the synchronized keyword applies.
  */
 @Service
 public class EverfiUserSyncJobService {
@@ -47,7 +50,7 @@ public class EverfiUserSyncJobService {
      * Runs the Everfi user sync once and optionally emails the detailed report to PEC admins.
      * The returned result is intentionally small because the report email is the detailed audit trail.
      */
-    public EverfiUserSyncJobResult runUserSync(boolean dryRun, boolean sendReportEmail) {
+    public synchronized EverfiUserSyncJobResult runUserSync(boolean dryRun, boolean sendReportEmail) {
         try {
             SyncRun run = everfiUserSyncService.syncUsers(dryRun);
             int errorCount = countErrors(run);

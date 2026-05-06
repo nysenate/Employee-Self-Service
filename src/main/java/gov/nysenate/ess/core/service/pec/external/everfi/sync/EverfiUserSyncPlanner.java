@@ -133,10 +133,13 @@ public class EverfiUserSyncPlanner {
                         unresolvedCandidateIssues(hasDuplicateRemoteEmpId)
                 ));
             }
-        } else if (desiredUser.email() == null) {
-            plannedActions.add(plannedAction(SyncAction.SKIP, desiredUser, null, SyncIssue.MISSING_EMAIL));
         } else {
-            plannedActions.add(plannedAction(SyncAction.CREATE, desiredUser, null));
+            List<SyncIssue> eligibilityIssues = desiredUserEligibilityIssues(desiredUser);
+            if (!eligibilityIssues.isEmpty()) {
+                plannedActions.add(new PlannedAction(SyncAction.SKIP, desiredUser, null, eligibilityIssues));
+            } else {
+                plannedActions.add(plannedAction(SyncAction.CREATE, desiredUser, null));
+            }
         }
     }
 
@@ -258,8 +261,9 @@ public class EverfiUserSyncPlanner {
      * Some desired users are resolved to a remote user but are not eligible for content updates.
      */
     private PlannedAction classifySyncEligibilityFailure(DesiredUser desiredUser, RemoteUser authoritativeRemote) {
-        if (hasMissingDesiredEmailMismatch(desiredUser, authoritativeRemote)) {
-            return plannedAction(SyncAction.SKIP, desiredUser, authoritativeRemote, SyncIssue.MISSING_EMAIL);
+        List<SyncIssue> eligibilityIssues = desiredUserEligibilityIssues(desiredUser);
+        if (!eligibilityIssues.isEmpty()) {
+            return new PlannedAction(SyncAction.SKIP, desiredUser, authoritativeRemote, eligibilityIssues);
         }
         return null;
     }
@@ -269,9 +273,18 @@ public class EverfiUserSyncPlanner {
                 && !Integer.valueOf(authoritativeRemote.mapping().employeeId()).equals(authoritativeRemote.remoteEmployeeId());
     }
 
-    private boolean hasMissingDesiredEmailMismatch(DesiredUser desiredUser, RemoteUser authoritativeRemote) {
-        return desiredUser.email() == null
-                && !Objects.equals(authoritativeRemote.remoteEmail(), desiredUser.email());
+    private List<SyncIssue> desiredUserEligibilityIssues(DesiredUser desiredUser) {
+        List<SyncIssue> issues = new ArrayList<>();
+        if (desiredUser.email() == null) {
+            issues.add(SyncIssue.MISSING_EMAIL);
+        }
+        if (desiredUser.firstName() == null) {
+            issues.add(SyncIssue.MISSING_FIRST_NAME);
+        }
+        if (desiredUser.lastName() == null) {
+            issues.add(SyncIssue.MISSING_LAST_NAME);
+        }
+        return issues;
     }
 
     private void flagDuplicateCandidateRemotes(List<PlannedAction> plannedActions,

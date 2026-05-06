@@ -9,6 +9,8 @@ import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategory
 import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUser;
 import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUserClient;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -30,12 +32,15 @@ import java.util.stream.Stream;
 @Service
 public class EverfiUserSyncLoader {
 
+    private static final Logger logger = LoggerFactory.getLogger(EverfiUserSyncLoader.class);
+
     /**
-     * @param remoteUsers              every user currently in the Everfi snapshot, enriched with mapping if present
+     * @param remoteUsers                 every user currently in the Everfi snapshot, enriched with mapping if present
      * @param empIdsWithUnmatchedMappings employee IDs whose mapping row points at a UUID no longer in Everfi —
      *                                    must not be routed to CREATE (would duplicate the mapping)
      */
-    record RemoteLoadResult(Set<RemoteUser> remoteUsers, Set<Integer> empIdsWithUnmatchedMappings) {}
+    record RemoteLoadResult(Set<RemoteUser> remoteUsers, Set<Integer> empIdsWithUnmatchedMappings) {
+    }
 
     private final EmployeeInfoService employeeInfoService;
     private final EverfiUserClient everfiUserClient;
@@ -136,7 +141,7 @@ public class EverfiUserSyncLoader {
                         .remoteFirstName(user.getFirstName())
                         .remoteLastName(user.getLastName())
                         .remoteEmail(user.getEmail())
-                        .categoryLabels(normalizeLabels(user.getUserCategoryLabels()))
+                        .categoryLabels(user.getCategoryLabels())
                         .build());
             }
             return new RemoteLoadResult(Collections.unmodifiableSet(result), unmatchedMappingEmpIds);
@@ -152,10 +157,11 @@ public class EverfiUserSyncLoader {
      * as a side effect.
      */
     EverfiCategoryLabel loadOrCreateTodaysUploadListLabel() {
+        LocalDate now = LocalDate.now();
         try {
-            EverfiCategoryLabel label = categoryService.getUploadListLabel(LocalDate.now());
+            EverfiCategoryLabel label = categoryService.getUploadListLabel(now);
             if (label == null) {
-                label = categoryService.createUploadListLabel(LocalDate.now());
+                label = categoryService.createUploadListLabel(now);
             }
             return label;
         } catch (IOException | RuntimeException ex) {
@@ -164,18 +170,28 @@ public class EverfiUserSyncLoader {
     }
 
     private List<EverfiCategoryLabel> resolveDesiredCategoryLabels(Employee emp) throws IOException {
+        EverfiCategoryLabel attendLiveLabel = categoryService.getAttendLiveLabel(emp);
+        EverfiCategoryLabel departmentLabel = categoryService.getDepartmentLabel(emp);
+        EverfiCategoryLabel roleLabel = categoryService.getRoleLabel(emp);
+
+        logMissingManagedLabel(emp, "Attended Live", attendLiveLabel, null);
+        logMissingManagedLabel(emp, "Department", departmentLabel, emp.getRespCenterHeadCode());
+        logMissingManagedLabel(emp, "Role", roleLabel, emp.isSenator() ? "Senator" : "Employee");
+
         return Stream.of(
-                categoryService.getAttendLiveLabel(emp),
-                categoryService.getDepartmentLabel(emp),
-                categoryService.getRoleLabel(emp)
+                attendLiveLabel,
+                departmentLabel,
+                roleLabel
         ).filter(Objects::nonNull).toList();
     }
 
-    private List<EverfiCategoryLabel> normalizeLabels(List<EverfiCategoryLabel> rawLabels) throws IOException {
-        if (rawLabels == null || rawLabels.isEmpty()) {
-            return List.of();
+    private void logMissingManagedLabel(Employee emp, String categoryName,
+                                        EverfiCategoryLabel label, String expectedLabelName) {
+        if (label == null) {
+            logger.warn("Missing Everfi managed label for employee {} in category '{}'{}",
+                    emp.getEmployeeId(),
+                    categoryName,
+                    expectedLabelName != null ? " (expected label: '" + expectedLabelName + "')" : "");
         }
-        List<EverfiCategoryLabel> normalized = categoryService.normalizeUsersCategoryLabel(rawLabels);
-        return normalized != null ? normalized : List.of();
     }
 }

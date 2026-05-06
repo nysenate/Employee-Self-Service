@@ -371,6 +371,8 @@ class SyncReportRenderer {
     private String describeIssue(SyncIssue issue) {
         return switch (issue) {
             case MISSING_EMAIL -> "Missing local email";
+            case MISSING_FIRST_NAME -> "Missing local first name";
+            case MISSING_LAST_NAME -> "Missing local last name";
             case DUPLICATE_REMOTE_EMP_ID -> "Multiple Everfi users share this employee ID";
             case MAPPING_WITHOUT_REMOTE_USER -> "Existing ESS mapping points to a missing Everfi user";
             case UNMAPPED_REMOTE_USER -> "Matching Everfi user exists without an ESS mapping";

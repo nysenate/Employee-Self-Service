@@ -2,7 +2,9 @@ package gov.nysenate.ess.core.service.pec.external.everfi.sync;
 
 import de.bechte.junit.runners.context.HierarchicalContextRunner;
 import gov.nysenate.ess.core.annotation.UnitTest;
+import org.junit.AfterClass;
 import org.junit.Test;
+import org.junit.BeforeClass;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
@@ -13,6 +15,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(HierarchicalContextRunner.class)
 @Category(UnitTest.class)
 public class EverfiUserSyncJobServiceTest {
+
+    private static TestLoggerControl logControl;
+
+    @BeforeClass
+    public static void suppressExpectedErrorLogs() {
+        logControl = TestLoggerControl.suppress(EverfiUserSyncJobService.class);
+    }
+
+    @AfterClass
+    public static void restoreLoggerLevel() {
+        logControl.restore();
+    }
 
     @Test
     public void runUserSync_returnsSuccessAndSendsReportEmail() {
@@ -155,7 +169,7 @@ public class EverfiUserSyncJobServiceTest {
         }
 
         @Override
-        public SyncRun syncUsers(boolean dryRun) {
+        SyncRun syncUsers(boolean dryRun) {
             syncUsersCalls++;
             this.receivedDryRun = dryRun;
             if (exceptionToThrow != null) {

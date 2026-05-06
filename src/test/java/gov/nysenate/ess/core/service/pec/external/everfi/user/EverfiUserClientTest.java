@@ -26,7 +26,7 @@ public class EverfiUserClientTest {
                 usersResponse("user-3", null, null)
         ));
 
-        EverfiUserClient client = new EverfiUserClient(everfiApiClient, new EverfiUserPayloadFactory());
+        EverfiUserClient client = new EverfiUserClient(everfiApiClient, new EverfiUserPayloadFactory(), null);
 
         List<EverfiUser> users = client.fetchAll(2);
 
@@ -38,7 +38,7 @@ public class EverfiUserClientTest {
 
     @Test
     public void findByUuidReturnsNullOnNotFound() throws IOException {
-        EverfiUserClient client = new EverfiUserClient(new NotFoundEverfiApiClient(), new EverfiUserPayloadFactory());
+        EverfiUserClient client = new EverfiUserClient(new NotFoundEverfiApiClient(), new EverfiUserPayloadFactory(), null);
 
         EverfiUser user = client.findByUuid("missing-user");
 
@@ -47,7 +47,7 @@ public class EverfiUserClientTest {
 
     @Test(expected = EverfiApiException.class)
     public void findByUuidRethrowsNonNotFoundApiErrors() throws IOException {
-        EverfiUserClient client = new EverfiUserClient(new ErrorEverfiApiClient(), new EverfiUserPayloadFactory());
+        EverfiUserClient client = new EverfiUserClient(new ErrorEverfiApiClient(), new EverfiUserPayloadFactory(), null);
 
         client.findByUuid("broken-user");
     }

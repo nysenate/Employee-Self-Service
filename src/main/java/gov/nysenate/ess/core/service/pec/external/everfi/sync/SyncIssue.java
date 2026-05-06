@@ -24,6 +24,16 @@ public enum SyncIssue {
     MISSING_EMAIL,
 
     /**
+     * The employee has no first name, so the sync cannot safely create or update the Everfi user.
+     */
+    MISSING_FIRST_NAME,
+
+    /**
+     * The employee has no last name, so the sync cannot safely create or update the Everfi user.
+     */
+    MISSING_LAST_NAME,
+
+    /**
      * An active remote user exists with no mapping and no corresponding desired user —
      * it may have been created outside of this sync process. Requires human review.
      */
