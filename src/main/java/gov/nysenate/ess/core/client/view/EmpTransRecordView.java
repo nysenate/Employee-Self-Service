@@ -1,13 +1,12 @@
 package gov.nysenate.ess.core.client.view;
 
-import com.ctc.wstx.util.StringUtil;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.core.model.transaction.TransactionColumn;
 import gov.nysenate.ess.core.model.transaction.TransactionRecord;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Map;

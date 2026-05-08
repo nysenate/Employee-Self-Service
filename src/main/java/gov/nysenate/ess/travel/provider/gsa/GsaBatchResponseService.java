@@ -6,6 +6,7 @@ import gov.nysenate.ess.core.util.HttpUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +29,7 @@ public class GsaBatchResponseService {
 
 
     @Autowired
-    public GsaBatchResponseService(GsaResponseParser gsaResponseParser, ObjectMapper jsonObjectMapper,
+    public GsaBatchResponseService(GsaResponseParser gsaResponseParser, @Qualifier("jsonObjectMapper") ObjectMapper jsonObjectMapper,
                                    GsaBatchResponseDao gsaBatchResponseDao) {
         this.gsaResponseParser = gsaResponseParser;
         this.mapper = jsonObjectMapper;

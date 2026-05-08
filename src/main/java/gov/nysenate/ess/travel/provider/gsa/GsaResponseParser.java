@@ -3,6 +3,7 @@ package gov.nysenate.ess.travel.provider.gsa;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -17,7 +18,7 @@ public class GsaResponseParser {
     private ObjectMapper mapper;
 
     @Autowired
-    public GsaResponseParser(ObjectMapper jsonObjectMapper) {
+    public GsaResponseParser(@Qualifier("jsonObjectMapper") ObjectMapper jsonObjectMapper) {
         this.mapper = jsonObjectMapper;
     }
 

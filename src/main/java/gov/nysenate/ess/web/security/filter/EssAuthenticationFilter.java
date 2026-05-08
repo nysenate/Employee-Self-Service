@@ -7,10 +7,9 @@ import gov.nysenate.ess.core.model.auth.LdapAuthStatus;
 import gov.nysenate.ess.core.model.auth.SenateLdapPerson;
 import gov.nysenate.ess.core.model.stats.UserAgentInfo;
 import gov.nysenate.ess.core.util.HttpResponseUtils;
-import gov.nysenate.ess.web.security.exception.LdapMismatchException;
-import gov.nysenate.ess.web.security.exception.NameNotFoundException;
 import gov.nysenate.ess.web.security.realm.EssIpAuthzRealm;
 import gov.nysenate.ess.web.security.xsrf.XsrfValidator;
+import jakarta.annotation.Resource;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.subject.Subject;
@@ -22,12 +21,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -37,8 +36,7 @@ import java.util.Set;
  *
  */
 @Service
-public class EssAuthenticationFilter extends AuthenticationFilter
-{
+public class EssAuthenticationFilter extends AuthenticationFilter {
     private static final Logger logger = LoggerFactory.getLogger(EssAuthenticationFilter.class);
 
     public static final String DEFAULT_USERNAME_PARAM = "username";
@@ -69,7 +67,7 @@ public class EssAuthenticationFilter extends AuthenticationFilter
      */
     @Override
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
-        if (isLoginRequest(request, response)) {
+        if (isLoginRequest(request, response) || pathsMatch("/WEB-INF/view/login.jsp", request)) {
             return isLoginSubmission(request, response)
                     ? executeLogin(request, response)
                     : handleLoginPageRequest(request, response);
@@ -82,7 +80,7 @@ public class EssAuthenticationFilter extends AuthenticationFilter
     /**
      * Overrides functionality so that requests to the login page are denied once the user is
      * already authenticated.
-     *
+     * <p>
      * If this subject was authenticated by the {@link EssIpAuthzRealm} log them out.
      * The {@link EssIpAuthzRealm} does not use {@link gov.nysenate.ess.core.model.auth.SenatePerson} as the
      * Primary Principal which is required when accessing non API endpoints.
@@ -129,7 +127,6 @@ public class EssAuthenticationFilter extends AuthenticationFilter
     }
 
     /**
-     *
      * @param request
      * @param response
      * @return
@@ -151,33 +148,24 @@ public class EssAuthenticationFilter extends AuthenticationFilter
                 subject.login(authToken);
                 authStatus = AuthenticationStatus.AUTHENTICATED;
                 return onLoginSuccess(authToken, authStatus, subject, request, response);
-            }
-            else if (ldapAuthStatus == LdapAuthStatus.LDAP_MISMATCH_EXCEPTION) {
+            } else if (ldapAuthStatus == LdapAuthStatus.LDAP_MISMATCH_EXCEPTION) {
                 authStatus = AuthenticationStatus.LDAP_MISMATCH;
-            }
-            else if (ldapAuthStatus == LdapAuthStatus.NAME_NOT_FOUND_EXCEPTION) {
+            } else if (ldapAuthStatus == LdapAuthStatus.NAME_NOT_FOUND_EXCEPTION) {
                 authStatus = AuthenticationStatus.NAME_NOT_FOUND;
-            }
-            else if (ldapAuthStatus == LdapAuthStatus.UNKNOWN_EXCEPTION) {
+            } else if (ldapAuthStatus == LdapAuthStatus.UNKNOWN_EXCEPTION) {
                 authStatus = AuthenticationStatus.UNKNOWN_ACCOUNT;
             }
-        }
-        catch(ExpiredCredentialsException ex) {
+        } catch (ExpiredCredentialsException ex) {
             authStatus = AuthenticationStatus.EXPIRED_CREDENTIALS;
-        }
-        catch(CredentialsException ex) {
+        } catch (CredentialsException ex) {
             authStatus = AuthenticationStatus.INCORRECT_CREDENTIALS;
-        }
-        catch(UnknownAccountException ex) {
+        } catch (UnknownAccountException ex) {
             authStatus = AuthenticationStatus.UNKNOWN_ACCOUNT;
-        }
-        catch(ExcessiveAttemptsException ex) {
+        } catch (ExcessiveAttemptsException ex) {
             authStatus = AuthenticationStatus.EXCESSIVE_ATTEMPTS;
-        }
-        catch(DisabledAccountException ex) {
+        } catch (DisabledAccountException ex) {
             authStatus = AuthenticationStatus.DISABLED_ACCOUNT;
-        }
-        catch(AuthenticationException ex) {
+        } catch (AuthenticationException ex) {
             logger.debug("Authentication exception!", ex);
             authStatus = AuthenticationStatus.FAILURE;
         }
@@ -211,7 +199,6 @@ public class EssAuthenticationFilter extends AuthenticationFilter
     }
 
     /**
-     *
      * @param token
      * @param subject
      * @param request
@@ -252,7 +239,6 @@ public class EssAuthenticationFilter extends AuthenticationFilter
     }
 
     /**
-     *
      * @param request
      * @return
      */
@@ -270,8 +256,8 @@ public class EssAuthenticationFilter extends AuthenticationFilter
 
     protected boolean isLoginSubmission(ServletRequest request, ServletResponse response) {
         return isLoginRequest(request, response) &&
-               (request instanceof HttpServletRequest) &&
-               WebUtils.toHttp(request).getMethod().equalsIgnoreCase(POST_METHOD);
+                (request instanceof HttpServletRequest) &&
+                WebUtils.toHttp(request).getMethod().equalsIgnoreCase(POST_METHOD);
     }
 
     protected boolean isAuthenticated(ServletRequest request, ServletResponse response) {

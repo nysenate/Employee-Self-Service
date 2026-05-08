@@ -3,10 +3,9 @@ package gov.nysenate.ess.core.service.notification.email.simple.message;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import gov.nysenate.ess.core.service.notification.email.simple.service.SimpleEmailService;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import javax.annotation.PostConstruct;
 
 /**
  * Simple email handle deliver the message to it's service.

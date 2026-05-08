@@ -35,7 +35,6 @@ public class BACHelpRestApiCtrlIT extends WebTest {
     @Autowired
     private ObjectMapper jsonObjectMapper;
 
-    @Ignore
     @Test
     public void testStatusChangesApiReturnsPostDate() throws Exception {
         // Test that the status changes API returns non-null postDate values

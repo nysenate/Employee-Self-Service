@@ -2,6 +2,8 @@ package gov.nysenate.ess.core.dao.stats;
 
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.model.stats.UserAgentInfo;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Role;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
@@ -11,12 +13,15 @@ import static gov.nysenate.ess.core.dao.stats.SqlUserAgentQuery.INSERT_USER_AGEN
  * {@inheritDoc}
  */
 @Repository
+@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 public class SqlUserAgentDao extends SqlBaseDao implements UserAgentDao {
+
+    public SqlUserAgentDao() {}
 
     /** {@inheritDoc} */
     @Override
     public void insertUserAgentInfo(UserAgentInfo userAgentInfo) {
-        localNamedJdbc.update(INSERT_USER_AGENT_INFO.getSql(schemaMap()), getUAIParams(userAgentInfo));
+        super.localNamedJdbc.update(INSERT_USER_AGENT_INFO.getSql(schemaMap()), getUAIParams(userAgentInfo));
     }
 
     /* --- Internal Methods --- */

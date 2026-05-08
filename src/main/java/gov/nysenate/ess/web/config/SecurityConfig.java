@@ -19,38 +19,36 @@ import org.apache.shiro.web.session.mgt.ServletContainerSessionManager;
 import org.apache.shiro.web.session.mgt.WebSessionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 
-import javax.servlet.Filter;
+import jakarta.servlet.Filter;
+import org.springframework.context.annotation.Role;
 
 /**
  * Configures dependencies necessary for security based functionality.
  * The security framework used is Apache Shiro (<a href="https://shiro.apache.org/">...</a>).
  */
 @Configuration
-public class SecurityConfig
-{
+@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+public class SecurityConfig {
 
     private final String loginUrl;
     private final String loginSuccessUrl;
     private final int xsrfBytesSize;
-
-    private final UserAgentDao userAgentDao;
+    private UserAgentDao userAgentDao;
     private final SessionTimeoutDao sessionTimeoutDao;
-    private final EssLdapAuthenticationFilter essLdapAuthenticationFilter;
 
     @Autowired
     public SecurityConfig(UserAgentDao userAgentDao,
                           SessionTimeoutDao sessionTimeoutDao,
-                          EssLdapAuthenticationFilter essLdapAuthenticationFilter,
                           @Value("${login.url:/login}") String loginUrl,
-                          @Value("${login.success.url:/}") String loginSuccessUrl,
+                          @Value("${login.success.url:/time/record/entry}") String loginSuccessUrl,
                           @Value("${xsrf.token.bytes:128}") int xsrfBytesSize) {
         this.userAgentDao = userAgentDao;
         this.sessionTimeoutDao = sessionTimeoutDao;
-        this.essLdapAuthenticationFilter = essLdapAuthenticationFilter;
         this.loginUrl = loginUrl;
         this.loginSuccessUrl = loginSuccessUrl;
         this.xsrfBytesSize = xsrfBytesSize;
@@ -61,6 +59,7 @@ public class SecurityConfig
      * manager instance.
      */
     @Bean(name = "shiroFilter")
+    @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
     public ShiroFilterFactoryBean shiroFilter() {
         ShiroFilterFactoryBean shiroFilter = new ShiroFilterFactoryBean();
         shiroFilter.setSecurityManager(securityManager());
@@ -73,6 +72,7 @@ public class SecurityConfig
     /**
      * Configures the shiro security manager with the instance of the active realm.
      */
+    @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
     @Bean(name = "securityManager")
     public DefaultWebSecurityManager securityManager() {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
@@ -83,23 +83,28 @@ public class SecurityConfig
 
     /**
      * Configures session manager.
+     *
      * @return {@link WebSessionManager}
      */
     @Bean(name = "sessionManager")
+    @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
     public WebSessionManager sessionManager() {
         return new ServletContainerSessionManager();
     }
 
     @Bean(name = "shiroCacheManager")
+    @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
     public CacheManager shiroCacheManager() {
         return new MemoryConstrainedCacheManager();
     }
 
     /**
      * This is needed for Shiro annotations to work
+     *
      * @return
      */
     @Bean
+    @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
     public AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor() {
         AuthorizationAttributeSourceAdvisor advisor = new AuthorizationAttributeSourceAdvisor();
         advisor.setSecurityManager(securityManager());
@@ -112,7 +117,7 @@ public class SecurityConfig
      * the bean name.
      */
     @Bean(name = "essAuthc")
-    public Filter essAuthenticationFilter (EssLdapAuthenticationFilter essLdapAuthenticationFilter) {
+    public Filter essAuthenticationFilter(EssLdapAuthenticationFilter essLdapAuthenticationFilter) {
         return new EssAuthenticationFilter(userAgentDao, essLdapAuthenticationFilter);
     }
 
@@ -120,10 +125,11 @@ public class SecurityConfig
      * An access control filter for session timeouts.
      * If the user's session is timed out, they will be logged out and redirected to login.
      * This filter should only be used for pages.  Api session timeouts are baked into the api authc filter.
+     *
      * @return
      */
     @Bean(name = "sessionTimeoutFilter")
-    public Filter sesssionTimeoutFilter () {
+    public Filter sesssionTimeoutFilter() {
         return new SessionTimeoutFilter(sessionTimeoutDao);
     }
 

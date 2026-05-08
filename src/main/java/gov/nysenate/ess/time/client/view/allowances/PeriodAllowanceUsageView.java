@@ -3,7 +3,7 @@ package gov.nysenate.ess.time.client.view.allowances;
 import gov.nysenate.ess.core.client.view.PayPeriodView;
 import gov.nysenate.ess.time.model.allowances.PeriodAllowanceUsage;
 
-import javax.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElement;
 import java.math.BigDecimal;
 
 public class PeriodAllowanceUsageView extends AllowanceUsageView {

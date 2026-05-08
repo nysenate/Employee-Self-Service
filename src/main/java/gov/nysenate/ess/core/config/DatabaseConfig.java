@@ -5,8 +5,10 @@ import gov.nysenate.ess.core.dao.base.SqlQueryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Role;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -21,6 +23,8 @@ import java.util.Map;
  */
 @EnableTransactionManagement
 @Configuration
+@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+
 public class DatabaseConfig {
     public static final String localTxManager = "localTxManager";
     public static final String remoteTxManager = "remoteTxManager";
@@ -28,10 +32,13 @@ public class DatabaseConfig {
     private final DataSource localDataSource;
     private final DataSource remoteDataSource;
 
+    private final DbConnectionPoolConfig dbConnectionPoolConfig;
+
     @Autowired
-    public DatabaseConfig(DataSource localDataSource, DataSource remoteDataSource) {
-        this.localDataSource = localDataSource;
-        this.remoteDataSource = remoteDataSource;
+    public DatabaseConfig(DbConnectionPoolConfig dbConnectionPoolConfig) {
+        this.dbConnectionPoolConfig = dbConnectionPoolConfig;
+        this.localDataSource = dbConnectionPoolConfig.localDataSource();
+        this.remoteDataSource = dbConnectionPoolConfig.remoteDataSource();
     }
 
     @Bean(name = "localJdbcTemplate")

@@ -3,6 +3,8 @@ package gov.nysenate.ess.web.security.session;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Role;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -14,6 +16,7 @@ import java.util.Objects;
  * and also register active pings to keep the session alive.
  */
 @Service
+@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 public class SessionTimeoutDao {
 
     private static final String lastActivePingAttr = "LAST_ACTIVE_PING";

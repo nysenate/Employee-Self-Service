@@ -3,6 +3,7 @@ package gov.nysenate.ess.travel.provider.addressvalidation;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nysenate.ess.core.model.unit.Address;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -16,7 +17,7 @@ public class AddressValidationService {
     private ObjectMapper jsonObjectMapper;
 
     @Autowired
-    public AddressValidationService(@Value("${sage.api.url}") String sageBaseUrl, ObjectMapper jsonObjectMapper) {
+    public AddressValidationService(@Value("${sage.api.url}") String sageBaseUrl, @Qualifier("jsonObjectMapper") ObjectMapper jsonObjectMapper) {
         this.sageBaseUrl = sageBaseUrl;
         this.jsonObjectMapper = jsonObjectMapper;
     }

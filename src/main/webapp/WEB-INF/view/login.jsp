@@ -2,7 +2,7 @@
 <%@ taglib prefix="ess" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="ess-component" tagdir="/WEB-INF/tags/component" %>
 <%@ taglib prefix="ess-layout" tagdir="/WEB-INF/tags/layout" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <ess-layout:head>
     <jsp:attribute name="pageTitle">ESS Login</jsp:attribute>
     <jsp:body>

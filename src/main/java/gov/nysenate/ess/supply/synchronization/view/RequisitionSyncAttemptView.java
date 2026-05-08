@@ -3,7 +3,7 @@ package gov.nysenate.ess.supply.synchronization.view;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.supply.synchronization.model.RequisitionSyncAttempt;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 @XmlRootElement

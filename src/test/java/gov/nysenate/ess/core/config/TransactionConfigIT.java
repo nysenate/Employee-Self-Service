@@ -7,7 +7,7 @@ import org.junit.experimental.categories.Category;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;

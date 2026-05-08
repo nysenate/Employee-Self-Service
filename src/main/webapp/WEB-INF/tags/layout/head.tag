@@ -1,6 +1,6 @@
 <%@tag description="ESS Base Template" pageEncoding="UTF-8"%>
 <%@attribute name="pageTitle" fragment="true" required="true" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
 
 <!doctype html>

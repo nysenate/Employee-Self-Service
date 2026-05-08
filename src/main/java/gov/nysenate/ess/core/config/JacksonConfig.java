@@ -11,7 +11,7 @@ public class JacksonConfig {
     /**
      * An object mapper for serializing objects into json.
      */
-    @Bean
+    @Bean(name = "jsonObjectMapper")
     public ObjectMapper jsonObjectMapper() {
         return OutputUtils.jsonMapper;
     }
@@ -19,7 +19,7 @@ public class JacksonConfig {
     /**
      * An object mapper for serializing objects into XML
      */
-    @Bean
+    @Bean(name = "xmlObjectMapper")
     public ObjectMapper xmlObjectMapper() {
         return OutputUtils.xmlMapper;
     }

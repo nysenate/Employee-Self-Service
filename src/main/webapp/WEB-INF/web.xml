@@ -1,22 +1,29 @@
-<web-app xmlns="http://java.sun.com/xml/ns/javaee" version="2.5">
-	<display-name>Senate Electronic Timesheets</display-name>
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app
+    xmlns="https://jakarta.ee/xml/ns/jakartaee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd"
+    version="5.0">
 
-    <error-page>
-        <error-code>404</error-code>
-        <location>/error/404</location>
-    </error-page>
+  <!-- Config here. -->
+  <display-name>Senate Electronic Timesheets</display-name>
 
-    <session-config>
-        <!-- Disables URL-based sessions (no more 'jsessionid' in the URL using Tomcat) -->
-        <tracking-mode>COOKIE</tracking-mode>
-        <!-- Set the session to never timeout itself -->
-        <session-timeout>-1</session-timeout>
-    </session-config>
+  <error-page>
+    <error-code>404</error-code>
+    <location>/error/404</location>
+  </error-page>
 
-    <!-- Configures the Spring profile -->
-    <context-param>
-        <param-name>spring.profiles.active</param-name>
-        <param-value>dev</param-value>
-    </context-param>
+  <session-config>
+    <!-- Disables URL-based sessions (no more 'jsessionid' in the URL using Tomcat) -->
+    <tracking-mode>COOKIE</tracking-mode>
+    <!-- Set the session to never timeout itself -->
+    <session-timeout>-1</session-timeout>
+  </session-config>
+
+  <!-- Configures the Spring profile -->
+  <context-param>
+    <param-name>spring.profiles.active</param-name>
+    <param-value>dev</param-value>
+  </context-param>
 
 </web-app>

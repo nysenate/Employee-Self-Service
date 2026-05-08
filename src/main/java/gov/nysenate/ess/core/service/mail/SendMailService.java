@@ -2,7 +2,7 @@ package gov.nysenate.ess.core.service.mail;
 
 import org.springframework.mail.javamail.JavaMailSender;
 
-import javax.mail.internet.MimeMessage;
+import jakarta.mail.internet.MimeMessage;
 import java.util.Collection;
 
 /**

@@ -7,12 +7,14 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.servlet.DispatcherServlet;
 
-import javax.servlet.DispatcherType;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletRegistration;
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.MultipartConfigElement;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletRegistration;
+
 import java.util.EnumSet;
 
-import static javax.servlet.DispatcherType.*;
+import static jakarta.servlet.DispatcherType.*;
 
 /**
  * Java based Spring configuration. This implementation is responsible for creating
@@ -20,13 +22,15 @@ import static javax.servlet.DispatcherType.*;
  * Note that this class is functionally equivalent to a web.xml configuration but we try
  * to do as much in Java to reduce complexity.
  */
-public class WebInitializer implements WebApplicationInitializer
-{
+public class WebInitializer implements WebApplicationInitializer {
     protected static String DISPATCHER_SERVLET_NAME = "ess";
+    private static final long MAX_UPLOAD_SIZE = 10 * 1024 * 1024;
+    private static final long MAX_UPLOAD_SIZE_PER_FILE = 5 * 1024 * 1024;
+    private static final int FILE_SIZE_THRESHOLD = 0;
 
     /**
      * Bootstraps the web application. This method is invoked automatically by Spring.
-     *
+     * <p>
      * You might notice that all the filters are registered via a DelegatingFilterProxy. This
      * is simply because we instantiate all the filter implementations as Spring beans and we
      * want Spring to control the lifecycle of these beans. If they were declared without this
@@ -56,22 +60,28 @@ public class WebInitializer implements WebApplicationInitializer
         dispatcher = servletContext.addServlet(DISPATCHER_SERVLET_NAME, new DispatcherServlet(dispatcherContext));
         dispatcher.setLoadOnStartup(1);
         dispatcher.addMapping("/");
+        dispatcher.setMultipartConfig(new MultipartConfigElement(
+                null,
+                MAX_UPLOAD_SIZE,
+                MAX_UPLOAD_SIZE_PER_FILE,
+                FILE_SIZE_THRESHOLD
+        ));
 
         /** Register the Apache Shiro web security filter using the 'shiroFilter' bean as the implementation. */
         DelegatingFilterProxy shiroFilter = new DelegatingFilterProxy("shiroFilter", dispatcherContext);
         shiroFilter.setTargetFilterLifecycle(true);
         EnumSet<DispatcherType> dispatcherTypes = EnumSet.of(REQUEST, FORWARD, INCLUDE);
         servletContext.addFilter("shiroFilter", shiroFilter)
-                      .addMappingForUrlPatterns(dispatcherTypes, false, "/*");
+                .addMappingForUrlPatterns(dispatcherTypes, false, "/*");
 
         /** Registers the CommonAttributeFilter which sets request attributes for JSP pages. */
         DelegatingFilterProxy commonAttributeFilter = new DelegatingFilterProxy("commonAttributeFilter", dispatcherContext);
         servletContext.addFilter("commonAttributeFilter", commonAttributeFilter)
-                      .addMappingForUrlPatterns(EnumSet.of(FORWARD), false, "/*");
+                .addMappingForUrlPatterns(EnumSet.of(FORWARD), false, "/*");
 
         /** Registers the restApiFilter which affects all REST API calls. */
         DelegatingFilterProxy restApiFilter = new DelegatingFilterProxy("restApiFilter", dispatcherContext);
         servletContext.addFilter("restApiFilter", restApiFilter)
-                .addMappingForUrlPatterns(EnumSet.of(REQUEST, FORWARD, INCLUDE), false, BaseRestApiCtrl.REST_PATH + "*");
+                .addMappingForUrlPatterns(EnumSet.of(REQUEST, FORWARD, INCLUDE), false, BaseRestApiCtrl.REST_PATH + "/*");
     }
 }
