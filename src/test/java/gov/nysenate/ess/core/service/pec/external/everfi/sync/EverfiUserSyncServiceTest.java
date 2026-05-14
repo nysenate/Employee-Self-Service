@@ -4,6 +4,7 @@ import de.bechte.junit.runners.context.HierarchicalContextRunner;
 import gov.nysenate.ess.core.annotation.UnitTest;
 import gov.nysenate.ess.core.model.pec.everfi.EverfiEmployeeMapping;
 import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategoryLabel;
+import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategorySnapshot;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -137,24 +138,30 @@ public class EverfiUserSyncServiceTest {
         }
 
         @Override
-        public void bootstrapDepartmentLabels(boolean dryRun) {
-            bootstrapDepartmentLabelsCalls++;
+        EverfiCategorySnapshot loadCategorySnapshot() {
+            return new EverfiCategorySnapshot(List.of());
         }
 
         @Override
-        public Set<DesiredUser> loadDesiredUsers() {
+        boolean bootstrapDepartmentLabels(EverfiCategorySnapshot snapshot, boolean dryRun) {
+            bootstrapDepartmentLabelsCalls++;
+            return false;
+        }
+
+        @Override
+        Set<DesiredUser> loadDesiredUsers(EverfiCategorySnapshot snapshot) {
             loadDesiredUsersCalls++;
             return desiredUsers;
         }
 
         @Override
-        public EverfiUserSyncLoader.RemoteLoadResult loadRemoteUsers() {
+        EverfiUserSyncLoader.RemoteLoadResult loadRemoteUsers(EverfiCategorySnapshot snapshot) {
             loadRemoteUsersCalls++;
             return new EverfiUserSyncLoader.RemoteLoadResult(remoteUsers, Set.of());
         }
 
         @Override
-        public EverfiCategoryLabel loadOrCreateTodaysUploadListLabel() {
+        EverfiCategoryLabel loadOrCreateTodaysUploadListLabel(EverfiCategorySnapshot snapshot) {
             loadOrCreateTodaysUploadListLabelCalls++;
             return labelToReturn;
         }

@@ -10,6 +10,7 @@ import gov.nysenate.ess.core.model.personnel.ResponsibilityHead;
 import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategory;
 import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategoryLabel;
 import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategoryService;
+import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategorySnapshot;
 import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUser;
 import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUserClient;
 import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUserPayloadFactory;
@@ -56,7 +57,7 @@ public class EverfiUserSyncLoaderTest {
                 null
         );
 
-        assertThatThrownBy(loader::loadDesiredUsers)
+        assertThatThrownBy(() -> loader.loadDesiredUsers(emptySnapshot()))
                 .isInstanceOf(EverfiUserSyncLoadException.class)
                 .hasMessage("Failed to load Desired Users.")
                 .hasCauseInstanceOf(IllegalStateException.class);
@@ -71,7 +72,7 @@ public class EverfiUserSyncLoaderTest {
                 null
         );
 
-        assertThatThrownBy(loader::loadRemoteUsers)
+        assertThatThrownBy(() -> loader.loadRemoteUsers(emptySnapshot()))
                 .isInstanceOf(EverfiUserSyncLoadException.class)
                 .hasMessage("Failed to load Remote Everfi Users.")
                 .hasCauseInstanceOf(IOException.class);
@@ -86,7 +87,7 @@ public class EverfiUserSyncLoaderTest {
                 null
         );
 
-        assertThatThrownBy(loader::loadRemoteUsers)
+        assertThatThrownBy(() -> loader.loadRemoteUsers(emptySnapshot()))
                 .isInstanceOf(EverfiUserSyncLoadException.class)
                 .hasMessage("Failed to load Remote Everfi Users.")
                 .hasCauseInstanceOf(RuntimeException.class);
@@ -101,7 +102,7 @@ public class EverfiUserSyncLoaderTest {
                 null
         );
 
-        Set<RemoteUser> remoteUsers = loader.loadRemoteUsers().remoteUsers();
+        Set<RemoteUser> remoteUsers = loader.loadRemoteUsers(emptySnapshot()).remoteUsers();
 
         RemoteUser remoteUser = assertOne(remoteUsers);
         assertThat(remoteUser.remoteUuid()).isEqualTo("everfi-1");
@@ -118,7 +119,7 @@ public class EverfiUserSyncLoaderTest {
                 null
         );
 
-        Set<RemoteUser> remoteUsers = loader.loadRemoteUsers().remoteUsers();
+        Set<RemoteUser> remoteUsers = loader.loadRemoteUsers(emptySnapshot()).remoteUsers();
 
         assertThat(assertOne(remoteUsers).mapping()).isEqualTo(mapping);
     }
@@ -132,7 +133,7 @@ public class EverfiUserSyncLoaderTest {
                 null
         );
 
-        Set<RemoteUser> remoteUsers = loader.loadRemoteUsers().remoteUsers();
+        Set<RemoteUser> remoteUsers = loader.loadRemoteUsers(emptySnapshot()).remoteUsers();
 
         assertThat(assertOne(remoteUsers).remoteEmployeeId()).isNull();
     }
@@ -147,7 +148,7 @@ public class EverfiUserSyncLoaderTest {
                 null
         );
 
-        EverfiUserSyncLoader.RemoteLoadResult result = loader.loadRemoteUsers();
+        EverfiUserSyncLoader.RemoteLoadResult result = loader.loadRemoteUsers(emptySnapshot());
 
         assertThat(result.remoteUsers()).isEmpty();
         assertThat(result.empIdsWithUnmatchedMappings()).containsExactly(123);
@@ -157,6 +158,10 @@ public class EverfiUserSyncLoaderTest {
     public void loadDesiredUsers_populatesCategoryLabels() {
         EverfiCategoryLabel attendLiveLabel = new EverfiCategoryLabel(1, "No");
         EverfiCategoryLabel roleLabel = new EverfiCategoryLabel(2, "Employee");
+        EverfiCategorySnapshot snapshot = new EverfiCategorySnapshot(List.of(
+                new EverfiCategory(10, EverfiCategorySnapshot.ATTENDED_LIVE, List.of(attendLiveLabel)),
+                new EverfiCategory(11, EverfiCategorySnapshot.ROLE, List.of(roleLabel))
+        ));
 
         Employee emp = new Employee();
         emp.setEmployeeId(42);
@@ -164,23 +169,14 @@ public class EverfiUserSyncLoaderTest {
         emp.setLastName("User");
         emp.setEmail("test@nysenate.gov");
 
-        EverfiCategoryService categoryService = new StubEverfiCategoryService() {
-            @Override
-            public EverfiCategoryLabel getAttendLiveLabel(Employee e) { return attendLiveLabel; }
-            @Override
-            public EverfiCategoryLabel getDepartmentLabel(Employee e) { return null; }
-            @Override
-            public EverfiCategoryLabel getRoleLabel(Employee e) { return roleLabel; }
-        };
-
         EverfiUserSyncLoader loader = new EverfiUserSyncLoader(
                 new StubEmployeeInfoService(Set.of(emp)),
                 new StubEverfiUserClient(List.of()),
                 new StubEverfiEmployeeMappingDao(List.of()),
-                categoryService
+                null
         );
 
-        Set<DesiredUser> desiredUsers = loader.loadDesiredUsers();
+        Set<DesiredUser> desiredUsers = loader.loadDesiredUsers(snapshot);
 
         DesiredUser desiredUser = assertOne(desiredUsers);
         assertThat(desiredUser.employeeId()).isEqualTo(42);
@@ -189,29 +185,33 @@ public class EverfiUserSyncLoaderTest {
 
     @Test
     public void loadOrCreateTodaysUploadListLabel_returnsExistingLabel() {
-        EverfiCategoryLabel existing = new EverfiCategoryLabel(200, "Apr 22 2026");
-        EverfiCategoryService categoryService = new StubEverfiCategoryService() {
-            @Override
-            public EverfiCategoryLabel getUploadListLabel(LocalDate date) { return existing; }
-        };
+        LocalDate today = LocalDate.now();
+        EverfiCategoryLabel existing = new EverfiCategoryLabel(
+                200, today.format(EverfiCategorySnapshot.UPLOAD_LIST_LABEL_FORMAT));
+        EverfiCategorySnapshot snapshot = new EverfiCategorySnapshot(List.of(
+                new EverfiCategory(20, EverfiCategorySnapshot.UPLOAD_LIST, List.of(existing))
+        ));
         EverfiUserSyncLoader loader = new EverfiUserSyncLoader(
                 new StubEmployeeInfoService(Set.of()),
                 new StubEverfiUserClient(List.of()),
                 new StubEverfiEmployeeMappingDao(List.of()),
-                categoryService
+                null
         );
 
-        assertThat(loader.loadOrCreateTodaysUploadListLabel()).isSameAs(existing);
+        assertThat(loader.loadOrCreateTodaysUploadListLabel(snapshot)).isSameAs(existing);
     }
 
     @Test
     public void loadOrCreateTodaysUploadListLabel_createsWhenMissing() {
         EverfiCategoryLabel created = new EverfiCategoryLabel(201, "Apr 22 2026");
+        EverfiCategorySnapshot snapshot = new EverfiCategorySnapshot(List.of(
+                new EverfiCategory(20, EverfiCategorySnapshot.UPLOAD_LIST, List.of())
+        ));
         EverfiCategoryService categoryService = new StubEverfiCategoryService() {
             @Override
-            public EverfiCategoryLabel getUploadListLabel(LocalDate date) { return null; }
-            @Override
-            public EverfiCategoryLabel createUploadListLabel(LocalDate date) { return created; }
+            public EverfiCategoryLabel createLabel(EverfiCategory category, String labelName) {
+                return created;
+            }
         };
         EverfiUserSyncLoader loader = new EverfiUserSyncLoader(
                 new StubEmployeeInfoService(Set.of()),
@@ -220,14 +220,17 @@ public class EverfiUserSyncLoaderTest {
                 categoryService
         );
 
-        assertThat(loader.loadOrCreateTodaysUploadListLabel()).isSameAs(created);
+        assertThat(loader.loadOrCreateTodaysUploadListLabel(snapshot)).isSameAs(created);
     }
 
     @Test
     public void loadOrCreateTodaysUploadListLabel_wrapsException() {
+        EverfiCategorySnapshot snapshot = new EverfiCategorySnapshot(List.of(
+                new EverfiCategory(20, EverfiCategorySnapshot.UPLOAD_LIST, List.of())
+        ));
         EverfiCategoryService categoryService = new StubEverfiCategoryService() {
             @Override
-            public EverfiCategoryLabel getUploadListLabel(LocalDate date) throws IOException {
+            public EverfiCategoryLabel createLabel(EverfiCategory category, String labelName) throws IOException {
                 throw new IOException("api error");
             }
         };
@@ -238,34 +241,54 @@ public class EverfiUserSyncLoaderTest {
                 categoryService
         );
 
-        assertThatThrownBy(loader::loadOrCreateTodaysUploadListLabel)
+        assertThatThrownBy(() -> loader.loadOrCreateTodaysUploadListLabel(snapshot))
                 .isInstanceOf(EverfiUserSyncLoadException.class)
                 .hasMessage("Failed to load or create today's Upload List label.")
                 .hasCauseInstanceOf(IOException.class);
     }
 
     @Test
-    public void bootstrapDepartmentLabels_dryRun_doesNotTouchCategoryService() {
-        EverfiCategoryService throwingCategoryService = new StubEverfiCategoryService() {
-            @Override
-            public EverfiCategory getCategory(String name) throws IOException {
-                throw new IOException("should not be called on dry run");
-            }
-        };
+    public void loadOrCreateTodaysUploadListLabel_uploadListCategoryMissing_throwsLoadException() {
+        EverfiCategorySnapshot snapshot = emptySnapshot();
+        EverfiUserSyncLoader loader = new EverfiUserSyncLoader(
+                new StubEmployeeInfoService(Set.of()),
+                new StubEverfiUserClient(List.of()),
+                new StubEverfiEmployeeMappingDao(List.of()),
+                null
+        );
+
+        assertThatThrownBy(() -> loader.loadOrCreateTodaysUploadListLabel(snapshot))
+                .isInstanceOf(EverfiUserSyncLoadException.class)
+                .hasMessage("Failed to load or create today's Upload List label.")
+                .hasCauseInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    public void bootstrapDepartmentLabels_dryRun_doesNotCreateLabels() {
+        var categoryService = new RecordingCreateLabelCategoryService();
+        EverfiCategorySnapshot snapshot = new EverfiCategorySnapshot(List.of(
+                new EverfiCategory(1, EverfiCategorySnapshot.DEPARTMENT, List.of())
+        ));
         EverfiUserSyncLoader loader = new EverfiUserSyncLoader(
                 new StubEmployeeInfoService(Set.of(employee(1, "ABC"))),
                 new StubEverfiUserClient(List.of()),
                 new StubEverfiEmployeeMappingDao(List.of()),
-                throwingCategoryService
+                categoryService
         );
 
-        loader.bootstrapDepartmentLabels(true);
+        boolean createdAny = loader.bootstrapDepartmentLabels(snapshot, true);
+
+        assertThat(createdAny).isFalse();
+        assertThat(categoryService.createdLabels).isEmpty();
     }
 
     @Test
     public void bootstrapDepartmentLabels_liveRun_createsMissingLabels() {
-        var categoryService = new RecordingDepartmentCategoryService(
-                new EverfiCategory(1, "Department", List.of(new EverfiCategoryLabel(10, "EXISTING"))));
+        var categoryService = new RecordingCreateLabelCategoryService();
+        EverfiCategorySnapshot snapshot = new EverfiCategorySnapshot(List.of(
+                new EverfiCategory(1, EverfiCategorySnapshot.DEPARTMENT,
+                        List.of(new EverfiCategoryLabel(10, "EXISTING")))
+        ));
         EverfiUserSyncLoader loader = new EverfiUserSyncLoader(
                 new StubEmployeeInfoService(Set.of(employee(1, "EXISTING"), employee(2, "NEW_DEPT"))),
                 new StubEverfiUserClient(List.of()),
@@ -273,15 +296,19 @@ public class EverfiUserSyncLoaderTest {
                 categoryService
         );
 
-        loader.bootstrapDepartmentLabels(false);
+        boolean createdAny = loader.bootstrapDepartmentLabels(snapshot, false);
 
+        assertThat(createdAny).isTrue();
         assertThat(categoryService.createdLabels).containsExactly("NEW_DEPT");
     }
 
     @Test
     public void bootstrapDepartmentLabels_liveRun_noMissingLabels_doesNotCreate() {
-        var categoryService = new RecordingDepartmentCategoryService(
-                new EverfiCategory(1, "Department", List.of(new EverfiCategoryLabel(10, "EXISTING"))));
+        var categoryService = new RecordingCreateLabelCategoryService();
+        EverfiCategorySnapshot snapshot = new EverfiCategorySnapshot(List.of(
+                new EverfiCategory(1, EverfiCategorySnapshot.DEPARTMENT,
+                        List.of(new EverfiCategoryLabel(10, "EXISTING")))
+        ));
         EverfiUserSyncLoader loader = new EverfiUserSyncLoader(
                 new StubEmployeeInfoService(Set.of(employee(1, "EXISTING"))),
                 new StubEverfiUserClient(List.of()),
@@ -289,15 +316,18 @@ public class EverfiUserSyncLoaderTest {
                 categoryService
         );
 
-        loader.bootstrapDepartmentLabels(false);
+        boolean createdAny = loader.bootstrapDepartmentLabels(snapshot, false);
 
+        assertThat(createdAny).isFalse();
         assertThat(categoryService.createdLabels).isEmpty();
     }
 
     @Test
     public void bootstrapDepartmentLabels_liveRun_filtersNullAndLiteralNullRespCodes() {
-        var categoryService = new RecordingDepartmentCategoryService(
-                new EverfiCategory(1, "Department", List.of()));
+        var categoryService = new RecordingCreateLabelCategoryService();
+        EverfiCategorySnapshot snapshot = new EverfiCategorySnapshot(List.of(
+                new EverfiCategory(1, EverfiCategorySnapshot.DEPARTMENT, List.of())
+        ));
         EverfiUserSyncLoader loader = new EverfiUserSyncLoader(
                 new StubEmployeeInfoService(Set.of(
                         employee(1, null),
@@ -309,34 +339,33 @@ public class EverfiUserSyncLoaderTest {
                 categoryService
         );
 
-        loader.bootstrapDepartmentLabels(false);
+        loader.bootstrapDepartmentLabels(snapshot, false);
 
         assertThat(categoryService.createdLabels).containsExactly("VALID");
     }
 
     @Test
     public void bootstrapDepartmentLabels_departmentCategoryMissing_throwsLoadException() {
-        EverfiCategoryService categoryService = new StubEverfiCategoryService() {
-            @Override
-            public EverfiCategory getCategory(String name) { return null; }
-        };
         EverfiUserSyncLoader loader = new EverfiUserSyncLoader(
                 new StubEmployeeInfoService(Set.of(employee(1, "ABC"))),
                 new StubEverfiUserClient(List.of()),
                 new StubEverfiEmployeeMappingDao(List.of()),
-                categoryService
+                null
         );
 
-        assertThatThrownBy(() -> loader.bootstrapDepartmentLabels(false))
+        assertThatThrownBy(() -> loader.bootstrapDepartmentLabels(emptySnapshot(), false))
                 .isInstanceOf(EverfiUserSyncLoadException.class)
                 .hasMessage("Failed to bootstrap department category labels.");
     }
 
     @Test
-    public void bootstrapDepartmentLabels_wrapsException() {
+    public void bootstrapDepartmentLabels_wrapsCreateLabelException() {
+        EverfiCategorySnapshot snapshot = new EverfiCategorySnapshot(List.of(
+                new EverfiCategory(1, EverfiCategorySnapshot.DEPARTMENT, List.of())
+        ));
         EverfiCategoryService categoryService = new StubEverfiCategoryService() {
             @Override
-            public EverfiCategory getCategory(String name) throws IOException {
+            public EverfiCategoryLabel createLabel(EverfiCategory category, String labelName) throws IOException {
                 throw new IOException("api error");
             }
         };
@@ -347,10 +376,14 @@ public class EverfiUserSyncLoaderTest {
                 categoryService
         );
 
-        assertThatThrownBy(() -> loader.bootstrapDepartmentLabels(false))
+        assertThatThrownBy(() -> loader.bootstrapDepartmentLabels(snapshot, false))
                 .isInstanceOf(EverfiUserSyncLoadException.class)
                 .hasMessage("Failed to bootstrap department category labels.")
                 .hasCauseInstanceOf(IOException.class);
+    }
+
+    private static EverfiCategorySnapshot emptySnapshot() {
+        return new EverfiCategorySnapshot(List.of());
     }
 
     private static Employee employee(int id, String respCenterHeadCode) {
@@ -448,23 +481,23 @@ public class EverfiUserSyncLoaderTest {
         private final List<EverfiUser> users;
 
         private StubEverfiUserClient(List<EverfiUser> users) {
-            super(null, new EverfiUserPayloadFactory(), null);
+            super(null, new EverfiUserPayloadFactory());
             this.users = users;
         }
 
         @Override
-        public List<EverfiUser> fetchAll() {
+        public List<EverfiUser> fetchAll(EverfiCategorySnapshot snapshot) {
             return users;
         }
     }
 
     private static class FailingEverfiUserClient extends EverfiUserClient {
         private FailingEverfiUserClient() {
-            super(null, new EverfiUserPayloadFactory(), null);
+            super(null, new EverfiUserPayloadFactory());
         }
 
         @Override
-        public List<EverfiUser> fetchAll() throws IOException {
+        public List<EverfiUser> fetchAll(EverfiCategorySnapshot snapshot) throws IOException {
             throw new IOException("remote load failed");
         }
     }
@@ -541,25 +574,17 @@ public class EverfiUserSyncLoaderTest {
 
     private static class StubEverfiCategoryService extends EverfiCategoryService {
         private StubEverfiCategoryService() {
-            super(null, null, null);
+            super(null);
         }
     }
 
-    private static class RecordingDepartmentCategoryService extends StubEverfiCategoryService {
-        private final EverfiCategory departmentCategory;
+    private static class RecordingCreateLabelCategoryService extends StubEverfiCategoryService {
         final List<String> createdLabels = new ArrayList<>();
 
-        private RecordingDepartmentCategoryService(EverfiCategory departmentCategory) {
-            this.departmentCategory = departmentCategory;
-        }
-
         @Override
-        public EverfiCategory getCategory(String name) { return departmentCategory; }
-
-        @Override
-        public EverfiCategoryLabel createDepartmentLabel(String name) {
-            createdLabels.add(name);
-            return new EverfiCategoryLabel(99, name);
+        public EverfiCategoryLabel createLabel(EverfiCategory category, String labelName) {
+            createdLabels.add(labelName);
+            return new EverfiCategoryLabel(99, labelName);
         }
     }
 

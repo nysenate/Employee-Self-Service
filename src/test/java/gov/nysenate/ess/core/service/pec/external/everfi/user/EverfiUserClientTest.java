@@ -3,6 +3,7 @@ package gov.nysenate.ess.core.service.pec.external.everfi.user;
 import gov.nysenate.ess.core.annotation.UnitTest;
 import gov.nysenate.ess.core.service.pec.external.everfi.EverfiApiException;
 import gov.nysenate.ess.core.service.pec.external.everfi.EverfiApiClient;
+import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategorySnapshot;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -26,9 +27,9 @@ public class EverfiUserClientTest {
                 usersResponse("user-3", null, null)
         ));
 
-        EverfiUserClient client = new EverfiUserClient(everfiApiClient, new EverfiUserPayloadFactory(), null);
+        EverfiUserClient client = new EverfiUserClient(everfiApiClient, new EverfiUserPayloadFactory());
 
-        List<EverfiUser> users = client.fetchAll(2);
+        List<EverfiUser> users = client.fetchAll(2, new EverfiCategorySnapshot(List.of()));
 
         assertEquals(3, users.size());
         assertEquals("user-1", users.get(0).getUuid());
@@ -38,18 +39,18 @@ public class EverfiUserClientTest {
 
     @Test
     public void findByUuidReturnsNullOnNotFound() throws IOException {
-        EverfiUserClient client = new EverfiUserClient(new NotFoundEverfiApiClient(), new EverfiUserPayloadFactory(), null);
+        EverfiUserClient client = new EverfiUserClient(new NotFoundEverfiApiClient(), new EverfiUserPayloadFactory());
 
-        EverfiUser user = client.findByUuid("missing-user");
+        EverfiUser user = client.findByUuid("missing-user", new EverfiCategorySnapshot(List.of()));
 
         assertNull(user);
     }
 
     @Test(expected = EverfiApiException.class)
     public void findByUuidRethrowsNonNotFoundApiErrors() throws IOException {
-        EverfiUserClient client = new EverfiUserClient(new ErrorEverfiApiClient(), new EverfiUserPayloadFactory(), null);
+        EverfiUserClient client = new EverfiUserClient(new ErrorEverfiApiClient(), new EverfiUserPayloadFactory());
 
-        client.findByUuid("broken-user");
+        client.findByUuid("broken-user", new EverfiCategorySnapshot(List.of()));
     }
 
     private static String usersResponse(String firstUuid, String secondUuid, String nextLink) {

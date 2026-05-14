@@ -6,6 +6,7 @@ import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategory;
 import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategoryLabel;
 import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategoryService;
+import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategorySnapshot;
 import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUser;
 import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUserClient;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
@@ -59,14 +60,29 @@ public class EverfiUserSyncLoader {
     }
 
     /**
+     * Fetch a fresh {@link EverfiCategorySnapshot}. Callers pass the result into the other
+     * load methods so a single run sees a consistent view of the categories and avoids
+     * repeated remote fetches.
+     */
+    EverfiCategorySnapshot loadCategorySnapshot() {
+        try {
+            return categoryService.fetchSnapshot();
+        } catch (IOException | RuntimeException ex) {
+            throw new EverfiUserSyncLoadException("Failed to load Everfi category snapshot.", ex);
+        }
+    }
+
+    /**
      * Ensures every employee's {@code respCenterHeadCode} has a corresponding Department label in Everfi,
      * creating any that are missing. Skipped on dry runs — no remote writes occur.
      * Throws {@link EverfiUserSyncLoadException} on any failure so the pipeline aborts before planning.
+     *
+     * @return true if any new labels were created (snapshot now stale); false otherwise.
      */
-    void bootstrapDepartmentLabels(boolean dryRun) {
-        if (dryRun) return;
+    boolean bootstrapDepartmentLabels(EverfiCategorySnapshot snapshot, boolean dryRun) {
+        if (dryRun) return false;
         try {
-            EverfiCategory departmentCategory = categoryService.getCategory("Department");
+            EverfiCategory departmentCategory = snapshot.getCategory(EverfiCategorySnapshot.DEPARTMENT);
             if (departmentCategory == null) {
                 throw new IllegalStateException("\"Department\" category not found in Everfi.");
             }
@@ -83,8 +99,9 @@ public class EverfiUserSyncLoader {
                     .toList();
 
             for (String code : missingCodes) {
-                categoryService.createDepartmentLabel(code);
+                categoryService.createLabel(departmentCategory, code);
             }
+            return !missingCodes.isEmpty();
         } catch (IOException | RuntimeException ex) {
             throw new EverfiUserSyncLoadException("Failed to bootstrap department category labels.", ex);
         }
@@ -94,7 +111,7 @@ public class EverfiUserSyncLoader {
      * Loads a set of Users who should be active in Everfi, including their category labels
      * (Attended Live, Department, Role) derived from employee data.
      */
-    Set<DesiredUser> loadDesiredUsers() {
+    Set<DesiredUser> loadDesiredUsers(EverfiCategorySnapshot snapshot) {
         try {
             Set<Employee> employees = employeeInfoService.getAllEmployees(true);
             Set<DesiredUser> result = new HashSet<>();
@@ -104,11 +121,11 @@ public class EverfiUserSyncLoader {
                         .email(employee.getEmail())
                         .firstName(employee.getFirstName())
                         .lastName(employee.getLastName())
-                        .categoryLabels(resolveDesiredCategoryLabels(employee))
+                        .categoryLabels(resolveDesiredCategoryLabels(employee, snapshot))
                         .build());
             }
             return Collections.unmodifiableSet(result);
-        } catch (IOException | RuntimeException ex) {
+        } catch (RuntimeException ex) {
             throw new EverfiUserSyncLoadException("Failed to load Desired Users.", ex);
         }
     }
@@ -117,11 +134,11 @@ public class EverfiUserSyncLoader {
      * Load the current representation of remote Everfi users, with normalized category labels.
      * Also detects local mapping rows whose UUID is absent from the remote snapshot.
      */
-    RemoteLoadResult loadRemoteUsers() {
+    RemoteLoadResult loadRemoteUsers(EverfiCategorySnapshot snapshot) {
         try {
             Map<String, EverfiEmployeeMapping> mappingsByUuid = everfiEmployeeMappingDao.findAll().stream()
                     .collect(Collectors.toUnmodifiableMap(EverfiEmployeeMapping::everfiUuid, Function.identity()));
-            List<EverfiUser> everfiUsers = everfiUserClient.fetchAll();
+            List<EverfiUser> everfiUsers = everfiUserClient.fetchAll(snapshot);
 
             Set<String> fetchedUuids = everfiUsers.stream()
                     .map(EverfiUser::getUuid)
@@ -156,27 +173,32 @@ public class EverfiUserSyncLoader {
      * Must only be called on a live run with at least one CREATE — dry runs must not create labels
      * as a side effect.
      */
-    EverfiCategoryLabel loadOrCreateTodaysUploadListLabel() {
+    EverfiCategoryLabel loadOrCreateTodaysUploadListLabel(EverfiCategorySnapshot snapshot) {
         LocalDate now = LocalDate.now();
         try {
-            EverfiCategoryLabel label = categoryService.getUploadListLabel(now);
-            if (label == null) {
-                label = categoryService.createUploadListLabel(now);
+            EverfiCategoryLabel label = snapshot.getUploadListLabel(now);
+            if (label != null) {
+                return label;
             }
-            return label;
+            EverfiCategory uploadListCategory = snapshot.getCategory(EverfiCategorySnapshot.UPLOAD_LIST);
+            if (uploadListCategory == null) {
+                throw new IllegalStateException("\"Upload List\" category not found in Everfi.");
+            }
+            return categoryService.createLabel(
+                    uploadListCategory, now.format(EverfiCategorySnapshot.UPLOAD_LIST_LABEL_FORMAT));
         } catch (IOException | RuntimeException ex) {
             throw new EverfiUserSyncLoadException("Failed to load or create today's Upload List label.", ex);
         }
     }
 
-    private List<EverfiCategoryLabel> resolveDesiredCategoryLabels(Employee emp) throws IOException {
-        EverfiCategoryLabel attendLiveLabel = categoryService.getAttendLiveLabel(emp);
-        EverfiCategoryLabel departmentLabel = categoryService.getDepartmentLabel(emp);
-        EverfiCategoryLabel roleLabel = categoryService.getRoleLabel(emp);
+    private List<EverfiCategoryLabel> resolveDesiredCategoryLabels(Employee emp, EverfiCategorySnapshot snapshot) {
+        EverfiCategoryLabel attendLiveLabel = snapshot.getAttendLiveLabel(emp);
+        EverfiCategoryLabel departmentLabel = snapshot.getDepartmentLabel(emp);
+        EverfiCategoryLabel roleLabel = snapshot.getRoleLabel(emp);
 
-        logMissingManagedLabel(emp, "Attended Live", attendLiveLabel, null);
-        logMissingManagedLabel(emp, "Department", departmentLabel, emp.getRespCenterHeadCode());
-        logMissingManagedLabel(emp, "Role", roleLabel, emp.isSenator() ? "Senator" : "Employee");
+        logMissingManagedLabel(emp, EverfiCategorySnapshot.ATTENDED_LIVE, attendLiveLabel, null);
+        logMissingManagedLabel(emp, EverfiCategorySnapshot.DEPARTMENT, departmentLabel, emp.getRespCenterHeadCode());
+        logMissingManagedLabel(emp, EverfiCategorySnapshot.ROLE, roleLabel, emp.isSenator() ? "Senator" : "Employee");
 
         return Stream.of(
                 attendLiveLabel,

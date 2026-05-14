@@ -61,7 +61,7 @@ final class EverfiUserSyncExecutorTestSupport {
         private final EverfiUser userToReturn;
 
         RecordingEverfiUserClient(EverfiUser userToReturn) {
-            super(null, new EverfiUserPayloadFactory(), null);
+            super(null, new EverfiUserPayloadFactory());
             this.userToReturn = userToReturn;
         }
 
@@ -83,7 +83,7 @@ final class EverfiUserSyncExecutorTestSupport {
         private final boolean failUpdateUser;
 
         FailingEverfiUserClient(boolean failAddUser, boolean failUpdateUser) {
-            super(null, null, null);
+            super(null, new EverfiUserPayloadFactory());
             this.failAddUser = failAddUser;
             this.failUpdateUser = failUpdateUser;
         }

@@ -1,6 +1,7 @@
 package gov.nysenate.ess.core.service.pec.external.everfi.sync;
 
 import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategoryLabel;
+import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategorySnapshot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -38,9 +39,14 @@ public class EverfiUserSyncService {
      * raised during the load and plan stages.
      */
     SyncRun syncUsers(boolean dryRun) {
-        loader.bootstrapDepartmentLabels(dryRun);
-        var desiredUsers = loader.loadDesiredUsers();
-        var remoteLoadResult = loader.loadRemoteUsers();
+        EverfiCategorySnapshot snapshot = loader.loadCategorySnapshot();
+        if (loader.bootstrapDepartmentLabels(snapshot, dryRun)) {
+            // Bootstrap created new labels; refetch so downstream sees them.
+            snapshot = loader.loadCategorySnapshot();
+        }
+
+        var desiredUsers = loader.loadDesiredUsers(snapshot);
+        var remoteLoadResult = loader.loadRemoteUsers(snapshot);
 
         var actions = planner.plan(desiredUsers, RemoteUserIndex.from(
                 remoteLoadResult.remoteUsers(),
@@ -51,7 +57,7 @@ public class EverfiUserSyncService {
         // and only on a live run — dry runs must not create labels as a side effect.
         boolean hasCreates = actions.stream().anyMatch(a -> a.action() == SyncAction.CREATE);
         EverfiCategoryLabel uploadListLabel = hasCreates && !dryRun
-                ? loader.loadOrCreateTodaysUploadListLabel()
+                ? loader.loadOrCreateTodaysUploadListLabel(snapshot)
                 : null;
 
         var results = executor.executeAll(actions, uploadListLabel, dryRun);

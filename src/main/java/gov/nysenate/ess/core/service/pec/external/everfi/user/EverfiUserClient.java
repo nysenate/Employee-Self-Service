@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nysenate.ess.core.service.pec.external.everfi.EverfiApiException;
 import gov.nysenate.ess.core.service.pec.external.everfi.EverfiApiClient;
 import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategoryLabel;
-import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategoryService;
+import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategorySnapshot;
 import gov.nysenate.ess.core.util.OutputUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -25,51 +25,55 @@ public class EverfiUserClient {
 
     private final EverfiApiClient everfiApiClient;
     private final EverfiUserPayloadFactory payloadFactory;
-    private final EverfiCategoryService categoryService;
 
     public EverfiUserClient(EverfiApiClient everfiApiClient,
-                            EverfiUserPayloadFactory payloadFactory,
-                            EverfiCategoryService categoryService) {
+                            EverfiUserPayloadFactory payloadFactory) {
         this.everfiApiClient = everfiApiClient;
         this.payloadFactory = payloadFactory;
-        this.categoryService = categoryService;
     }
 
-    public List<EverfiUser> fetchAll() throws IOException {
-        return fetchAll(EverfiUsersRequest.DEFAULT_PAGE_SIZE);
+    public List<EverfiUser> fetchAll(EverfiCategorySnapshot snapshot) throws IOException {
+        return fetchAll(EverfiUsersRequest.DEFAULT_PAGE_SIZE, snapshot);
     }
 
-    public List<EverfiUser> fetchAll(int pageSize) throws IOException {
+    public List<EverfiUser> fetchAll(int pageSize, EverfiCategorySnapshot snapshot) throws IOException {
         List<EverfiUser> users = new ArrayList<>();
-        forEachPage(pageSize, users::addAll);
+        forEachPage(pageSize, users::addAll, snapshot);
         return users;
     }
 
-    public void forEachPage(Consumer<List<EverfiUser>> pageConsumer) throws IOException {
-        forEachPage(EverfiUsersRequest.DEFAULT_PAGE_SIZE, pageConsumer);
+    public void forEachPage(Consumer<List<EverfiUser>> pageConsumer,
+                            EverfiCategorySnapshot snapshot) throws IOException {
+        forEachPage(EverfiUsersRequest.DEFAULT_PAGE_SIZE, pageConsumer, snapshot);
     }
 
-    public void forEachPage(int pageSize, Consumer<List<EverfiUser>> pageConsumer) throws IOException {
+    public void forEachPage(int pageSize,
+                            Consumer<List<EverfiUser>> pageConsumer,
+                            EverfiCategorySnapshot snapshot) throws IOException {
         Assert.notNull(pageConsumer, "pageConsumer must not be null");
+        Assert.notNull(snapshot, "snapshot must not be null");
 
         EverfiUsersRequest request = new EverfiUsersRequest(everfiApiClient, 1, pageSize);
         while (request != null) {
             List<EverfiUser> page = request.getUsers();
             for (EverfiUser user : page) {
-                hydrateLabels(user);
+                hydrateLabels(user, snapshot);
             }
             pageConsumer.accept(page);
             request = request.next();
         }
     }
 
-    public EverfiUser findByUuid(String uuid) throws IOException {
+    public EverfiUser findByUuid(String uuid, EverfiCategorySnapshot snapshot) throws IOException {
         Assert.hasText(uuid, "uuid must not be empty");
+        Assert.notNull(snapshot, "snapshot must not be null");
 
         String endpoint = USER_ENDPOINT + "/" + uuid + "?fields[users]=" + SINGLE_USER_FIELDS;
         try {
             String data = everfiApiClient.get(endpoint);
-            return parseUserFromData(data);
+            EverfiUser user = parseUserFromData(data);
+            hydrateLabels(user, snapshot);
+            return user;
         } catch (EverfiApiException ex) {
             if (ex.getStatusCode() == 404) {
                 return null;
@@ -105,18 +109,16 @@ public class EverfiUserClient {
         if (userNode == null) {
             return null;
         }
-        EverfiUser user = mapper.treeToValue(userNode, EverfiUser.class);
-        hydrateLabels(user);
-        return user;
+        return mapper.treeToValue(userNode, EverfiUser.class);
     }
 
     /**
      * Replaces the sparse label refs Everfi returns (id-only, name = JSON:API resource type)
-     * with fully populated labels by joining against the cached category list. Labels whose ids
-     * are not present in the cache are dropped — they belong to a category the local view doesn't
+     * with fully populated labels by joining against the snapshot. Labels whose ids are not
+     * present in the snapshot are dropped — they belong to a category the local view doesn't
      * know about and we can't describe them meaningfully.
      */
-    private void hydrateLabels(EverfiUser user) throws IOException {
+    private void hydrateLabels(EverfiUser user, EverfiCategorySnapshot snapshot) {
         if (user == null) {
             return;
         }
@@ -125,7 +127,7 @@ public class EverfiUserClient {
             user.setCategoryLabels(List.of());
             return;
         }
-        List<EverfiCategoryLabel> hydrated = categoryService.hydrateLabels(raw);
+        List<EverfiCategoryLabel> hydrated = snapshot.hydrateLabels(raw);
         user.setCategoryLabels(hydrated != null ? hydrated : List.of());
     }
 }
