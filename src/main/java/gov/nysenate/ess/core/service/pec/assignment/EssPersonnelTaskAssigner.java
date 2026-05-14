@@ -19,7 +19,6 @@ import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.model.transaction.TransactionHistoryUpdateEvent;
 import gov.nysenate.ess.core.model.transaction.TransactionRecord;
 import gov.nysenate.ess.core.service.mail.SendMailService;
-import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUserService;
 import gov.nysenate.ess.core.service.pec.notification.AssignmentWithTask;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
@@ -48,10 +47,9 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
 
     private final EmployeeInfoService empInfoService;
     private final EmpTransactionService transactionService;
-    private final EverfiUserService everfiUserService;
     private final SendMailService sendMailService;
-    private final PersonnelTaskDao personnelTaskDao;
     private final EverfiEmployeeMappingDao everfiEmployeeMappingDao;
+    private final PersonnelTaskDao personnelTaskDao;
     private final EmployeeDao employeeDao;
     private final PersonnelTaskAssignmentDao assignmentDao;
     private final List<String> pecAdminReportEmails;
@@ -60,11 +58,16 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
     private final List<GroupTaskAssigner> groupTaskAssigners;
 
     public EssPersonnelTaskAssigner(EmployeeInfoService empInfoService,
-                                    EmpTransactionService transactionService, SendMailService sendMailService, EverfiEmployeeMappingDao everfiEmployeeMappingDao,
+                                    EmpTransactionService transactionService,
+                                    SendMailService sendMailService,
+                                    EverfiEmployeeMappingDao everfiEmployeeMappingDao,
                                     List<GroupTaskAssigner> groupTaskAssigners,
                                     PersonnelTaskDao personnelTaskDao,
                                     PersonnelTaskAssignmentDao assignmentDao,
-                                    EventBus eventBus, EverfiUserService everfiUserService, EmployeeDao employeeDao, @Value("${pec.admin.report.emails}") String pecAdminReportEmails) {
+                                    EventBus eventBus,
+                                    EmployeeDao employeeDao,
+                                    @Value("${pec.admin.report.emails}") String pecAdminReportEmails
+    ) {
         this.empInfoService = empInfoService;
         this.transactionService = transactionService;
         this.sendMailService = sendMailService;
@@ -72,7 +75,6 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
         this.groupTaskAssigners = groupTaskAssigners;
         this.personnelTaskDao = personnelTaskDao;
         this.assignmentDao = assignmentDao;
-        this.everfiUserService = everfiUserService;
         this.employeeDao = employeeDao;
         this.pecAdminReportEmails = Arrays.asList(pecAdminReportEmails.replaceAll(" ", "").split(","));
         eventBus.register(this);
@@ -182,6 +184,7 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
                 " by employee " + updateEmpID);
     }
 
+    // TODO why are these "responses" emailed instead of returned through the UI?
     private void checkEverfiRecords(int taskID, int empID) {
         EverfiEmployeeMapping everfiEmployeeMapping = everfiEmployeeMappingDao.findByEmpId(empID).orElse(null);
         Employee employee = employeeDao.getEmployeeById(empID);
@@ -195,8 +198,7 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
         //check if they exist in Everfi.
         else if (everfiEmployeeMapping == null) {
             logger.info("Employee: " + employee.getEmail() + " has an email but has not been uploaded to Everfi");
-            everfiUserService.addEmployeesToEverfi(Arrays.asList(employee));
-            sendEmailToPecAdminReportEmails(subject, "ESS has attempted to create an Everfi account for " + employee.getFullName() + ". The account will be under the email " + employee.getEmail());
+            sendEmailToPecAdminReportEmails(subject, "No Everfi user exists for employee: " + employee.getFullName() + " Unable to assign task.");
         }
         //else they are registered but not assigned. send report to have that manually changed
         else {

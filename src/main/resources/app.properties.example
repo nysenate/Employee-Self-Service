@@ -366,9 +366,6 @@ scheduler.everfi.task.sync.cron = 0 0 * * * *
 #Schedules when users are added to everfi / ids stored in the db
 scheduler.everfi.user.update.cron = 0 0 23 * * *
 
-#Schedules when the Department category label is updated. Should be done before users are updated
-scheduler.everfi.category.update.cron = 0 0 22 * * *
-
 #Default of every hour on the top of the hour to pull KnowBe4 records
 scheduler.knowbe4.task.sync.cron = 0 0 * * * *
 

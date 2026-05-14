@@ -35,7 +35,7 @@ public class EverfiUserSyncJobService {
         this.reportMailer = reportMailer;
     }
 
-    @Scheduled(cron = "0 35 23 * * *")
+    @Scheduled(cron = "${scheduler.everfi.user.update.cron:0 0 23 * * *}")
     public void runScheduledUserSync() {
         if (!everfiSyncEnabled) {
             logger.info("EverfiUserSyncJobService is disabled and exiting run.");
