@@ -27,13 +27,14 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Loads the two sides of the sync (desired and remote) plus the local mapping table that links them.
- * Wraps any IO failure in {@link EverfiUserSyncLoadException} so the pipeline fails fast before planning.
+ * Stage 1 of the sync pipeline: ensures remote preconditions (Department labels, today's Upload List
+ * label) and loads desired users, remote users, and the local mapping table.
+ * Wraps any failure in {@link EverfiUserSyncLoadException} so the pipeline aborts before planning.
  */
 @Service
-public class EverfiUserSyncLoader {
+public class EverfiUserSyncPreflight {
 
-    private static final Logger logger = LoggerFactory.getLogger(EverfiUserSyncLoader.class);
+    private static final Logger logger = LoggerFactory.getLogger(EverfiUserSyncPreflight.class);
 
     /**
      * @param remoteUsers                 every user currently in the Everfi snapshot, enriched with mapping if present
@@ -48,7 +49,7 @@ public class EverfiUserSyncLoader {
     private final EverfiEmployeeMappingDao everfiEmployeeMappingDao;
     private final EverfiCategoryService categoryService;
 
-    public EverfiUserSyncLoader(
+    public EverfiUserSyncPreflight(
             EmployeeInfoService employeeInfoService,
             EverfiUserClient everfiUserClient,
             EverfiEmployeeMappingDao everfiEmployeeMappingDao,
@@ -79,7 +80,7 @@ public class EverfiUserSyncLoader {
      *
      * @return true if any new labels were created (snapshot now stale); false otherwise.
      */
-    boolean bootstrapDepartmentLabels(EverfiCategorySnapshot snapshot, boolean dryRun) {
+    boolean ensureDepartmentLabels(EverfiCategorySnapshot snapshot, boolean dryRun) {
         if (dryRun) return false;
         try {
             EverfiCategory departmentCategory = snapshot.getCategory(EverfiCategorySnapshot.DEPARTMENT);
@@ -103,7 +104,7 @@ public class EverfiUserSyncLoader {
             }
             return !missingCodes.isEmpty();
         } catch (IOException | RuntimeException ex) {
-            throw new EverfiUserSyncLoadException("Failed to bootstrap department category labels.", ex);
+            throw new EverfiUserSyncLoadException("Failed to ensure Department category labels.", ex);
         }
     }
 
@@ -173,7 +174,7 @@ public class EverfiUserSyncLoader {
      * Must only be called on a live run with at least one CREATE — dry runs must not create labels
      * as a side effect.
      */
-    EverfiCategoryLabel loadOrCreateTodaysUploadListLabel(EverfiCategorySnapshot snapshot) {
+    EverfiCategoryLabel ensureTodaysUploadListLabel(EverfiCategorySnapshot snapshot) {
         LocalDate now = LocalDate.now();
         try {
             EverfiCategoryLabel label = snapshot.getUploadListLabel(now);
@@ -187,7 +188,7 @@ public class EverfiUserSyncLoader {
             return categoryService.createLabel(
                     uploadListCategory, now.format(EverfiCategorySnapshot.UPLOAD_LIST_LABEL_FORMAT));
         } catch (IOException | RuntimeException ex) {
-            throw new EverfiUserSyncLoadException("Failed to load or create today's Upload List label.", ex);
+            throw new EverfiUserSyncLoadException("Failed to ensure today's Upload List label.", ex);
         }
     }
 

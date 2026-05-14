@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 /**
- * Orchestrates a single end-to-end sync run: load → plan → execute.
+ * Orchestrates a single end-to-end sync run: preflight → plan → execute.
  * See {@code package-info.java} for the pipeline overview and ubiquitous language.
  *
  * <p>Package-private on purpose: callers should enter through
@@ -19,16 +19,16 @@ public class EverfiUserSyncService {
 
     private static final Logger logger = LoggerFactory.getLogger(EverfiUserSyncService.class);
 
-    private final EverfiUserSyncLoader loader;
+    private final EverfiUserSyncPreflight preflight;
     private final EverfiUserSyncPlanner planner;
     private final EverfiUserSyncExecutor executor;
 
     public EverfiUserSyncService(
-            EverfiUserSyncLoader loader,
+            EverfiUserSyncPreflight preflight,
             EverfiUserSyncPlanner planner,
             EverfiUserSyncExecutor executor
     ) {
-        this.loader = loader;
+        this.preflight = preflight;
         this.planner = planner;
         this.executor = executor;
     }
@@ -39,14 +39,14 @@ public class EverfiUserSyncService {
      * raised during the load and plan stages.
      */
     SyncRun syncUsers(boolean dryRun) {
-        EverfiCategorySnapshot snapshot = loader.loadCategorySnapshot();
-        if (loader.bootstrapDepartmentLabels(snapshot, dryRun)) {
+        EverfiCategorySnapshot snapshot = preflight.loadCategorySnapshot();
+        if (preflight.ensureDepartmentLabels(snapshot, dryRun)) {
             // Bootstrap created new labels; refetch so downstream sees them.
-            snapshot = loader.loadCategorySnapshot();
+            snapshot = preflight.loadCategorySnapshot();
         }
 
-        var desiredUsers = loader.loadDesiredUsers(snapshot);
-        var remoteLoadResult = loader.loadRemoteUsers(snapshot);
+        var desiredUsers = preflight.loadDesiredUsers(snapshot);
+        var remoteLoadResult = preflight.loadRemoteUsers(snapshot);
 
         var actions = planner.plan(desiredUsers, RemoteUserIndex.from(
                 remoteLoadResult.remoteUsers(),
@@ -57,7 +57,7 @@ public class EverfiUserSyncService {
         // and only on a live run — dry runs must not create labels as a side effect.
         boolean hasCreates = actions.stream().anyMatch(a -> a.action() == SyncAction.CREATE);
         EverfiCategoryLabel uploadListLabel = hasCreates && !dryRun
-                ? loader.loadOrCreateTodaysUploadListLabel(snapshot)
+                ? preflight.ensureTodaysUploadListLabel(snapshot)
                 : null;
 
         var results = executor.executeAll(actions, uploadListLabel, dryRun);

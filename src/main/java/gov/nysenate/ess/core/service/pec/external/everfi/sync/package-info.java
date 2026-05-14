@@ -4,8 +4,8 @@
  *
  * <h2>Pipeline stages</h2>
  * <ol>
- *   <li><b>Load</b> ({@link gov.nysenate.ess.core.service.pec.external.everfi.sync.EverfiUserSyncLoader}) —
- *       bootstrap any missing Everfi Department category labels, then fetch desired users from local employee data
+ *   <li><b>Preflight</b> ({@link gov.nysenate.ess.core.service.pec.external.everfi.sync.EverfiUserSyncPreflight}) —
+ *       ensure any missing Everfi Department category labels exist, then fetch desired users from local employee data
  *       and remote users from Everfi, enriched with our mapping table.</li>
  *   <li><b>Plan</b> ({@link gov.nysenate.ess.core.service.pec.external.everfi.sync.EverfiUserSyncPlanner}) —
  *       classify each employee/remote into a {@link gov.nysenate.ess.core.service.pec.external.everfi.sync.PlannedAction}.
