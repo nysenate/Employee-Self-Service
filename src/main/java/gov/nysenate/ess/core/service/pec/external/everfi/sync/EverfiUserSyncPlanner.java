@@ -71,6 +71,13 @@ public class EverfiUserSyncPlanner {
         return plannedActions;
     }
 
+    /**
+     * Sanity-checks that every {@link PlannedAction} still points at the exact desired/remote
+     * objects supplied to this planning run, rather than a copied, reconstructed, or otherwise
+     * out-of-band instance. The planner is expected to classify existing inputs only; if an action
+     * references an object outside those input sets, some branch introduced data the caller did not
+     * provide and downstream execution/reporting could diverge from the original snapshot.
+     */
     private void validateInputsUnmodified(List<PlannedAction> actions,
                                           Set<DesiredUser> desiredUsers,
                                           Set<RemoteUser> remoteUsers) {

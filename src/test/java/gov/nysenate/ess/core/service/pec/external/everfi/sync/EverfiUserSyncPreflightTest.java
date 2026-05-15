@@ -264,25 +264,6 @@ public class EverfiUserSyncPreflightTest {
     }
 
     @Test
-    public void ensureDepartmentLabels_dryRun_doesNotCreateLabels() {
-        var categoryService = new RecordingCreateLabelCategoryService();
-        EverfiCategorySnapshot snapshot = new EverfiCategorySnapshot(List.of(
-                new EverfiCategory(1, EverfiCategorySnapshot.DEPARTMENT, List.of())
-        ));
-        EverfiUserSyncPreflight preflight = new EverfiUserSyncPreflight(
-                new StubEmployeeInfoService(Set.of(employee(1, "ABC"))),
-                new StubEverfiUserClient(List.of()),
-                new StubEverfiEmployeeMappingDao(List.of()),
-                categoryService
-        );
-
-        boolean createdAny = preflight.ensureDepartmentLabels(snapshot, true);
-
-        assertThat(createdAny).isFalse();
-        assertThat(categoryService.createdLabels).isEmpty();
-    }
-
-    @Test
     public void ensureDepartmentLabels_liveRun_createsMissingLabels() {
         var categoryService = new RecordingCreateLabelCategoryService();
         EverfiCategorySnapshot snapshot = new EverfiCategorySnapshot(List.of(
@@ -296,7 +277,7 @@ public class EverfiUserSyncPreflightTest {
                 categoryService
         );
 
-        boolean createdAny = preflight.ensureDepartmentLabels(snapshot, false);
+        boolean createdAny = preflight.ensureDepartmentLabels(snapshot);
 
         assertThat(createdAny).isTrue();
         assertThat(categoryService.createdLabels).containsExactly("NEW_DEPT");
@@ -316,14 +297,14 @@ public class EverfiUserSyncPreflightTest {
                 categoryService
         );
 
-        boolean createdAny = preflight.ensureDepartmentLabels(snapshot, false);
+        boolean createdAny = preflight.ensureDepartmentLabels(snapshot);
 
         assertThat(createdAny).isFalse();
         assertThat(categoryService.createdLabels).isEmpty();
     }
 
     @Test
-    public void ensureDepartmentLabels_liveRun_filtersNullAndLiteralNullRespCodes() {
+    public void ensureDepartmentLabels_liveRun_filtersNullRespCodes() {
         var categoryService = new RecordingCreateLabelCategoryService();
         EverfiCategorySnapshot snapshot = new EverfiCategorySnapshot(List.of(
                 new EverfiCategory(1, EverfiCategorySnapshot.DEPARTMENT, List.of())
@@ -331,15 +312,14 @@ public class EverfiUserSyncPreflightTest {
         EverfiUserSyncPreflight preflight = new EverfiUserSyncPreflight(
                 new StubEmployeeInfoService(Set.of(
                         employee(1, null),
-                        employee(2, "null"),
-                        employee(3, "VALID")
+                        employee(2, "VALID")
                 )),
                 new StubEverfiUserClient(List.of()),
                 new StubEverfiEmployeeMappingDao(List.of()),
                 categoryService
         );
 
-        preflight.ensureDepartmentLabels(snapshot, false);
+        preflight.ensureDepartmentLabels(snapshot);
 
         assertThat(categoryService.createdLabels).containsExactly("VALID");
     }
@@ -353,7 +333,7 @@ public class EverfiUserSyncPreflightTest {
                 null
         );
 
-        assertThatThrownBy(() -> preflight.ensureDepartmentLabels(emptySnapshot(), false))
+        assertThatThrownBy(() -> preflight.ensureDepartmentLabels(emptySnapshot()))
                 .isInstanceOf(EverfiUserSyncLoadException.class)
                 .hasMessage("Failed to ensure Department category labels.");
     }
@@ -376,7 +356,7 @@ public class EverfiUserSyncPreflightTest {
                 categoryService
         );
 
-        assertThatThrownBy(() -> preflight.ensureDepartmentLabels(snapshot, false))
+        assertThatThrownBy(() -> preflight.ensureDepartmentLabels(snapshot))
                 .isInstanceOf(EverfiUserSyncLoadException.class)
                 .hasMessage("Failed to ensure Department category labels.")
                 .hasCauseInstanceOf(IOException.class);

@@ -40,18 +40,17 @@ public class EverfiUserSyncService {
      */
     SyncRun syncUsers(boolean dryRun) {
         EverfiCategorySnapshot snapshot = preflight.loadCategorySnapshot();
-        if (preflight.ensureDepartmentLabels(snapshot, dryRun)) {
-            // Bootstrap created new labels; refetch so downstream sees them.
-            snapshot = preflight.loadCategorySnapshot();
+        if (!dryRun) {
+            if (preflight.ensureDepartmentLabels(snapshot)) {
+                // Bootstrap created new labels; refetch so downstream sees them.
+                snapshot = preflight.loadCategorySnapshot();
+            }
         }
 
         var desiredUsers = preflight.loadDesiredUsers(snapshot);
         var remoteLoadResult = preflight.loadRemoteUsers(snapshot);
 
-        var actions = planner.plan(desiredUsers, RemoteUserIndex.from(
-                remoteLoadResult.remoteUsers(),
-                remoteLoadResult.empIdsWithUnmatchedMappings()
-        ));
+        var actions = planner.plan(desiredUsers, RemoteUserIndex.from(remoteLoadResult));
 
         // Only find/create the Upload List label if there are actually users to create,
         // and only on a live run — dry runs must not create labels as a side effect.

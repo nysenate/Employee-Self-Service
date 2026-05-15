@@ -35,7 +35,8 @@ public class EverfiUserSyncServiceTest {
 
         SyncRun run = service.syncUsers(true);
 
-        assertThat(preflight.ensureDepartmentLabelsCalls).isEqualTo(1);
+        assertThat(preflight.loadCategorySnapshotCalls).isEqualTo(1);
+        assertThat(preflight.ensureDepartmentLabelsCalls).isEqualTo(0);
         assertThat(preflight.loadDesiredUsersCalls).isEqualTo(1);
         assertThat(preflight.loadRemoteUsersCalls).isEqualTo(1);
         assertThat(preflight.ensureTodaysUploadListLabelCalls).isEqualTo(0);
@@ -64,6 +65,41 @@ public class EverfiUserSyncServiceTest {
         service.syncUsers(false);
 
         assertThat(preflight.ensureTodaysUploadListLabelCalls).isEqualTo(0);
+    }
+
+    @Test
+    public void liveRun_ensuresDepartmentLabels() {
+        DesiredUser desiredUser = desiredUser().build();
+        RemoteUser remoteUser = remoteUser().build();
+        List<PlannedAction> actions = List.of(
+                new PlannedAction(SyncAction.SKIP, desiredUser, remoteUser, List.of()));
+        List<SyncResult> results = List.of(SyncResult.skipped(actions.get(0)));
+
+        RecordingPreflight preflight = new RecordingPreflight(Set.of(desiredUser), Set.of(remoteUser), null);
+        EverfiUserSyncService service = new EverfiUserSyncService(
+                preflight, new RecordingPlanner(actions), new RecordingExecutor(results));
+
+        service.syncUsers(false);
+
+        assertThat(preflight.ensureDepartmentLabelsCalls).isEqualTo(1);
+    }
+
+    @Test
+    public void createdDepartmentLabels_reloadSnapshotBeforeLoadingUsers() {
+        DesiredUser desiredUser = desiredUser().build();
+        RemoteUser remoteUser = remoteUser().build();
+        List<PlannedAction> actions = List.of(
+                new PlannedAction(SyncAction.SKIP, desiredUser, remoteUser, List.of()));
+        List<SyncResult> results = List.of(SyncResult.skipped(actions.get(0)));
+
+        RecordingPreflight preflight = new RecordingPreflight(Set.of(desiredUser), Set.of(remoteUser), null);
+        preflight.ensureDepartmentLabelsResult = true;
+        EverfiUserSyncService service = new EverfiUserSyncService(
+                preflight, new RecordingPlanner(actions), new RecordingExecutor(results));
+
+        service.syncUsers(false);
+
+        assertThat(preflight.loadCategorySnapshotCalls).isEqualTo(2);
     }
 
     @Test
@@ -124,10 +160,12 @@ public class EverfiUserSyncServiceTest {
         private final Set<DesiredUser> desiredUsers;
         private final Set<RemoteUser> remoteUsers;
         private final EverfiCategoryLabel labelToReturn;
+        private int loadCategorySnapshotCalls;
         private int ensureDepartmentLabelsCalls;
         private int loadDesiredUsersCalls;
         private int loadRemoteUsersCalls;
         private int ensureTodaysUploadListLabelCalls;
+        private boolean ensureDepartmentLabelsResult;
 
         private RecordingPreflight(Set<DesiredUser> desiredUsers, Set<RemoteUser> remoteUsers,
                                 EverfiCategoryLabel labelToReturn) {
@@ -139,13 +177,14 @@ public class EverfiUserSyncServiceTest {
 
         @Override
         EverfiCategorySnapshot loadCategorySnapshot() {
+            loadCategorySnapshotCalls++;
             return new EverfiCategorySnapshot(List.of());
         }
 
         @Override
-        boolean ensureDepartmentLabels(EverfiCategorySnapshot snapshot, boolean dryRun) {
+        boolean ensureDepartmentLabels(EverfiCategorySnapshot snapshot) {
             ensureDepartmentLabelsCalls++;
-            return false;
+            return ensureDepartmentLabelsResult;
         }
 
         @Override

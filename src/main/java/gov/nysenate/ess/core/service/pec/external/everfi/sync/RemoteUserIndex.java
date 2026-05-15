@@ -48,6 +48,11 @@ record RemoteUserIndex(
         return from(remoteUsers, Set.of());
     }
 
+    public static RemoteUserIndex from(@NotNull EverfiUserSyncPreflight.RemoteLoadResult remoteLoadResult) {
+        Objects.requireNonNull(remoteLoadResult, "remoteLoadResult must not be null");
+        return from(remoteLoadResult.remoteUsers(), remoteLoadResult.empIdsWithUnmatchedMappings());
+    }
+
     public static RemoteUserIndex from(@NotNull Set<RemoteUser> remoteUsers,
                                        @NotNull Set<Integer> empIdsWithUnmatchedMappings) {
         Objects.requireNonNull(remoteUsers, "remoteUsers must not be null");

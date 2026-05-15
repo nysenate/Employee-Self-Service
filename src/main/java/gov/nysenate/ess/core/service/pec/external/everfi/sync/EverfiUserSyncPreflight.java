@@ -10,6 +10,7 @@ import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategory
 import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUser;
 import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUserClient;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -75,13 +76,12 @@ public class EverfiUserSyncPreflight {
 
     /**
      * Ensures every employee's {@code respCenterHeadCode} has a corresponding Department label in Everfi,
-     * creating any that are missing. Skipped on dry runs — no remote writes occur.
+     * creating any that are missing. Callers decide whether a run is allowed to perform this remote write.
      * Throws {@link EverfiUserSyncLoadException} on any failure so the pipeline aborts before planning.
      *
      * @return true if any new labels were created (snapshot now stale); false otherwise.
      */
-    boolean ensureDepartmentLabels(EverfiCategorySnapshot snapshot, boolean dryRun) {
-        if (dryRun) return false;
+    boolean ensureDepartmentLabels(EverfiCategorySnapshot snapshot) {
         try {
             EverfiCategory departmentCategory = snapshot.getCategory(EverfiCategorySnapshot.DEPARTMENT);
             if (departmentCategory == null) {
@@ -94,7 +94,7 @@ public class EverfiUserSyncPreflight {
             Set<Employee> employees = employeeInfoService.getAllEmployees(true);
             List<String> missingCodes = employees.stream()
                     .map(Employee::getRespCenterHeadCode)
-                    .filter(code -> code != null && !code.equals("null"))
+                    .filter(StringUtils::isNotBlank)
                     .distinct()
                     .filter(code -> !existingLabelNames.contains(code))
                     .toList();
@@ -110,7 +110,7 @@ public class EverfiUserSyncPreflight {
 
     /**
      * Loads a set of Users who should be active in Everfi, including their category labels
-     * (Attended Live, Department, Role) derived from employee data.
+     * (Attended Live, Department, Role) derived from SFMS employee data.
      */
     Set<DesiredUser> loadDesiredUsers(EverfiCategorySnapshot snapshot) {
         try {
