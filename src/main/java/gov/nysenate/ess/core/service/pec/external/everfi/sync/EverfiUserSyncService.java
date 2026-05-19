@@ -1,7 +1,5 @@
 package gov.nysenate.ess.core.service.pec.external.everfi.sync;
 
-import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategoryLabel;
-import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategorySnapshot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -19,17 +17,23 @@ public class EverfiUserSyncService {
 
     private static final Logger logger = LoggerFactory.getLogger(EverfiUserSyncService.class);
 
-    private final EverfiUserSyncPreflight preflight;
+    private final EverfiUserSyncLoader loader;
     private final EverfiUserSyncPlanner planner;
+    private final EverfiLabelProvisioner labelProvisioner;
+    private final EverfiExecutableActionResolver actionResolver;
     private final EverfiUserSyncExecutor executor;
 
     public EverfiUserSyncService(
-            EverfiUserSyncPreflight preflight,
+            EverfiUserSyncLoader loader,
             EverfiUserSyncPlanner planner,
+            EverfiLabelProvisioner labelProvisioner,
+            EverfiExecutableActionResolver actionResolver,
             EverfiUserSyncExecutor executor
     ) {
-        this.preflight = preflight;
+        this.loader = loader;
         this.planner = planner;
+        this.labelProvisioner = labelProvisioner;
+        this.actionResolver = actionResolver;
         this.executor = executor;
     }
 
@@ -39,27 +43,14 @@ public class EverfiUserSyncService {
      * raised during the load and plan stages.
      */
     SyncRun syncUsers(boolean dryRun) {
-        EverfiCategorySnapshot snapshot = preflight.loadCategorySnapshot();
-        if (!dryRun) {
-            if (preflight.ensureDepartmentLabels(snapshot)) {
-                // Bootstrap created new labels; refetch so downstream sees them.
-                snapshot = preflight.loadCategorySnapshot();
-            }
-        }
-
-        var desiredUsers = preflight.loadDesiredUsers(snapshot);
-        var remoteLoadResult = preflight.loadRemoteUsers(snapshot);
-
-        var actions = planner.plan(desiredUsers, RemoteUserIndex.from(remoteLoadResult));
-
-        // Only find/create the Upload List label if there are actually users to create,
-        // and only on a live run — dry runs must not create labels as a side effect.
-        boolean hasCreates = actions.stream().anyMatch(a -> a.action() == SyncAction.CREATE);
-        EverfiCategoryLabel uploadListLabel = hasCreates && !dryRun
-                ? preflight.ensureTodaysUploadListLabel(snapshot)
-                : null;
-
-        var results = executor.executeAll(actions, uploadListLabel, dryRun);
+        loader.initializeCategoryCache();
+        var desiredUsers      = loader.loadDesiredUsers();
+        var remoteLoadResult  = loader.loadRemoteUsers();
+        var actions           = planner.plan(desiredUsers, RemoteUserIndex.from(remoteLoadResult));
+        var labelRequirements = LabelRequirements.from(actions);
+        var labels            = labelProvisioner.resolve(labelRequirements, dryRun);
+        var executableActions = actionResolver.resolve(actions, labels);
+        var results           = executor.executeAll(executableActions, dryRun);
         return SyncRun.of(results, dryRun);
     }
 }

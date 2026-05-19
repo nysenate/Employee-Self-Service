@@ -13,7 +13,6 @@ import org.junit.runner.RunWith;
 import org.springframework.dao.DataAccessResourceFailureException;
 
 import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static gov.nysenate.ess.core.service.pec.external.everfi.sync.EverfiUserSyncExecutorTestSupport.createAction;
 import static gov.nysenate.ess.core.service.pec.external.everfi.sync.EverfiUserSyncExecutorTestSupport.desiredUser;
@@ -23,6 +22,8 @@ import static gov.nysenate.ess.core.service.pec.external.everfi.sync.EverfiUserS
 @RunWith(HierarchicalContextRunner.class)
 @Category(UnitTest.class)
 public class EverfiUserSyncExecutorTest {
+
+    private static final EverfiCategoryLabel UPLOAD_LIST_LABEL = label(200, "Upload List", "May 19 2026");
 
     private EverfiUserSyncExecutorTestSupport.RecordingEverfiUserClient userClient;
     private EverfiUserSyncExecutorTestSupport.RecordingEverfiEmployeeMappingDao mappingDao;
@@ -37,7 +38,7 @@ public class EverfiUserSyncExecutorTest {
 
     @Test
     public void emptyActions_returnsNoResults() {
-        assertThat(executor.executeAll(List.of(), null, false)).isEmpty();
+        assertThat(executeAll(List.of(), false)).isEmpty();
     }
 
     public class CreateAction {
@@ -46,10 +47,10 @@ public class EverfiUserSyncExecutorTest {
         public void createsEverfiUserAndMapping() {
             PlannedAction action = createAction();
 
-            List<SyncResult> results = executor.executeAll(List.of(action), null, false);
+            List<SyncResult> results = executeCreate(List.of(action), false);
 
             assertThat(userClient.addedUserCommand).isEqualTo(new EverfiAddUserCommand(
-                    1, "Test", "User", "user@nysenate.gov", List.of()));
+                    1, "Test", "User", "user@nysenate.gov", List.of(UPLOAD_LIST_LABEL)));
             assertThat(mappingDao.insertedMappings)
                     .containsExactly(new EverfiEmployeeMapping(1, "everfi-uuid-1"));
             assertNoUpdatedUserWrite();
@@ -61,9 +62,9 @@ public class EverfiUserSyncExecutorTest {
             EverfiCategoryLabel roleLabel = label(100, "Role", "Employee");
             EverfiCategoryLabel uploadLabel = label(200, "Upload List", "Apr 22 2026");
             PlannedAction action = new PlannedAction(SyncAction.CREATE,
-                    desiredUser().categoryLabels(List.of(roleLabel)).build(), null, List.of());
+                    desiredUser().desiredLabels(List.of(new DesiredLabel("Role", "Employee"))).build(), null, List.of());
 
-            executor.executeAll(List.of(action), uploadLabel, false);
+            executor.executeAll(List.of(executable(action, List.of(roleLabel), uploadLabel)), false);
 
             assertThat(userClient.addedUserCommand.categoryLabels())
                     .containsExactly(roleLabel, uploadLabel);
@@ -73,10 +74,20 @@ public class EverfiUserSyncExecutorTest {
         public void respectsDryRun() {
             PlannedAction action = createAction();
 
-            List<SyncResult> results = executor.executeAll(List.of(action), null, true);
+            List<SyncResult> results = executeAll(List.of(action), true);
 
             assertNoWrites();
             assertResults(results, SyncResult.success(action));
+        }
+
+        @Test
+        public void missingUploadListLabel_returnsError() {
+            PlannedAction action = createAction();
+
+            List<SyncResult> results = executeAll(List.of(action), false);
+
+            assertNoWrites();
+            assertResults(results, SyncResult.error(action, "Upload List label is required for CREATE actions"));
         }
 
         @Test
@@ -87,7 +98,7 @@ public class EverfiUserSyncExecutorTest {
             );
             PlannedAction action = createAction();
 
-            List<SyncResult> results = executor.executeAll(List.of(action), null, false);
+            List<SyncResult> results = executeCreate(List.of(action), false);
 
             assertNoWrites();
             assertResults(results, SyncResult.error(action, "Error making Everfi request"));
@@ -102,7 +113,7 @@ public class EverfiUserSyncExecutorTest {
                     List.of()
             );
 
-            List<SyncResult> results = executor.executeAll(List.of(action), null, false);
+            List<SyncResult> results = executeCreate(List.of(action), false);
 
             assertNoWrites();
             assertResults(results, SyncResult.error(action, "firstName must not be empty"));
@@ -116,7 +127,7 @@ public class EverfiUserSyncExecutorTest {
             );
             PlannedAction action = createAction();
 
-            List<SyncResult> results = executor.executeAll(List.of(action), null, false);
+            List<SyncResult> results = executeCreate(List.of(action), false);
 
             assertNoUpdatedUserWrite();
             assertThat(mappingDao.insertedMappings).isEmpty();
@@ -133,7 +144,7 @@ public class EverfiUserSyncExecutorTest {
             );
             PlannedAction action = createAction();
 
-            List<SyncResult> results = executor.executeAll(List.of(action), null, false);
+            List<SyncResult> results = executeCreate(List.of(action), false);
 
             assertNoUpdatedUserWrite();
             assertThat(mappingDao.insertedMappings).isEmpty();
@@ -145,7 +156,7 @@ public class EverfiUserSyncExecutorTest {
             mappingDao.failInsertWith(new DataAccessResourceFailureException("Failed to insert mapping"));
             PlannedAction action = createAction();
 
-            List<SyncResult> results = executor.executeAll(List.of(action), null, false);
+            List<SyncResult> results = executeCreate(List.of(action), false);
 
             assertNoUpdatedUserWrite();
             assertThat(mappingDao.insertedMappings).isEmpty();
@@ -159,7 +170,7 @@ public class EverfiUserSyncExecutorTest {
         public void doesNotWriteAndReturnsSkipped() {
             PlannedAction action = new PlannedAction(SyncAction.SKIP, desiredUser().build(), remoteUser().build(), List.of());
 
-            List<SyncResult> results = executor.executeAll(List.of(action), null, false);
+            List<SyncResult> results = executeAll(List.of(action), false);
 
             assertNoWrites();
             assertResults(results, SyncResult.skipped(action));
@@ -169,7 +180,7 @@ public class EverfiUserSyncExecutorTest {
         public void withoutDesiredUser_doesNotWriteAndReturnsSkipped() {
             PlannedAction action = new PlannedAction(SyncAction.SKIP, null, remoteUser().remoteActive(false).build(), List.of());
 
-            List<SyncResult> results = executor.executeAll(List.of(action), null, false);
+            List<SyncResult> results = executeAll(List.of(action), false);
 
             assertNoWrites();
             assertResults(results, SyncResult.skipped(action));
@@ -187,7 +198,7 @@ public class EverfiUserSyncExecutorTest {
                     List.of(SyncIssue.UNMAPPED_REMOTE_USER)
             );
 
-            List<SyncResult> results = executor.executeAll(List.of(action), null, false);
+            List<SyncResult> results = executeAll(List.of(action), false);
 
             assertNoWrites();
             assertResults(results, SyncResult.flagged(action));
@@ -205,7 +216,7 @@ public class EverfiUserSyncExecutorTest {
                     List.of()
             );
 
-            List<SyncResult> results = executor.executeAll(List.of(action), null, false);
+            List<SyncResult> results = executeAll(List.of(action), false);
 
             assertNoAddUserWrite();
             assertThat(mappingDao.insertedMappings).isEmpty();
@@ -238,7 +249,7 @@ public class EverfiUserSyncExecutorTest {
                     List.of()
             );
 
-            List<SyncResult> results = executor.executeAll(List.of(action), null, false);
+            List<SyncResult> results = executeAll(List.of(action), false);
 
             assertThat(userClient.updatedUserCommand).isEqualTo(EverfiUpdateUserCommand.builder()
                     .uuid("everfi-uuid-1")
@@ -259,12 +270,12 @@ public class EverfiUserSyncExecutorTest {
             EverfiCategoryLabel remoteAdminLabel  = label(300, "Custom Category", "Admin Added");
             PlannedAction action = new PlannedAction(
                     SyncAction.UPDATE,
-                    desiredUser().categoryLabels(List.of(desiredRoleLabel)).build(),
+                    desiredUser().desiredLabels(List.of(new DesiredLabel("Role", "Employee"))).build(),
                     remoteUser().categoryLabels(List.of(remoteUploadLabel, remoteAdminLabel)).build(),
                     List.of()
             );
 
-            executor.executeAll(List.of(action), null, false);
+            executor.executeAll(List.of(executable(action, List.of(desiredRoleLabel), null)), false);
 
             assertThat(userClient.updatedUserCommand.categoryLabels())
                     .containsExactlyInAnyOrder(desiredRoleLabel, remoteUploadLabel, remoteAdminLabel);
@@ -277,12 +288,12 @@ public class EverfiUserSyncExecutorTest {
             EverfiCategoryLabel remoteUploadLabel   = label(200, "Upload List", "Apr 1 2026");
             PlannedAction action = new PlannedAction(
                     SyncAction.UPDATE,
-                    desiredUser().categoryLabels(List.of(desiredRoleEmployee)).build(),
+                    desiredUser().desiredLabels(List.of(new DesiredLabel("Role", "Employee"))).build(),
                     remoteUser().categoryLabels(List.of(remoteStaleSenator, remoteUploadLabel)).build(),
                     List.of()
             );
 
-            executor.executeAll(List.of(action), null, false);
+            executor.executeAll(List.of(executable(action, List.of(desiredRoleEmployee), null)), false);
 
             assertThat(userClient.updatedUserCommand.categoryLabels())
                     .containsExactlyInAnyOrder(desiredRoleEmployee, remoteUploadLabel);
@@ -297,7 +308,7 @@ public class EverfiUserSyncExecutorTest {
                     List.of()
             );
 
-            List<SyncResult> results = executor.executeAll(List.of(action), null, true);
+            List<SyncResult> results = executeAll(List.of(action), true);
 
             assertNoWrites();
             assertResults(results, SyncResult.success(action));
@@ -316,7 +327,7 @@ public class EverfiUserSyncExecutorTest {
                     List.of()
             );
 
-            List<SyncResult> results = executor.executeAll(List.of(action), null, false);
+            List<SyncResult> results = executeAll(List.of(action), false);
 
             assertNoWrites();
             assertResults(results, SyncResult.error(action, "Error making Everfi request"));
@@ -331,7 +342,7 @@ public class EverfiUserSyncExecutorTest {
                     List.of()
             );
 
-            List<SyncResult> results = executor.executeAll(List.of(action), null, false);
+            List<SyncResult> results = executeAll(List.of(action), false);
 
             assertNoWrites();
             assertResults(results, SyncResult.error(action, "lastName must not be empty"));
@@ -350,7 +361,7 @@ public class EverfiUserSyncExecutorTest {
                     List.of()
             );
 
-            List<SyncResult> results = executor.executeAll(List.of(action), null, false);
+            List<SyncResult> results = executeAll(List.of(action), false);
 
             assertNoWrites();
             assertResults(results, SyncResult.error(action, "Everfi API returned null user"));
@@ -368,7 +379,7 @@ public class EverfiUserSyncExecutorTest {
                     List.of()
             );
 
-            List<SyncResult> results = executor.executeAll(List.of(action), null, false);
+            List<SyncResult> results = executeAll(List.of(action), false);
 
             assertNoAddUserWrite();
             assertThat(mappingDao.insertedMappings).isEmpty();
@@ -402,7 +413,7 @@ public class EverfiUserSyncExecutorTest {
                     List.of()
             );
 
-            executor.executeAll(List.of(action), null, false);
+            executeAll(List.of(action), false);
 
             assertThat(userClient.updatedUserCommand).isEqualTo(EverfiUpdateUserCommand.builder()
                     .uuid("everfi-uuid-1")
@@ -422,12 +433,12 @@ public class EverfiUserSyncExecutorTest {
             EverfiCategoryLabel remoteAdminLabel  = label(300, "Custom Category", "Admin Added");
             PlannedAction action = new PlannedAction(
                     SyncAction.REACTIVATE,
-                    desiredUser().categoryLabels(List.of(desiredRoleLabel)).build(),
+                    desiredUser().desiredLabels(List.of(new DesiredLabel("Role", "Employee"))).build(),
                     remoteUser().remoteActive(false).categoryLabels(List.of(remoteUploadLabel, remoteAdminLabel)).build(),
                     List.of()
             );
 
-            executor.executeAll(List.of(action), null, false);
+            executor.executeAll(List.of(executable(action, List.of(desiredRoleLabel), null)), false);
 
             assertThat(userClient.updatedUserCommand.categoryLabels())
                     .containsExactlyInAnyOrder(desiredRoleLabel, remoteUploadLabel, remoteAdminLabel);
@@ -441,14 +452,14 @@ public class EverfiUserSyncExecutorTest {
             EverfiCategoryLabel remoteAdminLabel    = label(300, "Custom Category", "Admin Added");
             PlannedAction action = new PlannedAction(
                     SyncAction.REACTIVATE,
-                    desiredUser().categoryLabels(List.of(desiredRoleEmployee)).build(),
+                    desiredUser().desiredLabels(List.of(new DesiredLabel("Role", "Employee"))).build(),
                     remoteUser().remoteActive(false)
                             .categoryLabels(List.of(remoteStaleSenator, remoteUploadLabel, remoteAdminLabel))
                             .build(),
                     List.of()
             );
 
-            executor.executeAll(List.of(action), null, false);
+            executor.executeAll(List.of(executable(action, List.of(desiredRoleEmployee), null)), false);
 
             assertThat(userClient.updatedUserCommand.categoryLabels())
                     .containsExactlyInAnyOrder(desiredRoleEmployee, remoteUploadLabel, remoteAdminLabel);
@@ -463,7 +474,7 @@ public class EverfiUserSyncExecutorTest {
                     List.of()
             );
 
-            List<SyncResult> results = executor.executeAll(List.of(action), null, true);
+            List<SyncResult> results = executeAll(List.of(action), true);
 
             assertNoWrites();
             assertResults(results, SyncResult.success(action));
@@ -478,7 +489,7 @@ public class EverfiUserSyncExecutorTest {
                     List.of(SyncIssue.MISSING_EMAIL)
             );
 
-            List<SyncResult> results = executor.executeAll(List.of(action), null, false);
+            List<SyncResult> results = executeAll(List.of(action), false);
 
             assertNoWrites();
             assertResults(results, SyncResult.error(action, "Cannot reactivate user without email"));
@@ -497,7 +508,7 @@ public class EverfiUserSyncExecutorTest {
                     List.of()
             );
 
-            List<SyncResult> results = executor.executeAll(List.of(action), null, false);
+            List<SyncResult> results = executeAll(List.of(action), false);
 
             assertNoWrites();
             assertResults(results, SyncResult.error(action, "Error making Everfi request"));
@@ -515,7 +526,7 @@ public class EverfiUserSyncExecutorTest {
                     List.of()
             );
 
-            List<SyncResult> results = executor.executeAll(List.of(action), null, false);
+            List<SyncResult> results = executeAll(List.of(action), false);
 
             assertNoAddUserWrite();
             assertThat(mappingDao.insertedMappings).isEmpty();
@@ -540,7 +551,7 @@ public class EverfiUserSyncExecutorTest {
                     List.of()
             );
 
-            executor.executeAll(List.of(action), null, false);
+            executeAll(List.of(action), false);
 
             assertThat(userClient.updatedUserCommand.email()).isEqualTo("deactivated-1@nysenate.invalid");
             assertThat(userClient.updatedUserCommand.active()).isFalse();
@@ -556,7 +567,7 @@ public class EverfiUserSyncExecutorTest {
                     List.of()
             );
 
-            executor.executeAll(List.of(action), null, false);
+            executeAll(List.of(action), false);
 
             assertThat(userClient.updatedUserCommand.categoryLabels()).containsExactly(remoteLabel);
         }
@@ -566,7 +577,7 @@ public class EverfiUserSyncExecutorTest {
             PlannedAction action = new PlannedAction(
                     SyncAction.DEACTIVATE, null, remoteUser().build(), List.of());
 
-            List<SyncResult> results = executor.executeAll(List.of(action), null, true);
+            List<SyncResult> results = executeAll(List.of(action), true);
 
             assertNoWrites();
             assertResults(results, SyncResult.success(action));
@@ -581,7 +592,7 @@ public class EverfiUserSyncExecutorTest {
             PlannedAction action = new PlannedAction(
                     SyncAction.DEACTIVATE, null, remoteUser().build(), List.of());
 
-            List<SyncResult> results = executor.executeAll(List.of(action), null, false);
+            List<SyncResult> results = executeAll(List.of(action), false);
 
             assertNoWrites();
             assertResults(results, SyncResult.error(action, "Error making Everfi request"));
@@ -596,7 +607,7 @@ public class EverfiUserSyncExecutorTest {
                     List.of()
             );
 
-            List<SyncResult> results = executor.executeAll(List.of(action), null, false);
+            List<SyncResult> results = executeAll(List.of(action), false);
 
             assertNoWrites();
             assertResults(results, SyncResult.error(action, "firstName must not be empty"));
@@ -611,7 +622,7 @@ public class EverfiUserSyncExecutorTest {
                     List.of()
             );
 
-            List<SyncResult> results = executor.executeAll(List.of(action), null, false);
+            List<SyncResult> results = executeAll(List.of(action), false);
 
             assertNoWrites();
             assertResults(results, SyncResult.error(action, "lastName must not be empty"));
@@ -625,7 +636,7 @@ public class EverfiUserSyncExecutorTest {
         PlannedAction flag   = new PlannedAction(SyncAction.FLAG, null, remoteUser().build(), List.of(SyncIssue.UNRECOGNIZED_ACTIVE_REMOTE));
         PlannedAction update = new PlannedAction(SyncAction.UPDATE, desiredUser().build(), remoteUser().build(), List.of());
 
-        List<SyncResult> results = executor.executeAll(List.of(create, skip, flag, update), null, false);
+        List<SyncResult> results = executeCreate(List.of(create, skip, flag, update), false);
 
         assertThat(results).containsExactly(
                 SyncResult.success(create),
@@ -650,7 +661,7 @@ public class EverfiUserSyncExecutorTest {
                 List.of()
         );
 
-        List<SyncResult> results = executor.executeAll(List.of(create, update), null, false);
+        List<SyncResult> results = executeCreate(List.of(create, update), false);
 
         assertThat(userClient.updatedUserCommand).isEqualTo(EverfiUpdateUserCommand.builder()
                 .uuid("everfi-uuid-1")
@@ -684,5 +695,27 @@ public class EverfiUserSyncExecutorTest {
 
     private void assertResults(List<SyncResult> actualResults, SyncResult... expectedResults) {
         assertThat(actualResults).containsExactly(expectedResults);
+    }
+
+    private List<SyncResult> executeAll(List<PlannedAction> actions, boolean dryRun) {
+        return executor.executeAll(actions.stream().map(this::executable).toList(), dryRun);
+    }
+
+    private List<SyncResult> executeCreate(List<PlannedAction> actions, boolean dryRun) {
+        return executor.executeAll(actions.stream()
+                .map(action -> action.action() == SyncAction.CREATE
+                        ? executable(action, List.of(), UPLOAD_LIST_LABEL)
+                        : executable(action))
+                .toList(), dryRun);
+    }
+
+    private ExecutableAction executable(PlannedAction action) {
+        return executable(action, List.of(), null);
+    }
+
+    private ExecutableAction executable(PlannedAction action,
+                                        List<EverfiCategoryLabel> desiredLabels,
+                                        EverfiCategoryLabel uploadListLabel) {
+        return new ExecutableAction(action, desiredLabels, uploadListLabel);
     }
 }

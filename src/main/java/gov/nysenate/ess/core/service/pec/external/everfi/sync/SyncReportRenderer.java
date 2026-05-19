@@ -277,8 +277,8 @@ class SyncReportRenderer {
 
         if (remote == null) {
             // CREATE: name/email are already in the table row; only show labels if present
-            if (!desired.categoryLabels().isEmpty()) {
-                sb.append(String.format("    %-12s  %s%n", "labels:", formatLabelNames(desired.categoryLabels())));
+            if (!desired.desiredLabels().isEmpty()) {
+                sb.append(String.format("    %-12s  %s%n", "labels:", formatLabelNames(desired.desiredLabels())));
             }
             return;
         }
@@ -303,12 +303,12 @@ class SyncReportRenderer {
             sb.append(String.format("    %-12s  %s -> %s%n", "email:",
                     quote(remote.remoteEmail()), quote(desired.email())));
         }
-        if (!desired.categoryLabels().isEmpty()) {
-            Set<Integer> remoteLabelIds = remote.categoryLabels().stream()
-                    .map(EverfiCategoryLabel::getLabelId)
+        if (!desired.desiredLabels().isEmpty()) {
+            Set<String> remoteLabelNames = remote.categoryLabels().stream()
+                    .map(EverfiCategoryLabel::getLabelName)
                     .collect(Collectors.toSet());
-            List<EverfiCategoryLabel> missing = desired.categoryLabels().stream()
-                    .filter(l -> !remoteLabelIds.contains(l.getLabelId()))
+            List<DesiredLabel> missing = desired.desiredLabels().stream()
+                    .filter(l -> !remoteLabelNames.contains(l.labelName()))
                     .toList();
             if (!missing.isEmpty()) {
                 sb.append(String.format("    %-12s  %s%n", "+labels:", formatLabelNames(missing)));
@@ -320,12 +320,9 @@ class SyncReportRenderer {
         return value == null ? "(null)" : "\"" + value + "\"";
     }
 
-    private static String formatLabelNames(List<EverfiCategoryLabel> labels) {
+    private static String formatLabelNames(List<DesiredLabel> labels) {
         return labels.stream()
-                .map(l -> {
-                    String labelName = l.getLabelName() != null ? l.getLabelName() : String.valueOf(l.getLabelId());
-                    return l.getCategoryName() != null ? l.getCategoryName() + ": " + labelName : labelName;
-                })
+                .map(l -> l.categoryName() + ": " + l.labelName())
                 .collect(Collectors.joining(", "));
     }
 

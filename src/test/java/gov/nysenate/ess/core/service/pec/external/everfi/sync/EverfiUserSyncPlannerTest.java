@@ -184,7 +184,7 @@ public class EverfiUserSyncPlannerTest {
             EverfiCategoryLabel currentDepartment = label(100, "Department", "HR");
             EverfiCategoryLabel staleDepartment = label(101, "Department", "Finance");
             DesiredUser desired = desiredUser()
-                    .categoryLabels(List.of(currentDepartment))
+                    .desiredLabels(List.of(new DesiredLabel("Department", "HR")))
                     .build();
             RemoteUser remote = authoritativeRemote()
                     .categoryLabels(List.of(currentDepartment, staleDepartment))

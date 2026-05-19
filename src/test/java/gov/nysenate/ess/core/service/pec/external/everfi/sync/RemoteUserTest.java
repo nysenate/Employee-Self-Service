@@ -52,7 +52,7 @@ public class RemoteUserTest {
         EverfiCategoryLabel currentDepartment = label(100, "Department", "HR");
         EverfiCategoryLabel staleDepartment = label(101, "Department", "Finance");
         DesiredUser desiredUser = desiredUser()
-                .categoryLabels(List.of(currentDepartment))
+                .desiredLabels(List.of(new DesiredLabel("Department", "HR")))
                 .build();
         RemoteUser remoteUser = remoteUser()
                 .categoryLabels(List.of(currentDepartment, staleDepartment))
@@ -66,7 +66,7 @@ public class RemoteUserTest {
         EverfiCategoryLabel currentDepartment = label(100, "Department", "HR");
         EverfiCategoryLabel customLabel = label(200, "Custom Category", "Added Elsewhere");
         DesiredUser desiredUser = desiredUser()
-                .categoryLabels(List.of(currentDepartment))
+                .desiredLabels(List.of(new DesiredLabel("Department", "HR")))
                 .build();
         RemoteUser remoteUser = remoteUser()
                 .categoryLabels(List.of(currentDepartment, customLabel))

@@ -16,7 +16,7 @@ public class RemoteUserIndexTest {
 
     @Test
     public void whenEmptyRemoteUsers_returnsEmptyIndex() {
-        RemoteUserIndex index = RemoteUserIndex.from(new EverfiUserSyncPreflight.RemoteLoadResult(Set.of(), Set.of()));
+        RemoteUserIndex index = RemoteUserIndex.from(new EverfiUserSyncLoader.RemoteLoadResult(Set.of(), Set.of()));
         assertIndex(index, Map.of(), Map.of(), Set.of());
     }
 
@@ -29,7 +29,7 @@ public class RemoteUserIndexTest {
 
     @Test
     public void whenNullRemoteLoadResult_throws() {
-        assertThatThrownBy(() -> RemoteUserIndex.from((EverfiUserSyncPreflight.RemoteLoadResult) null))
+        assertThatThrownBy(() -> RemoteUserIndex.from((EverfiUserSyncLoader.RemoteLoadResult) null))
                 .isInstanceOfAny(NullPointerException.class, IllegalArgumentException.class)
                 .hasMessageContaining("remoteLoadResult");
     }
@@ -45,7 +45,7 @@ public class RemoteUserIndexTest {
     public void whenUnmatchedMappingEmpIdsProvided_exposedOnIndex() {
         Set<Integer> unmatchedEmpIds = Set.of(42, 99);
         RemoteUserIndex index = RemoteUserIndex.from(
-                new EverfiUserSyncPreflight.RemoteLoadResult(Set.of(), unmatchedEmpIds)
+                new EverfiUserSyncLoader.RemoteLoadResult(Set.of(), unmatchedEmpIds)
         );
         assertThat(index.empIdsWithUnmatchedMappings()).isEqualTo(unmatchedEmpIds);
     }

@@ -1,6 +1,5 @@
 package gov.nysenate.ess.core.service.pec.external.everfi.sync;
 
-import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategoryLabel;
 import lombok.Builder;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,14 +17,14 @@ public record DesiredUser(
         @Nullable String email,
         @Nullable String firstName,
         @Nullable String lastName,
-        List<EverfiCategoryLabel> categoryLabels
+        List<DesiredLabel> desiredLabels
 ) {
 
     public DesiredUser {
         email = normalizeEmail(email);
         firstName = trimToNull(firstName);
         lastName = trimToNull(lastName);
-        categoryLabels = categoryLabels != null ? List.copyOf(categoryLabels) : List.of();
+        desiredLabels = desiredLabels != null ? List.copyOf(desiredLabels) : List.of();
     }
 
     private static String trimToNull(String value) {

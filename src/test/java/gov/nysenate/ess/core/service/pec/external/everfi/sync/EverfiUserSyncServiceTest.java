@@ -3,8 +3,6 @@ package gov.nysenate.ess.core.service.pec.external.everfi.sync;
 import de.bechte.junit.runners.context.HierarchicalContextRunner;
 import gov.nysenate.ess.core.annotation.UnitTest;
 import gov.nysenate.ess.core.model.pec.everfi.EverfiEmployeeMapping;
-import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategoryLabel;
-import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategorySnapshot;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -26,24 +24,30 @@ public class EverfiUserSyncServiceTest {
         Set<DesiredUser> desiredUsers = Set.of(desiredUser);
         Set<RemoteUser> remoteUsers = Set.of(remoteUser);
         List<PlannedAction> actions = List.of(new PlannedAction(SyncAction.SKIP, desiredUser, remoteUser, List.of()));
+        List<ExecutableAction> executableActions = List.of(new ExecutableAction(actions.get(0), List.of(), null));
         List<SyncResult> results = List.of(SyncResult.skipped(actions.get(0)));
+        ResolvedLabels labels = ResolvedLabels.empty();
 
-        RecordingPreflight preflight = new RecordingPreflight(desiredUsers, remoteUsers, null);
+        RecordingLoader preflight = new RecordingLoader(desiredUsers, remoteUsers);
         RecordingPlanner planner = new RecordingPlanner(actions);
+        RecordingLabelProvisioner provisioner = new RecordingLabelProvisioner(labels);
+        RecordingActionResolver actionResolver = new RecordingActionResolver(executableActions);
         RecordingExecutor executor = new RecordingExecutor(results);
-        EverfiUserSyncService service = new EverfiUserSyncService(preflight, planner, executor);
+        EverfiUserSyncService service = new EverfiUserSyncService(
+                preflight, planner, provisioner, actionResolver, executor);
 
         SyncRun run = service.syncUsers(true);
 
-        assertThat(preflight.loadCategorySnapshotCalls).isEqualTo(1);
-        assertThat(preflight.ensureDepartmentLabelsCalls).isEqualTo(0);
+        assertThat(preflight.initializeCategoryCacheCalls).isEqualTo(1);
         assertThat(preflight.loadDesiredUsersCalls).isEqualTo(1);
         assertThat(preflight.loadRemoteUsersCalls).isEqualTo(1);
-        assertThat(preflight.ensureTodaysUploadListLabelCalls).isEqualTo(0);
         assertThat(planner.receivedDesiredUsers).isEqualTo(desiredUsers);
         assertThat(planner.receivedRemoteIndex.getAuthoritativeMatch(1)).contains(remoteUser);
-        assertThat(executor.receivedActions).isEqualTo(actions);
-        assertThat(executor.receivedUploadListLabel).isNull();
+        assertThat(provisioner.receivedRequirements).isEqualTo(new LabelRequirements(Set.of(), false));
+        assertThat(provisioner.receivedDryRun).isTrue();
+        assertThat(actionResolver.receivedActions).isEqualTo(actions);
+        assertThat(actionResolver.receivedLabels).isSameAs(labels);
+        assertThat(executor.receivedActions).isEqualTo(executableActions);
         assertThat(executor.receivedDryRun).isTrue();
         assertThat(run.results()).isEqualTo(results);
         assertThat(run.dryRun()).isTrue();
@@ -51,90 +55,27 @@ public class EverfiUserSyncServiceTest {
     }
 
     @Test
-    public void noCreates_doesNotLoadUploadListLabel() {
-        DesiredUser desiredUser = desiredUser().build();
-        RemoteUser remoteUser = remoteUser().build();
-        List<PlannedAction> actions = List.of(
-                new PlannedAction(SyncAction.UPDATE, desiredUser, remoteUser, List.of()));
-        List<SyncResult> results = List.of(SyncResult.success(actions.get(0)));
-
-        RecordingPreflight preflight = new RecordingPreflight(Set.of(desiredUser), Set.of(remoteUser), null);
-        EverfiUserSyncService service = new EverfiUserSyncService(
-                preflight, new RecordingPlanner(actions), new RecordingExecutor(results));
-
-        service.syncUsers(false);
-
-        assertThat(preflight.ensureTodaysUploadListLabelCalls).isEqualTo(0);
-    }
-
-    @Test
-    public void liveRun_ensuresDepartmentLabels() {
-        DesiredUser desiredUser = desiredUser().build();
-        RemoteUser remoteUser = remoteUser().build();
-        List<PlannedAction> actions = List.of(
-                new PlannedAction(SyncAction.SKIP, desiredUser, remoteUser, List.of()));
-        List<SyncResult> results = List.of(SyncResult.skipped(actions.get(0)));
-
-        RecordingPreflight preflight = new RecordingPreflight(Set.of(desiredUser), Set.of(remoteUser), null);
-        EverfiUserSyncService service = new EverfiUserSyncService(
-                preflight, new RecordingPlanner(actions), new RecordingExecutor(results));
-
-        service.syncUsers(false);
-
-        assertThat(preflight.ensureDepartmentLabelsCalls).isEqualTo(1);
-    }
-
-    @Test
-    public void createdDepartmentLabels_reloadSnapshotBeforeLoadingUsers() {
-        DesiredUser desiredUser = desiredUser().build();
-        RemoteUser remoteUser = remoteUser().build();
-        List<PlannedAction> actions = List.of(
-                new PlannedAction(SyncAction.SKIP, desiredUser, remoteUser, List.of()));
-        List<SyncResult> results = List.of(SyncResult.skipped(actions.get(0)));
-
-        RecordingPreflight preflight = new RecordingPreflight(Set.of(desiredUser), Set.of(remoteUser), null);
-        preflight.ensureDepartmentLabelsResult = true;
-        EverfiUserSyncService service = new EverfiUserSyncService(
-                preflight, new RecordingPlanner(actions), new RecordingExecutor(results));
-
-        service.syncUsers(false);
-
-        assertThat(preflight.loadCategorySnapshotCalls).isEqualTo(2);
-    }
-
-    @Test
-    public void createsWithDryRun_doesNotLoadUploadListLabel() {
+    public void syncUsers_provisionerReceivesActionsAndDryRun() {
         DesiredUser desiredUser = desiredUser().build();
         List<PlannedAction> actions = List.of(
                 new PlannedAction(SyncAction.CREATE, desiredUser, null, List.of()));
+        List<ExecutableAction> executableActions = List.of(new ExecutableAction(actions.get(0), List.of(), null));
         List<SyncResult> results = List.of(SyncResult.success(actions.get(0)));
+        ResolvedLabels labels = ResolvedLabels.empty();
 
-        RecordingPreflight preflight = new RecordingPreflight(Set.of(desiredUser), Set.of(), null);
-        EverfiUserSyncService service = new EverfiUserSyncService(
-                preflight, new RecordingPlanner(actions), new RecordingExecutor(results));
-
-        service.syncUsers(true);
-
-        assertThat(preflight.ensureTodaysUploadListLabelCalls).isEqualTo(0);
-    }
-
-    @Test
-    public void createsWithLiveRun_loadsAndPassesUploadListLabel() {
-        EverfiCategoryLabel uploadLabel = new EverfiCategoryLabel(200, "Apr 22 2026");
-        DesiredUser desiredUser = desiredUser().build();
-        List<PlannedAction> actions = List.of(
-                new PlannedAction(SyncAction.CREATE, desiredUser, null, List.of()));
-        List<SyncResult> results = List.of(SyncResult.success(actions.get(0)));
-
-        RecordingPreflight preflight = new RecordingPreflight(Set.of(desiredUser), Set.of(), uploadLabel);
+        RecordingLoader preflight = new RecordingLoader(Set.of(desiredUser), Set.of());
+        RecordingLabelProvisioner provisioner = new RecordingLabelProvisioner(labels);
+        RecordingActionResolver actionResolver = new RecordingActionResolver(executableActions);
         RecordingExecutor executor = new RecordingExecutor(results);
         EverfiUserSyncService service = new EverfiUserSyncService(
-                preflight, new RecordingPlanner(actions), executor);
+                preflight, new RecordingPlanner(actions), provisioner, actionResolver, executor);
 
         service.syncUsers(false);
 
-        assertThat(preflight.ensureTodaysUploadListLabelCalls).isEqualTo(1);
-        assertThat(executor.receivedUploadListLabel).isSameAs(uploadLabel);
+        assertThat(provisioner.receivedRequirements.uploadListRequired()).isTrue();
+        assertThat(provisioner.receivedDryRun).isFalse();
+        assertThat(actionResolver.receivedLabels).isSameAs(labels);
+        assertThat(executor.receivedActions).isSameAs(executableActions);
     }
 
     private DesiredUser.DesiredUserBuilder desiredUser() {
@@ -156,53 +97,34 @@ public class EverfiUserSyncServiceTest {
                 .remoteEmail("user@nysenate.gov");
     }
 
-    private static class RecordingPreflight extends EverfiUserSyncPreflight {
+    private static class RecordingLoader extends EverfiUserSyncLoader {
         private final Set<DesiredUser> desiredUsers;
         private final Set<RemoteUser> remoteUsers;
-        private final EverfiCategoryLabel labelToReturn;
-        private int loadCategorySnapshotCalls;
-        private int ensureDepartmentLabelsCalls;
+        private int initializeCategoryCacheCalls;
         private int loadDesiredUsersCalls;
         private int loadRemoteUsersCalls;
-        private int ensureTodaysUploadListLabelCalls;
-        private boolean ensureDepartmentLabelsResult;
 
-        private RecordingPreflight(Set<DesiredUser> desiredUsers, Set<RemoteUser> remoteUsers,
-                                EverfiCategoryLabel labelToReturn) {
+        private RecordingLoader(Set<DesiredUser> desiredUsers, Set<RemoteUser> remoteUsers) {
             super(null, null, null, null);
             this.desiredUsers = desiredUsers;
             this.remoteUsers = remoteUsers;
-            this.labelToReturn = labelToReturn;
         }
 
         @Override
-        EverfiCategorySnapshot loadCategorySnapshot() {
-            loadCategorySnapshotCalls++;
-            return new EverfiCategorySnapshot(List.of());
+        void initializeCategoryCache() {
+            initializeCategoryCacheCalls++;
         }
 
         @Override
-        boolean ensureDepartmentLabels(EverfiCategorySnapshot snapshot) {
-            ensureDepartmentLabelsCalls++;
-            return ensureDepartmentLabelsResult;
-        }
-
-        @Override
-        Set<DesiredUser> loadDesiredUsers(EverfiCategorySnapshot snapshot) {
+        Set<DesiredUser> loadDesiredUsers() {
             loadDesiredUsersCalls++;
             return desiredUsers;
         }
 
         @Override
-        EverfiUserSyncPreflight.RemoteLoadResult loadRemoteUsers(EverfiCategorySnapshot snapshot) {
+        EverfiUserSyncLoader.RemoteLoadResult loadRemoteUsers() {
             loadRemoteUsersCalls++;
-            return new EverfiUserSyncPreflight.RemoteLoadResult(remoteUsers, Set.of());
-        }
-
-        @Override
-        EverfiCategoryLabel ensureTodaysUploadListLabel(EverfiCategorySnapshot snapshot) {
-            ensureTodaysUploadListLabelCalls++;
-            return labelToReturn;
+            return new EverfiUserSyncLoader.RemoteLoadResult(remoteUsers, Set.of());
         }
     }
 
@@ -223,10 +145,44 @@ public class EverfiUserSyncServiceTest {
         }
     }
 
+    private static class RecordingLabelProvisioner extends EverfiLabelProvisioner {
+        private final ResolvedLabels resultToReturn;
+        private LabelRequirements receivedRequirements;
+        private boolean receivedDryRun;
+
+        private RecordingLabelProvisioner(ResolvedLabels resultToReturn) {
+            super(null);
+            this.resultToReturn = resultToReturn;
+        }
+
+        @Override
+        ResolvedLabels resolve(LabelRequirements requirements, boolean dryRun) {
+            this.receivedRequirements = requirements;
+            this.receivedDryRun = dryRun;
+            return resultToReturn;
+        }
+    }
+
+    private static class RecordingActionResolver extends EverfiExecutableActionResolver {
+        private final List<ExecutableAction> actionsToReturn;
+        private List<PlannedAction> receivedActions;
+        private ResolvedLabels receivedLabels;
+
+        private RecordingActionResolver(List<ExecutableAction> actionsToReturn) {
+            this.actionsToReturn = actionsToReturn;
+        }
+
+        @Override
+        List<ExecutableAction> resolve(List<PlannedAction> actions, ResolvedLabels labels) {
+            this.receivedActions = actions;
+            this.receivedLabels = labels;
+            return actionsToReturn;
+        }
+    }
+
     private static class RecordingExecutor extends EverfiUserSyncExecutor {
         private final List<SyncResult> resultsToReturn;
-        private List<PlannedAction> receivedActions;
-        private EverfiCategoryLabel receivedUploadListLabel;
+        private List<ExecutableAction> receivedActions;
         private boolean receivedDryRun;
 
         private RecordingExecutor(List<SyncResult> resultsToReturn) {
@@ -235,11 +191,8 @@ public class EverfiUserSyncServiceTest {
         }
 
         @Override
-        public List<SyncResult> executeAll(List<PlannedAction> actions,
-                                           EverfiCategoryLabel uploadListLabel,
-                                           boolean dryRun) {
+        List<SyncResult> executeAll(List<ExecutableAction> actions, boolean dryRun) {
             this.receivedActions = actions;
-            this.receivedUploadListLabel = uploadListLabel;
             this.receivedDryRun = dryRun;
             return resultsToReturn;
         }

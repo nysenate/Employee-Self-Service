@@ -185,7 +185,6 @@ public class SyncReportRendererTest {
 
     @Test
     public void generate_detailed_showsLabelsForCreates() {
-        EverfiCategoryLabel label = labelWithCategory(42, "Apr 22 2026", "Upload List");
         PlannedAction create = new PlannedAction(
                 SyncAction.CREATE,
                 DesiredUser.builder()
@@ -193,7 +192,7 @@ public class SyncReportRendererTest {
                         .firstName("Test")
                         .lastName("User")
                         .email("user@nysenate.gov")
-                        .categoryLabels(List.of(label))
+                        .desiredLabels(List.of(new DesiredLabel("Upload List", "Apr 22 2026")))
                         .build(),
                 null,
                 List.of()

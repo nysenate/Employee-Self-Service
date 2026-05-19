@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nysenate.ess.core.service.pec.external.everfi.EverfiApiException;
 import gov.nysenate.ess.core.service.pec.external.everfi.EverfiApiClient;
 import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategoryLabel;
-import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategorySnapshot;
+import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategoryService;
 import gov.nysenate.ess.core.util.OutputUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -25,54 +25,53 @@ public class EverfiUserClient {
 
     private final EverfiApiClient everfiApiClient;
     private final EverfiUserPayloadFactory payloadFactory;
+    private final EverfiCategoryService categoryService;
 
     public EverfiUserClient(EverfiApiClient everfiApiClient,
-                            EverfiUserPayloadFactory payloadFactory) {
+                            EverfiUserPayloadFactory payloadFactory,
+                            EverfiCategoryService categoryService) {
         this.everfiApiClient = everfiApiClient;
         this.payloadFactory = payloadFactory;
+        this.categoryService = categoryService;
     }
 
-    public List<EverfiUser> fetchAll(EverfiCategorySnapshot snapshot) throws IOException {
-        return fetchAll(EverfiUsersRequest.DEFAULT_PAGE_SIZE, snapshot);
+    public List<EverfiUser> fetchAll() throws IOException {
+        return fetchAll(EverfiUsersRequest.DEFAULT_PAGE_SIZE);
     }
 
-    public List<EverfiUser> fetchAll(int pageSize, EverfiCategorySnapshot snapshot) throws IOException {
+    public List<EverfiUser> fetchAll(int pageSize) throws IOException {
         List<EverfiUser> users = new ArrayList<>();
-        forEachPage(pageSize, users::addAll, snapshot);
+        forEachPage(pageSize, users::addAll);
         return users;
     }
 
-    public void forEachPage(Consumer<List<EverfiUser>> pageConsumer,
-                            EverfiCategorySnapshot snapshot) throws IOException {
-        forEachPage(EverfiUsersRequest.DEFAULT_PAGE_SIZE, pageConsumer, snapshot);
+    public void forEachPage(Consumer<List<EverfiUser>> pageConsumer) throws IOException {
+        forEachPage(EverfiUsersRequest.DEFAULT_PAGE_SIZE, pageConsumer);
     }
 
     public void forEachPage(int pageSize,
-                            Consumer<List<EverfiUser>> pageConsumer,
-                            EverfiCategorySnapshot snapshot) throws IOException {
+                            Consumer<List<EverfiUser>> pageConsumer) throws IOException {
         Assert.notNull(pageConsumer, "pageConsumer must not be null");
-        Assert.notNull(snapshot, "snapshot must not be null");
 
         EverfiUsersRequest request = new EverfiUsersRequest(everfiApiClient, 1, pageSize);
         while (request != null) {
             List<EverfiUser> page = request.getUsers();
             for (EverfiUser user : page) {
-                hydrateLabels(user, snapshot);
+                hydrateLabels(user);
             }
             pageConsumer.accept(page);
             request = request.next();
         }
     }
 
-    public EverfiUser findByUuid(String uuid, EverfiCategorySnapshot snapshot) throws IOException {
+    public EverfiUser findByUuid(String uuid) throws IOException {
         Assert.hasText(uuid, "uuid must not be empty");
-        Assert.notNull(snapshot, "snapshot must not be null");
 
         String endpoint = USER_ENDPOINT + "/" + uuid + "?fields[users]=" + SINGLE_USER_FIELDS;
         try {
             String data = everfiApiClient.get(endpoint);
             EverfiUser user = parseUserFromData(data);
-            hydrateLabels(user, snapshot);
+            hydrateLabels(user);
             return user;
         } catch (EverfiApiException ex) {
             if (ex.getStatusCode() == 404) {
@@ -114,11 +113,11 @@ public class EverfiUserClient {
 
     /**
      * Replaces the sparse label refs Everfi returns (id-only, name = JSON:API resource type)
-     * with fully populated labels by joining against the snapshot. Labels whose ids are not
-     * present in the snapshot are dropped — they belong to a category the local view doesn't
+     * with fully populated labels by joining against the category cache. Labels whose ids are not
+     * present in the cache are dropped — they belong to a category the local view doesn't
      * know about and we can't describe them meaningfully.
      */
-    private void hydrateLabels(EverfiUser user, EverfiCategorySnapshot snapshot) {
+    private void hydrateLabels(EverfiUser user) {
         if (user == null) {
             return;
         }
@@ -127,7 +126,7 @@ public class EverfiUserClient {
             user.setCategoryLabels(List.of());
             return;
         }
-        List<EverfiCategoryLabel> hydrated = snapshot.hydrateLabels(raw);
+        List<EverfiCategoryLabel> hydrated = categoryService.hydrateLabels(raw);
         user.setCategoryLabels(hydrated != null ? hydrated : List.of());
     }
 }

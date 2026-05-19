@@ -2,7 +2,9 @@ package gov.nysenate.ess.core.service.pec.external.everfi.sync;
 
 import gov.nysenate.ess.core.dao.pec.everfi.EverfiEmployeeMappingDao;
 import gov.nysenate.ess.core.model.pec.everfi.EverfiEmployeeMapping;
+import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategory;
 import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategoryLabel;
+import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategoryService;
 import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiAddUserCommand;
 import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUpdateUserCommand;
 import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUser;
@@ -51,8 +53,19 @@ final class EverfiUserSyncExecutorTestSupport {
 
     static EverfiCategoryLabel label(int labelId, String categoryName, String labelName) {
         EverfiCategoryLabel label = new EverfiCategoryLabel(labelId, labelName);
+        label.setCategoryId(1);
         label.setCategoryName(categoryName);
         return label;
+    }
+
+    static List<EverfiCategory> emptyCategories() {
+        return List.of();
+    }
+
+    static List<EverfiCategory> categoriesWithDepartment() {
+        return List.of(
+                new EverfiCategory(1, "Department", List.of())
+        );
     }
 
     static final class RecordingEverfiUserClient extends EverfiUserClient {
@@ -61,7 +74,7 @@ final class EverfiUserSyncExecutorTestSupport {
         private final EverfiUser userToReturn;
 
         RecordingEverfiUserClient(EverfiUser userToReturn) {
-            super(null, new EverfiUserPayloadFactory());
+            super(null, new EverfiUserPayloadFactory(), new EverfiCategoryService(null));
             this.userToReturn = userToReturn;
         }
 
@@ -83,7 +96,7 @@ final class EverfiUserSyncExecutorTestSupport {
         private final boolean failUpdateUser;
 
         FailingEverfiUserClient(boolean failAddUser, boolean failUpdateUser) {
-            super(null, new EverfiUserPayloadFactory());
+            super(null, new EverfiUserPayloadFactory(), new EverfiCategoryService(null));
             this.failAddUser = failAddUser;
             this.failUpdateUser = failUpdateUser;
         }
@@ -143,6 +156,22 @@ final class EverfiUserSyncExecutorTestSupport {
 
         void failInsertWith(RuntimeException insertFailure) {
             this.insertFailure = insertFailure;
+        }
+    }
+
+    static class RecordingCategoryService extends EverfiCategoryService {
+        final List<String> createdLabels = new ArrayList<>();
+        private final EverfiCategoryLabel createdLabel;
+
+        RecordingCategoryService(EverfiCategoryLabel createdLabel) {
+            super(null);
+            this.createdLabel = createdLabel;
+        }
+
+        @Override
+        public EverfiCategoryLabel createLabel(EverfiCategory category, String labelName) throws IOException {
+            createdLabels.add(category.getName() + ":" + labelName);
+            return createdLabel;
         }
     }
 

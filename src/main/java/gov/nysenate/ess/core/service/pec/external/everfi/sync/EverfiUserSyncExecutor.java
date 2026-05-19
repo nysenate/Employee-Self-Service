@@ -57,37 +57,35 @@ public class EverfiUserSyncExecutor {
     }
 
     /**
-     * Executes every action in order and returns a result per action. {@code uploadListLabel} is only
-     * needed when at least one CREATE will run live; pass null otherwise.
+     * Executes every action in order and returns a result per action.
+     * All label resolution and creation has already occurred before this method is called.
      */
-    List<SyncResult> executeAll(List<PlannedAction> actions,
-                                       @Nullable EverfiCategoryLabel uploadListLabel,
-                                       boolean dryRun) {
+    List<SyncResult> executeAll(List<ExecutableAction> actions, boolean dryRun) {
         List<SyncResult> results = new ArrayList<>();
-        for (PlannedAction action : actions) {
+        for (ExecutableAction action : actions) {
             results.add(switch (action.action()) {
-                case CREATE     -> executeCreate(action, uploadListLabel, dryRun);
-                case UPDATE     -> executeUpdate(action, dryRun);
+                case CREATE -> executeCreate(action, dryRun);
+                case UPDATE -> executeUpdate(action, dryRun);
                 case REACTIVATE -> executeReactivate(action, dryRun);
                 case DEACTIVATE -> executeDeactivate(action, dryRun);
-                case SKIP       -> SyncResult.skipped(action);
-                case FLAG       -> SyncResult.flagged(action);
+                case SKIP -> SyncResult.skipped(action.plannedAction());
+                case FLAG -> SyncResult.flagged(action.plannedAction());
             });
         }
         return results;
     }
 
-    private SyncResult executeCreate(PlannedAction action,
-                                     @Nullable EverfiCategoryLabel uploadListLabel,
-                                     boolean dryRun) {
+    private SyncResult executeCreate(ExecutableAction action, boolean dryRun) {
         var desired = action.requireDesired();
-        return executeSafely(action, dryRun, () -> {
+        return executeSafely(action.plannedAction(), dryRun, () -> {
+            List<EverfiCategoryLabel> labels = new ArrayList<>(action.desiredLabels());
+            labels.add(action.requireUploadListLabel());
             EverfiUser everfiUser = everfiUserClient.addUser(new EverfiAddUserCommand(
                     desired.employeeId(),
                     desired.firstName(),
                     desired.lastName(),
                     desired.email(),
-                    categoryLabelsForCreate(desired.categoryLabels(), uploadListLabel)
+                    labels
             ));
             everfiEmployeeMappingDao.insert(new EverfiEmployeeMapping(
                     desired.employeeId(),
@@ -96,11 +94,11 @@ public class EverfiUserSyncExecutor {
         });
     }
 
-    private SyncResult executeUpdate(PlannedAction action, boolean dryRun) {
+    private SyncResult executeUpdate(ExecutableAction action, boolean dryRun) {
         var desired = action.requireDesired();
         var remote = action.requireRemote();
-        var mapping = action.requireRemoteMapping();
-        return executeSafely(action, dryRun, () ->
+        var mapping = action.plannedAction().requireRemoteMapping();
+        return executeSafely(action.plannedAction(), dryRun, () ->
                 requireEverfiResponse(everfiUserClient.updateUser(EverfiUpdateUserCommand.builder()
                         .uuid(mapping.everfiUuid())
                         .employeeId(mapping.employeeId())
@@ -108,18 +106,18 @@ public class EverfiUserSyncExecutor {
                         .lastName(desired.lastName())
                         .email(resolveUpdateEmail(desired, remote))
                         .active(true)
-                        .categoryLabels(categoryLabelsForUpdate(desired.categoryLabels(), remote))
+                        .categoryLabels(categoryLabelsForUpdate(action.desiredLabels(), remote))
                         .build())));
     }
 
-    private SyncResult executeReactivate(PlannedAction action, boolean dryRun) {
+    private SyncResult executeReactivate(ExecutableAction action, boolean dryRun) {
         var desired = action.requireDesired();
         var remote = action.requireRemote();
-        var mapping = action.requireRemoteMapping();
+        var mapping = action.plannedAction().requireRemoteMapping();
         if (desired.email() == null) {
-            return SyncResult.error(action, "Cannot reactivate user without email");
+            return SyncResult.error(action.plannedAction(), "Cannot reactivate user without email");
         }
-        return executeSafely(action, dryRun, () ->
+        return executeSafely(action.plannedAction(), dryRun, () ->
                 requireEverfiResponse(everfiUserClient.updateUser(EverfiUpdateUserCommand.builder()
                         .uuid(mapping.everfiUuid())
                         .employeeId(mapping.employeeId())
@@ -127,15 +125,15 @@ public class EverfiUserSyncExecutor {
                         .lastName(desired.lastName())
                         .email(desired.email())
                         .active(true)
-                        .categoryLabels(categoryLabelsForUpdate(desired.categoryLabels(), remote))
+                        .categoryLabels(categoryLabelsForUpdate(action.desiredLabels(), remote))
                         .build())));
     }
 
-    private SyncResult executeDeactivate(PlannedAction action, boolean dryRun) {
+    private SyncResult executeDeactivate(ExecutableAction action, boolean dryRun) {
         var remote = action.requireRemote();
-        var mapping = action.requireRemoteMapping();
+        var mapping = action.plannedAction().requireRemoteMapping();
         String email = deactivatedEmail(mapping.employeeId());
-        return executeSafely(action, dryRun, () ->
+        return executeSafely(action.plannedAction(), dryRun, () ->
                 requireEverfiResponse(everfiUserClient.updateUser(EverfiUpdateUserCommand.builder()
                         .uuid(mapping.everfiUuid())
                         .employeeId(mapping.employeeId())
@@ -147,17 +145,8 @@ public class EverfiUserSyncExecutor {
                         .build())));
     }
 
-    private List<EverfiCategoryLabel> categoryLabelsForCreate(List<EverfiCategoryLabel> desiredLabels,
-                                                               @Nullable EverfiCategoryLabel uploadListLabel) {
-        List<EverfiCategoryLabel> labels = new ArrayList<>(desiredLabels);
-        if (uploadListLabel != null) {
-            labels.add(uploadListLabel);
-        }
-        return labels;
-    }
-
     private List<EverfiCategoryLabel> categoryLabelsForUpdate(List<EverfiCategoryLabel> desiredLabels,
-                                                               RemoteUser remote) {
+                                                              RemoteUser remote) {
         // Desired labels replace any remote labels in the same category.
         // All other remote labels (Upload List, admin-added, external-system labels) are preserved.
         Set<String> managedCategoryNames = desiredLabels.stream()

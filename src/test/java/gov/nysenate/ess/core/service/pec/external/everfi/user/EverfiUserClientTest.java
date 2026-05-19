@@ -3,7 +3,7 @@ package gov.nysenate.ess.core.service.pec.external.everfi.user;
 import gov.nysenate.ess.core.annotation.UnitTest;
 import gov.nysenate.ess.core.service.pec.external.everfi.EverfiApiException;
 import gov.nysenate.ess.core.service.pec.external.everfi.EverfiApiClient;
-import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategorySnapshot;
+import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategoryService;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -27,9 +27,10 @@ public class EverfiUserClientTest {
                 usersResponse("user-3", null, null)
         ));
 
-        EverfiUserClient client = new EverfiUserClient(everfiApiClient, new EverfiUserPayloadFactory());
+        EverfiUserClient client = new EverfiUserClient(
+                everfiApiClient, new EverfiUserPayloadFactory(), new EverfiCategoryService(null));
 
-        List<EverfiUser> users = client.fetchAll(2, new EverfiCategorySnapshot(List.of()));
+        List<EverfiUser> users = client.fetchAll(2);
 
         assertEquals(3, users.size());
         assertEquals("user-1", users.get(0).getUuid());
@@ -39,18 +40,20 @@ public class EverfiUserClientTest {
 
     @Test
     public void findByUuidReturnsNullOnNotFound() throws IOException {
-        EverfiUserClient client = new EverfiUserClient(new NotFoundEverfiApiClient(), new EverfiUserPayloadFactory());
+        EverfiUserClient client = new EverfiUserClient(
+                new NotFoundEverfiApiClient(), new EverfiUserPayloadFactory(), new EverfiCategoryService(null));
 
-        EverfiUser user = client.findByUuid("missing-user", new EverfiCategorySnapshot(List.of()));
+        EverfiUser user = client.findByUuid("missing-user");
 
         assertNull(user);
     }
 
     @Test(expected = EverfiApiException.class)
     public void findByUuidRethrowsNonNotFoundApiErrors() throws IOException {
-        EverfiUserClient client = new EverfiUserClient(new ErrorEverfiApiClient(), new EverfiUserPayloadFactory());
+        EverfiUserClient client = new EverfiUserClient(
+                new ErrorEverfiApiClient(), new EverfiUserPayloadFactory(), new EverfiCategoryService(null));
 
-        client.findByUuid("broken-user", new EverfiCategorySnapshot(List.of()));
+        client.findByUuid("broken-user");
     }
 
     private static String usersResponse(String firstUuid, String secondUuid, String nextLink) {

@@ -2,6 +2,7 @@ package gov.nysenate.ess.core.service.pec.external.everfi.sync;
 
 import gov.nysenate.ess.core.model.pec.everfi.EverfiEmployeeMapping;
 import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategoryLabel;
+import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiManagedCategory;
 import lombok.Builder;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
@@ -32,9 +33,6 @@ public record RemoteUser(
         @NotNull String remoteEmail,
         List<EverfiCategoryLabel> categoryLabels
 ) {
-
-    private static final String UPLOAD_LIST_CATEGORY = "Upload List";
-
     public RemoteUser {
         remoteUuid = Objects.requireNonNull(remoteUuid, "remoteUuid must not be null");
         remoteEmail = Objects.requireNonNull(remoteEmail, "remoteEmail must not be null");
@@ -47,7 +45,7 @@ public record RemoteUser(
      */
     public Optional<EverfiCategoryLabel> uploadListLabel() {
         return categoryLabels.stream()
-                .filter(l -> UPLOAD_LIST_CATEGORY.equals(l.getCategoryName()))
+                .filter(l -> EverfiManagedCategory.UPLOAD_LIST.categoryName().equals(l.getCategoryName()))
                 .findFirst();
     }
 
@@ -74,7 +72,7 @@ public record RemoteUser(
                 || !Objects.equals(remoteFirstName, desiredUser.firstName())
                 || !Objects.equals(remoteLastName, desiredUser.lastName())
                 || hasEmailDrift(desiredUser)
-                || hasLabelDrift(desiredUser.categoryLabels());
+                || hasLabelDrift(desiredUser.desiredLabels());
     }
 
     private boolean hasEmailDrift(DesiredUser desiredUser) {
@@ -90,33 +88,18 @@ public record RemoteUser(
      * Extra labels in categories not present on the desired user are treated as unmanaged and
      * do not make the user stale; those are preserved during update/reactivate writes.
      */
-    private boolean hasLabelDrift(List<EverfiCategoryLabel> desiredLabels) {
+    private boolean hasLabelDrift(List<DesiredLabel> desiredLabels) {
         if (desiredLabels.isEmpty()) {
             return false;
         }
-
-        Set<Integer> remoteLabelIds = categoryLabels.stream()
-                .map(EverfiCategoryLabel::getLabelId)
-                .collect(Collectors.toSet());
-        boolean missingDesiredLabelWithoutCategory = desiredLabels.stream()
-                .filter(label -> label.getCategoryName() == null)
-                .anyMatch(label -> !remoteLabelIds.contains(label.getLabelId()));
-        if (missingDesiredLabelWithoutCategory) {
-            return true;
-        }
-
-        Map<String, Set<Integer>> desiredByCategory = labelsByCategory(desiredLabels);
-        Map<String, Set<Integer>> remoteByCategory = labelsByCategory(categoryLabels);
+        Map<String, Set<String>> desiredByCategory = desiredLabels.stream()
+                .collect(Collectors.groupingBy(DesiredLabel::categoryName,
+                        Collectors.mapping(DesiredLabel::labelName, Collectors.toSet())));
+        Map<String, Set<String>> remoteByCategory = categoryLabels.stream()
+                .filter(l -> l.getCategoryName() != null)
+                .collect(Collectors.groupingBy(EverfiCategoryLabel::getCategoryName,
+                        Collectors.mapping(EverfiCategoryLabel::getLabelName, Collectors.toSet())));
         return desiredByCategory.entrySet().stream()
-                .anyMatch(entry -> !entry.getValue().equals(remoteByCategory.getOrDefault(entry.getKey(), Set.of())));
-    }
-
-    private Map<String, Set<Integer>> labelsByCategory(List<EverfiCategoryLabel> labels) {
-        return labels.stream()
-                .filter(label -> label.getCategoryName() != null)
-                .collect(Collectors.groupingBy(
-                        EverfiCategoryLabel::getCategoryName,
-                        Collectors.mapping(EverfiCategoryLabel::getLabelId, Collectors.toSet())
-                ));
+                .anyMatch(e -> !e.getValue().equals(remoteByCategory.getOrDefault(e.getKey(), Set.of())));
     }
 }
