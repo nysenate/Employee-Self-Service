@@ -153,13 +153,13 @@ public class EverfiUserSyncJobServiceTest {
         private int syncUsersCalls;
 
         private RecordingSyncService(SyncRun runToReturn) {
-            super(null, null, null, null, null);
+            super(null, null, null, null, null, null);
             this.runToReturn = runToReturn;
             this.exceptionToThrow = null;
         }
 
         private RecordingSyncService(RuntimeException exceptionToThrow) {
-            super(null, null, null, null, null);
+            super(null, null, null, null, null, null);
             this.runToReturn = null;
             this.exceptionToThrow = exceptionToThrow;
         }

@@ -1,8 +1,11 @@
 package gov.nysenate.ess.core.service.pec.external.everfi.sync;
 
+import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
 
 /**
  * Orchestrates a single end-to-end sync run: preflight → plan → execute.
@@ -17,6 +20,7 @@ public class EverfiUserSyncService {
 
     private static final Logger logger = LoggerFactory.getLogger(EverfiUserSyncService.class);
 
+    private final EverfiCategoryService categoryService;
     private final EverfiUserSyncLoader loader;
     private final EverfiUserSyncPlanner planner;
     private final EverfiLabelProvisioner labelProvisioner;
@@ -24,12 +28,14 @@ public class EverfiUserSyncService {
     private final EverfiUserSyncExecutor executor;
 
     public EverfiUserSyncService(
+            EverfiCategoryService categoryService,
             EverfiUserSyncLoader loader,
             EverfiUserSyncPlanner planner,
             EverfiLabelProvisioner labelProvisioner,
             EverfiExecutableActionResolver actionResolver,
             EverfiUserSyncExecutor executor
     ) {
+        this.categoryService = categoryService;
         this.loader = loader;
         this.planner = planner;
         this.labelProvisioner = labelProvisioner;
@@ -43,7 +49,7 @@ public class EverfiUserSyncService {
      * raised during the load and plan stages.
      */
     SyncRun syncUsers(boolean dryRun) {
-        loader.initializeCategoryCache();
+        initializeCategoryCache();
         var desiredUsers      = loader.loadDesiredUsers();
         var remoteLoadResult  = loader.loadRemoteUsers();
         var actions           = planner.plan(desiredUsers, RemoteUserIndex.from(remoteLoadResult));
@@ -52,5 +58,13 @@ public class EverfiUserSyncService {
         var executableActions = actionResolver.resolve(actions, labels);
         var results           = executor.executeAll(executableActions, dryRun);
         return SyncRun.of(results, dryRun);
+    }
+
+    void initializeCategoryCache() {
+        try {
+            categoryService.initialize();
+        } catch (IOException | RuntimeException ex) {
+            throw new EverfiUserSyncLoadException("Failed to initialize Everfi category cache.", ex);
+        }
     }
 }

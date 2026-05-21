@@ -4,7 +4,6 @@ import gov.nysenate.ess.core.dao.pec.everfi.EverfiEmployeeMappingDao;
 import gov.nysenate.ess.core.model.pec.everfi.EverfiEmployeeMapping;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategoryRules;
-import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategoryService;
 import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiManagedCategory;
 import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUser;
 import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUserClient;
@@ -39,26 +38,15 @@ public class EverfiUserSyncLoader {
     private final EmployeeInfoService employeeInfoService;
     private final EverfiUserClient everfiUserClient;
     private final EverfiEmployeeMappingDao everfiEmployeeMappingDao;
-    private final EverfiCategoryService categoryService;
 
     public EverfiUserSyncLoader(
             EmployeeInfoService employeeInfoService,
             EverfiUserClient everfiUserClient,
-            EverfiEmployeeMappingDao everfiEmployeeMappingDao,
-            EverfiCategoryService categoryService
+            EverfiEmployeeMappingDao everfiEmployeeMappingDao
     ) {
         this.employeeInfoService = employeeInfoService;
         this.everfiUserClient = everfiUserClient;
         this.everfiEmployeeMappingDao = everfiEmployeeMappingDao;
-        this.categoryService = categoryService;
-    }
-
-    void initializeCategoryCache() {
-        try {
-            categoryService.initialize();
-        } catch (IOException | RuntimeException ex) {
-            throw new EverfiUserSyncLoadException("Failed to initialize Everfi category cache.", ex);
-        }
     }
 
     /**

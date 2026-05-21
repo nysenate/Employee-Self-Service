@@ -3,15 +3,18 @@ package gov.nysenate.ess.core.service.pec.external.everfi.sync;
 import de.bechte.junit.runners.context.HierarchicalContextRunner;
 import gov.nysenate.ess.core.annotation.UnitTest;
 import gov.nysenate.ess.core.model.pec.everfi.EverfiEmployeeMapping;
+import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategoryService;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @RunWith(HierarchicalContextRunner.class)
 @Category(UnitTest.class)
@@ -28,17 +31,18 @@ public class EverfiUserSyncServiceTest {
         List<SyncResult> results = List.of(SyncResult.skipped(actions.get(0)));
         ResolvedLabels labels = ResolvedLabels.empty();
 
+        RecordingCategoryService categoryService = new RecordingCategoryService();
         RecordingLoader preflight = new RecordingLoader(desiredUsers, remoteUsers);
         RecordingPlanner planner = new RecordingPlanner(actions);
         RecordingLabelProvisioner provisioner = new RecordingLabelProvisioner(labels);
         RecordingActionResolver actionResolver = new RecordingActionResolver(executableActions);
         RecordingExecutor executor = new RecordingExecutor(results);
         EverfiUserSyncService service = new EverfiUserSyncService(
-                preflight, planner, provisioner, actionResolver, executor);
+                categoryService, preflight, planner, provisioner, actionResolver, executor);
 
         SyncRun run = service.syncUsers(true);
 
-        assertThat(preflight.initializeCategoryCacheCalls).isEqualTo(1);
+        assertThat(categoryService.initializeCalls).isEqualTo(1);
         assertThat(preflight.loadDesiredUsersCalls).isEqualTo(1);
         assertThat(preflight.loadRemoteUsersCalls).isEqualTo(1);
         assertThat(planner.receivedDesiredUsers).isEqualTo(desiredUsers);
@@ -68,7 +72,8 @@ public class EverfiUserSyncServiceTest {
         RecordingActionResolver actionResolver = new RecordingActionResolver(executableActions);
         RecordingExecutor executor = new RecordingExecutor(results);
         EverfiUserSyncService service = new EverfiUserSyncService(
-                preflight, new RecordingPlanner(actions), provisioner, actionResolver, executor);
+                new RecordingCategoryService(), preflight, new RecordingPlanner(actions), provisioner,
+                actionResolver, executor);
 
         service.syncUsers(false);
 
@@ -76,6 +81,23 @@ public class EverfiUserSyncServiceTest {
         assertThat(provisioner.receivedDryRun).isFalse();
         assertThat(actionResolver.receivedLabels).isSameAs(labels);
         assertThat(executor.receivedActions).isSameAs(executableActions);
+    }
+
+    @Test
+    public void initializeCategoryCacheWrapsFailure() {
+        EverfiUserSyncService service = new EverfiUserSyncService(
+                new FailingCategoryService(),
+                new RecordingLoader(Set.of(), Set.of()),
+                new RecordingPlanner(List.of()),
+                new RecordingLabelProvisioner(ResolvedLabels.empty()),
+                new RecordingActionResolver(List.of()),
+                new RecordingExecutor(List.of())
+        );
+
+        assertThatThrownBy(service::initializeCategoryCache)
+                .isInstanceOf(EverfiUserSyncLoadException.class)
+                .hasMessage("Failed to initialize Everfi category cache.")
+                .hasCauseInstanceOf(IOException.class);
     }
 
     private DesiredUser.DesiredUserBuilder desiredUser() {
@@ -100,19 +122,13 @@ public class EverfiUserSyncServiceTest {
     private static class RecordingLoader extends EverfiUserSyncLoader {
         private final Set<DesiredUser> desiredUsers;
         private final Set<RemoteUser> remoteUsers;
-        private int initializeCategoryCacheCalls;
         private int loadDesiredUsersCalls;
         private int loadRemoteUsersCalls;
 
         private RecordingLoader(Set<DesiredUser> desiredUsers, Set<RemoteUser> remoteUsers) {
-            super(null, null, null, null);
+            super(null, null, null);
             this.desiredUsers = desiredUsers;
             this.remoteUsers = remoteUsers;
-        }
-
-        @Override
-        void initializeCategoryCache() {
-            initializeCategoryCacheCalls++;
         }
 
         @Override
@@ -125,6 +141,30 @@ public class EverfiUserSyncServiceTest {
         EverfiUserSyncLoader.RemoteLoadResult loadRemoteUsers() {
             loadRemoteUsersCalls++;
             return new EverfiUserSyncLoader.RemoteLoadResult(remoteUsers, Set.of());
+        }
+    }
+
+    private static class RecordingCategoryService extends EverfiCategoryService {
+        private int initializeCalls;
+
+        private RecordingCategoryService() {
+            super(null);
+        }
+
+        @Override
+        public void initialize() {
+            initializeCalls++;
+        }
+    }
+
+    private static class FailingCategoryService extends EverfiCategoryService {
+        private FailingCategoryService() {
+            super(null);
+        }
+
+        @Override
+        public void initialize() throws IOException {
+            throw new IOException("Failed to fetch categories.");
         }
     }
 

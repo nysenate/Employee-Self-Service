@@ -36,8 +36,7 @@ public class EverfiUserSyncLoaderTest {
         EverfiUserSyncLoader preflight = new EverfiUserSyncLoader(
                 new FailingEmployeeInfoService(),
                 new StubEverfiUserClient(List.of()),
-                new StubEverfiEmployeeMappingDao(List.of()),
-                new EverfiCategoryService(null)
+                new StubEverfiEmployeeMappingDao(List.of())
         );
 
         assertThatThrownBy(() -> preflight.loadDesiredUsers())
@@ -51,8 +50,7 @@ public class EverfiUserSyncLoaderTest {
         EverfiUserSyncLoader preflight = new EverfiUserSyncLoader(
                 new StubEmployeeInfoService(Set.of()),
                 new FailingEverfiUserClient(),
-                new StubEverfiEmployeeMappingDao(List.of()),
-                null
+                new StubEverfiEmployeeMappingDao(List.of())
         );
 
         assertThatThrownBy(preflight::loadRemoteUsers)
@@ -66,8 +64,7 @@ public class EverfiUserSyncLoaderTest {
         EverfiUserSyncLoader preflight = new EverfiUserSyncLoader(
                 new StubEmployeeInfoService(Set.of()),
                 new StubEverfiUserClient(List.of(everfiUser("everfi-1", null))),
-                new StubEverfiEmployeeMappingDao(List.of()),
-                null
+                new StubEverfiEmployeeMappingDao(List.of())
         );
 
         assertThatThrownBy(preflight::loadRemoteUsers)
@@ -81,8 +78,7 @@ public class EverfiUserSyncLoaderTest {
         EverfiUserSyncLoader preflight = new EverfiUserSyncLoader(
                 new StubEmployeeInfoService(Set.of()),
                 new StubEverfiUserClient(List.of(everfiUser("everfi-1", "user@example.com"))),
-                new StubEverfiEmployeeMappingDao(List.of()),
-                null
+                new StubEverfiEmployeeMappingDao(List.of())
         );
 
         Set<RemoteUser> remoteUsers = preflight.loadRemoteUsers().remoteUsers();
@@ -98,8 +94,7 @@ public class EverfiUserSyncLoaderTest {
         EverfiUserSyncLoader preflight = new EverfiUserSyncLoader(
                 new StubEmployeeInfoService(Set.of()),
                 new StubEverfiUserClient(List.of(everfiUser("everfi-1", "user@example.com"))),
-                new StubEverfiEmployeeMappingDao(List.of(mapping)),
-                null
+                new StubEverfiEmployeeMappingDao(List.of(mapping))
         );
 
         Set<RemoteUser> remoteUsers = preflight.loadRemoteUsers().remoteUsers();
@@ -112,8 +107,7 @@ public class EverfiUserSyncLoaderTest {
         EverfiUserSyncLoader preflight = new EverfiUserSyncLoader(
                 new StubEmployeeInfoService(Set.of()),
                 new StubEverfiUserClient(List.of(everfiUser("everfi-1", "user@example.com", null))),
-                new StubEverfiEmployeeMappingDao(List.of()),
-                null
+                new StubEverfiEmployeeMappingDao(List.of())
         );
 
         Set<RemoteUser> remoteUsers = preflight.loadRemoteUsers().remoteUsers();
@@ -127,8 +121,7 @@ public class EverfiUserSyncLoaderTest {
         EverfiUserSyncLoader preflight = new EverfiUserSyncLoader(
                 new StubEmployeeInfoService(Set.of()),
                 new StubEverfiUserClient(List.of()),
-                new StubEverfiEmployeeMappingDao(List.of(orphanedMapping)),
-                null
+                new StubEverfiEmployeeMappingDao(List.of(orphanedMapping))
         );
 
         EverfiUserSyncLoader.RemoteLoadResult result = preflight.loadRemoteUsers();
@@ -148,8 +141,7 @@ public class EverfiUserSyncLoaderTest {
         EverfiUserSyncLoader preflight = new EverfiUserSyncLoader(
                 new StubEmployeeInfoService(Set.of(emp)),
                 new StubEverfiUserClient(List.of()),
-                new StubEverfiEmployeeMappingDao(List.of()),
-                new EverfiCategoryService(null)
+                new StubEverfiEmployeeMappingDao(List.of())
         );
 
         DesiredUser desiredUser = assertOne(preflight.loadDesiredUsers());
@@ -171,8 +163,7 @@ public class EverfiUserSyncLoaderTest {
         EverfiUserSyncLoader preflight = new EverfiUserSyncLoader(
                 new StubEmployeeInfoService(Set.of(emp)),
                 new StubEverfiUserClient(List.of()),
-                new StubEverfiEmployeeMappingDao(List.of()),
-                new EverfiCategoryService(null)
+                new StubEverfiEmployeeMappingDao(List.of())
         );
 
         DesiredUser desiredUser = assertOne(preflight.loadDesiredUsers());
@@ -194,8 +185,7 @@ public class EverfiUserSyncLoaderTest {
         EverfiUserSyncLoader preflight = new EverfiUserSyncLoader(
                 new StubEmployeeInfoService(Set.of(emp)),
                 new StubEverfiUserClient(List.of()),
-                new StubEverfiEmployeeMappingDao(List.of()),
-                new EverfiCategoryService(null)
+                new StubEverfiEmployeeMappingDao(List.of())
         );
 
         DesiredUser desiredUser = assertOne(preflight.loadDesiredUsers());
