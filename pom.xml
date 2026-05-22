@@ -19,6 +19,30 @@
       </resource>
     </resources>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>3.5.0</version>
+        <configuration>
+          <nonFilteredFileExtensions>
+            <nonFilteredFileExtension>pdf</nonFilteredFileExtension>
+          </nonFilteredFileExtensions>
+        </configuration>
+      </plugin>
+      <!-- Maven Compiler Plugin -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.15.0</version>
+        <configuration>
+          <release>21</release>
+          <compilerArgs>
+            <arg>-parameters</arg>
+          </compilerArgs>
+          <!-- avoid possible encoding issues -->
+          <encoding>utf-8</encoding>
+        </configuration>
+      </plugin>
       <!-- Surefire Plugin -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -34,7 +58,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
-        <version>3.2.3</version>
+        <version>3.5.5</version>
         <configuration>
           <argLine>-Dlog4j.configurationFile=test.log4j2.xml</argLine>
           <groups>gov.nysenate.ess.core.annotation.IntegrationTest</groups>
@@ -48,21 +72,6 @@
             </goals>
           </execution>
         </executions>
-      </plugin>
-      <!-- Maven Compiler Plugin -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.15.0</version>
-        <configuration>
-          <source>21</source>
-          <target>21</target>
-          <compilerArgs>
-            <arg>-parameters</arg>
-          </compilerArgs>
-          <!-- avoid possible encoding issues -->
-          <encoding>utf-8</encoding>
-        </configuration>
       </plugin>
       <!-- Maven Jar Plugin -->
       <plugin>
@@ -87,7 +96,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
-        <version>3.0.0</version>
+        <version>3.6.3</version>
         <executions>
           <execution>
             <id>exec-npm-install</id>
@@ -106,19 +115,16 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-resources-plugin</artifactId>
-        <version>3.4.0</version>
-        <configuration>
-          <nonFilteredFileExtensions>
-            <nonFilteredFileExtension>pdf</nonFilteredFileExtension>
-          </nonFilteredFileExtensions>
-        </configuration>
-      </plugin>
-      <plugin>
         <groupId>org.flywaydb</groupId>
         <artifactId>flyway-maven-plugin</artifactId>
-        <version>8.5.2</version>
+        <version>${flyway.version}</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-database-postgresql</artifactId>
+            <version>${flyway.version}</version>
+          </dependency>
+        </dependencies>
         <configuration>
           <configFiles>
             <configFile>src/main/resources/flyway.conf</configFile>
@@ -148,6 +154,7 @@
     <commons-text.version>1.11.0</commons-text.version>
     <commons-validator.version>1.8.0</commons-validator.version>
     <ehcache.version>3.9.9</ehcache.version>
+    <flyway.version>12.5.0</flyway.version>
     <freemarker.version>2.3.31</freemarker.version>
     <guava.version>32.1.3-jre</guava.version>
     <guice.version>5.1.0</guice.version>
@@ -155,18 +162,18 @@
     <hierarchicalcontextrunner.version>4.12.2</hierarchicalcontextrunner.version>
     <jackson.version>2.16.1</jackson.version>
     <javax-cache.version>1.1.1</javax-cache.version>
+    <jsoup.version>1.22.2</jsoup.version>
     <jstl.version>1.2</jstl.version>
     <junit.version>4.13.2</junit.version>
-    <log4j.version>2.22.1</log4j.version>
+    <log4j.version>2.26.0</log4j.version>
     <mockito.version>5.23.0</mockito.version>
     <oracle.driver.version>19.30.0.0</oracle.driver.version>
     <pdfbox.version>2.0.27</pdfbox.version>
-    <postgres.driver.version>42.5.5</postgres.driver.version>
-    <slf4j.version>1.7.36</slf4j.version>
+    <postgres-jdbc.version>42.7.11</postgres-jdbc.version>
+    <slf4j.version>2.0.18</slf4j.version>
     <spring.version>6.2.3</spring.version>
     <spring.ldap.version>2.4.1</spring.ldap.version>
     <tomcat.version>11.0.22</tomcat.version>
-    <woodstox.version>4.4.1</woodstox.version>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -390,12 +397,6 @@
       <version>${jackson.version}</version>
     </dependency>
 
-    <dependency>
-      <groupId>org.codehaus.woodstox</groupId>
-      <artifactId>woodstox-core-asl</artifactId>
-      <version>${woodstox.version}</version>
-    </dependency>
-
     <!-- Apache Shiro | Authentication/authorization. -->
     <dependency>
       <groupId>org.apache.shiro</groupId>
@@ -445,7 +446,7 @@
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
-      <version>${postgres.driver.version}</version>
+      <version>${postgres-jdbc.version}</version>
     </dependency>
 
     <!-- c3p0 connection pool -->
@@ -476,7 +477,7 @@
 
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-slf4j-impl</artifactId>
+      <artifactId>log4j-slf4j2-impl</artifactId>
       <version>${log4j.version}</version>
     </dependency>
 
@@ -626,7 +627,7 @@
     <dependency>
       <groupId>org.jsoup</groupId>
       <artifactId>jsoup</artifactId>
-      <version>1.15.4</version>
+      <version>${jsoup.version}</version>
     </dependency>
 
     <dependency>
