@@ -171,7 +171,7 @@
     <pdfbox.version>2.0.27</pdfbox.version>
     <postgres-jdbc.version>42.7.11</postgres-jdbc.version>
     <slf4j.version>2.0.18</slf4j.version>
-    <spring.version>6.2.3</spring.version>
+    <spring.version>6.2.8</spring.version>
     <spring.ldap.version>2.4.1</spring.ldap.version>
     <tomcat.version>11.0.22</tomcat.version>
 
