@@ -4,6 +4,7 @@ import de.bechte.junit.runners.context.HierarchicalContextRunner;
 import gov.nysenate.ess.core.annotation.UnitTest;
 import gov.nysenate.ess.core.model.pec.everfi.EverfiEmployeeMapping;
 import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategoryService;
+import gov.nysenate.ess.core.service.pec.external.everfi.sync.EverfiUserSyncExecutorTestSupport.StubCategoryService;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -31,7 +32,7 @@ public class EverfiUserSyncServiceTest {
         List<SyncResult> results = List.of(SyncResult.skipped(actions.get(0)));
         ResolvedLabels labels = ResolvedLabels.empty();
 
-        RecordingCategoryService categoryService = new RecordingCategoryService();
+        StubCategoryService categoryService = new StubCategoryService();
         RecordingLoader preflight = new RecordingLoader(desiredUsers, remoteUsers);
         RecordingPlanner planner = new RecordingPlanner(actions);
         RecordingLabelProvisioner provisioner = new RecordingLabelProvisioner(labels);
@@ -72,7 +73,7 @@ public class EverfiUserSyncServiceTest {
         RecordingActionResolver actionResolver = new RecordingActionResolver(executableActions);
         RecordingExecutor executor = new RecordingExecutor(results);
         EverfiUserSyncService service = new EverfiUserSyncService(
-                new RecordingCategoryService(), preflight, new RecordingPlanner(actions), provisioner,
+                new StubCategoryService(), preflight, new RecordingPlanner(actions), provisioner,
                 actionResolver, executor);
 
         service.syncUsers(false);
@@ -144,19 +145,6 @@ public class EverfiUserSyncServiceTest {
         }
     }
 
-    private static class RecordingCategoryService extends EverfiCategoryService {
-        private int initializeCalls;
-
-        private RecordingCategoryService() {
-            super(null);
-        }
-
-        @Override
-        public void initialize() {
-            initializeCalls++;
-        }
-    }
-
     private static class FailingCategoryService extends EverfiCategoryService {
         private FailingCategoryService() {
             super(null);
@@ -191,7 +179,7 @@ public class EverfiUserSyncServiceTest {
         private boolean receivedDryRun;
 
         private RecordingLabelProvisioner(ResolvedLabels resultToReturn) {
-            super(null);
+            super(new StubCategoryService());
             this.resultToReturn = resultToReturn;
         }
 

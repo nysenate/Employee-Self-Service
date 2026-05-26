@@ -23,6 +23,10 @@ record LabelRequirements(
         desiredLabels = Collections.unmodifiableSet(new LinkedHashSet<>(desiredLabels));
     }
 
+    static LabelRequirements of(boolean uploadListRequired, DesiredLabel... desiredLabels) {
+        return new LabelRequirements(new LinkedHashSet<>(List.of(desiredLabels)), uploadListRequired);
+    }
+
     static LabelRequirements from(List<PlannedAction> actions) {
         Set<DesiredLabel> desiredLabels = actions.stream()
                 .filter(LabelRequirements::writesDesiredLabels)

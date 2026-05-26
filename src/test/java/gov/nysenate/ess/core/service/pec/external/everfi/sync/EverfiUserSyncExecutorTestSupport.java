@@ -159,19 +159,29 @@ final class EverfiUserSyncExecutorTestSupport {
         }
     }
 
-    static class RecordingCategoryService extends EverfiCategoryService {
+    static class StubCategoryService extends EverfiCategoryService {
         final List<String> createdLabels = new ArrayList<>();
-        private final EverfiCategoryLabel createdLabel;
+        int initializeCalls;
+        private final EverfiCategoryLabel createResponse;
 
-        RecordingCategoryService(EverfiCategoryLabel createdLabel) {
+        StubCategoryService() {
+            this(null);
+        }
+
+        StubCategoryService(EverfiCategoryLabel createResponse) {
             super(null);
-            this.createdLabel = createdLabel;
+            this.createResponse = createResponse;
+        }
+
+        @Override
+        public void initialize() {
+            initializeCalls++;
         }
 
         @Override
         public EverfiCategoryLabel createLabel(EverfiCategory category, String labelName) throws IOException {
             createdLabels.add(category.getName() + ":" + labelName);
-            return createdLabel;
+            return createResponse;
         }
     }
 
