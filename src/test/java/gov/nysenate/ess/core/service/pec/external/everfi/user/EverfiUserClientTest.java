@@ -3,6 +3,8 @@ package gov.nysenate.ess.core.service.pec.external.everfi.user;
 import gov.nysenate.ess.core.annotation.UnitTest;
 import gov.nysenate.ess.core.service.pec.external.everfi.EverfiApiException;
 import gov.nysenate.ess.core.service.pec.external.everfi.EverfiApiClient;
+import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategory;
+import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategoryLabel;
 import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategoryService;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -48,6 +50,25 @@ public class EverfiUserClientTest {
         assertNull(user);
     }
 
+    @Test
+    public void findByUuidHydratesLabelsFromCategoryCache() throws IOException {
+        StubEverfiApiClient everfiApiClient = new StubEverfiApiClient(Map.of(
+                "/v1/admin/users/user-1?fields[users]=email,first_name,last_name,sso_id,employee_id,student_id,active,user_rule_set_roles,category_labels",
+                singleUserResponse("user-1", 200)
+        ));
+        EverfiCategoryService categoryService = new EverfiCategoryService(null);
+        categoryService.initialize(List.of(category("Department", categoryLabel(200, "HR", 10, "Department"))));
+        EverfiUserClient client = new EverfiUserClient(
+                everfiApiClient, new EverfiUserPayloadFactory(), categoryService);
+
+        EverfiUser user = client.findByUuid("user-1");
+
+        assertEquals(1, user.getCategoryLabels().size());
+        assertEquals("HR", user.getCategoryLabels().get(0).getLabelName());
+        assertEquals("Department", user.getCategoryLabels().get(0).getCategoryName());
+        assertEquals(10, user.getCategoryLabels().get(0).getCategoryId());
+    }
+
     @Test(expected = EverfiApiException.class)
     public void findByUuidRethrowsNonNotFoundApiErrors() throws IOException {
         EverfiUserClient client = new EverfiUserClient(
@@ -67,6 +88,10 @@ public class EverfiUserClientTest {
     }
 
     private static String userJson(String uuid) {
+        return userJson(uuid, "");
+    }
+
+    private static String userJson(String uuid, String labelRelationships) {
         return "{"
                 + "\"id\":\"" + uuid + "\","
                 + "\"attributes\":{"
@@ -77,8 +102,24 @@ public class EverfiUserClientTest {
                 + "\"first_name\":\"Test\","
                 + "\"last_name\":\"User\""
                 + "},"
-                + "\"relationships\":{\"category_labels\":{\"data\":[]}}"
+                + "\"relationships\":{\"category_labels\":{\"data\":[" + labelRelationships + "]}}"
                 + "}";
+    }
+
+    private static String singleUserResponse(String uuid, int labelId) {
+        String labelRelationship = "{\"id\":\"" + labelId + "\",\"type\":\"category_labels\"}";
+        return "{\"data\":" + userJson(uuid, labelRelationship) + "}";
+    }
+
+    private static EverfiCategory category(String name, EverfiCategoryLabel... labels) {
+        return new EverfiCategory(10, name, List.of(labels));
+    }
+
+    private static EverfiCategoryLabel categoryLabel(int labelId, String labelName, int categoryId, String categoryName) {
+        EverfiCategoryLabel label = new EverfiCategoryLabel(labelId, labelName);
+        label.setCategoryId(categoryId);
+        label.setCategoryName(categoryName);
+        return label;
     }
 
     private static class StubEverfiApiClient extends EverfiApiClient {
@@ -119,4 +160,5 @@ public class EverfiUserClientTest {
             throw new EverfiApiException(500, "Internal Server Error");
         }
     }
+
 }

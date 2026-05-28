@@ -1,8 +1,14 @@
 package gov.nysenate.ess.core.service.pec.external.everfi.category;
 
 import gov.nysenate.ess.core.service.pec.external.everfi.EverfiApiClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+
+import jakarta.annotation.PostConstruct;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -18,12 +24,42 @@ import java.util.Map;
 @Service
 public class EverfiCategoryService {
 
+    private static final Logger logger = LoggerFactory.getLogger(EverfiCategoryService.class);
+
     private final EverfiApiClient client;
+    private final boolean refreshEnabled;
     private volatile CacheState cacheState = CacheState.empty();
 
     @Autowired
-    public EverfiCategoryService(EverfiApiClient client) {
+    public EverfiCategoryService(
+            EverfiApiClient client,
+            @Value("${everfi.category.cache.refresh.enabled:false}") boolean refreshEnabled
+    ) {
         this.client = client;
+        this.refreshEnabled = refreshEnabled;
+    }
+
+    public EverfiCategoryService(EverfiApiClient client) {
+        this(client, false);
+    }
+
+    @PostConstruct
+    public void initializeOnStartup() {
+        if (!refreshEnabled) {
+            return;
+        }
+        try {
+            initialize();
+        } catch (IOException | RuntimeException ex) {
+            logger.error("Failed to initialize Everfi category cache during startup. Scheduled refresh may recover.", ex);
+        }
+    }
+
+    @Scheduled(cron = "${everfi.category.cache.refresh.cron:0 0 * * * *}")
+    public void refreshScheduledCache() throws IOException {
+        if (refreshEnabled) {
+            initialize();
+        }
     }
 
     public void initialize() throws IOException {
