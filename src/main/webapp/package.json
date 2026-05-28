@@ -8,7 +8,7 @@
   "license": "(BSD-2-Clause OR GPL-3.0)",
   "dependencies": {
     "bower": "^1.8.12",
-    "fast-xml-parser": "^3.17.4",
+    "fast-xml-parser": "^5.7.0",
     "grunt": "^1.5.2",
     "grunt-beep": "^1.0.1",
     "grunt-contrib-concat": "^1.0.1",
