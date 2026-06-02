@@ -9,7 +9,6 @@ import gov.nysenate.ess.core.client.response.error.ViewObjectErrorResponse;
 import gov.nysenate.ess.core.client.view.BACHelpEmpStatusChangeView;
 import gov.nysenate.ess.core.client.view.BACHelpEmployeeView;
 import gov.nysenate.ess.core.dao.transaction.EmpTransactionDao;
-import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.personnel.EmployeeNotFoundEx;
 import gov.nysenate.ess.core.model.transaction.TransactionCode;
@@ -43,7 +42,7 @@ public class BACHelpRestApiCtrl extends BaseRestApiCtrl {
      * Set of transaction codes that bachelp is allowed to query for.
      */
     private static final Set<TransactionCode> allowedCodes = ImmutableSet.of(
-            APP, LOC, NAM, PHO, RTP, LIN, EMP);
+            APP, LOC, NAM, PHO, RTP, LIN, EMP, RSH);
 
     private final EmployeeInfoService empInfoService;
     private final EmpTransactionDao empTransactionDao;
@@ -111,12 +110,6 @@ public class BACHelpRestApiCtrl extends BaseRestApiCtrl {
         LocalDate toDate = Optional.ofNullable(to)
                 .map(f -> parseISODate(f, "to"))
                 .orElse(DateUtils.THE_FUTURE);
-        LocalDate weekAgo = LocalDate.now().minusDays(7);
-        if (fromDate.isBefore(weekAgo)) {
-            throw new InvalidRequestParamEx(fromDate, "from", "date",
-                    "from date must not be earlier than 7 days ago");
-        }
-
         Range<LocalDate> dateRange = getClosedOpenRange(fromDate, toDate, "from", "to");
 
         List<TransactionRecord> transactionRecords = empTransactionDao.getRecordsByPostDate(dateRange, allowedCodes);

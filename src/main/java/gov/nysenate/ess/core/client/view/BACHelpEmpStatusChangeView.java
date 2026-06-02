@@ -13,11 +13,13 @@ public class BACHelpEmpStatusChangeView extends BACHelpEmployeeView {
 
     protected TransactionCode transactionCode;
     protected LocalDateTime postDateTime;
+    protected String notes;
 
     public BACHelpEmpStatusChangeView(Employee employee, TransactionRecord statusChangeRecord) {
         super(employee);
         this.transactionCode = statusChangeRecord.getTransCode();
         this.postDateTime = statusChangeRecord.getPostDate();
+        this.notes = statusChangeRecord.getNote();
     }
 
     @XmlElement
@@ -28,6 +30,11 @@ public class BACHelpEmpStatusChangeView extends BACHelpEmployeeView {
     @XmlElement
     public LocalDateTime getPostDateTime() {
         return postDateTime;
+    }
+
+    @XmlElement
+    public String getNotes() {
+        return notes;
     }
 
     @Override
