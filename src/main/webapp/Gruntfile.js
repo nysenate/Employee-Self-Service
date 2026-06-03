@@ -95,7 +95,7 @@ module.exports = function(grunt) {
                         '<%= bowerRoot %>/sockjs-client/dist/sockjs.min.js',
                         '<%= bowerRoot %>/stomp-websocket/lib/stomp.min.js',
                         '<%= bowerRoot %>/angular-ui-select/dist/select.min.js'
-                        ],
+                    ],
                     '<%= jsDest %>/ess-vendor-ie.min.js':
                         ['<%= bowerRoot %>/json2/json2.js']
                 }
@@ -109,7 +109,7 @@ module.exports = function(grunt) {
                         drop_console: true
                     },
                     preserveComments: 'some', /** Preserve licensing comments */
-                    banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +'<%= grunt.template.today("yyyy-mm-dd") %> */',
+                    banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' + '<%= grunt.template.today("yyyy-mm-dd") %> */',
                     sourceMap: true
                 },
                 files: {
@@ -152,10 +152,6 @@ module.exports = function(grunt) {
             cssVendor: {
                 files: ['<%= cssVendor %>/**/*.css'],
                 tasks: ['cssmin', 'fileExists', 'copy:css', '<%= properties.cssBeep %>']
-            },
-            jsVendor: {
-                files: ['<%= bowerRoot %>/**.js'],
-                tasks: ['uglify:vendor', 'fileExists', 'copy:js', '<%= properties.jsVendorBeep %>']
             },
             jsSource: {
                 files: ['<%= jsSource %>/**/*.js'],
