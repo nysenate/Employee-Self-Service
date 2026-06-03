@@ -1,10 +1,11 @@
 var fs = require("fs");
-var parser = require('fast-xml-parser');
+var XMLParser = require('fast-xml-parser').XMLParser;
 
 var pomPath = __dirname + "/../../../pom.xml";
 var pomXml = fs.readFileSync(pomPath, 'utf8');
 
-var pomJson = parser.parse(pomXml, {}, true);
+var parser = new XMLParser({ parseTagValue: false });
+var pomJson = parser.parse(pomXml);
 var artifactId = pomJson.project.artifactId;
 var version = pomJson.project.version;
 
@@ -34,6 +35,7 @@ module.exports = function(grunt) {
             dev: {
                 options: {
                     sourceMap: true,
+                    javascriptEnabled: true
                 },
                 files: {
                     '<%= cssSource %>/main.css': ['<%= lessSource %>/main.less']
@@ -45,7 +47,8 @@ module.exports = function(grunt) {
         cssmin: {
             options: {
                 sourceMap: true,
-                rebase: true
+                rebase: true,
+                inline: false
             },
             combine: {
                 src: ['<%= cssSource %>/*.css', '<%= cssVendor %>/*.css'],
@@ -196,7 +199,6 @@ module.exports = function(grunt) {
     });
 
     grunt.loadNpmTasks('grunt-contrib-copy');
-    grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-cssmin');
