@@ -9,13 +9,13 @@ import java.util.Collection;
 
 import jakarta.xml.bind.annotation.XmlElement;
 
-public class BACHelpEmpStatusChangeView extends BACHelpEmployeeView {
+public class RedmineEmpStatusChangeView extends RedmineEmployeeView {
 
     protected TransactionCode transactionCode;
     protected LocalDateTime postDateTime;
     protected String notes;
 
-    public BACHelpEmpStatusChangeView(Employee employee, TransactionRecord statusChangeRecord) {
+    public RedmineEmpStatusChangeView(Employee employee, TransactionRecord statusChangeRecord) {
         super(employee);
         this.transactionCode = statusChangeRecord.getTransCode();
         this.postDateTime = statusChangeRecord.getPostDate();
@@ -39,6 +39,6 @@ public class BACHelpEmpStatusChangeView extends BACHelpEmployeeView {
 
     @Override
     public String getViewType() {
-        return "bachelp employee status change";
+        return "redmine employee status change";
     }
 }

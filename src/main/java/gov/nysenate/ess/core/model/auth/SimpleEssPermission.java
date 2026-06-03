@@ -25,8 +25,8 @@ public enum SimpleEssPermission {
     /** Allows user to manually run personnel task assigner */
     RUN_PERSONNEL_TASK_ASSIGNER("admin:personnel-task-assigner"),
 
-    /** Grants access to BACHelp rest api */
-    BACHELP_API_ACCESS("core:bachelp-api-access"),
+    /** Grants access to Redmine rest api */
+    REDMINE_API_ACCESS("core:redmine-api-access"),
     ;
 
     private final String permissionString;

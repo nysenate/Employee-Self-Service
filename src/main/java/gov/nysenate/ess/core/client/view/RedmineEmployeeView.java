@@ -9,7 +9,7 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.Optional;
 
 @XmlRootElement
-public class BACHelpEmployeeView implements ViewObject
+public class RedmineEmployeeView implements ViewObject
 {
     protected int employeeId;
     protected String uid;
@@ -21,7 +21,7 @@ public class BACHelpEmployeeView implements ViewObject
     protected boolean active;
     protected LocationView location;
 
-    public BACHelpEmployeeView(Employee employee) {
+    public RedmineEmployeeView(Employee employee) {
         if (employee != null) {
             this.employeeId = employee.getEmployeeId();
             this.uid = employee.getUid();
@@ -39,7 +39,7 @@ public class BACHelpEmployeeView implements ViewObject
 
     @Override
     public String getViewType() {
-        return "bachelp employee";
+        return "redmine employee";
     }
 
     @XmlElement
