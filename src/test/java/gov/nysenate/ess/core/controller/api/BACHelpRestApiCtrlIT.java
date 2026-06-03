@@ -35,7 +35,6 @@ public class BACHelpRestApiCtrlIT extends WebTest {
     @Autowired
     private ObjectMapper jsonObjectMapper;
 
-    @Ignore
     @Test
     public void testStatusChangesApiReturnsPostDate() throws Exception {
         // Test that the status changes API returns non-null postDate values
@@ -112,34 +111,29 @@ public class BACHelpRestApiCtrlIT extends WebTest {
                 String transactionCode = statusChange.get("transactionCode").asText();
                 // Should be one of the allowed BACHelp transaction codes
                 assertTrue("Transaction code should be one of the allowed BACHelp codes",
-                        transactionCode.matches("APP|LOC|NAM|PHO|RTP|LIN|EMP"));
+                        transactionCode.matches("APP|LOC|NAM|PHO|RTP|LIN|EMP|RSH"));
             }
         }
     }
 
     @Test
-    public void testStatusChangesApiDateValidation() throws Exception {
-        // Test that dates older than 7 days are rejected
-        LocalDate tooOldDate = LocalDate.now().minusDays(8);
+    public void testStatusChangesApiAcceptsOldFromDate() throws Exception {
+        // The 7-day restriction has been removed; old 'from' dates should now be accepted.
+        LocalDate oldDate = LocalDate.now().minusDays(60);
 
         MvcResult result = mockMvc.perform(get(BACHELP_STATUS_CHANGE_ENDPOINT)
                         .header("X-API-Key", bachelpApiKey)
                         .header("Accept", "application/json")
-                        .param("from", tooOldDate.toString()))
-                .andExpect(status().isBadRequest())
+                        .param("from", oldDate.toString()))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json"))
                 .andReturn();
 
         String responseContent = result.getResponse().getContentAsString();
         JsonNode response = jsonObjectMapper.readTree(responseContent);
-
-        assertFalse("Should not be successful", response.get("success").asBoolean());
-        assertEquals("Should have correct error code", "INVALID_ARGUMENTS",
-                response.get("errorCode").asText());
-        assertEquals("Should have correct parameter name", "from",
-                response.get("errorData").get("parameterConstraint").get("name").asText());
-        assertTrue("Should contain constraint message",
-                response.get("errorData").get("parameterConstraint").get("constraint").asText()
-                        .contains("from date must not be earlier than 7 days ago"));
+        assertTrue("Should be successful", response.get("success").asBoolean());
+        assertEquals("Should have correct response type", "bachelp employee status change list",
+                response.get("responseType").asText());
     }
 
     @Test

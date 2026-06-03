@@ -4,7 +4,7 @@ import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.time.model.payroll.MiscLeaveGrant;
 import gov.nysenate.ess.time.model.payroll.MiscLeaveType;
 
-import javax.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElement;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 

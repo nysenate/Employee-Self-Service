@@ -12,6 +12,12 @@ import java.util.Collection;
 public interface TimeRecordManager {
 
     /**
+     * invokes the ensureAllActiveRecords method according to the configured cron value
+     * @see #ensureAllActiveRecords()
+     */
+    void scheduledEnsureAll();
+
+    /**
      * Ensure that the given employee has records that cover the given pay periods
      * ensures that all records covering the pay periods contain correct and up-to-date employee information
      *

@@ -16,7 +16,6 @@ import gov.nysenate.ess.core.model.auth.CorePermissionObject;
 import gov.nysenate.ess.core.model.alert.AlertInfo;
 import gov.nysenate.ess.core.model.alert.AlertInfoNotFound;
 import gov.nysenate.ess.core.model.auth.SimpleEssPermission;
-import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.personnel.EmployeeNotFoundEx;
 import gov.nysenate.ess.core.model.alert.InvalidAlertInfoEx;
@@ -28,10 +27,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.WebRequest;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +45,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
  * API controller responsible for viewing and saving alert contact info
  */
 @RestController
-@RequestMapping(value = BaseRestApiCtrl.REST_PATH + "alert-info")
+@RequestMapping(value = BaseRestApiCtrl.REST_PATH + "/alert-info")
 public class AlertInfoCtrl extends BaseRestApiCtrl {
 
     @Autowired private AlertInfoDao alertInfoDao;
@@ -122,7 +120,7 @@ public class AlertInfoCtrl extends BaseRestApiCtrl {
      * Accept: If an Accept header that is compatible with XML is set, this will respond with the XML format, otherwise
      * it will respond with the CSV format.
      */
-    @RequestMapping(value = "contact-dump", method = RequestMethod.GET)
+    @RequestMapping(value = "/contact-dump", method = RequestMethod.GET)
     public void generateContactList(HttpServletRequest request, HttpServletResponse response) throws IOException {
         checkPermission(SimpleEssPermission.ADMIN.getPermission());
 

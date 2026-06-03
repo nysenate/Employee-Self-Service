@@ -3,7 +3,7 @@ package gov.nysenate.ess.time.client.view.attendance;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.time.model.attendance.AttendanceHours;
 
-import javax.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElement;
 import java.math.BigDecimal;
 
 public class AttendanceHoursView implements ViewObject {

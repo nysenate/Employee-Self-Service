@@ -6,7 +6,7 @@ import java.util.List;
 
 public class KnowBe4AssignmentAndProgressResponse {
 
-    private String cusorValue;
+    private String cursorValue;
 
     private String nextCursor;
 
@@ -22,12 +22,12 @@ public class KnowBe4AssignmentAndProgressResponse {
         return assignments;
     }
 
-    public String getCusorValue() {
-        return cusorValue;
+    public String getCursorValue() {
+        return cursorValue;
     }
 
-    public void setCusorValue(String cusorValue) {
-        this.cusorValue = cusorValue;
+    public void setCursorValue(String cursorValue) {
+        this.cursorValue = cursorValue;
     }
 
     public String getNextCursor() {

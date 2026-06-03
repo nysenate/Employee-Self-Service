@@ -22,7 +22,7 @@ public class SfmsSynchronizationProcedure extends StoredProcedure {
     private static final String PARAMETER = "requisitionXml";
 
     @Autowired
-    public SfmsSynchronizationProcedure(DataSource remoteDataSource, @Qualifier("supplySyncProcedureName") String name) {
+    public SfmsSynchronizationProcedure(@Qualifier("remoteDataSource") DataSource remoteDataSource, @Qualifier("supplySyncProcedureName") String name) {
         super(remoteDataSource, name);
         declareParameter(new SqlOutParameter(RESPONSE, Types.NUMERIC));
         declareParameter(new SqlParameter(PARAMETER, Types.CHAR));
@@ -37,7 +37,7 @@ public class SfmsSynchronizationProcedure extends StoredProcedure {
      * Throws a DataAccessException if any errors occur while synchronizing the requisition.
      *
      * @param requisitionXml An XML representation of a requisition.
-     *                       For expected xml format, use the {@link JacksonConfig#xmlObjectMapper()}
+     *                       For expected xml format, use the {@link gov.nysenate.ess.web.config.WebApplicationConfig#xmlObjectMapper()}
      *                       when serializing the requisition view.
      */
     public void synchronizeRequisition(String requisitionXml) {

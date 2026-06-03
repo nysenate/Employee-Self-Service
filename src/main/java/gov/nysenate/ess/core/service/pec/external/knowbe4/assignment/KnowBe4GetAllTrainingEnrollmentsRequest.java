@@ -34,7 +34,7 @@ public class KnowBe4GetAllTrainingEnrollmentsRequest {
     public KnowBe4AssignmentAndProgressResponse fetch() throws IOException {
         String data = httpClient.get(endpoint());
 
-        if (data.equalsIgnoreCase("[]")) {
+        if (data == null || "[]".equals(data.trim())) {
             return null;
         }
 
@@ -49,7 +49,7 @@ public class KnowBe4GetAllTrainingEnrollmentsRequest {
                 OutputUtils.jsonToObject(pagination.toString(), KnowBe4Pagination.class);
 
         this.response = new KnowBe4AssignmentAndProgressResponse( Arrays.asList(knowBe4AssignmentAndProgressResponses) );
-        this.response.setCusorValue(this.cursorValue);
+        this.response.setCursorValue(this.cursorValue);
         this.response.setNextCursor(knowBe4Pagination.getNextCursor());
 
         return response;

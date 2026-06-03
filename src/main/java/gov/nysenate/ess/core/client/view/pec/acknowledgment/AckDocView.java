@@ -2,10 +2,9 @@ package gov.nysenate.ess.core.client.view.pec.acknowledgment;
 
 import gov.nysenate.ess.core.client.view.pec.PersonnelTaskView;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
-import gov.nysenate.ess.core.model.pec.acknowledgment.AckDoc;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.nio.file.Paths;
 
 @XmlRootElement

@@ -79,7 +79,7 @@ public class KnowBe4RecordService {
 
                 while (assignmentAndProgressList != null) {
 
-                    logger.info("Currently Processing KB4 Task " + task.getTaskId() + "-" + knowBe4AssignmentID.getID() + " response Page: " + response.getCusorValue());
+                    logger.info("Currently Processing KB4 Task " + task.getTaskId() + "-" + knowBe4AssignmentID.getID() + " response Page: " + response.getCursorValue());
 
                     if (assignmentAndProgressList.isEmpty()) {
                         logger.error("No KnowBe4 assignment records found for: {}", knowBe4AssignmentID );

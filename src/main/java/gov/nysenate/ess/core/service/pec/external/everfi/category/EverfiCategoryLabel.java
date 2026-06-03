@@ -76,7 +76,7 @@ public class EverfiCategoryLabel {
     }
 
     @JsonProperty("id")
-    private void upackLabelId(String labelId) {
+    private void unpackLabelId(String labelId) {
         this.labelId = Integer.parseInt(labelId);
     }
 }

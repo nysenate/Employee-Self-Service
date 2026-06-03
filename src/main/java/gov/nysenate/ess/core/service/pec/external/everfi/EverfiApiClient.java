@@ -28,6 +28,7 @@ public class EverfiApiClient {
 
     private static final int SUCCESS = 200;
     private static final int CREATED = 201;
+    private static final int NOT_FOUND = 404;
     private static final int EXPIRED_TOKEN_CODE = 401;
     private static final int RATE_LIMIT_EXCEEDED = 429;
     private static final int MAX_RETRIES = 10;
@@ -44,7 +45,7 @@ public class EverfiApiClient {
      * Makes a get reqeust to the given Everfi API endpoint.
      *
      * @param endpoint The endpoint of the API to call. Including any query parameters necessary.
-     * @return The body of the response as a String, or null if an error occurred.
+     * @return The body of the response as a String.
      * @throws IOException If there is an error making the request.
      */
     public String get(String endpoint) throws IOException {
@@ -56,7 +57,7 @@ public class EverfiApiClient {
      *
      * @param endpoint The endpoint of the API to call. Including any query parameters necessary.
      * @param body     The body of the post request to be sent.
-     * @return The body of the response as a String, or null if an error occurred.
+     * @return The body of the response as a String.
      * @throws IOException If there is an error making the request.
      */
     public String post(String endpoint, String body) throws IOException {
@@ -68,7 +69,7 @@ public class EverfiApiClient {
      *
      * @param endpoint The endpoint of the API to call. Including any query parameters necessary.
      * @param body     The body of the post request to be sent.
-     * @return The body of the response as a String, or null if an error occurred.
+     * @return The body of the response as a String.
      * @throws IOException If there is an error making the request.
      */
     public String patch(String endpoint, String body) throws IOException {
@@ -101,8 +102,7 @@ public class EverfiApiClient {
             return retryRateLimited(req);
         }
 
-        logFailure(result);
-        return null;
+        throw failure(result);
     }
 
     private ResponseResult executeOnce(HttpUriRequest req) throws IOException {
@@ -121,7 +121,7 @@ public class EverfiApiClient {
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 logger.error("Interrupted while waiting to retry Everfi rate-limited request.", e);
-                return null;
+                throw new IOException("Interrupted while retrying rate-limited Everfi request.", e);
             }
 
             ResponseResult result = executeOnce(req);
@@ -136,11 +136,10 @@ public class EverfiApiClient {
                 }
             }
             if (result.statusCode() != RATE_LIMIT_EXCEEDED) {
-                logFailure(result);
-                return null;
+                throw failure(result);
             }
         }
-        return null;
+        throw failure(new ResponseResult(RATE_LIMIT_EXCEEDED, "Exceeded retry limit for Everfi request."));
     }
 
     private record ResponseResult(int statusCode, String body) {
@@ -149,9 +148,10 @@ public class EverfiApiClient {
         }
     }
 
-    private void logFailure(ResponseResult result) {
+    private EverfiApiException failure(ResponseResult result) {
         logger.info(String.format("Received unknown response from Everfi: '%s %s'",
                 result.statusCode(), result.body()));
+        return new EverfiApiException(result.statusCode(), result.body());
     }
 
     /**

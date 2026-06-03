@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import gov.nysenate.ess.core.model.unit.Address;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -16,7 +17,7 @@ public class DistrictAssignmentService {
     private ObjectMapper jsonObjectMapper;
 
     @Autowired
-    public DistrictAssignmentService(@Value("${sage.api.url}") String sageBaseUrl, ObjectMapper jsonObjectMapper) {
+    public DistrictAssignmentService(@Value("${sage.api.url}") String sageBaseUrl, @Qualifier("jsonObjectMapper") ObjectMapper jsonObjectMapper) {
         this.sageBaseUrl = sageBaseUrl;
         this.jsonObjectMapper = jsonObjectMapper;
     }

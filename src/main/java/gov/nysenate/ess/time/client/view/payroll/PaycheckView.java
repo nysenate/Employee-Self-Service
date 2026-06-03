@@ -1,16 +1,13 @@
 package gov.nysenate.ess.time.client.view.payroll;
 
 import gov.nysenate.ess.core.client.view.base.ViewObject;
-import gov.nysenate.ess.time.client.view.payroll.DeductionView;
-import gov.nysenate.ess.time.model.payroll.Deduction;
 import gov.nysenate.ess.time.model.payroll.Paycheck;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toMap;

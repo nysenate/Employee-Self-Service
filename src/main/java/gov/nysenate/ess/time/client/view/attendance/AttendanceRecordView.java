@@ -2,8 +2,8 @@ package gov.nysenate.ess.time.client.view.attendance;
 
 import gov.nysenate.ess.time.model.attendance.AttendanceRecord;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;

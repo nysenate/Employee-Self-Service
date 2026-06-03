@@ -1,6 +1,6 @@
 <%@ tag import="gov.nysenate.ess.travel.authorization.permission.SimpleTravelPermission" %>
 <%@tag description="Left navigation menu for Travel screens" pageEncoding="UTF-8" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <%@ taglib prefix="ess-component-nav" tagdir="/WEB-INF/tags/component/nav" %>
 <%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
 <%@ taglib prefix="shir" uri="http://shiro.apache.org/tags" %>

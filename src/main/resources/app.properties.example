@@ -343,6 +343,14 @@ scheduler.moodle.sync.enabled = false
 #Determines whether or not we automatically scrape from Everfi
 scheduler.everfi.sync.enabled = false
 
+# If enabled, scheduled Everfi user syncs will plan and report changes without
+# applying Everfi user updates or local employee mapping writes.
+everfi.user.sync.dry-run.enabled = true
+
+# Enables managed Everfi category cache refresh. When true, ESS attempts a soft
+# startup initialization and continues refreshing on the configured cron.
+everfi.category.cache.refresh.enabled = false
+
 #Determines whether or not we automatically pull in records from KnowBe4
 scheduler.knowbe4.sync.enabled = false
 
@@ -366,8 +374,8 @@ scheduler.everfi.task.sync.cron = 0 0 * * * *
 #Schedules when users are added to everfi / ids stored in the db
 scheduler.everfi.user.update.cron = 0 0 23 * * *
 
-#Schedules when the Department category label is updated. Should be done before users are updated
-scheduler.everfi.category.update.cron = 0 0 22 * * *
+#Refreshes the Everfi category cache hourly.
+everfi.category.cache.refresh.cron = 0 0 * * * *
 
 #Default of every hour on the top of the hour to pull KnowBe4 records
 scheduler.knowbe4.task.sync.cron = 0 0 * * * *

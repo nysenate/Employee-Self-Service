@@ -1,6 +1,6 @@
 package gov.nysenate.ess.core.service.mail;
 
-import javax.mail.MessagingException;
+import jakarta.mail.MessagingException;
 
 /**
  * A wrapper of {@link MessagingException} that extends {@link RuntimeException} preventing the need for catching

@@ -3,7 +3,7 @@ package gov.nysenate.ess.web.controller.template;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Controller
 @RequestMapping(BaseTemplateCtrl.TMPL_BASE_URL)

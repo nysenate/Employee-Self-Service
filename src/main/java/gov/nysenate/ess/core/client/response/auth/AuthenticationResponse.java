@@ -2,7 +2,7 @@ package gov.nysenate.ess.core.client.response.auth;
 
 import gov.nysenate.ess.core.model.auth.AuthenticationStatus;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class AuthenticationResponse

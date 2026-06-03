@@ -5,6 +5,7 @@ import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreato
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 
 /**
  * Beans that implement {@link BeanPostProcessor} are configured here.
@@ -21,7 +22,8 @@ public class BeanPostProcessorConfig {
      * This is needed for Shiro annotations to work.
      * @return DefaultAdvisorAutoProxyCreator
      */
-    @Bean
+    @Bean(name = "defaultAdvisorAutoProxyCreator")
+    @DependsOn("lifecycleBeanPostProcessor")
     public DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator() {
         return new DefaultAdvisorAutoProxyCreator();
     }

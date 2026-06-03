@@ -4,8 +4,8 @@ import gov.nysenate.ess.core.client.view.AuthorizationStatusView;
 import gov.nysenate.ess.core.model.auth.AuthorizationStatus;
 import org.apache.shiro.subject.Subject;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class AuthorizationResponse

@@ -5,13 +5,33 @@ import gov.nysenate.ess.core.dao.base.DbVendor;
 
 public enum SqlEverfiUserQuery implements BasicSqlQuery {
 
-    SELECT_EMP_BY_EVERFI_ID("SELECT * FROM ${essSchema}.everfi_user_ids WHERE everfi_uuid = :everfi_UUID"),
+    INSERT_MAPPING(
+            """
+            INSERT INTO ${essSchema}.everfi_employee_mapping
+                (everfi_uuid, emp_id)
+            VALUES
+                (:everfiUuid, :employeeId)
+            """),
 
-    SELECT_EMP_BY_EMP_ID("SELECT * FROM ${essSchema}.everfi_user_ids WHERE emp_id = :emp_id"),
+    SELECT_ALL_MAPPINGS(
+            """
+            SELECT *
+            FROM ${essSchema}.everfi_employee_mapping
+            """),
 
-    INSERT_EVERFI_USER_ID("INSERT INTO ${essSchema}.everfi_user_ids (everfi_uuid, emp_id) VALUES (:everfi_UUID,:emp_id)"),
+    SELECT_MAPPING_BY_EMP_ID(
+            """
+            SELECT *
+            FROM ${essSchema}.everfi_employee_mapping
+            WHERE emp_id = :employeeId
+            """),
 
-    COUNT_EVERFI_USER_IDS("SELECT count(*) FROM ${essSchema}.everfi_user_ids");
+    SELECT_MAPPING_BY_UUID(
+            """
+            SELECT *
+            FROM ${essSchema}.everfi_employee_mapping
+            WHERE everfi_uuid = :everfiUuid
+            """);
 
     private final String sql;
 

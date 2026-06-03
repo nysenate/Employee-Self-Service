@@ -4,10 +4,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class KnowBe4Pagination {
 
-    @JsonProperty("perPage")
+    @JsonProperty("per_page")
     private Integer perPage;
 
-    @JsonProperty("nextCursor")
+    @JsonProperty("next_cursor")
     private String nextCursor;
 
     public KnowBe4Pagination() {}

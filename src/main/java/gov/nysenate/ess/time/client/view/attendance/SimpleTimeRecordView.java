@@ -6,7 +6,7 @@ import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.time.model.attendance.TimeRecord;
 import gov.nysenate.ess.time.model.attendance.TimeRecordStatus;
 
-import javax.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElement;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
