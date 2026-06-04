@@ -12,7 +12,6 @@ import gov.nysenate.ess.core.service.pec.external.everfi.assignment.EverfiAssign
 import gov.nysenate.ess.core.service.pec.external.everfi.assignment.EverfiAssignmentProgress;
 import gov.nysenate.ess.core.service.pec.external.everfi.assignment.EverfiAssignmentUser;
 import gov.nysenate.ess.core.service.pec.external.everfi.assignment.EverfiAssignmentsAndProgressRequest;
-import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUserService;
 import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,16 +31,15 @@ import static gov.nysenate.ess.core.model.pec.PersonnelTaskType.EVERFI_COURSE;
 @Service
 public class EverfiRecordService implements ESSEverfiRecordService {
 
+    private static final Logger logger = LoggerFactory.getLogger(EverfiRecordService.class);
+
     private EverfiApiClient everfiApiClient;
     private EmployeeDao employeeDao;
     private PersonnelTaskAssignmentDao personnelTaskAssignmentDao;
     private PersonnelTaskService taskService;
     private PersonnelTaskDao personnelTaskDao;
-    private EverfiUserService everfiUserService;
     private HashMap<Integer, Integer> everfiAssignmentIDMap;
     private HashMap<Integer, String> everfiContentIDMap;
-
-    private static final Logger logger = LoggerFactory.getLogger(EverfiRecordService.class);
 
     @Value("${scheduler.everfi.sync.enabled:false}")
     private boolean everfiSyncEnabled;
@@ -53,14 +51,15 @@ public class EverfiRecordService implements ESSEverfiRecordService {
     private int ack_2020_harassment_task_id;
 
     @Autowired
-    public EverfiRecordService(EverfiApiClient everfiApiClient, EmployeeDao employeeDao,
+    public EverfiRecordService(EverfiApiClient everfiApiClient,
+                               EmployeeDao employeeDao,
                                PersonnelTaskAssignmentDao personnelTaskAssignmentDao,
-                               EverfiUserService everfiUserService,
-                               PersonnelTaskService taskService, PersonnelTaskDao personnelTaskDao) {
+                               PersonnelTaskService taskService,
+                               PersonnelTaskDao personnelTaskDao
+    ) {
         this.everfiApiClient = everfiApiClient;
         this.employeeDao = employeeDao;
         this.personnelTaskAssignmentDao = personnelTaskAssignmentDao;
-        this.everfiUserService = everfiUserService;
         this.taskService = taskService;
         this.personnelTaskDao = personnelTaskDao;
         this.everfiAssignmentIDMap = personnelTaskDao.getEverfiAssignmentIDs();
@@ -86,7 +85,6 @@ public class EverfiRecordService implements ESSEverfiRecordService {
 
     /** {@inheritDoc} */
     public void contactEverfiForUserRecords(String since) throws IOException {
-
         EverfiAssignmentsAndProgressRequest request =
                 EverfiAssignmentsAndProgressRequest.allUserAssignments(everfiApiClient, since, 1000);
         List<EverfiAssignmentAndProgress> assignmentsAndProgress;
@@ -135,7 +133,6 @@ public class EverfiRecordService implements ESSEverfiRecordService {
      * @param assignmentAndProgresses
      */
     private void handleRecords(List<EverfiAssignmentAndProgress> assignmentAndProgresses) {
-
         List<PersonnelTask> everfiPersonnelTasks = getEverfiPersonnelTasks();
 
         for (EverfiAssignmentAndProgress assignmentAndProgress : assignmentAndProgresses) {

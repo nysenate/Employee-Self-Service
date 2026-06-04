@@ -11,6 +11,9 @@ public class EverfiUsersResponse {
     private EverfiResponseLinks links;
     private EverfiResponseMeta meta;
 
+    public EverfiUsersResponse() {
+    }
+
     public List<EverfiUser> getUsers() {
         return users;
     }

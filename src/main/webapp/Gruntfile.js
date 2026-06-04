@@ -1,10 +1,11 @@
 var fs = require("fs");
-var parser = require('fast-xml-parser');
+var XMLParser = require('fast-xml-parser').XMLParser;
 
 var pomPath = __dirname + "/../../../pom.xml";
 var pomXml = fs.readFileSync(pomPath, 'utf8');
 
-var pomJson = parser.parse(pomXml, {}, true);
+var parser = new XMLParser({ parseTagValue: false });
+var pomJson = parser.parse(pomXml);
 var artifactId = pomJson.project.artifactId;
 var version = pomJson.project.version;
 
@@ -34,6 +35,7 @@ module.exports = function(grunt) {
             dev: {
                 options: {
                     sourceMap: true,
+                    javascriptEnabled: true
                 },
                 files: {
                     '<%= cssSource %>/main.css': ['<%= lessSource %>/main.less']
@@ -45,7 +47,8 @@ module.exports = function(grunt) {
         cssmin: {
             options: {
                 sourceMap: true,
-                rebase: true
+                rebase: true,
+                inline: false
             },
             combine: {
                 src: ['<%= cssSource %>/*.css', '<%= cssVendor %>/*.css'],
@@ -92,7 +95,7 @@ module.exports = function(grunt) {
                         '<%= bowerRoot %>/sockjs-client/dist/sockjs.min.js',
                         '<%= bowerRoot %>/stomp-websocket/lib/stomp.min.js',
                         '<%= bowerRoot %>/angular-ui-select/dist/select.min.js'
-                        ],
+                    ],
                     '<%= jsDest %>/ess-vendor-ie.min.js':
                         ['<%= bowerRoot %>/json2/json2.js']
                 }
@@ -106,7 +109,7 @@ module.exports = function(grunt) {
                         drop_console: true
                     },
                     preserveComments: 'some', /** Preserve licensing comments */
-                    banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +'<%= grunt.template.today("yyyy-mm-dd") %> */',
+                    banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' + '<%= grunt.template.today("yyyy-mm-dd") %> */',
                     sourceMap: true
                 },
                 files: {
@@ -150,10 +153,6 @@ module.exports = function(grunt) {
                 files: ['<%= cssVendor %>/**/*.css'],
                 tasks: ['cssmin', 'fileExists', 'copy:css', '<%= properties.cssBeep %>']
             },
-            jsVendor: {
-                files: ['<%= bowerRoot %>/**.js'],
-                tasks: ['uglify:vendor', 'fileExists', 'copy:js', '<%= properties.jsVendorBeep %>']
-            },
             jsSource: {
                 files: ['<%= jsSource %>/**/*.js'],
                 tasks: ['uglify:dev', 'uglify:prod', 'fileExists', 'copy:js', '<%= properties.jsSourceBeep %>']
@@ -196,7 +195,6 @@ module.exports = function(grunt) {
     });
 
     grunt.loadNpmTasks('grunt-contrib-copy');
-    grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-cssmin');

@@ -1,7 +1,7 @@
 package gov.nysenate.ess.core.service.pec.external.everfi.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -25,8 +25,15 @@ public class EverfiUserAttributes {
     public EverfiUserAttributes() {
     }
 
-    public int getEmployeeId() {
-        return NumberUtils.toInt(employeeId, 0);
+    public Integer getEmployeeId() {
+        if (StringUtils.isBlank(employeeId)) {
+            return null;
+        }
+        try {
+            return Integer.valueOf(employeeId);
+        } catch (NumberFormatException ex) {
+            return null;
+        }
     }
 
     public boolean isActive() {
