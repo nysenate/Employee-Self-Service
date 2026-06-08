@@ -15,6 +15,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+
 import static gov.nysenate.ess.web.security.RedmineKeyAuthenticationToken.REDMINE_PRINCIPAL;
 
 /**
@@ -57,13 +60,24 @@ public class EssRedmineKeyRealm extends AuthorizingRealm {
         RedmineKeyAuthenticationToken redmineToken = (RedmineKeyAuthenticationToken) token;
         String providedKey = redmineToken.apiKey();
 
-        if (StringUtils.hasText(providedKey) && providedKey.equals(redmineApiKey)) {
+        if (StringUtils.hasText(providedKey) && constantTimeEquals(providedKey, redmineApiKey)) {
             logger.info("Redmine authentication successful");
             return new SimpleAuthenticationInfo(token.getPrincipal(), token.getCredentials(), getName());
         } else {
             logger.warn("Redmine authentication failed - invalid API key provided");
             throw new IncorrectCredentialsException("Invalid Redmine API key.");
         }
+    }
+
+    /**
+     * Compares two keys in constant time to avoid leaking the configured key via a
+     * timing side-channel. {@link MessageDigest#isEqual} is constant-time for equal-length
+     * inputs in modern JDKs.
+     */
+    private static boolean constantTimeEquals(String provided, String expected) {
+        return MessageDigest.isEqual(
+                provided.getBytes(StandardCharsets.UTF_8),
+                expected.getBytes(StandardCharsets.UTF_8));
     }
 
     /**

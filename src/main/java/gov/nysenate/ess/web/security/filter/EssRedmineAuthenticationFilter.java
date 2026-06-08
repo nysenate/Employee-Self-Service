@@ -9,6 +9,7 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.subject.Subject;
+import org.apache.shiro.subject.support.DefaultSubjectContext;
 import org.apache.shiro.web.filter.authc.AuthenticationFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +37,19 @@ public class EssRedmineAuthenticationFilter extends AuthenticationFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(EssRedmineAuthenticationFilter.class);
     private static final String API_KEY_HEADER = "X-API-Key";
+
+    /**
+     * Mark every Redmine request as session-less before any authentication occurs.
+     * This prevents {@link Subject#login} from persisting the authenticated principal
+     * into a Shiro/servlet session, so a valid key login cannot mint a JSESSIONID
+     * cookie that could be replayed to pivot onto the general {@code essApiAuthc}
+     * chain ({@code /api/v1/**}). The key must be presented on every request.
+     */
+    @Override
+    public boolean onPreHandle(ServletRequest request, ServletResponse response, Object mappedValue) throws Exception {
+        request.setAttribute(DefaultSubjectContext.SESSION_CREATION_ENABLED, Boolean.FALSE);
+        return super.onPreHandle(request, response, mappedValue);
+    }
 
     @Override
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
