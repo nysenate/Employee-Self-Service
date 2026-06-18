@@ -4,27 +4,27 @@ import gov.nysenate.ess.core.annotation.UnitTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import static gov.nysenate.ess.web.security.BACHelpKeyAuthenticationToken.BACHELP_PRINCIPAL;
+import static gov.nysenate.ess.web.security.RedmineKeyAuthenticationToken.REDMINE_PRINCIPAL;
 import static org.junit.Assert.*;
 
 @Category(UnitTest.class)
-public class BACHelpKeyAuthenticationTokenTest {
+public class RedmineKeyAuthenticationTokenTest {
 
     @Test
     public void testTokenCreation() {
         String apiKey = "test-api-key-12345";
-        BACHelpKeyAuthenticationToken token = new BACHelpKeyAuthenticationToken(apiKey);
+        RedmineKeyAuthenticationToken token = new RedmineKeyAuthenticationToken(apiKey);
         
-        assertEquals(BACHELP_PRINCIPAL, token.getPrincipal());
+        assertEquals(REDMINE_PRINCIPAL, token.getPrincipal());
         assertEquals(apiKey, token.getCredentials());
         assertEquals(apiKey, token.apiKey());
     }
 
     @Test
     public void testTokenWithNullKey() {
-        BACHelpKeyAuthenticationToken token = new BACHelpKeyAuthenticationToken(null);
+        RedmineKeyAuthenticationToken token = new RedmineKeyAuthenticationToken(null);
         
-        assertEquals(BACHELP_PRINCIPAL, token.getPrincipal());
+        assertEquals(REDMINE_PRINCIPAL, token.getPrincipal());
         assertNull(token.getCredentials());
         assertNull(token.apiKey());
     }
@@ -32,9 +32,9 @@ public class BACHelpKeyAuthenticationTokenTest {
     @Test
     public void testTokenWithEmptyKey() {
         String apiKey = "";
-        BACHelpKeyAuthenticationToken token = new BACHelpKeyAuthenticationToken(apiKey);
+        RedmineKeyAuthenticationToken token = new RedmineKeyAuthenticationToken(apiKey);
         
-        assertEquals(BACHELP_PRINCIPAL, token.getPrincipal());
+        assertEquals(REDMINE_PRINCIPAL, token.getPrincipal());
         assertEquals(apiKey, token.getCredentials());
         assertEquals(apiKey, token.apiKey());
     }
@@ -42,10 +42,10 @@ public class BACHelpKeyAuthenticationTokenTest {
     @Test
     public void testToString() {
         String apiKey = "test-api-key-12345";
-        BACHelpKeyAuthenticationToken token = new BACHelpKeyAuthenticationToken(apiKey);
+        RedmineKeyAuthenticationToken token = new RedmineKeyAuthenticationToken(apiKey);
         
         String tokenString = token.toString();
-        assertTrue(tokenString.contains("BACHelpKeyAuthenticationToken"));
-        assertTrue(tokenString.contains(BACHELP_PRINCIPAL));
+        assertTrue(tokenString.contains("RedmineKeyAuthenticationToken"));
+        assertTrue(tokenString.contains(REDMINE_PRINCIPAL));
     }
 }

@@ -22,15 +22,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @Category(IntegrationTest.class)
-public class BACHelpRestApiCtrlIT extends WebTest {
+public class RedmineRestApiCtrlIT extends WebTest {
 
-    private static final String BACHELP_STATUS_CHANGE_ENDPOINT = "/api/v1/bachelp/statusChanges";
-    private static final String BACHELP_SEARCH_ENDPOINT = "/api/v1/bachelp/employee/search";
-    private static final String BACHELP_EMPLOYEE_LOOKUP_ENDPOINT = "/api/v1/bachelp/employee";
-    private static final Logger logger = LoggerFactory.getLogger(BACHelpRestApiCtrlIT.class);
+    private static final String REDMINE_STATUS_CHANGE_ENDPOINT = "/api/v1/redmine/statusChanges";
+    private static final String REDMINE_SEARCH_ENDPOINT = "/api/v1/redmine/employee/search";
+    private static final String REDMINE_EMPLOYEE_LOOKUP_ENDPOINT = "/api/v1/redmine/employee";
+    private static final Logger logger = LoggerFactory.getLogger(RedmineRestApiCtrlIT.class);
 
-    @Value("${auth.bachelp.api.key}")
-    private String bachelpApiKey;
+    @Value("${auth.redmine.api.key}")
+    private String redmineApiKey;
 
     @Autowired
     private ObjectMapper jsonObjectMapper;
@@ -39,8 +39,8 @@ public class BACHelpRestApiCtrlIT extends WebTest {
     public void testStatusChangesApiReturnsPostDate() throws Exception {
         // Test that the status changes API returns non-null postDate values
         final String fromDateString = LocalDate.now().minusDays(3).toString();
-        MvcResult result = mockMvc.perform(get(BACHELP_STATUS_CHANGE_ENDPOINT)
-                        .header("X-API-Key", bachelpApiKey)
+        MvcResult result = mockMvc.perform(get(REDMINE_STATUS_CHANGE_ENDPOINT)
+                        .header("X-API-Key", redmineApiKey)
                         .header("Accept", "application/json")
                         .param("from", fromDateString))
                 .andExpect(status().isOk())
@@ -53,7 +53,7 @@ public class BACHelpRestApiCtrlIT extends WebTest {
         // Verify basic response structure
         assertTrue("Response should have success field", response.has("success"));
         assertTrue("Should be successful", response.get("success").asBoolean());
-        assertEquals("Should have correct response type", "bachelp employee status change list",
+        assertEquals("Should have correct response type", "redmine employee status change list",
                 response.get("responseType").asText());
 
         JsonNode results = response.get("result");
@@ -93,8 +93,8 @@ public class BACHelpRestApiCtrlIT extends WebTest {
         // Records returned should have post dates after the specified 'from' parameter
         LocalDate fromDate = LocalDate.now().minusDays(2);
 
-        MvcResult result = mockMvc.perform(get(BACHELP_STATUS_CHANGE_ENDPOINT)
-                        .header("X-API-Key", bachelpApiKey)
+        MvcResult result = mockMvc.perform(get(REDMINE_STATUS_CHANGE_ENDPOINT)
+                        .header("X-API-Key", redmineApiKey)
                         .header("Accept", "application/json")
                         .param("from", fromDate.toString()))
                 .andExpect(status().isOk())
@@ -109,8 +109,8 @@ public class BACHelpRestApiCtrlIT extends WebTest {
         if (!results.isEmpty()) {
             for (JsonNode statusChange : results) {
                 String transactionCode = statusChange.get("transactionCode").asText();
-                // Should be one of the allowed BACHelp transaction codes
-                assertTrue("Transaction code should be one of the allowed BACHelp codes",
+                // Should be one of the allowed Redmine transaction codes
+                assertTrue("Transaction code should be one of the allowed Redmine codes",
                         transactionCode.matches("APP|LOC|NAM|PHO|RTP|LIN|EMP|RSH"));
             }
         }
@@ -121,8 +121,8 @@ public class BACHelpRestApiCtrlIT extends WebTest {
         // The 7-day restriction has been removed; old 'from' dates should now be accepted.
         LocalDate oldDate = LocalDate.now().minusDays(60);
 
-        MvcResult result = mockMvc.perform(get(BACHELP_STATUS_CHANGE_ENDPOINT)
-                        .header("X-API-Key", bachelpApiKey)
+        MvcResult result = mockMvc.perform(get(REDMINE_STATUS_CHANGE_ENDPOINT)
+                        .header("X-API-Key", redmineApiKey)
                         .header("Accept", "application/json")
                         .param("from", oldDate.toString()))
                 .andExpect(status().isOk())
@@ -132,15 +132,15 @@ public class BACHelpRestApiCtrlIT extends WebTest {
         String responseContent = result.getResponse().getContentAsString();
         JsonNode response = jsonObjectMapper.readTree(responseContent);
         assertTrue("Should be successful", response.get("success").asBoolean());
-        assertEquals("Should have correct response type", "bachelp employee status change list",
+        assertEquals("Should have correct response type", "redmine employee status change list",
                 response.get("responseType").asText());
     }
 
     @Test
     public void testEmployeeSearchApi() throws Exception {
         // Basic test for the employee search endpoint to ensure it works
-        MvcResult result = mockMvc.perform(get(BACHELP_SEARCH_ENDPOINT)
-                        .header("X-API-Key", bachelpApiKey)
+        MvcResult result = mockMvc.perform(get(REDMINE_SEARCH_ENDPOINT)
+                        .header("X-API-Key", redmineApiKey)
                         .header("Accept", "application/json")
                         .param("term", "smith"))
                 .andExpect(status().isOk())
@@ -151,7 +151,7 @@ public class BACHelpRestApiCtrlIT extends WebTest {
         JsonNode response = jsonObjectMapper.readTree(responseContent);
 
         assertTrue("Should be successful", response.get("success").asBoolean());
-        assertEquals("Should have correct response type", "bachelp employee list",
+        assertEquals("Should have correct response type", "redmine employee list",
                 response.get("responseType").asText());
         assertTrue("Should have total field", response.has("total"));
         assertTrue("Should have result array", response.has("result"));
@@ -179,8 +179,8 @@ public class BACHelpRestApiCtrlIT extends WebTest {
         // Using employee ID 1 which should exist in most test datasets
         int testEmpId = 1;
 
-        MvcResult result = mockMvc.perform(get(BACHELP_EMPLOYEE_LOOKUP_ENDPOINT + "/" + testEmpId)
-                        .header("X-API-Key", bachelpApiKey)
+        MvcResult result = mockMvc.perform(get(REDMINE_EMPLOYEE_LOOKUP_ENDPOINT + "/" + testEmpId)
+                        .header("X-API-Key", redmineApiKey)
                         .header("Accept", "application/json"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
@@ -220,8 +220,8 @@ public class BACHelpRestApiCtrlIT extends WebTest {
         // Test employee lookup with non-existent employee ID
         int nonExistentEmpId = 999999;
 
-        mockMvc.perform(get(BACHELP_EMPLOYEE_LOOKUP_ENDPOINT + "/" + nonExistentEmpId)
-                        .header("X-API-Key", bachelpApiKey)
+        mockMvc.perform(get(REDMINE_EMPLOYEE_LOOKUP_ENDPOINT + "/" + nonExistentEmpId)
+                        .header("X-API-Key", redmineApiKey)
                         .header("Accept", "application/json"))
                 .andExpect(status().isNotFound())
                 .andExpect(content().contentType("application/json"));

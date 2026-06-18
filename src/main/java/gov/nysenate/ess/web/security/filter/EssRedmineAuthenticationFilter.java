@@ -4,11 +4,12 @@ import gov.nysenate.ess.core.client.response.auth.AuthenticationResponse;
 import gov.nysenate.ess.core.model.auth.AuthenticationStatus;
 import gov.nysenate.ess.core.util.HttpResponseUtils;
 import gov.nysenate.ess.core.util.OutputUtils;
-import gov.nysenate.ess.web.security.BACHelpKeyAuthenticationToken;
+import gov.nysenate.ess.web.security.RedmineKeyAuthenticationToken;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.subject.Subject;
+import org.apache.shiro.subject.support.DefaultSubjectContext;
 import org.apache.shiro.web.filter.authc.AuthenticationFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,20 +23,33 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static gov.nysenate.ess.core.model.auth.AuthenticationStatus.BACHELP_MISSING_API_KEY;
-import static gov.nysenate.ess.core.model.auth.AuthenticationStatus.BACHELP_INVALID_API_KEY;
-import static gov.nysenate.ess.web.security.BACHelpKeyAuthenticationToken.BACHELP_PRINCIPAL;
+import static gov.nysenate.ess.core.model.auth.AuthenticationStatus.REDMINE_MISSING_API_KEY;
+import static gov.nysenate.ess.core.model.auth.AuthenticationStatus.REDMINE_INVALID_API_KEY;
+import static gov.nysenate.ess.web.security.RedmineKeyAuthenticationToken.REDMINE_PRINCIPAL;
 
 /**
- * Authentication filter for BACHelp integration API endpoints.
+ * Authentication filter for Redmine integration API endpoints.
  * 
  * Extracts API key from X-API-Key header and attempts authentication
- * using the BACHelp key realm. The actual key validation is performed by the realm.
+ * using the Redmine key realm. The actual key validation is performed by the realm.
  */
-public class EssBACHelpAuthenticationFilter extends AuthenticationFilter {
+public class EssRedmineAuthenticationFilter extends AuthenticationFilter {
 
-    private static final Logger logger = LoggerFactory.getLogger(EssBACHelpAuthenticationFilter.class);
+    private static final Logger logger = LoggerFactory.getLogger(EssRedmineAuthenticationFilter.class);
     private static final String API_KEY_HEADER = "X-API-Key";
+
+    /**
+     * Mark every Redmine request as session-less before any authentication occurs.
+     * This prevents {@link Subject#login} from persisting the authenticated principal
+     * into a Shiro/servlet session, so a valid key login cannot mint a JSESSIONID
+     * cookie that could be replayed to pivot onto the general {@code essApiAuthc}
+     * chain ({@code /api/v1/**}). The key must be presented on every request.
+     */
+    @Override
+    public boolean onPreHandle(ServletRequest request, ServletResponse response, Object mappedValue) throws Exception {
+        request.setAttribute(DefaultSubjectContext.SESSION_CREATION_ENABLED, Boolean.FALSE);
+        return super.onPreHandle(request, response, mappedValue);
+    }
 
     @Override
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
@@ -43,30 +57,30 @@ public class EssBACHelpAuthenticationFilter extends AuthenticationFilter {
         String apiKey = httpRequest.getHeader(API_KEY_HEADER);
 
         if (!StringUtils.hasText(apiKey)) {
-            logger.debug("BACHelp API key header missing or empty");
-            writeBACHelpAuthenticationResponse(request, response, BACHELP_MISSING_API_KEY);
+            logger.debug("Redmine API key header missing or empty");
+            writeRedmineAuthenticationResponse(request, response, REDMINE_MISSING_API_KEY);
             return false;
         }
 
         // Create authentication token and let the realm validate the key
-        AuthenticationToken authToken = new BACHelpKeyAuthenticationToken(apiKey);
+        AuthenticationToken authToken = new RedmineKeyAuthenticationToken(apiKey);
         Subject subject = SecurityUtils.getSubject();
         
         try {
             subject.login(authToken);
-            logger.debug("BACHelp authentication successful");
+            logger.debug("Redmine authentication successful");
             return true;
         } catch (AuthenticationException ex) {
-            logger.debug("BACHelp authentication failed: {}", ex.getMessage());
-            writeBACHelpAuthenticationResponse(request, response, BACHELP_INVALID_API_KEY);
+            logger.debug("Redmine authentication failed: {}", ex.getMessage());
+            writeRedmineAuthenticationResponse(request, response, REDMINE_INVALID_API_KEY);
             return false;
         }
     }
 
     /**
-     * Generate an authentication error response for a failed BACHelp API authentication
+     * Generate an authentication error response for a failed Redmine API authentication
      */
-    private void writeBACHelpAuthenticationResponse(ServletRequest request, ServletResponse response, AuthenticationStatus status) throws IOException {
+    private void writeRedmineAuthenticationResponse(ServletRequest request, ServletResponse response, AuthenticationStatus status) throws IOException {
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         MediaType mediaType;
         
@@ -79,7 +93,7 @@ public class EssBACHelpAuthenticationFilter extends AuthenticationFilter {
 
         AuthenticationResponse authResponse = new AuthenticationResponse(
                 status,
-                BACHELP_PRINCIPAL,
+                REDMINE_PRINCIPAL,
                 0,
                 null);
 

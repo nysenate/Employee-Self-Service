@@ -1,5 +1,6 @@
 *.iml
 .idea/*
+.dev/
 !.idea/codeStyleSettings.xml
 !.idea/codeStyles/**
 *.swp

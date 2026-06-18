@@ -61,11 +61,11 @@ restrict.department.whitelist =
 # Allow these ip addresses to access the API without logging in.
 auth.api.ip.whitelist = ^$
 
-# BACHelp Integration Authentication
-# Set to true to enable API key authentication for BACHelp integration endpoints
-auth.bachelp.enabled = false
-# API key for BACHelp system integration (minimum 32 characters recommended)
-auth.bachelp.api.key =
+# Redmine Integration Authentication
+# Set to true to enable API key authentication for Redmine integration endpoints
+auth.redmine.enabled = false
+# API key for Redmine system integration (minimum 32 characters recommended)
+auth.redmine.api.key =
 
 # --- Database Configuration --------------------------------------------------
 

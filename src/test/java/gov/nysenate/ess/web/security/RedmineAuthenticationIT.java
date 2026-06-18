@@ -13,19 +13,19 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @Category(IntegrationTest.class)
-public class BACHelpAuthenticationIT extends WebTest {
+public class RedmineAuthenticationIT extends WebTest {
 
     private static final String INVALID_API_KEY = "invalid-key";
-    private static final String BACHELP_SEARCH_ENDPOINT = "/api/v1/bachelp/employee/search";
-    private static final String BACHELP_STATUS_CHANGE_ENDPOINT = "/api/v1/bachelp/statusChanges";
-    private static final String NON_BACHELP_ENDPOINT = "/api/v1/employees/search";
+    private static final String REDMINE_SEARCH_ENDPOINT = "/api/v1/redmine/employee/search";
+    private static final String REDMINE_STATUS_CHANGE_ENDPOINT = "/api/v1/redmine/statusChanges";
+    private static final String NON_REDMINE_ENDPOINT = "/api/v1/employees/search";
 
-    @Value("${auth.bachelp.api.key}") private String bachelpApiKey;
+    @Value("${auth.redmine.api.key}") private String redmineApiKey;
 
     @Test
-    public void testBACHelpEndpointWithInvalidKey() throws Exception {
+    public void testRedmineEndpointWithInvalidKey() throws Exception {
         // Test that invalid API key is rejected
-        mockMvc.perform(get(BACHELP_SEARCH_ENDPOINT)
+        mockMvc.perform(get(REDMINE_SEARCH_ENDPOINT)
                 .header("X-API-Key", INVALID_API_KEY)
                 .param("term", "test"))
                 .andExpect(status().isUnauthorized())
@@ -33,20 +33,20 @@ public class BACHelpAuthenticationIT extends WebTest {
     }
 
     @Test
-    public void testBACHelpEndpointWithMissingKey() throws Exception {
-        MvcResult result = mockMvc.perform(get(BACHELP_SEARCH_ENDPOINT)
+    public void testRedmineEndpointWithMissingKey() throws Exception {
+        MvcResult result = mockMvc.perform(get(REDMINE_SEARCH_ENDPOINT)
                 .param("term", "test"))
                 .andExpect(status().isUnauthorized())
                 .andExpect(content().contentType("application/json"))
                 .andReturn();
 
         String responseContent = result.getResponse().getContentAsString();
-        assert responseContent.contains("Missing BACHelp API key header");
+        assert responseContent.contains("Missing Redmine API key header");
     }
 
     @Test
-    public void testBACHelpEndpointWithEmptyKey() throws Exception {
-        MvcResult result = mockMvc.perform(get(BACHELP_SEARCH_ENDPOINT)
+    public void testRedmineEndpointWithEmptyKey() throws Exception {
+        MvcResult result = mockMvc.perform(get(REDMINE_SEARCH_ENDPOINT)
                 .header("X-API-Key", "")
                 .param("term", "test"))
                 .andExpect(status().isUnauthorized())
@@ -54,32 +54,32 @@ public class BACHelpAuthenticationIT extends WebTest {
                 .andReturn();
 
         String responseContent = result.getResponse().getContentAsString();
-        assert responseContent.contains("Missing BACHelp API key header");
+        assert responseContent.contains("Missing Redmine API key header");
     }
 
     @Test
-    public void testBACHelpStatusChangesEndpoint() throws Exception {
-        mockMvc.perform(get(BACHELP_STATUS_CHANGE_ENDPOINT)
-                .header("X-API-Key", bachelpApiKey)
+    public void testRedmineStatusChangesEndpoint() throws Exception {
+        mockMvc.perform(get(REDMINE_STATUS_CHANGE_ENDPOINT)
+                .header("X-API-Key", redmineApiKey)
                 .param("from", LocalDate.now().minusDays(1).toString()))
                 .andExpect(status().isOk());
     }
 
     @Test
-    public void testNonBACHelpEndpointNotAffected() throws Exception {
-        // Regular API endpoints should not be accessible with BACHelp auth
-        mockMvc.perform(get(NON_BACHELP_ENDPOINT)
-                .header("X-API-Key", bachelpApiKey))
+    public void testNonRedmineEndpointNotAffected() throws Exception {
+        // Regular API endpoints should not be accessible with Redmine auth
+        mockMvc.perform(get(NON_REDMINE_ENDPOINT)
+                .header("X-API-Key", redmineApiKey))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
-    public void testNonBACHelpUserAccess() throws Exception {
-        // Standard employees should not have access to bachelp endpoints
-        performAuthenticated(get(BACHELP_STATUS_CHANGE_ENDPOINT))
+    public void testNonRedmineUserAccess() throws Exception {
+        // Standard employees should not have access to redmine endpoints
+        performAuthenticated(get(REDMINE_STATUS_CHANGE_ENDPOINT))
                 .andExpect(status().isUnauthorized());
 
-        performAuthenticated(get(BACHELP_SEARCH_ENDPOINT))
+        performAuthenticated(get(REDMINE_SEARCH_ENDPOINT))
                 .andExpect(status().isUnauthorized());
     }
 }

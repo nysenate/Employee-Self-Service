@@ -6,8 +6,8 @@ import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.client.response.error.ErrorCode;
 import gov.nysenate.ess.core.client.response.error.ViewObjectErrorResponse;
-import gov.nysenate.ess.core.client.view.BACHelpEmpStatusChangeView;
-import gov.nysenate.ess.core.client.view.BACHelpEmployeeView;
+import gov.nysenate.ess.core.client.view.RedmineEmpStatusChangeView;
+import gov.nysenate.ess.core.client.view.RedmineEmployeeView;
 import gov.nysenate.ess.core.dao.transaction.EmpTransactionDao;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.personnel.EmployeeNotFoundEx;
@@ -27,19 +27,19 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static gov.nysenate.ess.core.model.auth.SimpleEssPermission.BACHELP_API_ACCESS;
+import static gov.nysenate.ess.core.model.auth.SimpleEssPermission.REDMINE_API_ACCESS;
 import static gov.nysenate.ess.core.model.transaction.TransactionCode.*;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.HEAD;
 
 /**
- * Contains API endpoints intended for use by BACHelp Redmine Plugins
+ * Contains API endpoints intended for use by Redmine Redmine Plugins
  */
 @RestController
-@RequestMapping(BaseRestApiCtrl.REST_PATH + "/bachelp")
-public class BACHelpRestApiCtrl extends BaseRestApiCtrl {
+@RequestMapping(BaseRestApiCtrl.REST_PATH + "/redmine")
+public class RedmineRestApiCtrl extends BaseRestApiCtrl {
     /**
-     * Set of transaction codes that bachelp is allowed to query for.
+     * Set of transaction codes that redmine is allowed to query for.
      */
     private static final Set<TransactionCode> allowedCodes = ImmutableSet.of(
             APP, LOC, NAM, PHO, RTP, LIN, EMP, RSH);
@@ -47,7 +47,7 @@ public class BACHelpRestApiCtrl extends BaseRestApiCtrl {
     private final EmployeeInfoService empInfoService;
     private final EmpTransactionDao empTransactionDao;
 
-    public BACHelpRestApiCtrl(EmployeeInfoService empInfoService,
+    public RedmineRestApiCtrl(EmployeeInfoService empInfoService,
                               EmpTransactionDao empTransactionDao) {
         this.empInfoService = empInfoService;
         this.empTransactionDao = empTransactionDao;
@@ -55,33 +55,33 @@ public class BACHelpRestApiCtrl extends BaseRestApiCtrl {
 
     /**
      * Perform a simple search over active and inactive employees, matching full name.
-     * Get a limited search response containing only BACHelp relevant fields.
+     * Get a limited search response containing only Redmine relevant fields.
      *
      * @param term    - String - search term used to match against full name
      * @param request - WebRequest
-     * @return ListViewResponse<BACHelpEmployeeView> - search results
+     * @return ListViewResponse<RedmineEmployeeView> - search results
      */
     @RequestMapping(value = "/employee/search", method = {GET, HEAD})
-    public ListViewResponse<BACHelpEmployeeView> employeeSearch(@RequestParam(defaultValue = "") String term,
+    public ListViewResponse<RedmineEmployeeView> employeeSearch(@RequestParam(defaultValue = "") String term,
                                                                 WebRequest request) {
-        checkPermission(BACHELP_API_ACCESS.getPermission());
+        checkPermission(REDMINE_API_ACCESS.getPermission());
         LimitOffset limitOffset = getLimitOffset(request, 20);
         PaginatedList<Employee> results = empInfoService.searchEmployees(term, false, limitOffset);
-        return ListViewResponse.fromPaginatedList(results, BACHelpEmployeeView::new);
+        return ListViewResponse.fromPaginatedList(results, RedmineEmployeeView::new);
     }
 
     /**
      * Retrieve info for a specific employee.
      *
      * @param empId - int - id of employee to lookup
-     * @return ViewObjectResponse<BACHelpEmployeeView> - employee info
+     * @return ViewObjectResponse<RedmineEmployeeView> - employee info
      */
     @RequestMapping(value = "/employee/{empId}", method = {GET, HEAD})
-    public ViewObjectResponse<BACHelpEmployeeView> empLookup(@PathVariable int empId) {
-        checkPermission(BACHELP_API_ACCESS.getPermission());
+    public ViewObjectResponse<RedmineEmployeeView> empLookup(@PathVariable int empId) {
+        checkPermission(REDMINE_API_ACCESS.getPermission());
         Employee emp = empInfoService.getEmployee(empId);
         return new ViewObjectResponse<>(
-                new BACHelpEmployeeView(emp), "employee"
+                new RedmineEmployeeView(emp), "employee"
         );
     }
 
@@ -98,12 +98,12 @@ public class BACHelpRestApiCtrl extends BaseRestApiCtrl {
      *
      * @param from - String - Defaults to one day ago
      * @param to   - String - Defaults to far in the future
-     * @return ListViewResponse<BACHelpEmpStatusChangeView>
+     * @return ListViewResponse<RedmineEmpStatusChangeView>
      */
     @RequestMapping(value = "/statusChanges", method = {GET, HEAD})
-    public ListViewResponse<BACHelpEmpStatusChangeView> getStatusChangeEmps(@RequestParam(required = false) String from,
+    public ListViewResponse<RedmineEmpStatusChangeView> getStatusChangeEmps(@RequestParam(required = false) String from,
                                                                             @RequestParam(required = false) String to) {
-        checkPermission(BACHELP_API_ACCESS.getPermission());
+        checkPermission(REDMINE_API_ACCESS.getPermission());
         LocalDate fromDate = Optional.ofNullable(from)
                 .map(f -> parseISODate(f, "from"))
                 .orElse(LocalDate.now().minusDays(1));
@@ -114,8 +114,8 @@ public class BACHelpRestApiCtrl extends BaseRestApiCtrl {
 
         List<TransactionRecord> transactionRecords = empTransactionDao.getRecordsByPostDate(dateRange, allowedCodes);
 
-        List<BACHelpEmpStatusChangeView> empStatusChangeViews = transactionRecords.stream()
-                .map(tRec -> new BACHelpEmpStatusChangeView(
+        List<RedmineEmpStatusChangeView> empStatusChangeViews = transactionRecords.stream()
+                .map(tRec -> new RedmineEmpStatusChangeView(
                         empInfoService.getEmployee(tRec.getEmployeeId()), tRec))
                 .toList();
 
