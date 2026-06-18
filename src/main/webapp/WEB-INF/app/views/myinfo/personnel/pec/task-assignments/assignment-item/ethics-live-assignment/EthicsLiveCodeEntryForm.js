@@ -2,10 +2,10 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import Button from "app/components/Button";
 import { useSubmitEthicsLiveForm } from "app/views/myinfo/personnel/pec/useTaskAssignment";
-import useAuthedUser from "app/hooks/useAuthedUser";
+import useRequireAuthedUser from "app/hooks/useRequireAuthedUser";
 
 export default function EthicsLiveCodeEntryForm({ taskId, onSuccess }) {
-  const { data: user } = useAuthedUser();
+  const { data: user } = useRequireAuthedUser();
   const submitEthicsLiveCodesApi = useSubmitEthicsLiveForm();
   const {
     register,

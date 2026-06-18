@@ -5,7 +5,7 @@ import { useManuallyAssignTask } from "../useTaskAssignment";
 import Modal from "../../../../../components/Modal";
 import { isoToMediumDate } from "../../../../../utils/dateUtils";
 import Button from "app/components/Button";
-import useAuthedUser from "app/hooks/useAuthedUser";
+import useRequireAuthedUser from "app/hooks/useRequireAuthedUser";
 
 export default function PotentialAssignmentsTable({
   potentialAssignments,
@@ -181,7 +181,7 @@ function UnassignedDetails({ emp, assignment, tasksMap }) {
 }
 
 function AssignTaskModal({ isOpen, setIsOpen, emp, task }) {
-  const { data: user } = useAuthedUser();
+  const { data: user } = useRequireAuthedUser();
   const manuallyAssignApi = useManuallyAssignTask();
 
   const onProceed = () => {

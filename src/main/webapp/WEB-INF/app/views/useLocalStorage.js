@@ -1,7 +1,7 @@
-import useAuthedUser from "app/hooks/useAuthedUser";
+import useRequireAuthedUser from "app/hooks/useRequireAuthedUser";
 
 export default function useLocalStorage() {
-  const { data: user } = useAuthedUser();
+  const { data: user } = useRequireAuthedUser();
 
   // Prefixes the key with the logged in empId.
   const getKey = (key) => {

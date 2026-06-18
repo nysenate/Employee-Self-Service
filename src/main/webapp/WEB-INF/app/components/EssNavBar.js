@@ -3,14 +3,14 @@ import React from "react";
 import "app/components/essNavBar.css";
 import { themes } from "app/ThemeContext";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
-import useAuthedUser from "app/hooks/useAuthedUser";
+import useRequireAuthedUser from "app/hooks/useRequireAuthedUser";
 import { useConfig } from "app/hooks/useConfig";
 import clsx from "clsx";
 import { twMerge } from "tailwind-merge";
 
 export default function EssNavBar() {
   const { data: config } = useConfig();
-  const { data: user } = useAuthedUser();
+  const { data: user } = useRequireAuthedUser();
 
   return (
     <nav

@@ -1,6 +1,6 @@
 import React, { useEffect, useReducer, useState } from "react";
 import { add, endOfDay, formatISO, startOfDay, subMonths } from "date-fns";
-import useAuthedUser from "app/hooks/useAuthedUser";
+import useRequireAuthedUser from "app/hooks/useRequireAuthedUser";
 import { useEmployee } from "app/views/useEmployee";
 import { useOrderHisotry } from "app/views/supply/orders/order-list/useOrderHistory";
 import { UTCDate } from "@date-fns/utc";
@@ -64,7 +64,7 @@ function filtersReducer(state, action) {
 }
 
 export default function OrderHistoryIndex() {
-  const { data: user } = useAuthedUser();
+  const { data: user } = useRequireAuthedUser();
   const [filters, dispatch] = useReducer(filtersReducer, initialFilters);
   const employeeQuery = useEmployee(user?.employeeId);
   const orderHistoryQuery = useOrderHisotry({

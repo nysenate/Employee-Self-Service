@@ -15,10 +15,10 @@ import {
 } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/16/solid";
 import { useDebounce } from "use-debounce";
-import useAuthedUser from "app/hooks/useAuthedUser";
+import useRequireAuthedUser from "app/hooks/useRequireAuthedUser";
 
 export default function SelectDestination() {
-  const { data: user } = useAuthedUser();
+  const { data: user } = useRequireAuthedUser();
   const employeeQuery = useEmployee(user?.employeeId);
   const validDestinationsQuery = useSupplyDestinations(user?.employeeId);
   const { setDestination } = useSupplyContext();

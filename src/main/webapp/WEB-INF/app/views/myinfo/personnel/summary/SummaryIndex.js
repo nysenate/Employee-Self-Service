@@ -13,10 +13,10 @@ import {
 import LoadingIndicator from "app/components/LoadingIndicator";
 import { useEmployee } from "app/views/useEmployee";
 import { useEmployeeTransactions } from "app/views/myinfo/personnel/summary/useEmployeeTransactions";
-import useAuthedUser from "app/hooks/useAuthedUser";
+import useRequireAuthedUser from "app/hooks/useRequireAuthedUser";
 
 export default function SummaryIndex() {
-  const { data: user } = useAuthedUser();
+  const { data: user } = useRequireAuthedUser();
   const empDetails = useEmployee(user?.employeeId);
   const transactions = useEmployeeTransactions(user?.employeeId);
 

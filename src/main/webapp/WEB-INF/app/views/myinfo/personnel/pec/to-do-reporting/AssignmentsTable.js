@@ -8,7 +8,7 @@ import {
   useManuallyDeactivateTaskAssignment,
   useManuallyOverrideCompletionStatus,
 } from "app/views/myinfo/personnel/pec/useTaskAssignment";
-import useAuthedUser from "app/hooks/useAuthedUser";
+import useRequireAuthedUser from "app/hooks/useRequireAuthedUser";
 
 export default function AssignmentsTable({ taskAssignments, state, dispatch }) {
   // Assignment details will be displayed for the row of this employee. Only display one row details at a time.
@@ -226,7 +226,7 @@ function IncompleteAssignmentDetails({ emp, assignment, tasksMap }) {
 }
 
 function ManuallyOverrideModal({ isOpen, setIsOpen, emp, assignment, task }) {
-  const { data: user } = useAuthedUser();
+  const { data: user } = useRequireAuthedUser();
   const manuallyOverrideApi = useManuallyOverrideCompletionStatus();
 
   const onProceed = () => {
@@ -271,7 +271,7 @@ function ManuallyOverrideModal({ isOpen, setIsOpen, emp, assignment, task }) {
 }
 
 function ManuallyDeactivateModal({ isOpen, setIsOpen, emp, assignment, task }) {
-  const { data: user } = useAuthedUser();
+  const { data: user } = useRequireAuthedUser();
   const deactivateTaskAssignmentApi = useManuallyDeactivateTaskAssignment();
 
   const onProceed = () => {

@@ -4,10 +4,10 @@ import Card from "app/components/Card";
 import AlertInfoForm from "app/views/myinfo/personnel/emergency-alert-info/AlertInfoForm";
 import LoadingIndicator from "app/components/LoadingIndicator";
 import { useEmployeeAlertInfo } from "app/views/myinfo/personnel/emergency-alert-info/useEmployeeAlertInfo";
-import useAuthedUser from "app/hooks/useAuthedUser";
+import useRequireAuthedUser from "app/hooks/useRequireAuthedUser";
 
 export default function EmergencyAlertInfoIndex() {
-  const { data: user } = useAuthedUser();
+  const { data: user } = useRequireAuthedUser();
   const alertInfo = useEmployeeAlertInfo(user?.employeeId);
 
   return (

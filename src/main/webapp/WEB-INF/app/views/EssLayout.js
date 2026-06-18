@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import EssNavBar from "app/components/EssNavBar";
 import { Outlet } from "react-router-dom";
-import useAuthedUser from "app/hooks/useAuthedUser";
+import useRequireAuthedUser from "app/hooks/useRequireAuthedUser";
 import TimeoutChecker from "app/TimeoutChecker";
 
 export default function EssLayout() {
-  const { data: user, isPending } = useAuthedUser();
+  const { isPending, isError } = useRequireAuthedUser();
 
-  if (isPending) {
+  if (isPending || isError) {
     return <></>;
   }
 

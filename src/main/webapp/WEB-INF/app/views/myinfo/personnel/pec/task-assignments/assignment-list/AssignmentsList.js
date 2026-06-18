@@ -10,7 +10,7 @@ import { Link } from "react-router-dom";
 import LoadingIndicator from "app/components/LoadingIndicator";
 import { isoToMediumDate } from "app/utils/dateUtils";
 import { useTaskAssignments } from "app/views/myinfo/personnel/pec/useTaskAssignment";
-import useAuthedUser from "app/hooks/useAuthedUser";
+import useRequireAuthedUser from "app/hooks/useRequireAuthedUser";
 
 /**
  * Generates URL, Url Text
@@ -58,7 +58,7 @@ const assignmentDisplayFields = (type) => {
 };
 
 export default function AssignmentsList() {
-  const { data: user } = useAuthedUser();
+  const { data: user } = useRequireAuthedUser();
   const assignments = useTaskAssignments(user?.employeeId);
   const [incompleteAssignments, setIncompleteAssignments] = useState([]);
   const [completedAssignments, setCompletedAssignments] = useState([]);

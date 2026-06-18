@@ -13,10 +13,10 @@ import { useCheckout } from "app/views/supply/store/cart/useCheckout";
 import LoadingIndicator from "app/components/LoadingIndicator";
 import CheckoutSummaryModal from "app/views/supply/store/cart/CheckoutSummaryModal";
 import { useItemsMap } from "app/views/supply/shared/hooks/useItems";
-import useAuthedUser from "app/hooks/useAuthedUser";
+import useRequireAuthedUser from "app/hooks/useRequireAuthedUser";
 
 export default function CartIndex() {
-  const { data: user } = useAuthedUser();
+  const { data: user } = useRequireAuthedUser();
   const { cart, clearCart, destination } = useSupplyContext();
   const [instructions, setInstructions] = useState("");
   const itemsQuery = useItemsMap();

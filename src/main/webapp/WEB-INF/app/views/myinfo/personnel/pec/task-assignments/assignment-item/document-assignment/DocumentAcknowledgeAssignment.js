@@ -9,10 +9,10 @@ import Button from "app/components/Button";
 import Modal from "app/components/Modal";
 import ModalNotice from "app/components/ModalNotice";
 import { useAcknowledgeDocument } from "app/views/myinfo/personnel/pec/useTaskAssignment";
-import useAuthedUser from "app/hooks/useAuthedUser";
+import useRequireAuthedUser from "app/hooks/useRequireAuthedUser";
 
 export default function DocumentAcknowledgeAssignment({ assignment }) {
-  const { data: user } = useAuthedUser();
+  const { data: user } = useRequireAuthedUser();
   const navigate = useNavigate();
   const acknowledgeDocumentApi = useAcknowledgeDocument();
   const isScrolledToBottom = useScrollDetection();
