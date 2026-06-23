@@ -10,15 +10,13 @@ import { useTaskAssignment } from "app/views/myinfo/personnel/pec/useTaskAssignm
 import useRequireAuthedUser from "app/hooks/useRequireAuthedUser";
 
 export default function TaskAssignmentIndex() {
-  const { data: user } = useRequireAuthedUser();
-  let { taskId } = useParams();
-  taskId = Number(taskId);
-  const { data: assignment, isLoading } = useTaskAssignment(
-    user?.employeeId,
-    taskId,
-  );
+  const { data: user, isPending: isUserPending } = useRequireAuthedUser();
+  const { taskId: taskIdParam } = useParams();
+  const taskId = Number(taskIdParam);
+  const { data: assignment, isPending: isAssignmentPending } =
+    useTaskAssignment(user?.employeeId, taskId,);
 
-  if (isLoading) {
+  if (isUserPending || isAssignmentPending || !assignment) {
     return <LoadingIndicator />;
   }
 

@@ -31,7 +31,7 @@ export function useTaskAssignment(empId, taskId) {
         (body) => body.task,
       );
     },
-    enabled: !!empId,
+    enabled: !!empId && Number.isFinite(taskId),
     throwOnError: true,
   });
 }
@@ -49,7 +49,6 @@ export function useAcknowledgeDocument() {
         queryKey: taskAssignmentKeys.all,
       });
     },
-    throwOnError: true,
   });
 }
 

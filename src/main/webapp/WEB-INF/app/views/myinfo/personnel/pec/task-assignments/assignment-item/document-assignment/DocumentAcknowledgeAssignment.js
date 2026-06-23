@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Hero from "app/components/Hero";
 import Card from "app/components/Card";
 import * as pdfjsLib from "pdfjs-dist";
@@ -18,23 +18,31 @@ export default function DocumentAcknowledgeAssignment({ assignment }) {
   const isScrolledToBottom = useScrollDetection();
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
   const [isAcknowledgmentInProgress, setIsAcknowledgmentInProgress] =
     useState(false);
 
   const onAcknowledge = () => {
+    setIsErrorModalOpen(false);
     setIsConfirmationModalOpen(true);
-    setIsAcknowledgmentInProgress(true);
   };
 
   const onAcknowledgeConfirmation = () => {
-    setIsConfirmationModalOpen(false);
+    setIsAcknowledgmentInProgress(true);
     acknowledgeDocumentApi
       .mutateAsync({
         empId: user.employeeId,
         taskId: assignment.taskId,
       })
       .then(() => {
+        setIsConfirmationModalOpen(false);
         setIsSuccessModalOpen(true);
+      })
+      .catch(() => {
+        setIsConfirmationModalOpen(false);
+        setIsErrorModalOpen(true);
+      })
+      .finally(() => {
         setIsAcknowledgmentInProgress(false);
       });
   };
@@ -100,8 +108,8 @@ export default function DocumentAcknowledgeAssignment({ assignment }) {
         onResolve={onAcknowledgeConfirmation}
         onReject={() => {
           setIsConfirmationModalOpen(false);
-          setIsAcknowledgmentInProgress(false);
         }}
+        isAcknowledgmentInProgress={isAcknowledgmentInProgress}
       />
       <ModalNotice
         isOpen={isSuccessModalOpen}
@@ -109,11 +117,23 @@ export default function DocumentAcknowledgeAssignment({ assignment }) {
         title="Acknowledgement Complete"
         body="You have successfully acknowledged this policy/document."
       />
+      <ModalNotice
+        isOpen={isErrorModalOpen}
+        onClose={() => setIsErrorModalOpen(false)}
+        title="Acknowledgement Failed"
+        body="We were unable to record your acknowledgement. Please try again."
+      />
     </>
   );
 }
 
-function ConfirmationModal({ assignment, isOpen, onResolve, onReject }) {
+function ConfirmationModal({
+  assignment,
+  isOpen,
+  onResolve,
+  onReject,
+  isAcknowledgmentInProgress,
+}) {
   return (
     <Modal isOpen={isOpen}>
       <Modal.Title>Acknowledge Policy/Document</Modal.Title>
@@ -137,10 +157,18 @@ function ConfirmationModal({ assignment, isOpen, onResolve, onReject }) {
         </div>
       </Modal.Body>
       <Modal.Buttons>
-        <Button variant="primary" onPress={onResolve}>
+        <Button
+          variant="primary"
+          onPress={onResolve}
+          isPending={isAcknowledgmentInProgress}
+        >
           I Agree
         </Button>
-        <Button variant="secondary" onPress={onReject}>
+        <Button
+          variant="secondary"
+          onPress={onReject}
+          isDisabled={isAcknowledgmentInProgress}
+        >
           Cancel
         </Button>
       </Modal.Buttons>
