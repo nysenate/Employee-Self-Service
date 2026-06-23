@@ -29,7 +29,9 @@ export default function PhoneInputs({ register, errors }) {
         <ContactLabel id="alternatePhone">Alternate</ContactLabel>
         <PhoneInput id="alternatePhone" register={register} errors={errors} />
         <PhoneContactOptionsSelect
+          id="alternateOptions"
           name="alternateOptions"
+          ariaLabel="Alternate phone contact preference"
           register={register}
         />
         <ErrorText id="alternatePhone" errors={errors} />
@@ -38,7 +40,12 @@ export default function PhoneInputs({ register, errors }) {
       <div className="col-span-3">
         <ContactLabel id="mobilePhone">Mobile</ContactLabel>
         <PhoneInput id="mobilePhone" register={register} errors={errors} />
-        <PhoneContactOptionsSelect name="mobileOptions" register={register} />
+        <PhoneContactOptionsSelect
+          id="mobileOptions"
+          name="mobileOptions"
+          ariaLabel="Mobile phone contact preference"
+          register={register}
+        />
         <ErrorText id="mobilePhone" errors={errors} />
       </div>
     </>
@@ -63,9 +70,15 @@ function PhoneInput({ id, register, errors, readOnly = false }) {
   );
 }
 
-function PhoneContactOptionsSelect({ name, register }) {
+function PhoneContactOptionsSelect({ id, name, ariaLabel, register }) {
   return (
-    <select name={name} className="select" {...register(name)}>
+    <select
+      id={id}
+      name={name}
+      className="select"
+      aria-label={ariaLabel}
+      {...register(name)}
+    >
       <option value="Only calls">Only calls</option>
       <option value="Only texts">Only texts</option>
       <option value="Both calls and texts">Both calls and texts</option>

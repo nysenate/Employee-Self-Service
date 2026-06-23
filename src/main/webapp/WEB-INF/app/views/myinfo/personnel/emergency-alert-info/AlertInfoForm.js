@@ -31,7 +31,7 @@ export default function AlertInfoForm({ alertInfo }) {
   } = useForm(useFormDefaultProps);
 
   React.useEffect(() => {
-    reset(useFormDefaultProps);
+    reset(useFormDefaultProps.defaultValues);
   }, [alertInfo]);
 
   const onSubmit = (data) => {
@@ -81,6 +81,7 @@ export default function AlertInfoForm({ alertInfo }) {
           <Button
             type="submit"
             variant="primary"
+            isPending={mutateAlertInfo.isPending}
             isDisabled={Object.keys(dirtyFields).length <= 0 || !isValid}
           >
             Save
