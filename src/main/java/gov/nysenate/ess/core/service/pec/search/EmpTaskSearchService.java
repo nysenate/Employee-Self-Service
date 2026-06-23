@@ -1,5 +1,6 @@
 package gov.nysenate.ess.core.service.pec.search;
 
+import gov.nysenate.ess.core.model.pec.EmployeeTaskAssignments;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.PaginatedList;
 
@@ -15,6 +16,8 @@ public interface EmpTaskSearchService {
      * @return {@link PaginatedList<EmpTaskSearchService>}
      */
     PaginatedList<EmployeeTaskSearchResult> searchForEmpTasks(EmpPTAQuery query, LimitOffset limitOffset);
+
+    PaginatedList<EmployeeTaskAssignments> searchEmployeeTaskAssignments(EmpPTAQuery query, LimitOffset limitOffset);
 
     /**
      * Search for employees and tasks that match the given query criteria.

@@ -1,7 +1,7 @@
 package gov.nysenate.ess.core.service.pec.assignment;
 
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
-import gov.nysenate.ess.core.service.pec.notification.AssignmentWithTask;
+import gov.nysenate.ess.core.model.pec.TaskAssignmentDetails;
 
 import java.util.List;
 
@@ -13,14 +13,14 @@ public interface PersonnelTaskAssigner {
     /**
      * Generates tasks for unassigned active personnel tasks for each active employee.
      */
-    List<AssignmentWithTask> assignTasks(boolean updateDb);
+    List<TaskAssignmentDetails> assignTasks(boolean updateDb);
 
     /**
      * Generates tasks for unassigned active personnel tasks for a single active employee.
      * @param empId int - employee id of the chosen employee.
      * @param updateDb boolean - if the database should be updated.
      */
-    List<AssignmentWithTask> assignTasks(int empId, boolean updateDb);
+    List<TaskAssignmentDetails> assignTasks(int empId, boolean updateDb);
 
     /**
      * Updates a tasks completion status assigned to an employee

@@ -134,7 +134,7 @@ export function useSearchTaskAssignments(state) {
   return useQuery({
     queryKey: taskAssignmentKeys.search(queryParams),
     queryFn: () => {
-      return fetchApiJson(`/personnel/task/emp/search?${queryParams}`);
+      return fetchApiJson(`/personnel/task/assignments?${queryParams}`);
     },
     cacheTime: 0, // Disable caching for this query.
   });

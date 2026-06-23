@@ -32,11 +32,7 @@ export default function AssignmentsSummary({
             total={taskAssignmentQuery.data.total}
             onPageChange={onPageChange}
           />
-          <AssignmentsTable
-            taskAssignments={taskAssignmentQuery.data.result}
-            state={state}
-            dispatch={dispatch}
-          />
+          <AssignmentsTable taskAssignments={taskAssignmentQuery.data.result} />
           <Pagination
             limit={state.limit}
             offset={state.offset}

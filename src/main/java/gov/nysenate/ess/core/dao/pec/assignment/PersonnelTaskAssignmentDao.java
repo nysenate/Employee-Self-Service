@@ -1,7 +1,7 @@
 package gov.nysenate.ess.core.dao.pec.assignment;
 
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
-import gov.nysenate.ess.core.service.pec.notification.AssignmentWithTask;
+import gov.nysenate.ess.core.model.pec.TaskAssignmentDetails;
 
 import java.util.List;
 
@@ -32,7 +32,7 @@ public interface PersonnelTaskAssignmentDao {
      * Get all assignment-task pairs that may require notification.
      * @return the relevant AssignmentWithTasks.
      */
-    List<AssignmentWithTask> getNotifiableAssignmentsWithTasks();
+    List<TaskAssignmentDetails> getNotifiableAssignmentsWithTasks();
 
     /**
      * Get a list of tasks matching the given query

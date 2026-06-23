@@ -1,5 +1,6 @@
 package gov.nysenate.ess.core.service.pec.notification;
 
+import gov.nysenate.ess.core.model.pec.TaskAssignmentDetails;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
 import gov.nysenate.ess.core.model.personnel.Employee;
@@ -38,11 +39,11 @@ public class EmployeeEmail {
 
     private final PecEmailType type;
     private final Employee employee;
-    private final List<AssignmentWithTask> dataList;
+    private final List<TaskAssignmentDetails> dataList;
     private final String html;
 
     public EmployeeEmail(Employee to, PecEmailType type,
-                         List<AssignmentWithTask> dataList, List<String> extraData) {
+                         List<TaskAssignmentDetails> dataList, List<String> extraData) {
         if (dataList.size() == 1 && type == PecEmailType.REMINDER) {
             type = PecEmailType.SINGLE_REMINDER;
         }
@@ -56,7 +57,7 @@ public class EmployeeEmail {
     /**
      * Converts a map of data to properly formatted HTML.
      */
-    private static String getTaskMapHtml(List<AssignmentWithTask> dataList) {
+    private static String getTaskMapHtml(List<TaskAssignmentDetails> dataList) {
         var html = new StringBuilder("<ul>");
         for (var data : dataList) {
             var task = data.task();
@@ -136,7 +137,7 @@ public class EmployeeEmail {
         return employee;
     }
 
-    public List<AssignmentWithTask> dataList() {
+    public List<TaskAssignmentDetails> dataList() {
         return dataList;
     }
 

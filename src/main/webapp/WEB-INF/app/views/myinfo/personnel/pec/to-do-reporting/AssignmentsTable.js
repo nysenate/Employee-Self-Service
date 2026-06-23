@@ -1,32 +1,23 @@
-import { CheckIcon, MinusIcon, XMarkIcon } from "@heroicons/react/16/solid";
+import {
+  CheckIcon,
+  ChevronDownIcon,
+  MinusIcon,
+  XMarkIcon,
+} from "@heroicons/react/16/solid";
 import React, { useState } from "react";
 import { isoToMediumDate } from "app/utils/dateUtils";
+import Accordion from "app/components/Accordion";
 import Button from "app/components/Button";
 import Modal from "app/components/Modal";
-import { useTasks } from "app/views/myinfo/personnel/pec/to-do-reporting/useTasks";
 import {
   useManuallyDeactivateTaskAssignment,
   useManuallyOverrideCompletionStatus,
 } from "app/views/myinfo/personnel/pec/useTaskAssignment";
 import useRequireAuthedUser from "app/hooks/useRequireAuthedUser";
 
-export default function AssignmentsTable({ taskAssignments, state, dispatch }) {
+export default function AssignmentsTable({ taskAssignments }) {
   // Assignment details will be displayed for the row of this employee. Only display one row details at a time.
   const [selectedEmpId, setSelectedEmpId] = useState(null);
-  // Load all tasks so we can look up full info on assignments.
-  const tasksApi = useTasks(false);
-  // Store all tasks in a map of taskId to task obj.
-  const [tasksMap, setTasksMap] = useState(new Map());
-
-  React.useEffect(() => {
-    if (tasksApi.isSuccess) {
-      let map = new Map();
-      for (const item of tasksApi.data) {
-        map.set(item.taskId, item);
-      }
-      setTasksMap(map);
-    }
-  }, [tasksApi.data]);
 
   const onRowClick = (empId) => {
     if (empId === selectedEmpId) {
@@ -41,19 +32,17 @@ export default function AssignmentsTable({ taskAssignments, state, dispatch }) {
       <table className="table">
         <thead>
           <tr className="table__head__row">
-            <th className="w-20">Completed/ Assigned</th>
+            <th className="w-20 text-center">Remaining</th>
             <th>Name</th>
             <th>Office</th>
           </tr>
         </thead>
         <tbody className="table__body table__body--striped table__body--highlight">
-          {taskAssignments.map((a) => (
+          {taskAssignments.map((empAssignments) => (
             <AssignmentRow
-              key={a.employee.employeeId}
-              emp={a.employee}
-              assignments={a.tasks}
-              tasksMap={tasksMap}
-              showDetails={a.employee.employeeId === selectedEmpId}
+              key={empAssignments.employee.employeeId}
+              empAssignments={empAssignments}
+              showDetails={empAssignments.employee.employeeId === selectedEmpId}
               onClick={onRowClick}
             />
           ))}
@@ -63,33 +52,44 @@ export default function AssignmentsTable({ taskAssignments, state, dispatch }) {
   );
 }
 
-function AssignmentRow({ emp, assignments, tasksMap, showDetails, onClick }) {
-  const showDetailsClasses = showDetails ? "border border-gray-500" : "";
+function AssignmentRow({ empAssignments, showDetails, onClick }) {
+  const showDetailsClasses = showDetails ? "!bg-teal-50/70" : "";
+  const accentClasses = showDetails ? "border-teal-600" : "border-transparent";
+  const emp = empAssignments.employee;
   return (
     <>
       <tr
-        className={`table__row ${showDetailsClasses}`}
+        className={`table__row group ${showDetailsClasses}`}
         onClick={() => onClick(emp.employeeId)}
       >
-        <td>
-          <CompletedStatus assignments={assignments} />
+        <td className={`border-l-4 py-1.5 text-center ${accentClasses}`}>
+          <CompletedStatus empAssignments={empAssignments} />
         </td>
         <td className="table__cell table__cell--left">
-          {emp.lastName}, {emp.firstName}
-          {emp.initial ? "," : ""} {emp.initial}
+          <div className="flex items-center gap-2">
+            <ChevronDownIcon
+              aria-hidden="true"
+              className={`h-4 w-4 shrink-0 text-gray-500 transition-transform group-hover:text-teal-700 ${
+                showDetails ? "rotate-180 text-teal-700" : ""
+              }`}
+            />
+            <span className="font-medium text-gray-900 group-hover:underline">
+              {emp.lastName}, {emp.firstName}
+              {emp.initial ? "," : ""} {emp.initial}
+            </span>
+          </div>
         </td>
         <td className="table__cell table__cell--left">
           {emp.respCtr?.respCenterHead?.name ?? ""}
         </td>
       </tr>
       {showDetails && (
-        <tr className={showDetailsClasses}>
-          <td colSpan="3">
-            <AssignmentRowDetails
-              emp={emp}
-              assignments={assignments}
-              tasksMap={tasksMap}
-            />
+        <tr>
+          <td
+            colSpan="3"
+            className="border-l-4 border-teal-600 bg-white px-5 py-3"
+          >
+            <AssignmentRowDetails empAssignments={empAssignments} />
           </td>
         </tr>
       )}
@@ -97,26 +97,41 @@ function AssignmentRow({ emp, assignments, tasksMap, showDetails, onClick }) {
   );
 }
 
-function CompletedStatus({ assignments }) {
-  const totalCount = assignments.length;
-  const completedCount = assignments.filter((a) => a.completed).length;
-
-  const completedStatusIcon = () => {
-    if (completedCount === totalCount) {
-      return <CheckIcon className="h-4 w-4 cursor-pointer text-green-900" />;
-    } else if (completedCount === 0) {
-      return <XMarkIcon className="h-4 w-4 cursor-pointer text-red-600" />;
+function CompletedStatus({ empAssignments }) {
+  const statusConfig = () => {
+    if (empAssignments.completionStatus === "ALL_COMPLETE") {
+      return {
+        label: "All trainings complete",
+        text: "Done",
+        badgeClasses: "border-green-300 bg-green-50 text-green-800",
+        icon: <CheckIcon className="h-4 w-4" />,
+      };
+    } else if (empAssignments.completionStatus === "ALL_OUTSTANDING") {
+      return {
+        label: "No trainings complete",
+        text: empAssignments.incompleteCount,
+        badgeClasses: "border-red-300 bg-red-100 text-red-800",
+        icon: <XMarkIcon className="h-4 w-4" />,
+      };
     } else {
-      return <MinusIcon className="h-4 w-4 cursor-pointer text-yellow-600" />;
+      return {
+        label: "Some trainings complete",
+        text: empAssignments.incompleteCount,
+        badgeClasses: "border-yellow-300 bg-yellow-100 text-yellow-800",
+        icon: <MinusIcon className="h-4 w-4" />,
+      };
     }
   };
+  const status = statusConfig();
 
   return (
-    <div className="flex items-center gap-1">
-      {completedStatusIcon()}
-      <span>
-        {completedCount}/{totalCount}
-      </span>
+    <div
+      className={`inline-grid w-16 grid-cols-[1rem_1fr] items-center gap-1 rounded border px-2 py-0.5 text-xs font-semibold tabular-nums ${status.badgeClasses}`}
+      aria-label={status.label}
+      title={status.label}
+    >
+      <span className="flex justify-center">{status.icon}</span>
+      <span className="text-center">{status.text}</span>
     </div>
   );
 }
@@ -125,12 +140,22 @@ function CompletedStatus({ assignments }) {
 const buttonClasses = `py-0.5 bg-gray-100 border border-gray-400 transition
 duration-500 hover:bg-gray-50 hover:text-teal-600 disabled:pointer-events-none disabled:opacity-50`;
 
-function AssignmentRowDetails({ emp, assignments, tasksMap }) {
-  const incompleteAssignments = assignments.filter((a) => !a.completed);
-  const completedAssignments = assignments.filter((a) => a.completed);
+function AssignmentRowDetails({ empAssignments }) {
+  const emp = empAssignments.employee;
+  const incompleteAssignments = empAssignments.incompleteAssignments;
+  const obsoleteAssignments = empAssignments.obsoleteAssignments;
+  const completedAssignments = empAssignments.completedAssignments;
+  const hasTrainingAssignments =
+    incompleteAssignments.length > 0 ||
+    obsoleteAssignments.length > 0 ||
+    completedAssignments.length > 0;
+  const defaultExpandedTrainingSections = [
+    incompleteAssignments.length > 0 ? "incomplete" : null,
+    completedAssignments.length > 0 ? "completed" : null,
+  ].filter(Boolean);
 
   return (
-    <div className="px-2 text-left">
+    <div className="max-w-5xl text-left text-sm">
       <div>
         <span className="font-semibold">Email: </span>
         <span>{emp.email}</span>
@@ -140,92 +165,132 @@ function AssignmentRowDetails({ emp, assignments, tasksMap }) {
         <span>{isoToMediumDate(emp.contServiceDate)}</span>
       </div>
 
-      {incompleteAssignments.length > 0 && (
-        <div className="my-2">
-          <div className="font-semibold">Incomplete Trainings:</div>
-          <ul className="ml-8 list-disc">
-            {incompleteAssignments.map((assignment) => (
-              <IncompleteAssignmentDetails
-                key={assignment.taskId}
-                emp={emp}
-                assignment={assignment}
-                tasksMap={tasksMap}
-              />
-            ))}
-          </ul>
-        </div>
-      )}
+      {hasTrainingAssignments && (
+        <div>
+          <Accordion
+            allowsMultipleExpanded
+            className="mt-3 max-w-4xl"
+            defaultExpandedKeys={defaultExpandedTrainingSections}
+          >
+            <TrainingAssignmentsAccordionItem
+              id="incomplete"
+              title="Incomplete Trainings"
+              assignments={incompleteAssignments}
+              renderAssignment={(assignment) => (
+                <IncompleteAssignmentDetails
+                  key={assignment.task.taskId}
+                  emp={emp}
+                  assignment={assignment}
+                />
+              )}
+            />
 
-      {completedAssignments.length > 0 && (
-        <div className="my-2">
-          <div className="font-semibold">Completed Trainings:</div>
-          <ul className="ml-8 list-disc">
-            {completedAssignments.map((assignment) => (
-              <li key={assignment.taskId}>
-                {tasksMap.get(assignment.taskId).title}
-                <div className="mt-1 mb-4">
-                  <a
-                    href={`/api/v1/personnel/task/acknowledgment/download?taskId=${assignment.taskId}&empId=${assignment.empId}`}
-                    className={`${buttonClasses} px-1`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Download signed pdf
-                  </a>
-                  <span className="font-light text-gray-700">
-                    {" "}
-                    completed {isoToMediumDate(assignment.timestamp)}
-                  </span>
-                </div>
-              </li>
-            ))}
-          </ul>
+            <TrainingAssignmentsAccordionItem
+              id="obsolete"
+              title="Obsolete Trainings"
+              assignments={obsoleteAssignments}
+              renderAssignment={(assignment) => (
+                <IncompleteAssignmentDetails
+                  key={assignment.task.taskId}
+                  emp={emp}
+                  assignment={assignment}
+                />
+              )}
+            />
+
+            <TrainingAssignmentsAccordionItem
+              id="completed"
+              title="Completed Trainings"
+              assignments={completedAssignments}
+              renderAssignment={(assignment) => (
+                <li key={assignment.task.taskId}>
+                  {assignment.task.title}
+                  <div className="mt-1 mb-4">
+                    <a
+                      href={`/api/v1/personnel/task/acknowledgment/download?taskId=${assignment.task.taskId}&empId=${emp.employeeId}`}
+                      className={`${buttonClasses} px-1`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Download signed pdf
+                    </a>
+                    <span className="font-light text-gray-700">
+                      {" "}
+                      completed {isoToMediumDate(assignment.timestamp)}
+                    </span>
+                  </div>
+                </li>
+              )}
+            />
+          </Accordion>
         </div>
       )}
     </div>
   );
 }
 
-function IncompleteAssignmentDetails({ emp, assignment, tasksMap }) {
-  const [isOverrideModalOpen, setIsOverrideModalOpen] = useState(false);
+function TrainingAssignmentsAccordionItem({
+  id,
+  title,
+  assignments,
+  renderAssignment,
+}) {
+  if (assignments.length === 0) {
+    return null;
+  }
+
+  return (
+    <Accordion.Item id={id} title={`${title}: ${assignments.length}`}>
+      <Accordion.Panel>
+        <ul className="ml-8 list-disc">{assignments.map(renderAssignment)}</ul>
+      </Accordion.Panel>
+    </Accordion.Item>
+  );
+}
+
+function IncompleteAssignmentDetails({ emp, assignment }) {
+  const task = assignment.task;
+  const [isCompleteManuallyModalOpen, setIsCompleteManuallyModalOpen] = useState(false);
   const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState(false);
 
   return (
     <li>
-      {tasksMap.get(assignment.taskId).title}
+      {task.title}
       <div className="mt-1 mb-4 flex gap-1">
-        <button
-          className={`${buttonClasses} px-1`}
-          onClick={() => setIsOverrideModalOpen(true)}
-        >
-          Manually Override
-        </button>
-        <button
-          className={`${buttonClasses} px-1`}
-          onClick={() => setIsDeactivateModalOpen(true)}
-        >
-          Deactivate Task
-        </button>
+        {assignment.canMarkComplete && (
+          <button
+            className={`${buttonClasses} px-1`}
+            onClick={() => setIsCompleteManuallyModalOpen(true)}
+          >
+            Complete Manually
+          </button>
+        )}
+        {assignment.canDeactivateAssignment && (
+          <button
+            className={`${buttonClasses} px-1`}
+            onClick={() => setIsDeactivateModalOpen(true)}
+          >
+            Deactivate Assignment
+          </button>
+        )}
       </div>
-      <ManuallyOverrideModal
-        isOpen={isOverrideModalOpen}
-        setIsOpen={setIsOverrideModalOpen}
+      <CompleteManuallyModal
+        isOpen={isCompleteManuallyModalOpen}
+        setIsOpen={setIsCompleteManuallyModalOpen}
         emp={emp}
         assignment={assignment}
-        task={tasksMap.get(assignment.taskId)}
       />
       <ManuallyDeactivateModal
         isOpen={isDeactivateModalOpen}
         setIsOpen={setIsDeactivateModalOpen}
         emp={emp}
         assignment={assignment}
-        task={tasksMap.get(assignment.taskId)}
       />
     </li>
   );
 }
 
-function ManuallyOverrideModal({ isOpen, setIsOpen, emp, assignment, task }) {
+function CompleteManuallyModal({ isOpen, emp, setIsOpen, assignment }) {
   const { data: user } = useRequireAuthedUser();
   const manuallyOverrideApi = useManuallyOverrideCompletionStatus();
 
@@ -233,7 +298,7 @@ function ManuallyOverrideModal({ isOpen, setIsOpen, emp, assignment, task }) {
     manuallyOverrideApi
       .mutateAsync({
         updatedByEmpId: user.employeeId,
-        taskId: task.taskId,
+        taskId: assignment.task.taskId,
         isCompleted: true,
         assignedEmpId: assignment.empId,
       })
@@ -244,25 +309,32 @@ function ManuallyOverrideModal({ isOpen, setIsOpen, emp, assignment, task }) {
   };
 
   return (
-    <Modal isOpen={isOpen}>
-      <Modal.Title>Personnel Task Override</Modal.Title>
+    <Modal isOpen={isOpen} className="w-full max-w-lg">
+      <Modal.Title>Complete Task Manually</Modal.Title>
       <Modal.Body>
-        <div className="text-center">
-          Warning: You are attempting to submit a task COMPLETION override for
-          employee
-          <br />
-          {emp.fullName}
-          <br />
-          for task
-          <br />
-          {task.title}
+        <div className="space-y-3">
+          <p>
+            This will mark the following task as complete for this employee. Use
+            this only when completion should be recorded manually.
+          </p>
+
+          <div>
+            <div>
+              <span className="font-semibold">Employee: </span>
+              {emp.fullName}
+            </div>
+            <div>
+              <span className="font-semibold">Task: </span>
+              {assignment.task.title}
+            </div>
+          </div>
         </div>
       </Modal.Body>
       <Modal.Buttons>
         <Button variant="primary" onPress={onProceed}>
-          Proceed
+          Confirm Completion
         </Button>
-        <Button variant="destructive" onPress={() => setIsOpen(false)}>
+        <Button variant="secondary" onPress={() => setIsOpen(false)}>
           Cancel
         </Button>
       </Modal.Buttons>
@@ -270,7 +342,7 @@ function ManuallyOverrideModal({ isOpen, setIsOpen, emp, assignment, task }) {
   );
 }
 
-function ManuallyDeactivateModal({ isOpen, setIsOpen, emp, assignment, task }) {
+function ManuallyDeactivateModal({ isOpen, setIsOpen, emp, assignment }) {
   const { data: user } = useRequireAuthedUser();
   const deactivateTaskAssignmentApi = useManuallyDeactivateTaskAssignment();
 
@@ -278,7 +350,7 @@ function ManuallyDeactivateModal({ isOpen, setIsOpen, emp, assignment, task }) {
     deactivateTaskAssignmentApi
       .mutateAsync({
         updatedByEmpId: user.employeeId,
-        taskId: task.taskId,
+        taskId: assignment.task.taskId,
         isActive: false,
         assignedEmpId: assignment.empId,
       })
@@ -289,25 +361,32 @@ function ManuallyDeactivateModal({ isOpen, setIsOpen, emp, assignment, task }) {
   };
 
   return (
-    <Modal isOpen={isOpen}>
-      <Modal.Title>Personnel Task Override</Modal.Title>
+    <Modal isOpen={isOpen} className="w-full max-w-lg">
+      <Modal.Title>Deactivate Assignment</Modal.Title>
       <Modal.Body>
-        <div className="text-center">
-          Warning: You are attempting to submit a task ACTIVE STATUS override
-          for employee
-          <br />
-          {emp.fullName}
-          <br />
-          for task
-          <br />
-          {task.title}
+        <div className="space-y-3">
+          <p>
+            This will deactivate the following assignment for this employee. The
+            task will no longer be counted as incomplete.
+          </p>
+
+          <div>
+            <div>
+              <span className="font-semibold">Employee: </span>
+              {emp.fullName}
+            </div>
+            <div>
+              <span className="font-semibold">Task: </span>
+              {assignment.task.title}
+            </div>
+          </div>
         </div>
       </Modal.Body>
       <Modal.Buttons>
-        <Button variant="primary" onPress={onProceed}>
-          Proceed
+        <Button variant="destructive" onPress={onProceed}>
+          Deactivate Assignment
         </Button>
-        <Button variant="destructive" onPress={() => setIsOpen(false)}>
+        <Button variant="secondary" onPress={() => setIsOpen(false)}>
           Cancel
         </Button>
       </Modal.Buttons>

@@ -1,6 +1,7 @@
 package gov.nysenate.ess.core.service.pec.notification;
 
 import gov.nysenate.ess.core.dao.pec.notification.PECNotificationDao;
+import gov.nysenate.ess.core.model.pec.TaskAssignmentDetails;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.mail.SendMailService;
@@ -104,11 +105,11 @@ public class PECNotificationService {
         logger.info("Completed PEC Reminder Process");
     }
 
-    public void sendInviteEmails(List<AssignmentWithTask> assigned) {
+    public void sendInviteEmails(List<TaskAssignmentDetails> assigned) {
         getInviteEmails(assigned).forEach(this::sendEmail);
     }
 
-    public List<EmployeeEmail> getInviteEmails(List<AssignmentWithTask> assigned) {
+    public List<EmployeeEmail> getInviteEmails(List<TaskAssignmentDetails> assigned) {
         return assigned.stream().filter(data -> data.task().isNotifiable())
                 .map(task -> pecEmailUtils.getEmail(INVITE, Optional.empty(), task))
                 .collect(Collectors.toList());
@@ -118,7 +119,7 @@ public class PECNotificationService {
         if (!task.isNotifiable()) {
             return;
         }
-        sendEmail(pecEmailUtils.getEmail(COMPLETION, Optional.empty(), new AssignmentWithTask(empId, task)));
+        sendEmail(pecEmailUtils.getEmail(COMPLETION, Optional.empty(), new TaskAssignmentDetails(empId, task)));
     }
 
     public void sendCodeEmail(List<String> emails, String code1, String code2, PersonnelTask task, String startDate, String endDate) {

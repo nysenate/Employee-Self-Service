@@ -7,7 +7,7 @@ import gov.nysenate.ess.core.dao.pec.task.PersonnelTaskDao;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
-import gov.nysenate.ess.core.service.pec.notification.AssignmentWithTask;
+import gov.nysenate.ess.core.model.pec.TaskAssignmentDetails;
 import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import org.slf4j.Logger;
@@ -40,7 +40,7 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
     }
 
     @Override
-    public List<AssignmentWithTask> assignGroupTasks(int empId, boolean updateDb) {
+    public List<TaskAssignmentDetails> assignGroupTasks(int empId, boolean updateDb) {
         return assignTasks(empId, getRequiredTaskIds(empId), updateDb);
     }
 
@@ -48,8 +48,8 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
         return taskService.getActiveTasksInGroup(getTargetGroup());
     }
 
-    private List<AssignmentWithTask> assignTasks(int empId, Set<Integer> assignableTaskIds, boolean updateDb) {
-        var taskData = new ArrayList<AssignmentWithTask>();
+    private List<TaskAssignmentDetails> assignTasks(int empId, Set<Integer> assignableTaskIds, boolean updateDb) {
+        var taskData = new ArrayList<TaskAssignmentDetails>();
         Map<Integer, PersonnelTask> personnelTaskMap = buildPersonnelTaskMap(taskService.getPersonnelTasks(false));
         Map<Integer, PersonnelTaskAssignment> assignmentMap = getAssignmentMap(empId);
         Set<Integer> existingTaskIds = assignmentMap.keySet();
@@ -75,7 +75,7 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
 
             PersonnelTaskAssignment assignmentWithDueDate = PersonnelTaskAssignment.newTask(empId, task.getTaskId())
                     .withDates(continuousServiceDate, task.getTaskType(), true, hasCompletedAnEthicsLiveTraining);
-            taskData.add(new AssignmentWithTask(assignmentWithDueDate, task));
+            taskData.add(new TaskAssignmentDetails(assignmentWithDueDate, task));
             if (updateDb) {
                 assignmentDao.updateAssignment(assignmentWithDueDate);
                 logger.info("Assigning {} personnel tasks to emp #{} : Task ID #{}",
