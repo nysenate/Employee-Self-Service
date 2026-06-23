@@ -33,7 +33,11 @@
         <tr>
           <th>Emp. Email</th>
           <td>
+            <#if ex.employee.email??>
               <a href="mailto:${ex.employee.email}">${ex.employee.email}</a>
+            <#else>
+              <em>No email on record</em>
+            </#if>
           </td>
         </tr>
       </table>
