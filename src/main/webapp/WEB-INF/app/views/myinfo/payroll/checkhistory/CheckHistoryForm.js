@@ -11,17 +11,24 @@ export default function CheckHistoryForm({
   calendarYears,
   fiscalYears,
 }) {
-  const [year, setYear] = useState(Math.max(...calendarYears));
+  const latestCalendarYear = maxYear(calendarYears);
+  const latestFiscalYear = maxYear(fiscalYears);
+  const [year, setYear] = useState(latestCalendarYear);
   const [useFiscalYears, setUseFiscalYears] = useState(false);
+  const selectedYears = useFiscalYears ? fiscalYears : calendarYears;
+  const hasYears = selectedYears.length > 0 && Number.isFinite(year);
 
-  // Year can end up in the future when useFiscalYear = true and the most recent fiscal year is checked.
-  // Then, unchecking useFiscalYear, will lead to year being an invalid value (not in calendarYears).
-  // This checks and corrects for that edge case.
   React.useEffect(() => {
-    if (!useFiscalYears && year > Math.max(...calendarYears)) {
-      setYear(Math.max(...calendarYears));
+    if (!selectedYears.includes(year)) {
+      setYear(maxYear(selectedYears));
     }
-  }, [useFiscalYears]);
+  }, [selectedYears, year]);
+
+  function handleFiscalYearChange(event) {
+    const nextUseFiscalYears = event.target.checked;
+    setUseFiscalYears(nextUseFiscalYears);
+    setYear(nextUseFiscalYears ? latestFiscalYear : latestCalendarYear);
+  }
 
   return (
     <div>
@@ -37,6 +44,7 @@ export default function CheckHistoryForm({
             className="select"
             value={year}
             onChange={(e) => setYear(parseInt(e.target.value))}
+            disabled={!hasYears}
           >
             {yearOptions(fiscalYears, calendarYears, useFiscalYears)}
           </select>
@@ -53,11 +61,19 @@ export default function CheckHistoryForm({
             name="useFiscalYears"
             type="checkbox"
             checked={useFiscalYears}
-            onChange={(event) => setUseFiscalYears(event.target.checked)}
+            onChange={handleFiscalYearChange}
           />
         </div>
       </Controls>
-      <CheckResults empId={empId} year={year} useFiscalYears={useFiscalYears} />
+      {hasYears ? (
+        <CheckResults
+          empId={empId}
+          year={year}
+          useFiscalYears={useFiscalYears}
+        />
+      ) : (
+        <NoPaychecksFound year={year} />
+      )}
     </div>
   );
 }
@@ -72,13 +88,7 @@ function CheckResults({ empId, year, useFiscalYears }) {
   return (
     <>
       {paycheckSummary.data.paychecks.length === 0 ? (
-        <Card className="mt-3">
-          <Card.Header>
-            <span className="text-lg font-semibold">
-              No paychecks found for {year}
-            </span>
-          </Card.Header>
-        </Card>
+        <NoPaychecksFound year={year} />
       ) : (
         <Card className="mt-3">
           <Card.Header>
@@ -92,6 +102,24 @@ function CheckResults({ empId, year, useFiscalYears }) {
     </>
   );
 }
+
+function NoPaychecksFound({ year }) {
+  return (
+    <Card className="mt-3">
+      <Card.Header>
+        <span className="text-lg font-semibold">
+          {Number.isFinite(year)
+            ? `No paychecks found for ${year}`
+            : "No paycheck records found"}
+        </span>
+      </Card.Header>
+    </Card>
+  );
+}
+
+const maxYear = (years) => {
+  return years.length > 0 ? Math.max(...years) : "";
+};
 
 const yearOptions = (fiscalYears, calendarYears, useFiscalYears) => {
   return useFiscalYears

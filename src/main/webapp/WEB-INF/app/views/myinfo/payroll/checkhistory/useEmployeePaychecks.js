@@ -13,6 +13,7 @@ export function useEmployeePaychecks(empId, year, useFiscalYear) {
         `/paychecks?empId=${empId}&year=${year}&fiscalYear=${useFiscalYear}`,
       ).then((body) => body.result);
     },
+    enabled: !!empId && Number.isFinite(year),
     staleTime: 1000 * 60 * 1,
     throwOnError: true,
   });
