@@ -13,7 +13,7 @@ export function useSupplyDestinations(empId) {
         (body) => body.result,
       );
     },
-    enable: !!empId,
+    enabled: !!empId,
     staleTime: 1000 * 60 * 1,
     throwOnError: true,
   });

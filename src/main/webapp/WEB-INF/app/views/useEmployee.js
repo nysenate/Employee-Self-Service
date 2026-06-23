@@ -13,7 +13,7 @@ export function useEmployee(empId, detail = true) {
         (body) => body.employee,
       );
     },
-    enable: !!empId,
+    enabled: !!empId,
     staleTime: 60000,
     throwOnError: true,
   });

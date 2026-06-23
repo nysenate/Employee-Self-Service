@@ -1,5 +1,5 @@
 import React from "react";
-import SummaryTitle from "app/views/myinfo/personnel/summary/SummayTitle";
+import SummaryTitle from "app/views/myinfo/personnel/summary/SummaryTitle";
 import Card from "app/components/Card";
 import PersonnelInfo from "app/views/myinfo/personnel/summary/PersonnelInfo";
 import OrganizationInfo from "app/views/myinfo/personnel/summary/OrganizationInfo";
@@ -16,11 +16,11 @@ import { useEmployeeTransactions } from "app/views/myinfo/personnel/summary/useE
 import useRequireAuthedUser from "app/hooks/useRequireAuthedUser";
 
 export default function SummaryIndex() {
-  const { data: user } = useRequireAuthedUser();
+  const { data: user, isPending: isUserPending } = useRequireAuthedUser();
   const empDetails = useEmployee(user?.employeeId);
   const transactions = useEmployeeTransactions(user?.employeeId);
 
-  if (empDetails.isPending || transactions.isPending) {
+  if (isUserPending || empDetails.isPending || transactions.isPending) {
     return <LoadingIndicator />;
   }
 

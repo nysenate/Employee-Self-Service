@@ -1,5 +1,6 @@
 import React from "react";
 import SummarySection from "app/views/myinfo/personnel/summary/SummarySection";
+import { txValue } from "app/views/myinfo/personnel/summary/summaryValues";
 
 export default function PersonnelInfo({ emp, transactions }) {
   return (
@@ -8,50 +9,50 @@ export default function PersonnelInfo({ emp, transactions }) {
       <SummarySection.Table>
         <SummarySection.Row>
           <SummarySection.Cell>Email</SummarySection.Cell>
-          <SummarySection.Cell>{emp.email}</SummarySection.Cell>
+          <SummarySection.Cell>{emp?.email ?? ""}</SummarySection.Cell>
         </SummarySection.Row>
         <SummarySection.Row>
           <SummarySection.Cell>Work Phone</SummarySection.Cell>
-          <SummarySection.Cell>{emp.workPhone}</SummarySection.Cell>
+          <SummarySection.Cell>{emp?.workPhone ?? ""}</SummarySection.Cell>
         </SummarySection.Row>
         <SummarySection.Row>
           <SummarySection.Cell>Home Phone</SummarySection.Cell>
-          <SummarySection.Cell>{emp.homePhone}</SummarySection.Cell>
+          <SummarySection.Cell>{emp?.homePhone ?? ""}</SummarySection.Cell>
         </SummarySection.Row>
         <SummarySection.Row>
           <SummarySection.Cell>Address Line 1</SummarySection.Cell>
           <SummarySection.Cell>
-            {transactions["ADSTREET1"].value}
+            {txValue(transactions, "ADSTREET1")}
           </SummarySection.Cell>
         </SummarySection.Row>
         <SummarySection.Row>
           <SummarySection.Cell>Address Line 2</SummarySection.Cell>
           <SummarySection.Cell>
-            {transactions["ADSTREET2"].value}
+            {txValue(transactions, "ADSTREET2")}
           </SummarySection.Cell>
         </SummarySection.Row>
         <SummarySection.Row>
           <SummarySection.Cell>City</SummarySection.Cell>
           <SummarySection.Cell>
-            {transactions["ADCITY"].value}
+            {txValue(transactions, "ADCITY")}
           </SummarySection.Cell>
         </SummarySection.Row>
         <SummarySection.Row>
           <SummarySection.Cell>State</SummarySection.Cell>
           <SummarySection.Cell>
-            {transactions["ADSTATE"].value}
+            {txValue(transactions, "ADSTATE")}
           </SummarySection.Cell>
         </SummarySection.Row>
         <SummarySection.Row>
           <SummarySection.Cell>Zip</SummarySection.Cell>
           <SummarySection.Cell>
-            {transactions["ADZIPCODE"].value}
+            {txValue(transactions, "ADZIPCODE")}
           </SummarySection.Cell>
         </SummarySection.Row>
         <SummarySection.Row>
           <SummarySection.Cell>Marital Status</SummarySection.Cell>
           <SummarySection.Cell>
-            {transactions["CDMARITAL"].value}
+            {txValue(transactions, "CDMARITAL")}
           </SummarySection.Cell>
         </SummarySection.Row>
       </SummarySection.Table>

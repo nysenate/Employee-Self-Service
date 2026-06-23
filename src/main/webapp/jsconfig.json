@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
-    "baseUrl": "./WEB-INF"
+    "baseUrl": "./WEB-INF",
+    "jsx": "react"
   }
 }

@@ -1,6 +1,10 @@
 import React from "react";
 import SummarySection from "app/views/myinfo/personnel/summary/SummarySection";
 import { toCurrency } from "app/utils/textUtils";
+import {
+  formattedTxValue,
+  txValue,
+} from "app/views/myinfo/personnel/summary/summaryValues";
 
 export function FederalTax({ transactions }) {
   return (
@@ -10,19 +14,19 @@ export function FederalTax({ transactions }) {
         <SummarySection.Row>
           <SummarySection.Cell>Exemptions</SummarySection.Cell>
           <SummarySection.Cell>
-            {transactions["NUFEDTAXEX"].value}
+            {txValue(transactions, "NUFEDTAXEX")}
           </SummarySection.Cell>
         </SummarySection.Row>
         <SummarySection.Row>
           <SummarySection.Cell>Reported Marital Status</SummarySection.Cell>
           <SummarySection.Cell>
-            {transactions["CDMARITALFED"].value}
+            {txValue(transactions, "CDMARITALFED")}
           </SummarySection.Cell>
         </SummarySection.Row>
         <SummarySection.Row>
           <SummarySection.Cell>Additional Withheld</SummarySection.Cell>
           <SummarySection.Cell>
-            {toCurrency(transactions["MOADDFEDTAX"].value || 0)}
+            {formattedTxValue(transactions, "MOADDFEDTAX", toCurrency)}
           </SummarySection.Cell>
         </SummarySection.Row>
       </SummarySection.Table>
@@ -38,19 +42,19 @@ export function StateTax({ transactions }) {
         <SummarySection.Row>
           <SummarySection.Cell>Exemptions</SummarySection.Cell>
           <SummarySection.Cell>
-            {transactions["NUSTATTAXEX"].value || 0}
+            {txValue(transactions, "NUSTATTAXEX")}
           </SummarySection.Cell>
         </SummarySection.Row>
         <SummarySection.Row>
           <SummarySection.Cell>Reported Marital Status</SummarySection.Cell>
           <SummarySection.Cell>
-            {transactions["CDMARITALST"].value}
+            {txValue(transactions, "CDMARITALST")}
           </SummarySection.Cell>
         </SummarySection.Row>
         <SummarySection.Row>
           <SummarySection.Cell>Additional Withheld</SummarySection.Cell>
           <SummarySection.Cell>
-            {toCurrency(transactions["MOADDSTATTAX"].value || 0)}
+            {formattedTxValue(transactions, "MOADDSTATTAX", toCurrency)}
           </SummarySection.Cell>
         </SummarySection.Row>
       </SummarySection.Table>
@@ -66,19 +70,19 @@ export function NewYorkCityTax({ transactions }) {
         <SummarySection.Row>
           <SummarySection.Cell>Exemptions</SummarySection.Cell>
           <SummarySection.Cell>
-            {transactions["NUCITYTAXEX"].value || 0}
+            {txValue(transactions, "NUCITYTAXEX")}
           </SummarySection.Cell>
         </SummarySection.Row>
         <SummarySection.Row>
           <SummarySection.Cell>Reported Marital Status</SummarySection.Cell>
           <SummarySection.Cell>
-            {transactions["CDMARITALNYC"].value}
+            {txValue(transactions, "CDMARITALNYC")}
           </SummarySection.Cell>
         </SummarySection.Row>
         <SummarySection.Row>
           <SummarySection.Cell>Additional Withheld</SummarySection.Cell>
           <SummarySection.Cell>
-            {toCurrency(transactions["MOADDCITYTAX"].value || 0)}
+            {formattedTxValue(transactions, "MOADDCITYTAX", toCurrency)}
           </SummarySection.Cell>
         </SummarySection.Row>
       </SummarySection.Table>
@@ -94,19 +98,19 @@ export function YonkersTax({ transactions }) {
         <SummarySection.Row>
           <SummarySection.Cell>Exemptions</SummarySection.Cell>
           <SummarySection.Cell>
-            {transactions["NUYONTAXEX"].value || 0}
+            {txValue(transactions, "NUYONTAXEX")}
           </SummarySection.Cell>
         </SummarySection.Row>
         <SummarySection.Row>
           <SummarySection.Cell>Reported Marital Status</SummarySection.Cell>
           <SummarySection.Cell>
-            {transactions["CDMARITALYON"].value}
+            {txValue(transactions, "CDMARITALYON")}
           </SummarySection.Cell>
         </SummarySection.Row>
         <SummarySection.Row>
           <SummarySection.Cell>Additional Withheld</SummarySection.Cell>
           <SummarySection.Cell>
-            {toCurrency(transactions["MOADDYONTAX"].value || 0)}
+            {formattedTxValue(transactions, "MOADDYONTAX", toCurrency)}
           </SummarySection.Cell>
         </SummarySection.Row>
       </SummarySection.Table>

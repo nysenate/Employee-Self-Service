@@ -1,5 +1,6 @@
 import React from "react";
 import SummarySection from "app/views/myinfo/personnel/summary/SummarySection";
+import { txValue } from "app/views/myinfo/personnel/summary/summaryValues";
 
 export default function OrganizationInfo({ emp, transactions }) {
   return (
@@ -9,7 +10,7 @@ export default function OrganizationInfo({ emp, transactions }) {
         <SummarySection.Row>
           <SummarySection.Cell>Resp Center Head</SummarySection.Cell>
           <SummarySection.Cell>
-            {emp.respCtr.respCenterHead.name}
+            {emp?.respCtr?.respCenterHead?.name ?? ""}
           </SummarySection.Cell>
         </SummarySection.Row>
         <SummarySection.Row>
@@ -19,19 +20,19 @@ export default function OrganizationInfo({ emp, transactions }) {
         <SummarySection.Row>
           <SummarySection.Cell>Negotiating Unit</SummarySection.Cell>
           <SummarySection.Cell>
-            {transactions["CDNEGUNIT"].value}
+            {txValue(transactions, "CDNEGUNIT")}
           </SummarySection.Cell>
         </SummarySection.Row>
         <SummarySection.Row>
           <SummarySection.Cell>Job Title</SummarySection.Cell>
           <SummarySection.Cell>
-            {transactions["CDNEGUNIT"].value}
+            {emp?.jobTitle ?? ""}
           </SummarySection.Cell>
         </SummarySection.Row>
         <SummarySection.Row>
           <SummarySection.Cell>T&A Supervisor</SummarySection.Cell>
           <SummarySection.Cell>
-            {transactions["NAFIRSTSUP"].value} {transactions["NALASTSUP"].value}
+            {supervisorName(transactions)}
           </SummarySection.Cell>
         </SummarySection.Row>
       </SummarySection.Table>
@@ -40,6 +41,24 @@ export default function OrganizationInfo({ emp, transactions }) {
 }
 
 function workAddress(emp) {
-  const addr = emp.workAddress;
-  return `${addr.addr1}, ${addr.addr2} ${addr.city}, ${addr.state} ${addr.zip5}`;
+  const addr = emp?.workAddress;
+  if (!addr) {
+    return "";
+  }
+
+  const street = [addr.addr1, addr.addr2].filter(Boolean).join(", ");
+  const cityStateZip = [addr.city, addr.state, addr.zip5]
+    .filter(Boolean)
+    .join(" ");
+
+  return [street, cityStateZip].filter(Boolean).join(", ");
+}
+
+function supervisorName(transactions) {
+  return [
+    txValue(transactions, "NAFIRSTSUP"),
+    txValue(transactions, "NALASTSUP"),
+  ]
+    .filter(Boolean)
+    .join(" ");
 }
