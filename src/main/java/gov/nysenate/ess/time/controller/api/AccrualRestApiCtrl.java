@@ -71,6 +71,9 @@ public class AccrualRestApiCtrl extends BaseRestApiCtrl
 
         List<PayPeriod> periods = payPeriodService.getPayPeriods(PayPeriodType.AF, dateRange, SortOrder.ASC);
         TreeMap<PayPeriod, PeriodAccSummary> accruals = accrualComputeService.getAccruals(empId, periods);
+        if (accruals.isEmpty()) {
+            return ListViewResponse.of(Collections.emptyList());
+        }
         int startYear = accruals.firstKey().getYear();
         Function<Map.Entry<LocalDate, ?>, PayPeriod> getPeriodFunc =
                 entry -> payPeriodService.getPayPeriod(PayPeriodType.AF, entry.getKey());
