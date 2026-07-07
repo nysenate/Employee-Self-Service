@@ -177,6 +177,24 @@ public class SqlEmployeeDaoIT extends BaseTest
     }
 
     @Test
+    public void freeTextSearch_matchesNameSuffix() {
+        // The suffix (e.g. "Jr") is folded onto the end of the name, so including it as a search
+        // token must still find the employee. Suffixes are rare, so skip if the DB snapshot has none.
+        Optional<Employee> suffixedEmp = employeeDao.getActiveEmployees().stream()
+                .filter(e -> e.getSuffix() != null && !e.getSuffix().trim().isEmpty())
+                .filter(e -> e.getFirstName() != null && e.getLastName() != null)
+                .findFirst();
+        if (suffixedEmp.isEmpty()) {
+            logger.warn("No active employee with a name suffix found - skipping suffix search test");
+            return;
+        }
+        Employee employee = suffixedEmp.get();
+        String nameWithSuffix = employee.getFirstName() + " " + employee.getLastName() + " " + employee.getSuffix();
+        assertTrue("Free-text search should match a term that includes the name suffix",
+                freeTextSearchContains(nameWithSuffix, employee.getEmployeeId()));
+    }
+
+    @Test
     public void freeTextSearch_ranksExactNameMatchFirst() {
         Employee employee = anyActiveEmployee();
         String fullName = employee.getFirstName() + " " + employee.getLastName();

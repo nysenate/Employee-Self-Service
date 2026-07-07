@@ -162,7 +162,7 @@ public class SqlEmployeeDao extends SqlBaseDao implements EmployeeDao {
     private static String buildNameTokenClause(List<String> tokens) {
         StringBuilder clause = new StringBuilder();
         for (int i = 0; i < tokens.size(); i++) {
-            clause.append("  AND (UPPER(TRIM(per.FFNAFIRST) || ' ' || TRIM(per.FFNAMIDINIT) || ' ' || TRIM(per.FFNALAST))")
+            clause.append("  AND (UPPER(TRIM(per.FFNAFIRST) || ' ' || TRIM(per.FFNAMIDINIT) || ' ' || TRIM(per.FFNALAST) || ' ' || TRIM(per.FFNASUFFIX))")
                     .append(" LIKE '%' || :tok").append(i).append(" || '%'\n")
                     .append("       OR UPPER(per.NAEMAIL) LIKE '%' || :tok").append(i).append(" || '%')\n");
         }

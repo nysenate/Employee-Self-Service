@@ -82,8 +82,9 @@ public enum SqlEmployeeQuery implements BasicSqlQuery
      * Free-text employee search used by the Redmine audit utils plugin.
      *
      * Every whitespace-delimited token in the search term must appear as a substring of either the
-     * employee's full name or their email/uid (see the injected ${nameTokenClause}). This makes the
-     * search insensitive to word order and to middle initials sitting between first and last name.
+     * employee's full name (first, middle initial, last, suffix) or their email/uid (see the injected
+     * ${nameTokenClause}). This makes the search insensitive to word order and to middle initials
+     * sitting between first and last name.
      *
      * A match_score column ranks results by match quality (exact name / uid prefix / last name
      * prefix / etc.) so the most likely intended employee floats to the top. Ordering is applied by
@@ -93,8 +94,8 @@ public enum SqlEmployeeQuery implements BasicSqlQuery
             GET_EMP_SQL_COLS.getSql() +
             ",\n" +
             "  CASE\n" +
-            "    WHEN UPPER(TRIM(per.FFNAFIRST) || ' ' || TRIM(per.FFNALAST)) = :fullTerm THEN 100\n" +
-            "    WHEN UPPER(TRIM(per.FFNAFIRST) || ' ' || TRIM(per.FFNAMIDINIT) || ' ' || TRIM(per.FFNALAST)) = :fullTerm THEN 100\n" +
+            "    WHEN UPPER(TRIM(TRIM(per.FFNAFIRST) || ' ' || TRIM(per.FFNALAST) || ' ' || TRIM(per.FFNASUFFIX))) = :fullTerm THEN 100\n" +
+            "    WHEN UPPER(TRIM(TRIM(per.FFNAFIRST) || ' ' || TRIM(per.FFNAMIDINIT) || ' ' || TRIM(per.FFNALAST) || ' ' || TRIM(per.FFNASUFFIX))) = :fullTerm THEN 100\n" +
             "    WHEN UPPER(per.NAEMAIL) LIKE :term || '%' THEN 90\n" +
             "    WHEN UPPER(TRIM(per.FFNALAST)) = :term THEN 80\n" +
             "    WHEN UPPER(TRIM(per.FFNALAST)) LIKE :term || '%' THEN 60\n" +
