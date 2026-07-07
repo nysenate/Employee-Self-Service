@@ -14,6 +14,7 @@ import gov.nysenate.ess.core.model.personnel.EmployeeNotFoundEx;
 import gov.nysenate.ess.core.model.transaction.TransactionCode;
 import gov.nysenate.ess.core.model.transaction.TransactionRecord;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
+import gov.nysenate.ess.core.service.personnel.EmployeeSearchBuilder;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.PaginatedList;
@@ -54,10 +55,12 @@ public class RedmineRestApiCtrl extends BaseRestApiCtrl {
     }
 
     /**
-     * Perform a simple search over active and inactive employees, matching full name.
-     * Get a limited search response containing only Redmine relevant fields.
+     * Search over active and inactive employees. The term is tokenized and every token must match the
+     * employee's full name or uid/email, so the search is insensitive to word order and middle
+     * initials. Results are ranked by match quality. Get a limited search response containing only
+     * Redmine relevant fields.
      *
-     * @param term    - String - search term used to match against full name
+     * @param term    - String - search term matched against full name and uid/email
      * @param request - WebRequest
      * @return ListViewResponse<RedmineEmployeeView> - search results
      */
@@ -66,8 +69,14 @@ public class RedmineRestApiCtrl extends BaseRestApiCtrl {
                                                                 WebRequest request) {
         checkPermission(REDMINE_API_ACCESS.getPermission());
         LimitOffset limitOffset = getLimitOffset(request, 20);
-        PaginatedList<Employee> results = empInfoService.searchEmployees(term, false, limitOffset);
-        return ListViewResponse.fromPaginatedList(results, RedmineEmployeeView::new);
+        EmployeeSearchBuilder searchBuilder = new EmployeeSearchBuilder()
+                .setName(term)
+                .setFreeTextNameMatch(true);
+        PaginatedList<Employee> results = empInfoService.searchEmployees(searchBuilder, limitOffset);
+        // Report the tokens that were matched so the client can highlight them in the results.
+        List<String> matchedTerms = EmployeeSearchBuilder.tokenizeSearchTerm(term);
+        return ListViewResponse.fromPaginatedList(
+                results, emp -> new RedmineEmployeeView(emp, matchedTerms));
     }
 
     /**

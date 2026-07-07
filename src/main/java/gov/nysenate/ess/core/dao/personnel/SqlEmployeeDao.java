@@ -109,6 +109,9 @@ public class SqlEmployeeDao extends SqlBaseDao implements EmployeeDao {
 
     @Override
     public PaginatedList<Employee> searchEmployees(EmployeeSearchBuilder employeeSearchBuilder, LimitOffset limitOffset) {
+        if (employeeSearchBuilder.isFreeTextNameMatch()) {
+            return freeTextSearchEmployees(employeeSearchBuilder, limitOffset);
+        }
         MapSqlParameterSource params = getEmpSearchParams(employeeSearchBuilder);
         OrderBy orderBy = new OrderBy(
                 "per.FFNALAST", SortOrder.ASC,
@@ -120,6 +123,50 @@ public class SqlEmployeeDao extends SqlBaseDao implements EmployeeDao {
         final String searchDml = SqlEmployeeQuery.GET_EMPS_BY_SEARCH_QUERY.getSql(schemaMap(), orderBy, limitOffset);
         remoteNamedJdbc.query(searchDml, params, rowHandler);
         return rowHandler.getList();
+    }
+
+    /**
+     * Free-text, relevance-ranked employee search. The search term is tokenized and every token must
+     * match the employee's full name or uid/email, making the search insensitive to word order and to
+     * middle initials. Results are ordered by match quality (see match_score in the query) then name.
+     */
+    private PaginatedList<Employee> freeTextSearchEmployees(EmployeeSearchBuilder searchBuilder, LimitOffset limitOffset) {
+        List<String> tokens = EmployeeSearchBuilder.tokenizeSearchTerm(searchBuilder.getName());
+        String fullTerm = String.join(" ", tokens);
+
+        MapSqlParameterSource params = getEmpSearchParams(searchBuilder);
+        params.addValue("fullTerm", fullTerm.isEmpty() ? null : fullTerm);
+        params.addValue("term", fullTerm.isEmpty() ? null : fullTerm);
+        for (int i = 0; i < tokens.size(); i++) {
+            params.addValue("tok" + i, tokens.get(i));
+        }
+
+        Map<String, SortOrder> sortColumns = new LinkedHashMap<>();
+        sortColumns.put("match_score", SortOrder.DESC);
+        sortColumns.put("per.FFNALAST", SortOrder.ASC);
+        sortColumns.put("per.FFNAFIRST", SortOrder.ASC);
+        sortColumns.put("per.FFNAMIDINIT", SortOrder.ASC);
+        OrderBy orderBy = new OrderBy(sortColumns);
+        PaginatedRowHandler<Employee> rowHandler =
+                new PaginatedRowHandler<>(limitOffset, "total_rows", getEmployeeRowMapper());
+        final String searchDml = SqlEmployeeQuery.GET_EMPS_BY_FREETEXT_SEARCH.getSql(schemaMap(), orderBy, limitOffset)
+                .replace("${nameTokenClause}", buildNameTokenClause(tokens));
+        remoteNamedJdbc.query(searchDml, params, rowHandler);
+        return rowHandler.getList();
+    }
+
+    /**
+     * Builds the dynamic WHERE fragment requiring every token to be a substring of the employee's
+     * full name or uid/email. Returns an empty string for an empty term (matching all employees).
+     */
+    private static String buildNameTokenClause(List<String> tokens) {
+        StringBuilder clause = new StringBuilder();
+        for (int i = 0; i < tokens.size(); i++) {
+            clause.append("  AND (UPPER(TRIM(per.FFNAFIRST) || ' ' || TRIM(per.FFNAMIDINIT) || ' ' || TRIM(per.FFNALAST))")
+                    .append(" LIKE '%' || :tok").append(i).append(" || '%'\n")
+                    .append("       OR UPPER(per.NAEMAIL) LIKE '%' || :tok").append(i).append(" || '%')\n");
+        }
+        return clause.toString();
     }
 
     /** {@inheritDoc} */
