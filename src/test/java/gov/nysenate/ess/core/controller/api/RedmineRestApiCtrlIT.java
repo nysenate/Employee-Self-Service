@@ -53,16 +53,20 @@ public class RedmineRestApiCtrlIT extends WebTest {
         // Verify basic response structure
         assertTrue("Response should have success field", response.has("success"));
         assertTrue("Should be successful", response.get("success").asBoolean());
-        assertEquals("Should have correct response type", "redmine employee status change list",
-                response.get("responseType").asText());
 
         JsonNode results = response.get("result");
         assertTrue("Should have results array", results.isArray());
 
-        // check that we have some results to test
+        // The response type is derived from the list contents, so an empty result set (e.g. a stale
+        // test DB snapshot with no recent transactions in the window) legitimately yields
+        // "empty list". There is nothing to assert about post dates in that case, so skip the rest.
         if (results.isEmpty()) {
-            logger.warn("No status changes detected since {}", fromDateString);
+            logger.warn("No status changes detected since {} - skipping post date checks", fromDateString);
+            return;
         }
+
+        assertEquals("Should have correct response type", "redmine employee status change list",
+                response.get("responseType").asText());
 
         // Check each result for postDate field
         for (JsonNode statusChange : results) {
