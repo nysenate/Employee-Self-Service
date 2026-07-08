@@ -16,7 +16,9 @@ public class RedmineEmployeeView implements ViewObject
     protected int employeeId;
     protected String uid;
     protected String firstName;
+    protected String initial;
     protected String lastName;
+    protected String suffix;
     protected String fullName;
     protected String email;
     protected String workPhone;
@@ -38,7 +40,9 @@ public class RedmineEmployeeView implements ViewObject
             this.employeeId = employee.getEmployeeId();
             this.uid = employee.getUid();
             this.firstName = employee.getFirstName();
+            this.initial = employee.getInitial();
             this.lastName = employee.getLastName();
+            this.suffix = employee.getSuffix();
             this.fullName = employee.getFullName();
             this.email = employee.getEmail();
             this.active = employee.isActive();
@@ -70,8 +74,18 @@ public class RedmineEmployeeView implements ViewObject
     }
 
     @XmlElement
+    public String getInitial() {
+        return initial;
+    }
+
+    @XmlElement
     public String getLastName() {
         return lastName;
+    }
+
+    @XmlElement
+    public String getSuffix() {
+        return suffix;
     }
 
     @XmlElement
