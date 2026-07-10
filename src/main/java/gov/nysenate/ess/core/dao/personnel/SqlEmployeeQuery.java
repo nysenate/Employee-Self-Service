@@ -78,6 +78,39 @@ public enum SqlEmployeeQuery implements BasicSqlQuery
             "  AND (:contServTo IS NULL OR DTCONTSERV <= :contServTo)"
     ),
 
+    /**
+     * Free-text employee search used by the Redmine audit utils plugin.
+     *
+     * Every whitespace-delimited token in the search term must appear as a substring of either the
+     * employee's full name (first, middle initial, last, suffix) or their email/uid (see the injected
+     * ${nameTokenClause}). This makes the search insensitive to word order and to middle initials
+     * sitting between first and last name.
+     *
+     * A match_score column ranks results by match quality (exact name / uid prefix / last name
+     * prefix / etc.) so the most likely intended employee floats to the top. Ordering is applied by
+     * the DAO via an OrderBy on match_score DESC followed by the alphabetical name tiebreak.
+     */
+    GET_EMPS_BY_FREETEXT_SEARCH(
+            GET_EMP_SQL_COLS.getSql() +
+            ",\n" +
+            "  CASE\n" +
+            "    WHEN UPPER(TRIM(TRIM(per.FFNAFIRST) || ' ' || TRIM(per.FFNALAST) || ' ' || TRIM(per.FFNASUFFIX))) = :fullTerm THEN 100\n" +
+            "    WHEN UPPER(TRIM(TRIM(per.FFNAFIRST) || ' ' || TRIM(per.FFNAMIDINIT) || ' ' || TRIM(per.FFNALAST) || ' ' || TRIM(per.FFNASUFFIX))) = :fullTerm THEN 100\n" +
+            "    WHEN UPPER(per.NAEMAIL) LIKE :term || '%' THEN 90\n" +
+            "    WHEN UPPER(TRIM(per.FFNALAST)) = :term THEN 80\n" +
+            "    WHEN UPPER(TRIM(per.FFNALAST)) LIKE :term || '%' THEN 60\n" +
+            "    WHEN UPPER(TRIM(per.FFNAFIRST)) LIKE :term || '%' THEN 40\n" +
+            "    ELSE 10\n" +
+            "  END AS match_score,\n" +
+            "  COUNT(*) OVER () AS total_rows\n" +
+            GET_EMP_SQL_TABLES.getSql() +
+            "WHERE (:empStatus IS NULL OR per.CDEMPSTATUS = :empStatus)\n" +
+            "  AND (:respCtrHeadCodesEmpty = 1 OR rctrhd.CDRESPCTRHD IN (:respCtrHeadCodes))\n" +
+            "  AND (:contServFrom IS NULL OR DTCONTSERV >= :contServFrom)\n" +
+            "  AND (:contServTo IS NULL OR DTCONTSERV <= :contServTo)\n" +
+            "${nameTokenClause}"
+    ),
+
     GET_ACTIVE_EMP_IDS(
         "SELECT DISTINCT NUXREFEM\n" +
         "FROM ${masterSchema}.PM21PERSONN\n" +

@@ -6,6 +6,8 @@ import gov.nysenate.ess.core.model.personnel.ResponsibilityCenter;
 
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 @XmlRootElement
@@ -14,19 +16,33 @@ public class RedmineEmployeeView implements ViewObject
     protected int employeeId;
     protected String uid;
     protected String firstName;
+    protected String initial;
     protected String lastName;
+    protected String suffix;
     protected String fullName;
     protected String email;
     protected String workPhone;
     protected boolean active;
     protected LocationView location;
+    /**
+     * The normalized search tokens that matched this employee, for client-side result highlighting.
+     * Empty when the view was not produced by a free-text search. See EmployeeSearchBuilder#tokenizeSearchTerm.
+     */
+    protected List<String> matchedTerms;
 
     public RedmineEmployeeView(Employee employee) {
+        this(employee, Collections.emptyList());
+    }
+
+    public RedmineEmployeeView(Employee employee, List<String> matchedTerms) {
+        this.matchedTerms = matchedTerms;
         if (employee != null) {
             this.employeeId = employee.getEmployeeId();
             this.uid = employee.getUid();
             this.firstName = employee.getFirstName();
+            this.initial = employee.getInitial();
             this.lastName = employee.getLastName();
+            this.suffix = employee.getSuffix();
             this.fullName = employee.getFullName();
             this.email = employee.getEmail();
             this.active = employee.isActive();
@@ -58,8 +74,18 @@ public class RedmineEmployeeView implements ViewObject
     }
 
     @XmlElement
+    public String getInitial() {
+        return initial;
+    }
+
+    @XmlElement
     public String getLastName() {
         return lastName;
+    }
+
+    @XmlElement
+    public String getSuffix() {
+        return suffix;
     }
 
     @XmlElement
@@ -85,6 +111,11 @@ public class RedmineEmployeeView implements ViewObject
     @XmlElement
     public boolean isActive() {
         return active;
+    }
+
+    @XmlElement
+    public List<String> getMatchedTerms() {
+        return matchedTerms;
     }
 
 }
