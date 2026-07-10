@@ -136,6 +136,96 @@ public class SqlEmployeeDaoIT extends BaseTest
     }
 
     @Test
+    public void freeTextSearch_isInsensitiveToWordOrder() {
+        Employee employee = anyActiveEmployee();
+        final int expectedEmpId = employee.getEmployeeId();
+
+        // "First Last" and the reversed "Last First" should both find the employee.
+        String naturalOrder = employee.getFirstName() + " " + employee.getLastName();
+        String reversedOrder = employee.getLastName() + " " + employee.getFirstName();
+
+        assertTrue("Free-text search should match natural word order",
+                freeTextSearchContains(naturalOrder, expectedEmpId));
+        assertTrue("Free-text search should match reversed word order",
+                freeTextSearchContains(reversedOrder, expectedEmpId));
+    }
+
+    @Test
+    public void freeTextSearch_ignoresMiddleInitialBetweenNames() {
+        // Pick an employee that actually has a middle initial - the legacy substring search would
+        // fail to match "First Last" for these because the initial sits between the two names.
+        Employee employee = employeeDao.getActiveEmployees().stream()
+                .filter(e -> e.getInitial() != null && !e.getInitial().trim().isEmpty())
+                .filter(e -> e.getFirstName() != null && e.getLastName() != null)
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("Expected at least one employee with a middle initial"));
+
+        String firstAndLast = employee.getFirstName() + " " + employee.getLastName();
+        assertTrue("Free-text search should match first + last even with a middle initial in between",
+                freeTextSearchContains(firstAndLast, employee.getEmployeeId()));
+    }
+
+    @Test
+    public void freeTextSearch_matchesUid() {
+        Employee employee = employeeDao.getActiveEmployees().stream()
+                .filter(e -> e.getUid() != null && !e.getUid().trim().isEmpty())
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("Expected at least one employee with a uid"));
+
+        assertTrue("Free-text search should match on uid/email",
+                freeTextSearchContains(employee.getUid(), employee.getEmployeeId()));
+    }
+
+    @Test
+    public void freeTextSearch_matchesNameSuffix() {
+        // The suffix (e.g. "Jr") is folded onto the end of the name, so including it as a search
+        // token must still find the employee. Suffixes are rare, so skip if the DB snapshot has none.
+        Optional<Employee> suffixedEmp = employeeDao.getActiveEmployees().stream()
+                .filter(e -> e.getSuffix() != null && !e.getSuffix().trim().isEmpty())
+                .filter(e -> e.getFirstName() != null && e.getLastName() != null)
+                .findFirst();
+        if (suffixedEmp.isEmpty()) {
+            logger.warn("No active employee with a name suffix found - skipping suffix search test");
+            return;
+        }
+        Employee employee = suffixedEmp.get();
+        String nameWithSuffix = employee.getFirstName() + " " + employee.getLastName() + " " + employee.getSuffix();
+        assertTrue("Free-text search should match a term that includes the name suffix",
+                freeTextSearchContains(nameWithSuffix, employee.getEmployeeId()));
+    }
+
+    @Test
+    public void freeTextSearch_ranksExactNameMatchFirst() {
+        Employee employee = anyActiveEmployee();
+        String fullName = employee.getFirstName() + " " + employee.getLastName();
+
+        EmployeeSearchBuilder esb = new EmployeeSearchBuilder()
+                .setName(fullName)
+                .setFreeTextNameMatch(true);
+        List<Employee> results = employeeDao.searchEmployees(esb, LimitOffset.ALL).getResults();
+        assertFalse("Exact name search should return results", results.isEmpty());
+        // The exact-name match should be ranked at (tied for) the top.
+        boolean topResultIsExactName = results.get(0).getFirstName().equalsIgnoreCase(employee.getFirstName())
+                && results.get(0).getLastName().equalsIgnoreCase(employee.getLastName());
+        assertTrue("An exact full-name match should be ranked first", topResultIsExactName);
+    }
+
+    private Employee anyActiveEmployee() {
+        return employeeDao.getActiveEmployees().stream()
+                .filter(e -> e.getFirstName() != null && e.getLastName() != null)
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("Expected at least one active employee"));
+    }
+
+    private boolean freeTextSearchContains(String term, int expectedEmpId) {
+        EmployeeSearchBuilder esb = new EmployeeSearchBuilder()
+                .setName(term)
+                .setFreeTextNameMatch(true);
+        return employeeDao.searchEmployees(esb, LimitOffset.ALL).getResults().stream()
+                .anyMatch(e -> e.getEmployeeId() == expectedEmpId);
+    }
+
+    @Test
     public void rctrHdSearchTest() {
         // Pick an employee from active employees
         final Set<Integer> activeEmployeeIds = employeeDao.getActiveEmployeeIds();
