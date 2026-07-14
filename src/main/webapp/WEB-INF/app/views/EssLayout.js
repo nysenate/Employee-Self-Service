@@ -5,9 +5,9 @@ import useRequireAuthedUser from "app/hooks/useRequireAuthedUser";
 import TimeoutChecker from "app/TimeoutChecker";
 
 export default function EssLayout() {
-  const { isPending, isError } = useRequireAuthedUser();
+  const { isPending, isError, isFetching } = useRequireAuthedUser();
 
-  if (isPending || isError) {
+  if (isPending || isFetching || isError) {
     return <></>;
   }
 

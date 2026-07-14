@@ -1,7 +1,10 @@
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchApiJson } from "app/api/fetchJson";
 import { useEffect } from "react";
+
+export const AUTHED_USER_QUERY_KEY = ["authedUser"];
+const AUTHED_USER_STALE_TIME_MS = 30 * 1000;
 
 /**
  * Returns a React Query result for the required authenticated user.
@@ -11,17 +14,19 @@ import { useEffect } from "react";
  * - isPending: true while the /employees/me request is loading
  * - isError/error: set when there is no authenticated user or when there is an error.
  *
- * Redirects to /logout when the user is confirmed unauthenticated.
+ * Redirects to /login when the user is confirmed unauthenticated.
  */
 export default function useRequireAuthedUser() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const query = useAuthedUserNoRedirect();
 
   useEffect(() => {
     if (query.error?.response?.status === 401) {
-      navigate("/logout");
+      queryClient.removeQueries();
+      navigate("/login", { replace: true });
     }
-  }, [query.error, navigate]);
+  }, [query.error, navigate, queryClient]);
 
   return query;
 }
@@ -32,20 +37,19 @@ export default function useRequireAuthedUser() {
  */
 export function useAuthedUserNoRedirect() {
   return useQuery({
-    queryKey: ["authedUser"],
+    queryKey: AUTHED_USER_QUERY_KEY,
     queryFn: () => {
       return fetchApiJson("/employees/me").then((body) => body.result);
     },
-    staleTime: 0,
+    staleTime: AUTHED_USER_STALE_TIME_MS,
     retry: (failureCount, error) => {
-      if (error?.data?.status?.authorized === false) {
-        // User is confirmed to be not authorized, no need to retry.
-        return false;
-      } else if (Number(failureCount) > 2) {
-        // Only retry up to 3 times.
+      if (
+        error?.response?.status === 401 ||
+        error?.data?.status?.authorized === false
+      ) {
         return false;
       }
-      return true;
+      return failureCount < 2;
     },
   });
 }

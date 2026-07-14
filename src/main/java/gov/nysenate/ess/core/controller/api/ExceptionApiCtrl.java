@@ -11,6 +11,7 @@ import gov.nysenate.ess.core.model.auth.AuthorizationStatus;
 import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.util.HttpResponseUtils;
 import gov.nysenate.ess.travel.department.DepartmentNotFoundEx;
+import gov.nysenate.ess.web.security.realm.EssIpAuthzRealm;
 import org.apache.catalina.connector.ClientAbortException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.shiro.authz.AuthorizationException;
@@ -33,7 +34,6 @@ import org.springframework.web.context.request.async.AsyncRequestNotUsableExcept
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.Optional;
 
 import static gov.nysenate.ess.core.util.OutputUtils.toJson;
 
@@ -97,8 +97,7 @@ public class ExceptionApiCtrl extends BaseRestApiCtrl {
     @ResponseBody
     public AuthorizationResponse handleUnauthenticatedException(HttpServletRequest request,
                                                                 UnauthenticatedException ex) {
-        logger.warn("Unauthenticated request for {}", request.getRequestURI());
-        return getAuthResponse(AuthorizationStatus.UNAUTHENTICATED, request);
+        return getAuthResponse(AuthorizationStatus.UNAUTHENTICATED, request, false);
     }
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
@@ -106,11 +105,11 @@ public class ExceptionApiCtrl extends BaseRestApiCtrl {
     @ResponseBody
     public AuthorizationResponse handleUnauthorizedException(HttpServletRequest request,
                                                              AuthorizationException ex) {
-        Object user = Optional.ofNullable(getSubject())
-                .map(Subject::getPrincipal)
-                .orElse(null);
-        logger.warn("Unauthorized request by user {} for {}", user, request.getRequestURI());
-        return getAuthResponse(AuthorizationStatus.UNAUTHORIZED, request);
+        Subject subject = getSubject();
+        if (isUnauthenticatedApiSubject(subject)) {
+            return getAuthResponse(AuthorizationStatus.UNAUTHENTICATED, request, false);
+        }
+        return getAuthResponse(AuthorizationStatus.UNAUTHORIZED, request, true);
     }
 
     @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
@@ -159,11 +158,24 @@ public class ExceptionApiCtrl extends BaseRestApiCtrl {
 
     /** --- Internal Methods --- */
 
-    private AuthorizationResponse getAuthResponse(AuthorizationStatus status, HttpServletRequest request) {
+    private AuthorizationResponse getAuthResponse(AuthorizationStatus status, HttpServletRequest request,
+                                                  boolean warn) {
         Subject subject = getSubject();
         String url = HttpResponseUtils.getFullUrl(request);
-        logger.warn("{} access attempt - user: {} url:{}", status, subject.getPrincipal(), url);
+        Object principal = subject != null ? subject.getPrincipal() : null;
+        if (warn) {
+            logger.warn("{} access attempt - user: {} url:{}", status, principal, url);
+        } else {
+            logger.debug("{} access attempt - user: {} url:{}", status, principal, url);
+        }
         return new AuthorizationResponse(status, subject, url);
+    }
+
+    private boolean isUnauthenticatedApiSubject(Subject subject) {
+        return subject == null
+                || subject.getPrincipal() == null
+                || subject.getPrincipals().getRealmNames().stream()
+                .anyMatch(realm -> realm.contains(EssIpAuthzRealm.class.getName()));
     }
 
     private boolean isClientDisconnect(Throwable ex) {
