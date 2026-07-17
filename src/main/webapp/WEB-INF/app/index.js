@@ -1,18 +1,30 @@
-import React, { StrictMode } from "react";
+import React, { lazy, StrictMode, Suspense } from "react";
 import "./app.css";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import EssLayout from "app/views/EssLayout";
-import TimeRouter from "app/views/time/TimeRouter";
 import LoginIndex from "app/views/login/LoginIndex";
-import MyInfoRouter from "app/views/myinfo/MyInfoRouter";
-import SupplyRouter from "app/views/supply/SupplyRouter";
 import Logout from "app/views/logout/Logout";
 import EssIndex from "app/views/EssIndex";
 import NotFound from "app/views/NotFound";
+import LoadingIndicator from "app/components/LoadingIndicator";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import TravelRouter from "app/views/travel/TravelRouter";
+
+const MyInfoRouter = lazy(() =>
+  import(
+    /* webpackChunkName: "myinfo" */ "app/views/myinfo/MyInfoRouter"
+  ),
+);
+const TimeRouter = lazy(() =>
+  import(/* webpackChunkName: "time" */ "app/views/time/TimeRouter"),
+);
+const SupplyRouter = lazy(() =>
+  import(/* webpackChunkName: "supply" */ "app/views/supply/SupplyRouter"),
+);
+const TravelRouter = lazy(() =>
+  import(/* webpackChunkName: "travel" */ "app/views/travel/TravelRouter"),
+);
 
 function App() {
   return (
@@ -20,10 +32,38 @@ function App() {
       <Routes>
         <Route path="/" element={<EssIndex />} />
         <Route path="/" element={<EssLayout />}>
-          <Route path="/myinfo/*" element={<MyInfoRouter />} />
-          <Route path="/time/*" element={<TimeRouter />} />
-          <Route path="/supply/*" element={<SupplyRouter />} />
-          <Route path="/travel/*" element={<TravelRouter />} />
+          <Route
+            path="/myinfo/*"
+            element={
+              <ApplicationLoader>
+                <MyInfoRouter />
+              </ApplicationLoader>
+            }
+          />
+          <Route
+            path="/time/*"
+            element={
+              <ApplicationLoader>
+                <TimeRouter />
+              </ApplicationLoader>
+            }
+          />
+          <Route
+            path="/supply/*"
+            element={
+              <ApplicationLoader>
+                <SupplyRouter />
+              </ApplicationLoader>
+            }
+          />
+          <Route
+            path="/travel/*"
+            element={
+              <ApplicationLoader>
+                <TravelRouter />
+              </ApplicationLoader>
+            }
+          />
         </Route>
         <Route path="/login" element={<LoginIndex />} />
         <Route path="/logout" element={<Logout />} />
@@ -32,6 +72,10 @@ function App() {
       </Routes>
     </BrowserRouter>
   );
+}
+
+function ApplicationLoader({ children }) {
+  return <Suspense fallback={<LoadingIndicator />}>{children}</Suspense>;
 }
 
 const queryClient = new QueryClient();
