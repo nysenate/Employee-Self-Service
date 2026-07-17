@@ -1,4 +1,3 @@
-import { useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchApiJson } from "app/api/fetchJson";
 import { useEffect } from "react";
@@ -17,16 +16,15 @@ const AUTHED_USER_STALE_TIME_MS = 30 * 1000;
  * Redirects to /login when the user is confirmed unauthenticated.
  */
 export default function useRequireAuthedUser() {
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const query = useAuthedUserNoRedirect();
 
   useEffect(() => {
     if (query.error?.response?.status === 401) {
       queryClient.removeQueries();
-      navigate("/login", { replace: true });
+      window.location.replace("/logout");
     }
-  }, [query.error, navigate, queryClient]);
+  }, [query.error, queryClient]);
 
   return query;
 }

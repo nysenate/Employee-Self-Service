@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { pingApi } from "app/api/pingApi";
-import { Link, useNavigate } from "react-router-dom";
 import Modal from "app/components/Modal";
 import Button from "app/components/Button";
 
@@ -10,7 +9,6 @@ const WARNING_THRESHOLD = 80;
 const PING_FAIL_TOLERANCE = 10;
 
 export default function TimeoutChecker({ children }) {
-  const navigate = useNavigate();
   // The length of time remaining before the user is logged out if they do not perform an action.
   const [remainingTime, setRemainingTime] = React.useState();
   const [isActive, setIsActive] = React.useState(true);
@@ -27,7 +25,7 @@ export default function TimeoutChecker({ children }) {
       .catch((err) => {
         console.log(err);
         if (err.status === 401) {
-          navigate("/logout");
+          window.location.assign("/logout");
         } else {
           setFailedPings((failedPings) => failedPings + 1);
         }
@@ -39,7 +37,7 @@ export default function TimeoutChecker({ children }) {
       console.log(
         "Ping api logout due to remaining time expiration or too many failed pings",
       );
-      navigate("/logout");
+      window.location.assign("/logout");
     } else if (remainingTime <= WARNING_THRESHOLD) {
       setShowInactivityModal(true);
     }
@@ -86,7 +84,6 @@ export default function TimeoutChecker({ children }) {
 }
 
 function InactivityModal({ onResolve }) {
-  const navigate = useNavigate();
   const [count, setCount] = useState(60);
 
   useEffect(() => {
@@ -99,7 +96,7 @@ function InactivityModal({ onResolve }) {
 
   useEffect(() => {
     if (count < 1) {
-      navigate("/logout");
+      window.location.assign("/logout");
     }
   }, [count]);
 
@@ -114,9 +111,9 @@ function InactivityModal({ onResolve }) {
         Do you want to continue your work?
       </Modal.Body>
       <Modal.Buttons>
-        <Link to="/logout" style={{ textDecoration: "none" }}>
+        <a href="/logout" style={{ textDecoration: "none" }}>
           <Button variant="destructive">Log out of ESS</Button>
-        </Link>
+        </a>
         <Button variant="primary" onPress={() => onResolve()}>
           Continue
         </Button>

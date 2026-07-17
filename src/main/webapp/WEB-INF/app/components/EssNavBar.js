@@ -58,12 +58,12 @@ export default function EssNavBar() {
             >
               <QuestionMarkCircleIcon className="mr-1 size-5" /> Help
             </Link>
-            <Link
-              to="/logout"
+            <a
+              href="/logout"
               className="flex h-full items-center px-2 text-[14.3px] text-gray-800 hover:bg-gray-200 hover:text-gray-800"
             >
               Sign Out
-            </Link>
+            </a>
           </div>
         </div>
       </div>
