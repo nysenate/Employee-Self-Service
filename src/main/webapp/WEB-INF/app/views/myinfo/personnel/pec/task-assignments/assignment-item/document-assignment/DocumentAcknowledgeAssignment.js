@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Hero from "app/components/Hero";
 import Card from "app/components/Card";
-import * as pdfjsLib from "pdfjs-dist";
 import { isoToLongDate } from "app/utils/dateUtils";
 import useScrollDetection from "app/views/myinfo/personnel/pec/task-assignments/assignment-item/document-assignment/useScrollDetection";
 import Button from "app/components/Button";
@@ -10,6 +9,11 @@ import Modal from "app/components/Modal";
 import ModalNotice from "app/components/ModalNotice";
 import { useAcknowledgeDocument } from "app/views/myinfo/personnel/pec/useTaskAssignment";
 import useRequireAuthedUser from "app/hooks/useRequireAuthedUser";
+
+const pdfWorkerSrc = new URL(
+  "pdfjs-dist/build/pdf.worker.min.mjs",
+  import.meta.url,
+).toString();
 
 export default function DocumentAcknowledgeAssignment({ assignment }) {
   const { data: user } = useRequireAuthedUser();
@@ -216,62 +220,108 @@ function AcknowledgeBanner({
 function RenderPdf({ pdfPath }) {
   const [doc, setDoc] = useState(null);
   const [pages, setPages] = useState([]);
+  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
-    let isMounted = true;
+    let isDisposed = false;
+    let loadingTask;
+
+    setDoc(null);
+    setPages([]);
+    setHasError(false);
+
     (async () => {
-      if (pdfPath) {
-        const loadingTask = pdfjsLib.getDocument(pdfPath);
+      if (!pdfPath) return;
+
+      try {
+        const pdfjsLib = await import("pdfjs-dist");
+        if (isDisposed) return;
+
+        pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerSrc;
+        loadingTask = pdfjsLib.getDocument(pdfPath);
         const pdf = await loadingTask.promise;
-        if (!isMounted) return;
+        if (isDisposed) return;
 
         setDoc(pdf);
         setPages(Array.from({ length: pdf.numPages }, (_, i) => i + 1));
+      } catch (error) {
+        if (!isDisposed) {
+          console.error("Unable to load PDF document", error);
+          setHasError(true);
+        }
       }
     })();
+
     return () => {
-      isMounted = false;
+      isDisposed = true;
+      if (loadingTask) {
+        void loadingTask.destroy();
+      }
     };
   }, [pdfPath]);
+
+  if (hasError) {
+    return (
+      <p className="m-5 font-semibold text-red-600" role="alert">
+        The document could not be displayed. Please try opening the printable
+        view.
+      </p>
+    );
+  }
 
   return (
     <div>
       {pages.map((pageNum) => (
-        <PdfPage key={pageNum} doc={doc} pageNum={pageNum} />
+        <PdfPage
+          key={pageNum}
+          doc={doc}
+          pageNum={pageNum}
+          onError={setHasError}
+        />
       ))}
     </div>
   );
 }
 
-function PdfPage({ doc, pageNum }) {
+function PdfPage({ doc, pageNum, onError }) {
   const canvasRef = useRef(null);
 
   useEffect(() => {
     if (!doc) return;
+    let isDisposed = false;
     let renderTask;
 
     (async () => {
-      const page = await doc.getPage(pageNum);
+      try {
+        const page = await doc.getPage(pageNum);
+        if (isDisposed) return;
 
-      const viewport = page.getViewport({
-        scale: 1.5,
-        rotation: page.rotate, // respect PDF metadata
-      });
+        const viewport = page.getViewport({
+          scale: 1.5,
+          rotation: page.rotate, // respect PDF metadata
+        });
 
-      const canvas = canvasRef.current;
-      const ctx = canvas.getContext("2d");
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext("2d");
 
-      canvas.width = viewport.width;
-      canvas.height = viewport.height;
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
 
-      renderTask = page.render({ canvasContext: ctx, viewport });
-      await renderTask.promise;
+        renderTask = page.render({ canvasContext: ctx, viewport });
+        await renderTask.promise;
+      } catch (error) {
+        if (!isDisposed && error?.name !== "RenderingCancelledException") {
+          console.error(`Unable to render PDF page ${pageNum}`, error);
+          onError(true);
+        }
+      }
     })();
 
     return () => {
-      if (renderTask) renderTask.cancel();
+      isDisposed = true;
+      renderTask?.cancel();
     };
-  }, [doc, pageNum]);
+  }, [doc, pageNum, onError]);
 
   return <canvas ref={canvasRef} className="w-full" />;
 }

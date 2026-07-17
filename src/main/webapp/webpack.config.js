@@ -5,7 +5,6 @@ const Dotenv = require("dotenv-webpack");
 module.exports = {
   entry: {
     main: "./WEB-INF/app/index.js",
-    "pdf.worker": "pdfjs-dist/build/pdf.worker.mjs",
   },
   output: {
     path: path.resolve(__dirname, "assets/dist"),
