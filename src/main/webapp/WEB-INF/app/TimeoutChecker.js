@@ -26,7 +26,11 @@ export default function TimeoutChecker({ children }) {
       })
       .catch((err) => {
         console.log(err);
-        setFailedPings((failedPings) => failedPings + 1);
+        if (err.status === 401) {
+          navigate("/logout");
+        } else {
+          setFailedPings((failedPings) => failedPings + 1);
+        }
       });
   };
 
