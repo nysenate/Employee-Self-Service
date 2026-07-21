@@ -1,6 +1,5 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const Dotenv = require("dotenv-webpack");
 
 const isProduction = process.env.NODE_ENV === "production";
 
@@ -36,26 +35,11 @@ module.exports = {
         exclude: /node_modules/,
         use: "babel-loader",
       },
-      // Load image files
-      {
-        test: /\.(png|jpe?g|gif|svg)$/i,
-        use: [
-          {
-            loader: "file-loader",
-            options: {
-              name: "[path][name].[ext]",
-            },
-          },
-        ],
-      },
     ],
   },
   plugins: [
     new HtmlWebpackPlugin({
       template: "WEB-INF/app/index.html",
-    }),
-    new Dotenv({
-      path: "react-properties.env",
     }),
   ],
   context: __dirname,

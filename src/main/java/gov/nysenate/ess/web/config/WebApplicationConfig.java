@@ -85,7 +85,7 @@ public class WebApplicationConfig implements WebMvcConfigurer
             logger.warn("Resource path/location for accessing public assets were not set!");
         } else {
             logger.info("Registering resource path {} for files under {}", resourcePath, resourceLocation);
-            registry.addResourceHandler(resourcePath + "dist/index.html")
+            registry.addResourceHandler(resourcePath + "dist/*.html")
                     .addResourceLocations(resourceLocation + "dist/")
                     .setCacheControl(CacheControl.noCache());
             registry.addResourceHandler(resourcePath + "dist/**")
