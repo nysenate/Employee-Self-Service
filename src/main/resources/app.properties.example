@@ -224,8 +224,8 @@ image.url = /assets/supply_photos
 
 # --- Web Cache ---------------------------------------------------------------
 
-# in secs, 0  = no cache
-cache.frontend.expire = 60
+# Cache lifetime in seconds for content-hashed React assets and release-versioned legacy assets. Default 1 year.
+cache.frontend.expire = 31536000
 
 # --- Project Version ---------------------------------------------------------
 

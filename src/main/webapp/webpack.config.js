@@ -2,14 +2,19 @@ const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const Dotenv = require("dotenv-webpack");
 
+const isProduction = process.env.NODE_ENV === "production";
+
 module.exports = {
   entry: {
     main: "./WEB-INF/app/index.js",
   },
   output: {
     path: path.resolve(__dirname, "assets/dist"),
-    filename: "[name].bundle.js",
-    publicPath: process.env.NODE_ENV === "production" ? "/assets/dist/" : "/",
+    filename: isProduction ? "[name].[contenthash].js" : "[name].bundle.js",
+    chunkFilename: isProduction
+      ? "[name].[contenthash].js"
+      : "[name].bundle.js",
+    publicPath: isProduction ? "/assets/dist/" : "/",
     clean: true,
   },
   resolve: {
@@ -54,7 +59,7 @@ module.exports = {
     }),
   ],
   context: __dirname,
-  mode: process.env.NODE_ENV === "production" ? "production" : "development",
+  mode: isProduction ? "production" : "development",
   devServer: {
     port: 3000,
     // Send API requests for these paths to the target base URL while in dev mode.
@@ -79,5 +84,5 @@ module.exports = {
     },
     static: ["../assets"],
   },
-  devtool: process.env.NODE_ENV === "production" ? false : "eval-source-map",
+  devtool: isProduction ? false : "eval-source-map",
 };
