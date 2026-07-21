@@ -10,6 +10,7 @@ module.exports = {
     path: path.resolve(__dirname, "assets/dist"),
     filename: "[name].bundle.js",
     publicPath: process.env.NODE_ENV === "production" ? "/assets/dist/" : "/",
+    clean: true,
   },
   resolve: {
     extensions: [".js", ".jsx", ".json"],
