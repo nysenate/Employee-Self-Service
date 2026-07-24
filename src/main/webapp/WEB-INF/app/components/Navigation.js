@@ -96,8 +96,8 @@ const Link = ({ to, permission, children, ...rest }) => {
       );
       borderColor = "border-gray-700";
   }
-  const activeClasses = `block px-4 py-1 font-semibold border-l-4 ${borderColor} bg-gray-50`;
-  const inactiveClasses = `block px-5 py-1`;
+  const activeClasses = `flex items-center gap-2 py-1 pr-5 pl-4 font-semibold border-l-4 ${borderColor} bg-gray-50`;
+  const inactiveClasses = `flex items-center gap-2 px-5 py-1`;
 
   if (isLoading || data?.isPermitted === false) {
     return null;

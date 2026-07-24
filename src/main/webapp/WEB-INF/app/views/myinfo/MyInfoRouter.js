@@ -12,6 +12,9 @@ import ToDoAssignment from "./personnel/pec/to-do-assignment/ToDoAssignment";
 import ToDoReporting from "./personnel/pec/to-do-reporting/ToDoReporting";
 import AssertPermission from "app/components/AssertPermission";
 import NotFound from "app/views/NotFound";
+import { AsyncBadge } from "app/components/Badge";
+import useRequireAuthedUser from "app/hooks/useRequireAuthedUser";
+import { useTaskAssignments } from "app/views/myinfo/personnel/pec/useTaskAssignment";
 
 export default function MyInfoRouter() {
   return (
@@ -60,6 +63,8 @@ export default function MyInfoRouter() {
 }
 
 function MyInfoLayout() {
+  const { data: user } = useRequireAuthedUser();
+
   return (
     <AppLayout>
       <Navigation>
@@ -72,7 +77,14 @@ function MyInfoLayout() {
             Emergency Alert Info
           </Navigation.Link>
           <Navigation.Link to="/myinfo/personnel/tasks/assignments">
-            To-Do List
+            <span className="mr-auto">To-Do List</span>
+            <AsyncBadge
+              useData={useTaskAssignments}
+              queryArgs={[user?.employeeId]}
+              selectCount={countIncompleteAssignments}
+              hideWhenZero
+              title="Personnel tasks needing attention"
+            />
           </Navigation.Link>
           <Navigation.Link
             to="/myinfo/personnel/todo/report"
@@ -95,4 +107,11 @@ function MyInfoLayout() {
       </Navigation>
     </AppLayout>
   );
+}
+
+function countIncompleteAssignments(assignments) {
+  return assignments.filter(
+    (assignment) =>
+      !assignment.completed && assignment.active && assignment.task?.active,
+  ).length;
 }
