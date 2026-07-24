@@ -1,0 +1,208 @@
+/*
+ * The accrual tables on the Accrual History and Accrual Projections pages.
+ *
+ * Ported from the .hours-table mixin and the .accrual-table rules in
+ * assets/css/less/time.less. These tables carry sixteen columns of hours in 860px, so they
+ * keep their own dense cell padding rather than using the shared .table__* classes.
+ *
+ * Legacy colors: @teal #006B80, @light-teal / @personal-color #4196A7,
+ * @sick-color #d19525, @vacation-color #799933.
+ */
+
+.accrualTable {
+  width: 860px;
+  margin: 10px;
+}
+
+.accrualTable thead {
+  background: white;
+}
+
+.accrualTable thead th {
+  border: 0;
+  padding: 8px;
+  font-weight: 600;
+}
+
+.accrualTable thead tr:last-of-type {
+  border-bottom: 1px solid #006b80;
+}
+
+/*
+ * The legacy .personal / .vacation / .sick classes are solid color chips, so the second
+ * header row reads as three colored bands over the hour columns.
+ */
+.accrualTable thead th.personal {
+  background: #4196a7;
+  color: white;
+}
+
+.accrualTable thead th.vacation {
+  background: #799933;
+  color: white;
+}
+
+.accrualTable thead th.sick {
+  background: #d19525;
+  color: white;
+}
+
+.accrualTable tbody tr:nth-child(even) {
+  background: rgba(51, 51, 51, 0.05);
+}
+
+.accrualTable tbody tr.highlighted {
+  border: 1px solid #006b80;
+  border-left-width: 3px;
+}
+
+.accrualTable tbody tr:not(.invalid):hover {
+  background: rgba(51, 51, 51, 0.1);
+  cursor: pointer;
+}
+
+.accrualTable tbody td {
+  border: 0;
+  border-right: 1px solid #eee;
+  text-align: center;
+  padding: 8px;
+}
+
+/* --- Hour cells, tinted by accrual type --- */
+
+.accrualTable tbody td.accrualHours {
+  border: 0;
+  color: #333;
+}
+
+.accrualTable tbody td.accrualHours.personal {
+  background: rgba(65, 150, 167, 0.1);
+}
+
+.accrualTable tbody td.accrualHours.sick {
+  background: rgba(209, 149, 37, 0.1);
+}
+
+.accrualTable tbody td.accrualHours.vacation {
+  background: rgba(121, 153, 51, 0.1);
+}
+
+.accrualTable tbody td.availableHours {
+  font-weight: bold;
+}
+
+.accrualTable tbody td.availableHours.personal {
+  background: rgba(65, 150, 167, 0.2);
+}
+
+.accrualTable tbody td.availableHours.sick {
+  background: rgba(209, 149, 37, 0.2);
+}
+
+.accrualTable tbody td.availableHours.vacation {
+  background: rgba(121, 153, 51, 0.2);
+}
+
+/*
+ * An available hours cell flashes its accrual color when a projection upstream of it changes,
+ * then fades back to the body text color.
+ */
+.accrualTable tbody td.availableHours.personal.changed {
+  color: #4196a7;
+}
+
+.accrualTable tbody td.availableHours.sick.changed {
+  color: #d19525;
+}
+
+.accrualTable tbody td.availableHours.vacation.changed {
+  color: #799933;
+}
+
+.accrualTable tbody td.availableHours:not(.changed) {
+  transition: color 0.25s ease-out;
+}
+
+/* --- Projected usage inputs --- */
+
+/*
+ * Boxed the same way as every other legacy number field (the input[type="number"] rule in
+ * assets/css/less/common/input.less). The border and padding are also what gives the rows
+ * their height in production.
+ */
+.accrualTable tbody td input {
+  width: 50px;
+  border: 1px solid #ccc;
+  outline: 0;
+  background: #fafafa;
+  padding: 0.3em;
+  -moz-appearance: textfield;
+}
+
+.accrualTable tbody td input:focus {
+  border-color: #999;
+}
+
+.accrualTable tbody td input::-webkit-inner-spin-button,
+.accrualTable tbody td input::-webkit-outer-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
+.accrualTable tbody td input.invalid {
+  background: #ffbcbc;
+}
+
+/* --- Accrual detail modal tables --- */
+
+.detailTable {
+  width: 20em;
+  text-align: right;
+}
+
+.detailTable td {
+  width: 7em;
+  padding: 2px 0;
+}
+
+.detailTable td:first-child {
+  width: 13em;
+  text-align: left;
+}
+
+.detailTable tr.totalRow {
+  border-top: 1px solid #006b80;
+}
+
+.detailTable tr.totalRow td {
+  font-weight: bold;
+}
+
+.detailInfoTable th {
+  text-align: left;
+  font-weight: 600;
+  padding-right: 10px;
+}
+
+.detailInfoTable td {
+  text-align: right;
+}
+
+/* --- Sick leave donation history --- */
+/* Ported from table.donation-history-table in assets/css/less/common/tables.less. */
+
+.donationTable {
+  width: 25%;
+  text-align: left;
+  border-collapse: collapse;
+}
+
+.donationTable th,
+.donationTable td {
+  border: 1px solid #000000;
+  padding: 5px;
+}
+
+.donationTable tbody tr:nth-child(odd) {
+  background: #fafafa;
+}

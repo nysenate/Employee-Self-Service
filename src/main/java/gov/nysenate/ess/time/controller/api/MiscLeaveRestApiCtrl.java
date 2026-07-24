@@ -6,11 +6,13 @@ import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.time.client.view.attendance.MiscLeaveGrantView;
 import gov.nysenate.ess.time.client.view.attendance.MiscLeaveGrantWithHoursRemaining;
+import gov.nysenate.ess.time.client.view.attendance.MiscLeaveTypeView;
 import gov.nysenate.ess.time.dao.attendance.TimeRecordDao;
 import gov.nysenate.ess.time.dao.payroll.MiscLeaveDao;
 import gov.nysenate.ess.time.model.attendance.TimeEntry;
 import gov.nysenate.ess.time.model.auth.EssTimePermission;
 import gov.nysenate.ess.time.model.payroll.MiscLeaveGrant;
+import gov.nysenate.ess.time.model.payroll.MiscLeaveType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +40,16 @@ public class MiscLeaveRestApiCtrl extends BaseRestApiCtrl {
     public MiscLeaveRestApiCtrl(MiscLeaveDao miscLeaveDao, TimeRecordDao timeRecordDao) {
         this.miscLeaveDao = miscLeaveDao;
         this.timeRecordDao = timeRecordDao;
+    }
+
+    /**
+     * Returns the display labels for every misc leave type.
+     * These are static reference data, used to label misc leave hours on time records.
+     */
+    @RequestMapping("/types")
+    public BaseResponse getMiscLeaveTypes() {
+        return ListViewResponse.of(Arrays.stream(MiscLeaveType.values())
+                .map(MiscLeaveTypeView::new).collect(Collectors.toList()));
     }
 
     @RequestMapping("/grants")

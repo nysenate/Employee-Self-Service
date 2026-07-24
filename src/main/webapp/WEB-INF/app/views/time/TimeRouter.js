@@ -2,8 +2,13 @@ import React from "react";
 import { ThemeContext, themes } from "app/ThemeContext";
 import Navigation from "app/components/Navigation";
 import AppLayout from "app/components/AppLayout";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import PayrollCalendar from "app/views/time/attendance/payroll-calendar/PayrollCalendar";
+import AttendanceHistoryIndex from "app/views/time/attendance/history/AttendanceHistoryIndex";
+import RecordEntryIndex from "app/views/time/attendance/record-entry/RecordEntryIndex";
+import AccrualHistoryIndex from "app/views/time/accrual/AccrualHistoryIndex";
+import AccrualProjectionsIndex from "app/views/time/accrual/AccrualProjectionsIndex";
+import SickLeaveDonationIndex from "app/views/time/accrual/SickLeaveDonationIndex";
 import NotFound from "app/views/NotFound";
 
 export default function TimeRouter() {
@@ -11,21 +16,15 @@ export default function TimeRouter() {
     <ThemeContext.Provider value={themes.time}>
       <Routes>
         <Route path="" element={<TimeLayout />}>
-          <Route path="record/entry" element={<div>Time Record Entry</div>} />
-          <Route
-            path="record/history"
-            element={<div>Attendance History</div>}
-          />
+          <Route path="record/entry" element={<RecordEntryIndex />} />
+          <Route path="record/history" element={<AttendanceHistoryIndex />} />
           <Route path="period/calendar" element={<PayrollCalendar />} />
-          <Route path="accrual/history" element={<div>Accrual History</div>} />
+          <Route path="accrual/history" element={<AccrualHistoryIndex />} />
           <Route
             path="accrual/projections"
-            element={<div>Accrual Projections</div>}
+            element={<AccrualProjectionsIndex />}
           />
-          <Route
-            path="accrual/donation"
-            element={<div>Sick Leave Donation</div>}
-          />
+          <Route path="accrual/donation" element={<SickLeaveDonationIndex />} />
 
           <Route
             path="record/manage"
@@ -54,6 +53,7 @@ export default function TimeRouter() {
 
           <Route path="personnel/search" element={<div>Employee Search</div>} />
 
+          <Route path="" element={<Navigate to="record/entry" replace />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

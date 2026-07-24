@@ -32,7 +32,9 @@ export async function fetchJson(input, init) {
   // response.ok is true when res.status is 2xx
   // https://developer.mozilla.org/en-US/docs/Web/API/Response/ok
   if (response.ok) {
-    return response.json();
+    // Some endpoints, i.e. POST /timerecords, return an empty body on success.
+    const body = await response.text();
+    return body ? JSON.parse(body) : null;
   }
 
   // Unsuccessful response, throw error.
