@@ -152,7 +152,7 @@
 
   <properties>
     <apache.shiro.version>2.0.2</apache.shiro.version>
-    <c3p0.version>0.9.5.5</c3p0.version>
+    <c3p0.version>0.14.0</c3p0.version>
     <commons-csv.version>1.10.0</commons-csv.version>
     <commons-fileupload.version>1.5</commons-fileupload.version>
     <commons-io.version>2.22.0</commons-io.version>
