@@ -1,7 +1,7 @@
 import React, { lazy, StrictMode, Suspense } from "react";
 import "./app.css";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import EssLayout from "app/views/EssLayout";
 import LoginIndex from "app/views/login/LoginIndex";
 import Logout from "app/views/logout/Logout";
@@ -12,6 +12,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { ErrorBoundary } from "react-error-boundary";
 import ErrorPage from "app/views/ErrorPage";
+import { useConfig } from "app/hooks/useConfig";
 
 const MyInfoRouter = lazy(() =>
   import(
@@ -70,6 +71,7 @@ function App() {
           </Route>
           <Route path="/login" element={<LoginIndex />} />
           <Route path="/logout" element={<Logout />} />
+          <Route path="/error" element={<ErrorPagePreview />} />
           <Route path="/404" element={<NotFound />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
@@ -80,6 +82,24 @@ function App() {
 
 function ApplicationLoader({ children }) {
   return <Suspense fallback={<LoadingIndicator />}>{children}</Suspense>;
+}
+
+function ErrorPagePreview() {
+  const { data: config, isPending } = useConfig();
+
+  if (isPending) {
+    return <LoadingIndicator />;
+  }
+
+  if (config?.runtimeLevel !== "dev") {
+    return <Navigate to="/404" replace />;
+  }
+
+  return (
+    <ErrorPage
+      error={new Error("An unexpected error occurred while loading this page.")}
+    />
+  );
 }
 
 const queryClient = new QueryClient();
