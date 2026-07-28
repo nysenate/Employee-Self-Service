@@ -3,11 +3,7 @@ import { format, parseISO } from "date-fns";
 import { toCurrency } from "app/utils/textUtils";
 import clsx from "clsx";
 
-const stickyLabelCellClasses = clsx(
-  "relative sticky left-0 z-20",
-  "after:pointer-events-none after:absolute after:right-0 after:bottom-0",
-  "after:top-0 after:w-[2px] after:bg-teal-600 after:content-['']",
-);
+const stickyLabelCellClasses = "relative sticky left-0 z-20";
 
 export default function Paycheck({ summary }) {
   return (
