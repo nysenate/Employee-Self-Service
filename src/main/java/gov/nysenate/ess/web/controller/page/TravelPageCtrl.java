@@ -1,16 +1,15 @@
 package gov.nysenate.ess.web.controller.page;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.view.InternalResourceView;
 
 import jakarta.servlet.http.HttpServletRequest;
+
+import static gov.nysenate.ess.web.controller.page.FrontendFramework.REACT;
 
 /**
  * Handles requests to the Travel app.
@@ -18,14 +17,15 @@ import jakarta.servlet.http.HttpServletRequest;
 @Controller
 @RequestMapping("/travel/**")
 public class TravelPageCtrl {
-    private static final Logger logger = LoggerFactory.getLogger(TravelPageCtrl.class);
     private final PageCtrlUtils pageCtrlUtils;
     private final boolean serveReact;
 
     @Autowired
-    public TravelPageCtrl(PageCtrlUtils pageCtrlUtils, @Value("${serve.react.travel:false}") boolean serveReact) {
+    public TravelPageCtrl(PageCtrlUtils pageCtrlUtils,
+                          @Value("${frontend.travel.framework:}") String frontendFramework) {
         this.pageCtrlUtils = pageCtrlUtils;
-        this.serveReact = serveReact;
+        this.serveReact = FrontendFramework.fromProperty(
+                "frontend.travel.framework", frontendFramework) == REACT;
     }
 
     @RequestMapping(method = {RequestMethod.GET, RequestMethod.HEAD})

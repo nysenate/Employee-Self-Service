@@ -393,9 +393,9 @@ pec.code.admin.emails =
 
 # --- Front End Configuration -----------------------------------------------------------
 
-# Configure which ESS applications should serve a ReactJS front end.
-# If true, the ReactJS front end will be used. If false, the AngularJS front end will be used.
-serve.react.myinfo = false
-serve.react.time = false
-serve.react.supply = false
-serve.react.travel = false
+# Select the front-end framework for each ESS application.
+# Supported values are "angularjs" and "react". Missing or invalid values default to "angularjs".
+frontend.myinfo.framework = angularjs
+frontend.time.framework = angularjs
+frontend.supply.framework = angularjs
+frontend.travel.framework = angularjs
