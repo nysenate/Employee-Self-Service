@@ -3,12 +3,20 @@ import EssNavBar from "app/components/EssNavBar";
 import { Outlet } from "react-router-dom";
 import useRequireAuthedUser from "app/hooks/useRequireAuthedUser";
 import TimeoutChecker from "app/TimeoutChecker";
+import LoadingIndicator from "app/components/LoadingIndicator";
+import ErrorPage from "app/views/ErrorPage";
 
 export default function EssLayout() {
-  const { isPending, isError, isFetching } = useRequireAuthedUser();
+  const { error, isPending, isError, isFetching } = useRequireAuthedUser();
 
-  if (isPending || isFetching || isError) {
-    return <></>;
+  // Do not mount protected routes while the user's session is being verified.
+  // This prevents their queries from starting based only on cached user data.
+  if (isPending || isFetching) {
+    return <LoadingIndicator />;
+  }
+
+  if (isError) {
+    return <ErrorPage error={error} />;
   }
 
   return (

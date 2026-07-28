@@ -14,7 +14,13 @@ export default function ErrorPage({ error, resetErrorBoundary }) {
         <Button variant="destructive" onPress={() => navigate(0)}>
           Try Again
         </Button>
-        <Button variant="destructive" onPress={() => navigate("/logout")}>
+        <Button
+          variant="destructive"
+          onPress={() => {
+            resetErrorBoundary?.();
+            navigate("/logout");
+          }}
+        >
           Logout
         </Button>
       </div>

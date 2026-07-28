@@ -10,6 +10,8 @@ import NotFound from "app/views/NotFound";
 import LoadingIndicator from "app/components/LoadingIndicator";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { ErrorBoundary } from "react-error-boundary";
+import ErrorPage from "app/views/ErrorPage";
 
 const MyInfoRouter = lazy(() =>
   import(
@@ -29,47 +31,49 @@ const TravelRouter = lazy(() =>
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<EssIndex />} />
-        <Route path="/" element={<EssLayout />}>
-          <Route
-            path="/myinfo/*"
-            element={
-              <ApplicationLoader>
-                <MyInfoRouter />
-              </ApplicationLoader>
-            }
-          />
-          <Route
-            path="/time/*"
-            element={
-              <ApplicationLoader>
-                <TimeRouter />
-              </ApplicationLoader>
-            }
-          />
-          <Route
-            path="/supply/*"
-            element={
-              <ApplicationLoader>
-                <SupplyRouter />
-              </ApplicationLoader>
-            }
-          />
-          <Route
-            path="/travel/*"
-            element={
-              <ApplicationLoader>
-                <TravelRouter />
-              </ApplicationLoader>
-            }
-          />
-        </Route>
-        <Route path="/login" element={<LoginIndex />} />
-        <Route path="/logout" element={<Logout />} />
-        <Route path="/404" element={<NotFound />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <ErrorBoundary FallbackComponent={ErrorPage}>
+        <Routes>
+          <Route path="/" element={<EssIndex />} />
+          <Route path="/" element={<EssLayout />}>
+            <Route
+              path="/myinfo/*"
+              element={
+                <ApplicationLoader>
+                  <MyInfoRouter />
+                </ApplicationLoader>
+              }
+            />
+            <Route
+              path="/time/*"
+              element={
+                <ApplicationLoader>
+                  <TimeRouter />
+                </ApplicationLoader>
+              }
+            />
+            <Route
+              path="/supply/*"
+              element={
+                <ApplicationLoader>
+                  <SupplyRouter />
+                </ApplicationLoader>
+              }
+            />
+            <Route
+              path="/travel/*"
+              element={
+                <ApplicationLoader>
+                  <TravelRouter />
+                </ApplicationLoader>
+              }
+            />
+          </Route>
+          <Route path="/login" element={<LoginIndex />} />
+          <Route path="/logout" element={<Logout />} />
+          <Route path="/404" element={<NotFound />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </ErrorBoundary>
     </BrowserRouter>
   );
 }
