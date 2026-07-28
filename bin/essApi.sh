@@ -13,6 +13,7 @@
 # Revised: 2021-04-07 - add options to specify HTTP method
 # Revised: 2021-10-26 - modify HTTP Accept header for ESS/Alert XML output
 # Revised: 2023-01-18 - add --csv option; change "eax" default output to CSV
+# Revised: 2026-06-23 - prevent double-slashes in API URL
 #
 
 prog=`basename $0`
@@ -157,13 +158,13 @@ if [ "$method" ]; then
 fi
 
 if [ $no_auth -eq 1 ]; then
-  curl $curl_opts -X $http_req "$base_api_url/$url" -H "Accept:application/$format"
+  curl $curl_opts -X $http_req "$base_api_url$url" -H "Accept:application/$format"
   rc=$?
 else
   [ "$esspass" ] || read -s -p "Password: " esspass
 
   curl $curl_opts -X POST -c "$cookietmp" "$base_url/login" -H "Accept:application/$format" -H 'Content-Type:application/x-www-form-urlencoded' -d "username=$essuser&password=$esspass&rememberMe=false"
-  curl $curl_opts -X $http_req -b "$cookietmp" "$base_api_url/$url" -H "Accept:application/$format"
+  curl $curl_opts -X $http_req -b "$cookietmp" "$base_api_url$url" -H "Accept:application/$format"
   rc=$?
   rm -f "$cookietmp"
 fi
