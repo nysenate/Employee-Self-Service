@@ -5,7 +5,7 @@ import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignmentGroup;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
-import gov.nysenate.ess.core.service.pec.notification.AssignmentWithTask;
+import gov.nysenate.ess.core.model.pec.TaskAssignmentDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -27,7 +27,7 @@ public class SqlPersonnelTaskAssignmentDao extends SqlBaseDao implements Personn
     @Override
     public List<PersonnelTaskAssignment> getAssignmentsForEmp(int empId) {
         return localNamedJdbc.query(
-                SELECT_TASKS_FOR_EMP.getSql(schemaMap()),
+                SELECT_TASK_ASSIGNMENTS.getSql(schemaMap()),
                 getEmpIdParams(empId),
                 patRowMapper
         );
@@ -38,15 +38,14 @@ public class SqlPersonnelTaskAssignmentDao extends SqlBaseDao implements Personn
             throws PersonnelTaskAssignmentNotFoundEx {
         try {
             List<PersonnelTaskAssignment> personnelTaskAssignments = localNamedJdbc.query(
-                    SELECT_SPECIFIC_TASK_FOR_EMP.getSql(schemaMap()),
+                    SELECT_SPECIFIC_TASK_ASSIGNMENT.getSql(schemaMap()),
                     getEmpIdTaskIdParams(empId, taskId),
                     patRowMapper
             );
             if (personnelTaskAssignments.isEmpty() || personnelTaskAssignments == null) {
                 logger.error("PERSONNEL TASK ASSIGNMENT WITH ID: " + taskId + " DOES NOT EXIST FOR EMPLOYEE: " + empId);
                 throw new PersonnelTaskAssignmentNotFoundEx(empId, taskId);
-            }
-            else {
+            } else {
                 return personnelTaskAssignments.get(0);
             }
         } catch (EmptyResultDataAccessException ex) {
@@ -55,7 +54,7 @@ public class SqlPersonnelTaskAssignmentDao extends SqlBaseDao implements Personn
     }
 
     @Override
-    public List<AssignmentWithTask> getNotifiableAssignmentsWithTasks() {
+    public List<TaskAssignmentDetails> getNotifiableAssignmentsWithTasks() {
         return localNamedJdbc.query(SELECT_NOTIFIABLE_ASSIGNMENTS.getSql(schemaMap()), assignTaskMapper);
     }
 
@@ -134,7 +133,7 @@ public class SqlPersonnelTaskAssignmentDao extends SqlBaseDao implements Personn
         } else if (updated != 1) {
             throw new IllegalStateException(
                     "Too many updates (" + updated + ") occurred for assigned task - " +
-                            "empId:" + empId + " taskId:" + taskId );
+                            "empId:" + empId + " taskId:" + taskId);
         }
     }
 
@@ -175,8 +174,8 @@ public class SqlPersonnelTaskAssignmentDao extends SqlBaseDao implements Personn
                     rs.getString("resource")
             );
 
-    private static final RowMapper<AssignmentWithTask> assignTaskMapper = (rs, rowNum) ->
-            new AssignmentWithTask(patRowMapper.mapRow(rs, rowNum), taskRowMapper.mapRow(rs, rowNum));
+    private static final RowMapper<TaskAssignmentDetails> assignTaskMapper = (rs, rowNum) ->
+            new TaskAssignmentDetails(patRowMapper.mapRow(rs, rowNum), taskRowMapper.mapRow(rs, rowNum));
 
     private MapSqlParameterSource getEmpIdParams(int empId) {
         return new MapSqlParameterSource("empId", empId);

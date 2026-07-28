@@ -5,40 +5,46 @@ import gov.nysenate.ess.core.dao.base.DbVendor;
 
 public enum PersonnelTaskAssignmentQuery implements BasicSqlQuery {
 
-    SELECT_TASKS_FOR_EMP("" +
-            "SELECT *\n" +
-            "FROM ${essSchema}.personnel_task_assignment\n" +
-            "WHERE emp_id = :empId"
+    SELECT_TASK_ASSIGNMENTS("""
+            SELECT *
+            FROM ${essSchema}.personnel_task_assignment
+            WHERE emp_id = :empId
+            ORDER BY task_id ASC
+            """
     ),
 
-    SELECT_SPECIFIC_TASK_FOR_EMP("" +
-            SELECT_TASKS_FOR_EMP.sql + "\n" +
-            "  AND task_id = :taskId"
+    SELECT_SPECIFIC_TASK_ASSIGNMENT("""
+            SELECT *
+            FROM ${essSchema}.personnel_task_assignment
+            WHERE emp_id = :empId
+              AND task_id = :taskId
+            """
     ),
 
     SELECT_NOTIFIABLE_ASSIGNMENTS(
             "SELECT *\n" +
-            "FROM ${essSchema}.personnel_task_assignment pta\n" +
-            "JOIN ${essSchema}.personnel_task pt ON pt.task_id = pta.task_id\n" +
-            "WHERE pt.active AND pt.notifiable AND pta.active AND NOT pta.completed"
+                    "FROM ${essSchema}.personnel_task_assignment pta\n" +
+                    "JOIN ${essSchema}.personnel_task pt ON pt.task_id = pta.task_id\n" +
+                    "WHERE pt.active AND pt.notifiable AND pta.active AND NOT pta.completed"
     ),
 
-    SELECT_TASKS_QUERY("" +
-            "SELECT *\n" +
-            "FROM ${essSchema}.personnel_task_assignment ta\n" +
-            "JOIN ${essSchema}.personnel_task t USING (task_id)\n" +
-            "WHERE (:active::boolean IS NULL OR ta.active = :active::boolean)\n" +
-            "  AND (:empId::int IS NULL OR emp_id = :empId)\n" +
-            "  AND (:taskType::ess.personnel_task_type IS NULL OR t.task_type = :taskType::ess.personnel_task_type)\n" +
-            "  AND (:completed::boolean IS NULL OR completed = :completed::boolean)\n" +
-            "  AND (:completed::boolean IS NULL OR :completed::boolean = FALSE OR\n" +
-            "        (:completedFrom::TIMESTAMP WITHOUT TIME ZONE IS NULL OR\n" +
-            "          timestamp >= :completedFrom::TIMESTAMP WITHOUT TIME ZONE)\n" +
-            "        AND\n" +
-            "        (:completedTo::TIMESTAMP WITHOUT TIME ZONE IS NULL OR\n" +
-            "          timestamp <= :completedTo::TIMESTAMP WITHOUT TIME ZONE)\n" +
-            "  )\n" +
-            "  AND (:taskIdsPresent OR ta.task_id IN (:taskIds))"
+    SELECT_TASKS_QUERY("""
+            SELECT *
+            FROM ${essSchema}.personnel_task_assignment ta
+            JOIN ${essSchema}.personnel_task t USING (task_id)
+            WHERE (:active::boolean IS NULL OR ta.active = :active::boolean)
+              AND (:empId::int IS NULL OR emp_id = :empId)
+              AND (:taskType::ess.personnel_task_type IS NULL OR t.task_type = :taskType::ess.personnel_task_type)
+              AND (:completed::boolean IS NULL OR completed = :completed::boolean)
+              AND (:completed::boolean IS NULL OR :completed::boolean = FALSE OR
+                    (:completedFrom::TIMESTAMP WITHOUT TIME ZONE IS NULL OR
+                      timestamp >= :completedFrom::TIMESTAMP WITHOUT TIME ZONE)
+                    AND
+                    (:completedTo::TIMESTAMP WITHOUT TIME ZONE IS NULL OR
+                      timestamp <= :completedTo::TIMESTAMP WITHOUT TIME ZONE)
+              )
+              AND (:taskIdsPresent OR ta.task_id IN (:taskIds))
+            """
     ),
 
     SELECT_NOT_IN_TASKS_QUERY("" +
@@ -69,7 +75,7 @@ public enum PersonnelTaskAssignmentQuery implements BasicSqlQuery {
             "WHERE emp_id = :empId AND task_id = :taskId"
     ),
 
-    UPDATE_TASK_DATES ("" +
+    UPDATE_TASK_DATES("" +
             "UPDATE ${essSchema}.personnel_task_assignment\n" +
             "SET assignment_date = :assignmentDate, due_date = :dueDate\n" +
             "WHERE emp_id = :empId AND task_id = :taskId"

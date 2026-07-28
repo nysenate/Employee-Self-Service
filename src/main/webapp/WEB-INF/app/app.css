@@ -1,0 +1,211 @@
+@import "tailwindcss";
+
+@source "../../../WEB-INF/app/**/*.js";
+@source "../../../WEB-INF/app/**/*.html";
+
+@theme {
+    /* Custom Colors */
+    --color-teal-100: #edf4f6;
+    --color-teal-200: #dbeaed;
+    --color-teal-300: #bce4ec;
+    --color-teal-400: #b8e3eb;
+    --color-teal-500: #4195a7;
+    --color-teal-600: #016b80;
+    --color-teal-700: #016073;
+    --color-teal-800: #005667;
+    --color-teal-900: #004552;
+
+    --color-green-100: #f1f5ec;
+    --color-green-200: #e5eadb;
+    --color-green-300: #c9d6ad;
+    --color-green-400: #afc285;
+    --color-green-500: #81ad1f;
+    --color-green-600: #799933;
+    --color-green-700: #6d8a2e;
+    --color-green-800: #5b7325;
+    --color-green-900: #495c1f;
+
+    --color-purple-100: #eff1f8;
+    --color-purple-200: #e0e2f2;
+    --color-purple-300: #c1c6e5;
+    --color-purple-400: #929bd1;
+    --color-purple-500: #737ec4;
+    --color-purple-600: #6370bd;
+    --color-purple-700: #5060b5;
+    --color-purple-800: #404d91;
+    --color-purple-900: #303a6d;
+
+    --color-orange-100: #faf4eb;
+    --color-orange-200: #f5ead9;
+    --color-orange-300: #edd5a8;
+    --color-orange-400: #e3bf7d;
+    --color-orange-500: #daaa51;
+    --color-orange-600: #d19526;
+    --color-orange-700: #bb8620;
+    --color-orange-800: #966b1a;
+    --color-orange-900: #705013;
+
+    --color-gray-25: #fefefe;
+    --color-gray-50: #fafafa;
+    --color-gray-75: #f5f5f5;
+    --color-gray-100: #f1f1f1;
+    --color-gray-450: #848b98;
+
+    /* Custom Font Sizes */
+    --text-xs: 0.688rem;
+    --text-sm: 0.75rem;
+    --text-base: 0.813rem;
+    --text-lg: 0.9rem;
+    --text-xl: 1rem;
+    --text-2xl: 1.125rem;
+    --text-3xl: 1.25rem;
+    --text-4xl: 1.5rem;
+    --text-5xl: 1.875rem;
+    --text-6xl: 2.25rem;
+
+    /* Custom Font Family */
+    --font-family-openSans: "Open Sans", sans-serif;
+
+    /* Theme Variables */
+    --color-background: hsl(0 0% 100%);
+    --color-foreground: hsl(0 0% 3.9%);
+    --color-card: hsl(0 0% 100%);
+    --color-card-foreground: hsl(0 0% 3.9%);
+    --color-popover: hsl(0 0% 100%);
+    --color-popover-foreground: hsl(0 0% 3.9%);
+    --color-primary: hsl(0 0% 9%);
+    --color-primary-foreground: hsl(0 0% 98%);
+    --color-secondary: hsl(0 0% 96.1%);
+    --color-secondary-foreground: hsl(0 0% 9%);
+    --color-muted: hsl(0 0% 96.1%);
+    --color-muted-foreground: hsl(0 0% 45.1%);
+    --color-accent: hsl(0 0% 96.1%);
+    --color-accent-foreground: hsl(0 0% 9%);
+    --color-destructive: hsl(357 66% 45%);
+    --color-destructive-foreground: hsl(0 0% 98%);
+    --color-border: hsl(0 0% 89.8%);
+    --color-input: oklch(55.1% 0.027 264.364);
+    --color-ring: hsl(0 0% 3.9%);
+    --radius-lg: 0.5rem;
+    --radius-md: calc(0.5rem - 2px);
+    --radius-sm: calc(0.5rem - 4px);
+}
+
+/* Base styles */
+@layer base {
+    html {
+        font-family: var(--font-family-openSans);
+        scrollbar-gutter: stable;
+    }
+
+    body {
+        @apply m-0 bg-gray-100 text-base text-gray-800;
+        font-family: var(--font-family-openSans);
+    }
+
+    input {
+        @apply focus-visible:outline-0;
+    }
+
+    select {
+        @apply focus-visible:outline-0;
+    }
+
+    a {
+        @apply text-base text-teal-600 hover:text-teal-800;
+    }
+
+    button {
+        @apply outline-none;
+    }
+}
+
+/*  Custom css classes */
+@layer components {
+    .input {
+        @apply border border-gray-300 bg-gray-50 p-1.5 focus-visible:border-gray-600 disabled:border-none disabled:bg-white [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none;
+    }
+
+    .input--invalid {
+        @apply border border-red-600 focus-visible:border-red-600;
+    }
+
+    .select {
+        @apply border border-gray-300 bg-gray-50 p-1.5;
+    }
+
+    /* --- Table  Classes --- */
+    .table {
+        @apply w-full overflow-x-auto;
+    }
+
+    .table--sticky thead tr:nth-child(1) th {
+        @apply sticky z-10 border-b border-teal-600 bg-white shadow;
+    }
+
+    .table__head__row {
+        @apply border-b border-teal-600;
+    }
+
+    .table__head__cell {
+        @apply px-5 py-3 text-left font-semibold tracking-wide;
+    }
+
+    .table--compact .table__head__cell {
+        @apply px-2 py-2 text-sm;
+    }
+
+    .table__body {
+        @apply text-center;
+    }
+
+    .table__body--striped .table__row:nth-child(odd) {
+        @apply bg-gray-75;
+    }
+
+    .table__body--striped .table__row--error:nth-child(odd) {
+        @apply bg-red-300/50;
+    }
+
+    .table__body--highlight .table__row {
+        @apply cursor-pointer transition duration-75 hover:brightness-90;
+    }
+
+    .table__row {
+        @apply bg-gray-25;
+    }
+
+    .table__row--error {
+        @apply bg-red-300/30;
+    }
+
+    .table__cell {
+        @apply px-5 py-1.5 text-left;
+    }
+
+    .table--compact .table__cell {
+        @apply px-2 py-1;
+    }
+
+    .table__cell--bold {
+        @apply font-semibold;
+    }
+
+    th.cell--number {
+        @apply text-right;
+    }
+
+    td.cell--number {
+        @apply text-right tabular-nums;
+    }
+
+    .table__totals {
+        @apply border-t-2 border-teal-600 font-semibold;
+    }
+}
+
+@media print {
+    input::placeholder {
+        color: transparent !important;
+    }
+}

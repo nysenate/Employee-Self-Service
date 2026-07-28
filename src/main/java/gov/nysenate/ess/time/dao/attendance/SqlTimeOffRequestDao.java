@@ -125,7 +125,7 @@ public class SqlTimeOffRequestDao extends SqlBaseDao implements TimeOffRequestDa
 
         //If the request is new, add it to the database,
         //Otherwise, update the request.
-        if(requestId == -1) {
+        if (requestId == -1) {
             requestId = addNewRequest(request);
         } else {
             //remove old comments and days
@@ -136,17 +136,17 @@ public class SqlTimeOffRequestDao extends SqlBaseDao implements TimeOffRequestDa
             MapSqlParameterSource params = getAddRequestParams(request);
             params.addValue("requestId", request.getRequestId());
             int changed = localNamedJdbc.update(SqlTimeOffRequestQuery.UPDATE_REQUEST.getSql(schemaMap()), params);
-            if(changed == 0) {
+            if (changed == 0) {
                 requestId = -1;
             }
             //add in the new comments and days
-            if(request.getComments() != null) {
+            if (request.getComments() != null) {
                 for (TimeOffRequestComment comment : request.getComments()) {
                     comment.setRequestId(request.getRequestId());
                     addCommentToRequest(comment);
                 }
             }
-            if(request.getDays() != null) {
+            if (request.getDays() != null) {
                 for (TimeOffRequestDay day : request.getDays()) {
                     day.setRequestId(request.getRequestId());
                     addDayToRequest(day);
@@ -292,13 +292,13 @@ public class SqlTimeOffRequestDao extends SqlBaseDao implements TimeOffRequestDa
         params.addValue("sickEmpHours", day.getSickEmpHours().orElse(BigDecimal.ZERO));
         params.addValue("sickFamHours", day.getSickFamHours().orElse(BigDecimal.ZERO));
         params.addValue("miscHours", day.getMiscHours().orElse(BigDecimal.ZERO));
-                                                    //Allow misc_type to be null
-        params.addValue("miscType", Optional.ofNullable(day.getMiscType())
-                                                        .map(Enum::name)
-                                                        .orElse(null));
-        params.addValue("misc2_Hours", day.getMiscHours().orElse(BigDecimal.ZERO));
         //Allow misc_type to be null
-        params.addValue("misc_Type2", Optional.ofNullable(day.getMiscType())
+        params.addValue("miscType", Optional.ofNullable(day.getMiscType())
+                .map(Enum::name)
+                .orElse(null));
+        params.addValue("misc2_Hours", day.getMisc2Hours().orElse(BigDecimal.ZERO));
+        //Allow misc_type to be null
+        params.addValue("misc_Type2", Optional.ofNullable(day.getMiscType2())
                 .map(Enum::name)
                 .orElse(null));
         return params;
@@ -317,8 +317,8 @@ public class SqlTimeOffRequestDao extends SqlBaseDao implements TimeOffRequestDa
         params.addValue("supervisorId", request.getSupervisorId());
         params.addValue("status", request.getStatus().getName());
         params.addValue("updateTimestamp", toDate(request.getTimestamp()));
-        params.addValue("startDate",  toDate(request.getStartDate()));
-        params.addValue("endDate",  toDate(request.getEndDate()));
+        params.addValue("startDate", toDate(request.getStartDate()));
+        params.addValue("endDate", toDate(request.getEndDate()));
         return params;
     }
 }

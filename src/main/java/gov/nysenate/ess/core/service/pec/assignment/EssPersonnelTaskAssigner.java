@@ -19,7 +19,7 @@ import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.model.transaction.TransactionHistoryUpdateEvent;
 import gov.nysenate.ess.core.model.transaction.TransactionRecord;
 import gov.nysenate.ess.core.service.mail.SendMailService;
-import gov.nysenate.ess.core.service.pec.notification.AssignmentWithTask;
+import gov.nysenate.ess.core.model.pec.TaskAssignmentDetails;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
 import org.apache.commons.lang3.StringUtils;
@@ -81,7 +81,7 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
     }
 
     @Override
-    public List<AssignmentWithTask> assignTasks(boolean updateDb) {
+    public List<TaskAssignmentDetails> assignTasks(boolean updateDb) {
         if (updateDb) {
             logger.info("Determining and assigning personnel tasks for all active employees...");
         }
@@ -96,7 +96,7 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
     }
 
     @Override
-    public List<AssignmentWithTask> assignTasks(int empId, boolean updateDb) {
+    public List<TaskAssignmentDetails> assignTasks(int empId, boolean updateDb) {
         if (needsTaskAssignment(empId)) {
             return groupTaskAssigners.stream()
                     .map(groupAssigner -> groupAssigner.assignGroupTasks(empId, updateDb))

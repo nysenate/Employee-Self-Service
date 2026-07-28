@@ -4,6 +4,7 @@
 CLAUDE.md
 !.idea/codeStyleSettings.xml
 !.idea/codeStyles/**
+*.swp
 **/target/
 **.properties
 !src/test/resources/test.default.properties

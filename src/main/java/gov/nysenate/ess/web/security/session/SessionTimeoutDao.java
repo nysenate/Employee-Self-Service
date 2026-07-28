@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 /**
  * Contains methods to check the remaining allowed inactivity time for the current session,
@@ -30,13 +29,13 @@ public class SessionTimeoutDao {
 
     /**
      * Gets the remaining allowed inactivity for the current session in seconds.
+     * If the session does not have a last ping registered, it is set to now.
      *
      * @return Duration
      */
     public Duration getRemainingAllowedInactivity() {
+        ensureLastActivePing();
         LocalDateTime lastActivePing = getLastActivePing();
-        Objects.requireNonNull(lastActivePing, "User's session does not have a last ping timestamp");
-
         Duration inactivity = Duration.between(lastActivePing, LocalDateTime.now());
         return sessionTimeoutDuration.minus(inactivity);
     }
@@ -51,12 +50,10 @@ public class SessionTimeoutDao {
 
     /**
      * Checks that the session is not timed out.
-     * If the session does not have a last ping registered, it is set to now.
      *
      * @return boolean
      */
     public boolean isSessionActive() {
-        ensureLastActivePing();
         return !getRemainingAllowedInactivity().isNegative();
     }
 

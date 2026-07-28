@@ -21,10 +21,7 @@ import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentNotFoundE
 import gov.nysenate.ess.core.model.auth.CorePermission;
 import gov.nysenate.ess.core.model.auth.SimpleEssPermission;
 import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
-import gov.nysenate.ess.core.model.pec.EmpPATSearchResultView;
-import gov.nysenate.ess.core.model.pec.PersonnelTask;
-import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
-import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
+import gov.nysenate.ess.core.model.pec.*;
 import gov.nysenate.ess.core.model.pec.ethics.EthicsCourseTask;
 import gov.nysenate.ess.core.model.pec.ethics.EthicsLiveCourseTask;
 import gov.nysenate.ess.core.model.pec.everfi.EverfiCourseTask;
@@ -44,6 +41,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 
 import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -87,14 +85,15 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
         this.empTaskSearchService = empTaskSearchService;
     }
 
-    /** Get Tasks API
+    /**
+     * Get Tasks API
      * --------------
-     *
+     * <p>
      * Get a list of all personnel tasks.
-     *
+     * <p>
      * Request params:
-     * @param activeOnly boolean - default false - if true, only active tasks are returned, otherwise all tasks.
      *
+     * @param activeOnly boolean - default false - if true, only active tasks are returned, otherwise all tasks.
      * @return {@link ListViewResponse<PersonnelTaskView>}
      */
     @RequestMapping(value = "", method = {GET, HEAD})
@@ -102,29 +101,68 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
         return ListViewResponse.of(
                 taskService.getPersonnelTasks(activeOnly, true).stream()
                         .map(this::getPersonnelTaskView)
+                        .sorted(Comparator.comparingInt(PersonnelTaskView::getTaskId).reversed())
                         .collect(Collectors.toList()),
                 "tasks"
         );
     }
 
     /**
+     * Employee Task Assignments Search
+     * --------------------------------
+     * <p>
+     * Search for employees and their personnel task assignments.
+     * <p>
+     * Usage:
+     * (GET)    /api/v1/personnel/task/assignments
+     * <p>
+     * Example:
+     * /api/v1/personnel/task/assignments?empActive=true&taskActive=true&limit=10&offset=1&sort=NAME:ASC&sort=OFFICE:ASC
+     * <p>
+     * Request params:
+     * <p>
+     * empActive - boolean - filters employees by active status.
+     * taskActive - boolean - filters assignments by personnel task active status.
+     * limit - int - default 10 - limit the number of employee results returned.
+     * offset - int - default 1 - start the result list from this result.
+     * sort - string - comma-separated ordered sort directives.
+     *
+     * @return {@link ListViewResponse< EmployeeTaskAssignmentsView >}
+     */
+    @GetMapping(value = "/assignments")
+    public ListViewResponse<EmployeeTaskAssignmentsView> getAssignments(WebRequest request) {
+        checkPermission(SimpleEssPermission.COMPLIANCE_REPORT_GENERATION.getPermission());
+        LimitOffset limitOffset = getLimitOffset(request, 10);
+        EmpPTAQuery empPTAQuery = extractEmpPATQuery(request);
+
+        PaginatedList<EmployeeTaskAssignments> results =
+                empTaskSearchService.searchEmployeeTaskAssignments(empPTAQuery, limitOffset);
+        List<EmployeeTaskAssignmentsView> resultViews = results.getResults().stream()
+                .map(EmployeeTaskAssignmentsView::new)
+                .collect(Collectors.toList());
+        return ListViewResponse.of(resultViews, results.getTotal(), limitOffset);
+    }
+
+    /**
      * Get Tasks for Emp API
      * ---------------------
-     *
+     * <p>
      * Gets a list of all tasks for a specific employee.
-     *
+     * <p>
      * Usage:
      * (GET)    /api/v1/personnel/task/assignment/{empId}
-     *
+     * <p>
      * Path params:
-     * @param empId int - employee id
      *
+     * @param empId      int - employee id
+     * @param activeOnly boolean - if true, return only active assignments.
      * @return {@link ListViewResponse<PersonnelTaskAssignmentView>} list of tasks assigned to given emp.
      */
     @RequestMapping(value = "/assignment/{empId:\\d+}", method = {GET, HEAD})
     public ListViewResponse<PersonnelTaskAssignmentView> getAssignmentsForEmployee(
             @PathVariable int empId,
-            @RequestParam(defaultValue = "false") boolean detail) {
+            @RequestParam(defaultValue = "false") boolean detail,
+            @RequestParam(defaultValue = "false") boolean activeOnly) {
 
         checkPermission(new CorePermission(empId, PERSONNEL_TASK, GET));
 
@@ -133,6 +171,9 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
                 detail ? this::getDetailedTaskView : PersonnelTaskAssignmentView::new;
 
         List<PersonnelTaskAssignment> tasks = taskDao.getAssignmentsForEmp(empId);
+        if (activeOnly) {
+            tasks = tasks.stream().filter(PersonnelTaskAssignment::isActive).toList();
+        }
         List<PersonnelTaskAssignmentView> taskViews = tasks.stream()
                 .map(viewMapper)
                 .collect(Collectors.toList());
@@ -142,16 +183,16 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
     /**
      * Get Task for Emp API
      * --------------------
-     *
+     * <p>
      * Gets a specific task assignment.
-     *
+     * <p>
      * Usage:
      * (GET)    /api/v1/personnel/task/assignment/{empId}/{taskId}
-     *
+     * <p>
      * Path params:
-     * @param empId int - employee id
-     * @param taskId int - task id
      *
+     * @param empId  int - employee id
+     * @param taskId int - task id
      * @return {@link ViewObjectResponse<PersonnelTaskAssignmentView>}
      */
     @RequestMapping(value = "/assignment/{empId}/{taskId}", method = {GET, HEAD})
@@ -169,52 +210,20 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
     }
 
     /**
-     * Employee Task Search
-     * --------------------
-     *
-     * Search for employees and tasks.
-     *
-     * Usage:
-     * (GET)    /api/v1/personnel/task/emp/search
-     *
-     * Request params:
-     * @see #extractEmpPATQuery(WebRequest) for facet parameters
-     * limit - int - default 10 - limit the number of results
-     * offset - int - default 1 - start the result list from this result.
-     *
-     * @return {@link ViewObjectResponse<PersonnelTaskAssignmentView>}
-     */
-    @RequestMapping(value = "/emp/search", method = {GET, HEAD})
-    public ListViewResponse<EmpPATSearchResultView> empTaskSearch(WebRequest request) {
-
-        checkPermission(SimpleEssPermission.COMPLIANCE_REPORT_GENERATION.getPermission());
-
-        LimitOffset limitOffset = getLimitOffset(request, 10);
-
-        EmpPTAQuery empPTAQuery = extractEmpPATQuery(request);
-
-        PaginatedList<EmployeeTaskSearchResult> results = empTaskSearchService.searchForEmpTasks(empPTAQuery, limitOffset);
-        List<EmpPATSearchResultView> resultViews = results.getResults().stream()
-                .map(EmpPATSearchResultView::new)
-                .collect(Collectors.toList());
-        return ListViewResponse.of(resultViews, results.getTotal(), limitOffset);
-    }
-
-    /**
      * Employee Assign Task Search
      * --------------------
-     *
+     * <p>
      * Search for employees and tasks.
-     *
+     * <p>
      * Usage:
      * (GET)    /api/v1/personnel/task/emp/assignSearch
-     *
+     * <p>
      * Request params:
+     *
+     * @return {@link ViewObjectResponse<PersonnelTaskAssignmentView>}
      * @see #extractEmpPATQuery(WebRequest) for facet parameters
      * limit - int - default 10 - limit the number of results
      * offset - int - default 1 - start the result list from this result.
-     *
-     * @return {@link ViewObjectResponse<PersonnelTaskAssignmentView>}
      */
     @RequestMapping(value = "/emp/assignSearch", method = {GET, HEAD})
     public ListViewResponse<EmpPATSearchResultView> empAssignTaskSearch(WebRequest request) {
@@ -235,13 +244,14 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
     /**
      * Employee Task Search Report
      * ---------------------------
-     *
+     * <p>
      * Returns a CSV report based on the passed in request params
-     *
+     * <p>
      * Usage:
      * (GET)    /api/v1/personnel/task/emp/search/report
-     *
+     * <p>
      * Request params:
+     *
      * @see #extractEmpPATQuery(WebRequest) for facet parameters
      *
      */
@@ -249,7 +259,7 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
     public void generateSearchReportCSV(WebRequest request, HttpServletResponse response) throws IOException {
         checkPermission(SimpleEssPermission.COMPLIANCE_REPORT_GENERATION.getPermission());
 
-        String csvFileName =  "PEC_Report" + LocalDateTime.now().withNano(0)+".csv";
+        String csvFileName = "PEC_Report" + LocalDateTime.now().withNano(0) + ".csv";
         // creates mock data
         String headerKey = "Content-Disposition";
         String headerValue = String.format("attachment; filename=\"%s\"",
@@ -271,9 +281,9 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
         //handle csv printing
         int maxNumOfTasks = getMaxNumOfTasks(resultViews);
         CSVPrinter csvPrinter = createProperCSVPrinter(maxNumOfTasks, response);
-        for (EmpPATSearchResultView searchResultView: resultViews) {
-            DetailedEmployeeView currentEmployee =  searchResultView.getEmployee();
-            handleCSVPrinting(csvPrinter,currentEmployee, getRespCenter(currentEmployee), searchResultView.getTasks(), maxNumOfTasks);
+        for (EmpPATSearchResultView searchResultView : resultViews) {
+            DetailedEmployeeView currentEmployee = searchResultView.getEmployee();
+            handleCSVPrinting(csvPrinter, currentEmployee, getRespCenter(currentEmployee), searchResultView.getTasks(), maxNumOfTasks);
         }
         csvPrinter.close();
     }
@@ -302,7 +312,7 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
      */
     private int getMaxNumOfTasks(List<EmpPATSearchResultView> resultViews) {
         int max = 1;
-        for (EmpPATSearchResultView searchResultView: resultViews) {
+        for (EmpPATSearchResultView searchResultView : resultViews) {
             int recordCount = searchResultView.getTasks().size();
             if (recordCount > max) {
                 max = recordCount;
@@ -317,12 +327,12 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
     private CSVPrinter createProperCSVPrinter(int maxNumOfTasks, HttpServletResponse response) throws IOException {
         StringBuilder testOriginalTaskString = new StringBuilder("EmpId, Name, Email, Work Phone, Resp Center, Continuous Service, ");
 
-        for (int i = 1; i < maxNumOfTasks+1; i++) {
+        for (int i = 1; i < maxNumOfTasks + 1; i++) {
             testOriginalTaskString.append(createTaskStrings(i));
         }
 
-         return new CSVPrinter(response.getWriter(), CSVFormat.DEFAULT
-                    .withHeader(testOriginalTaskString.toString().split(",")));
+        return new CSVPrinter(response.getWriter(), CSVFormat.DEFAULT
+                .withHeader(testOriginalTaskString.toString().split(",")));
     }
 
     /**
@@ -381,8 +391,7 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
         String respCenter = "";
         try {
             respCenter = currentEmployee.getRespCtr().getRespCenterHead().getShortName();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             //No need to do anything. This means that the employee does not have a responsibility center
         }
         return respCenter;
@@ -404,20 +413,13 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
     /** Generate a task view for the given task */
     private PersonnelTaskView getPersonnelTaskView(PersonnelTask detailedTask) {
         return switch (detailedTask.getTaskType()) {
-            case DOCUMENT_ACKNOWLEDGMENT ->
-                    new AckDocView(detailedTask, assets + ackDocPath);
-            case MOODLE_COURSE ->
-                    new MoodleTaskView(detailedTask);
-            case VIDEO_CODE_ENTRY ->
-                    new PECVideoView((VideoTask) detailedTask, assets + pecVidPath);
-            case EVERFI_COURSE ->
-                    new EverfiTaskView((EverfiCourseTask) detailedTask);
-            case ETHICS_COURSE ->
-                    new EthicsCourseTaskView((EthicsCourseTask) detailedTask);
-            case ETHICS_LIVE_COURSE ->
-                    new EthicsLiveCourseTaskView((EthicsLiveCourseTask) detailedTask);
-            case KNOWBE4_COURSE ->
-                    new KnowBe4TaskView( (KnowBe4CourseTask) detailedTask);
+            case DOCUMENT_ACKNOWLEDGMENT -> new AckDocView(detailedTask, assets + ackDocPath);
+            case MOODLE_COURSE -> new MoodleTaskView(detailedTask);
+            case VIDEO_CODE_ENTRY -> new PECVideoView((VideoTask) detailedTask, assets + pecVidPath);
+            case EVERFI_COURSE -> new EverfiTaskView((EverfiCourseTask) detailedTask);
+            case ETHICS_COURSE -> new EthicsCourseTaskView((EthicsCourseTask) detailedTask);
+            case ETHICS_LIVE_COURSE -> new EthicsLiveCourseTaskView((EthicsLiveCourseTask) detailedTask);
+            case KNOWBE4_COURSE -> new KnowBe4TaskView((KnowBe4CourseTask) detailedTask);
 
         };
     }

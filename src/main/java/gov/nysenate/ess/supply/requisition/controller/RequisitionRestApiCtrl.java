@@ -88,13 +88,15 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
      * @param requisitionView
      */
     @RequestMapping(value = "/{id}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void saveRequisition(@PathVariable int id, @RequestBody RequisitionView requisitionView) {
+    public BaseResponse saveRequisition(@PathVariable int id, @RequestBody RequisitionView requisitionView) {
         Requisition requisition = requisitionView.toRequisition();
         checkPermission(RequisitionPermission.forCustomer(requisition.getCustomer().getEmployeeId(), RequestMethod.POST));
 
         requisition = requisition.setModifiedBy(getModifiedBy());
         requisition = requisitionService.saveRequisition(requisition);
-        broadcastRequisitionUpdate(new RequisitionView(requisition));
+        RequisitionView reqView = new RequisitionView(requisition);
+        broadcastRequisitionUpdate(reqView);
+        return new ViewObjectResponse<>(reqView);
     }
 
     /**
@@ -104,7 +106,7 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
      * @param requisitionView
      */
     @RequestMapping(value = "/{id}/process", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void processRequisition(@PathVariable int id, @RequestBody RequisitionView requisitionView) {
+    public BaseResponse processRequisition(@PathVariable int id, @RequestBody RequisitionView requisitionView) {
         Requisition requisition = requisitionView.toRequisition();
         checkPermission(RequisitionPermission.forCustomer(requisition.getCustomer().getEmployeeId(), RequestMethod.POST));
 
@@ -116,7 +118,9 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
         }
         requisition = requisition.setModifiedBy(getModifiedBy());
         requisition = requisitionService.processRequisition(requisition);
-        broadcastRequisitionUpdate(new RequisitionView(requisition));
+        RequisitionView reqView = new RequisitionView(requisition);
+        broadcastRequisitionUpdate(reqView);
+        return new ViewObjectResponse<>(reqView);
     }
 
     /**
@@ -126,14 +130,16 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
      * @param requisitionView
      */
     @RequestMapping(value = "/{id}/undo", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void undoRequisition(@PathVariable int id, @RequestBody RequisitionView requisitionView) {
+    public BaseResponse undoRequisition(@PathVariable int id, @RequestBody RequisitionView requisitionView) {
         Requisition requisition = requisitionView.toRequisition();
         // Only Supply Approvers may Undo an action.
         checkPermission(SupplyPermission.SUPPLY_REQUISITION_APPROVE.getPermission());
 
         requisition = requisition.setModifiedBy(getModifiedBy());
         requisition = requisitionService.undoRequisition(requisition);
-        broadcastRequisitionUpdate(new RequisitionView(requisition));
+        RequisitionView reqView = new RequisitionView(requisition);
+        broadcastRequisitionUpdate(reqView);
+        return new ViewObjectResponse<>(reqView);
     }
 
     /**
@@ -143,13 +149,15 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
      * @param requisitionView
      */
     @RequestMapping(value = "/{id}/reject", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void rejectRequisition(@PathVariable int id, @RequestBody RequisitionView requisitionView) {
+    public BaseResponse rejectRequisition(@PathVariable int id, @RequestBody RequisitionView requisitionView) {
         Requisition requisition = requisitionView.toRequisition();
         checkPermission(RequisitionPermission.forCustomer(requisition.getCustomer().getEmployeeId(), RequestMethod.POST));
 
         requisition = requisition.setModifiedBy(getModifiedBy());
         requisition = requisitionService.rejectRequisition(requisition);
-        broadcastRequisitionUpdate(new RequisitionView(requisition));
+        RequisitionView reqView = new RequisitionView(requisition);
+        broadcastRequisitionUpdate(reqView);
+        return new ViewObjectResponse<>(reqView);
     }
 
     /**
@@ -183,7 +191,7 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
                                            @RequestParam(required = false) String dateField,
                                            @RequestParam(required = false) String[] syncStatus,
                                            @RequestParam(defaultValue = "All", required = false) String itemId,
-                                           @RequestParam(required = false) String reconciled,
+                                           @RequestParam(required = false) Boolean reconciled,
                                            WebRequest webRequest) {
         checkPermission(RequisitionPermission.forAll(RequestMethod.GET));
 

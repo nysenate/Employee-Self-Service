@@ -16,7 +16,7 @@ public class LoginPageCtrl
     private static final Logger logger = LoggerFactory.getLogger(LoginPageCtrl.class);
 
     @RequestMapping(method = {RequestMethod.GET, RequestMethod.HEAD})
-    public String loginPage(HttpServletRequest request, HttpServletResponse response) {
+    public Object loginPage(HttpServletRequest request, HttpServletResponse response) {
         return "login";
     }
 }

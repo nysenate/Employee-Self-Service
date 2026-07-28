@@ -1,11 +1,13 @@
 package gov.nysenate.ess.supply.item.model;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Objects;
 
 /**
  * Simple class to represent a Supply Item Category.
  */
-public final class Category {
+public final class Category implements Comparable<Category> {
 
     private final String name;
 
@@ -20,8 +22,8 @@ public final class Category {
     @Override
     public String toString() {
         return "Category{" +
-               "name='" + name + '\'' +
-               '}';
+                "name='" + name + '\'' +
+                '}';
     }
 
     @Override
@@ -35,5 +37,10 @@ public final class Category {
     @Override
     public int hashCode() {
         return name != null ? name.hashCode() : 0;
+    }
+
+    @Override
+    public int compareTo(@NotNull Category o) {
+        return this.getName().compareTo(o.getName());
     }
 }

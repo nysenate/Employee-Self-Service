@@ -63,7 +63,7 @@ public class ReconciliationService {
     public List<Requisition> reqsPendingReconciliation() {
         RequisitionQuery query = new RequisitionQuery()
                 .setStatuses(EnumSet.of(RequisitionStatus.APPROVED))
-                .setReconciled("false")
+                .setReconciled(false)
                 .setFromDateTime(DateUtils.LONG_AGO.atTime(0, 0))
                 .setLimitOffset(LimitOffset.ALL);
         return requisitionService.searchRequisitions(query).getResults();
@@ -71,11 +71,11 @@ public class ReconciliationService {
 
     /**
      * Verifies all items needed to reconcile the outstanding requisitions are included in the Inventory.
-     *
+     * <p>
      * An item needs to be reconciled if it requires synchronization.
      *
      * @param inventory User entered inventory.
-     * @param reqs Requisitions needing to be reconciled.
+     * @param reqs      Requisitions needing to be reconciled.
      * @return
      */
     private boolean isFullInventory(Inventory inventory, List<Requisition> reqs) {
@@ -86,8 +86,9 @@ public class ReconciliationService {
     /**
      * Given all requisitions which require reconciliation this returns
      * a Set of all items which need to be reconciled.
-     *
+     * <p>
      * Items that do not require synchronization do not need to be reconciled.
+     *
      * @param reqs
      * @return
      */

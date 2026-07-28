@@ -1,0 +1,159 @@
+import React from "react";
+import { format, parseISO } from "date-fns";
+import { toCurrency } from "app/utils/textUtils";
+import clsx from "clsx";
+
+const stickyLabelCellClasses = clsx(
+  "relative sticky left-0 z-20",
+  "after:pointer-events-none after:absolute after:right-0 after:bottom-0",
+  "after:top-0 after:w-[2px] after:bg-teal-600 after:content-['']",
+);
+
+export default function Paycheck({ summary }) {
+  return (
+    <div className="overflow-x-scroll pt-3">
+      <table className="table--sticky table--compact table">
+        <thead className="">
+          <tr className="table__head__row">
+            <th
+              className={clsx(
+                "table__head__cell bg-white",
+                stickyLabelCellClasses,
+              )}
+            >
+              Check Date
+            </th>
+            <th className="table__head__cell">Pay Period</th>
+            <th className="table__head__cell cell--number">Gross</th>
+            {summary.deductions.map((d) => (
+              <th key={d.code} className="table__head__cell cell--number">
+                {formatDeductionHeader(d.description)}
+              </th>
+            ))}
+            {displayDirectDepositColumn(summary) && (
+              <th className="table__head__cell cell--number">
+                Direct Deposit
+              </th>
+            )}
+            {displayCheckColumn(summary) && (
+              <th className="table__head__cell cell--number">Check</th>
+            )}
+          </tr>
+        </thead>
+        <tbody className="table__body table__body--striped table__body--highlight">
+          {summary.paychecks.map((p, i) => (
+            <tr key={p.payPeriod} className="table__row">
+              <td
+                className={clsx(
+                  "table__cell",
+                  stickyLabelCellClasses,
+                  `${i % 2 === 0 ? "bg-gray-75" : "bg-white"}`,
+                )}
+              >
+                {format(parseISO(p.checkDate), "M/dd/yyyy")}
+              </td>
+              <td className="table__cell">{p.payPeriod}</td>
+              <td
+                className={`table__cell cell--number ${isSignificantChange(
+                  p.grossIncome,
+                  summary.paychecks[i - 1]?.grossIncome,
+                )}`}
+              >
+                {toCurrency(p.grossIncome)}
+              </td>
+              {p.deductions.map((d, ix) => (
+                <td
+                  key={d.code}
+                  className={`table__cell cell--number ${isSignificantChange(
+                    d.amount,
+                    summary.paychecks[i - 1]?.deductions[ix].amount,
+                  )}`}
+                >
+                  {toCurrency(d.amount)}
+                </td>
+              ))}
+              {displayDirectDepositColumn(summary) && (
+                <td
+                  className={`table__cell cell--number ${isSignificantChange(
+                    p.directDepositAmount,
+                    summary.paychecks[i - 1]?.directDepositAmount,
+                  )}`}
+                >
+                  {toCurrency(p.directDepositAmount)}
+                </td>
+              )}
+              {displayCheckColumn(summary) && (
+                <td
+                  className={`table__cell cell--number ${isSignificantChange(
+                    p.checkAmount,
+                    summary.paychecks[i - 1]?.checkAmount,
+                  )}`}
+                >
+                  {toCurrency(p.checkAmount)}
+                </td>
+              )}
+            </tr>
+          ))}
+          <tr className="table__totals">
+            <td
+              colSpan="2"
+              className={clsx(
+                "table__cell table__cell--left",
+                stickyLabelCellClasses,
+                "bg-white",
+                "after:hidden",
+              )}
+            >
+              Annual Totals
+            </td>
+            <td className="table__cell cell--number">
+              {toCurrency(summary.grossIncomeTotal)}
+            </td>
+            {summary.deductions.map((d) => (
+              <td key={d.code} className="table__cell cell--number">
+                {toCurrency(summary.deductionTotals[d.code]) || toCurrency(0)}
+              </td>
+            ))}
+            {displayDirectDepositColumn(summary) && (
+              <td className="table__cell cell--number">
+                {toCurrency(summary.directDepositTotal)}
+              </td>
+            )}
+            {displayCheckColumn(summary) && (
+              <td className="table__cell cell--number">
+                {toCurrency(summary.checkAmountTotal)}
+              </td>
+            )}
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+const displayDirectDepositColumn = (summary) => {
+  return summary.directDepositTotal > 0;
+};
+
+const displayCheckColumn = (summary) => {
+  return summary.checkAmountTotal > 0;
+};
+
+const formatDeductionHeader = (input) => {
+  if (input !== null) {
+    return input.replace(/\w\S*/g, function (txt) {
+      txt = txt.replace(":", "");
+      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    });
+  }
+};
+
+// Style a cell bold if there was a significant change from the previous row.
+const isSignificantChange = (curr, prev) => {
+  if (typeof prev !== "undefined") {
+    if (Math.abs(curr - prev) > 0.03) {
+      return "font-semibold";
+    }
+  }
+  return "";
+};

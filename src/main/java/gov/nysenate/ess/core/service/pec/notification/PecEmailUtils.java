@@ -2,6 +2,7 @@ package gov.nysenate.ess.core.service.pec.notification;
 
 import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
 import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
+import gov.nysenate.ess.core.model.pec.TaskAssignmentDetails;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.personnel.EmployeeNotFoundEx;
@@ -42,12 +43,12 @@ class PecEmailUtils {
     /**
      * Constructs an email, fetching the Employee data if needed.
      */
-    public EmployeeEmail getEmail(PecEmailType type, Optional<Employee> employeeOpt, AssignmentWithTask data) {
+    public EmployeeEmail getEmail(PecEmailType type, Optional<Employee> employeeOpt, TaskAssignmentDetails data) {
         Employee employee = employeeOpt.orElseGet(() -> employeeInfoService.getEmployee(data.assignment().getEmpId()));
         return getEmail(type, employee, List.of(data));
     }
 
-    public EmployeeEmail getEmail(PecEmailType type, Employee employee, List<AssignmentWithTask> dataList) {
+    public EmployeeEmail getEmail(PecEmailType type, Employee employee, List<TaskAssignmentDetails> dataList) {
         return new EmployeeEmail(employee, type, dataList, List.of(domainUrl));
     }
 
@@ -58,8 +59,8 @@ class PecEmailUtils {
         for (String address : addresses) {
             try {
                 Employee emp = employeeDao.getEmployeeByEmail(address);
-                var dataList = new ArrayList<AssignmentWithTask>();
-                taskOpt.ifPresent(task -> dataList.add(new AssignmentWithTask(emp.getEmployeeId(), task)));
+                var dataList = new ArrayList<TaskAssignmentDetails>();
+                taskOpt.ifPresent(task -> dataList.add(new TaskAssignmentDetails(emp.getEmployeeId(), task)));
                 emails.add(new EmployeeEmail(emp, type, dataList, extraData));
             }
             catch (EmployeeNotFoundEx ex) {
@@ -72,8 +73,8 @@ class PecEmailUtils {
         return emails;
     }
 
-    public Map<Employee, List<AssignmentWithTask>> getNotifiableTaskMap(boolean allNotifs) {
-        var idToTaskMap = new HashMap<Integer, List<AssignmentWithTask>>();
+    public Map<Employee, List<TaskAssignmentDetails>> getNotifiableTaskMap(boolean allNotifs) {
+        var idToTaskMap = new HashMap<Integer, List<TaskAssignmentDetails>>();
         for (var task : assignmentDao.getNotifiableAssignmentsWithTasks()) {
             if (!shouldSendReminder(task.assignment().getDueDate())) {
                 if (!allNotifs) {
@@ -86,7 +87,7 @@ class PecEmailUtils {
             }
             idToTaskMap.get(id).add(task);
         }
-        var empToTaskMap = new HashMap<Employee, List<AssignmentWithTask>>();
+        var empToTaskMap = new HashMap<Employee, List<TaskAssignmentDetails>>();
         for (var entry : idToTaskMap.entrySet()) {
             try {
                 Employee emp = employeeInfoService.getEmployee(entry.getKey());

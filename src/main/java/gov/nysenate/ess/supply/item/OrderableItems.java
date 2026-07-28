@@ -1,5 +1,6 @@
 package gov.nysenate.ess.supply.item;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.supply.item.model.SupplyItem;
@@ -11,6 +12,7 @@ public class OrderableItems {
 
     /**
      * Returns a new set of SupplyItems with hidden and non expendable items removed.
+     *
      * @param items A collection of items to be filtered.
      * @return An ImmutableSet containing all visible and expendable items in the given <code>items</code> collection.
      * Returns an empty set if <code>items</code> is <code>null</code> or empty.

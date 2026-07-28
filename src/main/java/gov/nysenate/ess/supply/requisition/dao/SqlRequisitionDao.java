@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
@@ -49,7 +50,6 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
     @Override
     @Transactional(value = "localTxManager")
     public synchronized Requisition saveRequisition(Requisition requisition) {
-
         requisition = requisition.setModifiedDateTime(dateTimeFactory.now());
         // Get the next revision id and set it in the requisition.
         requisition = requisition.setRevisionId(getNextRevisionId());
@@ -107,8 +107,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
     }
 
     @Override
-    public synchronized PaginatedList<Requisition> searchRequisitions(RequisitionQuery query) {
-
+    public PaginatedList<Requisition> searchRequisitions(RequisitionQuery query) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("destination", query.getDestination())
                 .addValue("customerId", query.getCustomerId())
@@ -116,9 +115,9 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                 .addValue("fromDate", toDate(query.getFromDateTime()))
                 .addValue("toDate", toDate(query.getToDateTime()))
                 .addValue("issuerId", query.getIssuerId())
-                .addValue("itemId", query.getItemId())
+                .addValue("itemId", query.getItemId(), Types.INTEGER)
                 .addValue("sfmsSyncStatus", extractSyncEnumSetParams(query.getSyncStatuses()))
-                .addValue("isReconciled", query.getReconciled());
+                .addValue("isReconciled", query.getReconciled() == null ? '%' : query.getReconciled());
         String sql = generateSearchQuery(SqlRequisitionQuery.SEARCH_REQUISITIONS_PARTIAL,
                 query.getDateField(), query.getOrderBy(), query.getLimitOffset());
         PaginatedRowHandler<Requisition> paginatedRowHandler = new PaginatedRowHandler<>(query.getLimitOffset(),

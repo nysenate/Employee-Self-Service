@@ -10,10 +10,7 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Repository
 public class SupplyItemDao extends SqlBaseDao {
@@ -56,8 +53,7 @@ public class SupplyItemDao extends SqlBaseDao {
         List<SupplyItem> itemList = remoteNamedJdbc.query(sql, params, new SupplyItemRowMapper());
         if (itemList.isEmpty() || itemList == null) {
             throw new IncorrectResultSizeDataAccessException(0);
-        }
-        else {
+        } else {
             return setItemRestriction(itemList.get(0));
         }
     }

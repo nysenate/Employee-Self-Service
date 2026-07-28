@@ -1,0 +1,252 @@
+/* RequisitionFormIndex.module.css */
+/*Hero Cart Icon*/
+.cartWidget {
+    display: inline-block;
+    float: right;
+}
+
+/* Common Styles */
+.destinationContainer {
+    background: #ffffff;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.destinationMessage {
+    font-size: 1.2em;
+}
+
+.selectDestination {
+    font-size: 1em;
+    padding: 5px;
+    margin-left: 10px;
+}
+
+.destinationDetails {
+    background: #ffffff;
+    padding: 20px;
+}
+
+.detailsRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.destinationInfo {
+    font-size: 1.2em;
+    color: #7154ae;
+    display: flex;
+    align-items: center;
+}
+
+.changeButton {
+    margin-left: 10px;
+    background: none;
+    border: none;
+    color: #007b8a;
+    cursor: pointer;
+}
+
+.searchBar {
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+}
+
+.searchInput {
+    padding: 5px;
+    margin-right: 10px;
+    border: 1px solid grey;
+}
+
+.resetButton {
+    background-color: lightgrey;
+    margin-left: 10px;
+    padding: 5px;
+}
+
+.sortBy {
+    display: flex;
+    align-items: center;
+}
+
+.sortSelect {
+    margin-left: 10px;
+    padding: 5px;
+}
+
+/* Items Display */
+.itemGrid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+}
+
+.itemCard {
+    border: 1px solid #ddd;
+    padding: 16px;
+    text-align: center;
+    margin-right: 5px;
+    margin-top: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+    background-color: #fff;
+    transition: box-shadow 0.3s ease-in-out;
+    width: 200px;
+    height: 251px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between; /* Ensure space between elements */
+    box-sizing: border-box; /* Include padding and border in the width and height */
+}
+
+.itemCard:hover {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.itemImage {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 120px; /* Fixed height for the image container */
+    width: 100%;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.itemImage img {
+    max-height: 100%;
+    object-fit: contain; /* This ensures the image scales to fit while maintaining aspect ratio */
+}
+
+.itemDescription h4 {
+    margin: 10px 0 5px; /* Reduced margin for fitting within the fixed height */
+    font-size: 1em;
+    color: #333;
+    height: 40px; /* Ensures description does not overflow */
+    overflow: hidden; /* Hide overflowing text */
+}
+
+.itemDescription p {
+    margin: 5px 0;
+    color: #666;
+}
+
+.itemPrice p {
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #27ae60;
+}
+
+.addToCartButton {
+    padding: 5px 10px; /* Smaller padding for fitting within the fixed height */
+    border: none;
+    background-color: #27ae60;
+    color: #fff;
+    font-size: 0.9em; /* Slightly smaller font */
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.addToCartButton:hover {
+    background-color: #218c53;
+}
+
+.itemQuantities {
+    text-align: center !important;
+    display: block;
+}
+
+.itemQuantities p {
+    color: #4d4d4d;
+}
+
+.itemInputs {
+    display: flex;
+    justifycontent: center;
+    gap: 5px;
+}
+
+.qtyInput {
+    margin-top: 5px;
+    width: 50px;
+    height: 28px;
+    text-align: center;
+    font-size: 120%;
+    border: 1px solid #ccc;
+    outline: 0;
+    background: #fafafa;
+    padding: 0.3em;
+}
+
+.qtyAdjustButton {
+    margin: 5px 10px 10px 10px;
+    font-size: 1.25em;
+    width: 34px;
+    height: 28px;
+    padding: 0;
+    background: #799933;
+    color: #fefefe;
+    font-weight: 600;
+    border: none;
+    border-radius: 2px;
+}
+
+/* Pagination */
+.paginationTop,
+.paginationBottom {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 0;
+    background-color: #ffffff;
+    border-top: 1px solid #ddd;
+    width: 100%;
+    position: relative; /* Ensure the pagination covers full width */
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+
+.paginationTop {
+    margin-bottom: 5px;
+}
+
+.paginationBottom {
+    margin-top: 10px;
+}
+
+.pageButton {
+    background-color: #ffffff;
+    font-weight: bold;
+    color: #a6a6b3;
+    padding: 5px 10px;
+    margin: 0 5px;
+    cursor: pointer;
+    transition: background-color 0.3s,
+    border-color 0.3s;
+}
+
+.pageButton:hover {
+    background-color: #f0f0f0;
+    border-color: #007b8a;
+}
+
+.pageButton:disabled {
+    cursor: not-allowed;
+    color: #999;
+    border-color: #ddd;
+}
+
+.activePage {
+    color: #6370bd;
+    border-color: #007b8a;
+}
+
+.ellipsis {
+    margin: 0 5px;
+    color: #999;
+}

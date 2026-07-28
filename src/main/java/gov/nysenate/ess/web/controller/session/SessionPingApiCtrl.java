@@ -4,6 +4,7 @@ import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.auth.SimpleEssPermission;
 import gov.nysenate.ess.web.client.response.PingResponse;
 import gov.nysenate.ess.web.security.session.SessionTimeoutDao;
+import org.apache.shiro.authz.UnauthorizedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

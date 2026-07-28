@@ -1,7 +1,9 @@
 package gov.nysenate.ess.travel.api.application;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.travel.request.app.PurposeOfTravel;
+import org.apache.commons.lang3.StringUtils;
 
 public class PurposeOfTravelView implements ViewObject {
 
@@ -23,6 +25,15 @@ public class PurposeOfTravelView implements ViewObject {
             return null;
         }
         return new PurposeOfTravel(eventType.toEventType(), eventName, additionalPurpose);
+    }
+
+    @JsonProperty("summary")
+    public String summary() {
+        String summary = getEventType().getDisplayName();
+        if (StringUtils.isNotBlank(getEventName())) {
+            summary += String.format(" : %s", getEventName());
+        }
+        return summary;
     }
 
     public EventTypeView getEventType() {

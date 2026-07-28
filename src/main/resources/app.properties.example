@@ -224,8 +224,8 @@ image.url = /assets/supply_photos
 
 # --- Web Cache ---------------------------------------------------------------
 
-# in secs, 0  = no cache
-cache.frontend.expire = 60
+# Cache lifetime in seconds for content-hashed React assets and release-versioned legacy assets. Default 1 year.
+cache.frontend.expire = 31536000
 
 # --- Project Version ---------------------------------------------------------
 
@@ -252,6 +252,9 @@ supply.requisition.notification.list =
 # Comma-separated list of commodity codes which do not need to be reconciled.
 supply.reconciliation.ignore.list = E69, E710, E912, E1013, E1015, E1215
 
+# Comma-separated list of allowed origins for cross-origin WebSocket connections.
+supply.websocket.permitted.origins =
+
 # --- Google Maps Configuration -----------------------------------------------
 google.maps.api.key =
 
@@ -270,6 +273,7 @@ sage.api.url = https://pubgeo.nysenate.gov/api/v2
 
 # The senate helpline phone number
 helpline.phone.number =
+personnel.phone.number =
 
 
 ########################################################################################################################
@@ -386,3 +390,12 @@ pec.admin.report.emails =
 
 #Supports comma-separated emails
 pec.code.admin.emails =
+
+# --- Front End Configuration -----------------------------------------------------------
+
+# Configure which ESS applications should serve a ReactJS front end.
+# If true, the ReactJS front end will be used. If false, the AngularJS front end will be used.
+serve.react.myinfo = false
+serve.react.time = false
+serve.react.supply = false
+serve.react.travel = false

@@ -2,7 +2,7 @@ package gov.nysenate.ess.core.service.pec.assignment;
 
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignmentGroup;
-import gov.nysenate.ess.core.service.pec.notification.AssignmentWithTask;
+import gov.nysenate.ess.core.model.pec.TaskAssignmentDetails;
 
 import java.util.List;
 import java.util.Set;
@@ -23,7 +23,7 @@ public interface GroupTaskAssigner {
      * @param updateDb - if the database should be updated
      * @return the tasks that were, or could be, assigned
      */
-    List<AssignmentWithTask> assignGroupTasks(int empId, boolean updateDb);
+    List<TaskAssignmentDetails> assignGroupTasks(int empId, boolean updateDb);
 
     /**
      * Returns a Set of task IDs that are in this group for this employee.

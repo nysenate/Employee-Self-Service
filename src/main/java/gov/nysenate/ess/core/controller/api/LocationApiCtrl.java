@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Comparator;
 import java.util.stream.Collectors;
 
 @RestController
@@ -21,7 +22,9 @@ public class LocationApiCtrl extends BaseRestApiCtrl {
 
     @RequestMapping(value = "")
     public BaseResponse getLocations() {
-        return ListViewResponse.of(locationService.getLocations(true).stream().map(LocationView::new).collect(Collectors.toList()));
+        return ListViewResponse.of(locationService.getLocations(true).stream()
+                .sorted((Comparator.comparing(o -> o.getLocId().getCode())))
+                .map(LocationView::new).collect(Collectors.toList()));
     }
 
     @RequestMapping(value = "", params = {"locCode", "locType"})
@@ -33,8 +36,8 @@ public class LocationApiCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/search")
     public BaseResponse searchLocations(@RequestParam String term) {
         return ListViewResponse.of(locationService.searchLocations(term)
-                                              .stream()
-                                              .map(LocationView::new)
-                                              .collect(Collectors.toList()));
+                .stream()
+                .map(LocationView::new)
+                .collect(Collectors.toList()));
     }
 }

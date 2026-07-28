@@ -4,6 +4,9 @@ import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
+import gov.nysenate.ess.travel.api.application.statistics.TravelApplicationStatisticsUtil;
+import gov.nysenate.ess.travel.api.application.statistics.TravelStatusCountDTO;
+import gov.nysenate.ess.travel.api.application.statistics.TravelStatusCountView;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
 import gov.nysenate.ess.travel.request.attachment.Attachment;
 import gov.nysenate.ess.travel.request.attachment.SqlAttachmentDao;
@@ -26,6 +29,8 @@ import org.springframework.web.bind.annotation.*;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,14 +45,14 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
     @Autowired private AttachmentService attachmentService;
     @Autowired private SqlAttachmentDao attachmentDao;
 
-    @RequestMapping(value = "/application/{appId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/applications/{appId}", method = RequestMethod.GET)
     public BaseResponse getTravelAppById(@PathVariable int appId) {
         TravelApplication app = appService.getTravelApplication(appId);
         checkTravelAppPermission(app, RequestMethod.GET);
         return new ViewObjectResponse<>(new TravelApplicationView(app));
     }
 
-    @RequestMapping(value = "/application/{appId}.pdf", method = RequestMethod.GET)
+    @RequestMapping(value = "/applications/{appId}.pdf", method = RequestMethod.GET)
     public ResponseEntity<byte[]> getAppPdf(@PathVariable int appId) throws IOException {
         ApplicationReview appReview = appReviewService.getApplicationReviewByAppId(appId);
         checkTravelAppPermission(appReview.application(), RequestMethod.GET);
@@ -66,16 +71,44 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
         }
     }
 
-    @RequestMapping(value = "/applications")
-    public BaseResponse getActiveTravelApps() {
-        List<TravelApplication> apps = appService.selectTravelApplications(getSubjectEmployeeId());
+    @RequestMapping(value = "/applications/statistics")
+    public BaseResponse getTravelAppStatistics(
+            @RequestParam("fromDate") String fromDate,
+            @RequestParam(value = "toDate", required = false) String toDate) {
+
+        LocalDate fromLocalDate = parseISODate(fromDate, "from-date");
+        LocalDateTime fromLocalDateTime = fromLocalDate.atStartOfDay();
+        if (toDate == null || toDate.isEmpty()) {
+            toDate = LocalDate.now().toString();
+        }
+
+        LocalDate toLocalDate = parseISODate(toDate, "to-date");
+        LocalDateTime toLocalDateTime = toLocalDate.atStartOfDay();
+
+        List<TravelApplication> apps = appService.selectAllTravelApplications(fromLocalDateTime, toLocalDateTime);
+
         List<TravelApplicationView> appViews = apps.stream()
                 .map(TravelApplicationView::new)
                 .collect(Collectors.toList());
-        return ListViewResponse.of(appViews);
+
+        List<TravelStatusCountDTO> appStatuses = TravelApplicationStatisticsUtil.getTravelStatusCount(appViews);
+
+        List<TravelStatusCountView> appStatsViews = appStatuses.stream()
+                .map(TravelStatusCountView::new)
+                .collect(Collectors.toList());
+        return ListViewResponse.of(appStatsViews);
     }
 
-    @RequestMapping(value = "/application/attachment/{uuid}", method = RequestMethod.GET)
+    @GetMapping(value = "/applications")
+    public BaseResponse getActiveTravelApps() {
+        List<TravelApplication> apps = appService.selectTravelApplications(getSubjectEmployeeId());
+        List<TravelApplicationSummaryView> appSummaryViews = apps.stream()
+                .map(TravelApplicationSummaryView::new)
+                .collect(Collectors.toList());
+        return ListViewResponse.of(appSummaryViews);
+    }
+
+    @RequestMapping(value = "/applications/attachment/{uuid}", method = RequestMethod.GET)
     public ResponseEntity<byte[]> getAttachment(@PathVariable String uuid) throws IOException {
         Attachment attachment = attachmentDao.selectAttachment(uuid);
         File attachmentFile = attachmentService.getAttachmentFile(uuid);

@@ -46,6 +46,19 @@ public class EmployeeRestApiCtrl extends BaseRestApiCtrl
     @Autowired private EmployeeInfoService empInfoService;
 
     /**
+     * Get the currently logged in Employee
+     * ------------------------------------
+     *
+     * Retrieves basic information about the current logged-in user.
+     * Helpful for synchronizing auth state between angularJS and React.
+     */
+    @RequestMapping(value = "/me")
+    public BaseResponse getMe() {
+        Employee emp = empInfoService.getEmployee(getSubjectEmployeeId());
+        return new ViewObjectResponse<>(new EmployeeView(emp));
+    }
+
+    /**
      * Get Employee Info API
      * ---------------------
      * Get current personnel and payroll data for the requested employee

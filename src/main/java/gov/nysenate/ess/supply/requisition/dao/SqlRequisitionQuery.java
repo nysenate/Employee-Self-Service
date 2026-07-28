@@ -49,11 +49,23 @@ public enum SqlRequisitionQuery implements BasicSqlQuery {
                 WHERE r.requisition_id = :requisitionId
             """),
 
+    SEARCH_REQUISITIONS_GET_IDS(
+            """
+            SELECT DISTINCT r.requisition_id
+            FROM ${supplySchema}.requisition r
+            JOIN ${supplySchema}.requisition_content rc
+                ON r.current_revision_id = rc.revision_id
+            JOIN ${supplySchema}.line_item li
+                USING(revision_id)
+            WHERE rc.destination ILIKE :destination
+                AND 
+            """
+    ),
+
     /**
      * Must use {@link SqlRequisitionDao#generateSearchQuery(SqlRequisitionQuery, String, OrderBy, LimitOffset) generateSearchQuery}
      * to complete partial queries.
      */
-
     SEARCH_REQUISITIONS_PARTIAL(
             """
                 SELECT *, count(*) OVER() as total_rows

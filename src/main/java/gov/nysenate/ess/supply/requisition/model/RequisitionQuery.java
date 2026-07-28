@@ -6,6 +6,7 @@ import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.OrderBy;
 import gov.nysenate.ess.core.util.SortOrder;
 import org.apache.commons.lang3.StringUtils;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.time.LocalDateTime;
 import java.util.EnumSet;
@@ -26,7 +27,7 @@ public class RequisitionQuery {
     private String itemId;
     private LimitOffset limitOffset;
     private OrderBy orderBy;
-    private String reconciled;
+    private Boolean reconciled;
     private EnumSet<SyncStatus> syncStatus;
 
     public RequisitionQuery() {
@@ -41,7 +42,7 @@ public class RequisitionQuery {
         this.itemId = WILDCARD;
         this.limitOffset = LimitOffset.TEN;
         this.orderBy = new OrderBy(this.dateField, SortOrder.DESC);
-        this.reconciled = WILDCARD;
+        this.reconciled = null;
         this.syncStatus = EnumSet.allOf(SyncStatus.class);
     }
 
@@ -125,15 +126,8 @@ public class RequisitionQuery {
         return this;
     }
 
-    public RequisitionQuery setReconciled(String reconciled) {
-        if (reconciled != null) {
-            if (reconciled.equals("t") || StringUtils.equalsIgnoreCase(reconciled, "true")) {
-                this.reconciled = "true";
-            }
-            if (reconciled.equals("f") || StringUtils.equalsIgnoreCase(reconciled, "false")) {
-                this.reconciled = "false";
-            }
-        }
+    public RequisitionQuery setReconciled(@Nullable Boolean reconciled) {
+        this.reconciled = reconciled;
         return this;
     }
 
@@ -182,7 +176,7 @@ public class RequisitionQuery {
         return orderBy;
     }
 
-    public String getReconciled() {
+    public Boolean getReconciled() {
         return reconciled;
     }
 

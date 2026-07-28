@@ -6,9 +6,12 @@ import com.google.common.collect.Range;
 import gov.nysenate.ess.core.dao.pec.assignment.PTAQueryBuilder;
 import gov.nysenate.ess.core.dao.pec.assignment.PTAQueryCompletionStatus;
 import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
-import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
+import gov.nysenate.ess.core.model.pec.EmployeeTaskAssignments;
+import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
+import gov.nysenate.ess.core.model.pec.TaskAssignmentDetails;
 import gov.nysenate.ess.core.model.personnel.Employee;
+import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
 import gov.nysenate.ess.core.service.personnel.ActiveEmployeeIdService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.personnel.EmployeeSearchBuilder;
@@ -19,7 +22,6 @@ import gov.nysenate.ess.core.util.SortOrder;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -38,12 +40,14 @@ public class EssEmpTaskSearchService implements EmpTaskSearchService {
 
     private final EmployeeInfoService employeeInfoService;
     private final PersonnelTaskAssignmentDao patDao;
+    private final PersonnelTaskService taskService;
     private final ActiveEmployeeIdService activeEmployeeIdService;
 
     public EssEmpTaskSearchService(EmployeeInfoService employeeInfoService, PersonnelTaskAssignmentDao patDao,
-                                   ActiveEmployeeIdService activeEmployeeIdService) {
+                                   PersonnelTaskService taskService, ActiveEmployeeIdService activeEmployeeIdService) {
         this.employeeInfoService = employeeInfoService;
         this.patDao = patDao;
+        this.taskService = taskService;
         this.activeEmployeeIdService = activeEmployeeIdService;
     }
 
@@ -71,6 +75,35 @@ public class EssEmpTaskSearchService implements EmpTaskSearchService {
         List<EmployeeTaskSearchResult> limitedResultList = LimitOffset.limitList(resultList, limitOffset);
 
         return new PaginatedList<>(resultList.size(), limitOffset, limitedResultList);
+    }
+
+    public PaginatedList<EmployeeTaskAssignments> searchEmployeeTaskAssignments(EmpPTAQuery query, LimitOffset limitOffset) {
+        PaginatedList<EmployeeTaskSearchResult> searchResults = searchForEmpTasks(query, limitOffset);
+        Map<Integer, PersonnelTask> taskMap = taskService.getPersonnelTasks(false, false).stream()
+                .collect(Collectors.toMap(PersonnelTask::getTaskId, task -> task));
+
+        List<EmployeeTaskAssignments> assignments = searchResults.getResults().stream()
+                .map(result -> toEmployeeTaskAssignments(result, taskMap))
+                .collect(Collectors.toList());
+
+        return new PaginatedList<>(searchResults.getTotal(), limitOffset, assignments);
+    }
+
+    private EmployeeTaskAssignments toEmployeeTaskAssignments(EmployeeTaskSearchResult result,
+                                                              Map<Integer, PersonnelTask> taskMap) {
+        List<TaskAssignmentDetails> assignments = result.getTasks().stream()
+                .map(assignment -> new TaskAssignmentDetails(assignment, getTask(assignment, taskMap)))
+                .collect(Collectors.toList());
+        return new EmployeeTaskAssignments(result.getEmployee(), assignments);
+    }
+
+    private PersonnelTask getTask(PersonnelTaskAssignment assignment, Map<Integer, PersonnelTask> taskMap) {
+        PersonnelTask task = taskMap.get(assignment.getTaskId());
+        if (task == null) {
+            throw new IllegalStateException(
+                    "No personnel task found for assignment task id " + assignment.getTaskId());
+        }
+        return task;
     }
 
     @Override

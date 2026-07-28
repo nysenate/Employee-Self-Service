@@ -7,7 +7,16 @@
   },
   "license": "(BSD-2-Clause OR GPL-3.0)",
   "dependencies": {
+    "@date-fns/utc": "^2.1.0",
+    "@headlessui/react": "^2.2.0",
+    "@heroicons/react": "^2.1.5",
+    "@hookform/resolvers": "^5.2.2",
+    "@stomp/stompjs": "^7.1.1",
+    "@tanstack/react-query": "^5.40.1",
+    "@tanstack/react-query-devtools": "^5.40.1",
     "bower": "^1.8.12",
+    "clsx": "^2.1.1",
+    "date-fns": "^3.6.0",
     "fast-xml-parser": "^5.8.0",
     "grunt": "^1.5.2",
     "grunt-beep": "^1.0.1",
@@ -17,10 +26,27 @@
     "grunt-contrib-less": "^3.0.0",
     "grunt-contrib-uglify": "^5.2.2",
     "grunt-contrib-watch": "^1.1.0",
-    "grunt-file-exists": "^0.1.4"
+    "grunt-file-exists": "^0.1.4",
+    "lucide-react": "^0.554.0",
+    "pdfjs-dist": "^4.6.82",
+    "react": "^18.2.0",
+    "react-aria-components": "1.15.1",
+    "react-calendar": "^6.0.0",
+    "react-dom": "^18.2.0",
+    "react-error-boundary": "^4.0.13",
+    "react-hook-form": "^7.66.1",
+    "react-paginate": "^8.3.0",
+    "react-router-dom": "^6.23.1",
+    "sockjs-client": "^1.6.1",
+    "tailwind-merge": "^3.4.0",
+    "use-debounce": "^10.0.4",
+    "zod": "^4.1.12"
   },
   "scripts": {
-    "postinstall": "bower install && grunt compile"
+    "build": "NODE_ENV='production' webpack",
+    "dev": "webpack serve",
+    "lint": "eslint WEB-INF/app --ext .js",
+    "postinstall": "npm run build && bower install && grunt compile"
   },
   "overrides": {
     "minimatch": "^3.1.4",
@@ -28,5 +54,39 @@
   },
   "volta": {
     "node": "20.12.0"
-  }
+  },
+  "babel": {
+    "presets": [
+      "@babel/preset-env",
+      "@babel/preset-react"
+    ]
+  },
+  "devDependencies": {
+    "@babel/core": "^7.15.8",
+    "@babel/preset-env": "^7.15.8",
+    "@babel/preset-react": "^7.14.5",
+    "@tailwindcss/postcss": "^4.1.17",
+    "@tanstack/eslint-plugin-query": "^5.43.1",
+    "autoprefixer": "^10.4.0",
+    "babel-loader": "^8.1.0",
+    "css-loader": "^5.2.7",
+    "eslint": "^8.57.0",
+    "eslint-plugin-react-hooks": "^4.3.0",
+    "html-webpack-plugin": "^5.5.0",
+    "postcss": "^8.4.0",
+    "postcss-loader": "^6.2.1",
+    "postcss-nested": "^7.0.0",
+    "prettier": "^3.5.3",
+    "prettier-plugin-tailwindcss": "^0.6.0",
+    "style-loader": "^2.0.0",
+    "tailwindcss": "^4.1.0",
+    "webpack": "^5.93.0",
+    "webpack-cli": "^4.9.2",
+    "webpack-dev-server": "^4.9.0"
+  },
+  "browserslist": [
+    "baseline widely available",
+    "not safari < 17.4",
+    "not ios_saf < 17.4"
+  ]
 }

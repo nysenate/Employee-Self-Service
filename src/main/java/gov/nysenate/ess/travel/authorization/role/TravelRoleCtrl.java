@@ -17,8 +17,9 @@ public class TravelRoleCtrl extends BaseRestApiCtrl {
     @Autowired private TravelRoleFactory roleFactory;
     @Autowired private EmployeeInfoService employeeInfoService;
 
-    @RequestMapping("/{empId}")
-    public BaseResponse getEmployeeTravelRoles(@PathVariable int empId) {
+    @RequestMapping("")
+    public BaseResponse getEmployeeTravelRoles() {
+        int empId = getSubjectEmployeeId();
         Employee emp = employeeInfoService.getEmployee(empId);
         TravelRoles roles = roleFactory.travelRolesForEmp(emp);
         return new ViewObjectResponse<>(new TravelRolesView(roles));

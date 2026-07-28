@@ -4,6 +4,7 @@ import gov.nysenate.ess.travel.request.app.dao.TravelApplicationDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,6 +31,18 @@ public class TravelApplicationService {
         return travelApplicationDao.selectTravelApplications(userId).stream()
                 .filter(app -> app.getSubmittedDateTime() != null)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Get a list of all travel applications.
+     *
+     * @return
+     */
+    public List<TravelApplication> selectAllTravelApplications(LocalDateTime from, LocalDateTime to) {
+        return travelApplicationDao.selectAllApplications(from, to).stream()
+                                    .filter(app -> app.getSubmittedDateTime() != null)
+                                    .collect(Collectors.toList());
+
     }
 
     public void saveApplication(TravelApplication app) {

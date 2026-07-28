@@ -1,5 +1,6 @@
 package gov.nysenate.ess.core.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 //import org.springframework.web.socket.config.annotation.AbstractWebSocketMessageBrokerConfigurer;
@@ -11,6 +12,9 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
+    @Value("${supply.websocket.permitted.origins:}")
+    private String[] permittedOrigins;
+
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
 //        super.configureMessageBroker(registry);
@@ -20,6 +24,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/socket").withSockJS();
+        registry.addEndpoint("/socket")
+                .setAllowedOriginPatterns(permittedOrigins)
+                .withSockJS();
     }
 }
