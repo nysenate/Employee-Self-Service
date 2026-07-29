@@ -79,21 +79,26 @@ export default function ApplicationHistory() {
     const from = startOfDay(new UTCDate(state.fromDate));
     const to = endOfDay(new UTCDate(state.toDate));
 
-    return apps.filter((app) => {
-      const travelDate = app?.startDate;
-      if (!travelDate) {
-        return false;
-      }
-      const travelDay = new UTCDate(travelDate);
-      return travelDay >= from && travelDay <= to;
-    });
+    return apps
+      .filter((app) => {
+        const travelDate = app?.startDate;
+        if (!travelDate) {
+          return false;
+        }
+        const travelDay = new UTCDate(travelDate);
+        return travelDay >= from && travelDay <= to;
+      })
+      .sort(
+        (firstApp, secondApp) =>
+          new UTCDate(secondApp.startDate) - new UTCDate(firstApp.startDate),
+      );
   }, [apps, state.fromDate, state.toDate]);
 
   return (
     <div>
       <Hero>Travel Application History</Hero>
       <Controls>
-        <div className="flex gap-3 p-4">
+        <div className="flex gap-3 px-4 py-3">
           <div className="grid gap-1">
             <label className="text-sm font-semibold" htmlFor="fromDate">
               From Date
