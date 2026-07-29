@@ -23,8 +23,22 @@ export default function InputDebounced({
   }, [value]);
 
   useEffect(() => {
-    onChange(debouncedTerm);
-  }, [debouncedTerm]);
+    const isWithinDateRange =
+      type !== "date" ||
+      !debouncedTerm ||
+      ((!min || debouncedTerm >= min) && (!max || debouncedTerm <= max));
+
+    if (isWithinDateRange) {
+      onChange(debouncedTerm);
+    }
+  }, [debouncedTerm, min, max, type]);
+
+  // A date can become valid or invalid when its range changes.
+  useEffect(() => {
+    if (inputRef.current) {
+      setIsInvalid(!inputRef.current.checkValidity());
+    }
+  }, [term, min, max]);
 
   // Check validity on every change
   const handleInputChange = (e) => {

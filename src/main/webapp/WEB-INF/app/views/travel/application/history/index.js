@@ -90,6 +90,7 @@ export default function ApplicationHistory() {
               id="fromDate"
               type="date"
               value={state.fromDate}
+              max={state.toDate}
               onChange={(value) =>
                 updateSearchParams({
                   fromDate: value,
@@ -106,6 +107,7 @@ export default function ApplicationHistory() {
               id="toDate"
               type="date"
               value={state.toDate}
+              min={state.fromDate}
               onChange={(value) =>
                 updateSearchParams({
                   toDate: value,
