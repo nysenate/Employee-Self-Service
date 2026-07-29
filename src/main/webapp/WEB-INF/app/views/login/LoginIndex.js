@@ -14,7 +14,13 @@ export const LOGIN_STATES = {
 };
 
 export const LOGIN_BUTTON_CLASSES = `py-0.5 bg-gray-100 border border-gray-400 transition
-duration-500 hover:bg-gray-50 hover:text-teal-600 disabled:pointer-events-none disabled:opacity-50`;
+duration-200 hover:bg-gray-50 hover:text-teal-600 disabled:pointer-events-none disabled:opacity-50
+focus-visible:outline-none focus-visible:border-teal-600 focus-visible:text-teal-600
+focus-visible:bg-teal-50 focus-visible:ring-2 focus-visible:ring-teal-500/60
+focus-visible:shadow-[0_0_10px_2px_rgba(13,148,136,0.55)]`;
+
+/** Where a user lands once they're authenticated. */
+export const POST_LOGIN_PATH = "/time/record/entry";
 
 export default function LoginIndex() {
   const { data: config } = useConfig();
@@ -25,7 +31,7 @@ export default function LoginIndex() {
   useEffect(() => {
     // If the user is already logged in, redirect them.
     if (user) {
-      navigate("/myinfo");
+      navigate(POST_LOGIN_PATH);
     }
   }, [user]);
 

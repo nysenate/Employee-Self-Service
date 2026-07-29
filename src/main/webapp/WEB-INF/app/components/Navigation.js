@@ -118,8 +118,39 @@ const Link = ({ to, permission, children, ...rest }) => {
   );
 };
 
+/**
+ * A small count pill sitting beside a link, for things needing the user's attention.
+ * Ported from the legacy "badge" directive (assets/js/src/common/badge-directive.js), which
+ * hid itself when the count was zero.
+ *
+ * @param count The number to show. Nothing is rendered when it is zero or missing.
+ * @param color One of "teal", "green" or "orange".
+ * @param title Tooltip describing what is being counted.
+ */
+const Badge = ({ count, color = "teal", title }) => {
+  if (!count) {
+    return null;
+  }
+
+  return (
+    <span
+      title={title}
+      className={`ml-1 inline-block min-w-5 rounded-full px-1.5 text-center text-xs leading-5 font-semibold text-white ${badgeStyles[color] || badgeStyles.teal}`}
+    >
+      {count}
+    </span>
+  );
+};
+
+const badgeStyles = {
+  teal: "bg-teal-700",
+  green: "bg-green-700",
+  orange: "bg-orange-600",
+};
+
 Navigation.Title = Title;
 Navigation.Section = Section;
 Navigation.Link = Link;
+Navigation.Badge = Badge;
 
 export default Navigation;

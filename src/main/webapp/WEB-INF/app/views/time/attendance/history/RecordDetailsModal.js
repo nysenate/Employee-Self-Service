@@ -25,6 +25,35 @@ const ANNUAL_HOUR_COLUMNS = [
  * Mirrors the legacy record details modal (WEB-INF/view/template/time/record/details.jsp).
  */
 export default function RecordDetailsModal({ record, onClose }) {
+  if (!record) {
+    return null;
+  }
+
+  return (
+    <Modal isOpen={!!record} onOpenChange={onClose} className="max-w-[95vw]">
+      <Modal.Title>
+        Attendance record for {record.employee?.fullName} from{" "}
+        {formatRecordDate(record.beginDate)} to{" "}
+        {formatRecordDate(record.endDate)}
+      </Modal.Title>
+      <Modal.Body>
+        <RecordDetails record={record} />
+      </Modal.Body>
+      <Modal.Buttons>
+        <Button variant="secondary" onPress={() => onClose(false)}>
+          Exit
+        </Button>
+      </Modal.Buttons>
+    </Modal>
+  );
+}
+
+/**
+ * The entries and summary of a single record, without any surrounding dialog. The Review Time
+ * Records page shows this beside its record list, the way the legacy recordDetails directive
+ * was reused by the review modal.
+ */
+export function RecordDetails({ record }) {
   const miscLeaveTypes = useMiscLeaveTypes();
 
   if (!record) {
@@ -35,55 +64,41 @@ export default function RecordDetailsModal({ record, onClose }) {
   const tempEntries = hasTempEntries(record);
 
   return (
-    <Modal isOpen={!!record} onOpenChange={onClose} className="max-w-[95vw]">
-      <Modal.Title>
-        Attendance record for {record.employee?.fullName} from{" "}
-        {formatRecordDate(record.beginDate)} to{" "}
-        {formatRecordDate(record.endDate)}
-      </Modal.Title>
-      <Modal.Body>
-        <div className="flex flex-col gap-4 lg:flex-row">
-          <div className="grow overflow-x-auto">
-            {tempEntries && (
-              <TempEntryTable record={record} showTitle={annualEntries} />
-            )}
-            {annualEntries && (
-              <AnnualEntryTable
-                record={record}
-                showTitle={tempEntries}
-                miscLeaveTypes={miscLeaveTypes.data}
-              />
-            )}
-          </div>
-          <div className="w-full shrink-0 lg:w-56">
-            <DetailsSection title="Notes">
-              {record.remarks || "This time record has no notes."}
-            </DetailsSection>
-            <DetailsSection title="Supervisor">
-              {record.supervisor?.fullName}
-            </DetailsSection>
-            <DetailsSection title="Status">
-              {getRecordStatusLabel(record.recordStatus)}
-            </DetailsSection>
-            <DetailsSection title="Actions">
-              <a
-                href={`/api/v1/attendance/report?timeRecordId=${record.timeRecordId}`}
-                target="_blank"
-                rel="noreferrer"
-                title="Open a Printable View for this Record"
-              >
-                Print Record
-              </a>
-            </DetailsSection>
-          </div>
-        </div>
-      </Modal.Body>
-      <Modal.Buttons>
-        <Button variant="secondary" onPress={() => onClose(false)}>
-          Exit
-        </Button>
-      </Modal.Buttons>
-    </Modal>
+    <div className="flex flex-col gap-4 lg:flex-row">
+      <div className="grow overflow-x-auto">
+        {tempEntries && (
+          <TempEntryTable record={record} showTitle={annualEntries} />
+        )}
+        {annualEntries && (
+          <AnnualEntryTable
+            record={record}
+            showTitle={tempEntries}
+            miscLeaveTypes={miscLeaveTypes.data}
+          />
+        )}
+      </div>
+      <div className="w-full shrink-0 lg:w-56">
+        <DetailsSection title="Notes">
+          {record.remarks || "This time record has no notes."}
+        </DetailsSection>
+        <DetailsSection title="Supervisor">
+          {record.supervisor?.fullName}
+        </DetailsSection>
+        <DetailsSection title="Status">
+          {getRecordStatusLabel(record.recordStatus)}
+        </DetailsSection>
+        <DetailsSection title="Actions">
+          <a
+            href={`/api/v1/attendance/report?timeRecordId=${record.timeRecordId}`}
+            target="_blank"
+            rel="noreferrer"
+            title="Open a Printable View for this Record"
+          >
+            Print Record
+          </a>
+        </DetailsSection>
+      </div>
+    </div>
   );
 }
 

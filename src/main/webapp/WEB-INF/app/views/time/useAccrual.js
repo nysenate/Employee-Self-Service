@@ -10,8 +10,11 @@ function getQueryKey(empId, beforeDate) {
  * @param empId The employee id.
  * @param beforeDate ISO date, i.e. "2026-01-01". Accruals are computed for the pay period
  *                   containing this date, counting only usage before it.
+ * @param throwOnError Whether a failure should replace the page with an error. Pass false where
+ *                     the accruals are supporting detail and the page can stand without them,
+ *                     such as a supervisor reading an employee they may not have access to.
  */
-export function useAccruals(empId, beforeDate) {
+export function useAccruals(empId, beforeDate, throwOnError = true) {
   return useQuery({
     queryKey: getQueryKey(empId, beforeDate),
     queryFn: () => {
@@ -21,7 +24,8 @@ export function useAccruals(empId, beforeDate) {
     },
     enabled: !!empId && !!beforeDate,
     staleTime: 1000 * 60,
-    throwOnError: true,
+    retry: throwOnError,
+    throwOnError,
   });
 }
 

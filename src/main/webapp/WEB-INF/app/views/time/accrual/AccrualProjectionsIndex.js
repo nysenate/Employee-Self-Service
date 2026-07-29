@@ -25,7 +25,20 @@ import {
  */
 export default function AccrualProjectionsIndex() {
   const { data: user } = useRequireAuthedUser();
-  const empId = user?.employeeId;
+
+  return (
+    <div>
+      <Hero>Accrual Projections</Hero>
+      <AccrualProjectionsSection empId={user?.employeeId} />
+    </div>
+  );
+}
+
+/**
+ * The accrual projections for a single employee. Used both by the My Accruals page and, for
+ * an arbitrary employee, by the Employee Search page.
+ */
+export function AccrualProjectionsSection({ empId }) {
   const employee = useEmployee(empId);
 
   /*
@@ -44,8 +57,6 @@ export default function AccrualProjectionsIndex() {
 
   return (
     <div>
-      <Hero>Accrual Projections</Hero>
-
       {accruals.isError && (
         <Notification
           level="warn"

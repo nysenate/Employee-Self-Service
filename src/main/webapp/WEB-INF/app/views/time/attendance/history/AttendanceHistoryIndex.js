@@ -20,30 +20,50 @@ import {
 
 export default function AttendanceHistoryIndex() {
   const { data: user } = useRequireAuthedUser();
-  const recordYears = useActiveTimeRecordYears(user?.employeeId);
+
+  return (
+    <div>
+      <Hero>Attendance History</Hero>
+      <AttendanceHistorySection
+        empId={user?.employeeId}
+        emptyMessage="You have no time records."
+      />
+    </div>
+  );
+}
+
+/**
+ * The attendance history for a single employee: a year selector over the years the employee
+ * has records for, and the active and submitted record tables for the selected year. Used
+ * both by the My Attendance page and, for an arbitrary employee, by the Employee Search page.
+ */
+export function AttendanceHistorySection({
+  empId,
+  emptyMessage = "This employee has no time records.",
+  linkActiveToEntry = true,
+}) {
+  const recordYears = useActiveTimeRecordYears(empId);
 
   if (recordYears.isPending) {
     return <LoadingIndicator />;
   }
 
+  if (recordYears.data.length === 0) {
+    return (
+      <NoticeCard title="No Time Record History">{emptyMessage}</NoticeCard>
+    );
+  }
+
   return (
-    <div>
-      <Hero>Attendance History</Hero>
-      {recordYears.data.length === 0 ? (
-        <NoticeCard title="No Time Record History">
-          You have no time records.
-        </NoticeCard>
-      ) : (
-        <AttendanceHistory
-          empId={user.employeeId}
-          recordYears={recordYears.data}
-        />
-      )}
-    </div>
+    <AttendanceHistory
+      empId={empId}
+      recordYears={recordYears.data}
+      linkActiveToEntry={linkActiveToEntry}
+    />
   );
 }
 
-function AttendanceHistory({ empId, recordYears }) {
+function AttendanceHistory({ empId, recordYears, linkActiveToEntry = true }) {
   const [year, setYear] = useState(recordYears[0]);
   const [detailsRecord, setDetailsRecord] = useState(null);
 
@@ -96,7 +116,13 @@ function AttendanceHistory({ empId, recordYears }) {
             </NoticeCard>
           )}
 
-          {active.length > 0 && <ActiveRecords records={active} />}
+          {active.length > 0 && (
+            <ActiveRecords
+              records={active}
+              linkActiveToEntry={linkActiveToEntry}
+              onRecordClick={setDetailsRecord}
+            />
+          )}
 
           {submitted.length > 0 && (
             <SubmittedRecords
@@ -118,7 +144,7 @@ function AttendanceHistory({ empId, recordYears }) {
   );
 }
 
-function ActiveRecords({ records }) {
+function ActiveRecords({ records, linkActiveToEntry, onRecordClick }) {
   const navigate = useNavigate();
 
   return (
@@ -130,12 +156,17 @@ function ActiveRecords({ records }) {
         <p className="text-center">
           The following time records are in progress or awaiting submission.
           <br />
-          You can edit a record by clicking the row.
+          {linkActiveToEntry
+            ? "You can edit a record by clicking the row."
+            : "Click a row to view the in-progress record."}
         </p>
         <RecordTable
           records={records}
-          onRecordClick={(record) =>
-            navigate(`/time/record/entry?record=${record.beginDate}`)
+          onRecordClick={
+            linkActiveToEntry
+              ? (record) =>
+                  navigate(`/time/record/entry?record=${record.beginDate}`)
+              : onRecordClick
           }
         />
       </Card.Content>

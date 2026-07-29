@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import LoginTitle from "app/views/login/LoginTitle";
 import LoginLoadingCircle from "app/views/login/LoginLoadingCircle";
-import { LOGIN_BUTTON_CLASSES, LOGIN_STATES } from "app/views/login/LoginIndex";
+import {
+  LOGIN_BUTTON_CLASSES,
+  LOGIN_STATES,
+  POST_LOGIN_PATH,
+} from "app/views/login/LoginIndex";
 import { useForm } from "react-hook-form";
 import loginUser from "app/views/login/loginUser";
 import { useNavigate } from "react-router-dom";
@@ -22,7 +26,7 @@ export default function LoginForm({ setState }) {
     clearErrors();
 
     loginUser(data.username, data.password)
-      .then(() => navigate("/myinfo"))
+      .then(() => navigate(POST_LOGIN_PATH))
       .catch((e) =>
         setError("validationError", { type: "custom", message: e.message }),
       )

@@ -30,6 +30,11 @@ public class TimeOffRequestDayRowMapper extends BaseRowMapper<TimeOffRequestDay>
         day.setMiscType(Optional.ofNullable(rs.getString("misc_type"))
                 .map(MiscLeaveType::valueOf)
                 .orElse(null));
+        day.setMisc2Hours(rs.getBigDecimal("misc2_hours"));
+        //Allow for misc_type2 to be a null value
+        day.setMiscType2(Optional.ofNullable(rs.getString("misc_type2"))
+                .map(MiscLeaveType::valueOf)
+                .orElse(null));
         return day;
     }
 }

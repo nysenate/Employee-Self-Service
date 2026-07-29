@@ -36,6 +36,7 @@ public class TimeOffRequestDayView extends AttendanceHoursView implements ViewOb
         day.setSickEmpHours(sickEmpHours);
         day.setSickFamHours(sickFamHours);
         day.setMiscHours(miscHours);
+        day.setMisc2Hours(misc2Hours);
         day.setMiscType(miscType != null ? MiscLeaveType.valueOf(miscType) : null);
         day.setMiscType2(miscType2 != null ? MiscLeaveType.valueOf(miscType2) : null);
         day.setDate(date);

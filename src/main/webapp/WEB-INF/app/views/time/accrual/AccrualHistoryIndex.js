@@ -18,25 +18,36 @@ import AccrualHistoryTable from "app/views/time/accrual/AccrualHistoryTable";
  */
 export default function AccrualHistoryIndex() {
   const { data: user } = useRequireAuthedUser();
-  const activeYears = useAccrualActiveYears(user?.employeeId);
 
   return (
     <div>
       <Hero>Accrual History</Hero>
-      {activeYears.isPending ? (
-        <LoadingIndicator />
-      ) : activeYears.data.length === 0 ? (
-        <Notification level="info" title="No Accrual History">
-          <p>You have no accrual records.</p>
-        </Notification>
-      ) : (
-        <AccrualHistory
-          empId={user.employeeId}
-          activeYears={activeYears.data}
-        />
-      )}
+      <AccrualHistorySection empId={user?.employeeId} />
     </div>
   );
+}
+
+/**
+ * The accrual history for a single employee: a year selector over the years the employee has
+ * accrual records for, and the summary table for the selected year. Used both by the My
+ * Accruals page and, for an arbitrary employee, by the Employee Search page.
+ */
+export function AccrualHistorySection({ empId }) {
+  const activeYears = useAccrualActiveYears(empId);
+
+  if (activeYears.isPending) {
+    return <LoadingIndicator />;
+  }
+
+  if (activeYears.data.length === 0) {
+    return (
+      <Notification level="info" title="No Accrual History">
+        <p>No accrual records exist.</p>
+      </Notification>
+    );
+  }
+
+  return <AccrualHistory empId={empId} activeYears={activeYears.data} />;
 }
 
 function AccrualHistory({ empId, activeYears }) {
