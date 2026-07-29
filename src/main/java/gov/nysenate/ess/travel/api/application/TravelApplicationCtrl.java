@@ -4,14 +4,17 @@ import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
+import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
+import gov.nysenate.ess.core.util.LimitOffset;
+import gov.nysenate.ess.core.util.PaginatedList;
+import gov.nysenate.ess.core.util.SortOrder;
 import gov.nysenate.ess.travel.api.application.statistics.TravelApplicationStatisticsUtil;
 import gov.nysenate.ess.travel.api.application.statistics.TravelStatusCountDTO;
 import gov.nysenate.ess.travel.api.application.statistics.TravelStatusCountView;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
 import gov.nysenate.ess.travel.request.attachment.Attachment;
 import gov.nysenate.ess.travel.request.attachment.SqlAttachmentDao;
-import gov.nysenate.ess.travel.request.app.TravelApplication;
-import gov.nysenate.ess.travel.request.app.TravelApplicationService;
+import gov.nysenate.ess.travel.request.app.*;
 import gov.nysenate.ess.travel.report.pdf.TravelAppPdfGenerator;
 import gov.nysenate.ess.travel.review.ApplicationReview;
 import gov.nysenate.ess.travel.review.ApplicationReviewService;
@@ -25,12 +28,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.WebRequest;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -99,13 +104,77 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
         return ListViewResponse.of(appStatsViews);
     }
 
+    /**
+     * Returns submitted travel applications where the current user is the traveler or submitter.
+     * Results can be filtered by inclusive travel start-date bounds and by one or more statuses.
+     * <p>
+     * Usage:
+     * {@code GET /api/v1/travel/applications}
+     * <p>
+     * Example:
+     * <pre>
+     * GET /api/v1/travel/applications?from=2026-01-01&to=2026-06-30&status=APPROVED&status=CANCELED&sort=startDate:desc&limit=16&offset=1
+     * </pre>
+     * <p>
+     * Request parameters:
+     * <ul>
+     *   <li>{@code from} - optional ISO date; earliest travel start date, inclusive.</li>
+     *   <li>{@code to} - optional ISO date; latest travel start date, inclusive.</li>
+     *   <li>{@code status} - optional, repeatable {@link AppStatus}; omitted means all statuses.</li>
+     *   <li>{@code sort} - optional {@code field:direction}. Fields: {@code startDate},
+     *       {@code submittedDate}, {@code status}, {@code id}. Directions: {@code asc}, {@code desc}.
+     *       Defaults to {@code startDate:desc}.</li>
+     *   <li>{@code limit} - optional page size; defaults to 16.</li>
+     *   <li>{@code offset} - optional one-indexed result offset; defaults to 1.</li>
+     * </ul>
+     *
+     * @return matching application summaries and pagination metadata
+     */
     @GetMapping(value = "/applications")
-    public BaseResponse getActiveTravelApps() {
-        List<TravelApplication> apps = appService.selectTravelApplications(getSubjectEmployeeId());
-        List<TravelApplicationSummaryView> appSummaryViews = apps.stream()
-                .map(TravelApplicationSummaryView::new)
-                .collect(Collectors.toList());
-        return ListViewResponse.of(appSummaryViews);
+    public BaseResponse getActiveTravelApps(
+            @RequestParam(required = false) String from,
+            @RequestParam(required = false) String to,
+            @RequestParam(required = false) String[] status,
+            @RequestParam(defaultValue = "startDate:desc") String sort,
+            WebRequest request) {
+        LocalDate fromDate = from == null ? null : parseISODate(from, "from");
+        LocalDate toDate = to == null ? null : parseISODate(to, "to");
+        if (fromDate != null && toDate != null && fromDate.isAfter(toDate)) {
+            throw new InvalidRequestParamEx(to, "to", "date", "Must be on or after from");
+        }
+
+        EnumSet<AppStatus> statuses = EnumSet.noneOf(AppStatus.class);
+        if (status != null) {
+            for (String statusValue : status) {
+                statuses.add(getEnumParameter("status", statusValue, AppStatus.class));
+            }
+        }
+
+        String[] sortParts = sort.split(":", -1);
+        if (sortParts.length != 2) {
+            throw new InvalidRequestParamEx(
+                    sort, "sort", "sort", "Must use the format field:direction"
+            );
+        }
+        TravelApplicationSortField sortField = getEnumParameterByValue(
+                TravelApplicationSortField.class,
+                TravelApplicationSortField::fromParameter,
+                TravelApplicationSortField::parameterName,
+                "sort",
+                sortParts[0]
+        );
+        SortOrder sortOrder = getEnumParameter("sort", sortParts[1], SortOrder.class);
+        if (sortOrder == SortOrder.NONE) {
+            throw new InvalidRequestParamEx(sort, "sort", "sort", "Direction must be ASC or DESC");
+        }
+
+        LimitOffset limitOffset = getLimitOffset(request, 16);
+        TravelApplicationQuery query = new TravelApplicationQuery(
+                fromDate, toDate, statuses, sortField, sortOrder, limitOffset
+        );
+        PaginatedList<TravelApplication> apps =
+                appService.selectTravelApplications(getSubjectEmployeeId(), query);
+        return ListViewResponse.fromPaginatedList(apps, TravelApplicationSummaryView::new);
     }
 
     @RequestMapping(value = "/applications/attachment/{uuid}", method = RequestMethod.GET)

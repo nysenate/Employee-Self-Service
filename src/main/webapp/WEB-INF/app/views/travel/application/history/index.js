@@ -1,9 +1,8 @@
 import React, { useEffect, useMemo } from "react";
 import Hero from "app/components/Hero";
 import Controls from "app/components/Controls";
-import { endOfDay, formatISO, startOfDay, subMonths } from "date-fns";
+import { formatISO, subMonths } from "date-fns";
 import { useSearchParams } from "react-router-dom";
-import { UTCDate } from "@date-fns/utc";
 import { useTravelApps } from "app/views/travel/application/history/useTravelApps";
 import TravelApplicationResults from "app/views/travel/application/history/TravelApplicationResults";
 import InputDebounced from "app/components/InputDebounced";
@@ -13,6 +12,8 @@ const initialState = {
   toDate: formatISO(new Date(), { representation: "date" }),
   limit: 16,
   offset: 1,
+  status: "",
+  sort: "startDate:desc",
 };
 
 function fromSearchParams(searchParams) {
@@ -21,6 +22,8 @@ function fromSearchParams(searchParams) {
     toDate: searchParams.get("toDate") ?? initialState.toDate,
     limit: Number(searchParams.get("limit") ?? initialState.limit),
     offset: Number(searchParams.get("offset") ?? initialState.offset),
+    status: searchParams.get("status") ?? initialState.status,
+    sort: searchParams.get("sort") ?? initialState.sort,
   };
 }
 
@@ -38,6 +41,7 @@ export default function ApplicationHistory() {
       ["toDate", state.toDate],
       ["limit", state.limit],
       ["offset", state.offset],
+      ["sort", state.sort],
     ].forEach(([key, value]) => {
       if (!params.get(key) && value != null) {
         params.set(key, value.toString());
@@ -63,42 +67,21 @@ export default function ApplicationHistory() {
   };
 
   const appQuery = useTravelApps({
-    from: formatISO(startOfDay(new UTCDate(state.fromDate))),
-    to: formatISO(endOfDay(new UTCDate(state.toDate))),
+    from: state.fromDate,
+    to: state.toDate,
+    status: state.status,
+    sort: state.sort,
     limit: state.limit,
     offset: state.offset,
   });
 
   const apps = Array.isArray(appQuery.data?.result) ? appQuery.data.result : [];
 
-  const filteredApps = useMemo(() => {
-    if (!state.fromDate || !state.toDate) {
-      return apps;
-    }
-
-    const from = startOfDay(new UTCDate(state.fromDate));
-    const to = endOfDay(new UTCDate(state.toDate));
-
-    return apps
-      .filter((app) => {
-        const travelDate = app?.startDate;
-        if (!travelDate) {
-          return false;
-        }
-        const travelDay = new UTCDate(travelDate);
-        return travelDay >= from && travelDay <= to;
-      })
-      .sort(
-        (firstApp, secondApp) =>
-          new UTCDate(secondApp.startDate) - new UTCDate(firstApp.startDate),
-      );
-  }, [apps, state.fromDate, state.toDate]);
-
   return (
     <div>
       <Hero>Travel Application History</Hero>
       <Controls>
-        <div className="flex gap-3 px-4 py-3">
+        <div className="flex flex-wrap gap-3 px-4 py-3">
           <div className="grid gap-1">
             <label className="text-sm font-semibold" htmlFor="fromDate">
               From Date
@@ -131,11 +114,55 @@ export default function ApplicationHistory() {
               }
             />
           </div>
+          <div className="grid gap-1">
+            <label className="text-sm font-semibold" htmlFor="status">
+              Status
+            </label>
+            <select
+              id="status"
+              className="select"
+              value={state.status}
+              onChange={(event) =>
+                updateSearchParams({ status: event.target.value, offset: 1 })
+              }
+            >
+              <option value="">All statuses</option>
+              <option value="DEPARTMENT_HEAD">Department Head</option>
+              <option value="TRAVEL_UNIT">Travel Unit</option>
+              <option value="APPROVED">Approved</option>
+              <option value="DISAPPROVED">Disapproved</option>
+              <option value="CANCELED">Canceled</option>
+              <option value="NOT_APPLICABLE">Not Applicable</option>
+            </select>
+          </div>
+          <div className="grid gap-1">
+            <label className="text-sm font-semibold" htmlFor="sort">
+              Sort
+            </label>
+            <select
+              id="sort"
+              className="select"
+              value={state.sort}
+              onChange={(event) =>
+                updateSearchParams({ sort: event.target.value, offset: 1 })
+              }
+            >
+              <option value="startDate:desc">Start date: newest</option>
+              <option value="startDate:asc">Start date: oldest</option>
+              <option value="submittedDate:desc">Submitted: newest</option>
+              <option value="submittedDate:asc">Submitted: oldest</option>
+              <option value="status:asc">Status</option>
+            </select>
+          </div>
         </div>
       </Controls>
       <TravelApplicationResults
-        apps={filteredApps}
+        apps={apps}
         isLoading={appQuery.isPending}
+        limit={state.limit}
+        offset={state.offset}
+        total={appQuery.data?.total ?? 0}
+        onPageChange={(offset) => updateSearchParams({ offset })}
       />
     </div>
   );

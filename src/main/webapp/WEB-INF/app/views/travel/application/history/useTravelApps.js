@@ -9,7 +9,7 @@ function getQueryKey(queryString) {
 export function useTravelApps(params) {
   const queryString = buildQueryString(params);
   return useQuery({
-    queryKey: getQueryKey(params),
+    queryKey: getQueryKey(queryString),
     queryFn: () => fetchApiJson(`/travel/applications?${queryString}`),
     staleTime: 0,
     throwOnError: true,

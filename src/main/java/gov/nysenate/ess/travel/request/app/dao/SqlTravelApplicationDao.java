@@ -10,6 +10,9 @@ import gov.nysenate.ess.travel.request.allowances.mileage.SqlMileagePerDiemsDao;
 import gov.nysenate.ess.travel.request.app.*;
 import gov.nysenate.ess.travel.request.attachment.SqlAttachmentDao;
 import gov.nysenate.ess.travel.request.route.RouteDao;
+import gov.nysenate.ess.core.util.OrderBy;
+import gov.nysenate.ess.core.util.PaginatedList;
+import gov.nysenate.ess.core.util.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +23,8 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.sql.Types;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -122,13 +127,37 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
     }
 
     @Override
-    public List<TravelApplication> selectTravelApplications(int userId) {
-        MapSqlParameterSource params = new MapSqlParameterSource("userId", userId);
-        String sql = SqlTravelApplicationQuery.SELECT_APP_BY_TRAVELER.getSql(schemaMap());
-        List<TravelAppRepositoryView> appRepViews = localNamedJdbc.query(sql, params, new TravelApplicationRowMapper());
-        return appRepViews.stream()
+    public PaginatedList<TravelApplication> selectTravelApplications(int userId, TravelApplicationQuery query) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("userId", userId)
+                .addValue("statuses", query.getStatuses().stream().map(Enum::name).toList())
+                .addValue("fromDate", query.getFrom(), Types.DATE)
+                .addValue("toDate", query.getTo(), Types.DATE);
+
+        int total = localNamedJdbc.queryForObject(
+                SqlTravelApplicationQuery.COUNT_APPS_FOR_USER.getSql(schemaMap()),
+                params,
+                Integer.class
+        );
+
+        Map<String, SortOrder> sortColumns = new LinkedHashMap<>();
+        sortColumns.put(query.getSortField().sqlColumn(), query.getSortOrder());
+        // Use the unique app ID as a tie-breaker so pagination has a stable, deterministic order.
+        if (query.getSortField() != TravelApplicationSortField.ID) {
+            sortColumns.put(TravelApplicationSortField.ID.sqlColumn(), query.getSortOrder());
+        }
+        String sql = SqlTravelApplicationQuery.SELECT_APPS_FOR_USER.getSql(
+                schemaMap(),
+                new OrderBy(sortColumns),
+                query.getLimitOffset()
+        );
+
+        List<TravelAppRepositoryView> appRepViews =
+                localNamedJdbc.query(sql, params, new TravelApplicationRowMapper());
+        List<TravelApplication> applications = appRepViews.stream()
                 .map(this::populateApplicationDetails)
                 .collect(Collectors.toList());
+        return new PaginatedList<>(total, query.getLimitOffset(), applications);
     }
 
     private TravelApplication populateApplicationDetails(TravelAppRepositoryView view) {

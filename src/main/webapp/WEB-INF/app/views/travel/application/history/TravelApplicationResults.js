@@ -6,8 +6,16 @@ import Modal from "app/components/Modal";
 import TravelAppForm from "app/views/travel/shared/components/TravelAppForm";
 import { useTravelApp } from "app/views/travel/shared/hooks/useTravelApp";
 import TravelAppSummaryTable from "app/views/travel/shared/components/TravelAppSummaryTable";
+import Pagination from "app/components/Pagination";
 
-export default function TravelApplicationResults({ apps, isLoading }) {
+export default function TravelApplicationResults({
+  apps,
+  isLoading,
+  limit,
+  offset,
+  total,
+  onPageChange,
+}) {
   const [selectedApp, setSelectedApp] = React.useState(null);
 
   const handleRowClick = (app) => {
@@ -50,6 +58,14 @@ export default function TravelApplicationResults({ apps, isLoading }) {
             handleRowClick={handleRowClick}
             handleRowKeyDown={handleRowKeyDown}
           />
+          {total > limit && (
+            <Pagination
+              limit={limit}
+              offset={offset}
+              total={total}
+              onPageChange={onPageChange}
+            />
+          )}
         </div>
       </Card>
 
