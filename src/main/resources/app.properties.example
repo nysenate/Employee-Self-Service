@@ -271,7 +271,7 @@ sage.api.url = https://pubgeo.nysenate.gov/api/v2
 
 # --- Senate Info -------------------------------------------------------------
 
-# The senate helpline phone number
+# The Senate Helpline and Personnel phone numbers
 helpline.phone.number =
 personnel.phone.number =
 
