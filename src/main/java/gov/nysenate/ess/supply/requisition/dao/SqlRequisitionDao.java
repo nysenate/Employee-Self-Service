@@ -115,9 +115,9 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                 .addValue("fromDate", toDate(query.getFromDateTime()))
                 .addValue("toDate", toDate(query.getToDateTime()))
                 .addValue("issuerId", query.getIssuerId())
-                .addValue("itemId", query.getItemId(), Types.INTEGER)
+                .addValue("itemId", query.getItemId())
                 .addValue("sfmsSyncStatus", extractSyncEnumSetParams(query.getSyncStatuses()))
-                .addValue("isReconciled", query.getReconciled() == null ? '%' : query.getReconciled());
+                .addValue("isReconciled", query.getReconciled(), Types.BOOLEAN);
         String sql = generateSearchQuery(SqlRequisitionQuery.SEARCH_REQUISITIONS_PARTIAL,
                 query.getDateField(), query.getOrderBy(), query.getLimitOffset());
         PaginatedRowHandler<Requisition> paginatedRowHandler = new PaginatedRowHandler<>(query.getLimitOffset(),
