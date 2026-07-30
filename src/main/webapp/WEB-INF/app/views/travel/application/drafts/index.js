@@ -13,6 +13,7 @@ import { Trash2 } from "lucide-react";
 import { toCurrency } from "app/utils/textUtils";
 import Card from "app/components/Card";
 import Button from "app/components/Button";
+import NoMatchesFound from "app/components/NoMatchesFound";
 
 export default function Drafts() {
   const { data, isPending } = useDrafts();
@@ -23,9 +24,23 @@ export default function Drafts() {
         Continue work on a saved draft.
       </Controls>
 
-      {isPending ? <LoadingIndicator /> : <DraftTable drafts={data.result} />}
+      {isPending ? (
+        <LoadingIndicator />
+      ) : (
+        <DraftResults drafts={data?.result} />
+      )}
     </div>
   );
+}
+
+function DraftResults({ drafts }) {
+  const rows = Array.isArray(drafts) ? drafts : [];
+
+  if (!rows.length) {
+    return <NoMatchesFound className="mt-6">No Drafts Found</NoMatchesFound>;
+  }
+
+  return <DraftTable drafts={rows} />;
 }
 
 function DraftTable({ drafts }) {
