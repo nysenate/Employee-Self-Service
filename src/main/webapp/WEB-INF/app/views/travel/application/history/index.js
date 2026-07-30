@@ -1,14 +1,16 @@
 import React from "react";
+import { ArrowUpDown, ListFilter } from "lucide-react";
 import Hero from "app/components/Hero";
 import Controls from "app/components/Controls";
+import SingleSelectFilter from "app/components/SingleSelectFilter";
 import { useTravelApps } from "app/views/travel/application/history/useTravelApps";
 import TravelApplicationResults from "app/views/travel/application/history/TravelApplicationResults";
 import DateRangeFilter from "app/components/DateRangeFilter";
+import { useApplicationHistorySearchParams } from "app/views/travel/application/history/useApplicationHistorySearchParams";
 import {
-  APPLICATION_HISTORY_SORT_OPTIONS,
-  APPLICATION_HISTORY_STATUS_OPTIONS,
-  useApplicationHistorySearchParams,
-} from "app/views/travel/application/history/useApplicationHistorySearchParams";
+  SORT_FILTER_OPTIONS,
+  STATUS_FILTER_OPTIONS,
+} from "app/views/travel/application/history/historyFilterOptions";
 
 export default function ApplicationHistory() {
   const { state, updateDateRange, updateSearchParams } =
@@ -36,50 +38,25 @@ export default function ApplicationHistory() {
               updateDateRange(dateRange, { replace: false })
             }
           />
-          <div className="grid gap-1">
-            <label className="text-sm font-semibold" htmlFor="status">
-              Status
-            </label>
-            <select
-              id="status"
-              className="select"
-              value={state.status}
-              onChange={(event) =>
-                updateSearchParams(
-                  { status: event.target.value, offset: 1 },
-                  { replace: false },
-                )
-              }
-            >
-              {APPLICATION_HISTORY_STATUS_OPTIONS.map(({ value, label }) => (
-                <option key={value} value={value}>
-                  {label}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="grid gap-1">
-            <label className="text-sm font-semibold" htmlFor="sort">
-              Sort
-            </label>
-            <select
-              id="sort"
-              className="select"
-              value={state.sort}
-              onChange={(event) =>
-                updateSearchParams(
-                  { sort: event.target.value, offset: 1 },
-                  { replace: false },
-                )
-              }
-            >
-              {APPLICATION_HISTORY_SORT_OPTIONS.map(({ value, label }) => (
-                <option key={value} value={value}>
-                  {label}
-                </option>
-              ))}
-            </select>
-          </div>
+          <SingleSelectFilter
+            label="Status"
+            value={state.status}
+            options={STATUS_FILTER_OPTIONS}
+            icon={ListFilter}
+            onChange={(status) =>
+              updateSearchParams({ status, offset: 1 }, { replace: false })
+            }
+          />
+          <SingleSelectFilter
+            label="Sort"
+            value={state.sort}
+            options={SORT_FILTER_OPTIONS}
+            icon={ArrowUpDown}
+            className="w-52"
+            onChange={(sort) =>
+              updateSearchParams({ sort, offset: 1 }, { replace: false })
+            }
+          />
         </div>
       </Controls>
       <TravelApplicationResults

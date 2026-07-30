@@ -1,8 +1,10 @@
 import React, { useId, useState } from "react";
-import { CalendarDays, Check, ChevronDown } from "lucide-react";
+import { CalendarDays, Check } from "lucide-react";
 import { format, isValid, parseISO } from "date-fns";
+import { Dialog } from "react-aria-components";
 import Button from "app/components/Button";
 import { EssPopover } from "app/components/EssPopover";
+import FilterTrigger from "app/components/FilterTrigger";
 import {
   createCustomDateRange,
   DATE_RANGE_PRESETS,
@@ -72,83 +74,69 @@ export default function DateRangeFilter({
         offset={4}
         contentClassName="w-[300px] p-3"
         trigger={
-          <Button
+          <FilterTrigger
             id={triggerId}
-            variant="secondary"
-            aria-labelledby={`${labelId} ${triggerId}`}
-            className="w-full overflow-hidden border-gray-300 bg-gray-50 px-2 py-1.5 font-normal text-gray-800 [&>span]:w-full [&>span]:min-w-0"
-          >
-            <span className="flex w-full min-w-0 items-center gap-2">
-              <CalendarDays
-                aria-hidden="true"
-                className="h-4 w-4 shrink-0 text-gray-500"
-              />
-              <span
-                className="min-w-0 flex-1 truncate text-left"
-                title={triggerLabel}
-              >
-                {triggerLabel}
-              </span>
-              <ChevronDown
-                aria-hidden="true"
-                className={cn(
-                  "ml-auto h-4 w-4 shrink-0 transition-transform",
-                  isOpen && "rotate-180",
-                )}
-              />
-            </span>
-          </Button>
+            labelId={labelId}
+            icon={CalendarDays}
+            valueLabel={triggerLabel}
+            isOpen={isOpen}
+          />
         }
       >
-        <div className="flex gap-3">
-          <DateInput
-            id={fromDateId}
-            label="From date"
-            value={draftFromDate}
-            max={draftToDate}
-            onChange={setDraftFromDate}
-          />
-          <DateInput
-            id={toDateId}
-            label="To date"
-            value={draftToDate}
-            min={draftFromDate}
-            onChange={setDraftToDate}
-          />
-        </div>
-        <div className="mt-3 flex justify-end">
-          <Button
-            variant="secondary"
-            isDisabled={!isCustomRangeValid}
-            onPress={applyCustomRange}
-          >
-            Apply dates
-          </Button>
-        </div>
-
-        <div className="my-3 border-t border-gray-200" />
-        <div className="mb-1 text-sm font-semibold">Quick ranges</div>
-        <div className="grid gap-1">
-          {presets.map((preset) => (
+        <Dialog aria-label="Choose a date range" className="outline-none">
+          <div className="flex gap-3">
+            <DateInput
+              id={fromDateId}
+              label="From date"
+              value={draftFromDate}
+              max={draftToDate}
+              onChange={setDraftFromDate}
+            />
+            <DateInput
+              id={toDateId}
+              label="To date"
+              value={draftToDate}
+              min={draftFromDate}
+              onChange={setDraftToDate}
+            />
+          </div>
+          <div className="mt-3 flex justify-end">
             <Button
-              key={preset.value}
-              variant="quiet"
-              onPress={() => selectPreset(preset.value)}
-              className={cn(
-                "w-full px-3 py-2 font-normal",
-                selectedPreset?.value === preset.value &&
-                  "bg-teal-100 text-teal-800",
-              )}
+              variant="secondary"
+              isDisabled={!isCustomRangeValid}
+              onPress={applyCustomRange}
             >
-              <span className="flex w-full items-center justify-between">
-                {preset.label}
-                {selectedPreset?.value === preset.value && (
-                  <Check aria-hidden="true" className="ml-2 h-4 w-4 shrink-0" />
-                )}
-              </span>
+              Apply dates
             </Button>
-          ))}
-        </div>
+          </div>
+
+          <div className="my-3 border-t border-gray-200" />
+          <div className="mb-1 text-sm font-semibold">Quick ranges</div>
+          <div className="grid gap-1">
+            {presets.map((preset) => (
+              <Button
+                key={preset.value}
+                variant="quiet"
+                onPress={() => selectPreset(preset.value)}
+                className={cn(
+                  "w-full px-3 py-2 font-normal [&>span]:w-full",
+                  selectedPreset?.value === preset.value &&
+                    "bg-teal-100 text-teal-800",
+                )}
+              >
+                <span className="flex w-full items-center justify-between">
+                  {preset.label}
+                  {selectedPreset?.value === preset.value && (
+                    <Check
+                      aria-hidden="true"
+                      className="ml-2 h-4 w-4 shrink-0"
+                    />
+                  )}
+                </span>
+              </Button>
+            ))}
+          </div>
+        </Dialog>
       </EssPopover>
     </div>
   );
