@@ -1,6 +1,6 @@
 import { formatISO, startOfYear, subMonths } from "date-fns";
 
-export const DEFAULT_DATE_RANGE_PRESET = "pastMonth";
+export const DEFAULT_DATE_RANGE_PRESET = "pastThreeMonths";
 
 export const DATE_RANGE_PRESETS = [
   {
