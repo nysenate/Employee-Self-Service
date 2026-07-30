@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useMemo } from "react";
-import { formatISO, isValid, parseISO, subMonths } from "date-fns";
 import { useSearchParams } from "react-router-dom";
+import {
+  readDateRangeSearchParams,
+  writeDateRangeSearchParams,
+} from "app/utils/dateRangeSearchParams";
 
 const MAX_LIMIT = 100;
 
@@ -31,21 +34,11 @@ const validSorts = new Set(
 
 function getDefaults() {
   return {
-    fromDate: formatISO(subMonths(new Date(), 1), { representation: "date" }),
-    toDate: formatISO(new Date(), { representation: "date" }),
     limit: 16,
     offset: 1,
     status: "",
     sort: "startDate:desc",
   };
-}
-
-function parseDate(value, fallback) {
-  if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
-    return fallback;
-  }
-
-  return isValid(parseISO(value)) ? value : fallback;
 }
 
 function parsePositiveInteger(value, fallback, max = Number.MAX_SAFE_INTEGER) {
@@ -60,20 +53,11 @@ function parsePositiveInteger(value, fallback, max = Number.MAX_SAFE_INTEGER) {
 }
 
 export function fromSearchParams(searchParams, defaults = getDefaults()) {
-  let fromDate = parseDate(searchParams.get("fromDate"), defaults.fromDate);
-  let toDate = parseDate(searchParams.get("toDate"), defaults.toDate);
-
-  // Treat an inverted manually entered range as a reversed range.
-  if (fromDate > toDate) {
-    [fromDate, toDate] = [toDate, fromDate];
-  }
-
   const status = searchParams.get("status") ?? defaults.status;
   const sort = searchParams.get("sort") ?? defaults.sort;
 
   return {
-    fromDate,
-    toDate,
+    dateRange: readDateRangeSearchParams(searchParams),
     limit: parsePositiveInteger(
       searchParams.get("limit"),
       defaults.limit,
@@ -86,10 +70,8 @@ export function fromSearchParams(searchParams, defaults = getDefaults()) {
 }
 
 function canonicalizeSearchParams(searchParams, state) {
-  const params = new URLSearchParams(searchParams);
+  const params = writeDateRangeSearchParams(searchParams, state.dateRange);
 
-  params.set("fromDate", state.fromDate);
-  params.set("toDate", state.toDate);
   params.set("limit", state.limit.toString());
   params.set("offset", state.offset.toString());
   params.set("sort", state.sort);
@@ -140,5 +122,23 @@ export function useApplicationHistorySearchParams() {
     [setSearchParams],
   );
 
-  return { state, updateSearchParams };
+  const updateDateRange = useCallback(
+    (dateRange, { replace = true } = {}) => {
+      setSearchParams(
+        (currentParams) => {
+          const nextParams = writeDateRangeSearchParams(
+            currentParams,
+            dateRange,
+          );
+
+          nextParams.set("offset", "1");
+          return nextParams;
+        },
+        { replace },
+      );
+    },
+    [setSearchParams],
+  );
+
+  return { state, updateDateRange, updateSearchParams };
 }

@@ -3,7 +3,7 @@ import Hero from "app/components/Hero";
 import Controls from "app/components/Controls";
 import { useTravelApps } from "app/views/travel/application/history/useTravelApps";
 import TravelApplicationResults from "app/views/travel/application/history/TravelApplicationResults";
-import InputDebounced from "app/components/InputDebounced";
+import DateRangeFilter from "app/components/DateRangeFilter";
 import {
   APPLICATION_HISTORY_SORT_OPTIONS,
   APPLICATION_HISTORY_STATUS_OPTIONS,
@@ -11,11 +11,12 @@ import {
 } from "app/views/travel/application/history/useApplicationHistorySearchParams";
 
 export default function ApplicationHistory() {
-  const { state, updateSearchParams } = useApplicationHistorySearchParams();
+  const { state, updateDateRange, updateSearchParams } =
+    useApplicationHistorySearchParams();
 
   const appQuery = useTravelApps({
-    from: state.fromDate,
-    to: state.toDate,
+    from: state.dateRange.fromDate,
+    to: state.dateRange.toDate,
     status: state.status,
     sort: state.sort,
     limit: state.limit,
@@ -28,47 +29,13 @@ export default function ApplicationHistory() {
     <div>
       <Hero>Travel Application History</Hero>
       <Controls>
-        <div className="flex flex-wrap gap-3 px-4 py-3">
-          <div className="grid gap-1">
-            <label className="text-sm font-semibold" htmlFor="fromDate">
-              From Date
-            </label>
-            <InputDebounced
-              id="fromDate"
-              type="date"
-              className="w-32"
-              value={state.fromDate}
-              max={state.toDate}
-              onChange={(value) => {
-                if (value !== state.fromDate) {
-                  updateSearchParams({
-                    fromDate: value,
-                    offset: 1,
-                  });
-                }
-              }}
-            />
-          </div>
-          <div className="grid gap-1">
-            <label className="text-sm font-semibold" htmlFor="toDate">
-              To Date
-            </label>
-            <InputDebounced
-              id="toDate"
-              type="date"
-              className="w-32"
-              value={state.toDate}
-              min={state.fromDate}
-              onChange={(value) => {
-                if (value !== state.toDate) {
-                  updateSearchParams({
-                    toDate: value,
-                    offset: 1,
-                  });
-                }
-              }}
-            />
-          </div>
+        <div className="flex flex-wrap items-start gap-3 px-4 py-3">
+          <DateRangeFilter
+            value={state.dateRange}
+            onChange={(dateRange) =>
+              updateDateRange(dateRange, { replace: false })
+            }
+          />
           <div className="grid gap-1">
             <label className="text-sm font-semibold" htmlFor="status">
               Status
