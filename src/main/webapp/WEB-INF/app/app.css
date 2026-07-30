@@ -148,7 +148,7 @@
     }
 
     .table__head__cell {
-        @apply px-5 py-3 text-left font-semibold tracking-wide;
+        @apply px-3 py-3 text-left font-semibold tracking-wide;
     }
 
     .table--compact .table__head__cell {
@@ -180,7 +180,7 @@
     }
 
     .table__cell {
-        @apply px-5 py-1.5 text-left;
+        @apply px-3 py-1.5 text-left;
     }
 
     .table--compact .table__cell {

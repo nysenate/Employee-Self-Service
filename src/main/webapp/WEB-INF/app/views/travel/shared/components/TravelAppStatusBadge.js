@@ -37,7 +37,8 @@ export default function TravelAppStatusBadge({ status }) {
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-none border px-2 py-0.5 text-sm font-semibold",
+        "inline-flex w-30 items-center justify-center whitespace-nowrap",
+        "rounded-none border px-2 py-0.5 text-sm font-semibold",
         className,
       )}
     >

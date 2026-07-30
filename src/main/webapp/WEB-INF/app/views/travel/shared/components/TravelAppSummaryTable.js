@@ -13,7 +13,14 @@ export default function TravelAppSummaryTable({
   }
 
   return (
-    <table className="table">
+    <table className="table table-fixed">
+      <colgroup>
+        <col className="w-28" />
+        <col className="w-44" />
+        <col />
+        <col className="w-32" />
+        <col className="w-40" />
+      </colgroup>
       <thead>
         <tr className="table__head__row">
           <th className="table__head__cell">Travel Date</th>

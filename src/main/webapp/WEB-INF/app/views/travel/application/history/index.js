@@ -36,6 +36,7 @@ export default function ApplicationHistory() {
             <InputDebounced
               id="fromDate"
               type="date"
+              className="w-32"
               value={state.fromDate}
               max={state.toDate}
               onChange={(value) => {
@@ -55,6 +56,7 @@ export default function ApplicationHistory() {
             <InputDebounced
               id="toDate"
               type="date"
+              className="w-32"
               value={state.toDate}
               min={state.fromDate}
               onChange={(value) => {
