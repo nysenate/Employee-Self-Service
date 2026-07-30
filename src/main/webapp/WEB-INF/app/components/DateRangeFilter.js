@@ -118,8 +118,9 @@ export default function DateRangeFilter({
                 key={preset.value}
                 variant="quiet"
                 onPress={() => selectPreset(preset.value)}
+                contentClassName="w-full"
                 className={cn(
-                  "w-full px-3 py-2 font-normal [&>span]:w-full",
+                  "w-full px-3 py-2 font-normal",
                   selectedPreset?.value === preset.value &&
                     "bg-teal-100 text-teal-800",
                 )}

@@ -16,8 +16,9 @@ export default function FilterTrigger({
       {...(id ? { id } : {})}
       variant="secondary"
       {...(labelId && id ? { "aria-labelledby": `${labelId} ${id}` } : {})}
+      contentClassName="w-full min-w-0"
       className={cn(
-        "w-full overflow-hidden border-gray-300 bg-gray-50 px-2 py-1.5 font-normal text-gray-800 [&>span]:w-full [&>span]:min-w-0",
+        "w-full overflow-hidden border-gray-300 bg-gray-50 px-2 py-1.5 font-normal text-gray-800",
         className,
       )}
     >

@@ -13,8 +13,13 @@ import {
 } from "app/views/travel/application/history/historyFilterOptions";
 
 export default function ApplicationHistory() {
-  const { state, updateDateRange, updateSearchParams } =
-    useApplicationHistorySearchParams();
+  const {
+    state,
+    hasActiveFilters,
+    resetFilters,
+    updateDateRange,
+    updateSearchParams,
+  } = useApplicationHistorySearchParams();
 
   const appQuery = useTravelApps({
     from: state.dateRange.fromDate,
@@ -62,9 +67,13 @@ export default function ApplicationHistory() {
       <TravelApplicationResults
         apps={apps}
         isLoading={appQuery.isPending}
+        isUpdating={appQuery.isFetching && !appQuery.isPending}
+        isPlaceholderData={appQuery.isPlaceholderData}
+        hasActiveFilters={hasActiveFilters}
         limit={state.limit}
         offset={state.offset}
         total={appQuery.data?.total ?? 0}
+        onResetFilters={() => resetFilters({ replace: false })}
         onPageChange={(offset) =>
           updateSearchParams({ offset }, { replace: false })
         }

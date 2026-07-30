@@ -1,7 +1,10 @@
 import React, { forwardRef, useContext } from "react";
 import { ThemeContext } from "app/ThemeContext";
 import { cn } from "app/utils/cn";
-import { Button as AriaButton, composeRenderProps } from "react-aria-components";
+import {
+  Button as AriaButton,
+  composeRenderProps,
+} from "react-aria-components";
 
 /**
  * A common button component for ESS.
@@ -15,6 +18,7 @@ import { Button as AriaButton, composeRenderProps } from "react-aria-components"
  * @param isPending Pending state. Pending buttons are rendered as non-interactive and show a spinner.
  * @param children The content to display in the button.
  * @param className Optional string class names to merge with button styles.
+ * @param contentClassName Optional string class names for the button's content wrapper.
  * @param passThroughProps Any valid attributes for a button element, besides those in controlledProps, will
  *                         be passed onto the button element.
  */
@@ -26,6 +30,7 @@ const Button = forwardRef(function (
     isPending,
     type = "button",
     className = "",
+    contentClassName = "",
     children,
     ...passThroughProps
   },
@@ -37,7 +42,10 @@ const Button = forwardRef(function (
   const pending = Boolean(isPending);
   const blocksInteraction = Boolean(isDisabled) || pending;
 
-  if (process.env.NODE_ENV !== "production" && typeof className === "function") {
+  if (
+    process.env.NODE_ENV !== "production" &&
+    typeof className === "function"
+  ) {
     throw new Error(
       '[Button] Function "className" is not supported. Pass a class string instead.',
     );
@@ -61,7 +69,13 @@ const Button = forwardRef(function (
     >
       {composeRenderProps(children, (inputChildren, renderProps) => (
         <>
-          <span className={renderProps.isPending ? "opacity-0" : ""}>
+          <span
+            className={cn(
+              "inline-flex items-center justify-center",
+              contentClassName,
+              renderProps.isPending && "opacity-0",
+            )}
+          >
             {inputChildren}
           </span>
           {renderProps.isPending && (

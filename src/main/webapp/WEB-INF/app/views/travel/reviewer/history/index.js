@@ -141,15 +141,8 @@ function Results({ data, state, updateSearchParams }) {
 
   const apps = appReviews.map((review) => review.application);
 
-  const handleRowClick = (app) => {
+  const selectApp = (app) => {
     setSelectedReview(appIdToReview.get(app.id));
-  };
-
-  const handleRowKeyDown = (event, app) => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      setSelectedReview(appIdToReview.get(app.id));
-    }
   };
 
   const handleDialogChange = (open) => {
@@ -166,11 +159,7 @@ function Results({ data, state, updateSearchParams }) {
     <>
       <Card className="mt-6">
         <div className="p-3">
-          <TravelAppSummaryTable
-            apps={apps}
-            handleRowClick={handleRowClick}
-            handleRowKeyDown={handleRowKeyDown}
-          />
+          <TravelAppSummaryTable apps={apps} onSelectApp={selectApp} />
           <Pagination
             limit={state.limit}
             offset={state.offset}

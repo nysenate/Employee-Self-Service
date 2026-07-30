@@ -16,15 +16,8 @@ export default function ReviewQueueResults({ queue }) {
 
   const apps = queue.map((review) => review.application);
 
-  const handleRowClick = (app) => {
+  const selectApp = (app) => {
     setSelectedReview(appIdToReview.get(app.id));
-  };
-
-  const handleRowKeyDown = (event, app) => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      setSelectedReview(appIdToReview.get(app.id));
-    }
   };
 
   const handleIsOpenChange = (open) => {
@@ -40,11 +33,7 @@ export default function ReviewQueueResults({ queue }) {
           <Card.Title>Applications to Review</Card.Title>
         </Card.Header>
         <Card.Content>
-          <TravelAppSummaryTable
-            apps={apps}
-            handleRowClick={handleRowClick}
-            handleRowKeyDown={handleRowKeyDown}
-          />
+          <TravelAppSummaryTable apps={apps} onSelectApp={selectApp} />
         </Card.Content>
       </Card>
 

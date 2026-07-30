@@ -4,6 +4,7 @@ import {
   readDateRangeSearchParams,
   writeDateRangeSearchParams,
 } from "app/utils/dateRangeSearchParams";
+import { DEFAULT_DATE_RANGE_PRESET } from "app/utils/dateRangeUtils";
 
 const MAX_LIMIT = 100;
 
@@ -140,5 +141,38 @@ export function useApplicationHistorySearchParams() {
     [setSearchParams],
   );
 
-  return { state, updateDateRange, updateSearchParams };
+  const resetFilters = useCallback(
+    ({ replace = false } = {}) => {
+      setSearchParams(
+        (currentParams) => {
+          const nextParams = new URLSearchParams(currentParams);
+
+          nextParams.delete("range");
+          nextParams.delete("fromDate");
+          nextParams.delete("toDate");
+          nextParams.delete("status");
+          nextParams.set("sort", defaults.sort);
+          nextParams.set("offset", "1");
+
+          return nextParams;
+        },
+        { replace },
+      );
+    },
+    [defaults.sort, setSearchParams],
+  );
+
+  const hasActiveFilters =
+    state.status !== defaults.status ||
+    state.sort !== defaults.sort ||
+    state.dateRange.selection.type !== "preset" ||
+    state.dateRange.selection.preset !== DEFAULT_DATE_RANGE_PRESET;
+
+  return {
+    state,
+    hasActiveFilters,
+    resetFilters,
+    updateDateRange,
+    updateSearchParams,
+  };
 }
