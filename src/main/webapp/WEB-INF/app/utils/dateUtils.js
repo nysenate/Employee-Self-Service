@@ -17,7 +17,7 @@ export function isoToShortDate(isoDate) {
  * @returns {string|string}
  */
 export function isoToShortDateTime(isoDatetime) {
-  return formatDate(isoDatetime, "MM/dd/yyyy h:mmaaa");
+  return formatDate(isoDatetime, "M/dd/yy h:mmaaa");
 }
 
 /**
