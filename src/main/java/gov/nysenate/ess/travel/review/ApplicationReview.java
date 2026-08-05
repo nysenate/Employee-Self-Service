@@ -1,72 +1,64 @@
 package gov.nysenate.ess.travel.review;
 
-import com.google.common.base.Preconditions;
 import gov.nysenate.ess.travel.request.app.TravelApplication;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
-import gov.nysenate.ess.travel.review.strategy.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import gov.nysenate.ess.travel.review.policy.ReviewPolicy;
+import gov.nysenate.ess.travel.review.policy.ReviewPolicyType;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
  * The entire review process for a single {@link TravelApplication}.
  */
 public class ApplicationReview {
-    private static final Logger logger = LoggerFactory.getLogger(ApplicationReview.class);
     private final static Comparator<Action> actionComparator = Comparator.comparing(Action::dateTime);
 
     private int appReviewId;
-    private TravelApplication application;
-    private TravelRole travelerRole;
-    private SortedSet<Action> actions;
-    private ReviewerStrategy reviewerStrategy;
+    private final TravelApplication application;
+    private final SortedSet<Action> actions;
+    private final ReviewPolicy policy;
+    private TravelRole pendingReviewerRole;
     private boolean isShared;
 
-    public ApplicationReview(int appReviewId, TravelApplication application, TravelRole travelerRole,
-                             List<Action> actions, ReviewerStrategy reviewerStrategy, boolean isShared) {
+    public ApplicationReview(int appReviewId, TravelApplication application, ReviewPolicy policy,
+                             TravelRole pendingReviewerRole, List<Action> actions, boolean isShared) {
         this.appReviewId = appReviewId;
         this.application = application;
-        this.travelerRole = travelerRole;
         this.actions = new TreeSet<>(actionComparator);
         this.actions.addAll(actions);
-        this.reviewerStrategy = reviewerStrategy;
+        this.policy = policy;
+        if (!policy.reviewerOrder().contains(pendingReviewerRole)) {
+            throw new IllegalArgumentException("Pending reviewer role must belong to the review policy.");
+        }
+        this.pendingReviewerRole = pendingReviewerRole;
         this.isShared = isShared;
     }
 
-    public ApplicationReview(TravelApplication application, TravelRole travelerRole, ReviewerStrategy reviewerStrategy) {
-        this(0, application, travelerRole, new ArrayList<>(), reviewerStrategy, false);
+    public ApplicationReview(TravelApplication application, ReviewPolicy policy) {
+        this(0, application, policy, policy.firstReviewer(), List.of(), false);
     }
 
     public void addAction(Action action) {
-        try {
-            Preconditions.checkArgument(action.role().equals(nextReviewerRole()));
-        } catch (IllegalArgumentException ex) {
-            logger.error("""
-                         Add Action precondition failed for AppReviewId = {}.
-                         Action role = {},
-                         Next reviewer role = {}
-                         {}
-                         """,
-                    appReviewId, action.role(), nextReviewerRole(), ex);
+        if (action.role() != pendingReviewerRole) {
+            throw new IllegalArgumentException("Action role must match the pending reviewer role.");
         }
         actions.add(action);
+        pendingReviewerRole = action.isDisapproval()
+                ? TravelRole.NONE
+                : policy.after(pendingReviewerRole);
     }
 
-    /**
-     * Returns the role which needs to review the application next.
-     * If the application has been disapproved there is no need to continue the review workflow.
-     */
-    public TravelRole nextReviewerRole() {
-        if (application.getStatus().isDisapproved()) {
-            return TravelRole.NONE;
-        } else if (mostRecentAction() != null && mostRecentAction().isDisapproval() && application.getStatus().isPending()) {
-            // App has been resubmitted.
-            return reviewerStrategy.after(null);
-        } else {
-            return reviewerStrategy.after(previousReviewerRole());
-        }
+    public void restart() {
+        pendingReviewerRole = policy.firstReviewer();
+    }
+
+    public TravelRole pendingReviewerRole() {
+        return pendingReviewerRole;
     }
 
     public Action getLatestActionByRole(TravelRole role) {
@@ -91,8 +83,12 @@ public class ApplicationReview {
         return actions.last();
     }
 
-    public TravelRole travelerRole() {
-        return travelerRole;
+    public ReviewPolicyType policyType() {
+        return policy.id().type();
+    }
+
+    public int policyVersion() {
+        return policy.id().version();
     }
 
     public boolean isShared() {
@@ -111,20 +107,6 @@ public class ApplicationReview {
         this.appReviewId = appReviewId;
     }
 
-    private TravelRole previousReviewerRole() {
-        Action a = mostRecentAction();
-        return a == null ? null : a.role();
-    }
-
-    // Returns the most recent action or null if there are no actions.
-    private Action mostRecentAction() {
-        try {
-            return actions.last();
-        } catch (NoSuchElementException ex) {
-            return null;
-        }
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -133,12 +115,13 @@ public class ApplicationReview {
         return appReviewId == that.appReviewId &&
                 isShared == that.isShared &&
                 Objects.equals(application, that.application) &&
-                travelerRole == that.travelerRole &&
+                Objects.equals(policy.id(), that.policy.id()) &&
+                pendingReviewerRole == that.pendingReviewerRole &&
                 Objects.equals(actions, that.actions);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(appReviewId, application, travelerRole, actions, isShared);
+        return Objects.hash(appReviewId, application, policy.id(), pendingReviewerRole, actions, isShared);
     }
 }

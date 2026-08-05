@@ -17,14 +17,14 @@ export default function DisapproveConfirmDialog({
   const canDisapprove = trimmedNote.length > 0 && !isPending;
 
   const handleDisapprove = () => {
-    if (!review?.appReviewId || !review?.nextReviewerRole || !trimmedNote) {
+    if (!review?.appReviewId || !review?.pendingReviewerRole || !trimmedNote) {
       return;
     }
 
     disapproveReview.mutate(
       {
         appReviewId: review.appReviewId,
-        role: review.nextReviewerRole,
+        role: review.pendingReviewerRole,
         notes: trimmedNote,
       },
       {

@@ -17,7 +17,7 @@ import gov.nysenate.ess.travel.delegate.DelegationDao;
 import gov.nysenate.ess.travel.notifications.email.TravelEmailService;
 import gov.nysenate.ess.travel.request.app.TravelApplicationStatus;
 import gov.nysenate.ess.travel.review.dao.ApplicationReviewDao;
-import gov.nysenate.ess.travel.review.strategy.ReviewerStrategyFactory;
+import gov.nysenate.ess.travel.review.policy.ReviewPolicySelector;
 import gov.nysenate.ess.travel.review.view.ActionType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,7 +35,7 @@ public class ApplicationReviewService {
     @Autowired private TravelRoleFactory travelRoleFactory;
     @Autowired private TravelEmailService emailService;
     @Autowired private DelegationDao delegationDao;
-    @Autowired private ReviewerStrategyFactory reviewerStrategyFactory;
+    @Autowired private ReviewPolicySelector policySelector;
     @Autowired private EventBus eventBus;
 
     public void approveApplication(ApplicationReview applicationReview, Employee approver, String notes,
@@ -43,8 +43,9 @@ public class ApplicationReviewService {
         Action approvalAction = new Action(0, approver, approverRole,
                 ActionType.APPROVE, notes, LocalDateTime.now());
         applicationReview.addAction(approvalAction);
+        TravelRole pendingReviewerRole = applicationReview.pendingReviewerRole();
 
-        if (applicationReview.nextReviewerRole() == TravelRole.NONE) {
+        if (pendingReviewerRole == TravelRole.NONE) {
             // If no one else needs to review, the application is completely approved.
             travelApplicationService.updateApplicationStatus(
                     applicationReview.application().getAppId(),
@@ -52,8 +53,8 @@ public class ApplicationReviewService {
             );
             eventBus.post(new TravelApprovalEmailEvent(applicationReview));
         } else {
-            if (applicationReview.nextReviewerRole() == TravelRole.TRAVEL_ADMIN
-                    || applicationReview.nextReviewerRole() == TravelRole.SECRETARY_OF_THE_SENATE) {
+            if (pendingReviewerRole == TravelRole.TRAVEL_ADMIN
+                    || pendingReviewerRole == TravelRole.SECRETARY_OF_THE_SENATE) {
                 travelApplicationService.updateApplicationStatus(
                         applicationReview.application().getAppId(),
                         new TravelApplicationStatus(AppStatus.TRAVEL_UNIT, "")
@@ -80,10 +81,7 @@ public class ApplicationReviewService {
     }
 
     public ApplicationReview createApplicationReview(TravelApplication app) {
-        TravelRoles roles = travelRoleFactory.travelRolesForEmp(app.getTraveler());
-        ApplicationReview appReview = new ApplicationReview(app, roles.apex(), reviewerStrategyFactory.createStrategy(app));
-        eventBus.post(new TravelPendingReviewEmailEvent(appReview));
-        return appReview;
+        return new ApplicationReview(app, policySelector.selectFor(app));
     }
 
     public ApplicationReview getApplicationReview(int appReviewId) {

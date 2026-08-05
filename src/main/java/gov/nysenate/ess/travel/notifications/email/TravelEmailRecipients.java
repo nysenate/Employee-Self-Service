@@ -51,7 +51,7 @@ public class TravelEmailRecipients {
     }
 
     /**
-     * Determines which reviewers should be notified when there is a change in the AppReview next reviewer.
+     * Determines which reviewers should be notified when there is a change in the pending reviewer.
      *
      * @param appReview The ApplicationReview an email notification is being sent for.
      * @return A set of employees who should be emailed.
@@ -59,7 +59,7 @@ public class TravelEmailRecipients {
     public Set<Employee> forPendingReview(ApplicationReview appReview) {
         Set<Employee> recipients = Sets.newHashSet();
 
-        switch (appReview.nextReviewerRole()) {
+        switch (appReview.pendingReviewerRole()) {
             case DEPARTMENT_HEAD:
                 Employee deptHead = employeeInfoService.getEmployee(appReview.application().getTravelerDeptHeadEmpId());
                 recipients.add(deptHead);

@@ -18,7 +18,7 @@ export default function ApproveConfirmDialog({
     approveReview.mutate(
       {
         appReviewId: review.appReviewId,
-        role: review.nextReviewerRole,
+        role: review.pendingReviewerRole,
         notes: note?.trim() || null,
       },
       {

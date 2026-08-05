@@ -5,7 +5,7 @@ import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.travel.request.app.dao.TravelApplicationDao;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
 import gov.nysenate.ess.travel.review.ApplicationReview;
-import gov.nysenate.ess.travel.review.strategy.ReviewerStrategyFactory;
+import gov.nysenate.ess.travel.review.policy.ReviewPolicyRegistry;
 import gov.nysenate.ess.travel.review.view.ActionType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -23,7 +23,7 @@ public class SqlApplicationReviewDao extends SqlBaseDao implements ApplicationRe
 
     @Autowired private TravelApplicationDao travelApplicationDao;
     @Autowired private SqlActionDao actionDao;
-    @Autowired private ReviewerStrategyFactory reviewerStrategyFactory;
+    @Autowired private ReviewPolicyRegistry policyRegistry;
 
     /**
      * Save an Application Review
@@ -83,8 +83,9 @@ public class SqlApplicationReviewDao extends SqlBaseDao implements ApplicationRe
     private ApplicationReview populateRepView(AppReviewRepositoryView view) {
         var travelApplication = travelApplicationDao.selectTravelApplication(view.appId);
         var actions = actionDao.selectActionsByReviewId(view.appReviewId);
-        return new ApplicationReview(view.appReviewId, travelApplication, view.travelerRole, actions,
-                reviewerStrategyFactory.createStrategy(travelApplication), view.isShared);
+        var policy = policyRegistry.resolve(view.policyType, view.policyVersion);
+        return new ApplicationReview(view.appReviewId, travelApplication, policy,
+                view.pendingReviewerRole, actions, view.isShared);
     }
 
     /**
@@ -153,8 +154,9 @@ public class SqlApplicationReviewDao extends SqlBaseDao implements ApplicationRe
         return new MapSqlParameterSource()
                 .addValue("appReviewId", appReview.getAppReviewId())
                 .addValue("appId", appReview.application().getAppId())
-                .addValue("travelerRole", appReview.travelerRole().name())
-                .addValue("nextReviewerRole", appReview.nextReviewerRole().name())
+                .addValue("policyType", appReview.policyType().name())
+                .addValue("policyVersion", appReview.policyVersion())
+                .addValue("pendingReviewerRole", appReview.pendingReviewerRole().name())
                 .addValue("isShared", appReview.isShared());
     }
 }

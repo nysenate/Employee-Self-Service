@@ -12,7 +12,7 @@ public class ApplicationReviewView implements ViewObject {
 
     private String appReviewId;
     private TravelApplicationView travelApplication;
-    private String nextReviewerRole;
+    private String pendingReviewerRole;
     private List<ActionView> actions;
     private boolean isShared;
 
@@ -22,7 +22,7 @@ public class ApplicationReviewView implements ViewObject {
     public ApplicationReviewView(ApplicationReview appReview) {
         appReviewId = String.valueOf(appReview.getAppReviewId());
         travelApplication = new TravelApplicationView(appReview.application());
-        nextReviewerRole = appReview.nextReviewerRole().name();
+        pendingReviewerRole = appReview.pendingReviewerRole().name();
         actions = appReview.actions().stream()
                 .map(ActionView::new)
                 .collect(Collectors.toList());
@@ -37,8 +37,8 @@ public class ApplicationReviewView implements ViewObject {
         return travelApplication;
     }
 
-    public String getNextReviewerRole() {
-        return nextReviewerRole;
+    public String getPendingReviewerRole() {
+        return pendingReviewerRole;
     }
 
     public List<ActionView> getActions() {

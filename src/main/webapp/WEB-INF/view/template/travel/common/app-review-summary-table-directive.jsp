@@ -20,7 +20,7 @@
         <tr dir-paginate="review in reviews | orderBy: '-travelApplication.travelStartDate' | itemsPerPage : 10"
             pagination-id="travel-table-pagination"
             ng-click="onRowClick({review: review})"
-            ng-class="{'shared-review': (review.isShared && activeRole.name && activeRole.name !== review.nextReviewerRole) }">
+            ng-class="{'shared-review': (review.isShared && activeRole.name && activeRole.name !== review.pendingReviewerRole) }">
 
           <td ng-bind="::review.travelApplication.activeAmendment.startDate | date:'M/d/yyyy'"></td>
           <td ng-bind="::review.travelApplication.traveler.fullName"></td>
