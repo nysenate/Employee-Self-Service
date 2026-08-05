@@ -41,7 +41,10 @@ export default function ApplicationHistory() {
     <div>
       <Hero>Travel Application History</Hero>
       <Controls>
-        <div className="flex flex-wrap items-start gap-3 px-4 py-3">
+        <div className="mb-3 text-center text-gray-600">
+          View your previously submitted travel applications.
+        </div>
+        <div className="flex flex-wrap items-start gap-3 px-4 my-3">
           <DateRangeFilter
             value={state.dateRange}
             onChange={(dateRange) =>

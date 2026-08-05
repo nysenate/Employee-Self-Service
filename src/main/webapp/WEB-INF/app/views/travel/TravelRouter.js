@@ -23,7 +23,6 @@ export default function TravelRouter() {
           <Route path="/manage/review-history" element={<ReviewHistory />} />
           <Route path="/manage/queue" element={<ReviewQueue />} />
 
-          <Route path="/stats" element={<Travel />} />
           <Route path="" element={<Navigate to="applications" replace />} />
           <Route path="*" element={<NotFound />} />
         </Route>
@@ -54,9 +53,6 @@ function TravelLayout() {
           </Navigation.Link>
           <Navigation.Link to="/travel/manage/review-history">
             Review History
-          </Navigation.Link>
-          <Navigation.Link to="/travel/manage/stats">
-            Statistics
           </Navigation.Link>
         </Navigation.Section>
       </Navigation>

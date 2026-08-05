@@ -1,15 +1,11 @@
 import React from "react";
-import Card from "app/components/Card";
 import LoadingIndicator from "app/components/LoadingIndicator";
 import Modal from "app/components/Modal";
-import Button from "app/components/Button";
 import TravelAppForm from "app/views/travel/shared/components/TravelAppForm";
 import { useTravelApp } from "app/views/travel/shared/hooks/useTravelApp";
 import TravelAppSummaryTable from "app/views/travel/shared/components/TravelAppSummaryTable";
-import Pagination from "app/components/Pagination";
-import { RotateCcw, SearchX } from "lucide-react";
-import TravelResultsHeader from "app/views/travel/shared/components/TravelResultsHeader";
-import TravelResultsContent from "app/views/travel/shared/components/TravelResultsContent";
+import TravelEmptyResults from "app/views/travel/shared/components/TravelEmptyResults";
+import TravelResultsCard from "app/views/travel/shared/components/TravelResultsCard";
 import { TRAVEL_RESULTS_STATUS } from "app/views/travel/shared/travelResultsStatus";
 
 const APPLICATION_ITEM_LABEL = {
@@ -52,63 +48,31 @@ export default function TravelApplicationResults({
   }
 
   if (!rows.length) {
-    return <EmptyResults onResetFilters={onResetFilters} />;
+    return (
+      <TravelEmptyResults
+        itemLabel="travel applications"
+        onResetFilters={onResetFilters}
+      />
+    );
   }
 
   return (
     <>
-      <Card className="mt-6">
-        <div className="p-4">
-          <TravelResultsHeader
-            count={rows.length}
-            status={status}
-            offset={offset}
-            total={total}
-            itemLabel={APPLICATION_ITEM_LABEL}
-            onResetFilters={onResetFilters}
-          />
-          <TravelResultsContent status={status}>
-            <TravelAppSummaryTable apps={rows} onSelectApp={selectApp} />
-          </TravelResultsContent>
-          <Pagination
-            limit={limit}
-            offset={offset}
-            total={total}
-            onPageChange={onPageChange}
-          />
-        </div>
-      </Card>
+      <TravelResultsCard
+        count={rows.length}
+        status={status}
+        limit={limit}
+        offset={offset}
+        total={total}
+        itemLabel={APPLICATION_ITEM_LABEL}
+        onResetFilters={onResetFilters}
+        onPageChange={onPageChange}
+      >
+        <TravelAppSummaryTable apps={rows} onSelectApp={selectApp} />
+      </TravelResultsCard>
 
       <TravelAppFormModal app={selectedApp} onOpenChange={handleDialogChange} />
     </>
-  );
-}
-
-function EmptyResults({ onResetFilters }) {
-  return (
-    <Card className="mt-6">
-      <div className="flex flex-col items-center px-4 py-10 text-center">
-        <SearchX aria-hidden="true" className="mb-3 h-10 w-10 text-gray-400" />
-        <h2 className="text-xl font-semibold">
-          No travel applications match these filters
-        </h2>
-        <p className="mt-1 text-gray-600">
-          Try adjusting the filters above
-          {onResetFilters ? " or reset them to the defaults." : "."}
-        </p>
-        {onResetFilters && (
-          <Button
-            variant="secondary"
-            className="mt-4"
-            contentClassName="gap-2"
-            onPress={onResetFilters}
-          >
-            <RotateCcw aria-hidden="true" className="h-4 w-4" />
-            Reset filters
-          </Button>
-        )}
-      </div>
-    </Card>
   );
 }
 
