@@ -1,12 +1,4 @@
-import { useCallback, useEffect, useMemo } from "react";
-import { useSearchParams } from "react-router-dom";
-import {
-  readDateRangeSearchParams,
-  writeDateRangeSearchParams,
-} from "app/utils/dateRangeSearchParams";
-import { DEFAULT_DATE_RANGE_PRESET } from "app/utils/dateRangeUtils";
-
-const MAX_LIMIT = 100;
+import { useTravelHistorySearchParams } from "app/views/travel/shared/hooks/useTravelHistorySearchParams";
 
 export const APPLICATION_HISTORY_STATUS_OPTIONS = [
   { value: "", label: "All statuses" },
@@ -33,146 +25,21 @@ const validSorts = new Set(
   APPLICATION_HISTORY_SORT_OPTIONS.map(({ value }) => value),
 );
 
-function getDefaults() {
-  return {
-    limit: 16,
-    offset: 1,
-    status: "",
-    sort: "startDate:desc",
-  };
-}
-
-function parsePositiveInteger(value, fallback, max = Number.MAX_SAFE_INTEGER) {
-  if (value === null || value.trim() === "") {
-    return fallback;
-  }
-
-  const parsed = Number(value);
-  return Number.isInteger(parsed) && parsed >= 1 && parsed <= max
-    ? parsed
-    : fallback;
-}
-
-export function fromSearchParams(searchParams, defaults = getDefaults()) {
-  const status = searchParams.get("status") ?? defaults.status;
-  const sort = searchParams.get("sort") ?? defaults.sort;
-
-  return {
-    dateRange: readDateRangeSearchParams(searchParams),
-    limit: parsePositiveInteger(
-      searchParams.get("limit"),
-      defaults.limit,
-      MAX_LIMIT,
-    ),
-    offset: parsePositiveInteger(searchParams.get("offset"), defaults.offset),
-    status: validStatuses.has(status) ? status : defaults.status,
-    sort: validSorts.has(sort) ? sort : defaults.sort,
-  };
-}
-
-function canonicalizeSearchParams(searchParams, state) {
-  const params = writeDateRangeSearchParams(searchParams, state.dateRange);
-
-  params.set("limit", state.limit.toString());
-  params.set("offset", state.offset.toString());
-  params.set("sort", state.sort);
-
-  if (state.status) {
-    params.set("status", state.status);
-  } else {
-    params.delete("status");
-  }
-
-  return params;
-}
+const FILTERS = {
+  status: {
+    defaultValue: "",
+    validValues: validStatuses,
+  },
+  sort: {
+    defaultValue: "startDate:desc",
+    validValues: validSorts,
+    persistDefault: true,
+  },
+};
 
 export function useApplicationHistorySearchParams() {
-  const defaults = useMemo(getDefaults, []);
-  const [searchParams, setSearchParams] = useSearchParams();
-  const state = useMemo(
-    () => fromSearchParams(searchParams, defaults),
-    [defaults, searchParams],
-  );
-
-  useEffect(() => {
-    const canonicalParams = canonicalizeSearchParams(searchParams, state);
-    if (canonicalParams.toString() !== searchParams.toString()) {
-      setSearchParams(canonicalParams, { replace: true });
-    }
-  }, [searchParams, setSearchParams, state]);
-
-  const updateSearchParams = useCallback(
-    (updates, { replace = true } = {}) => {
-      setSearchParams(
-        (currentParams) => {
-          const nextParams = new URLSearchParams(currentParams);
-
-          Object.entries(updates).forEach(([key, value]) => {
-            if (value === undefined || value === null || value === "") {
-              nextParams.delete(key);
-            } else {
-              nextParams.set(key, value.toString());
-            }
-          });
-
-          return nextParams;
-        },
-        { replace },
-      );
-    },
-    [setSearchParams],
-  );
-
-  const updateDateRange = useCallback(
-    (dateRange, { replace = true } = {}) => {
-      setSearchParams(
-        (currentParams) => {
-          const nextParams = writeDateRangeSearchParams(
-            currentParams,
-            dateRange,
-          );
-
-          nextParams.set("offset", "1");
-          return nextParams;
-        },
-        { replace },
-      );
-    },
-    [setSearchParams],
-  );
-
-  const resetFilters = useCallback(
-    ({ replace = false } = {}) => {
-      setSearchParams(
-        (currentParams) => {
-          const nextParams = new URLSearchParams(currentParams);
-
-          nextParams.delete("range");
-          nextParams.delete("fromDate");
-          nextParams.delete("toDate");
-          nextParams.delete("status");
-          nextParams.set("sort", defaults.sort);
-          nextParams.set("offset", "1");
-
-          return nextParams;
-        },
-        { replace },
-      );
-    },
-    [defaults.sort, setSearchParams],
-  );
-
-  const hasActiveFilters =
-    state.status !== defaults.status ||
-    state.sort !== defaults.sort ||
-    state.dateRange.selection.type !== "preset" ||
-    state.dateRange.selection.preset !== DEFAULT_DATE_RANGE_PRESET;
-
-  return {
-    state,
-    hasActiveFilters,
-    resetFilters,
-    updateDateRange,
-    updateSearchParams,
-  };
+  return useTravelHistorySearchParams({
+    defaultLimit: 16,
+    filters: FILTERS,
+  });
 }
