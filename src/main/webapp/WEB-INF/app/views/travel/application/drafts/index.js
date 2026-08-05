@@ -13,10 +13,17 @@ import { FilePenLine, LoaderCircle, Trash2 } from "lucide-react";
 import { toCurrency } from "app/utils/textUtils";
 import Card from "app/components/Card";
 import Button from "app/components/Button";
-import { cn } from "app/utils/cn";
+import TravelResultsContent from "app/views/travel/shared/components/TravelResultsContent";
+import {
+  resolveTravelResultsStatus,
+  TRAVEL_RESULTS_STATUS,
+} from "app/views/travel/shared/travelResultsStatus";
 
 export default function Drafts() {
   const { data, isPending, isFetching } = useDrafts();
+  const resultsStatus = resolveTravelResultsStatus({
+    isFetching: isFetching && !isPending,
+  });
 
   return (
     <div>
@@ -30,16 +37,13 @@ export default function Drafts() {
           <LoadingIndicator />
         </div>
       ) : (
-        <DraftResults
-          drafts={data?.result}
-          isUpdating={isFetching && !isPending}
-        />
+        <DraftResults drafts={data?.result} status={resultsStatus} />
       )}
     </div>
   );
 }
 
-function DraftResults({ drafts, isUpdating }) {
+function DraftResults({ drafts, status }) {
   const navigate = useNavigate();
   const rows = Array.isArray(drafts) ? drafts : [];
 
@@ -67,10 +71,10 @@ function DraftResults({ drafts, isUpdating }) {
     );
   }
 
-  return <DraftTable drafts={rows} isUpdating={isUpdating} />;
+  return <DraftTable drafts={rows} status={status} />;
 }
 
-function DraftTable({ drafts, isUpdating }) {
+function DraftTable({ drafts, status }) {
   const navigate = useNavigate();
   const rows = Array.isArray(drafts) ? drafts : [];
   const deleteDraft = useMutateDraft();
@@ -112,11 +116,8 @@ function DraftTable({ drafts, isUpdating }) {
     <>
       <Card className="mt-6">
         <div className="p-4">
-          <DraftResultsHeader count={rows.length} isUpdating={isUpdating} />
-          <div
-            aria-busy={isUpdating}
-            className={cn("transition-opacity", isUpdating && "opacity-60")}
-          >
+          <DraftResultsHeader count={rows.length} status={status} />
+          <TravelResultsContent status={status}>
             <table className="table table-fixed">
               <colgroup>
                 <col className="w-24" />
@@ -182,7 +183,7 @@ function DraftTable({ drafts, isUpdating }) {
                 ))}
               </tbody>
             </table>
-          </div>
+          </TravelResultsContent>
         </div>
       </Card>
       <Modal
@@ -241,14 +242,16 @@ function DraftTable({ drafts, isUpdating }) {
   );
 }
 
-function DraftResultsHeader({ count, isUpdating }) {
+function DraftResultsHeader({ count, status }) {
+  const isRefreshing = status === TRAVEL_RESULTS_STATUS.refreshing;
+
   return (
     <div className="mb-3 flex min-h-9 items-center gap-3 border-b border-gray-200 pb-3">
       <div aria-live="polite" className="flex items-center gap-3">
         <span className="font-semibold">
           {count} saved {count === 1 ? "draft" : "drafts"}
         </span>
-        {isUpdating && (
+        {isRefreshing && (
           <span className="inline-flex items-center gap-1.5 text-sm text-gray-500">
             <LoaderCircle aria-hidden="true" className="h-4 w-4 animate-spin" />
             Refreshing

@@ -11,6 +11,7 @@ import {
   SORT_FILTER_OPTIONS,
   STATUS_FILTER_OPTIONS,
 } from "app/views/travel/application/history/historyFilterOptions";
+import { resolveTravelResultsStatus } from "app/views/travel/shared/travelResultsStatus";
 
 export default function ApplicationHistory() {
   const {
@@ -31,6 +32,10 @@ export default function ApplicationHistory() {
   });
 
   const apps = Array.isArray(appQuery.data?.result) ? appQuery.data.result : [];
+  const resultsStatus = resolveTravelResultsStatus({
+    isFetching: appQuery.isFetching && !appQuery.isPending,
+    isPlaceholderData: appQuery.isPlaceholderData,
+  });
 
   return (
     <div>
@@ -67,13 +72,13 @@ export default function ApplicationHistory() {
       <TravelApplicationResults
         apps={apps}
         isLoading={appQuery.isPending}
-        isUpdating={appQuery.isFetching && !appQuery.isPending}
-        isPlaceholderData={appQuery.isPlaceholderData}
-        hasActiveFilters={hasActiveFilters}
+        status={resultsStatus}
         limit={state.limit}
         offset={state.offset}
         total={appQuery.data?.total ?? 0}
-        onResetFilters={() => resetFilters({ replace: false })}
+        onResetFilters={
+          hasActiveFilters ? () => resetFilters({ replace: false }) : undefined
+        }
         onPageChange={(offset) =>
           updateSearchParams({ offset }, { replace: false })
         }

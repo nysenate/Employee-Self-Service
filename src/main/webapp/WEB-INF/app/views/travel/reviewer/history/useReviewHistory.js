@@ -1,6 +1,6 @@
 import { buildQueryString } from "app/utils/apiUtils";
 import { fetchApiJson } from "app/api/fetchJson";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
 function getQueryKey(params) {
   return ["travel", "review", "history", params];
@@ -11,6 +11,7 @@ export function useReviewHistory(params) {
   return useQuery({
     queryKey: getQueryKey(params),
     queryFn: () => fetchApiJson(`/travel/review/history?${queryString}`),
+    placeholderData: keepPreviousData,
     staleTime: 0,
     throwOnError: true,
   });

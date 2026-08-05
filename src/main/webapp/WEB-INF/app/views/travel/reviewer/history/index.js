@@ -1,10 +1,7 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import Hero from "app/components/Hero";
 import Controls from "app/components/Controls";
-import { endOfDay, formatISO, startOfDay, subMonths } from "date-fns";
 import { useSearchParams } from "react-router-dom";
-import { UTCDate } from "@date-fns/utc";
-import InputDebounced from "app/components/InputDebounced";
 import { useReviewHistory } from "app/views/travel/reviewer/history/useReviewHistory";
 import NoMatchesFound from "app/components/NoMatchesFound";
 import LoadingIndicator from "app/components/LoadingIndicator";
@@ -15,18 +12,34 @@ import Modal from "app/components/Modal";
 import Button from "app/components/Button";
 import Pagination from "app/components/Pagination";
 import Card from "app/components/Card";
+import DateRangeFilter from "app/components/DateRangeFilter";
+import {
+  readDateRangeSearchParams,
+  writeDateRangeSearchParams,
+} from "app/utils/dateRangeSearchParams";
+import { DEFAULT_DATE_RANGE_PRESET } from "app/utils/dateRangeUtils";
+import TravelResultsHeader from "app/views/travel/shared/components/TravelResultsHeader";
+import TravelResultsContent from "app/views/travel/shared/components/TravelResultsContent";
+import {
+  resolveTravelResultsStatus,
+  TRAVEL_RESULTS_STATUS,
+} from "app/views/travel/shared/travelResultsStatus";
+
+const REVIEW_ITEM_LABEL = {
+  singular: "review",
+  plural: "reviews",
+};
 
 const initialState = {
-  fromDate: formatISO(subMonths(new Date(), 1), { representation: "date" }),
-  toDate: formatISO(new Date(), { representation: "date" }),
   limit: 12,
   offset: 1,
 };
 
 function fromSearchParams(searchParams) {
   return {
-    fromDate: searchParams.get("fromDate") ?? initialState.fromDate,
-    toDate: searchParams.get("toDate") ?? initialState.toDate,
+    dateRange: readDateRangeSearchParams(searchParams, {
+      defaultPreset: DEFAULT_DATE_RANGE_PRESET,
+    }),
     limit: Number(searchParams.get("limit") ?? initialState.limit),
     offset: Number(searchParams.get("offset") ?? initialState.offset),
   };
@@ -41,20 +54,24 @@ export default function ReviewHistory() {
     const params = new URLSearchParams(searchParams);
     let changed = false;
 
+    const canonicalParams = writeDateRangeSearchParams(
+      params,
+      state.dateRange,
+      { defaultPreset: DEFAULT_DATE_RANGE_PRESET },
+    );
+
     [
-      ["fromDate", state.fromDate],
-      ["toDate", state.toDate],
       ["limit", state.limit],
       ["offset", state.offset],
     ].forEach(([key, value]) => {
-      if (!params.get(key) && value != null) {
-        params.set(key, value.toString());
+      if (!canonicalParams.get(key) && value != null) {
+        canonicalParams.set(key, value.toString());
         changed = true;
       }
     });
 
-    if (changed) {
-      setSearchParams(params, { replace: true });
+    if (changed || canonicalParams.toString() !== searchParams.toString()) {
+      setSearchParams(canonicalParams, { replace: true });
     }
   }, [searchParams, setSearchParams, state]);
 
@@ -70,69 +87,83 @@ export default function ReviewHistory() {
     setSearchParams(params, { replace: true });
   };
 
+  const updateDateRange = useCallback(
+    (dateRange) => {
+      setSearchParams(
+        (currentParams) => {
+          const params = writeDateRangeSearchParams(currentParams, dateRange, {
+            defaultPreset: DEFAULT_DATE_RANGE_PRESET,
+          });
+
+          params.set("offset", "1");
+          return params;
+        },
+        { replace: false },
+      );
+    },
+    [setSearchParams],
+  );
+
+  const resetFilters = useCallback(() => {
+    setSearchParams(
+      (currentParams) => {
+        const params = new URLSearchParams(currentParams);
+        params.delete("range");
+        params.delete("fromDate");
+        params.delete("toDate");
+        params.set("offset", "1");
+        return params;
+      },
+      { replace: false },
+    );
+  }, [setSearchParams]);
+
+  const hasActiveFilters =
+    state.dateRange.selection.type !== "preset" ||
+    state.dateRange.selection.preset !== DEFAULT_DATE_RANGE_PRESET;
+
   const historyQuery = useReviewHistory({
-    from: formatISO(startOfDay(new UTCDate(state.fromDate))),
-    to: formatISO(endOfDay(new UTCDate(state.toDate))),
+    from: state.dateRange.fromDate ?? undefined,
+    to: state.dateRange.toDate ?? undefined,
     limit: state.limit,
     offset: state.offset,
+  });
+  const resultsStatus = resolveTravelResultsStatus({
+    isFetching: historyQuery.isFetching && !historyQuery.isPending,
+    isPlaceholderData: historyQuery.isPlaceholderData,
   });
 
   return (
     <div>
       <Hero>Review History</Hero>
       <Controls>
-        <div className="flex gap-3 p-4">
-          <div className="grid gap-1">
-            <label className="text-sm font-semibold" htmlFor="fromDate">
-              From Date
-            </label>
-            <InputDebounced
-              id="fromDate"
-              type="date"
-              value={state.fromDate}
-              onChange={(value) =>
-                updateSearchParams({
-                  fromDate: value,
-                  offset: 1,
-                })
-              }
-            />
-          </div>
-          <div className="grid gap-1">
-            <label className="text-sm font-semibold" htmlFor="toDate">
-              To Date
-            </label>
-            <InputDebounced
-              id="toDate"
-              type="date"
-              value={state.toDate}
-              onChange={(value) =>
-                updateSearchParams({
-                  toDate: value,
-                  offset: 1,
-                })
-              }
-            />
-          </div>
+        <div className="flex flex-wrap items-start gap-3 px-4 py-3">
+          <DateRangeFilter value={state.dateRange} onChange={updateDateRange} />
         </div>
       </Controls>
-      {historyQuery.isPending ? (
-        <LoadingIndicator />
-      ) : (
-        <Results
-          data={historyQuery.data}
-          state={state}
-          updateSearchParams={updateSearchParams}
-        />
-      )}
+      <Results
+        data={historyQuery.data}
+        state={state}
+        isLoading={historyQuery.isPending}
+        status={resultsStatus}
+        onResetFilters={hasActiveFilters ? resetFilters : undefined}
+        updateSearchParams={updateSearchParams}
+      />
     </div>
   );
 }
 
-function Results({ data, state, updateSearchParams }) {
+function Results({
+  data,
+  state,
+  isLoading,
+  status,
+  onResetFilters,
+  updateSearchParams,
+}) {
   const [selectedReview, setSelectedReview] = React.useState(null);
   const appReviews = data?.result ?? [];
-  const total = data.total;
+  const total = data?.total ?? 0;
 
   const appIdToReview = new Map();
   appReviews.forEach((review, index) =>
@@ -151,15 +182,36 @@ function Results({ data, state, updateSearchParams }) {
     }
   };
 
-  if (!appReviews || appReviews.length === 0) {
+  if (
+    isLoading ||
+    (status === TRAVEL_RESULTS_STATUS.transitioning && !appReviews.length)
+  ) {
+    return (
+      <div className="mt-6">
+        <LoadingIndicator />
+      </div>
+    );
+  }
+
+  if (appReviews.length === 0) {
     return <NoMatchesFound className="mt-6" />;
   }
 
   return (
     <>
       <Card className="mt-6">
-        <div className="p-3">
-          <TravelAppSummaryTable apps={apps} onSelectApp={selectApp} />
+        <div className="p-4">
+          <TravelResultsHeader
+            count={appReviews.length}
+            status={status}
+            offset={state.offset}
+            total={total}
+            itemLabel={REVIEW_ITEM_LABEL}
+            onResetFilters={onResetFilters}
+          />
+          <TravelResultsContent status={status}>
+            <TravelAppSummaryTable apps={apps} onSelectApp={selectApp} />
+          </TravelResultsContent>
           <Pagination
             limit={state.limit}
             offset={state.offset}

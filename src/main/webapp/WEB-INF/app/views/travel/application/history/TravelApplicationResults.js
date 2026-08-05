@@ -7,15 +7,20 @@ import TravelAppForm from "app/views/travel/shared/components/TravelAppForm";
 import { useTravelApp } from "app/views/travel/shared/hooks/useTravelApp";
 import TravelAppSummaryTable from "app/views/travel/shared/components/TravelAppSummaryTable";
 import Pagination from "app/components/Pagination";
-import { LoaderCircle, RotateCcw, SearchX } from "lucide-react";
-import { cn } from "app/utils/cn";
+import { RotateCcw, SearchX } from "lucide-react";
+import TravelResultsHeader from "app/views/travel/shared/components/TravelResultsHeader";
+import TravelResultsContent from "app/views/travel/shared/components/TravelResultsContent";
+import { TRAVEL_RESULTS_STATUS } from "app/views/travel/shared/travelResultsStatus";
+
+const APPLICATION_ITEM_LABEL = {
+  singular: "application",
+  plural: "applications",
+};
 
 export default function TravelApplicationResults({
   apps,
   isLoading,
-  isUpdating,
-  isPlaceholderData,
-  hasActiveFilters,
+  status,
   limit,
   offset,
   total,
@@ -35,7 +40,10 @@ export default function TravelApplicationResults({
     }
   };
 
-  if (isLoading || (isPlaceholderData && !rows.length)) {
+  if (
+    isLoading ||
+    (status === TRAVEL_RESULTS_STATUS.transitioning && !rows.length)
+  ) {
     return (
       <div className="mt-6">
         <LoadingIndicator />
@@ -44,33 +52,24 @@ export default function TravelApplicationResults({
   }
 
   if (!rows.length) {
-    return (
-      <EmptyResults
-        canReset={hasActiveFilters}
-        onResetFilters={onResetFilters}
-      />
-    );
+    return <EmptyResults onResetFilters={onResetFilters} />;
   }
 
   return (
     <>
       <Card className="mt-6">
         <div className="p-4">
-          <ResultsHeader
+          <TravelResultsHeader
             count={rows.length}
-            isUpdating={isUpdating}
-            isPlaceholderData={isPlaceholderData}
+            status={status}
             offset={offset}
             total={total}
-            canReset={hasActiveFilters}
+            itemLabel={APPLICATION_ITEM_LABEL}
             onResetFilters={onResetFilters}
           />
-          <div
-            aria-busy={isUpdating}
-            className={cn("transition-opacity", isUpdating && "opacity-60")}
-          >
+          <TravelResultsContent status={status}>
             <TravelAppSummaryTable apps={rows} onSelectApp={selectApp} />
-          </div>
+          </TravelResultsContent>
           <Pagination
             limit={limit}
             offset={offset}
@@ -85,58 +84,7 @@ export default function TravelApplicationResults({
   );
 }
 
-function ResultsHeader({
-  count,
-  isUpdating,
-  isPlaceholderData,
-  offset,
-  total,
-  canReset,
-  onResetFilters,
-}) {
-  const lastResult = Math.min(offset + count - 1, total);
-
-  return (
-    <div className="mb-3 flex min-h-9 flex-wrap items-center justify-between gap-2 border-b border-gray-200 pb-3">
-      <div aria-live="polite" className="flex items-center gap-3">
-        {isPlaceholderData ? (
-          <span className="inline-flex items-center gap-1.5 font-semibold">
-            <LoaderCircle aria-hidden="true" className="h-4 w-4 animate-spin" />
-            Updating results
-          </span>
-        ) : (
-          <>
-            <span className="font-semibold">
-              Showing {offset}–{lastResult} of {total}{" "}
-              {total === 1 ? "application" : "applications"}
-            </span>
-            {isUpdating && (
-              <span className="inline-flex items-center gap-1.5 text-sm text-gray-500">
-                <LoaderCircle
-                  aria-hidden="true"
-                  className="h-4 w-4 animate-spin"
-                />
-                Refreshing
-              </span>
-            )}
-          </>
-        )}
-      </div>
-      {canReset && (
-        <Button
-          variant="quiet"
-          contentClassName="gap-2"
-          onPress={onResetFilters}
-        >
-          <RotateCcw aria-hidden="true" className="h-4 w-4" />
-          Reset filters
-        </Button>
-      )}
-    </div>
-  );
-}
-
-function EmptyResults({ canReset, onResetFilters }) {
+function EmptyResults({ onResetFilters }) {
   return (
     <Card className="mt-6">
       <div className="flex flex-col items-center px-4 py-10 text-center">
@@ -146,9 +94,9 @@ function EmptyResults({ canReset, onResetFilters }) {
         </h2>
         <p className="mt-1 text-gray-600">
           Try adjusting the filters above
-          {canReset ? " or reset them to the defaults." : "."}
+          {onResetFilters ? " or reset them to the defaults." : "."}
         </p>
-        {canReset && (
+        {onResetFilters && (
           <Button
             variant="secondary"
             className="mt-4"
