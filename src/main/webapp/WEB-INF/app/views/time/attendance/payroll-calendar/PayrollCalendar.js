@@ -142,14 +142,18 @@ function YearCalendar({ year, holidays, payPeriods }) {
   const getTileInfo = (date) => dateInfo.get(getDateKey(date)) || UNMARKED_DATE;
 
   return (
-    <div className="flex flex-wrap justify-center gap-4">
+    <div className="grid grid-cols-3 gap-x-5 gap-y-6">
       {months.map((month) => (
-        <div key={month.getTime()}>
-          <div className="text-center font-semibold text-teal-700">
-            {month.toLocaleString("default", { month: "long" })}
+        <div className="w-full" key={month.getTime()}>
+          <div className="text-center text-gray-600">
+            <span className="font-bold">
+              {month.toLocaleString("default", { month: "long" })}
+            </span>{" "}
+            {month.getFullYear()}
           </div>
           <Calendar
             className={styles.monthCalendar}
+            formatShortWeekday={formatShortWeekday}
             activeStartDate={month}
             calendarType="gregory"
             showNeighboringMonth={false}
@@ -172,6 +176,13 @@ function YearCalendar({ year, holidays, payPeriods }) {
       ))}
     </div>
   );
+}
+
+/** Two letter weekday headings, i.e. "Su", matching the legacy datepickers. */
+function formatShortWeekday(locale, date) {
+  return date
+    .toLocaleString(locale || "default", { weekday: "short" })
+    .slice(0, 2);
 }
 
 /** Shared result for the majority of dates, which carry no highlighting at all. */

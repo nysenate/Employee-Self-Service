@@ -3,52 +3,78 @@
  * Base react-calendar styles come from "react-calendar/dist/Calendar.css"; this file
  * only layers on the ESS specific sizing and date highlighting.
  *
- * The highlight colors mirror the legacy AngularJS page (assets/css/less/time.less).
+ * The layout and highlight colors mirror the legacy AngularJS page, which rendered
+ * jQuery UI datepickers (assets/css/less/time.less). There the highlighting was applied
+ * to the inner span of each day rather than the whole table cell, which is why the
+ * backgrounds below sit on the tile's <abbr> instead of the tile itself.
  */
 
 /* --- Legend swatch colors --- */
 
 .holidayLegend {
-    background: #d4ff60;
+  background: #d4ff60;
 }
 
 .partialHolidayLegend {
-    background: repeating-linear-gradient(
-            45deg,
-            #d4ff60,
-            #d4ff60 3px,
-            #fafafa 3px,
-            #fafafa 6px
-    );
+  background: repeating-linear-gradient(
+    45deg,
+    #d4ff60,
+    #d4ff60 3px,
+    #fafafa 3px,
+    #fafafa 6px
+  );
 }
 
 .payPeriodEndLegend {
-    background: #b8e3eb;
+  background: #b8e3eb;
 }
 
 /* --- Month calendar --- */
 
+/*
+ * The months stretch to fill their grid column, so the type scales with the available
+ * width instead of leaving a fixed-size calendar stranded in a wide cell. Every size
+ * below is in em, so they all follow from this one value.
+ */
 .monthCalendar {
-    width: 230px;
-    border: none;
-    font-family: inherit;
-    line-height: 1.125em;
+  width: 100%;
+  border: none;
+  font-family: inherit;
+  font-size: clamp(0.875rem, 1.15vw, 1.25rem);
+  line-height: 1.125em;
+}
+
+.monthCalendar :global(.react-calendar__month-view__weekdays) {
+  text-transform: none;
+  font-size: 0.8125em;
+  color: #444;
 }
 
 .monthCalendar :global(.react-calendar__month-view__weekdays__weekday) {
-    padding: 0.4em 0;
-    font-size: 0.75em;
+  padding: 0.35em 0;
 }
 
 /* The weekday abbreviations are underlined by default. */
 .monthCalendar :global(.react-calendar__month-view__weekdays__weekday) abbr {
-    text-decoration: none;
+  text-decoration: none;
 }
 
 .monthCalendar :global(.react-calendar__tile) {
-    position: relative;
-    padding: 0.45em 0.2em;
-    font-size: 0.833em;
+  position: relative;
+  padding: 1px;
+  font-size: 0.8125em;
+  color: #666;
+}
+
+/*
+ * The legacy page highlighted the day number's span, so every day gets a block that
+ * fills its cell apart from the one pixel gutter above. Highlights on neighboring days
+ * then read as separate boxes, as they do in production.
+ */
+.monthCalendar :global(.react-calendar__tile) abbr {
+  display: block;
+  padding: 0.3em 0;
+  border: 2px solid transparent;
 }
 
 /*
@@ -57,13 +83,13 @@
  * disabled + weekend coloring so the highlight classes below control the appearance.
  */
 .monthCalendar :global(.react-calendar__tile):disabled {
-    background-color: transparent;
-    color: inherit;
-    cursor: default;
+  background-color: transparent;
+  color: inherit;
+  cursor: default;
 }
 
 .monthCalendar :global(.react-calendar__month-view__days__day--weekend) {
-    color: inherit;
+  color: inherit;
 }
 
 /* --- Date highlighting --- */
@@ -74,51 +100,51 @@
  */
 
 .monthCalendar .weekendDate.weekendDate {
-    color: #aaa;
+  color: #aaa;
 }
 
-.monthCalendar .currentDate.currentDate {
-    border: 2px solid #e64727;
-    font-weight: bold;
+.monthCalendar .currentDate.currentDate abbr {
+  border-color: #e64727;
+  font-weight: bold;
 }
 
-.monthCalendar .holidayDate.holidayDate {
-    background: #d4ff60;
+.monthCalendar .holidayDate.holidayDate abbr {
+  background: #d4ff60;
 }
 
-.monthCalendar .holidayDate.partialHolidayDate {
-    background: repeating-linear-gradient(
-            45deg,
-            #d4ff60,
-            #d4ff60 3px,
-            #fafafa 3px,
-            #fafafa 6px
-    );
+.monthCalendar .holidayDate.partialHolidayDate abbr {
+  background: repeating-linear-gradient(
+    45deg,
+    #d4ff60,
+    #d4ff60 3px,
+    #fafafa 3px,
+    #fafafa 6px
+  );
 }
 
-.monthCalendar .payPeriodEndDate.payPeriodEndDate {
-    background: #b8e3eb;
+.monthCalendar .payPeriodEndDate.payPeriodEndDate abbr {
+  background: #b8e3eb;
 }
 
 /* A date that is both a holiday and a pay period end splits the tile diagonally. */
-.monthCalendar .holidayDate.payPeriodEndDate {
-    background: linear-gradient(45deg, #d4ff60 49%, #b8e3eb 52%);
+.monthCalendar .holidayDate.payPeriodEndDate abbr {
+  background: linear-gradient(45deg, #d4ff60 49%, #b8e3eb 52%);
 }
 
-.monthCalendar .holidayDate.partialHolidayDate.payPeriodEndDate {
-    background:
-            linear-gradient(45deg, transparent, transparent 50%, #b8e3eb 50%),
-            repeating-linear-gradient(
-                    45deg,
-                    #d4ff60,
-                    #d4ff60 3px,
-                    #fafafa 3px,
-                    #fafafa 6px
-            );
+.monthCalendar .holidayDate.partialHolidayDate.payPeriodEndDate abbr {
+  background:
+    linear-gradient(45deg, transparent, transparent 50%, #b8e3eb 50%),
+    repeating-linear-gradient(
+      45deg,
+      #d4ff60,
+      #d4ff60 3px,
+      #fafafa 3px,
+      #fafafa 6px
+    );
 }
 
 /* Covers the tile so the title tooltip appears from anywhere within the date. */
 .tileTooltip {
-    position: absolute;
-    inset: 0;
+  position: absolute;
+  inset: 0;
 }
