@@ -19,6 +19,8 @@ export default function SingleSelectFilter({
   options,
   icon,
   className,
+  layout = "stacked",
+  triggerClassName,
   contentClassName = "w-64 p-2",
 }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -38,13 +40,19 @@ export default function SingleSelectFilter({
       onSelectionChange={selectOption}
       isOpen={isOpen}
       onOpenChange={setIsOpen}
-      className={cn("grid w-44 flex-none gap-1", className)}
+      className={cn(
+        layout === "inline"
+          ? "flex flex-none items-center gap-2"
+          : "grid w-44 flex-none gap-1",
+        className,
+      )}
     >
       <Label className="text-sm font-semibold">{label}</Label>
       <FilterTrigger
         icon={icon}
         valueLabel={selectedOption?.triggerLabel ?? selectedOption?.label}
         isOpen={isOpen}
+        className={triggerClassName}
       />
       <EssPopoverPanel
         placement="bottom start"

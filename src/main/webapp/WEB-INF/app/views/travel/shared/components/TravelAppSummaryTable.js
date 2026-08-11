@@ -2,10 +2,12 @@ import { isoToShortDate } from "app/utils/dateUtils";
 import { toCurrency } from "app/utils/textUtils";
 import TravelAppStatusBadge from "app/views/travel/shared/components/TravelAppStatusBadge";
 import React from "react";
-import Button from "app/components/Button";
-import { ChevronRight } from "lucide-react";
 
-export default function TravelAppSummaryTable({ apps, onSelectApp }) {
+export default function TravelAppSummaryTable({
+  apps,
+  onSelectApp,
+  actionLabel = "View",
+}) {
   if (!apps || apps.length === 0) {
     return null;
   }
@@ -19,7 +21,6 @@ export default function TravelAppSummaryTable({ apps, onSelectApp }) {
           <col />
           <col className="w-32" />
           <col className="w-40" />
-          <col className="w-10" />
         </colgroup>
         <thead>
           <tr className="table__head__row">
@@ -28,17 +29,20 @@ export default function TravelAppSummaryTable({ apps, onSelectApp }) {
             <th className="table__head__cell">Destination</th>
             <th className="table__head__cell cell--number">Allotted Funds</th>
             <th className="table__head__cell">Status</th>
-            <th className="table__head__cell">
-              <span className="sr-only">Actions</span>
-            </th>
           </tr>
         </thead>
         <tbody className="table__body table__body--highlight">
           {apps.map((app) => (
             <tr
               key={app.id}
-              className="table__row"
+              className="table__row focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-teal-600"
+              role="button"
+              tabIndex={0}
+              aria-label={getActionLabel(app, actionLabel)}
               onClick={() => onSelectApp(app)}
+              onKeyDown={(event) =>
+                handleRowKeyDown(event, () => onSelectApp(app))
+              }
             >
               <td className="table__cell">{isoToShortDate(app.startDate)}</td>
               <td className="table__cell">{app.travelerName ?? ""}</td>
@@ -49,19 +53,6 @@ export default function TravelAppSummaryTable({ apps, onSelectApp }) {
               <td className="table__cell">
                 <TravelAppStatusBadge status={app.status} />
               </td>
-              <td
-                className="table__cell px-1"
-                onClick={(event) => event.stopPropagation()}
-              >
-                <Button
-                  variant="quiet"
-                  aria-label={getViewDetailsLabel(app)}
-                  className="h-8 w-8 p-0"
-                  onPress={() => onSelectApp(app)}
-                >
-                  <ChevronRight aria-hidden="true" className="h-4 w-4" />
-                </Button>
-              </td>
             </tr>
           ))}
         </tbody>
@@ -70,19 +61,26 @@ export default function TravelAppSummaryTable({ apps, onSelectApp }) {
   );
 }
 
-function getViewDetailsLabel(app) {
+function handleRowKeyDown(event, onSelect) {
+  if (event.key !== "Enter" && event.key !== " ") return;
+
+  event.preventDefault();
+  onSelect();
+}
+
+function getActionLabel(app, actionLabel) {
   const traveler = app.travelerName?.trim();
   const travelDate = isoToShortDate(app.startDate);
 
   if (traveler && travelDate) {
-    return `View ${traveler}'s travel application for ${travelDate}`;
+    return `${actionLabel} ${traveler}'s travel application for ${travelDate}`;
   }
   if (traveler) {
-    return `View ${traveler}'s travel application`;
+    return `${actionLabel} ${traveler}'s travel application`;
   }
   if (travelDate) {
-    return `View travel application for ${travelDate}`;
+    return `${actionLabel} travel application for ${travelDate}`;
   }
 
-  return "View travel application details";
+  return `${actionLabel} travel application details`;
 }

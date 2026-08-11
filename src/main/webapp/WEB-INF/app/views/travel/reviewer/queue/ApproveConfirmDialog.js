@@ -35,14 +35,12 @@ export default function ApproveConfirmDialog({
     if (!nextOpen && !isPending) {
       onOpenChange(false);
       setNote("");
+      approveReview.reset();
     }
   };
 
   return (
-    <Modal
-      isOpen={open}
-      onOpenChange={handleCloseRequest}
-    >
+    <Modal isOpen={open} onOpenChange={handleCloseRequest}>
       <Modal.Title>Confirm approval</Modal.Title>
       <Modal.Body>
         <p className="mb-3">
@@ -50,6 +48,12 @@ export default function ApproveConfirmDialog({
           approving.
         </p>
         <ReviewSummary review={review} />
+        {approveReview.isError && (
+          <p role="alert" className="mb-3 text-sm font-medium text-red-700">
+            We couldn&apos;t approve this application. Your notes have been
+            preserved. Please try again.
+          </p>
+        )}
         <div className="grid gap-2">
           <label
             className="text-sm font-semibold"
@@ -69,7 +73,7 @@ export default function ApproveConfirmDialog({
         </div>
       </Modal.Body>
       <Modal.Buttons>
-        <Button onPress={handleApprove} isDisabled={isPending}>
+        <Button onPress={handleApprove} isPending={isPending}>
           Approve
         </Button>
         <Button

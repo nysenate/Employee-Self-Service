@@ -1,5 +1,6 @@
 import React from "react";
 import { isoToShortDate } from "app/utils/dateUtils";
+import { travelRoleDisplayName } from "app/views/travel/shared/travelRoles";
 
 export function ReviewSummary({ review }) {
   const summary = getReviewSummary(review);
@@ -12,6 +13,14 @@ export function ReviewSummary({ review }) {
         <div>{summary.destinationLabel}</div>
         <div className="text-foreground font-semibold">Dates of travel</div>
         <div>{summary.travelDates}</div>
+        {summary.reviewingAs && (
+          <>
+            <div className="text-foreground font-semibold">Reviewing as</div>
+            <div className="text-foreground font-semibold">
+              {summary.reviewingAs}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
@@ -30,5 +39,6 @@ function getReviewSummary(review) {
     travelerName: traveler.fullName || "N/A",
     destinationLabel,
     travelDates,
+    reviewingAs: travelRoleDisplayName(review?.pendingReviewerRole),
   };
 }
