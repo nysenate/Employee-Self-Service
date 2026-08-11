@@ -132,6 +132,7 @@ public class ApplicationReviewCtrl extends BaseRestApiCtrl {
                 .sorted(
                         Comparator.<ApplicationReview, LocalDate>comparing(review -> review.application().startDate())
                                 .thenComparing(review -> review.application().getAppId())
+                                .reversed()
                 )
                 .collect(Collectors.toList());
 
