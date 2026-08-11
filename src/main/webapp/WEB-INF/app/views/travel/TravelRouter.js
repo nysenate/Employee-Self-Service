@@ -10,6 +10,8 @@ import SubmitApplication from "app/views/travel/application/submit";
 import Drafts from "app/views/travel/application/drafts";
 import ReviewHistory from "app/views/travel/reviewer/history";
 import ReviewQueue from "app/views/travel/reviewer/queue/ReviewQueuePage";
+import { AsyncBadge } from "app/components/Badge";
+import { useReviewQueue } from "app/views/travel/reviewer/queue/useReviewQueue";
 
 export default function TravelRouter() {
   return (
@@ -49,7 +51,13 @@ function TravelLayout() {
         </Navigation.Section>
         <Navigation.Section name="Manage Travel">
           <Navigation.Link to="/travel/manage/queue">
-            Review Travel
+            <span className="mr-auto">Review Travel</span>
+            <AsyncBadge
+              useData={useReviewQueue}
+              selectCount={countPendingReviews}
+              hideWhenZero
+              title="Travel applications awaiting review"
+            />
           </Navigation.Link>
           <Navigation.Link to="/travel/manage/review-history">
             Review History
@@ -57,5 +65,12 @@ function TravelLayout() {
         </Navigation.Section>
       </Navigation>
     </AppLayout>
+  );
+}
+
+function countPendingReviews(reviewQueue) {
+  return Object.values(reviewQueue).reduce(
+    (count, roleQueue) => count + roleQueue.length,
+    0,
   );
 }
