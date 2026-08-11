@@ -32,15 +32,18 @@
 /* --- Month calendar --- */
 
 /*
- * The months stretch to fill their grid column, so the type scales with the available
- * width instead of leaving a fixed-size calendar stranded in a wide cell. Every size
- * below is in em, so they all follow from this one value.
+ * The months are sized off this one font size -- every measurement below is in em --
+ * and are capped at the width the legacy datepickers used, then centered in their grid
+ * column so a wide viewport spreads the months out rather than inflating them.
+ * The doubled class name beats the library's own `.react-calendar` border rule.
  */
-.monthCalendar {
+.monthCalendar.monthCalendar {
   width: 100%;
+  max-width: 15em;
+  margin: 0 auto;
   border: none;
   font-family: inherit;
-  font-size: clamp(0.875rem, 1.15vw, 1.25rem);
+  font-size: 0.875rem;
   line-height: 1.125em;
 }
 
@@ -73,7 +76,7 @@
  */
 .monthCalendar :global(.react-calendar__tile) abbr {
   display: block;
-  padding: 0.3em 0;
+  padding: 0.2em 0;
   border: 2px solid transparent;
 }
 
