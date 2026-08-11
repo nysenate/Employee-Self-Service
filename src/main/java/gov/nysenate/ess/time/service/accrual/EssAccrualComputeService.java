@@ -22,6 +22,7 @@ import gov.nysenate.ess.time.model.accrual.*;
 import gov.nysenate.ess.time.model.attendance.TimeRecord;
 import gov.nysenate.ess.time.model.attendance.TimeRecordScope;
 import gov.nysenate.ess.time.model.expectedhrs.ExpectedHours;
+import gov.nysenate.ess.time.service.allowance.AllowanceRecordCache;
 import gov.nysenate.ess.time.service.expectedhrs.TxExpectedHoursService;
 import gov.nysenate.ess.time.util.AccrualUtils;
 import org.slf4j.Logger;
@@ -159,14 +160,21 @@ public class EssAccrualComputeService implements AccrualComputeService {
         TreeMap<PayPeriod, PeriodAccSummary> periodAccruals =
                 accrualDao.getPeriodAccruals(empId, endDate, LimitOffset.ALL, SortOrder.ASC);
 
+        // Expected hours are resolved once per pay period below, and each resolution needs this
+        // employee's attendance and time records for the surrounding year. Sharing one cache for the
+        // whole computation reads each year once instead of once per period. It is scoped to this
+        // call and discarded on return, so no result can be carried into a later request.
+        AllowanceRecordCache recordCache = new AllowanceRecordCache();
+
         // Get existing accrual records
-        TreeMap<PayPeriod, PeriodAccSummary> resultMap = getRelevantAccruals(empId, periodAccruals, periodSet);
+        TreeMap<PayPeriod, PeriodAccSummary> resultMap =
+                getRelevantAccruals(empId, periodAccruals, periodSet, recordCache);
 
         // Get a set of pay periods that need to be computed
         TreeSet<PayPeriod> remainingPeriods = getMissingPeriods(resultMap, periodSet);
 
         // Compute accruals for any remaining periods
-        getGapAccruals(empId, remainingPeriods, periodAccruals)
+        getGapAccruals(empId, remainingPeriods, periodAccruals, recordCache)
                 .forEach(accSummary -> resultMap.put(accSummary.getPayPeriod(), accSummary));
 
         return resultMap;
@@ -176,7 +184,8 @@ public class EssAccrualComputeService implements AccrualComputeService {
 
     private Collection<PeriodAccSummary> getGapAccruals(int empId,
                                                         SortedSet<PayPeriod> remainingPeriods,
-                                                        TreeMap<PayPeriod, PeriodAccSummary> periodAccruals) {
+                                                        TreeMap<PayPeriod, PeriodAccSummary> periodAccruals,
+                                                        AllowanceRecordCache recordCache) {
 
         TransactionHistory empTrans = empTransService.getTransHistory(empId);
 
@@ -249,7 +258,7 @@ public class EssAccrualComputeService implements AccrualComputeService {
         // The accrual state is constructed using the latest existing period accrual summary
         AccrualState accrualState = computeInitialAccState(empTrans, optPeriodAccRecord,
                 // Obtain the latest annual accrual record before/on the last pay period year requested
-                annualAcc.floorEntry(lastPeriod.getYear()).getValue(), fromDate);
+                annualAcc.floorEntry(lastPeriod.getYear()).getValue(), fromDate, recordCache);
 
         // Generate a list of all the pay periods between the period immediately following the DTPERLSPOST and
         // before the pay period we are trying to compute available accruals for. We will call these the accrual
@@ -283,7 +292,8 @@ public class EssAccrualComputeService implements AccrualComputeService {
              *  be easier to obtain other information from it if needed.
              */
             computeGapPeriodAccruals(period, accrualState, empTrans, lastAnnualAccSummary,
-                    timeRecords, periodUsages, accrualAllowedDates, expectedHourDates, countRemainingPeriod);
+                    timeRecords, periodUsages, accrualAllowedDates, expectedHourDates, countRemainingPeriod,
+                    recordCache);
 
             if (countRemainingPeriod) {
                 PeriodAccSummary periodAccSummary = accrualState.toPeriodAccrualSummary(refPeriod, period);
@@ -303,7 +313,8 @@ public class EssAccrualComputeService implements AccrualComputeService {
      * @return TreeMap<PayPeriod, PeriodAccSummary>
      */
     private TreeMap<PayPeriod, PeriodAccSummary> getRelevantAccruals(int empId,
-                                                                     TreeMap<PayPeriod, PeriodAccSummary> periodAccruals, SortedSet<PayPeriod> payPeriods) {
+                                                                     TreeMap<PayPeriod, PeriodAccSummary> periodAccruals, SortedSet<PayPeriod> payPeriods,
+                                                                     AllowanceRecordCache recordCache) {
         RangeSet<LocalDate> employedAnnualEmploymentDates =
                 getEmployedAnnualEmploymentDates(empTransService.getTransHistory(empId));
         return periodAccruals.values().stream()
@@ -311,7 +322,8 @@ public class EssAccrualComputeService implements AccrualComputeService {
                 .filter(perAccSumm ->
                         employedAnnualEmploymentDates.intersects(perAccSumm.getPayPeriod().getDateRange()))
                 .peek(perAccSumm -> perAccSumm.setExpectedHours(
-                        expHoursService.getExpectedHours(perAccSumm.getEmpId(), perAccSumm.getPayPeriod())))
+                        expHoursService.getExpectedHours(
+                                perAccSumm.getEmpId(), perAccSumm.getPayPeriod(), recordCache)))
                 .collect(Collectors.toMap(PeriodAccSummary::getPayPeriod, Function.identity(),
                         (a, b) -> b, TreeMap::new));
     }
@@ -431,7 +443,8 @@ public class EssAccrualComputeService implements AccrualComputeService {
      * @return AccrualState
      */
     private AccrualState computeInitialAccState(TransactionHistory transHistory, Optional<PeriodAccSummary> periodAccSum,
-                                                AnnualAccSummary annualAcc, LocalDate fromDate) {
+                                                AnnualAccSummary annualAcc, LocalDate fromDate,
+                                                AllowanceRecordCache recordCache) {
         AccrualState accrualState = new AccrualState(annualAcc);
         // Use the day before the from date as the end date if none exists
         // (this means that there have been no accruals posted yet for the employee)
@@ -459,7 +472,8 @@ public class EssAccrualComputeService implements AccrualComputeService {
 
         // Set the expected YTD hours from the last PD23ACCUSAGE record
         if (periodAccSum.isPresent()) {
-            ExpectedHours expectedHours = expHoursService.getExpectedHours(transHistory.getEmployeeId(), firstPayPeriod);
+            ExpectedHours expectedHours = expHoursService.getExpectedHours(
+                    transHistory.getEmployeeId(), firstPayPeriod, recordCache);
             accrualState.setYtdHoursExpected(expectedHours.getYtdHoursExpected());
         } else {
             accrualState.setYtdHoursExpected(BigDecimal.ZERO);
@@ -494,7 +508,8 @@ public class EssAccrualComputeService implements AccrualComputeService {
                                           List<TimeRecord> timeRecords, TreeMap<PayPeriod, PeriodAccUsage> periodUsages,
                                           RangeSet<LocalDate> accrualAllowedDates,
                                           RangeSet<LocalDate> expectedHoursDates,
-                                          boolean countRemainingPeriod) {
+                                          boolean countRemainingPeriod,
+                                          AllowanceRecordCache recordCache) {
         Range<LocalDate> gapPeriodRange = gapPeriod.getDateRange();
 
         TreeMap<LocalDate, PersonnelStatus> statusTreeMap = transHistory.getEffectivePersonnelStatus(gapPeriodRange);
@@ -588,7 +603,8 @@ public class EssAccrualComputeService implements AccrualComputeService {
             accrualState.incrementAccrualsEarned();
         }
         // Adjust the year to date hours expected
-        ExpectedHours expectedHours = expHoursService.getExpectedHours(transHistory.getEmployeeId(), gapPeriodRange);
+        ExpectedHours expectedHours = expHoursService.getExpectedHours(
+                transHistory.getEmployeeId(), gapPeriodRange, recordCache);
         accrualState.setYtdHoursExpected(expectedHours.getYtdHoursExpected().add(expectedHours.getPeriodHoursExpected()));
     }
 

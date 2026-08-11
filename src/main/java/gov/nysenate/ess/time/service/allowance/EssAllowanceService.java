@@ -76,7 +76,13 @@ public class EssAllowanceService implements AllowanceService {
     /** {@inheritDoc} */
     @Override
     public AllowanceUsage getAllowanceUsage(int empId, LocalDate date) {
-        return getAllowanceUsage(empId, DateUtils.yearToDate(date));
+        return getAllowanceUsage(empId, DateUtils.yearToDate(date), new AllowanceRecordCache());
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public AllowanceUsage getAllowanceUsage(int empId, LocalDate date, AllowanceRecordCache recordCache) {
+        return getAllowanceUsage(empId, DateUtils.yearToDate(date), recordCache);
     }
 
     /** {@inheritDoc} */
@@ -115,10 +121,25 @@ public class EssAllowanceService implements AllowanceService {
     }
 
     private AllowanceUsage getAllowanceUsage(int empId, Range<LocalDate> dateRange) {
+        return getAllowanceUsage(empId, dateRange, new AllowanceRecordCache());
+    }
+
+    /**
+     * Loading the year's attendance and time records is by far the most expensive part of this
+     * calculation, and both result sets depend only on the employee and the year. Taking them from
+     * the supplied cache lets a caller working through many dates in one year — accrual computation
+     * asks once per pay period — pay for them once rather than once per date. A caller that does not
+     * share a cache gets a fresh one per call, which is exactly the previous behaviour.
+     */
+    private AllowanceUsage getAllowanceUsage(int empId, Range<LocalDate> dateRange,
+                                             AllowanceRecordCache recordCache) {
         int year = getAllowanceYear(dateRange);
-        List<AttendanceRecord> attendRecs = attendanceDao.getAttendanceRecords(empId, year);
-        List<TimeRecord> tRecs = getValidTimeRecords(empId, year, attendRecs);
-        return getAllowanceUsage(empId, dateRange, attendRecs, tRecs);
+        AllowanceRecordCache.YearRecords records = recordCache.get(empId, year, () -> {
+            List<AttendanceRecord> attendRecs = attendanceDao.getAttendanceRecords(empId, year);
+            return new AllowanceRecordCache.YearRecords(
+                    attendRecs, getValidTimeRecords(empId, year, attendRecs));
+        });
+        return getAllowanceUsage(empId, dateRange, records.getAttendanceRecords(), records.getTimeRecords());
     }
 
     private AllowanceUsage getAllowanceUsage(int empId, Range<LocalDate> dateRange,

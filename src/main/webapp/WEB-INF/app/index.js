@@ -1,18 +1,22 @@
-import React, { StrictMode } from "react";
+import React, { lazy, StrictMode } from "react";
 import "./app.css";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import EssLayout from "app/views/EssLayout";
-import TimeRouter from "app/views/time/TimeRouter";
 import LoginIndex from "app/views/login/LoginIndex";
-import MyInfoRouter from "app/views/myinfo/MyInfoRouter";
-import SupplyRouter from "app/views/supply/SupplyRouter";
 import Logout from "app/views/logout/Logout";
 import EssIndex from "app/views/EssIndex";
 import NotFound from "app/views/NotFound";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import TravelRouter from "app/views/travel/TravelRouter";
+
+// Each module is a separate chunk so that, for example, a user on Time does not
+// download Supply, Travel and MyInfo up front. EssLayout provides the Suspense
+// boundary these resolve into.
+const TimeRouter = lazy(() => import("app/views/time/TimeRouter"));
+const MyInfoRouter = lazy(() => import("app/views/myinfo/MyInfoRouter"));
+const SupplyRouter = lazy(() => import("app/views/supply/SupplyRouter"));
+const TravelRouter = lazy(() => import("app/views/travel/TravelRouter"));
 
 function App() {
   return (

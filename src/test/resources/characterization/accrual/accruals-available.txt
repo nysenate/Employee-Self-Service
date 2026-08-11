@@ -1,0 +1,35 @@
+[empId=11423 period=2017-12-28..2017-12-31]
+personalAvailable = 0
+vacationAvailable = 42
+sickAvailable = 204.5
+serviceYtd = 1809
+serviceYtdExpected = 1806
+biWeekHrsExpected = 14
+[empId=12195 period=2017-12-28..2017-12-31]
+personalAvailable = 0
+vacationAvailable = 47
+sickAvailable = 54.5
+serviceYtd = 1666
+serviceYtdExpected = 1666
+biWeekHrsExpected = 14
+[empId=10976 period=2015-12-31..2015-12-31]
+personalAvailable = 1.5
+vacationAvailable = 111.75
+sickAvailable = 273.5
+serviceYtd = 1837
+serviceYtdExpected = 1820
+biWeekHrsExpected = 7
+[empId=11303 period=2015-12-31..2015-12-31]
+personalAvailable = 0
+vacationAvailable = 0
+sickAvailable = 0
+serviceYtd = 0
+serviceYtdExpected = 0
+biWeekHrsExpected = 0
+[empId=12250 period=2017-12-28..2017-12-31]
+personalAvailable = 0
+vacationAvailable = 0
+sickAvailable = 0
+serviceYtd = 38
+serviceYtdExpected = 38
+biWeekHrsExpected = 0

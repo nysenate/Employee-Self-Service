@@ -12,6 +12,7 @@ import gov.nysenate.ess.core.util.RangeUtils;
 import gov.nysenate.ess.core.util.SortOrder;
 import gov.nysenate.ess.time.model.expectedhrs.ExpectedHours;
 import gov.nysenate.ess.time.model.expectedhrs.InvalidExpectedHourDatesEx;
+import gov.nysenate.ess.time.service.allowance.AllowanceRecordCache;
 import gov.nysenate.ess.time.service.allowance.AllowanceService;
 import gov.nysenate.ess.time.service.personnel.DockHoursService;
 import gov.nysenate.ess.time.util.AccrualUtils;
@@ -51,6 +52,12 @@ public class TxExpectedHoursService implements ExpectedHoursService {
 
     @Override
     public ExpectedHours getExpectedHours(int empId, Range<LocalDate> dateRange) throws InvalidExpectedHourDatesEx {
+        return getExpectedHours(empId, dateRange, new AllowanceRecordCache());
+    }
+
+    @Override
+    public ExpectedHours getExpectedHours(int empId, Range<LocalDate> dateRange, AllowanceRecordCache recordCache)
+            throws InvalidExpectedHourDatesEx {
         dateRange = dateRange.canonical(DateUtils.getLocalDateDiscreteDomain());
 
         TransactionHistory transactionHistory = empTransactionService.getTransHistory(empId);
@@ -80,7 +87,7 @@ public class TxExpectedHoursService implements ExpectedHoursService {
         // Currently, the Temporary Hours included are only the Submitted Hours. RA/SA Hours include unsubmitted hours.
         // If including only Submitted Temporary Hours becomes an issue, then we may need to include all Temporary
         // Hours.
-        BigDecimal tempHours = allowanceService.getAllowanceUsage(empId, beginDate).getHoursUsed();
+        BigDecimal tempHours = allowanceService.getAllowanceUsage(empId, beginDate, recordCache).getHoursUsed();
         ytdHoursExpected = AccrualUtils.roundExpectedHours(ytdHoursExpected.add(tempHours));
 
         BigDecimal periodHoursExpected = getExpectedHours(transactionHistory, dateRange);

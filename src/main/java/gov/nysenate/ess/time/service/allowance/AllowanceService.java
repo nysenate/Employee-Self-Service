@@ -42,6 +42,21 @@ public interface AllowanceService
     AllowanceUsage getAllowanceUsage(int empId, LocalDate date);
 
     /**
+     * Get annual allowance usage before the given date, reusing already loaded records.
+     *
+     * <p>Equivalent to {@link #getAllowanceUsage(int, LocalDate)} in every respect except that the
+     * attendance and time records it reads are taken from the supplied cache when present. Callers
+     * asking for many dates in the same year should share one cache across those calls; see
+     * {@link AllowanceRecordCache}.
+     *
+     * @param empId int
+     * @param date LocalDate
+     * @param recordCache {@link AllowanceRecordCache} shared across a single computation
+     * @return {@link AllowanceUsage}
+     */
+    AllowanceUsage getAllowanceUsage(int empId, LocalDate date, AllowanceRecordCache recordCache);
+
+    /**
      * Get a list of allowance usage for each period in the given year.
      *
      * @param empId int

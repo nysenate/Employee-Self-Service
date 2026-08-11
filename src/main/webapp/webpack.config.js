@@ -48,6 +48,10 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: "WEB-INF/app/index.html",
+      // Only the app entry belongs in the page. The pdf.worker entry is still emitted,
+      // but it is loaded as an actual Web Worker (see GlobalWorkerOptions.workerSrc in
+      // DocumentAcknowledgeAssignment) rather than executed on the main thread.
+      chunks: ["main"],
     }),
     new Dotenv({
       path: "react-properties.env",

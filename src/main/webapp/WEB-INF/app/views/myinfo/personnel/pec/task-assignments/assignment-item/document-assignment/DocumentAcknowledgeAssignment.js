@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Hero from "app/components/Hero";
 import Card from "app/components/Card";
-import * as pdfjsLib from "pdfjs-dist";
 import { isoToLongDate } from "app/utils/dateUtils";
 import useScrollDetection from "app/views/myinfo/personnel/pec/task-assignments/assignment-item/document-assignment/useScrollDetection";
 import Button from "app/components/Button";
@@ -213,6 +212,26 @@ function AcknowledgeBanner({
   );
 }
 
+/**
+ * PDF.js is large enough that it should not be part of any page's initial download.
+ * It is imported on demand the first time a document is rendered, and the resulting
+ * promise is cached so later renders reuse the already loaded module.
+ */
+let pdfjsPromise = null;
+
+function loadPdfjs() {
+  if (!pdfjsPromise) {
+    pdfjsPromise = import("pdfjs-dist").then((pdfjsLib) => {
+      // Run parsing in a real worker instead of on the main thread. The worker file is
+      // emitted by the "pdf.worker" webpack entry; __webpack_public_path__ resolves to
+      // "/" under the dev server and "/assets/dist/" in a production build.
+      pdfjsLib.GlobalWorkerOptions.workerSrc = `${__webpack_public_path__}pdf.worker.bundle.js`;
+      return pdfjsLib;
+    });
+  }
+  return pdfjsPromise;
+}
+
 function RenderPdf({ pdfPath }) {
   const [doc, setDoc] = useState(null);
   const [pages, setPages] = useState([]);
@@ -221,6 +240,9 @@ function RenderPdf({ pdfPath }) {
     let isMounted = true;
     (async () => {
       if (pdfPath) {
+        const pdfjsLib = await loadPdfjs();
+        if (!isMounted) return;
+
         const loadingTask = pdfjsLib.getDocument(pdfPath);
         const pdf = await loadingTask.promise;
         if (!isMounted) return;
