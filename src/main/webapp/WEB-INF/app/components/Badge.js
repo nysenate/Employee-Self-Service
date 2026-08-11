@@ -35,7 +35,7 @@ export default function Badge({
         className,
       )}
     >
-      {count}
+      <span className="translate-y-px">{count}</span>
     </span>
   );
 }
