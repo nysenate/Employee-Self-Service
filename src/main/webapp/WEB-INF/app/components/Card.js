@@ -42,7 +42,7 @@ function CardFooter({ children, className }) {
   return (
     <div
       className={cn(
-        "mt-3 flex items-center border-t border-teal-400 p-3",
+        "mt-3 flex items-center border-t border-gray-200 p-3",
         className,
       )}
     >

@@ -1,0 +1,5 @@
+export const travelQueryKeys = {
+  all: ["travel"],
+  newDraft: () => [...travelQueryKeys.all, "draft", "new"],
+  eventTypes: () => [...travelQueryKeys.all, "event-types"],
+};
