@@ -7,7 +7,11 @@ import LoadingIndicator from "app/components/LoadingIndicator";
 import ApproveConfirmDialog from "./ApproveConfirmDialog";
 import DisapproveConfirmDialog from "./DisapproveConfirmDialog";
 
-export default function ReviewerActionModal({ reviewSummary, setIsOpen }) {
+export default function ReviewerActionModal({
+  reviewSummary,
+  setIsOpen,
+  onReviewCompleted,
+}) {
   const { data, isPending } = useTravelReview(reviewSummary?.appReviewId);
   const review = data?.result;
   const [approveDialogOpen, setApproveDialogOpen] = useState(false);
@@ -47,10 +51,16 @@ export default function ReviewerActionModal({ reviewSummary, setIsOpen }) {
       <Modal.Controls>
         <div className="grid w-full grid-cols-[1fr_auto] items-center gap-6 px-3 py-1.5 sm:justify-center">
           <div className="flex items-center justify-center gap-3">
-            <Button variant="primary" onPress={() => setApproveDialogOpen(true)}>
+            <Button
+              variant="primary"
+              onPress={() => setApproveDialogOpen(true)}
+            >
               Approve Application
             </Button>
-            <Button variant="destructive" onPress={() => setDisapproveDialogOpen(true)}>
+            <Button
+              variant="destructive"
+              onPress={() => setDisapproveDialogOpen(true)}
+            >
               Disapprove Application
             </Button>
             <Button variant="secondary">Edit Application</Button>
@@ -73,13 +83,19 @@ export default function ReviewerActionModal({ reviewSummary, setIsOpen }) {
         open={approveDialogOpen}
         onOpenChange={setApproveDialogOpen}
         review={review}
-        onApproved={() => setIsOpen(false)}
+        onApproved={() => {
+          setIsOpen(false);
+          onReviewCompleted?.({ action: "approved", review });
+        }}
       />
       <DisapproveConfirmDialog
         open={disapproveDialogOpen}
         onOpenChange={setDisapproveDialogOpen}
         review={review}
-        onDisapproved={() => setIsOpen(false)}
+        onDisapproved={() => {
+          setIsOpen(false);
+          onReviewCompleted?.({ action: "disapproved", review });
+        }}
       />
     </Modal>
   );

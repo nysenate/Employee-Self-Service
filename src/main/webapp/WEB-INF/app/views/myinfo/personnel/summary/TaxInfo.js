@@ -6,13 +6,25 @@ import {
   txValue,
 } from "app/views/myinfo/personnel/summary/summaryValues";
 
+function localTaxValue(transactions, key, formatter) {
+  if (transactions?.[key]?.value === null) {
+    return <span>N/A</span>;
+  }
+
+  return formatter
+    ? formattedTxValue(transactions, key, formatter)
+    : txValue(transactions, key);
+}
+
 export function FederalTax({ transactions }) {
   return (
     <SummarySection>
       <SummarySection.Title>Federal Tax</SummarySection.Title>
-      <SummarySection.Table>
+      <SummarySection.Table className="table-fixed">
         <SummarySection.Row>
-          <SummarySection.Cell>Exemptions</SummarySection.Cell>
+          <SummarySection.Cell className="w-3/4">
+            Exemptions
+          </SummarySection.Cell>
           <SummarySection.Cell>
             {txValue(transactions, "NUFEDTAXEX")}
           </SummarySection.Cell>
@@ -38,9 +50,11 @@ export function StateTax({ transactions }) {
   return (
     <SummarySection>
       <SummarySection.Title>State Tax</SummarySection.Title>
-      <SummarySection.Table>
+      <SummarySection.Table className="table-fixed">
         <SummarySection.Row>
-          <SummarySection.Cell>Exemptions</SummarySection.Cell>
+          <SummarySection.Cell className="w-3/4">
+            Exemptions
+          </SummarySection.Cell>
           <SummarySection.Cell>
             {txValue(transactions, "NUSTATTAXEX")}
           </SummarySection.Cell>
@@ -66,23 +80,25 @@ export function NewYorkCityTax({ transactions }) {
   return (
     <SummarySection>
       <SummarySection.Title>New York City Tax</SummarySection.Title>
-      <SummarySection.Table>
+      <SummarySection.Table className="table-fixed">
         <SummarySection.Row>
-          <SummarySection.Cell>Exemptions</SummarySection.Cell>
+          <SummarySection.Cell className="w-3/4">
+            Exemptions
+          </SummarySection.Cell>
           <SummarySection.Cell>
-            {txValue(transactions, "NUCITYTAXEX")}
+            {localTaxValue(transactions, "NUCITYTAXEX")}
           </SummarySection.Cell>
         </SummarySection.Row>
         <SummarySection.Row>
           <SummarySection.Cell>Reported Marital Status</SummarySection.Cell>
           <SummarySection.Cell>
-            {txValue(transactions, "CDMARITALNYC")}
+            {localTaxValue(transactions, "CDMARITALNYC")}
           </SummarySection.Cell>
         </SummarySection.Row>
         <SummarySection.Row>
           <SummarySection.Cell>Additional Withheld</SummarySection.Cell>
           <SummarySection.Cell>
-            {formattedTxValue(transactions, "MOADDCITYTAX", toCurrency)}
+            {localTaxValue(transactions, "MOADDCITYTAX", toCurrency)}
           </SummarySection.Cell>
         </SummarySection.Row>
       </SummarySection.Table>
@@ -94,23 +110,25 @@ export function YonkersTax({ transactions }) {
   return (
     <SummarySection>
       <SummarySection.Title>Yonkers Tax</SummarySection.Title>
-      <SummarySection.Table>
+      <SummarySection.Table className="table-fixed">
         <SummarySection.Row>
-          <SummarySection.Cell>Exemptions</SummarySection.Cell>
+          <SummarySection.Cell className="w-3/4">
+            Exemptions
+          </SummarySection.Cell>
           <SummarySection.Cell>
-            {txValue(transactions, "NUYONTAXEX")}
+            {localTaxValue(transactions, "NUYONTAXEX")}
           </SummarySection.Cell>
         </SummarySection.Row>
         <SummarySection.Row>
           <SummarySection.Cell>Reported Marital Status</SummarySection.Cell>
           <SummarySection.Cell>
-            {txValue(transactions, "CDMARITALYON")}
+            {localTaxValue(transactions, "CDMARITALYON")}
           </SummarySection.Cell>
         </SummarySection.Row>
         <SummarySection.Row>
           <SummarySection.Cell>Additional Withheld</SummarySection.Cell>
           <SummarySection.Cell>
-            {formattedTxValue(transactions, "MOADDYONTAX", toCurrency)}
+            {localTaxValue(transactions, "MOADDYONTAX", toCurrency)}
           </SummarySection.Cell>
         </SummarySection.Row>
       </SummarySection.Table>

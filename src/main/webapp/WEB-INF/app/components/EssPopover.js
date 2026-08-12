@@ -50,7 +50,7 @@ export function EssPopover({
   );
 }
 
-function EssPopoverPanel({
+export function EssPopoverPanel({
   placement = "top",
   offset = 8,
   showArrow = false,

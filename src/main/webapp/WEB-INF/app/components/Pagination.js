@@ -5,6 +5,7 @@ import {
   getPageCount,
   getPageNumber,
 } from "app/utils/paginationUtils";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 /**
  * Pagination component to navigate through pages.
@@ -25,6 +26,10 @@ export default function Pagination({
     return null;
   }
 
+  if (total <= limit) {
+    return null;
+  }
+
   const page = getPageNumber(limit, offset);
   const pageCount = getPageCount(limit, total);
 
@@ -32,31 +37,42 @@ export default function Pagination({
     return onPageChange(getOffset(limit, selectedPage + 1));
   };
 
-  const itemClassName = "hover:bg-gray-100 cursor-pointer";
-  const linkClassName = "px-2 py-1 text-gray-500 border-none";
+  const linkClassName =
+    "inline-flex h-9 min-w-9 items-center justify-center border border-transparent px-2 text-sm font-medium text-gray-600 outline-none transition hover:bg-gray-100 focus-visible:ring-2 focus-visible:ring-teal-600 focus-visible:ring-offset-1 aria-disabled:cursor-not-allowed aria-disabled:text-gray-300 aria-disabled:hover:bg-transparent";
 
   return (
     <ReactPaginate
       pageCount={pageCount}
-      pageRangeDisplayed={5}
+      pageRangeDisplayed={3}
       onPageChange={onPageChangeWrapper}
       marginPagesDisplayed={1}
       forcePage={page - 1} // react-paginate pages are 0 indexed.
       disableInitialCallback={true}
-      nextLabel=">"
-      previousLabel="<"
-      containerClassName="flex space-x-0 md:space-x-2 justify-center m-3"
-      pageClassName={itemClassName}
+      nextLabel={
+        <span className="inline-flex items-center gap-1">
+          <span className="hidden sm:inline">Next</span>
+          <ChevronRight aria-hidden="true" className="h-4 w-4" />
+        </span>
+      }
+      previousLabel={
+        <span className="inline-flex items-center gap-1">
+          <ChevronLeft aria-hidden="true" className="h-4 w-4" />
+          <span className="hidden sm:inline">Previous</span>
+        </span>
+      }
+      previousAriaLabel="Go to previous page"
+      nextAriaLabel="Go to next page"
+      ariaLabelBuilder={(pageNumber, isSelected) =>
+        isSelected
+          ? `Page ${pageNumber}, current page`
+          : `Go to page ${pageNumber}`
+      }
+      containerClassName="mt-4 flex flex-wrap items-center justify-center gap-1"
       pageLinkClassName={linkClassName}
-      activeClassName="border-solid border border-teal-600"
-      activeLinkClassName="text-teal-600"
-      previousClassName={itemClassName}
-      previousLinkClassName={linkClassName}
-      nextClassName={itemClassName}
-      nextLinkClassName={linkClassName}
-      breakClassName={itemClassName}
+      activeLinkClassName="border-teal-600 bg-teal-50 text-teal-700"
+      previousLinkClassName={`${linkClassName} sm:px-3`}
+      nextLinkClassName={`${linkClassName} sm:px-3`}
       breakLinkClassName={linkClassName}
-      disabledClassName=""
     />
   );
 }

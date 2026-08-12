@@ -224,8 +224,8 @@ image.url = /assets/supply_photos
 
 # --- Web Cache ---------------------------------------------------------------
 
-# in secs, 0  = no cache
-cache.frontend.expire = 60
+# Cache lifetime in seconds for content-hashed React assets and release-versioned legacy assets. Default 1 year.
+cache.frontend.expire = 31536000
 
 # --- Project Version ---------------------------------------------------------
 
@@ -271,7 +271,7 @@ sage.api.url = https://pubgeo.nysenate.gov/api/v2
 
 # --- Senate Info -------------------------------------------------------------
 
-# The senate helpline phone number
+# The Senate Helpline and Personnel phone numbers
 helpline.phone.number =
 personnel.phone.number =
 
@@ -393,9 +393,9 @@ pec.code.admin.emails =
 
 # --- Front End Configuration -----------------------------------------------------------
 
-# Configure which ESS applications should serve a ReactJS front end.
-# If true, the ReactJS front end will be used. If false, the AngularJS front end will be used.
-serve.react.myinfo = false
-serve.react.time = false
-serve.react.supply = false
-serve.react.travel = false
+# Select the front-end framework for each ESS application.
+# Supported values are "angularjs" and "react". Missing or invalid values default to "angularjs".
+frontend.myinfo.framework = angularjs
+frontend.time.framework = angularjs
+frontend.supply.framework = angularjs
+frontend.travel.framework = angularjs

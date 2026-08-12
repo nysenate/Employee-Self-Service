@@ -8,7 +8,7 @@
   </div>
 
   <div class="travel-button-container" style="margin-top: 5px !important; min-height: 50px;">
-    <span ng-if="role.name === appReview.nextReviewerRole">
+    <span ng-if="role.name === appReview.pendingReviewerRole">
       <button type="button" class="travel-submit-btn"
              ng-click="approve()">
         Approve Application

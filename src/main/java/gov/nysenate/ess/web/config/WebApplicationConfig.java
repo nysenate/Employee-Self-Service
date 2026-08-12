@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
+import org.springframework.http.CacheControl;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.ResourceHttpMessageConverter;
@@ -30,6 +31,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 import jakarta.annotation.PostConstruct;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -70,6 +72,7 @@ public class WebApplicationConfig implements WebMvcConfigurer
 
     @Value("${resource.path}") private String resourcePath;
     @Value("${resource.location}") private String resourceLocation;
+    @Value("${cache.frontend.expire:31536000}") private long frontendCacheExpire;
 
     @Value("${data.dir}") private String dataDir;
     @Value("${data.ackdoc_subdir}") private String ackDocSubdir;
@@ -82,8 +85,21 @@ public class WebApplicationConfig implements WebMvcConfigurer
             logger.warn("Resource path/location for accessing public assets were not set!");
         } else {
             logger.info("Registering resource path {} for files under {}", resourcePath, resourceLocation);
+            registry.addResourceHandler(resourcePath + "dist/*.html")
+                    .addResourceLocations(resourceLocation + "dist/")
+                    .setCacheControl(CacheControl.noCache());
+            registry.addResourceHandler(resourcePath + "dist/**")
+                    .addResourceLocations(resourceLocation + "dist/")
+                    .setCacheControl(versionedAssetCacheControl());
+            registry.addResourceHandler(resourcePath + "js/dest/**")
+                    .addResourceLocations(resourceLocation + "js/dest/")
+                    .setCacheControl(versionedAssetCacheControl());
+            registry.addResourceHandler(resourcePath + "css/dest/**")
+                    .addResourceLocations(resourceLocation + "css/dest/")
+                    .setCacheControl(versionedAssetCacheControl());
             registry.addResourceHandler(resourcePath + "**", "/favicon.ico")
-                    .addResourceLocations(resourceLocation);
+                    .addResourceLocations(resourceLocation)
+                    .setCacheControl(CacheControl.noCache());
         }
 
         // Serve PEC resources from external directories
@@ -109,6 +125,10 @@ public class WebApplicationConfig implements WebMvcConfigurer
                         .addResourceLocations("file:" + pecVidDir);
             }
         }
+    }
+
+    private CacheControl versionedAssetCacheControl() {
+        return CacheControl.maxAge(Duration.ofSeconds(frontendCacheExpire)).cachePublic().immutable();
     }
 
     /**

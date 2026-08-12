@@ -3,7 +3,6 @@ package gov.nysenate.ess.travel.review.view;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.travel.api.application.TravelApplicationSummaryView;
-import gov.nysenate.ess.travel.api.application.TravelApplicationView;
 import gov.nysenate.ess.travel.review.ApplicationReview;
 
 import java.util.List;
@@ -13,7 +12,7 @@ public class ApplicationReviewSummaryView implements ViewObject {
 
     private String appReviewId;
     private TravelApplicationSummaryView application;
-    private String nextReviewerRole;
+    private String pendingReviewerRole;
     private List<ActionView> actions;
     private boolean isShared;
 
@@ -23,7 +22,7 @@ public class ApplicationReviewSummaryView implements ViewObject {
     public ApplicationReviewSummaryView(ApplicationReview appReview) {
         appReviewId = String.valueOf(appReview.getAppReviewId());
         application = new TravelApplicationSummaryView(appReview.application());
-        nextReviewerRole = appReview.nextReviewerRole().name();
+        pendingReviewerRole = appReview.pendingReviewerRole().name();
         actions = appReview.actions().stream()
                 .map(ActionView::new)
                 .collect(Collectors.toList());
@@ -38,8 +37,8 @@ public class ApplicationReviewSummaryView implements ViewObject {
         return application;
     }
 
-    public String getNextReviewerRole() {
-        return nextReviewerRole;
+    public String getPendingReviewerRole() {
+        return pendingReviewerRole;
     }
 
     public List<ActionView> getActions() {

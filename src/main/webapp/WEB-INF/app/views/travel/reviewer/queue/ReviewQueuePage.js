@@ -1,10 +1,21 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { Users } from "lucide-react";
 import Hero from "app/components/Hero";
 import Controls from "app/components/Controls";
+import SingleSelectFilter from "app/components/SingleSelectFilter";
+import { cn } from "app/utils/cn";
 import { useUserTravelRoles } from "app/views/travel/shared/hooks/useUserTravelRoles";
 import { useReviewQueue } from "app/views/travel/reviewer/queue/useReviewQueue";
 import LoadingIndicator from "app/components/LoadingIndicator";
 import ReviewQueueResults from "./ReviewQueueResults";
+
+const REVIEW_ROLE_PRIORITY = [
+  "DEPARTMENT_HEAD",
+  "TRAVEL_ADMIN",
+  "SECRETARY_OF_THE_SENATE",
+  "MAJORITY_LEADER",
+  "DELEGATE",
+];
 
 export default function ReviewQueuePage() {
   const { data: userRoles, isPending: isUserRolesPending } =
@@ -13,17 +24,18 @@ export default function ReviewQueuePage() {
     useReviewQueue();
 
   const [selectedRole, setSelectedRole] = useState(null);
-  const [queue, setQueue] = useState([]);
 
   const dedupedRoles = useMemo(() => {
     if (!userRoles?.allRoles) return [];
 
     const seen = new Set();
-    return userRoles.allRoles.filter((role) => {
-      if (seen.has(role.name)) return false;
-      seen.add(role.name);
-      return true;
-    });
+    return userRoles.allRoles
+      .filter((role) => {
+        if (seen.has(role.name)) return false;
+        seen.add(role.name);
+        return true;
+      })
+      .sort((a, b) => rolePriority(a.name) - rolePriority(b.name));
   }, [userRoles]);
 
   // Set a default selectedRole once data is loaded.
@@ -32,36 +44,47 @@ export default function ReviewQueuePage() {
     setSelectedRole(dedupedRoles[0]);
   }, [dedupedRoles, selectedRole]);
 
-  // Update the queue whenever selectedRole changes.
-  useEffect(() => {
-    const queueForRole = reviewQueue?.[selectedRole?.name] ?? [];
-    setQueue(queueForRole);
-  }, [selectedRole, reviewQueue]);
-
   const isLoading = isUserRolesPending || isReviewQueuePending || !selectedRole;
 
   if (isLoading) {
     return <LoadingIndicator />;
   }
 
+  const canChangeRole = dedupedRoles.length > 1;
+  const queue = reviewQueue?.[selectedRole.name] ?? [];
+
   return (
     <div>
       <Hero>Review Travel Applications</Hero>
       <Controls>
-        <div className="mb-3 font-semibold">
+        <div
+          className={cn("text-center text-gray-600", canChangeRole && "mb-3")}
+        >
           The following travel applications require your review.
         </div>
-        <RoleSelect
-          selectedRole={selectedRole}
-          setSelectedRole={setSelectedRole}
-          roles={dedupedRoles}
-          reviewQueue={reviewQueue}
-        />
+        {canChangeRole && (
+          <div className="my-3 flex justify-center">
+            <RoleSelect
+              selectedRole={selectedRole}
+              setSelectedRole={setSelectedRole}
+              roles={dedupedRoles}
+              reviewQueue={reviewQueue}
+            />
+          </div>
+        )}
       </Controls>
 
-      <ReviewQueueResults queue={queue} />
+      <ReviewQueueResults
+        queue={queue}
+        roleName={canChangeRole ? selectedRole?.displayName : null}
+      />
     </div>
   );
+}
+
+function rolePriority(roleName) {
+  const priority = REVIEW_ROLE_PRIORITY.indexOf(roleName);
+  return priority === -1 ? REVIEW_ROLE_PRIORITY.length : priority;
 }
 
 function RoleSelect({ selectedRole, setSelectedRole, roles, reviewQueue }) {
@@ -72,45 +95,24 @@ function RoleSelect({ selectedRole, setSelectedRole, roles, reviewQueue }) {
     }
   };
 
-  const roleBgClass = (() => {
-    switch (selectedRole?.name) {
-      case "DEPARTMENT_HEAD":
-        return "bg-orange-500/40";
-      case "TRAVEL_ADMIN":
-        return "bg-teal-500/40";
-      case "SECRETARY_OF_THE_SENATE":
-        return "bg-green-500/40";
-      default:
-        return "";
-    }
-  })();
+  const options = roles.map((role) => {
+    const count = reviewQueue?.[role.name]?.length ?? 0;
+    return {
+      value: role.name,
+      label: role.displayName,
+      description: `${count} pending`,
+    };
+  });
 
   return (
-    <div
-      className={`flex items-center justify-center gap-2 py-2 ${roleBgClass}`}
-    >
-      <label
-        className="text-sm font-semibold"
-        htmlFor="review-queue-active-role"
-      >
-        Active Role:
-      </label>
-      <select
-        id="review-queue-active-role"
-        className="select min-w-[16rem]"
-        value={selectedRole?.name ?? ""}
-        onChange={(event) => handleChange(event.target.value)}
-      >
-        {roles.map((role) => {
-          const count = reviewQueue?.[role.name]?.length ?? 0;
-          const label = `${role.displayName} - (${count}) Pending`;
-          return (
-            <option key={role.name} value={role.name}>
-              {label}
-            </option>
-          );
-        })}
-      </select>
-    </div>
+    <SingleSelectFilter
+      label="Reviewing as"
+      value={selectedRole?.name ?? ""}
+      options={options}
+      icon={Users}
+      layout="inline"
+      triggerClassName="w-64"
+      onChange={handleChange}
+    />
   );
 }

@@ -1,6 +1,7 @@
 *.iml
 .idea/*
 .dev/
+CLAUDE.md
 !.idea/codeStyleSettings.xml
 !.idea/codeStyles/**
 *.swp

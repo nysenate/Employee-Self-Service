@@ -1,24 +1,33 @@
 import React from "react";
-import Card from "app/components/Card";
 import LoadingIndicator from "app/components/LoadingIndicator";
-import NoMatchesFound from "app/components/NoMatchesFound";
 import Modal from "app/components/Modal";
 import TravelAppForm from "app/views/travel/shared/components/TravelAppForm";
 import { useTravelApp } from "app/views/travel/shared/hooks/useTravelApp";
 import TravelAppSummaryTable from "app/views/travel/shared/components/TravelAppSummaryTable";
+import TravelEmptyResults from "app/views/travel/shared/components/TravelEmptyResults";
+import TravelResultsCard from "app/views/travel/shared/components/TravelResultsCard";
+import { TRAVEL_RESULTS_STATUS } from "app/views/travel/shared/travelResultsStatus";
 
-export default function TravelApplicationResults({ apps, isLoading }) {
+const APPLICATION_ITEM_LABEL = {
+  singular: "application",
+  plural: "applications",
+};
+
+export default function TravelApplicationResults({
+  apps,
+  isLoading,
+  status,
+  limit,
+  offset,
+  total,
+  onResetFilters,
+  onPageChange,
+}) {
   const [selectedApp, setSelectedApp] = React.useState(null);
+  const rows = Array.isArray(apps) ? apps : [];
 
-  const handleRowClick = (app) => {
+  const selectApp = (app) => {
     setSelectedApp(app);
-  };
-
-  const handleRowKeyDown = (event, app) => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      setSelectedApp(app);
-    }
   };
 
   const handleDialogChange = (open) => {
@@ -27,7 +36,10 @@ export default function TravelApplicationResults({ apps, isLoading }) {
     }
   };
 
-  if (isLoading) {
+  if (
+    isLoading ||
+    (status === TRAVEL_RESULTS_STATUS.transitioning && !rows.length)
+  ) {
     return (
       <div className="mt-6">
         <LoadingIndicator />
@@ -35,23 +47,29 @@ export default function TravelApplicationResults({ apps, isLoading }) {
     );
   }
 
-  const rows = Array.isArray(apps) ? apps : [];
-
   if (!rows.length) {
-    return <NoMatchesFound className="mt-6" />;
+    return (
+      <TravelEmptyResults
+        itemLabel="travel applications"
+        onResetFilters={onResetFilters}
+      />
+    );
   }
 
   return (
     <>
-      <Card className="mt-6">
-        <div className="p-4">
-          <TravelAppSummaryTable
-            apps={rows}
-            handleRowClick={handleRowClick}
-            handleRowKeyDown={handleRowKeyDown}
-          />
-        </div>
-      </Card>
+      <TravelResultsCard
+        count={rows.length}
+        status={status}
+        limit={limit}
+        offset={offset}
+        total={total}
+        itemLabel={APPLICATION_ITEM_LABEL}
+        onResetFilters={onResetFilters}
+        onPageChange={onPageChange}
+      >
+        <TravelAppSummaryTable apps={rows} onSelectApp={selectApp} />
+      </TravelResultsCard>
 
       <TravelAppFormModal app={selectedApp} onOpenChange={handleDialogChange} />
     </>

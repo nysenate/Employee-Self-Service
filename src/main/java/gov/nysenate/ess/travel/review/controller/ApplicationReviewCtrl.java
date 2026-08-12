@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -112,9 +111,11 @@ public class ApplicationReviewCtrl extends BaseRestApiCtrl {
      * @return A list of ApplicationReviews where the user has performed an action.
      */
     @RequestMapping(value = "/history")
-    public BaseResponse reviewHistory(@RequestParam String from, @RequestParam String to, WebRequest request) {
-        LocalDateTime fromDate = parseISODateTime(from, "from");
-        LocalDateTime toDate = parseISODateTime(to, "to");
+    public BaseResponse reviewHistory(@RequestParam(required = false) String from,
+                                      @RequestParam(required = false) String to,
+                                      WebRequest request) {
+        LocalDate fromDate = from == null ? null : parseISODate(from, "from");
+        LocalDate toDate = to == null ? null : parseISODate(to, "to");
         LimitOffset limitOffset = getLimitOffset(request, 12);
 
         Employee emp = employeeInfoService.getEmployee(getSubjectEmployeeId());
@@ -123,14 +124,15 @@ public class ApplicationReviewCtrl extends BaseRestApiCtrl {
         // TODO implement this filtering at the service/dao level
         List<ApplicationReview> filtered = reviews.stream()
                 .filter(review -> {
-                    LocalDateTime startDate = review.application().startDate().atStartOfDay();
+                    LocalDate startDate = review.application().startDate();
                     return startDate != null
-                            && (startDate.isEqual(fromDate) || startDate.isAfter(fromDate))
-                            && (startDate.isEqual(toDate) || startDate.isBefore(toDate));
+                            && (fromDate == null || !startDate.isBefore(fromDate))
+                            && (toDate == null || !startDate.isAfter(toDate));
                 })
                 .sorted(
                         Comparator.<ApplicationReview, LocalDate>comparing(review -> review.application().startDate())
                                 .thenComparing(review -> review.application().getAppId())
+                                .reversed()
                 )
                 .collect(Collectors.toList());
 

@@ -1,28 +1,28 @@
 package gov.nysenate.ess.web.controller.page;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.view.InternalResourceView;
 
 import jakarta.servlet.http.HttpServletRequest;
+
+import static gov.nysenate.ess.web.controller.page.FrontendFramework.REACT;
 
 @Controller
 @RequestMapping("/supply/**")
 public class SupplyPageCtrl {
-    private static final Logger logger = LoggerFactory.getLogger(SupplyPageCtrl.class);
     private final PageCtrlUtils pageCtrlUtils;
     private final boolean serveReact;
 
     @Autowired
-    public SupplyPageCtrl(PageCtrlUtils pageCtrlUtils, @Value("${serve.react.supply:false}") boolean serveReact) {
+    public SupplyPageCtrl(PageCtrlUtils pageCtrlUtils,
+                          @Value("${frontend.supply.framework:}") String frontendFramework) {
         this.pageCtrlUtils = pageCtrlUtils;
-        this.serveReact = serveReact;
+        this.serveReact = FrontendFramework.fromProperty(
+                "frontend.supply.framework", frontendFramework) == REACT;
     }
 
     @RequestMapping(method = {RequestMethod.GET, RequestMethod.HEAD})

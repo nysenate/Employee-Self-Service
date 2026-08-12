@@ -17,14 +17,14 @@ export default function DisapproveConfirmDialog({
   const canDisapprove = trimmedNote.length > 0 && !isPending;
 
   const handleDisapprove = () => {
-    if (!review?.appReviewId || !review?.nextReviewerRole || !trimmedNote) {
+    if (!review?.appReviewId || !review?.pendingReviewerRole || !trimmedNote) {
       return;
     }
 
     disapproveReview.mutate(
       {
         appReviewId: review.appReviewId,
-        role: review.nextReviewerRole,
+        role: review.pendingReviewerRole,
         notes: trimmedNote,
       },
       {
@@ -41,20 +41,24 @@ export default function DisapproveConfirmDialog({
     if (!nextOpen && !isPending) {
       onOpenChange(false);
       setNote("");
+      disapproveReview.reset();
     }
   };
 
   return (
-    <Modal
-      isOpen={open}
-      onOpenChange={handleCloseRequest}
-    >
+    <Modal isOpen={open} onOpenChange={handleCloseRequest}>
       <Modal.Title>Confirm disapproval</Modal.Title>
       <Modal.Body>
         <p className="mb-3">
           Confirm the application details and add notes before disapproving.
         </p>
         <ReviewSummary review={review} />
+        {disapproveReview.isError && (
+          <p role="alert" className="mb-3 text-sm font-medium text-red-700">
+            We couldn&apos;t disapprove this application. Your notes have been
+            preserved. Please try again.
+          </p>
+        )}
         <div className="grid gap-2">
           <label
             className="text-sm font-semibold"
@@ -78,6 +82,7 @@ export default function DisapproveConfirmDialog({
           variant="destructive"
           onPress={handleDisapprove}
           isDisabled={!canDisapprove}
+          isPending={isPending}
         >
           Disapprove
         </Button>

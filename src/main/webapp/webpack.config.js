@@ -1,16 +1,20 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const Dotenv = require("dotenv-webpack");
+
+const isProduction = process.env.NODE_ENV === "production";
 
 module.exports = {
   entry: {
     main: "./WEB-INF/app/index.js",
-    "pdf.worker": "pdfjs-dist/build/pdf.worker.mjs",
   },
   output: {
     path: path.resolve(__dirname, "assets/dist"),
-    filename: "[name].bundle.js",
-    publicPath: process.env.NODE_ENV === "production" ? "/assets/dist/" : "/",
+    filename: isProduction ? "[name].[contenthash].js" : "[name].bundle.js",
+    chunkFilename: isProduction
+      ? "[name].[contenthash].js"
+      : "[name].bundle.js",
+    publicPath: isProduction ? "/assets/dist/" : "/",
+    clean: true,
   },
   resolve: {
     extensions: [".js", ".jsx", ".json"],
@@ -31,34 +35,19 @@ module.exports = {
         exclude: /node_modules/,
         use: "babel-loader",
       },
-      // Load image files
-      {
-        test: /\.(png|jpe?g|gif|svg)$/i,
-        use: [
-          {
-            loader: "file-loader",
-            options: {
-              name: "[path][name].[ext]",
-            },
-          },
-        ],
-      },
     ],
   },
   plugins: [
     new HtmlWebpackPlugin({
       template: "WEB-INF/app/index.html",
-      // Only the app entry belongs in the page. The pdf.worker entry is still emitted,
-      // but it is loaded as an actual Web Worker (see GlobalWorkerOptions.workerSrc in
-      // DocumentAcknowledgeAssignment) rather than executed on the main thread.
+      // Only the app entry belongs in the page. The PDF.js worker is emitted as an
+      // asset off import.meta.url (see GlobalWorkerOptions.workerSrc in
+      // DocumentAcknowledgeAssignment) and loaded as an actual Web Worker.
       chunks: ["main"],
-    }),
-    new Dotenv({
-      path: "react-properties.env",
     }),
   ],
   context: __dirname,
-  mode: process.env.NODE_ENV === "production" ? "production" : "development",
+  mode: isProduction ? "production" : "development",
   devServer: {
     port: 3000,
     // Send API requests for these paths to the target base URL while in dev mode.
@@ -83,5 +72,5 @@ module.exports = {
     },
     static: ["../assets"],
   },
-  devtool: process.env.NODE_ENV === "production" ? false : "eval-source-map",
+  devtool: isProduction ? false : "eval-source-map",
 };

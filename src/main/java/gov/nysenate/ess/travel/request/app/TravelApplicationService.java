@@ -1,6 +1,7 @@
 package gov.nysenate.ess.travel.request.app;
 
 import gov.nysenate.ess.travel.request.app.dao.TravelApplicationDao;
+import gov.nysenate.ess.core.util.PaginatedList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,10 +28,8 @@ public class TravelApplicationService {
      *
      * @return
      */
-    public List<TravelApplication> selectTravelApplications(int userId) {
-        return travelApplicationDao.selectTravelApplications(userId).stream()
-                .filter(app -> app.getSubmittedDateTime() != null)
-                .collect(Collectors.toList());
+    public PaginatedList<TravelApplication> selectTravelApplications(int userId, TravelApplicationQuery query) {
+        return travelApplicationDao.selectTravelApplications(userId, query);
     }
 
     /**

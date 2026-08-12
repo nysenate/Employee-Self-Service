@@ -8,10 +8,8 @@ import {
 } from "app/views/login/LoginIndex";
 import { useForm } from "react-hook-form";
 import loginUser from "app/views/login/loginUser";
-import { useNavigate } from "react-router-dom";
 
 export default function LoginForm({ setState }) {
-  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const {
     register,
@@ -26,7 +24,9 @@ export default function LoginForm({ setState }) {
     clearErrors();
 
     loginUser(data.username, data.password)
-      .then(() => navigate(POST_LOGIN_PATH))
+      .then((authResponse) => {
+        window.location.assign(authResponse.redirectUrl || POST_LOGIN_PATH);
+      })
       .catch((e) =>
         setError("validationError", { type: "custom", message: e.message }),
       )

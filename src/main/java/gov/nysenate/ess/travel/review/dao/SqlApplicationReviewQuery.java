@@ -6,41 +6,41 @@ import gov.nysenate.ess.core.dao.base.DbVendor;
 enum SqlApplicationReviewQuery implements BasicSqlQuery {
     INSERT_APPLICATION_REVIEW(
             "INSERT INTO ${travelSchema}.app_review \n" +
-                    " (app_id, traveler_role, next_reviewer_role, is_shared) \n" +
-                    " VALUES (:appId, :travelerRole, :nextReviewerRole, :isShared)"
+                    " (app_id, policy_type, policy_version, pending_reviewer_role, is_shared) \n" +
+                    " VALUES (:appId, :policyType, :policyVersion, :pendingReviewerRole, :isShared)"
     ),
     UPDATE_APPLICATION_REVIEW(
             "UPDATE ${travelSchema}.app_review\n" +
-                    " SET next_reviewer_role = :nextReviewerRole, is_shared = :isShared\n" +
+                    " SET pending_reviewer_role = :pendingReviewerRole, is_shared = :isShared\n" +
                     " WHERE app_review_id = :appReviewId"
     ),
     PENDING_REVIEWS_FOR_ROLE("""
-            SELECT app_review.app_review_id, app_review.app_id, app_review.traveler_role,
-                   app_review.next_reviewer_role, is_shared
+            SELECT app_review.app_review_id, app_review.app_id, app_review.policy_type,
+                   app_review.policy_version, app_review.pending_reviewer_role, is_shared
             FROM ${travelSchema}.app_review
               JOIN ${travelSchema}.app ON app_review.app_id = app.app_id
             WHERE app.status IN ('DEPARTMENT_HEAD', 'TRAVEL_UNIT')
-            AND app_review.next_reviewer_role = :role
+            AND app_review.pending_reviewer_role = :role
             """
     ),
     PENDING_REVIEWS_FOR_DEPT_HD("""
-            SELECT app_review.app_review_id, app_review.app_id, app_review.traveler_role,
-              app_review.next_reviewer_role, is_shared
+            SELECT app_review.app_review_id, app_review.app_id, app_review.policy_type,
+              app_review.policy_version, app_review.pending_reviewer_role, is_shared
             FROM ${travelSchema}.app_review
               JOIN ${travelSchema}.app ON app_review.app_id = app.app_id
             WHERE app.status IN ('DEPARTMENT_HEAD', 'TRAVEL_UNIT')
-              AND app_review.next_reviewer_role = 'DEPARTMENT_HEAD'
+              AND app_review.pending_reviewer_role = 'DEPARTMENT_HEAD'
               AND app.traveler_dept_head_emp_id IN (:empIds)
             """
     ),
     APP_REVIEW_SELECT(
-            "SELECT app_review.app_review_id, app_review.app_id, app_review.traveler_role,\n" +
-                    " app_review.next_reviewer_role, is_shared\n "
+            "SELECT app_review.app_review_id, app_review.app_id, app_review.policy_type,\n" +
+                    " app_review.policy_version, app_review.pending_reviewer_role, is_shared\n "
     ),
     SELECT_ACTIVE_SHARED_REVIEWS(
             APP_REVIEW_SELECT.getSql() +
                     " FROM ${travelSchema}.app_review\n" +
-                    " WHERE app_review.next_reviewer_role != :role" +
+                    " WHERE app_review.pending_reviewer_role != :role" +
                     " AND (SELECT type FROM ${travelSchema}.app_review_action\n" +
                     "     WHERE app_review_action.app_review_id = app_review.app_review_id\n" +
                     "     ORDER BY date_time desc\n" +

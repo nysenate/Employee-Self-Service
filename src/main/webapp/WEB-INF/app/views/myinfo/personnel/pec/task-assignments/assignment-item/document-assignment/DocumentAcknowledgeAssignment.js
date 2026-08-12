@@ -222,10 +222,13 @@ let pdfjsPromise = null;
 function loadPdfjs() {
   if (!pdfjsPromise) {
     pdfjsPromise = import("pdfjs-dist").then((pdfjsLib) => {
-      // Run parsing in a real worker instead of on the main thread. The worker file is
-      // emitted by the "pdf.worker" webpack entry; __webpack_public_path__ resolves to
-      // "/" under the dev server and "/assets/dist/" in a production build.
-      pdfjsLib.GlobalWorkerOptions.workerSrc = `${__webpack_public_path__}pdf.worker.bundle.js`;
+      // Run parsing in a real worker instead of on the main thread. Resolving the
+      // worker through import.meta.url lets webpack emit and fingerprint it, so it
+      // keeps working under the contenthash filenames used in production builds.
+      pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+        "pdfjs-dist/build/pdf.worker.min.mjs",
+        import.meta.url,
+      ).toString();
       return pdfjsLib;
     });
   }
@@ -235,65 +238,107 @@ function loadPdfjs() {
 function RenderPdf({ pdfPath }) {
   const [doc, setDoc] = useState(null);
   const [pages, setPages] = useState([]);
+  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
-    let isMounted = true;
-    (async () => {
-      if (pdfPath) {
-        const pdfjsLib = await loadPdfjs();
-        if (!isMounted) return;
+    let isDisposed = false;
+    let loadingTask;
 
-        const loadingTask = pdfjsLib.getDocument(pdfPath);
+    setDoc(null);
+    setPages([]);
+    setHasError(false);
+
+    (async () => {
+      if (!pdfPath) return;
+
+      try {
+        const pdfjsLib = await loadPdfjs();
+        if (isDisposed) return;
+
+        loadingTask = pdfjsLib.getDocument(pdfPath);
         const pdf = await loadingTask.promise;
-        if (!isMounted) return;
+        if (isDisposed) return;
 
         setDoc(pdf);
         setPages(Array.from({ length: pdf.numPages }, (_, i) => i + 1));
+      } catch (error) {
+        if (!isDisposed) {
+          console.error("Unable to load PDF document", error);
+          setHasError(true);
+        }
       }
     })();
+
     return () => {
-      isMounted = false;
+      isDisposed = true;
+      if (loadingTask) {
+        void loadingTask.destroy();
+      }
     };
   }, [pdfPath]);
+
+  if (hasError) {
+    return (
+      <p className="m-5 font-semibold text-red-600" role="alert">
+        The document could not be displayed. Please try opening the printable
+        view.
+      </p>
+    );
+  }
 
   return (
     <div>
       {pages.map((pageNum) => (
-        <PdfPage key={pageNum} doc={doc} pageNum={pageNum} />
+        <PdfPage
+          key={pageNum}
+          doc={doc}
+          pageNum={pageNum}
+          onError={setHasError}
+        />
       ))}
     </div>
   );
 }
 
-function PdfPage({ doc, pageNum }) {
+function PdfPage({ doc, pageNum, onError }) {
   const canvasRef = useRef(null);
 
   useEffect(() => {
     if (!doc) return;
+    let isDisposed = false;
     let renderTask;
 
     (async () => {
-      const page = await doc.getPage(pageNum);
+      try {
+        const page = await doc.getPage(pageNum);
+        if (isDisposed) return;
 
-      const viewport = page.getViewport({
-        scale: 1.5,
-        rotation: page.rotate, // respect PDF metadata
-      });
+        const viewport = page.getViewport({
+          scale: 1.5,
+          rotation: page.rotate, // respect PDF metadata
+        });
 
-      const canvas = canvasRef.current;
-      const ctx = canvas.getContext("2d");
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext("2d");
 
-      canvas.width = viewport.width;
-      canvas.height = viewport.height;
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
 
-      renderTask = page.render({ canvasContext: ctx, viewport });
-      await renderTask.promise;
+        renderTask = page.render({ canvasContext: ctx, viewport });
+        await renderTask.promise;
+      } catch (error) {
+        if (!isDisposed && error?.name !== "RenderingCancelledException") {
+          console.error(`Unable to render PDF page ${pageNum}`, error);
+          onError(true);
+        }
+      }
     })();
 
     return () => {
-      if (renderTask) renderTask.cancel();
+      isDisposed = true;
+      renderTask?.cancel();
     };
-  }, [doc, pageNum]);
+  }, [doc, pageNum, onError]);
 
   return <canvas ref={canvasRef} className="w-full" />;
 }

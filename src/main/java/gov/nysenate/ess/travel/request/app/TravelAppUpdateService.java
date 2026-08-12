@@ -26,8 +26,6 @@ import gov.nysenate.ess.travel.request.route.destination.Destination;
 import gov.nysenate.ess.travel.notifications.email.TravelEmailService;
 import gov.nysenate.ess.travel.review.ApplicationReview;
 import gov.nysenate.ess.travel.review.ApplicationReviewService;
-import gov.nysenate.ess.travel.review.strategy.ReviewerStrategy;
-import gov.nysenate.ess.travel.review.strategy.ReviewerStrategyFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +50,6 @@ public class TravelAppUpdateService {
     @Autowired private TravelRoleFactory travelRoleFactory;
     @Autowired private MileageAllowanceService mileageService;
     @Autowired private GsaAllowanceService gsaAllowanceService;
-    @Autowired private ReviewerStrategyFactory reviewerStrategyFactory;
     @Autowired private LodgingPerDiemService lodgingPerDiemService;
 
     /**
@@ -196,9 +193,11 @@ public class TravelAppUpdateService {
 
     public TravelApplication resubmitApp(int appId, TravelApplication app, Employee user) {
         saveAppEdits(app, user);
-        app.setStatus(new TravelApplicationStatus(getApprovalStatus(app)));
-        travelApplicationService.saveApplication(app);
         ApplicationReview applicationReview = appReviewService.getApplicationReviewByAppId(app.getAppId());
+        applicationReview.restart();
+        app.setStatus(new TravelApplicationStatus(statusForPendingReviewer(applicationReview.pendingReviewerRole())));
+        travelApplicationService.saveApplication(app);
+        applicationReview.application().setStatus(app.getStatus());
         appReviewService.saveApplicationReview(applicationReview);
         eventBus.post(new TravelPendingReviewEmailEvent(applicationReview));
         return app;
@@ -213,24 +212,21 @@ public class TravelAppUpdateService {
         app.setCreatedBy(submitter);
         app.setModifiedBy(submitter);
         app.setTravelerDeptHeadEmpId(draft.getTraveler().getDeptHeadId());
-        app.setStatus(new TravelApplicationStatus(getApprovalStatus(app)));
+        ApplicationReview appReview = appReviewService.createApplicationReview(app);
+        app.setStatus(new TravelApplicationStatus(statusForPendingReviewer(appReview.pendingReviewerRole())));
 
         travelApplicationService.saveApplication(app);
 
-        ApplicationReview appReview = appReviewService.createApplicationReview(app);
         appReviewService.saveApplicationReview(appReview);
+        eventBus.post(new TravelPendingReviewEmailEvent(appReview));
         return app;
     }
 
-    private AppStatus getApprovalStatus(TravelApplication app) {
-        ReviewerStrategy reviewerStrategy = reviewerStrategyFactory.createStrategy(app);
-        TravelRole roleToReview = reviewerStrategy.after(null);
-        AppStatus appStatus;
-        switch (roleToReview) {
-            case TRAVEL_ADMIN, SECRETARY_OF_THE_SENATE, MAJORITY_LEADER -> appStatus = AppStatus.TRAVEL_UNIT;
-            default -> appStatus = AppStatus.DEPARTMENT_HEAD;
-        }
-        return appStatus;
+    private AppStatus statusForPendingReviewer(TravelRole pendingReviewerRole) {
+        return switch (pendingReviewerRole) {
+            case TRAVEL_ADMIN, SECRETARY_OF_THE_SENATE, MAJORITY_LEADER -> AppStatus.TRAVEL_UNIT;
+            default -> AppStatus.DEPARTMENT_HEAD;
+        };
     }
 
 }

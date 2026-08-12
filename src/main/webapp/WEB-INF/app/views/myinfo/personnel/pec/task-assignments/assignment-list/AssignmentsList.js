@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   AcademicCapIcon,
   CheckIcon,
   DocumentTextIcon,
-  TrophyIcon,
   VideoCameraIcon,
 } from "@heroicons/react/16/solid";
 import { Link } from "react-router-dom";
@@ -60,15 +59,12 @@ const assignmentDisplayFields = (type) => {
 export default function AssignmentsList() {
   const { data: user } = useRequireAuthedUser();
   const assignments = useTaskAssignments(user?.employeeId);
-  const [incompleteAssignments, setIncompleteAssignments] = useState([]);
-  const [completedAssignments, setCompletedAssignments] = useState([]);
-
-  useEffect(() => {
-    setIncompleteAssignments(
-      assignments.data?.filter((a) => !a.completed) ?? [],
-    );
-    setCompletedAssignments(assignments.data?.filter((a) => a.completed) ?? []);
-  }, [assignments.data]);
+  const assignmentData = assignments.data ?? [];
+  const incompleteAssignments = assignmentData.filter(
+    (assignment) =>
+      !assignment.completed && assignment.active && assignment.task?.active,
+  );
+  const completedAssignments = assignmentData.filter((a) => a.completed);
 
   if (assignments.isPending) {
     return <LoadingIndicator />;

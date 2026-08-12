@@ -12,9 +12,9 @@ const Title = ({ children }) => {
   );
 };
 
-const Table = ({ children }) => {
+const Table = ({ children, className = "" }) => {
   return (
-    <table className="mt-2 table w-full">
+    <table className={`mt-2 table w-full ${className}`}>
       <tbody className="table__body table__body--striped">{children}</tbody>
     </table>
   );
@@ -24,8 +24,10 @@ const Row = ({ children }) => {
   return <tr className="table__row">{children}</tr>;
 };
 
-const Cell = ({ children }) => {
-  return <td className="table__cell table__cell--left">{children}</td>;
+const Cell = ({ children, className = "" }) => {
+  return (
+    <td className={`table__cell table__cell--left ${className}`}>{children}</td>
+  );
 };
 
 SummarySection.Title = Title;

@@ -148,7 +148,11 @@
     }
 
     .table__head__cell {
-        @apply px-5 py-3 text-left font-semibold tracking-wide;
+        @apply px-3 py-3 text-left font-semibold tracking-wide;
+    }
+
+    .table--compact .table__head__cell {
+        @apply px-2 py-2 text-sm;
     }
 
     .table__body {
@@ -176,7 +180,11 @@
     }
 
     .table__cell {
-        @apply px-5 py-1.5 text-left;
+        @apply px-3 py-1.5 text-left;
+    }
+
+    .table--compact .table__cell {
+        @apply px-2 py-1;
     }
 
     .table__cell--bold {
@@ -188,7 +196,7 @@
     }
 
     td.cell--number {
-        @apply text-right font-mono;
+        @apply text-right tabular-nums;
     }
 
     .table__totals {

@@ -4,15 +4,20 @@ import { Outlet } from "react-router-dom";
 import useRequireAuthedUser from "app/hooks/useRequireAuthedUser";
 import LoadingIndicator from "app/components/LoadingIndicator";
 import TimeoutChecker from "app/TimeoutChecker";
+import ErrorPage from "app/views/ErrorPage";
 
 export default function EssLayout() {
-  const { isPending, isError } = useRequireAuthedUser();
+  const { error, isPending, isError } = useRequireAuthedUser();
 
   // Only the initial load blocks rendering. Background refetches of the authed user
   // (the query goes stale after 30s and refetches on window focus) must not unmount
   // the app, which would discard all page state and re-render everything.
-  if (isPending || isError) {
-    return <></>;
+  if (isPending) {
+    return <LoadingIndicator />;
+  }
+
+  if (isError) {
+    return <ErrorPage error={error} />;
   }
 
   return (
