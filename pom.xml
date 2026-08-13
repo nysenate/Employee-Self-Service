@@ -175,7 +175,7 @@
     <jsoup.version>1.22.2</jsoup.version>
     <jstl.version>1.2</jstl.version>
     <junit.version>4.13.2</junit.version>
-    <log4j.version>2.26.0</log4j.version>
+    <log4j.version>2.26.1</log4j.version>
     <lombok.version>1.18.42</lombok.version>
     <mockito.version>5.23.0</mockito.version>
     <oracle.driver.version>19.30.0.0</oracle.driver.version>
