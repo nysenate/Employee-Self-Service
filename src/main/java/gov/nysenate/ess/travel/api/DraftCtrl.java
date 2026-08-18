@@ -50,6 +50,10 @@ public class DraftCtrl extends BaseRestApiCtrl {
      * <p>
      * Usage:   (PUT) /api/v1/travel/drafts
      * </p>
+     *
+     * @throws DepartmentNotFoundEx if the current user's travel department cannot be determined while constructing
+     *                               the default traveler; the API exception handler returns a
+     *                               {@link ErrorCode#MISSING_DEPARTMENT} response
      */
     @RequestMapping(value = "", method = RequestMethod.PUT)
     public BaseResponse createDraft() throws DepartmentNotFoundEx {
@@ -214,4 +218,3 @@ public class DraftCtrl extends BaseRestApiCtrl {
         return new ErrorResponse(ErrorCode.DATA_PROVIDER_ERROR);
     }
 }
-
