@@ -7,11 +7,11 @@ import LoadingIndicator from "app/components/LoadingIndicator";
 import ErrorPage from "app/views/ErrorPage";
 
 export default function EssLayout() {
-  const { error, isPending, isError, isFetching } = useRequireAuthedUser();
+  const { error, isPending, isError } = useRequireAuthedUser();
 
-  // Do not mount protected routes while the user's session is being verified.
-  // This prevents their queries from starting based only on cached user data.
-  if (isPending || isFetching) {
+  // Do not mount protected routes until the user's session is initially verified.
+  // Background verification must leave them mounted so local form state survives.
+  if (isPending) {
     return <LoadingIndicator />;
   }
 
