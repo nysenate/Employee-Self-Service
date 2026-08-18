@@ -70,8 +70,10 @@ describe("Purpose step", () => {
     vi.stubGlobal(
       "fetch",
       vi.fn((url) => {
-        if (url.endsWith("/travel/event-types"))
-          return response(eventTypes);
+        if (url.endsWith("/travel/event-types")) return response(eventTypes);
+        if (url.endsWith("/travel/mode-of-transportation")) return response([]);
+        if (url.endsWith("/config"))
+          return response({ config: { googleApiKey: "test-key" } });
         return response(initialDraft);
       }),
     );
@@ -159,8 +161,7 @@ describe("Purpose step", () => {
 
   it("does not save invalid Purpose data and retains data after a save failure", async () => {
     const fetchMock = vi.fn((url, options) => {
-      if (url.endsWith("/travel/event-types"))
-        return response(eventTypes);
+      if (url.endsWith("/travel/event-types")) return response(eventTypes);
       if (options.method === "POST") return response(null, false);
       return response(initialDraft);
     });
@@ -187,8 +188,7 @@ describe("Purpose step", () => {
     vi.stubGlobal(
       "fetch",
       vi.fn((url) => {
-        if (url.endsWith("/travel/event-types"))
-          return response(eventTypes);
+        if (url.endsWith("/travel/event-types")) return response(eventTypes);
         if (url.endsWith("/attachment"))
           return response({
             items: [{ filename: "uuid-1", originalName: "agenda.pdf" }],

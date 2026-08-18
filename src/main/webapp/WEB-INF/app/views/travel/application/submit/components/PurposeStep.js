@@ -115,7 +115,9 @@ const PurposeStep = forwardRef(function PurposeStep(
               });
             }}
           >
-            <option value="">Select a purpose</option>
+            <option value="" disabled hidden>
+              Select a purpose
+            </option>
             {eventTypes.map((eventType) => (
               <option key={eventType.name} value={eventType.name}>
                 {eventType.displayName}

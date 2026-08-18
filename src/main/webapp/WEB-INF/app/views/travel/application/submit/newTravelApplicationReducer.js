@@ -1,3 +1,5 @@
+import { createEmptyRoute, initializeOutboundRoute } from "./routeModel";
+
 export const WORKFLOW_STEPS = Object.freeze([
   "Purpose",
   "Outbound",
@@ -12,15 +14,26 @@ export function createWorkflowState(draft) {
     workingDraft: draft,
     currentStep: 0,
     furthestCompletedStep: -1,
+    dirtyRoute: draft.amendment?.route ?? createEmptyRoute(),
+    needsRouteRecalculation: false,
   };
 }
 
 export function newTravelApplicationReducer(state, action) {
   switch (action.type) {
     case "UPDATE_DRAFT":
-      return { ...state, workingDraft: action.draft };
+      return invalidateFollowingSteps({
+        ...state,
+        workingDraft: action.draft,
+      });
+    case "UPDATE_DIRTY_ROUTE":
+      return invalidateFollowingSteps({
+        ...state,
+        dirtyRoute: invalidateCalculatedRoute(action.route),
+        needsRouteRecalculation: true,
+      });
     case "APPEND_ATTACHMENTS":
-      return {
+      return invalidateFollowingSteps({
         ...state,
         workingDraft: {
           ...state.workingDraft,
@@ -32,17 +45,27 @@ export function newTravelApplicationReducer(state, action) {
             ],
           },
         },
-      };
+      });
     case "RESET_BASELINE":
       return {
         ...state,
         serverDraft: action.draft,
         workingDraft: action.draft,
+        dirtyRoute: action.draft.amendment?.route ?? state.dirtyRoute,
+        needsRouteRecalculation: false,
       };
     case "COMPLETE_CURRENT_STEP": {
       if (state.currentStep >= WORKFLOW_STEPS.length - 1) return state;
+      const dirtyRoute =
+        state.currentStep === 0
+          ? initializeOutboundRoute(
+              state.dirtyRoute,
+              state.workingDraft.traveler?.empWorkLocation?.address,
+            )
+          : state.dirtyRoute;
       return {
         ...state,
+        dirtyRoute,
         furthestCompletedStep: Math.max(
           state.furthestCompletedStep,
           state.currentStep,
@@ -61,6 +84,23 @@ export function newTravelApplicationReducer(state, action) {
   }
 }
 
+function invalidateFollowingSteps(state) {
+  return {
+    ...state,
+    furthestCompletedStep: Math.min(
+      state.furthestCompletedStep,
+      state.currentStep - 1,
+    ),
+  };
+}
+
+function invalidateCalculatedRoute(route) {
+  const editableRoute = { ...route };
+  delete editableRoute.origin;
+  delete editableRoute.destinations;
+  return editableRoute;
+}
+
 export function canNavigateToStep(state, step) {
   return (
     Number.isInteger(step) &&
@@ -72,6 +112,8 @@ export function canNavigateToStep(state, step) {
 
 export function hasUnsavedChanges(state) {
   return (
-    JSON.stringify(state.workingDraft) !== JSON.stringify(state.serverDraft)
+    JSON.stringify(state.workingDraft) !== JSON.stringify(state.serverDraft) ||
+    JSON.stringify(state.dirtyRoute) !==
+      JSON.stringify(state.serverDraft.amendment?.route ?? createEmptyRoute())
   );
 }

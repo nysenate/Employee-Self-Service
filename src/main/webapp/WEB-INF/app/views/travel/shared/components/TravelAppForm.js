@@ -1,7 +1,5 @@
 import React, { useMemo } from "react";
 import LoadingCircle from "app/components/LoadingCircle";
-import { fetchApiJson } from "app/api/fetchJson";
-import { useQuery } from "@tanstack/react-query";
 import { isoToShortDate } from "app/utils/dateUtils";
 import { toCurrency } from "app/utils/textUtils";
 import { cn } from "app/utils/cn";
@@ -11,6 +9,7 @@ import TransportationDetailsPopover from "app/views/travel/shared/components/Tra
 import MealDetailsPopover from "app/views/travel/shared/components/MealDetailsPopover";
 import LodgingDetailsPopover from "app/views/travel/shared/components/LodgingDetailsPopover";
 import TravelAppStatusBadge from "app/views/travel/shared/components/TravelAppStatusBadge";
+import { useModesOfTransportation } from "app/views/travel/shared/hooks/useModesOfTransportation";
 
 const NOT_AVAILABLE = "N/A";
 
@@ -272,17 +271,6 @@ function AllowancesBox({ amendment }) {
       </div>
     </div>
   );
-}
-
-function useModesOfTransportation() {
-  return useQuery({
-    queryKey: ["travel", "mode-of-transportation"],
-    queryFn: () =>
-      fetchApiJson("/travel/mode-of-transportation").then(
-        (res) => res?.result ?? [],
-      ),
-    staleTime: 1000 * 60 * 30,
-  });
 }
 
 function formatDate(value) {

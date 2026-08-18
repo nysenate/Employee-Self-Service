@@ -15,13 +15,18 @@ export default function WorkflowActions({
   onSave,
   onPrimary,
   isSaving = false,
+  isPrimaryPending = false,
 }) {
   const actions = WORKFLOW_ACTIONS[step];
 
   return (
     <div className="flex flex-wrap items-center justify-end gap-3">
       {actions.back && (
-        <Button variant="secondary" onPress={onBack}>
+        <Button
+          variant="secondary"
+          onPress={onBack}
+          isDisabled={isPrimaryPending}
+        >
           Back
         </Button>
       )}
@@ -29,13 +34,19 @@ export default function WorkflowActions({
         <Button
           variant="secondary"
           onPress={onSave}
-          isDisabled={!onSave}
+          isDisabled={!onSave || isPrimaryPending}
           isPending={isSaving}
         >
           Save
         </Button>
       )}
-      <Button onPress={onPrimary}>{actions.primary}</Button>
+      <Button
+        onPress={onPrimary}
+        isDisabled={isPrimaryPending}
+        isPending={isPrimaryPending}
+      >
+        {actions.primary}
+      </Button>
     </div>
   );
 }

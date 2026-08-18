@@ -33,13 +33,13 @@ describe("new travel application workflow shell", () => {
     vi.restoreAllMocks();
     vi.stubGlobal(
       "fetch",
-      vi.fn().mockResolvedValue({
+      vi.fn().mockImplementation(async (url) => ({
         ok: true,
-        json: () =>
-          Promise.resolve({
-            result: [{ name: "Forum", displayName: "Forum" }],
-          }),
-      }),
+        json: async () =>
+          String(url).includes("/config")
+            ? { result: { config: { googleApiKey: "test-key" } } }
+            : { result: [{ name: "Forum", displayName: "Forum" }] },
+      })),
     );
   });
 
