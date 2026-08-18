@@ -19,7 +19,7 @@ function CardHeader({ children, className }) {
   return (
     <div
       className={cn(
-        "flex items-center justify-center border-b border-solid border-teal-400 px-3 py-3",
+        "flex items-center justify-center border-b border-solid border-teal-200 px-3 py-3",
         className,
       )}
     >

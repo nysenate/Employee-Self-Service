@@ -190,7 +190,7 @@
     width: 34px;
     height: 28px;
     padding: 0;
-    background: #799933;
+    background: var(--color-green-600);
     color: #fefefe;
     font-weight: 600;
     border: none;
@@ -242,7 +242,7 @@
 }
 
 .activePage {
-    color: #6370bd;
+    color: var(--color-purple-500);
     border-color: #007b8a;
 }
 

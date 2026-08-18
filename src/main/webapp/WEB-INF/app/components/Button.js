@@ -147,8 +147,8 @@ function getButtonClassName({ variant, renderProps, className }) {
 const variantStyles = {
   primary: {
     base: "border-b-2 border-green-800 bg-green-600 px-2.5 py-1 font-semibold text-white",
-    hover: "bg-green-500",
-    pressed: "bg-green-700",
+    hover: "bg-green-700",
+    pressed: "bg-green-800",
     focus: "ring-2 ring-green-600 ring-offset-1",
   },
   secondary: {
@@ -158,9 +158,9 @@ const variantStyles = {
     focus: "ring-2 ring-gray-500 ring-offset-1",
   },
   destructive: {
-    base: "border-b-2 border-red-700 bg-red-600 px-2.5 py-1 font-semibold text-white",
-    hover: "bg-red-500",
-    pressed: "bg-red-700",
+    base: "border-b-2 border-red-800 bg-red-600 px-2.5 py-1 font-semibold text-white",
+    hover: "bg-red-700",
+    pressed: "bg-red-800",
     focus: "ring-2 ring-red-600 ring-offset-1",
   },
   quiet: {
@@ -177,26 +177,26 @@ const variantStyles = {
   },
   themeMyinfo: {
     base: "border-b-2 border-green-800 bg-green-600 px-2.5 py-1 font-semibold text-white",
-    hover: "bg-green-500",
-    pressed: "bg-green-700",
+    hover: "bg-green-700",
+    pressed: "bg-green-800",
     focus: "ring-2 ring-green-600 ring-offset-1",
   },
   themeTime: {
     base: "border-b-2 border-teal-800 bg-teal-600 px-2.5 py-1 font-semibold text-white",
-    hover: "bg-teal-500",
-    pressed: "bg-teal-700",
+    hover: "bg-teal-700",
+    pressed: "bg-teal-800",
     focus: "ring-2 ring-teal-600 ring-offset-1",
   },
   themeSupply: {
     base: "border-b-2 border-purple-800 bg-purple-600 px-2.5 py-1 font-semibold text-white",
-    hover: "bg-purple-500",
-    pressed: "bg-purple-700",
+    hover: "bg-purple-700",
+    pressed: "bg-purple-800",
     focus: "ring-2 ring-purple-600 ring-offset-1",
   },
   themeTravel: {
     base: "border-b-2 border-orange-800 bg-orange-600 px-2.5 py-1 font-semibold text-white",
-    hover: "bg-orange-500",
-    pressed: "bg-orange-700",
+    hover: "bg-orange-700",
+    pressed: "bg-orange-800",
     focus: "ring-2 ring-orange-600 ring-offset-1",
   },
 };

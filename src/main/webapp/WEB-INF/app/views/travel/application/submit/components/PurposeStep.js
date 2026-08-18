@@ -58,7 +58,7 @@ const PurposeStep = forwardRef(function PurposeStep(
 
         <section
           aria-labelledby="traveler-heading"
-          className="bg-[#EAF4F5] p-4 sm:p-5"
+          className="bg-teal-50 p-4 sm:p-5"
         >
           <h2 id="traveler-heading" className="mb-3 text-lg font-semibold">
             Traveler Information

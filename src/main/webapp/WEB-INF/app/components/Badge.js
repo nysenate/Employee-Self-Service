@@ -3,10 +3,10 @@ import { ThemeContext, themes } from "app/ThemeContext";
 import { cn } from "app/utils/cn";
 
 const themeClasses = {
-  [themes.myinfo]: "bg-green-600",
-  [themes.time]: "bg-teal-800",
-  [themes.supply]: "bg-purple-800",
-  [themes.travel]: "bg-orange-800",
+  [themes.myinfo]: "bg-green-700",
+  [themes.time]: "bg-teal-700",
+  [themes.supply]: "bg-purple-700",
+  [themes.travel]: "bg-orange-700",
 };
 
 /**
