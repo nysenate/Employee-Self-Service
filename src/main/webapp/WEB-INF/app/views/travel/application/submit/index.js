@@ -1,7 +1,7 @@
 import React from "react";
 import Hero from "app/components/Hero";
 import Button from "app/components/Button";
-import ErrorBanner from "app/components/ErrorBanner";
+import ErrorAlert from "app/components/ErrorAlert";
 import LoadingIndicator from "app/components/LoadingIndicator";
 import NewTravelApplication from "./NewTravelApplication";
 import { useNewTravelDraft } from "./hooks/useNewTravelDraft";
@@ -38,15 +38,13 @@ function InitializationLoading() {
 
 function InitializationError({ error, retry }) {
   const missingDepartment = error?.data?.errorCode === "MISSING_DEPARTMENT";
+  const title = missingDepartment
+    ? "Department information is missing"
+    : "We couldn’t start your travel application";
 
   return (
-    <ErrorBanner>
-      <h2 className="text-lg font-semibold">
-        {missingDepartment
-          ? "Department information is missing"
-          : "We couldn’t start your travel application"}
-      </h2>
-      <p className="mx-auto mt-2 max-w-2xl">
+    <ErrorAlert title={title}>
+      <p className="max-w-2xl">
         {missingDepartment
           ? "ESS could not determine your department. Contact your personnel office before starting a travel application."
           : "The application could not be initialized. Your information has not been changed. Please try again."}
@@ -56,6 +54,6 @@ function InitializationError({ error, retry }) {
           Try again
         </Button>
       )}
-    </ErrorBanner>
+    </ErrorAlert>
   );
 }

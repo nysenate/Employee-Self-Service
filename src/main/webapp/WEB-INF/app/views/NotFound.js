@@ -1,11 +1,10 @@
 import React from "react";
-import ErrorBanner from "app/components/ErrorBanner";
+import ErrorAlert from "app/components/ErrorAlert";
 
 export default function NotFound() {
   return (
-    <ErrorBanner>
-      <h1 className="my-1 text-2xl font-semibold">Page Not Found</h1>
-      <h3>Sorry the page that you requested doesn't seem to exist.</h3>
-    </ErrorBanner>
+    <ErrorAlert headingAs="h1" title="Page not found">
+      <p>Sorry, the page you requested doesn’t seem to exist.</p>
+    </ErrorAlert>
   );
 }

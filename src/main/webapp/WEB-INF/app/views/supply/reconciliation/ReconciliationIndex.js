@@ -7,7 +7,7 @@ import {
 } from "app/views/supply/reconciliation/useReconciliation";
 import LoadingIndicator from "app/components/LoadingIndicator";
 import Button from "app/components/Button";
-import ErrorBanner from "app/components/ErrorBanner";
+import ErrorAlert from "app/components/ErrorAlert";
 import ReconciliationTabs from "app/views/supply/reconciliation/ReconciliationTabs";
 import ModalNotice from "app/components/ModalNotice";
 import { useQueryClient } from "@tanstack/react-query";
@@ -100,10 +100,11 @@ function InvalidReconciliationErrorMsg({ status }) {
   }
   return (
     <div className="p-3">
-      <ErrorBanner>
-        One or more of the quantities entered is incorrect. Please review the
-        below errors
-      </ErrorBanner>
+      <ErrorAlert title="Review item quantities">
+        <p>
+          One or more entered quantities is incorrect. Review the errors below.
+        </p>
+      </ErrorAlert>
     </div>
   );
 }
@@ -114,12 +115,9 @@ function FormErrorMsg({ status }) {
   }
   return (
     <div className="p-3">
-      <ErrorBanner>
-        <span className="text-xl">Missing item quantities</span>
-        <br />
-        <br />
-        To reconcile, you must enter a quantity for all items on both pages
-      </ErrorBanner>
+      <ErrorAlert title="Missing item quantities">
+        <p>To reconcile, enter a quantity for every item on both pages.</p>
+      </ErrorAlert>
     </div>
   );
 }
