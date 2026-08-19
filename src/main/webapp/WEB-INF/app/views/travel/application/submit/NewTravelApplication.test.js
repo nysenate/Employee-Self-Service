@@ -67,6 +67,25 @@ function returnReadyDraft() {
   };
 }
 
+function calculatedExpenseDraft(draft) {
+  return {
+    ...draft,
+    amendment: {
+      ...draft.amendment,
+      allowances: {
+        tolls: 0,
+        parking: 0,
+        alternateTransportation: 0,
+        trainAndPlane: 0,
+        registration: 0,
+      },
+      mealPerDiems: { isAllowedMeals: false, allMealPerDiems: [] },
+      lodgingPerDiems: { allLodgingPerDiems: [] },
+      mileagePerDiems: { allPerDiems: [] },
+    },
+  };
+}
+
 async function advanceToReturn() {
   await screen.findByRole("option", { name: "Forum" });
   fireEvent.click(screen.getByRole("button", { name: "Next" }));
@@ -177,9 +196,7 @@ describe("new travel application workflow shell", () => {
         return successfulResponse({ config: { googleApiKey: "test-key" } });
       }
       if (String(url).endsWith("/travel/event-types")) {
-        return successfulResponse([
-          { name: "Forum", displayName: "Forum" },
-        ]);
+        return successfulResponse([{ name: "Forum", displayName: "Forum" }]);
       }
       if (String(url).endsWith("/travel/mode-of-transportation")) {
         return successfulResponse([
@@ -261,9 +278,7 @@ describe("new travel application workflow shell", () => {
         return successfulResponse({ config: { googleApiKey: "test-key" } });
       }
       if (String(url).endsWith("/travel/event-types")) {
-        return successfulResponse([
-          { name: "Forum", displayName: "Forum" },
-        ]);
+        return successfulResponse([{ name: "Forum", displayName: "Forum" }]);
       }
       if (String(url).endsWith("/travel/mode-of-transportation")) {
         return successfulResponse([
@@ -296,6 +311,106 @@ describe("new travel application workflow shell", () => {
     );
     expect(screen.getByLabelText("Travel date")).toHaveValue("2026-08-19");
     expect(screen.getByRole("button", { name: "Expenses" })).toBeDisabled();
+  });
+
+  it("recalculates changed expenses and advances with the authoritative response", async () => {
+    const draft = calculatedExpenseDraft(returnReadyDraft());
+    draft.amendment.route.outboundLegs[0].to.address.county = "Erie";
+    draft.amendment.route.returnLegs[0].from.address.county = "Erie";
+    const patchBodies = [];
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (url, options = {}) => {
+        if (String(url).includes("/config")) {
+          return successfulResponse({ config: { googleApiKey: "test-key" } });
+        }
+        if (String(url).endsWith("/travel/event-types")) {
+          return successfulResponse([{ name: "Forum", displayName: "Forum" }]);
+        }
+        if (String(url).endsWith("/travel/mode-of-transportation")) {
+          return successfulResponse([
+            { methodOfTravel: "TRAIN", displayName: "Train" },
+          ]);
+        }
+        if (options.method === "PATCH") {
+          const body = JSON.parse(options.body);
+          patchBodies.push(body);
+          const calculated = calculatedExpenseDraft(body.draft);
+          if (body.options.includes("ALLOWANCES")) {
+            calculated.amendment.totalAllowance = 25;
+          }
+          return successfulResponse(calculated);
+        }
+        return successfulResponse(draft);
+      }),
+    );
+
+    renderWorkflow(draft);
+    await advanceToReturn();
+    fireEvent.click(screen.getByRole("button", { name: "Next" }));
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: "Expenses" })).toHaveAttribute(
+        "aria-current",
+        "step",
+      ),
+    );
+    fireEvent.change(screen.getByLabelText(/^Tolls/), {
+      target: { value: "25" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Next" }));
+
+    await screen.findByRole("heading", { name: "Review" });
+    expect(patchBodies).toHaveLength(1);
+    expect(patchBodies[0].options).toEqual([
+      "ALLOWANCES",
+      "MEAL_PER_DIEMS",
+      "LODGING_PER_DIEMS",
+      "MILEAGE_PER_DIEMS",
+    ]);
+    expect(patchBodies[0].draft.amendment.allowances.tolls).toBe(25);
+  });
+
+  it("does not recalculate unchanged expenses returned by route calculation", async () => {
+    const draft = calculatedExpenseDraft(returnReadyDraft());
+    draft.amendment.route.outboundLegs[0].to.address.county = "Erie";
+    draft.amendment.route.returnLegs[0].from.address.county = "Erie";
+    const patchBodies = [];
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (url, options = {}) => {
+        if (String(url).includes("/config")) {
+          return successfulResponse({ config: { googleApiKey: "test-key" } });
+        }
+        if (String(url).endsWith("/travel/event-types")) {
+          return successfulResponse([{ name: "Forum", displayName: "Forum" }]);
+        }
+        if (String(url).endsWith("/travel/mode-of-transportation")) {
+          return successfulResponse([
+            { methodOfTravel: "TRAIN", displayName: "Train" },
+          ]);
+        }
+        if (options.method === "PATCH") {
+          const body = JSON.parse(options.body);
+          patchBodies.push(body);
+          return successfulResponse(calculatedExpenseDraft(body.draft));
+        }
+        return successfulResponse(draft);
+      }),
+    );
+
+    renderWorkflow(draft);
+    await advanceToReturn();
+    fireEvent.click(screen.getByRole("button", { name: "Next" }));
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: "Expenses" })).toHaveAttribute(
+        "aria-current",
+        "step",
+      ),
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Next" }));
+
+    await screen.findByRole("heading", { name: "Review" });
+    expect(patchBodies).toHaveLength(0);
   });
 });
 

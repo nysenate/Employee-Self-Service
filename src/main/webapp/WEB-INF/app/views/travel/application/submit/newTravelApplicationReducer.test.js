@@ -3,6 +3,7 @@ import {
   canNavigateToStep,
   createWorkflowState,
   hasUnsavedChanges,
+  needsExpenseRecalculation,
   needsRouteRecalculation,
   newTravelApplicationReducer,
 } from "./newTravelApplicationReducer";
@@ -162,6 +163,7 @@ describe("new travel application reducer", () => {
     expect(state.workingDraft).toBe(calculated);
     expect(state.dirtyRoute).toEqual(calculated.amendment.route);
     expect(needsRouteRecalculation(state)).toBe(false);
+    expect(needsExpenseRecalculation(state)).toBe(false);
     expect(state.serverDraft).toBe(calculated);
     expect(hasUnsavedChanges(state)).toBe(false);
   });
@@ -192,5 +194,41 @@ describe("new travel application reducer", () => {
       route: calculatedRoute,
     });
     expect(needsRouteRecalculation(state)).toBe(false);
+  });
+
+  it("tracks calculated expenses and applies lodging results to the latest draft", () => {
+    const draft = {
+      amendment: {
+        allowances: { tolls: 0 },
+        lodgingPerDiems: {
+          allLodgingPerDiems: [
+            { id: 1, rate: 100, isReimbursementRequested: true },
+          ],
+        },
+      },
+    };
+    let state = createWorkflowState(draft);
+    state = newTravelApplicationReducer(state, {
+      type: "UPDATE_EXPENSE_ROW",
+      group: "lodgingPerDiems",
+      index: 0,
+      changes: { isReimbursementRequested: false },
+    });
+    expect(needsExpenseRecalculation(state)).toBe(true);
+
+    state = newTravelApplicationReducer(state, {
+      type: "APPLY_LODGING_CALCULATION",
+      index: 0,
+      calculation: { rate: 175, isReimbursementRequested: true },
+    });
+    expect(
+      state.workingDraft.amendment.lodgingPerDiems.allLodgingPerDiems[0],
+    ).toMatchObject({ rate: 175, isReimbursementRequested: false });
+
+    state = newTravelApplicationReducer(state, {
+      type: "APPLY_CALCULATED_EXPENSES",
+      draft: state.workingDraft,
+    });
+    expect(needsExpenseRecalculation(state)).toBe(false);
   });
 });

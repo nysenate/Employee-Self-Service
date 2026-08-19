@@ -11,6 +11,8 @@ export default function RouteSegmentFields({
   isDisabled = false,
 }) {
   const fieldId = (field) => `segment-${index}-${field}`;
+  const dateId = fieldId("date");
+  const modeId = fieldId("mode");
 
   return (
     <div className="grid gap-4 md:grid-cols-2">
@@ -32,21 +34,15 @@ export default function RouteSegmentFields({
         }
         isDisabled={isDisabled}
       />
-      <Field
-        label="Travel date"
-        id={fieldId("date")}
-        error={errors[fieldId("date")]}
-      >
+      <Field label="Travel date" id={dateId} error={errors[dateId]}>
         <input
-          id={fieldId("date")}
+          id={dateId}
           type="date"
-          className={`input w-full sm:max-w-40 ${errors[fieldId("date")] ? "input--invalid" : ""}`}
+          className={`input w-full sm:max-w-40 ${errors[dateId] ? "input--invalid" : ""}`}
           value={toNativeDateValue(leg.travelDate)}
-          aria-invalid={Boolean(errors[fieldId("date")])}
+          aria-invalid={Boolean(errors[dateId])}
           disabled={isDisabled}
-          aria-describedby={
-            errors[fieldId("date")] ? `${fieldId("date")}-error` : undefined
-          }
+          aria-describedby={errors[dateId] ? `${dateId}-error` : undefined}
           onChange={(event) =>
             onChange({ travelDate: fromNativeDateValue(event.target.value) })
           }
@@ -71,20 +67,14 @@ export default function RouteSegmentFields({
         }}
         isDisabled={isDisabled}
       />
-      <Field
-        label="Mode of transportation"
-        id={fieldId("mode")}
-        error={errors[fieldId("mode")]}
-      >
+      <Field label="Mode of transportation" id={modeId} error={errors[modeId]}>
         <select
-          id={fieldId("mode")}
-          className={`select w-full sm:max-w-64 ${errors[fieldId("mode")] ? "input--invalid" : ""}`}
+          id={modeId}
+          className={`select w-full sm:max-w-64 ${errors[modeId] ? "input--invalid" : ""}`}
           value={leg.methodOfTravelDisplayName ?? ""}
-          aria-invalid={Boolean(errors[fieldId("mode")])}
+          aria-invalid={Boolean(errors[modeId])}
           disabled={isDisabled}
-          aria-describedby={
-            errors[fieldId("mode")] ? `${fieldId("mode")}-error` : undefined
-          }
+          aria-describedby={errors[modeId] ? `${modeId}-error` : undefined}
           onChange={(event) =>
             onChange({
               methodOfTravelDisplayName: event.target.value,
@@ -100,31 +90,39 @@ export default function RouteSegmentFields({
           ))}
         </select>
       </Field>
-      {leg.methodOfTravelDisplayName === "Other" && (
-        <Field
-          label="Specify mode of transportation"
-          id={fieldId("modeOther")}
-          error={errors[fieldId("modeOther")]}
-          className="md:col-start-2"
-        >
-          <input
-            id={fieldId("modeOther")}
-            className={`input w-full ${errors[fieldId("modeOther")] ? "input--invalid" : ""}`}
-            value={leg.methodOfTravelDescription ?? ""}
-            aria-invalid={Boolean(errors[fieldId("modeOther")])}
-            disabled={isDisabled}
-            aria-describedby={
-              errors[fieldId("modeOther")]
-                ? `${fieldId("modeOther")}-error`
-                : undefined
-            }
-            onChange={(event) =>
-              onChange({ methodOfTravelDescription: event.target.value })
-            }
-          />
-        </Field>
-      )}
+      <OtherModeField
+        id={fieldId("modeOther")}
+        leg={leg}
+        errors={errors}
+        isDisabled={isDisabled}
+        onChange={onChange}
+      />
     </div>
+  );
+}
+
+function OtherModeField({ id, leg, errors, isDisabled, onChange }) {
+  if (leg.methodOfTravelDisplayName !== "Other") return null;
+  const error = errors[id];
+  return (
+    <Field
+      label="Specify mode of transportation"
+      id={id}
+      error={error}
+      className="md:col-start-2"
+    >
+      <input
+        id={id}
+        className={`input w-full ${error ? "input--invalid" : ""}`}
+        value={leg.methodOfTravelDescription ?? ""}
+        aria-invalid={Boolean(error)}
+        disabled={isDisabled}
+        aria-describedby={error ? `${id}-error` : undefined}
+        onChange={(event) =>
+          onChange({ methodOfTravelDescription: event.target.value })
+        }
+      />
+    </Field>
   );
 }
 

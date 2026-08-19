@@ -1,6 +1,7 @@
 import React, { useReducer, useRef, useState } from "react";
 import Card from "app/components/Card";
 import PurposeStep from "./components/PurposeStep";
+import ExpensesStep from "./components/ExpensesStep";
 import RouteStep from "./components/RouteStep";
 import OutsideConusModal from "./components/OutsideConusModal";
 import UnsavedChangesModal from "./components/UnsavedChangesModal";
@@ -36,11 +37,21 @@ import {
   updateOutboundLeg,
 } from "./routeModel";
 import { useCalculateTravelRoute } from "./hooks/useRouteMutations";
+import {
+  useCalculateLodgingRate,
+  useCalculateTravelExpenses,
+} from "./hooks/useExpenseMutations";
+import {
+  applyEditableExpenses,
+  createEditableExpenses,
+  validateExpenses,
+} from "./expenseModel";
 import { useAddressCounty } from "app/views/travel/shared/hooks/useAddressCounty";
 import {
   createWorkflowState,
   hasUnsavedChanges,
   needsRouteRecalculation,
+  needsExpenseRecalculation,
   newTravelApplicationReducer,
   WORKFLOW_STEPS,
 } from "./newTravelApplicationReducer";
@@ -61,14 +72,24 @@ export default function NewTravelApplication({ draft }) {
   const [routeCalculationError, setRouteCalculationError] = useState(null);
   const [saveMessage, setSaveMessage] = useState(null);
   const [uploadError, setUploadError] = useState(false);
+  const [expenses, setExpenses] = useState(() => createEditableExpenses(draft));
+  const [expenseErrors, setExpenseErrors] = useState({});
+  const [lodgingErrors, setLodgingErrors] = useState({});
+  const [pendingLodgingRows, setPendingLodgingRows] = useState({});
+  const [expenseCalculationError, setExpenseCalculationError] = useState(null);
   const errorSummaryRef = useRef(null);
   const routeAdvancePendingRef = useRef(false);
   const saveDraft = useSaveTravelDraft();
   const calculateRoute = useCalculateTravelRoute();
+  const calculateExpenses = useCalculateTravelExpenses();
+  const calculateLodging = useCalculateLodgingRate();
   const uploadDocuments = useUploadSupportingDocuments();
   const addressCounty = useAddressCounty();
   const guard = useUnsavedChangesGuard(hasUnsavedChanges(state));
   const routeNeedsRecalculation = needsRouteRecalculation(state);
+  const expenseActionPendingRef = useRef(false);
+  const lodgingRequestRef = useRef({});
+  const isLodgingPending = Object.keys(pendingLodgingRows).length > 0;
 
   function validateCurrentPurpose() {
     const errors = validatePurpose(state.workingDraft);
@@ -94,6 +115,10 @@ export default function NewTravelApplication({ draft }) {
     }
     if (state.currentStep === 2) {
       await prepareReturnAction("next");
+      return;
+    }
+    if (state.currentStep === 3) {
+      await completeExpenseAction("next");
       return;
     }
     dispatch({ type: "COMPLETE_CURRENT_STEP" });
@@ -180,6 +205,10 @@ export default function NewTravelApplication({ draft }) {
       await prepareReturnAction("save");
       return;
     }
+    if (state.currentStep === 3) {
+      await completeExpenseAction("save");
+      return;
+    }
     try {
       const savedDraft = await saveDraft.mutateAsync(state.workingDraft);
       dispatch({ type: "RESET_BASELINE", draft: savedDraft });
@@ -251,6 +280,7 @@ export default function NewTravelApplication({ draft }) {
         };
         draftToUse = await calculateRoute.mutateAsync(draftWithRoute);
         dispatch({ type: "APPLY_CALCULATED_DRAFT", draft: draftToUse });
+        resetExpensesAfterRouteCalculation(draftToUse);
       }
       if (action === "save") {
         phase = "save";
@@ -278,6 +308,98 @@ export default function NewTravelApplication({ draft }) {
     }
   }
 
+  async function completeExpenseAction(action) {
+    if (expenseActionPendingRef.current) return;
+    setSaveMessage(null);
+    setExpenseCalculationError(null);
+    const errors = validateExpenses(expenses);
+    setExpenseErrors(errors);
+    if (!reportValidationResult(errors) || Object.keys(lodgingErrors).length)
+      return;
+    expenseActionPendingRef.current = true;
+    let phase = "calculate";
+    try {
+      let draftToUse = applyEditableExpenses(state.workingDraft, expenses);
+      if (needsExpenseRecalculation({ ...state, workingDraft: draftToUse })) {
+        draftToUse = await calculateExpenses.mutateAsync(draftToUse);
+        dispatch({ type: "APPLY_CALCULATED_EXPENSES", draft: draftToUse });
+        setExpenses(createEditableExpenses(draftToUse));
+      }
+      if (action === "save") {
+        phase = "save";
+        const savedDraft = await saveDraft.mutateAsync(draftToUse);
+        dispatch({ type: "RESET_BASELINE", draft: savedDraft });
+        setExpenses(createEditableExpenses(savedDraft));
+        setSaveMessage({
+          type: "success",
+          text: "Your travel application was saved as a draft.",
+        });
+      } else {
+        dispatch({ type: "COMPLETE_CURRENT_STEP" });
+      }
+    } catch {
+      const text =
+        phase === "save"
+          ? "Your travel application could not be saved. Your entered information is still available."
+          : "Your expense totals could not be calculated. Your entered information is still available; please try again.";
+      if (phase === "save") setSaveMessage({ type: "error", text });
+      else setExpenseCalculationError(text);
+    } finally {
+      expenseActionPendingRef.current = false;
+    }
+  }
+
+  async function handleLodgingSelect(row, index, address) {
+    const requestId = (lodgingRequestRef.current[index] ?? 0) + 1;
+    lodgingRequestRef.current[index] = requestId;
+    if (!address?.zip5) {
+      setLodgingErrors((current) => ({
+        ...current,
+        [index]: "Select a recognized hotel address containing a ZIP code.",
+      }));
+      return;
+    }
+    setLodgingErrors((current) => {
+      const next = { ...current };
+      delete next[index];
+      return next;
+    });
+    setPendingLodgingRows((current) => ({ ...current, [index]: true }));
+    dispatch({
+      type: "UPDATE_EXPENSE_ROW",
+      group: "lodgingPerDiems",
+      index,
+      changes: { address },
+    });
+    try {
+      const result = await calculateLodging.mutateAsync({
+        date: row.date,
+        address,
+      });
+      if (requestId !== lodgingRequestRef.current[index]) return;
+      dispatch({
+        type: "APPLY_LODGING_CALCULATION",
+        index,
+        calculation: result,
+      });
+    } catch {
+      if (requestId !== lodgingRequestRef.current[index]) return;
+      setLodgingErrors((current) => ({
+        ...current,
+        [index]:
+          "The lodging rate could not be calculated. Select another address or try again.",
+      }));
+    } finally {
+      if (requestId === lodgingRequestRef.current[index]) {
+        setPendingLodgingRows((current) => {
+          const next = { ...current };
+          delete next[index];
+          return next;
+        });
+      }
+    }
+  }
+
   async function handleUpload(files, isTooLarge) {
     setUploadError(false);
     if (files.length === 0) return;
@@ -301,9 +423,13 @@ export default function NewTravelApplication({ draft }) {
       step={state.currentStep}
       onBack={() => dispatch({ type: "GO_BACK" })}
       onSave={handleSave}
-      isSaving={saveDraft.isPending}
+      isSaving={
+        saveDraft.isPending || calculateExpenses.isPending || isLodgingPending
+      }
       onPrimary={handleNext}
-      isPrimaryPending={isAdvancingRoute}
+      isPrimaryPending={
+        isAdvancingRoute || calculateExpenses.isPending || isLodgingPending
+      }
     />
   );
 
@@ -432,6 +558,30 @@ export default function NewTravelApplication({ draft }) {
             }}
           />
         </>
+      ) : state.currentStep === 3 ? (
+        <ExpensesStep
+          draft={state.workingDraft}
+          expenses={expenses}
+          errors={expenseErrors}
+          errorSummaryRef={errorSummaryRef}
+          calculationError={expenseCalculationError}
+          lodgingErrors={lodgingErrors}
+          isDisabled={calculateExpenses.isPending}
+          pendingLodgingRows={pendingLodgingRows}
+          onExpensesChange={(next) => {
+            setExpenseErrors({});
+            setExpenses(next);
+            dispatch({
+              type: "UPDATE_DRAFT",
+              draft: applyEditableExpenses(state.workingDraft, next),
+            });
+          }}
+          onDraftChange={(next) =>
+            dispatch({ type: "UPDATE_DRAFT", draft: next })
+          }
+          onLodgingSelect={handleLodgingSelect}
+          actions={workflowActions}
+        />
       ) : (
         <Card>
           <Card.Header className="justify-start bg-teal-50">
@@ -451,18 +601,7 @@ export default function NewTravelApplication({ draft }) {
         </Card>
       )}
 
-      {saveMessage && (
-        <p
-          role={saveMessage.type === "error" ? "alert" : "status"}
-          className={
-            saveMessage.type === "error"
-              ? "font-medium text-red-700"
-              : "font-medium text-green-700"
-          }
-        >
-          {saveMessage.text}
-        </p>
-      )}
+      <SaveMessage message={saveMessage} />
 
       <UnsavedChangesModal guard={guard} />
     </div>
@@ -472,6 +611,30 @@ export default function NewTravelApplication({ draft }) {
     setRouteErrors({});
     dispatch({ type: "UPDATE_DIRTY_ROUTE", route });
   }
+
+  function resetExpensesAfterRouteCalculation(calculatedDraft) {
+    setExpenses(createEditableExpenses(calculatedDraft));
+    setExpenseErrors({});
+    setLodgingErrors({});
+    setPendingLodgingRows({});
+    setExpenseCalculationError(null);
+    lodgingRequestRef.current = {};
+  }
+}
+
+function SaveMessage({ message }) {
+  if (!message) return null;
+  const isError = message.type === "error";
+  return (
+    <p
+      role={isError ? "alert" : "status"}
+      className={
+        isError ? "font-medium text-red-700" : "font-medium text-green-700"
+      }
+    >
+      {message.text}
+    </p>
+  );
 }
 
 function routeErrorMessage(error) {

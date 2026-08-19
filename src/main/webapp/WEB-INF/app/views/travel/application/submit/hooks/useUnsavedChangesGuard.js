@@ -14,33 +14,14 @@ export function useUnsavedChangesGuard(isDirty) {
       event.returnValue = "";
     };
     const guardAppLink = (event) => {
-      if (
-        event.defaultPrevented ||
-        event.button !== 0 ||
-        event.metaKey ||
-        event.ctrlKey ||
-        event.shiftKey ||
-        event.altKey
-      ) {
-        return;
-      }
+      if (shouldIgnoreClick(event)) return;
 
       const anchor = event.target.closest?.("a[href]");
-      if (!anchor || anchor.target || anchor.hasAttribute("download")) return;
-
-      const destination = new URL(anchor.href, window.location.href);
-      if (
-        destination.origin !== window.location.origin ||
-        `${destination.pathname}${destination.search}` ===
-          `${location.pathname}${location.search}`
-      ) {
-        return;
-      }
+      const destination = navigableDestination(anchor, location);
+      if (!destination) return;
 
       event.preventDefault();
-      setPendingDestination(
-        `${destination.pathname}${destination.search}${destination.hash}`,
-      );
+      setPendingDestination(destination);
     };
 
     window.addEventListener("beforeunload", warnBeforeUnload);
@@ -60,4 +41,28 @@ export function useUnsavedChangesGuard(isDirty) {
       if (destination) navigate(destination);
     },
   };
+}
+
+function shouldIgnoreClick(event) {
+  return (
+    event.defaultPrevented ||
+    event.button !== 0 ||
+    event.metaKey ||
+    event.ctrlKey ||
+    event.shiftKey ||
+    event.altKey
+  );
+}
+
+function navigableDestination(anchor, location) {
+  if (!anchor || anchor.target || anchor.hasAttribute("download")) return null;
+  const destination = new URL(anchor.href, window.location.href);
+  const currentPath = `${location.pathname}${location.search}`;
+  if (
+    destination.origin !== window.location.origin ||
+    `${destination.pathname}${destination.search}` === currentPath
+  ) {
+    return null;
+  }
+  return `${destination.pathname}${destination.search}${destination.hash}`;
 }
