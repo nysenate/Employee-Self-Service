@@ -20,10 +20,12 @@ export default function RouteStep({
   onUpdateSegment,
   onDestinationSelect,
   firstLegQualifier,
+  lastLegQualifier,
   onCountySubmit,
   pendingCounty,
   onCountyCancel,
   actions,
+  isDisabled = false,
 }) {
   const { data: modes = [], isError: modesFailed } = useModesOfTransportation();
 
@@ -63,6 +65,7 @@ export default function RouteStep({
                     variant="quiet"
                     aria-label={`Remove segment ${index + 1}`}
                     onPress={onRemoveLastSegment}
+                    isDisabled={isDisabled}
                   >
                     <Trash2 aria-hidden="true" className="h-4 w-4" /> Remove
                   </Button>
@@ -75,12 +78,14 @@ export default function RouteStep({
                 modes={modes}
                 onChange={(changes) => onUpdateSegment(index, changes)}
                 onDestinationSelect={onDestinationSelect}
+                isDisabled={isDisabled}
               />
               {index === 0 && firstLegQualifier && (
                 <label className="mt-4 flex items-center gap-2">
                   <input
                     type="checkbox"
                     checked={firstLegQualifier.checked}
+                    disabled={isDisabled}
                     onChange={(event) =>
                       firstLegQualifier.onChange(event.target.checked)
                     }
@@ -88,11 +93,28 @@ export default function RouteStep({
                   {firstLegQualifier.label}
                 </label>
               )}
+              {index === legs.length - 1 && lastLegQualifier && (
+                <label className="mt-4 flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={lastLegQualifier.checked}
+                    disabled={isDisabled}
+                    onChange={(event) =>
+                      lastLegQualifier.onChange(event.target.checked)
+                    }
+                  />
+                  {lastLegQualifier.label}
+                </label>
+              )}
             </section>
           ))}
         </div>
         <div className="text-center">
-          <Button variant="secondary" onPress={onAddSegment}>
+          <Button
+            variant="secondary"
+            onPress={onAddSegment}
+            isDisabled={isDisabled}
+          >
             <Plus aria-hidden="true" className="h-4 w-4" /> {addSegmentLabel}
           </Button>
         </div>

@@ -1,4 +1,10 @@
-import { createEmptyRoute, initializeOutboundRoute } from "./routeModel";
+import {
+  createEmptyRoute,
+  initializeOutboundRoute,
+  initializeReturnRoute,
+  toEditableRoute,
+  toRouteDto,
+} from "./routeModel";
 
 export const WORKFLOW_STEPS = Object.freeze([
   "Purpose",
@@ -9,13 +15,16 @@ export const WORKFLOW_STEPS = Object.freeze([
 ]);
 
 export function createWorkflowState(draft) {
+  const dirtyRoute = toEditableRoute(
+    draft.amendment?.route ?? createEmptyRoute(),
+  );
   return {
     serverDraft: draft,
     workingDraft: draft,
     currentStep: 0,
     furthestCompletedStep: -1,
-    dirtyRoute: draft.amendment?.route ?? createEmptyRoute(),
-    needsRouteRecalculation: false,
+    dirtyRoute,
+    calculatedRouteBaseline: toRouteDto(dirtyRoute),
   };
 }
 
@@ -27,10 +36,10 @@ export function newTravelApplicationReducer(state, action) {
         workingDraft: action.draft,
       });
     case "UPDATE_DIRTY_ROUTE":
+      if (routesEqual(state.dirtyRoute, action.route)) return state;
       return invalidateFollowingSteps({
         ...state,
         dirtyRoute: invalidateCalculatedRoute(action.route),
-        needsRouteRecalculation: true,
       });
     case "APPEND_ATTACHMENTS":
       return invalidateFollowingSteps({
@@ -51,8 +60,22 @@ export function newTravelApplicationReducer(state, action) {
         ...state,
         serverDraft: action.draft,
         workingDraft: action.draft,
-        dirtyRoute: action.draft.amendment?.route ?? state.dirtyRoute,
-        needsRouteRecalculation: false,
+        dirtyRoute: action.draft.amendment?.route
+          ? toEditableRoute(action.draft.amendment.route)
+          : state.dirtyRoute,
+        calculatedRouteBaseline: action.draft.amendment?.route
+          ? toRouteDto(toEditableRoute(action.draft.amendment.route))
+          : state.calculatedRouteBaseline,
+      };
+    case "APPLY_CALCULATED_DRAFT":
+      return {
+        ...state,
+        serverDraft: action.draft,
+        workingDraft: action.draft,
+        dirtyRoute: toEditableRoute(action.draft.amendment.route),
+        calculatedRouteBaseline: toRouteDto(
+          toEditableRoute(action.draft.amendment.route),
+        ),
       };
     case "COMPLETE_CURRENT_STEP": {
       if (state.currentStep >= WORKFLOW_STEPS.length - 1) return state;
@@ -62,7 +85,9 @@ export function newTravelApplicationReducer(state, action) {
               state.dirtyRoute,
               state.workingDraft.traveler?.empWorkLocation?.address,
             )
-          : state.dirtyRoute;
+          : state.currentStep === 1
+            ? initializeReturnRoute(state.dirtyRoute)
+            : state.dirtyRoute;
       return {
         ...state,
         dirtyRoute,
@@ -101,6 +126,10 @@ function invalidateCalculatedRoute(route) {
   return editableRoute;
 }
 
+function routesEqual(first, second) {
+  return JSON.stringify(first) === JSON.stringify(second);
+}
+
 export function canNavigateToStep(state, step) {
   return (
     Number.isInteger(step) &&
@@ -111,9 +140,18 @@ export function canNavigateToStep(state, step) {
 }
 
 export function hasUnsavedChanges(state) {
+  const serverRoute = toRouteDto(
+    toEditableRoute(state.serverDraft.amendment?.route ?? createEmptyRoute()),
+  );
   return (
     JSON.stringify(state.workingDraft) !== JSON.stringify(state.serverDraft) ||
-    JSON.stringify(state.dirtyRoute) !==
-      JSON.stringify(state.serverDraft.amendment?.route ?? createEmptyRoute())
+    JSON.stringify(toRouteDto(state.dirtyRoute)) !== JSON.stringify(serverRoute)
+  );
+}
+
+export function needsRouteRecalculation(state) {
+  return !routesEqual(
+    toRouteDto(state.dirtyRoute),
+    state.calculatedRouteBaseline,
   );
 }

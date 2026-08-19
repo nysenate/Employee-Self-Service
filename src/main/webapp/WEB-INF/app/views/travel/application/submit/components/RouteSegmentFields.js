@@ -8,6 +8,7 @@ export default function RouteSegmentFields({
   modes,
   onChange,
   onDestinationSelect,
+  isDisabled = false,
 }) {
   const fieldId = (field) => `segment-${index}-${field}`;
 
@@ -29,6 +30,7 @@ export default function RouteSegmentFields({
             },
           })
         }
+        isDisabled={isDisabled}
       />
       <Field
         label="Travel date"
@@ -41,6 +43,7 @@ export default function RouteSegmentFields({
           className={`input w-full sm:max-w-40 ${errors[fieldId("date")] ? "input--invalid" : ""}`}
           value={toNativeDateValue(leg.travelDate)}
           aria-invalid={Boolean(errors[fieldId("date")])}
+          disabled={isDisabled}
           aria-describedby={
             errors[fieldId("date")] ? `${fieldId("date")}-error` : undefined
           }
@@ -66,6 +69,7 @@ export default function RouteSegmentFields({
           });
           onDestinationSelect(address);
         }}
+        isDisabled={isDisabled}
       />
       <Field
         label="Mode of transportation"
@@ -77,6 +81,7 @@ export default function RouteSegmentFields({
           className={`select w-full sm:max-w-64 ${errors[fieldId("mode")] ? "input--invalid" : ""}`}
           value={leg.methodOfTravelDisplayName ?? ""}
           aria-invalid={Boolean(errors[fieldId("mode")])}
+          disabled={isDisabled}
           aria-describedby={
             errors[fieldId("mode")] ? `${fieldId("mode")}-error` : undefined
           }
@@ -107,6 +112,7 @@ export default function RouteSegmentFields({
             className={`input w-full ${errors[fieldId("modeOther")] ? "input--invalid" : ""}`}
             value={leg.methodOfTravelDescription ?? ""}
             aria-invalid={Boolean(errors[fieldId("modeOther")])}
+            disabled={isDisabled}
             aria-describedby={
               errors[fieldId("modeOther")]
                 ? `${fieldId("modeOther")}-error`

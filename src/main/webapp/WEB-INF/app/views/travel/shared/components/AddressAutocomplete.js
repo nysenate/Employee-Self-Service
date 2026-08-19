@@ -38,6 +38,7 @@ export default function AddressAutocomplete({
   error,
   onTextChange,
   onSelect,
+  isDisabled = false,
 }) {
   const inputRef = useRef(null);
   const onSelectRef = useRef(onSelect);
@@ -73,6 +74,7 @@ export default function AddressAutocomplete({
         value={value}
         placeholder={`${label} address`}
         autoComplete="off"
+        disabled={isDisabled}
         aria-invalid={Boolean(error)}
         aria-describedby={error ? `${id}-error` : undefined}
         onChange={(event) => onTextChange(event.target.value)}

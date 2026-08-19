@@ -3,6 +3,7 @@ import {
   canNavigateToStep,
   createWorkflowState,
   hasUnsavedChanges,
+  needsRouteRecalculation,
   newTravelApplicationReducer,
 } from "./newTravelApplicationReducer";
 
@@ -83,12 +84,113 @@ describe("new travel application reducer", () => {
     });
 
     expect(state.furthestCompletedStep).toBe(0);
-    expect(state.needsRouteRecalculation).toBe(true);
+    expect(needsRouteRecalculation(state)).toBe(true);
     expect(state.dirtyRoute.origin).toBeUndefined();
     expect(state.dirtyRoute.destinations).toBeUndefined();
-    expect(state.dirtyRoute.returnLegs).toEqual(
-      draft.amendment.route.returnLegs,
+    expect(state.dirtyRoute.returnLegs[0]).toMatchObject(
+      draft.amendment.route.returnLegs[0],
     );
     expect(state.workingDraft.amendment.allowances).toEqual({ parking: 10 });
+  });
+
+  it("preserves route calculations when revisiting Outbound without changes", () => {
+    const calculatedRoute = {
+      outboundLegs: [{ travelDate: "01/05/2026" }],
+      returnLegs: [{ travelDate: "01/06/2026" }],
+      origin: { city: "Albany" },
+      destinations: [{ city: "Buffalo" }],
+    };
+    const draft = { amendment: { route: calculatedRoute } };
+    let state = {
+      ...createWorkflowState(draft),
+      currentStep: 1,
+      furthestCompletedStep: 2,
+    };
+
+    const afterValidation = newTravelApplicationReducer(state, {
+      type: "UPDATE_DIRTY_ROUTE",
+      route: structuredClone(state.dirtyRoute),
+    });
+    expect(afterValidation).toBe(state);
+    expect(needsRouteRecalculation(afterValidation)).toBe(false);
+    expect(afterValidation.furthestCompletedStep).toBe(2);
+
+    state = newTravelApplicationReducer(afterValidation, {
+      type: "COMPLETE_CURRENT_STEP",
+    });
+    expect(state.currentStep).toBe(2);
+    expect(needsRouteRecalculation(state)).toBe(false);
+  });
+
+  it("initializes Return after Outbound and applies authoritative calculations", () => {
+    const draft = {
+      amendment: {
+        route: {
+          outboundLegs: [
+            {
+              from: { addressText: "Albany" },
+              to: { addressText: "Buffalo" },
+              methodOfTravelDisplayName: "Train",
+            },
+          ],
+          returnLegs: [],
+        },
+      },
+    };
+    let state = { ...createWorkflowState(draft), currentStep: 1 };
+    state = newTravelApplicationReducer(state, {
+      type: "COMPLETE_CURRENT_STEP",
+    });
+    expect(state.currentStep).toBe(2);
+    expect(state.dirtyRoute.returnLegs[0]).toMatchObject({
+      from: { addressText: "Buffalo" },
+      to: { addressText: "Albany" },
+      methodOfTravelDisplayName: "Train",
+    });
+
+    const calculated = {
+      ...draft,
+      amendment: {
+        ...draft.amendment,
+        route: { ...state.dirtyRoute, origin: { city: "Albany" } },
+      },
+    };
+    state = newTravelApplicationReducer(state, {
+      type: "APPLY_CALCULATED_DRAFT",
+      draft: calculated,
+    });
+    expect(state.workingDraft).toBe(calculated);
+    expect(state.dirtyRoute).toEqual(calculated.amendment.route);
+    expect(needsRouteRecalculation(state)).toBe(false);
+    expect(state.serverDraft).toBe(calculated);
+    expect(hasUnsavedChanges(state)).toBe(false);
+  });
+
+  it("does not recalculate after route edits are reverted to the calculated baseline", () => {
+    const draft = {
+      amendment: {
+        route: {
+          outboundLegs: [{ travelDate: "01/05/2026" }],
+          returnLegs: [{ travelDate: "01/06/2026" }],
+        },
+      },
+    };
+    let state = createWorkflowState(draft);
+    const calculatedRoute = structuredClone(state.dirtyRoute);
+
+    state = newTravelApplicationReducer(state, {
+      type: "UPDATE_DIRTY_ROUTE",
+      route: {
+        ...state.dirtyRoute,
+        returnLegs: [{ travelDate: "01/07/2026" }],
+      },
+    });
+    expect(needsRouteRecalculation(state)).toBe(true);
+
+    state = newTravelApplicationReducer(state, {
+      type: "UPDATE_DIRTY_ROUTE",
+      route: calculatedRoute,
+    });
+    expect(needsRouteRecalculation(state)).toBe(false);
   });
 });

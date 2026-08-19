@@ -1,11 +1,17 @@
 import { describe, expect, it } from "vitest";
 import {
   addOutboundLeg,
+  addReturnLeg,
   createEmptyRoute,
+  findMissingRouteCounty,
+  initializeReturnRoute,
   findMissingOutboundCounty,
   initializeOutboundRoute,
   removeLastOutboundLeg,
   setOutboundAddressCounty,
+  setRouteAddressCounty,
+  toEditableRoute,
+  toRouteDto,
 } from "./routeModel";
 
 const workAddress = {
@@ -86,5 +92,105 @@ describe("outbound route model", () => {
         setOutboundAddressCounty(route, 0, "to", "Erie"),
       ),
     ).toBeNull();
+  });
+});
+
+describe("return route model", () => {
+  const outbound = (mode, description = "") => ({
+    from: {
+      address: { ...workAddress, county: "Albany" },
+      addressText: "Albany",
+    },
+    to: {
+      address: { ...workAddress, county: "Erie" },
+      addressText: "Buffalo",
+    },
+    travelDate: "08/10/2026",
+    methodOfTravelDisplayName: mode,
+    methodOfTravelDescription: description,
+  });
+
+  it("initializes once from the outbound endpoints and infers one mode", () => {
+    const route = initializeReturnRoute({
+      outboundLegs: [outbound("Other", "Bicycle")],
+      returnLegs: [],
+    });
+    expect(route.returnLegs[0]).toMatchObject({
+      from: { addressText: "Buffalo" },
+      to: { addressText: "Albany" },
+      methodOfTravelDisplayName: "Other",
+      methodOfTravelDescription: "Bicycle",
+    });
+    expect(initializeReturnRoute(route)).toBe(route);
+  });
+
+  it("does not infer a return mode when outbound modes differ", () => {
+    const route = initializeReturnRoute({
+      outboundLegs: [outbound("Train"), outbound("Car")],
+      returnLegs: [],
+    });
+    expect(route.returnLegs[0].methodOfTravelDisplayName).toBe("");
+  });
+
+  it("adds a return segment from only the final segment and clears stale Other text", () => {
+    const route = {
+      outboundLegs: [outbound("Train")],
+      returnLegs: [
+        {
+          ...outbound("Train"),
+          methodOfTravelDescription: "stale bicycle",
+        },
+      ],
+      lastLegQualifiesForDinner: true,
+    };
+    const added = addReturnLeg(route);
+    expect(added.returnLegs[1]).toMatchObject({
+      from: route.returnLegs[0].to,
+      to: route.outboundLegs[0].from,
+      methodOfTravelDisplayName: "Train",
+      methodOfTravelDescription: "",
+    });
+    expect(added.lastLegQualifiesForDinner).toBe(true);
+  });
+
+  it("fills repeated missing addresses after prompting once", () => {
+    const missing = { ...workAddress };
+    const route = {
+      outboundLegs: [
+        { ...outbound("Train"), to: { address: missing, addressText: "Same" } },
+      ],
+      returnLegs: [
+        {
+          ...outbound("Train"),
+          from: { address: missing, addressText: "Same" },
+        },
+      ],
+    };
+    const target = findMissingRouteCounty(route);
+    const updated = setRouteAddressCounty(route, target, "Erie");
+    expect(findMissingRouteCounty(updated)).toBeNull();
+    expect(updated.returnLegs[0].from.address.county).toBe("Erie");
+  });
+
+  it("keeps address display text out of the backend route DTO", () => {
+    const route = {
+      outboundLegs: [outbound("Train")],
+      returnLegs: [],
+    };
+    const editable = toEditableRoute({
+      ...route,
+      outboundLegs: [
+        {
+          ...route.outboundLegs[0],
+          from: { address: workAddress },
+        },
+      ],
+    });
+    expect(editable.outboundLegs[0].from.addressText).toBe(
+      workAddress.formattedAddressWithCounty,
+    );
+    expect(toRouteDto(editable).outboundLegs[0].from).not.toHaveProperty(
+      "addressText",
+    );
   });
 });
