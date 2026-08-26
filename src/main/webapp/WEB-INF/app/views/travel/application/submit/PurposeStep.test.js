@@ -42,6 +42,7 @@ function response(result, ok = true) {
     ok,
     statusText: ok ? "" : "Server Error",
     json: () => Promise.resolve(ok ? { result } : {}),
+    text: () => Promise.resolve(JSON.stringify(ok ? { result } : {})),
   });
 }
 

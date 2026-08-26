@@ -19,13 +19,16 @@ const ny = {
 function renderStep(route, onRouteChange = vi.fn()) {
   vi.stubGlobal(
     "fetch",
-    vi.fn().mockImplementation(async (url) => ({
-      ok: true,
-      json: async () =>
-        String(url).includes("/config")
-          ? { result: { config: { googleApiKey: "test-key" } } }
-          : { result: [{ methodOfTravel: "TRAIN", displayName: "Train" }] },
-    })),
+    vi.fn().mockImplementation(async (url) => {
+      const body = String(url).includes("/config")
+        ? { result: { config: { googleApiKey: "test-key" } } }
+        : { result: [{ methodOfTravel: "TRAIN", displayName: "Train" }] };
+      return {
+        ok: true,
+        json: async () => body,
+        text: async () => JSON.stringify(body),
+      };
+    }),
   );
   render(
     <QueryClientProvider

@@ -33,13 +33,16 @@ describe("new travel application workflow shell", () => {
     vi.restoreAllMocks();
     vi.stubGlobal(
       "fetch",
-      vi.fn().mockImplementation(async (url) => ({
-        ok: true,
-        json: async () =>
-          String(url).includes("/config")
-            ? { result: { config: { googleApiKey: "test-key" } } }
-            : { result: [{ name: "Forum", displayName: "Forum" }] },
-      })),
+      vi.fn().mockImplementation(async (url) => {
+        const body = String(url).includes("/config")
+          ? { result: { config: { googleApiKey: "test-key" } } }
+          : { result: [{ name: "Forum", displayName: "Forum" }] };
+        return {
+          ok: true,
+          json: async () => body,
+          text: async () => JSON.stringify(body),
+        };
+      }),
     );
   });
 

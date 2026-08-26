@@ -23,6 +23,7 @@ function response(body, { ok = true, statusText = "" } = {}) {
     ok,
     statusText,
     json: () => Promise.resolve(body),
+    text: () => Promise.resolve(JSON.stringify(body)),
   });
 }
 

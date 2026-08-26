@@ -3,7 +3,7 @@ import { format } from "date-fns";
 import { useDebounce } from "use-debounce";
 import Button from "app/components/Button";
 import Notification from "app/components/Notification";
-import ErrorBanner from "app/components/ErrorBanner";
+import ErrorAlert from "app/components/ErrorAlert";
 import { useConfig } from "app/hooks/useConfig";
 import { useHolidaysDuring } from "app/views/time/useHoliday";
 import { useAccruals } from "app/views/time/useAccrual";
@@ -333,11 +333,9 @@ export default function RecordEntryForm({ record, records, empId, onSaved }) {
 
         {saveError && (
           <div className="p-3">
-            <ErrorBanner>
-              Your time record could not be saved.
-              <br />
+            <ErrorAlert title="Your time record could not be saved.">
               {saveError.data?.message || saveError.message}
-            </ErrorBanner>
+            </ErrorAlert>
           </div>
         )}
 

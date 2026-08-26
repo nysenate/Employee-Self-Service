@@ -4,7 +4,7 @@ import { addDays, format, parseISO } from "date-fns";
 import Hero from "app/components/Hero";
 import Button from "app/components/Button";
 import Notification from "app/components/Notification";
-import ErrorBanner from "app/components/ErrorBanner";
+import ErrorAlert from "app/components/ErrorAlert";
 import LoadingIndicator from "app/components/LoadingIndicator";
 import useRequireAuthedUser from "app/hooks/useRequireAuthedUser";
 import {
@@ -156,10 +156,12 @@ function NoActiveRecords({ empId, allRecords }) {
         You may enter time for the next pay period by pressing the button below.
       </p>
       {createNextRecord.isError && (
-        <ErrorBanner>
-          {createNextRecord.error.data?.message ||
-            "The next time record could not be created."}
-        </ErrorBanner>
+        <ErrorAlert
+          className="mt-3 text-left"
+          title="The next time record could not be created."
+        >
+          {createNextRecord.error.data?.message}
+        </ErrorAlert>
       )}
       <Button
         className="mt-3"
