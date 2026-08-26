@@ -5,45 +5,49 @@
 
 @theme {
     /* Custom Colors */
-    --color-teal-100: #edf4f6;
-    --color-teal-200: #dbeaed;
-    --color-teal-300: #bce4ec;
-    --color-teal-400: #b8e3eb;
-    --color-teal-500: #4195a7;
-    --color-teal-600: #016b80;
-    --color-teal-700: #016073;
-    --color-teal-800: #005667;
-    --color-teal-900: #004552;
+    --color-teal-50: #eef7f9;
+    --color-teal-100: #daecf0;
+    --color-teal-200: #b1d5dd;
+    --color-teal-300: #7bb6c3;
+    --color-teal-400: #4196a7;
+    --color-teal-500: #278093;
+    --color-teal-600: #006b80;
+    --color-teal-700: #00586a;
+    --color-teal-800: #004554;
+    --color-teal-900: #00333e;
 
-    --color-green-100: #f1f5ec;
-    --color-green-200: #e5eadb;
-    --color-green-300: #c9d6ad;
-    --color-green-400: #afc285;
-    --color-green-500: #81ad1f;
-    --color-green-600: #799933;
-    --color-green-700: #6d8a2e;
-    --color-green-800: #5b7325;
-    --color-green-900: #495c1f;
+    --color-green-50: #f9fbf7;
+    --color-green-100: #f3f7ee;
+    --color-green-200: #e4ebd9;
+    --color-green-300: #c5d5ae;
+    --color-green-400: #a0b975;
+    --color-green-500: #799933;
+    --color-green-600: #637f25;
+    --color-green-700: #536a1e;
+    --color-green-800: #435718;
+    --color-green-900: #344412;
 
-    --color-purple-100: #eff1f8;
-    --color-purple-200: #e0e2f2;
-    --color-purple-300: #c1c6e5;
-    --color-purple-400: #929bd1;
-    --color-purple-500: #737ec4;
-    --color-purple-600: #6370bd;
-    --color-purple-700: #5060b5;
-    --color-purple-800: #404d91;
-    --color-purple-900: #303a6d;
+    --color-purple-50: #f3f5fc;
+    --color-purple-100: #e3e7f6;
+    --color-purple-200: #c4ccec;
+    --color-purple-300: #a3aede;
+    --color-purple-400: #808ecd;
+    --color-purple-500: #6270bd;
+    --color-purple-600: #4e5baa;
+    --color-purple-700: #3e498b;
+    --color-purple-800: #2f386c;
+    --color-purple-900: #21274e;
 
-    --color-orange-100: #faf4eb;
-    --color-orange-200: #f5ead9;
-    --color-orange-300: #edd5a8;
-    --color-orange-400: #e3bf7d;
-    --color-orange-500: #daaa51;
-    --color-orange-600: #d19526;
-    --color-orange-700: #bb8620;
-    --color-orange-800: #966b1a;
-    --color-orange-900: #705013;
+    --color-orange-50: #faf4ec;
+    --color-orange-100: #f1e6d6;
+    --color-orange-200: #e7cda5;
+    --color-orange-300: #deb168;
+    --color-orange-400: #d19525;
+    --color-orange-500: #b97e00;
+    --color-orange-600: #a56a00;
+    --color-orange-700: #8c5500;
+    --color-orange-800: #744300;
+    --color-orange-900: #5a3200;
 
     --color-gray-25: #fefefe;
     --color-gray-50: #fafafa;

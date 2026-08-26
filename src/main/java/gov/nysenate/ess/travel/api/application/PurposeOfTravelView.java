@@ -29,6 +29,9 @@ public class PurposeOfTravelView implements ViewObject {
 
     @JsonProperty("summary")
     public String summary() {
+        if (getEventType() == null) {
+            return "";
+        }
         String summary = getEventType().getDisplayName();
         if (StringUtils.isNotBlank(getEventName())) {
             summary += String.format(" : %s", getEventName());

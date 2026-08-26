@@ -103,7 +103,7 @@ function CompletedStatus({ empAssignments }) {
       return {
         label: "All trainings complete",
         text: "Done",
-        badgeClasses: "border-green-300 bg-green-50 text-green-800",
+        badgeClasses: "border-green-400 bg-green-100 text-green-900",
         icon: <CheckIcon className="h-4 w-4" />,
       };
     } else if (empAssignments.completionStatus === "ALL_OUTSTANDING") {

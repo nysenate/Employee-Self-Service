@@ -17,13 +17,13 @@ const Title = ({ children }) => {
   let bgColor;
   switch (theme) {
     case themes.myinfo:
-      bgColor = "bg-green-800";
+      bgColor = "bg-green-700";
       break;
     case themes.time:
-      bgColor = "bg-teal-800";
+      bgColor = "bg-teal-700";
       break;
     case themes.supply:
-      bgColor = "bg-purple-800";
+      bgColor = "bg-purple-700";
       break;
     case themes.travel:
       bgColor = "bg-orange-700";

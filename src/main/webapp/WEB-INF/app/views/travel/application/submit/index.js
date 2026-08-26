@@ -1,12 +1,59 @@
 import React from "react";
-import { useTravelApp } from "app/views/travel/shared/hooks/useTravelApp";
+import Hero from "app/components/Hero";
+import Button from "app/components/Button";
+import ErrorAlert from "app/components/ErrorAlert";
+import LoadingIndicator from "app/components/LoadingIndicator";
+import NewTravelApplication from "./NewTravelApplication";
+import { useNewTravelDraft } from "./hooks/useNewTravelDraft";
 
 export default function SubmitApplication() {
-  const { data, isPending } = useTravelApp(15);
+  const draftQuery = useNewTravelDraft();
 
-  if (isPending) {
-    return null;
-  }
+  return (
+    <div className="space-y-5">
+      <Hero>New Travel Application</Hero>
+      {draftQuery.isPending && <InitializationLoading />}
+      {draftQuery.isError && (
+        <InitializationError
+          error={draftQuery.error}
+          retry={draftQuery.refetch}
+        />
+      )}
+      {draftQuery.isSuccess && <NewTravelApplication draft={draftQuery.data} />}
+    </div>
+  );
+}
 
-  return <div className="">Hello submit travel app</div>;
+function InitializationLoading() {
+  return (
+    <div
+      className="flex min-h-48 flex-col items-center justify-center gap-3"
+      role="status"
+    >
+      <LoadingIndicator />
+      <span>Preparing your travel application…</span>
+    </div>
+  );
+}
+
+function InitializationError({ error, retry }) {
+  const missingDepartment = error?.data?.errorCode === "MISSING_DEPARTMENT";
+  const title = missingDepartment
+    ? "Department information is missing"
+    : "We couldn’t start your travel application";
+
+  return (
+    <ErrorAlert title={title}>
+      <p className="max-w-2xl">
+        {missingDepartment
+          ? "ESS could not determine your department. Contact your personnel office before starting a travel application."
+          : "The application could not be initialized. Your information has not been changed. Please try again."}
+      </p>
+      {!missingDepartment && (
+        <Button className="mt-4" onPress={retry}>
+          Try again
+        </Button>
+      )}
+    </ErrorAlert>
+  );
 }

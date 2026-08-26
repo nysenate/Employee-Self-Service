@@ -5,21 +5,29 @@
  *                                    i.e. Use "/employees?active=true" to call "/api/v1/employees?active=true".
  * @param {Object} opts               The Options for this fetch call
  * @param {String} [opts.method=GET]  The http method. Defaults to "GET".
- * @param {Object} [opts.payload]     Http payload data. Only needed/used if opts.method = POST.
+ * @param {Object|FormData} [opts.payload] Http payload data for POST, PUT, or PATCH.
  */
-export async function fetchApiJson(path, opts) {
+export async function fetchApiJson(path, opts = {}) {
+  const { payload, headers: suppliedHeaders, ...fetchOptions } = opts;
+  const isFormData = payload instanceof FormData;
+  const headers = {
+    Accept: "application/json",
+    ...suppliedHeaders,
+  };
+
+  if (!isFormData && payload !== undefined) {
+    headers["Content-Type"] = "application/json";
+  }
+
   const init = {
-    ...opts,
-    method: opts?.method || "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    },
+    ...fetchOptions,
+    method: opts.method || "GET",
+    headers,
     cache: "no-store",
   };
 
-  if (opts?.method === "POST") {
-    init.body = JSON.stringify(opts.payload);
+  if (payload !== undefined) {
+    init.body = isFormData ? payload : JSON.stringify(payload);
   }
 
   return fetchJson(`/api/v1${path}`, init);
