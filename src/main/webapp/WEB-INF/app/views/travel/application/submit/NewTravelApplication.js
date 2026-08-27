@@ -1,8 +1,8 @@
 import React, { useReducer, useRef, useState } from "react";
-import Card from "app/components/Card";
 import PurposeStep from "./components/PurposeStep";
 import ExpensesStep from "./components/ExpensesStep";
 import RouteStep from "./components/RouteStep";
+import ReviewStep from "./components/ReviewStep";
 import OutsideConusModal from "./components/OutsideConusModal";
 import UnsavedChangesModal from "./components/UnsavedChangesModal";
 import LongTripModal from "./components/LongTripModal";
@@ -53,7 +53,6 @@ import {
   needsRouteRecalculation,
   needsExpenseRecalculation,
   newTravelApplicationReducer,
-  WORKFLOW_STEPS,
 } from "./newTravelApplicationReducer";
 
 export default function NewTravelApplication({ draft }) {
@@ -583,22 +582,7 @@ export default function NewTravelApplication({ draft }) {
           actions={workflowActions}
         />
       ) : (
-        <Card>
-          <Card.Header className="justify-start bg-teal-50">
-            <Card.Title>{WORKFLOW_STEPS[state.currentStep]}</Card.Title>
-          </Card.Header>
-          <Card.Content className="p-5">
-            <h2 className="text-lg font-semibold">
-              {WORKFLOW_STEPS[state.currentStep]}
-            </h2>
-            <p className="mt-2 text-gray-600">
-              This step will be completed in its assigned implementation slice.
-            </p>
-          </Card.Content>
-          <Card.Footer className="mt-0 justify-end bg-gray-50 px-5 py-4">
-            {workflowActions}
-          </Card.Footer>
-        </Card>
+        <ReviewStep draft={state.workingDraft} actions={workflowActions} />
       )}
 
       <SaveMessage message={saveMessage} />

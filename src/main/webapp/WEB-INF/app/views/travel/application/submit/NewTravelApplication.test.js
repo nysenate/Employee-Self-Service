@@ -318,32 +318,30 @@ describe("new travel application workflow shell", () => {
     draft.amendment.route.outboundLegs[0].to.address.county = "Erie";
     draft.amendment.route.returnLegs[0].from.address.county = "Erie";
     const patchBodies = [];
-    vi.stubGlobal(
-      "fetch",
-      vi.fn(async (url, options = {}) => {
-        if (String(url).includes("/config")) {
-          return successfulResponse({ config: { googleApiKey: "test-key" } });
+    const fetchMock = vi.fn(async (url, options = {}) => {
+      if (String(url).includes("/config")) {
+        return successfulResponse({ config: { googleApiKey: "test-key" } });
+      }
+      if (String(url).endsWith("/travel/event-types")) {
+        return successfulResponse([{ name: "Forum", displayName: "Forum" }]);
+      }
+      if (String(url).endsWith("/travel/mode-of-transportation")) {
+        return successfulResponse([
+          { methodOfTravel: "TRAIN", displayName: "Train" },
+        ]);
+      }
+      if (options.method === "PATCH") {
+        const body = JSON.parse(options.body);
+        patchBodies.push(body);
+        const calculated = calculatedExpenseDraft(body.draft);
+        if (body.options.includes("ALLOWANCES")) {
+          calculated.amendment.totalAllowance = 25;
         }
-        if (String(url).endsWith("/travel/event-types")) {
-          return successfulResponse([{ name: "Forum", displayName: "Forum" }]);
-        }
-        if (String(url).endsWith("/travel/mode-of-transportation")) {
-          return successfulResponse([
-            { methodOfTravel: "TRAIN", displayName: "Train" },
-          ]);
-        }
-        if (options.method === "PATCH") {
-          const body = JSON.parse(options.body);
-          patchBodies.push(body);
-          const calculated = calculatedExpenseDraft(body.draft);
-          if (body.options.includes("ALLOWANCES")) {
-            calculated.amendment.totalAllowance = 25;
-          }
-          return successfulResponse(calculated);
-        }
-        return successfulResponse(draft);
-      }),
-    );
+        return successfulResponse(calculated);
+      }
+      return successfulResponse(draft);
+    });
+    vi.stubGlobal("fetch", fetchMock);
 
     renderWorkflow(draft);
     await advanceToReturn();
@@ -368,6 +366,19 @@ describe("new travel application workflow shell", () => {
       "MILEAGE_PER_DIEMS",
     ]);
     expect(patchBodies[0].draft.amendment.allowances.tolls).toBe(25);
+
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+    expect(await screen.findByText(/saved as a draft/i)).toBeVisible();
+    expect(screen.getByRole("heading", { name: "Review" })).toBeVisible();
+    expect(
+      fetchMock.mock.calls.some(
+        ([url, options]) =>
+          String(url).endsWith("/travel/drafts") && options.method === "POST",
+      ),
+    ).toBe(true);
+    const unload = new Event("beforeunload", { cancelable: true });
+    window.dispatchEvent(unload);
+    expect(unload.defaultPrevented).toBe(false);
   });
 
   it("does not recalculate unchanged expenses returned by route calculation", async () => {
