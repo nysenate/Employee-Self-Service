@@ -6,7 +6,7 @@ export const WORKFLOW_ACTIONS = Object.freeze([
   { back: true, save: false, primary: "Next" },
   { back: true, save: true, primary: "Next" },
   { back: true, save: true, primary: "Next" },
-  { back: true, save: true, primary: "Submit Application" },
+  { back: true, save: true, primary: "Submit application" },
 ]);
 
 export default function WorkflowActions({
@@ -16,6 +16,7 @@ export default function WorkflowActions({
   onPrimary,
   isSaving = false,
   isPrimaryPending = false,
+  isDisabled = false,
 }) {
   const actions = WORKFLOW_ACTIONS[step];
 
@@ -25,7 +26,7 @@ export default function WorkflowActions({
         <Button
           variant="secondary"
           onPress={onBack}
-          isDisabled={isPrimaryPending}
+          isDisabled={isDisabled || isPrimaryPending}
         >
           Back
         </Button>
@@ -34,7 +35,7 @@ export default function WorkflowActions({
         <Button
           variant="secondary"
           onPress={onSave}
-          isDisabled={!onSave || isPrimaryPending}
+          isDisabled={isDisabled || !onSave || isPrimaryPending}
           isPending={isSaving}
         >
           Save
@@ -42,7 +43,7 @@ export default function WorkflowActions({
       )}
       <Button
         onPress={onPrimary}
-        isDisabled={isPrimaryPending}
+        isDisabled={isDisabled || isPrimaryPending}
         isPending={isPrimaryPending}
       >
         {actions.primary}

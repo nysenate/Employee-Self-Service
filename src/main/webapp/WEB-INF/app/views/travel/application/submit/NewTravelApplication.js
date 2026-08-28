@@ -1,4 +1,5 @@
 import React, { useReducer, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import PurposeStep from "./components/PurposeStep";
 import ExpensesStep from "./components/ExpensesStep";
 import RouteStep from "./components/RouteStep";
@@ -8,6 +9,10 @@ import UnsavedChangesModal from "./components/UnsavedChangesModal";
 import LongTripModal from "./components/LongTripModal";
 import WorkflowActions from "./components/WorkflowActions";
 import WorkflowProgress from "./components/WorkflowProgress";
+import {
+  SubmissionConfirmationModal,
+  SubmissionSuccessModal,
+} from "./components/SubmissionModals";
 import { useUnsavedChangesGuard } from "./hooks/useUnsavedChangesGuard";
 import {
   useSaveTravelDraft,
@@ -47,6 +52,7 @@ import {
   validateExpenses,
 } from "./expenseModel";
 import { useAddressCounty } from "app/views/travel/shared/hooks/useAddressCounty";
+import { useSubmitTravelApplication } from "./hooks/useSubmitTravelApplication";
 import {
   createWorkflowState,
   hasUnsavedChanges,
@@ -56,6 +62,7 @@ import {
 } from "./newTravelApplicationReducer";
 
 export default function NewTravelApplication({ draft }) {
+  const navigate = useNavigate();
   const [state, dispatch] = useReducer(
     newTravelApplicationReducer,
     draft,
@@ -76,6 +83,8 @@ export default function NewTravelApplication({ draft }) {
   const [lodgingErrors, setLodgingErrors] = useState({});
   const [pendingLodgingRows, setPendingLodgingRows] = useState({});
   const [expenseCalculationError, setExpenseCalculationError] = useState(null);
+  const [submissionState, setSubmissionState] = useState("idle");
+  const [submissionError, setSubmissionError] = useState(false);
   const errorSummaryRef = useRef(null);
   const routeAdvancePendingRef = useRef(false);
   const saveDraft = useSaveTravelDraft();
@@ -83,8 +92,14 @@ export default function NewTravelApplication({ draft }) {
   const calculateExpenses = useCalculateTravelExpenses();
   const calculateLodging = useCalculateLodgingRate();
   const uploadDocuments = useUploadSupportingDocuments();
+  const submitApplication = useSubmitTravelApplication();
   const addressCounty = useAddressCounty();
-  const guard = useUnsavedChangesGuard(hasUnsavedChanges(state));
+  const submissionLocked =
+    submissionState === "submitting" || submissionState === "success";
+  const guard = useUnsavedChangesGuard(
+    submissionState !== "success" && hasUnsavedChanges(state),
+    submissionState === "submitting",
+  );
   const routeNeedsRecalculation = needsRouteRecalculation(state);
   const expenseActionPendingRef = useRef(false);
   const lodgingRequestRef = useRef({});
@@ -104,7 +119,11 @@ export default function NewTravelApplication({ draft }) {
 
   async function handleNext() {
     setSaveMessage(null);
-    if (state.currentStep === 0 && !validateCurrentPurpose()) return;
+    if (state.currentStep === 0) {
+      if (!validateCurrentPurpose()) return;
+      dispatch({ type: "COMPLETE_CURRENT_STEP" });
+      return;
+    }
     if (state.currentStep === 1) {
       const errors = validateOutboundRoute(state.dirtyRoute);
       setRouteErrors(errors);
@@ -120,7 +139,8 @@ export default function NewTravelApplication({ draft }) {
       await completeExpenseAction("next");
       return;
     }
-    dispatch({ type: "COMPLETE_CURRENT_STEP" });
+    setSubmissionError(false);
+    setSubmissionState("confirming");
   }
 
   async function continueOutbound(route) {
@@ -399,6 +419,19 @@ export default function NewTravelApplication({ draft }) {
     }
   }
 
+  async function confirmSubmission() {
+    if (submitApplication.isPending || submissionState !== "confirming") return;
+    setSubmissionState("submitting");
+    setSubmissionError(false);
+    try {
+      await submitApplication.mutateAsync(state.workingDraft);
+      setSubmissionState("success");
+    } catch {
+      setSubmissionState("idle");
+      setSubmissionError(true);
+    }
+  }
+
   async function handleUpload(files, isTooLarge) {
     setUploadError(false);
     if (files.length === 0) return;
@@ -427,8 +460,12 @@ export default function NewTravelApplication({ draft }) {
       }
       onPrimary={handleNext}
       isPrimaryPending={
-        isAdvancingRoute || calculateExpenses.isPending || isLodgingPending
+        isAdvancingRoute ||
+        calculateExpenses.isPending ||
+        isLodgingPending ||
+        submissionState === "submitting"
       }
+      isDisabled={submissionLocked}
     />
   );
 
@@ -438,6 +475,7 @@ export default function NewTravelApplication({ draft }) {
         currentStep={state.currentStep}
         furthestCompletedStep={state.furthestCompletedStep}
         onSelect={(step) => dispatch({ type: "GO_TO_STEP", step })}
+        isDisabled={submissionLocked}
       />
 
       {state.currentStep === 0 ? (
@@ -586,6 +624,29 @@ export default function NewTravelApplication({ draft }) {
       )}
 
       <SaveMessage message={saveMessage} />
+
+      {submissionState === "submitting" && (
+        <p role="status" className="font-medium">
+          Submitting your travel application…
+        </p>
+      )}
+      {submissionError && (
+        <p role="alert" className="font-medium">
+          Your travel application could not be submitted. Your application and
+          any saved draft remain available; you can edit it or try again.
+        </p>
+      )}
+
+      <SubmissionConfirmationModal
+        isOpen={submissionState === "confirming"}
+        onCancel={() => setSubmissionState("idle")}
+        onConfirm={confirmSubmission}
+      />
+      <SubmissionSuccessModal
+        isOpen={submissionState === "success"}
+        onReturn={() => navigate("/travel")}
+        onLogout={() => navigate("/logout")}
+      />
 
       <UnsavedChangesModal guard={guard} />
     </div>

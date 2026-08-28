@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-export function useUnsavedChangesGuard(isDirty) {
+export function useUnsavedChangesGuard(isDirty, isLocked = false) {
   const location = useLocation();
   const navigate = useNavigate();
   const [pendingDestination, setPendingDestination] = useState(null);
 
   useEffect(() => {
-    if (!isDirty) return undefined;
+    if (!isDirty && !isLocked) return undefined;
 
     const warnBeforeUnload = (event) => {
       event.preventDefault();
@@ -21,6 +21,7 @@ export function useUnsavedChangesGuard(isDirty) {
       if (!destination) return;
 
       event.preventDefault();
+      if (isLocked) return;
       setPendingDestination(destination);
     };
 
@@ -30,7 +31,7 @@ export function useUnsavedChangesGuard(isDirty) {
       window.removeEventListener("beforeunload", warnBeforeUnload);
       document.removeEventListener("click", guardAppLink, true);
     };
-  }, [isDirty, location]);
+  }, [isDirty, isLocked, location]);
 
   return {
     isOpen: pendingDestination !== null,

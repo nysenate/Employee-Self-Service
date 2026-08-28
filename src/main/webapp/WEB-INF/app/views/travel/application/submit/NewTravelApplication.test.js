@@ -21,6 +21,8 @@ function renderWorkflow(draft = { traveler: {} }) {
             path="/travel/applications"
             element={<h1>Travel history</h1>}
           />
+          <Route path="/travel" element={<h1>Travel home</h1>} />
+          <Route path="/logout" element={<h1>Logging out</h1>} />
         </Routes>
         <Link to="/travel/applications">Travel history link</Link>
       </MemoryRouter>
@@ -423,7 +425,127 @@ describe("new travel application workflow shell", () => {
     await screen.findByRole("heading", { name: "Review" });
     expect(patchBodies).toHaveLength(0);
   });
+
+  it("confirms, locks, and completes submission before leaving the workflow", async () => {
+    const draft = calculatedExpenseDraft(returnReadyDraft());
+    draft.amendment.route.outboundLegs[0].to.address.county = "Erie";
+    draft.amendment.route.returnLegs[0].from.address.county = "Erie";
+    const submission = deferredPromise();
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (url) => {
+        if (String(url).includes("/config"))
+          return successfulResponse({ config: { googleApiKey: "test-key" } });
+        if (String(url).endsWith("/travel/event-types"))
+          return successfulResponse([{ name: "Forum", displayName: "Forum" }]);
+        if (String(url).endsWith("/travel/mode-of-transportation"))
+          return successfulResponse([
+            { methodOfTravel: "TRAIN", displayName: "Train" },
+          ]);
+        if (String(url).endsWith("/travel/drafts/submit"))
+          return submission.promise;
+        return successfulResponse(draft);
+      }),
+    );
+
+    renderWorkflow(draft);
+    await advanceToReturn();
+    fireEvent.click(screen.getByRole("button", { name: "Next" }));
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: "Expenses" })).toHaveAttribute(
+        "aria-current",
+        "step",
+      ),
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Next" }));
+    await screen.findByRole("heading", { name: "Review" });
+
+    fireEvent.click(screen.getByRole("button", { name: "Submit application" }));
+    expect(
+      screen.getByRole("dialog", { name: "Submit travel application?" }),
+    ).toBeVisible();
+    fireEvent.click(screen.getByRole("button", { name: "Submit application" }));
+    expect(
+      await screen.findByText(/Submitting your travel application/),
+    ).toBeVisible();
+    expect(screen.getByRole("button", { name: "Back" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Save" })).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: /Purpose.*completed/ }),
+    ).toBeDisabled();
+    fireEvent.click(screen.getByRole("link", { name: "Travel history link" }));
+    expect(screen.getByRole("heading", { name: "Review" })).toBeVisible();
+    expect(
+      screen.queryByRole("dialog", { name: "Leave this application?" }),
+    ).not.toBeInTheDocument();
+
+    submission.resolve(successfulResponse({ id: 42 }));
+    expect(
+      await screen.findByRole("dialog", { name: "Application submitted" }),
+    ).toBeVisible();
+    fireEvent.click(screen.getByRole("button", { name: "Go back to ESS" }));
+    expect(
+      await screen.findByRole("heading", { name: "Travel home" }),
+    ).toBeVisible();
+  });
+
+  it("retains review data after failure and requires confirmation before retry", async () => {
+    const draft = calculatedExpenseDraft(returnReadyDraft());
+    draft.amendment.route.outboundLegs[0].to.address.county = "Erie";
+    draft.amendment.route.returnLegs[0].from.address.county = "Erie";
+    let submitAttempts = 0;
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (url) => {
+        if (String(url).includes("/config"))
+          return successfulResponse({ config: { googleApiKey: "test-key" } });
+        if (String(url).endsWith("/travel/event-types"))
+          return successfulResponse([{ name: "Forum", displayName: "Forum" }]);
+        if (String(url).endsWith("/travel/mode-of-transportation"))
+          return successfulResponse([
+            { methodOfTravel: "TRAIN", displayName: "Train" },
+          ]);
+        if (String(url).endsWith("/travel/drafts/submit")) {
+          submitAttempts += 1;
+          return failedResponse(500, { message: "failed" });
+        }
+        return successfulResponse(draft);
+      }),
+    );
+
+    renderWorkflow(draft);
+    await advanceToReturn();
+    fireEvent.click(screen.getByRole("button", { name: "Next" }));
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: "Expenses" })).toHaveAttribute(
+        "aria-current",
+        "step",
+      ),
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Next" }));
+    await screen.findByRole("heading", { name: "Review" });
+    fireEvent.click(screen.getByRole("button", { name: "Submit application" }));
+    fireEvent.click(screen.getByRole("button", { name: "Submit application" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "could not be submitted",
+    );
+    expect(screen.getByRole("heading", { name: "Review" })).toBeVisible();
+    fireEvent.click(screen.getByRole("button", { name: "Submit application" }));
+    expect(
+      screen.getByRole("dialog", { name: "Submit travel application?" }),
+    ).toBeVisible();
+    expect(submitAttempts).toBe(1);
+  });
 });
+
+function deferredPromise() {
+  let resolve;
+  const promise = new Promise((resolvePromise) => {
+    resolve = resolvePromise;
+  });
+  return { promise, resolve };
+}
 
 function successfulResponse(result) {
   return jsonResponse({ result });

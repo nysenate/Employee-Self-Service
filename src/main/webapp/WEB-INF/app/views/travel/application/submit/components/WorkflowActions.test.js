@@ -21,4 +21,14 @@ describe("WorkflowActions", () => {
     fireEvent.click(next);
     expect(onPrimary).not.toHaveBeenCalled();
   });
+
+  it("locks every review action during and after submission", () => {
+    render(<WorkflowActions step={4} isDisabled />);
+
+    expect(screen.getByRole("button", { name: "Back" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Save" })).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: "Submit application" }),
+    ).toBeDisabled();
+  });
 });

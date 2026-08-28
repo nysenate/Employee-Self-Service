@@ -6,6 +6,7 @@ export default function WorkflowProgress({
   currentStep,
   furthestCompletedStep,
   onSelect,
+  isDisabled = false,
 }) {
   return (
     <nav
@@ -29,6 +30,7 @@ export default function WorkflowProgress({
                 index > 0 && index <= furthestCompletedStep + 1
               }
               onSelect={onSelect}
+              isDisabled={isDisabled}
             />
           ))}
         </ol>
@@ -44,8 +46,9 @@ function ProgressStep({
   isCompleted,
   connectorCompleted,
   onSelect,
+  isDisabled,
 }) {
-  const canSelect = isCompleted && !isCurrent;
+  const canSelect = !isDisabled && isCompleted && !isCurrent;
   return (
     <li key={step} className="relative flex justify-center">
       {connectorCompleted && (
