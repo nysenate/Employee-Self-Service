@@ -78,7 +78,7 @@
     "eslint-plugin-react-hooks": "^4.3.0",
     "html-webpack-plugin": "^5.5.0",
     "jsdom": "^25.0.1",
-    "postcss": "^8.4.0",
+    "postcss": "^8.5.26",
     "postcss-loader": "^6.2.1",
     "postcss-nested": "^7.0.0",
     "prettier": "^3.5.3",
