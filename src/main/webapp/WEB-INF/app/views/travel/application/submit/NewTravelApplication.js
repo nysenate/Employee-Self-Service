@@ -691,6 +691,13 @@ function routeErrorMessage(error) {
     return "A third-party travel service is unavailable. Your route was not calculated; please try again.";
   }
   if (
+    error?.response?.status === 422 ||
+    serialized.includes("MEAL_RATES_UNAVAILABLE")
+  ) {
+    const date = error?.data?.errorData;
+    return `${date ? `Your travel date ${date} is` : "One or more of your travel dates are"} outside the range we currently have meal rates for. Meal rates are published once a year for the federal fiscal year beginning October 1; please choose an earlier date or try again tomorrow.`;
+  }
+  if (
     error?.response?.status === 400 ||
     serialized.includes("INVALID_TRAVEL_DATES")
   ) {
