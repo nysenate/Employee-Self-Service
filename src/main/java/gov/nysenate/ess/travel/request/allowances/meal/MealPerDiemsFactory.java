@@ -6,7 +6,6 @@ import gov.nysenate.ess.travel.employee.TravelEmployee;
 import gov.nysenate.ess.travel.provider.gsa.GsaAllowanceService;
 import gov.nysenate.ess.travel.provider.senate.SenateMie;
 import gov.nysenate.ess.travel.provider.senate.SqlSenateMieDao;
-import gov.nysenate.ess.travel.request.allowances.PerDiem;
 import gov.nysenate.ess.travel.request.route.Route;
 import gov.nysenate.ess.travel.request.route.destination.Destination;
 import gov.nysenate.ess.travel.utils.Dollars;
@@ -43,9 +42,9 @@ public class MealPerDiemsFactory {
         Set<MealPerDiem> mealPerDiemSet = init(route);
         List<MealPerDiem> mpds = dedupe(mealPerDiemSet);
         mpds.sort(dateComparator);
-        if (mpds.size() > 0) {
-            mpds.get(0).setQualifiesForBreakfast(route.firstLegQualifiesForBreakfast());
-            mpds.get(mpds.size() - 1).setQualifiesForDinner(route.lastLegQualifiesForDinner());
+        if (!mpds.isEmpty()) {
+            mpds.getFirst().setQualifiesForBreakfast(route.firstLegQualifiesForBreakfast());
+            mpds.getLast().setQualifiesForDinner(route.lastLegQualifiesForDinner());
         }
         return new MealPerDiems(mpds, adjustments);
     }
@@ -57,13 +56,13 @@ public class MealPerDiemsFactory {
                 Dollars mieTotal = gsaAllowanceService.fetchMealRate(date, d.getAddress().getZip5());
                 // Ignore zero rates... TODO is this correct?
                 if (!mieTotal.equals(Dollars.ZERO)) {
-                    SenateMie mie = null;
                     try {
-                        mie = senateMieDao.selectSenateMie(DateUtils.getFederalFiscalYear(date), mieTotal);
+                        SenateMie mie = senateMieDao.selectSenateMie(DateUtils.getFederalFiscalYear(date), mieTotal);
+                        mealPerDiemSet.add(new MealPerDiem(d.getAddress(), date, mieTotal, mie));
                     } catch (IncorrectResultSizeDataAccessException ex) {
                         sendSenateMieMissingErrorMessages(date, mieTotal);
+                        throw new MealRatesUnavailableException(date);
                     }
-                    mealPerDiemSet.add(new MealPerDiem(d.getAddress(), date, mieTotal, mie));
                 }
             }
         }

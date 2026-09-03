@@ -121,6 +121,8 @@ function returnEditForm($q, appProps, modals, draftsApi) {
                             scope.closeLoadingModal();
                             if (error.status === 502) {
                                 scope.handleDataProviderError();
+                            } else if (error.status === 422) {
+                                scope.handleMealRatesUnavailable(error.data && error.data.errorData);
                             } else if (error.status === 400) {
                                 scope.$parent.handleTravelDateError();
                             } else {

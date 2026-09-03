@@ -6,6 +6,7 @@ import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.client.response.error.ErrorCode;
 import gov.nysenate.ess.core.client.response.error.ErrorResponse;
+import gov.nysenate.ess.core.client.response.error.ViewObjectErrorResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
@@ -13,6 +14,7 @@ import gov.nysenate.ess.travel.api.application.*;
 import gov.nysenate.ess.travel.department.DepartmentNotFoundEx;
 import gov.nysenate.ess.travel.employee.TravelEmployee;
 import gov.nysenate.ess.travel.employee.TravelEmployeeService;
+import gov.nysenate.ess.travel.request.allowances.meal.MealRatesUnavailableException;
 import gov.nysenate.ess.travel.request.app.*;
 import gov.nysenate.ess.travel.request.attachment.Attachment;
 import gov.nysenate.ess.travel.request.draft.*;
@@ -28,6 +30,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -209,6 +212,14 @@ public class DraftCtrl extends BaseRestApiCtrl {
     @ResponseBody
     public ErrorResponse invalidTravelDates(InvalidTravelDatesException ex) {
         return new ErrorResponse(ErrorCode.INVALID_TRAVEL_DATES);
+    }
+
+    @ExceptionHandler(MealRatesUnavailableException.class)
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    @ResponseBody
+    public ErrorResponse mealRatesUnavailable(MealRatesUnavailableException ex) {
+        return new ViewObjectErrorResponse(ErrorCode.MEAL_RATES_UNAVAILABLE,
+                ex.getDate().format(DateTimeFormatter.ofPattern("MM/dd/yyyy")));
     }
 
     @ExceptionHandler(ProviderException.class)

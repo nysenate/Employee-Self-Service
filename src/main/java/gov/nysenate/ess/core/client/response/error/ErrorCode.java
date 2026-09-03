@@ -34,7 +34,8 @@ public enum ErrorCode {
     /** Travel Errors */
     DATA_PROVIDER_ERROR(301, "An error occurred while communicating with 3rd party data providers."),
     INVALID_TRAVEL_DATES(302, "One or more of your travel dates are invalid."),
-    MISSING_DEPARTMENT(303, "Department lookup failed.");
+    MISSING_DEPARTMENT(303, "Department lookup failed."),
+    MEAL_RATES_UNAVAILABLE(304, "Meal rates have not been published for one or more of your travel dates.");
 
     /** Unique ID for error code */
     private final int code;

@@ -14,9 +14,7 @@ public final class MealPerDiem {
     private final TravelAddress address;
     private final LocalDate date;
     /**
-     * The daily meal reimbursement rate for this address and date.
-     * The same as the mie.total() if mie is not null. {@code rate} should never be null,
-     * however a mie may be null if the senate has not yet defined meal rates for the {@code date} yet.
+     * The daily meal reimbursement rate for this address and date. The same as {@code mie.total()}.
      */
     private final Dollars rate;
     private final SenateMie mie;

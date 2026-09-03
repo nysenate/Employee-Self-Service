@@ -122,6 +122,13 @@ function appEditCtrl($scope, $timeout, $q, modals, countyService, motApi, drafts
 
     };
 
+    /**
+     * @param date The travel date without meal rates, formatted MM/DD/YYYY. May be absent.
+     */
+    $scope.handleMealRatesUnavailable = function (date) {
+        modals.open("meal-rates-unavailable-error", {date: date});
+    };
+
     $scope.handleDataProviderError = function () {
         modals.open("external-api-error")
             .then(function () {

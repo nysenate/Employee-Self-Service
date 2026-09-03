@@ -149,6 +149,22 @@
       </div>
     </modal>
 
+    <%--Travel date falls in a federal fiscal year whose meal rates have not been loaded yet--%>
+    <modal modal-id="meal-rates-unavailable-error">
+      <div error-modal
+           title="Meal Rates Unavailable"
+           buttonValue="Ok"
+           buttonClass="reject-button">
+        <p>
+          <span ng-if="params.date">Your travel date {{params.date}} is</span>
+          <span ng-if="!params.date">One or more of your travel dates are</span>
+          outside the range we currently have meal rates for.
+          Meal rates are published once a year for the federal fiscal year beginning October 1;
+          please choose an earlier date or try again tomorrow.
+        </p>
+      </div>
+    </modal>
+
   </div>
 
 </div>
