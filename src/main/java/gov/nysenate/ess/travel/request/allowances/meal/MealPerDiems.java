@@ -1,6 +1,7 @@
 package gov.nysenate.ess.travel.request.allowances.meal;
 
 import com.google.common.collect.ImmutableSortedSet;
+import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.travel.utils.Dollars;
 
 import java.util.*;
@@ -61,6 +62,15 @@ public class MealPerDiems {
 
     protected ImmutableSortedSet<MealPerDiem> allMealPerDiems() {
         return mealPerDiems;
+    }
+
+    /**
+     * True when any per diem was priced from a federal fiscal year earlier than the one its date
+     * falls in.
+     */
+    public boolean usesPriorYearRates() {
+        return mealPerDiems.stream()
+                .anyMatch(mpd -> mpd.mie().getFiscalYear() < DateUtils.getFederalFiscalYear(mpd.date()));
     }
 
     protected boolean isOverridden() {

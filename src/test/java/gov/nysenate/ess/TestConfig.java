@@ -13,7 +13,7 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 @Configuration
 @PropertySource("classpath:/app.properties")
 @PropertySource("classpath:/test.default.properties")
-@PropertySource("classpath:/test.app.properties")
+@PropertySource(value = "classpath:/test.app.properties", ignoreResourceNotFound = true)
 @PropertySource("classpath:/test.data.properties")
 @PropertySource("classpath:/shiro.ini")
 @Profile({"test"})

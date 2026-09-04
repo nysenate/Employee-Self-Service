@@ -78,6 +78,13 @@
             </p>
           </div>
           <div class="padding-top-10">
+            <div class="travel-note" ng-if="dirtyDraft.usesPriorYearMealRates"
+                 style="width: auto; display: block; margin-bottom: 10px;">
+              <p>
+                Meal rates for the federal fiscal year beginning October 1 have not been published
+                yet, so dates on or after that are estimated using the prior year's rates.
+              </p>
+            </div>
             <table class="travel-table">
               <thead>
               <tr>
