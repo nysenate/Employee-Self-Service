@@ -165,6 +165,16 @@ function Meals({ draft, onDraftChange }) {
           for current eligibility rules and rates.
         </aside>
       </div>
+      {draft.usesPriorYearMealRates && (
+        <aside
+          role="status"
+          className="mt-4 border-l-4 border-yellow-400 bg-yellow-50 p-4 text-yellow-800"
+        >
+          Meal rates for the federal fiscal year beginning October 1 have not
+          been published yet, so dates on or after that are estimated using the
+          prior year's rates.
+        </aside>
+      )}
       <table className="table mt-4" aria-label="Eligible meal reimbursements">
         <thead>
           <tr className="table__head__row">
