@@ -8,6 +8,8 @@ import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUpdateUserCo
 import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUser;
 import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUserClient;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -43,6 +45,7 @@ import java.util.stream.Collectors;
 @Service
 public class EverfiUserSyncExecutor {
 
+    private static final Logger logger = LoggerFactory.getLogger(EverfiUserSyncExecutor.class);
     private static final String DEACTIVATED_EMAIL_DOMAIN = "@nysenate.invalid";
 
     private final EverfiUserClient everfiUserClient;
@@ -178,6 +181,7 @@ public class EverfiUserSyncExecutor {
             }
             return SyncResult.success(action);
         } catch (IOException | IllegalArgumentException | NullPointerException | DataAccessException e) {
+            logger.error("Everfi user sync {} action failed.", action.action(), e);
             return SyncResult.error(action, e.getMessage());
         }
     }

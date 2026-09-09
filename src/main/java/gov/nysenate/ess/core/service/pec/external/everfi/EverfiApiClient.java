@@ -22,38 +22,45 @@ public class EverfiApiClient {
 
     private static final Logger logger = LoggerFactory.getLogger(EverfiApiClient.class);
 
-    private final String HOST;
+    private final String host;
     private final CloseableHttpClient everfiHttpClient;
     private final EverfiClientTokenProvider tokenProvider;
 
-    private static final int SUCCESS = 200;
-    private static final int CREATED = 201;
+    private static final int SUCCESS_STATUS_MIN = 200;
+    private static final int SUCCESS_STATUS_MAX = 299;
     private static final int NOT_FOUND = 404;
     private static final int EXPIRED_TOKEN_CODE = 401;
     private static final int RATE_LIMIT_EXCEEDED = 429;
     private static final int MAX_RETRIES = 10;
+    private final long maxRateLimitWaitMs;
 
-    public EverfiApiClient(@Value("${pec.everfi.host}") String host,
-                           CloseableHttpClient everfiHttpClient,
-                           EverfiClientTokenProvider tokenProvider) {
-        this.HOST = host;
+    public EverfiApiClient(
+            @Value("${pec.everfi.host}") String host,
+            CloseableHttpClient everfiHttpClient,
+            EverfiClientTokenProvider tokenProvider,
+            @Value("${everfi.http.max-rate-limit-wait-ms:60000}") long maxRateLimitWaitMs) {
+        if (maxRateLimitWaitMs < 0) {
+            throw new IllegalArgumentException("everfi.http.max-rate-limit-wait-ms must not be negative.");
+        }
+        this.host = host;
         this.everfiHttpClient = everfiHttpClient;
         this.tokenProvider = tokenProvider;
+        this.maxRateLimitWaitMs = maxRateLimitWaitMs;
     }
 
     /**
-     * Makes a get reqeust to the given Everfi API endpoint.
+     * Makes a GET request to the given Everfi API endpoint.
      *
      * @param endpoint The endpoint of the API to call. Including any query parameters necessary.
      * @return The body of the response as a String.
      * @throws IOException If there is an error making the request.
      */
     public String get(String endpoint) throws IOException {
-        return makeRequest(new HttpGet(HOST + endpoint), null);
+        return makeRequest(new HttpGet(host + endpoint), null);
     }
 
     /**
-     * Makes a post request to the given Everifi API endpoint with the given body entity.
+     * Makes a POST request to the given Everfi API endpoint with the given body entity.
      *
      * @param endpoint The endpoint of the API to call. Including any query parameters necessary.
      * @param body     The body of the post request to be sent.
@@ -61,11 +68,11 @@ public class EverfiApiClient {
      * @throws IOException If there is an error making the request.
      */
     public String post(String endpoint, String body) throws IOException {
-        return makeRequest(new HttpPost(HOST + endpoint), body);
+        return makeRequest(new HttpPost(host + endpoint), body);
     }
 
     /**
-     * Makes a patch request to the given Everifi API endpoint with the given body entity.
+     * Makes a PATCH request to the given Everfi API endpoint with the given body entity.
      *
      * @param endpoint The endpoint of the API to call. Including any query parameters necessary.
      * @param body     The body of the post request to be sent.
@@ -73,7 +80,7 @@ public class EverfiApiClient {
      * @throws IOException If there is an error making the request.
      */
     public String patch(String endpoint, String body) throws IOException {
-        return makeRequest(new HttpPatch(HOST + endpoint), body);
+        return makeRequest(new HttpPatch(host + endpoint), body);
     }
 
     private String makeRequest(HttpUriRequest req, String entity) throws IOException {
@@ -106,18 +113,69 @@ public class EverfiApiClient {
     }
 
     private ResponseResult executeOnce(HttpUriRequest req) throws IOException {
-        updateHeaders(req);
-        try (CloseableHttpResponse response = everfiHttpClient.execute(req)) {
-            int status = response.getStatusLine().getStatusCode();
-            String body = response.getEntity() == null ? null : EntityUtils.toString(response.getEntity());
-            return new ResponseResult(status, body);
+        String target = requestTarget(req);
+        long startNanos = System.nanoTime();
+        logRequestStarted(req, target);
+        try {
+            updateHeaders(req);
+            try (CloseableHttpResponse response = everfiHttpClient.execute(req)) {
+                int status = response.getStatusLine().getStatusCode();
+                String body = response.getEntity() == null ? null : EntityUtils.toString(response.getEntity());
+                logRequestFinished(req, target, status, elapsedMillis(startNanos));
+                return new ResponseResult(status, body);
+            }
+        } catch (IOException | RuntimeException ex) {
+            logger.error("Everfi API request failed: {} after {} ms.",
+                    target, elapsedMillis(startNanos), ex);
+            throw ex;
         }
     }
 
+    private long elapsedMillis(long startNanos) {
+        return (System.nanoTime() - startNanos) / 1_000_000;
+    }
+
+    private void logRequestStarted(HttpUriRequest req, String target) {
+        if (modifiesEverfiData(req)) {
+            logger.info("Starting Everfi API request: {}.", target);
+        } else {
+            logger.debug("Starting Everfi API request: {}.", target);
+        }
+    }
+
+    private void logRequestFinished(HttpUriRequest req, String target, int status, long durationMs) {
+        if (modifiesEverfiData(req)) {
+            logger.info("Finished Everfi API request: {} returned HTTP {} in {} ms.",
+                    target, status, durationMs);
+        } else {
+            logger.debug("Finished Everfi API request: {} returned HTTP {} in {} ms.",
+                    target, status, durationMs);
+        }
+    }
+
+    private boolean modifiesEverfiData(HttpUriRequest req) {
+        return switch (req.getMethod()) {
+            case "POST", "PUT", "PATCH", "DELETE" -> true;
+            default -> false;
+        };
+    }
+
     private String retryRateLimited(HttpUriRequest req) throws IOException {
+        long totalWaitMs = 0;
         for (int retry = 1; retry <= MAX_RETRIES; retry++) {
+            long waitMs;
             try {
-                Thread.sleep(getWaitTimeExp(retry));
+                waitMs = rateLimitWaitMillis(retry, totalWaitMs);
+            } catch (EverfiApiException ex) {
+                logger.error("Aborting Everfi rate-limit retries for {} after {} ms of backoff.",
+                        requestTarget(req), totalWaitMs);
+                throw ex;
+            }
+            totalWaitMs += waitMs;
+            logger.warn("Everfi rate limited {}. Retry {}/{} in {} ms ({} ms total backoff).",
+                    requestTarget(req), retry, MAX_RETRIES, waitMs, totalWaitMs);
+            try {
+                Thread.sleep(waitMs);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 logger.error("Interrupted while waiting to retry Everfi rate-limited request.", e);
@@ -142,10 +200,30 @@ public class EverfiApiClient {
         throw failure(new ResponseResult(RATE_LIMIT_EXCEEDED, "Exceeded retry limit for Everfi request."));
     }
 
+    long rateLimitWaitMillis(int retryCount, long elapsedWaitMs) throws EverfiApiException {
+        if (retryCount < 1 || elapsedWaitMs < 0) {
+            throw new IllegalArgumentException("Retry count must be positive and elapsed wait must not be negative.");
+        }
+        long nextWaitMs = exponentialBackoffMillis(retryCount);
+        if (elapsedWaitMs > maxRateLimitWaitMs - nextWaitMs) {
+            throw failure(new ResponseResult(
+                    RATE_LIMIT_EXCEEDED, "Exceeded maximum rate-limit wait of " + maxRateLimitWaitMs + " ms."));
+        }
+        return nextWaitMs;
+    }
+
+    private String requestTarget(HttpUriRequest req) {
+        return req.getMethod() + " " + req.getURI().getPath();
+    }
+
     private record ResponseResult(int statusCode, String body) {
         boolean isSuccess() {
-            return statusCode == SUCCESS || statusCode == CREATED;
+            return isSuccessStatus(statusCode);
         }
+    }
+
+    static boolean isSuccessStatus(int statusCode) {
+        return statusCode >= SUCCESS_STATUS_MIN && statusCode <= SUCCESS_STATUS_MAX;
     }
 
     private EverfiApiException failure(ResponseResult result) {
@@ -159,11 +237,8 @@ public class EverfiApiClient {
      * backoff algorithm.
      * First retry waits 400ms, next 800ms, then 1,600ms, etc...
      */
-    private long getWaitTimeExp(int retryCount) {
-        if (0 == retryCount) {
-            return 0;
-        }
-        return ((long) Math.pow(2, retryCount) * 200L);
+    private long exponentialBackoffMillis(int retryCount) {
+        return 200L << retryCount;
     }
 
     private void updateHeaders(HttpUriRequest req) throws IOException {

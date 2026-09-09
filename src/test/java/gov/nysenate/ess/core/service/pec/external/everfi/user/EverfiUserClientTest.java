@@ -127,7 +127,7 @@ public class EverfiUserClientTest {
         private final Map<String, String> responses = new HashMap<>();
 
         private StubEverfiApiClient(Map<String, String> responses) {
-            super("https://example.com", null, null);
+            super("https://example.com", null, null, 0);
             this.responses.putAll(responses);
         }
 
@@ -140,7 +140,7 @@ public class EverfiUserClientTest {
     private static class NotFoundEverfiApiClient extends EverfiApiClient {
 
         private NotFoundEverfiApiClient() {
-            super("https://example.com", null, null);
+            super("https://example.com", null, null, 0);
         }
 
         @Override
@@ -152,7 +152,7 @@ public class EverfiUserClientTest {
     private static class ErrorEverfiApiClient extends EverfiApiClient {
 
         private ErrorEverfiApiClient() {
-            super("https://example.com", null, null);
+            super("https://example.com", null, null, 0);
         }
 
         @Override

@@ -8,7 +8,7 @@ import org.junit.experimental.categories.Category;
 @Category(UnitTest.class)
 public class EverfiUsersRequestTest {
 
-    private final EverfiApiClient everfiApiClient = new EverfiApiClient("https://example.com", null, null);
+    private final EverfiApiClient everfiApiClient = new EverfiApiClient("https://example.com", null, null, 0);
 
     @Test(expected = IllegalArgumentException.class)
     public void invalidPageSizeThrows() {
