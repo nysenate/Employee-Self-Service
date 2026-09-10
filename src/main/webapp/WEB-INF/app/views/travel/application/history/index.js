@@ -46,6 +46,7 @@ export default function ApplicationHistory() {
         </div>
         <div className="flex flex-wrap items-start gap-3 px-4 my-3">
           <DateRangeFilter
+            label="Travel dates"
             value={state.dateRange}
             onChange={(dateRange) =>
               updateDateRange(dateRange, { replace: false })

@@ -1,12 +1,15 @@
-import { formatISO, startOfYear, subMonths } from "date-fns";
+import { endOfYear, formatISO, startOfYear, subMonths } from "date-fns";
 
-export const DEFAULT_DATE_RANGE_PRESET = "pastThreeMonths";
+export const DEFAULT_DATE_RANGE_PRESET = "pastThreeMonthsOnward";
 
 export const DATE_RANGE_PRESETS = [
   {
-    value: "pastMonth",
-    label: "Past month",
-    resolve: (today) => rangeFrom(subMonths(today, 1), today),
+    value: "pastThreeMonthsOnward",
+    label: "Recent & future",
+    resolve: (today) => ({
+      fromDate: formatISO(subMonths(today, 3), { representation: "date" }),
+      toDate: null,
+    }),
   },
   {
     value: "pastThreeMonths",
@@ -19,9 +22,9 @@ export const DATE_RANGE_PRESETS = [
     resolve: (today) => rangeFrom(subMonths(today, 12), today),
   },
   {
-    value: "yearToDate",
-    label: "Year to date",
-    resolve: (today) => rangeFrom(startOfYear(today), today),
+    value: "thisYear",
+    label: "This year",
+    resolve: (today) => rangeFrom(startOfYear(today), endOfYear(today)),
   },
   {
     value: "allTime",

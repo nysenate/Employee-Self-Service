@@ -36,6 +36,7 @@ export default function ReviewHistory() {
         </div>
         <div className="my-3 flex flex-wrap items-start gap-3 px-4">
           <DateRangeFilter
+            label="Travel dates"
             value={state.dateRange}
             onChange={(dateRange) =>
               updateDateRange(dateRange, { replace: false })
