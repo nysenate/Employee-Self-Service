@@ -1,6 +1,8 @@
 export const travelQueryKeys = {
   all: ["travel"],
-  newDraft: () => [...travelQueryKeys.all, "draft", "new"],
+  drafts: () => [...travelQueryKeys.all, "drafts"],
+  draft: (draftId) => [...travelQueryKeys.drafts(), "detail", String(draftId)],
+  newDraft: () => [...travelQueryKeys.drafts(), "new"],
   eventTypes: () => [...travelQueryKeys.all, "event-types"],
   modesOfTransportation: () => [
     ...travelQueryKeys.all,

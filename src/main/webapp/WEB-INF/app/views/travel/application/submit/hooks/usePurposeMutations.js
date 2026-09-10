@@ -1,12 +1,26 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchApiJson } from "app/api/fetchJson";
+import { travelQueryKeys } from "app/views/travel/shared/hooks/travelQueryKeys";
 
 export function useSaveTravelDraft() {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: (draft) =>
       fetchApiJson("/travel/drafts", { method: "POST", payload: draft }).then(
         (body) => body.result,
       ),
+    onSuccess: (savedDraft) => {
+      queryClient.setQueryData(
+        travelQueryKeys.draft(savedDraft.id),
+        savedDraft,
+      );
+      queryClient.invalidateQueries({
+        queryKey: travelQueryKeys.drafts(),
+        exact: true,
+        refetchType: "none",
+      });
+    },
   });
 }
 

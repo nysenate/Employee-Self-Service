@@ -19,6 +19,10 @@ export default function TravelRouter() {
       <Routes>
         <Route path="" element={<TravelLayout />}>
           <Route path="/applications/new" element={<SubmitApplication />} />
+          <Route
+            path="/applications/new/:draftId"
+            element={<SubmitApplication />}
+          />
           <Route path="/applications/drafts" element={<Drafts />} />
           <Route path="/applications" element={<ApplicationHistory />} />
 
