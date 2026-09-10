@@ -269,6 +269,9 @@ describe("new travel application workflow shell", () => {
     expect(
       patchBody.draft.amendment.route.returnLegs[0].from.address.county,
     ).toBe("Erie");
+    const unload = new Event("beforeunload", { cancelable: true });
+    window.dispatchEvent(unload);
+    expect(unload.defaultPrevented).toBe(true);
   });
 
   it("retains Return entries and blocks Expenses when route calculation fails", async () => {

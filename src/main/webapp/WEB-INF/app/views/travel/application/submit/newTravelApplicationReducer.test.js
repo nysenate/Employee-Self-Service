@@ -123,7 +123,7 @@ describe("new travel application reducer", () => {
     expect(needsRouteRecalculation(state)).toBe(false);
   });
 
-  it("initializes Return after Outbound and applies authoritative calculations", () => {
+  it("initializes Return and keeps authoritative calculations dirty until saved", () => {
     const draft = {
       amendment: {
         route: {
@@ -164,8 +164,8 @@ describe("new travel application reducer", () => {
     expect(state.dirtyRoute).toEqual(calculated.amendment.route);
     expect(needsRouteRecalculation(state)).toBe(false);
     expect(needsExpenseRecalculation(state)).toBe(false);
-    expect(state.serverDraft).toBe(calculated);
-    expect(hasUnsavedChanges(state)).toBe(false);
+    expect(state.serverDraft).toBe(draft);
+    expect(hasUnsavedChanges(state)).toBe(true);
   });
 
   it("does not recalculate after route edits are reverted to the calculated baseline", () => {

@@ -93,6 +93,37 @@ describe("outbound route model", () => {
       ),
     ).toBeNull();
   });
+
+  it("fills repeated outbound addresses after prompting once", () => {
+    const repeatedAddress = {
+      ...workAddress,
+      formattedAddressWithCounty: "Buffalo, NY 14202",
+    };
+    const route = {
+      outboundLegs: [
+        {
+          from: {
+            address: { ...workAddress, county: "Albany" },
+            addressText: "Albany",
+          },
+          to: { address: repeatedAddress, addressText: "Buffalo" },
+        },
+        {
+          from: { address: repeatedAddress, addressText: "Buffalo" },
+          to: {
+            address: { ...workAddress, county: "Onondaga" },
+            addressText: "Syracuse",
+          },
+        },
+      ],
+      returnLegs: [],
+    };
+
+    const updated = setOutboundAddressCounty(route, 0, "to", "Erie");
+
+    expect(findMissingOutboundCounty(updated)).toBeNull();
+    expect(updated.outboundLegs[1].from.address.county).toBe("Erie");
+  });
 });
 
 describe("return route model", () => {

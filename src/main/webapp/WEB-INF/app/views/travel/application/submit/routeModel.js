@@ -87,13 +87,15 @@ export function removeLastOutboundLeg(route) {
 }
 
 export function setOutboundAddressCounty(route, index, direction, county) {
-  const leg = route.outboundLegs[index];
-  return updateOutboundLeg(route, index, {
-    [direction]: {
-      ...leg[direction],
-      address: { ...leg[direction].address, county },
-    },
-  });
+  const targetAddress = route.outboundLegs[index]?.[direction]?.address;
+  return {
+    ...route,
+    outboundLegs: setMatchingAddressCounties(
+      route.outboundLegs,
+      targetAddress,
+      county,
+    ),
+  };
 }
 
 export function findMissingOutboundCounty(route) {
@@ -182,27 +184,40 @@ export function findMissingRouteCounty(route) {
 
 export function setRouteAddressCounty(route, target, county) {
   const targetAddress = target.addressField.address;
+  return {
+    ...route,
+    outboundLegs: setMatchingAddressCounties(
+      route.outboundLegs,
+      targetAddress,
+      county,
+    ),
+    returnLegs: setMatchingAddressCounties(
+      route.returnLegs,
+      targetAddress,
+      county,
+    ),
+  };
+}
+
+function setMatchingAddressCounties(legs = [], targetAddress, county) {
+  if (!targetAddress) return legs;
+
   const matches = (address) =>
     address === targetAddress ||
     (address?.formattedAddressWithCounty &&
       address.formattedAddressWithCounty ===
-        targetAddress.formattedAddressWithCounty);
-  const updateLegs = (legs = []) =>
-    legs.map((leg) => {
-      const updated = { ...leg };
-      for (const direction of ["from", "to"]) {
-        if (matches(leg[direction]?.address)) {
-          updated[direction] = {
-            ...leg[direction],
-            address: { ...leg[direction].address, county },
-          };
-        }
+        targetAddress?.formattedAddressWithCounty);
+
+  return legs.map((leg) => {
+    const updated = { ...leg };
+    for (const direction of ["from", "to"]) {
+      if (matches(leg[direction]?.address)) {
+        updated[direction] = {
+          ...leg[direction],
+          address: { ...leg[direction].address, county },
+        };
       }
-      return updated;
-    });
-  return {
-    ...route,
-    outboundLegs: updateLegs(route.outboundLegs),
-    returnLegs: updateLegs(route.returnLegs),
-  };
+    }
+    return updated;
+  });
 }

@@ -80,7 +80,6 @@ const ACTION_REDUCERS = {
   }),
   APPLY_CALCULATED_DRAFT: (state, action) => ({
     ...state,
-    serverDraft: action.draft,
     workingDraft: action.draft,
     dirtyRoute: toEditableRoute(action.draft.amendment.route),
     calculatedRouteBaseline: toRouteDto(
