@@ -27,6 +27,8 @@ public class RedmineEmployeeView implements ViewObject
     /**
      * The normalized search tokens that matched this employee, for client-side result highlighting.
      * Empty when the view was not produced by a free-text search. See EmployeeSearchBuilder#tokenizeSearchTerm.
+     * Tokens are upper-cased with punctuation removed (e.g. "O'Brien" -> "OBRIEN"), so a client
+     * highlighting them must ignore punctuation in the names it searches.
      */
     protected List<String> matchedTerms;
 

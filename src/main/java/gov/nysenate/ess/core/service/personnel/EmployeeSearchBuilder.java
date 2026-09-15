@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * Represents a query to search for employees.
@@ -15,6 +16,15 @@ import java.util.Set;
  * TODO: Add more parameters as needed.
  */
 public class EmployeeSearchBuilder {
+
+    /**
+     * The only characters kept (after upper-casing) when normalizing free-text search; everything else
+     * is removed. The DAO strips the same characters from the name and email columns in SQL, so both
+     * sides of every comparison are normalized identically.
+     */
+    public static final String SEARCHABLE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ";
+
+    private static final Pattern NON_SEARCHABLE_CHARS = Pattern.compile("[^" + SEARCHABLE_CHARS + "]");
 
     private String name;
     private Boolean active;
@@ -100,19 +110,21 @@ public class EmployeeSearchBuilder {
     }
 
     /**
-     * Normalizes a free-text search term (uppercase, keep only letters/digits/spaces, collapse
-     * whitespace) and splits it into tokens. Digits are retained so uid/email fragments still match.
+     * Normalizes a free-text search term (uppercase, remove anything not in {@link #SEARCHABLE_CHARS},
+     * collapse whitespace) and splits it into tokens. Digits are retained so uid/email fragments still match.
+     * Punctuation is removed rather than replaced with a space, so "Obaro-Best" and "O'Brien" become
+     * the single tokens "OBAROBEST" and "OBRIEN".
      *
      * This is the single source of truth for how {@link #freeTextNameMatch} tokenizes a term: the DAO
      * uses it to build the query, and API layers use it to report which terms were matched (for result
-     * highlighting) so the two never drift.
+     * highlighting) so the two never drift. The DAO normalizes the columns it compares against with the
+     * same steps.
      */
     public static List<String> tokenizeSearchTerm(String term) {
         if (term == null) {
             return Collections.emptyList();
         }
-        String normalized = term.trim().toUpperCase()
-                .replaceAll("[^A-Z0-9 ]", "")
+        String normalized = NON_SEARCHABLE_CHARS.matcher(term.trim().toUpperCase()).replaceAll("")
                 .replaceAll(" +", " ")
                 .trim();
         if (normalized.isEmpty()) {

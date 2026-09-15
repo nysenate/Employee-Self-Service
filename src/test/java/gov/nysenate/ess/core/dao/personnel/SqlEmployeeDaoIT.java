@@ -9,7 +9,6 @@ import gov.nysenate.ess.core.model.personnel.EmployeeNotFoundEx;
 import gov.nysenate.ess.core.service.personnel.EmployeeSearchBuilder;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.PaginatedList;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
@@ -136,7 +135,6 @@ public class SqlEmployeeDaoIT extends BaseTest
                 results.getTotal() < activeEmployeeIds.size());
     }
 
-    @Ignore("Potential issues for names with non-alphabetic characters")
     @Test
     public void freeTextSearch_isInsensitiveToWordOrder() {
         Employee employee = anyActiveEmployee();
@@ -152,7 +150,6 @@ public class SqlEmployeeDaoIT extends BaseTest
                 freeTextSearchContains(reversedOrder, expectedEmpId));
     }
 
-    @Ignore("Potential issues for names with non-alphabetic characters")
     @Test
     public void freeTextSearch_ignoresMiddleInitialBetweenNames() {
         // Pick an employee that actually has a middle initial - the legacy substring search would
@@ -160,7 +157,7 @@ public class SqlEmployeeDaoIT extends BaseTest
         Employee employee = employeeDao.getActiveEmployees().stream()
                 .filter(e -> e.getInitial() != null && !e.getInitial().trim().isEmpty())
                 .filter(e -> e.getFirstName() != null && e.getLastName() != null)
-                .findFirst()
+                .min(Comparator.comparingInt(Employee::getEmployeeId))
                 .orElseThrow(() -> new AssertionError("Expected at least one employee with a middle initial"));
 
         String firstAndLast = employee.getFirstName() + " " + employee.getLastName();
@@ -197,7 +194,6 @@ public class SqlEmployeeDaoIT extends BaseTest
                 freeTextSearchContains(nameWithSuffix, employee.getEmployeeId()));
     }
 
-    @Ignore("Potential issues for names with non-alphabetic characters")
     @Test
     public void freeTextSearch_ranksExactNameMatchFirst() {
         Employee employee = anyActiveEmployee();
@@ -208,17 +204,74 @@ public class SqlEmployeeDaoIT extends BaseTest
                 .setFreeTextNameMatch(true);
         List<Employee> results = employeeDao.searchEmployees(esb, LimitOffset.ALL).getResults();
         assertFalse("Exact name search should return results", results.isEmpty());
-        // The exact-name match should be ranked at (tied for) the top.
-        boolean topResultIsExactName = results.getFirst().getFirstName().equalsIgnoreCase(employee.getFirstName())
-                && results.getFirst().getLastName().equalsIgnoreCase(employee.getLastName());
-        assertTrue("An exact full-name match should be ranked first", topResultIsExactName);
+        // The exact-name match should be ranked at (tied for) the top. Names are compared normalized,
+        // since e.g. "O'Brien" and "Obrien" are indistinguishable to the search and tie for first.
+        Employee top = results.getFirst();
+        assertEquals("An exact full-name match should be ranked first",
+                normalizedName(employee), normalizedName(top));
     }
 
+    @Test
+    public void freeTextSearch_findsEveryPunctuatedNameByFullName() {
+        // Names with hyphens, apostrophes or periods used to be unfindable, because only the search
+        // term had its punctuation stripped. Check every such active employee, not just one.
+        List<Employee> punctuated = employeeDao.getActiveEmployees().stream()
+                .filter(e -> e.getFirstName() != null && e.getLastName() != null)
+                .filter(e -> (e.getFirstName() + e.getLastName()).matches(".*[^A-Za-z0-9 ].*"))
+                .sorted(Comparator.comparingInt(Employee::getEmployeeId))
+                .toList();
+        if (punctuated.isEmpty()) {
+            logger.warn("No active employee with a punctuated name found - skipping punctuated name test");
+            return;
+        }
+        List<String> notFound = punctuated.stream()
+                .filter(e -> !freeTextSearchContains(e.getFirstName() + " " + e.getLastName(), e.getEmployeeId()))
+                .map(e -> e.getEmployeeId() + " " + e.getFirstName() + " " + e.getLastName())
+                .toList();
+        assertEquals("Every punctuated name should be findable by its full name", List.of(), notFound);
+    }
+
+    @Test
+    public void freeTextSearch_matchesHyphenatedNameWithoutHyphen() {
+        Optional<Employee> hyphenatedEmp = employeeDao.getActiveEmployees().stream()
+                .filter(e -> e.getFirstName() != null && e.getLastName() != null)
+                .filter(e -> e.getLastName().contains("-"))
+                .min(Comparator.comparingInt(Employee::getEmployeeId));
+        if (hyphenatedEmp.isEmpty()) {
+            logger.warn("No active employee with a hyphenated last name found - skipping hyphen test");
+            return;
+        }
+        Employee employee = hyphenatedEmp.get();
+        String spaced = employee.getFirstName() + " " + employee.getLastName().replace("-", " ");
+        String joined = employee.getFirstName() + " " + employee.getLastName().replace("-", "");
+        assertTrue("Free-text search should match a hyphenated name typed with a space",
+                freeTextSearchContains(spaced, employee.getEmployeeId()));
+        assertTrue("Free-text search should match a hyphenated name typed without the hyphen",
+                freeTextSearchContains(joined, employee.getEmployeeId()));
+    }
+
+    @Test
+    public void freeTextSearch_matchesFullEmail() {
+        Employee employee = employeeDao.getActiveEmployees().stream()
+                .filter(e -> e.getEmail() != null && e.getEmail().contains("@"))
+                .min(Comparator.comparingInt(Employee::getEmployeeId))
+                .orElseThrow(() -> new AssertionError("Expected at least one employee with an email"));
+
+        assertTrue("Free-text search should match a full email address",
+                freeTextSearchContains(employee.getEmail(), employee.getEmployeeId()));
+    }
+
+    /** Deterministic choice of test subject; set iteration order changes whenever employee records do. */
     private Employee anyActiveEmployee() {
         return employeeDao.getActiveEmployees().stream()
                 .filter(e -> e.getFirstName() != null && e.getLastName() != null)
-                .findFirst()
+                .min(Comparator.comparingInt(Employee::getEmployeeId))
                 .orElseThrow(() -> new AssertionError("Expected at least one active employee"));
+    }
+
+    private static String normalizedName(Employee employee) {
+        return String.join(" ",
+                EmployeeSearchBuilder.tokenizeSearchTerm(employee.getFirstName() + " " + employee.getLastName()));
     }
 
     private boolean freeTextSearchContains(String term, int expectedEmpId) {

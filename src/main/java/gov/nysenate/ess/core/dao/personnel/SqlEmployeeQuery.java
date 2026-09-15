@@ -2,6 +2,7 @@ package gov.nysenate.ess.core.dao.personnel;
 
 import gov.nysenate.ess.core.dao.base.BasicSqlQuery;
 import gov.nysenate.ess.core.dao.base.DbVendor;
+import gov.nysenate.ess.core.service.personnel.EmployeeSearchBuilder;
 
 public enum SqlEmployeeQuery implements BasicSqlQuery
 {
@@ -89,17 +90,22 @@ public enum SqlEmployeeQuery implements BasicSqlQuery
      * A match_score column ranks results by match quality (exact name / uid prefix / last name
      * prefix / etc.) so the most likely intended employee floats to the top. Ordering is applied by
      * the DAO via an OrderBy on match_score DESC followed by the alphabetical name tiebreak.
+     *
+     * The tokens are normalized by EmployeeSearchBuilder#tokenizeSearchTerm, so every column they are
+     * compared against is stripped of punctuation the same way (see {@link #strippedSql(String)}).
+     * Otherwise names like "O'Brien" or "Stewart-Cousins" could never match. match_score compares
+     * against :compactTerm, the tokens joined without spaces, using {@link #compactSql(String)}.
      */
     GET_EMPS_BY_FREETEXT_SEARCH(
             GET_EMP_SQL_COLS.getSql() +
             ",\n" +
             "  CASE\n" +
-            "    WHEN UPPER(TRIM(TRIM(per.FFNAFIRST) || ' ' || TRIM(per.FFNALAST) || ' ' || TRIM(per.FFNASUFFIX))) = :fullTerm THEN 100\n" +
-            "    WHEN UPPER(TRIM(TRIM(per.FFNAFIRST) || ' ' || TRIM(per.FFNAMIDINIT) || ' ' || TRIM(per.FFNALAST) || ' ' || TRIM(per.FFNASUFFIX))) = :fullTerm THEN 100\n" +
-            "    WHEN UPPER(per.NAEMAIL) LIKE :term || '%' THEN 90\n" +
-            "    WHEN UPPER(TRIM(per.FFNALAST)) = :term THEN 80\n" +
-            "    WHEN UPPER(TRIM(per.FFNALAST)) LIKE :term || '%' THEN 60\n" +
-            "    WHEN UPPER(TRIM(per.FFNAFIRST)) LIKE :term || '%' THEN 40\n" +
+            "    WHEN " + compactSql("per.FFNAFIRST || per.FFNALAST || per.FFNASUFFIX") + " = :compactTerm THEN 100\n" +
+            "    WHEN " + compactSql("per.FFNAFIRST || per.FFNAMIDINIT || per.FFNALAST || per.FFNASUFFIX") + " = :compactTerm THEN 100\n" +
+            "    WHEN " + compactSql("per.NAEMAIL") + " LIKE :compactTerm || '%' THEN 90\n" +
+            "    WHEN " + compactSql("per.FFNALAST") + " = :compactTerm THEN 80\n" +
+            "    WHEN " + compactSql("per.FFNALAST") + " LIKE :compactTerm || '%' THEN 60\n" +
+            "    WHEN " + compactSql("per.FFNAFIRST") + " LIKE :compactTerm || '%' THEN 40\n" +
             "    ELSE 10\n" +
             "  END AS match_score,\n" +
             "  COUNT(*) OVER () AS total_rows\n" +
@@ -159,6 +165,51 @@ public enum SqlEmployeeQuery implements BasicSqlQuery
 
     SqlEmployeeQuery(String sql) {
         this.sql = sql;
+    }
+
+    private static final String FULL_NAME_SQL =
+            "TRIM(per.FFNAFIRST) || ' ' || TRIM(per.FFNAMIDINIT) || ' ' || TRIM(per.FFNALAST) || ' ' || TRIM(per.FFNASUFFIX)";
+
+    /**
+     * Upper-cases a SQL expression and removes every character not in
+     * EmployeeSearchBuilder#SEARCHABLE_CHARS, matching what EmployeeSearchBuilder#tokenizeSearchTerm
+     * does to the search term. Spaces are kept, so tokens (which contain no spaces) can't match across
+     * word boundaries.
+     */
+    static String strippedSql(String expr) {
+        return keepOnlySql(expr, EmployeeSearchBuilder.SEARCHABLE_CHARS);
+    }
+
+    /**
+     * Like {@link #strippedSql(String)} but also removes spaces. Used to compare against the whole
+     * search term with its spaces removed, which makes equality and prefix comparisons independent of
+     * how the words were spaced (e.g. an empty middle initial) without a slower REGEXP_REPLACE.
+     */
+    static String compactSql(String expr) {
+        return keepOnlySql(expr, EmployeeSearchBuilder.SEARCHABLE_CHARS.replace(" ", ""));
+    }
+
+    /**
+     * Upper-cases a SQL expression and removes every character not in {@code keep}.
+     *
+     * This runs against every row searched, so it uses TRANSLATE, which benchmarked several times
+     * faster than REGEXP_REPLACE. The inner TRANSLATE deletes the kept characters, leaving only the
+     * unwanted ones; the outer TRANSLATE deletes those. 'A' is kept as a mapping character in both
+     * because TRANSLATE needs a non-empty target list.
+     */
+    private static String keepOnlySql(String expr, String keep) {
+        String upper = "UPPER(" + expr + ")";
+        return "TRANSLATE(" + upper + ", 'A' || TRANSLATE(" + upper + ", 'A" + keep + "', 'A'), 'A')";
+    }
+
+    /** The employee's full name (first, middle initial, last, suffix), stripped for token matching. */
+    static String strippedFullNameSql() {
+        return strippedSql(FULL_NAME_SQL);
+    }
+
+    /** The employee's email, which begins with their uid, stripped for token matching. */
+    static String strippedEmailSql() {
+        return strippedSql("per.NAEMAIL");
     }
 
     @Override
