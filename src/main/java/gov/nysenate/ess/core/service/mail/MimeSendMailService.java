@@ -19,6 +19,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.AddressException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -138,7 +139,9 @@ public class MimeSendMailService extends JavaMailSenderImpl implements SendMailS
      */
     @Override
     protected void doSend(@NotNull MimeMessage[] mimeMessages, Object[] originalMessages) throws MailException {
-        logEmails(mimeMessages);
+        if (testModeEnabled) {
+            logIntendedRecipients(mimeMessages);
+        }
         if (testModeEnabled) {
             prependRecipientsToSubjects(mimeMessages);
             overrideRecipients(mimeMessages);
@@ -146,10 +149,51 @@ public class MimeSendMailService extends JavaMailSenderImpl implements SendMailS
         if (!isProd()) {
             prependEnvironmentToSubjects(mimeMessages);
         }
-        super.doSend(mimeMessages, originalMessages);
+        try {
+            super.doSend(mimeMessages, originalMessages);
+        } catch (MailException ex) {
+            logger.error("SMTP batch handoff failed via {}:{} from={} messages={}",
+                    smtpHost(), smtpPort(), smtpFrom(), messageSummaries(mimeMessages), ex);
+            throw ex;
+        }
+        for (MimeMessage message : mimeMessages) {
+            logger.info("SMTP handoff succeeded via {}:{} from={} {}", smtpHost(), smtpPort(),
+                    smtpFrom(), messageSummary(message));
+        }
     }
 
-    private void logEmails(MimeMessage[] mimeMessages) {
+    private List<String> messageSummaries(MimeMessage[] messages) {
+        return Arrays.stream(messages).map(this::messageSummary).toList();
+    }
+
+    private String messageSummary(MimeMessage message) {
+        try {
+            return String.format("to=%s cc=%s bcc=%s messageId=%s",
+                    recipients(message, TO), recipients(message, CC), recipients(message, BCC), message.getMessageID());
+        } catch (MessagingException ex) {
+            logger.warn("Could not inspect SMTP message details for logging", ex);
+            return "[message details unavailable]";
+        }
+    }
+
+    private String recipients(MimeMessage message, Message.RecipientType type) throws MessagingException {
+        Address[] addresses = message.getRecipients(type);
+        return addresses == null ? "[]" : Arrays.toString(addresses);
+    }
+
+    private String smtpHost() {
+        return getSession().getProperty("mail.smtp.host");
+    }
+
+    private String smtpPort() {
+        return getSession().getProperty("mail.smtp.port");
+    }
+
+    private String smtpFrom() {
+        return getSession().getProperty("mail.smtp.from");
+    }
+
+    private void logIntendedRecipients(MimeMessage[] mimeMessages) {
         try {
             for (MimeMessage message : mimeMessages) {
                 for (Message.RecipientType type : recipientTypes) {
@@ -158,8 +202,8 @@ public class MimeSendMailService extends JavaMailSenderImpl implements SendMailS
                         continue;
                     }
                     for (Address address : recipients) {
-                        logger.info("Email event triggered for Environment: {}, with testModeEnable = {}, address: {}:{}, subject: {}",
-                                runtimeLevel, testModeEnabled, type, address, message.getSubject());
+                        logger.info("Email prepared for environment {}: intended recipient before test mode rewrite={}:{}, subject={}",
+                                runtimeLevel, type, address, message.getSubject());
                     }
                 }
 
