@@ -37,7 +37,11 @@ public class VerifyAuthorizationFilter extends PermissionsAuthorizationFilter {
         Subject subject = getSubject(request, response);
         // If the subject isn't identified, redirect to login URL
         if (subject.getPrincipal() == null) {
-            saveRequestAndRedirectToLogin(request, response);
+            if (LoginRedirectRequest.isPageNavigation(request)) {
+                saveRequestAndRedirectToLogin(request, response);
+            } else {
+                redirectToLogin(request, response);
+            }
         } else {
             // Otherwise logout the subject and go to authz error page url
             WebUtils.issueRedirect(request, response, authzErrorUrl);
