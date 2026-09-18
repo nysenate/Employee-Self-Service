@@ -44,4 +44,25 @@ describe("submission modals", () => {
     expect(onReturn).toHaveBeenCalledOnce();
     expect(onLogout).toHaveBeenCalledOnce();
   });
+
+  it("renders operation-specific confirmation copy", () => {
+    render(
+      <SubmissionConfirmationModal
+        isOpen
+        onCancel={vi.fn()}
+        onConfirm={vi.fn()}
+        title="Resubmit travel application?"
+        body="Review this application again."
+        actionLabel="Save and Resubmit"
+      />,
+    );
+
+    expect(screen.getByRole("dialog")).toHaveAccessibleName(
+      "Resubmit travel application?",
+    );
+    expect(screen.getByText("Review this application again.")).toBeVisible();
+    expect(
+      screen.getByRole("button", { name: "Save and Resubmit" }),
+    ).toBeVisible();
+  });
 });

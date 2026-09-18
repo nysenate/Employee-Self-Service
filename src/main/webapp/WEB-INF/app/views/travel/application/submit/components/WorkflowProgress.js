@@ -1,10 +1,10 @@
 import React from "react";
 import { Check } from "lucide-react";
-import { WORKFLOW_STEPS } from "../newTravelApplicationReducer";
 
 export default function WorkflowProgress({
-  currentStep,
-  furthestCompletedStep,
+  steps,
+  currentStepId,
+  completedStepIds,
   onSelect,
   isDisabled = false,
 }) {
@@ -19,15 +19,15 @@ export default function WorkflowProgress({
           className="absolute top-4 right-[10%] left-[10%] h-0.5 bg-gray-200"
         />
         <ol className="relative grid grid-cols-5">
-          {WORKFLOW_STEPS.map((step, index) => (
+          {steps.map((step, index) => (
             <ProgressStep
-              key={step}
+              key={step.id}
               step={step}
               index={index}
-              isCurrent={index === currentStep}
-              isCompleted={index <= furthestCompletedStep}
+              isCurrent={step.id === currentStepId}
+              isCompleted={completedStepIds.includes(step.id)}
               connectorCompleted={
-                index > 0 && index <= furthestCompletedStep + 1
+                index > 0 && completedStepIds.includes(steps[index - 1].id)
               }
               onSelect={onSelect}
               isDisabled={isDisabled}
@@ -50,7 +50,7 @@ function ProgressStep({
 }) {
   const canSelect = !isDisabled && isCompleted && !isCurrent;
   return (
-    <li key={step} className="relative flex justify-center">
+    <li className="relative flex justify-center">
       {connectorCompleted && (
         <div
           aria-hidden="true"
@@ -61,7 +61,7 @@ function ProgressStep({
         type="button"
         aria-current={isCurrent ? "step" : undefined}
         disabled={!canSelect}
-        onClick={() => onSelect(index)}
+        onClick={() => onSelect(step.id)}
         className={`group relative z-10 flex min-w-20 flex-col items-center gap-2 text-sm font-semibold ${stepTextClass(canSelect, isCurrent)} focus-visible:ring-2 focus-visible:ring-teal-600 focus-visible:ring-offset-4`}
       >
         <StepMarker
@@ -69,7 +69,7 @@ function ProgressStep({
           isCurrent={isCurrent}
           isCompleted={isCompleted}
         />
-        <span>{step}</span>
+        <span>{step.label}</span>
         {isCompleted && !isCurrent && (
           <span className="sr-only"> (completed)</span>
         )}

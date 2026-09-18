@@ -6,6 +6,7 @@ import { useConfig } from "app/hooks/useConfig";
 
 export default function ReviewStep({
   draft,
+  application = null,
   actions,
   loadMaps = loadGoogleMaps,
 }) {
@@ -71,12 +72,8 @@ export default function ReviewStep({
   }
 
   const reviewApp = useMemo(
-    () => ({
-      ...draft,
-      activeAmendment: draft.amendment,
-      submittedDateTime: draft.submittedDateTime ?? new Date().toISOString(),
-    }),
-    [draft],
+    () => buildReviewApplication(draft, application),
+    [application, draft],
   );
 
   return (
@@ -139,6 +136,24 @@ export default function ReviewStep({
       </Card.Footer>
     </Card>
   );
+}
+
+export function buildReviewApplication(draft, application = null) {
+  if (!application) {
+    return {
+      ...draft,
+      activeAmendment: draft.amendment,
+      submittedDateTime: draft.submittedDateTime ?? new Date().toISOString(),
+    };
+  }
+
+  return {
+    ...application,
+    id: application.id,
+    submittedDateTime: application.submittedDateTime,
+    traveler: draft.traveler,
+    activeAmendment: draft.amendment,
+  };
 }
 
 export function buildDirectionsRequest(draft) {

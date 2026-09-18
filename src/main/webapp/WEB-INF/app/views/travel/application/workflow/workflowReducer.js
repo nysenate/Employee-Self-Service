@@ -4,20 +4,13 @@ import {
   initializeReturnRoute,
   toEditableRoute,
   toRouteDto,
-} from "./routeModel";
+} from "../submit/routeModel";
 import {
   applyLodgingCalculation,
   expenseSignature,
   updateExpenseRow,
-} from "./expenseModel";
-
-export const WORKFLOW_STEPS = Object.freeze([
-  "Purpose",
-  "Outbound",
-  "Return",
-  "Expenses",
-  "Review",
-]);
+} from "../submit/expenseModel";
+import { STANDARD_STEPS } from "./workflowSteps";
 
 export function createWorkflowState(draft) {
   const dirtyRoute = toEditableRoute(
@@ -26,15 +19,15 @@ export function createWorkflowState(draft) {
   return {
     serverDraft: draft,
     workingDraft: draft,
-    currentStep: 0,
-    furthestCompletedStep: -1,
+    currentStepId: STANDARD_STEPS[0].id,
+    completedStepIds: [],
     dirtyRoute,
     calculatedRouteBaseline: toRouteDto(dirtyRoute),
     calculatedExpenseBaseline: expenseSignature(draft),
   };
 }
 
-export function newTravelApplicationReducer(state, action) {
+export function workflowReducer(state, action) {
   const reduce = ACTION_REDUCERS[action.type];
   return reduce ? reduce(state, action) : state;
 }
@@ -112,42 +105,51 @@ const ACTION_REDUCERS = {
       ),
     }),
   COMPLETE_CURRENT_STEP: (state) => {
-    if (state.currentStep >= WORKFLOW_STEPS.length - 1) return state;
+    const currentIndex = stepIndex(state.currentStepId);
+    if (currentIndex < 0 || currentIndex >= STANDARD_STEPS.length - 1)
+      return state;
     const dirtyRoute =
-      state.currentStep === 0
+      state.currentStepId === "purpose"
         ? initializeOutboundRoute(
             state.dirtyRoute,
             state.workingDraft.traveler?.empWorkLocation?.address,
           )
-        : state.currentStep === 1
+        : state.currentStepId === "outbound"
           ? initializeReturnRoute(state.dirtyRoute)
           : state.dirtyRoute;
+    const completed = new Set([
+      ...state.completedStepIds,
+      state.currentStepId,
+    ]);
     return {
       ...state,
       dirtyRoute,
-      furthestCompletedStep: Math.max(
-        state.furthestCompletedStep,
-        state.currentStep,
+      completedStepIds: STANDARD_STEPS.filter((step) => completed.has(step.id)).map(
+        (step) => step.id,
       ),
-      currentStep: state.currentStep + 1,
+      currentStepId: STANDARD_STEPS[currentIndex + 1].id,
     };
   },
-  GO_BACK: (state) => ({
-    ...state,
-    currentStep: Math.max(0, state.currentStep - 1),
-  }),
+  GO_BACK: (state) => {
+    const currentIndex = stepIndex(state.currentStepId);
+    if (currentIndex <= 0) return state;
+    return {
+      ...state,
+      currentStepId: STANDARD_STEPS[currentIndex - 1].id,
+    };
+  },
   GO_TO_STEP: (state, action) =>
-    canNavigateToStep(state, action.step)
-      ? { ...state, currentStep: action.step }
+    canNavigateToStep(state, action.stepId)
+      ? { ...state, currentStepId: action.stepId }
       : state,
 };
 
 function invalidateFollowingSteps(state) {
+  const currentIndex = stepIndex(state.currentStepId);
   return {
     ...state,
-    furthestCompletedStep: Math.min(
-      state.furthestCompletedStep,
-      state.currentStep - 1,
+    completedStepIds: state.completedStepIds.filter(
+      (stepId) => stepIndex(stepId) < currentIndex,
     ),
   };
 }
@@ -163,13 +165,15 @@ function routesEqual(first, second) {
   return JSON.stringify(first) === JSON.stringify(second);
 }
 
-export function canNavigateToStep(state, step) {
+export function canNavigateToStep(state, stepId) {
   return (
-    Number.isInteger(step) &&
-    step >= 0 &&
-    step < WORKFLOW_STEPS.length &&
-    (step === state.currentStep || step <= state.furthestCompletedStep)
+    stepIndex(stepId) >= 0 &&
+    (stepId === state.currentStepId || state.completedStepIds.includes(stepId))
   );
+}
+
+function stepIndex(stepId) {
+  return STANDARD_STEPS.findIndex((step) => step.id === stepId);
 }
 
 export function hasUnsavedChanges(state) {

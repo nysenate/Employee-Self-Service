@@ -12,6 +12,8 @@ public interface TravelApplicationDao {
 
     void saveTravelApplication(TravelApplication app);
 
+    void lockTravelApplication(int appId);
+
     void updateTravelApplicationStatus(int appId, TravelApplicationStatus status);
 
     TravelApplication selectTravelApplication(int appId);

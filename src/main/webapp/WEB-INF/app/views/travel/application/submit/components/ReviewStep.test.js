@@ -2,7 +2,10 @@ import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import ReviewStep, { buildDirectionsRequest } from "./ReviewStep";
+import ReviewStep, {
+  buildDirectionsRequest,
+  buildReviewApplication,
+} from "./ReviewStep";
 
 const albany = {
   formattedAddressWithCounty: "Albany, NY 12207, Albany County",
@@ -148,6 +151,66 @@ describe("ReviewStep", () => {
     await waitFor(() =>
       expect(screen.getByLabelText("Outbound travel route map")).toBeVisible(),
     );
+  });
+
+  it("combines original identity and date with edited preview fields", () => {
+    const draft = reviewDraft();
+    draft.id = 0;
+    draft.submittedDateTime = "2026-09-21T12:00:00";
+    draft.amendment.purposeOfTravel.summary = "Edited conference";
+    draft.amendment.totalAllowance = 321;
+    const application = {
+      id: 842,
+      submittedDateTime: "2024-07-04T09:30:00",
+      traveler: { fullName: "Stale Traveler" },
+      activeAmendment: {
+        purposeOfTravel: { summary: "Original purpose" },
+        totalAllowance: 12,
+      },
+    };
+
+    renderStep({ draft, application });
+
+    expect(screen.getByText("7/04/24")).toBeVisible();
+    expect(screen.getByText(/Taylor Traveler/)).toBeVisible();
+    expect(screen.queryByText(/Stale Traveler/)).not.toBeInTheDocument();
+    expect(screen.getByText("Edited conference")).toBeVisible();
+    expect(screen.queryByText("Original purpose")).not.toBeInTheDocument();
+    expect(screen.getByText("$321.00")).toBeVisible();
+
+    const display = buildReviewApplication(draft, application);
+    expect(display.id).toBe(842);
+    expect(display.id).not.toBe(draft.id);
+    expect(display.submittedDateTime).toBe(application.submittedDateTime);
+    expect(display.activeAmendment).toBe(draft.amendment);
+  });
+
+  it("preserves the new-preview fallback without mutating either input", () => {
+    const draft = {
+      ...reviewDraft(),
+      id: 0,
+      submittedDateTime: "2026-08-01T10:00:00",
+    };
+    const application = {
+      id: 71,
+      submittedDateTime: "2024-02-03T08:00:00",
+      traveler: { fullName: "Original traveler" },
+      activeAmendment: { purposeOfTravel: { summary: "Original" } },
+    };
+    const originalDraft = structuredClone(draft);
+    const originalApplication = structuredClone(application);
+
+    const newPreview = buildReviewApplication(draft);
+    const existingPreview = buildReviewApplication(draft, application);
+
+    expect(newPreview).toMatchObject({
+      id: 0,
+      submittedDateTime: draft.submittedDateTime,
+      activeAmendment: draft.amendment,
+    });
+    expect(existingPreview).not.toBe(application);
+    expect(draft).toEqual(originalDraft);
+    expect(application).toEqual(originalApplication);
   });
 
   it("opens a supporting document in a separate window", async () => {

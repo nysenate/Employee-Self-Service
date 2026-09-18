@@ -5,37 +5,66 @@ import {
   hasUnsavedChanges,
   needsExpenseRecalculation,
   needsRouteRecalculation,
-  newTravelApplicationReducer,
-} from "./newTravelApplicationReducer";
+  workflowReducer,
+} from "./workflowReducer";
 
-describe("new travel application reducer", () => {
+describe("workflow reducer", () => {
+  it("honors first and last bounds and rejects unknown navigation", () => {
+    const initial = createWorkflowState({ traveler: {}, amendment: {} });
+    expect(workflowReducer(initial, { type: "GO_BACK" })).toBe(initial);
+    expect(
+      workflowReducer(initial, {
+        type: "GO_TO_STEP",
+        stepId: "unknown",
+      }),
+    ).toBe(initial);
+
+    const review = {
+      ...initial,
+      currentStepId: "review",
+      completedStepIds: ["purpose", "outbound", "return", "expenses"],
+    };
+    expect(
+      workflowReducer(review, { type: "COMPLETE_CURRENT_STEP" }),
+    ).toBe(review);
+
+    const previous = workflowReducer(review, { type: "GO_BACK" });
+    expect(previous.currentStepId).toBe("expenses");
+    expect(previous.workingDraft).toBe(review.workingDraft);
+  });
+
   it("tracks completion and only permits current or completed steps", () => {
     let state = createWorkflowState({ purpose: "" });
 
-    expect(canNavigateToStep(state, 1)).toBe(false);
-    state = newTravelApplicationReducer(state, {
+    expect(state.currentStepId).toBe("purpose");
+    expect(state.completedStepIds).toEqual([]);
+    expect(canNavigateToStep(state, "outbound")).toBe(false);
+    state = workflowReducer(state, {
       type: "COMPLETE_CURRENT_STEP",
     });
-    expect(state.currentStep).toBe(1);
-    expect(state.furthestCompletedStep).toBe(0);
-    expect(canNavigateToStep(state, 0)).toBe(true);
-    expect(canNavigateToStep(state, 2)).toBe(false);
+    expect(state.currentStepId).toBe("outbound");
+    expect(state.completedStepIds).toEqual(["purpose"]);
+    expect(canNavigateToStep(state, "purpose")).toBe(true);
+    expect(canNavigateToStep(state, "return")).toBe(false);
 
-    state = newTravelApplicationReducer(state, { type: "GO_TO_STEP", step: 0 });
-    expect(state.currentStep).toBe(0);
+    state = workflowReducer(state, {
+      type: "GO_TO_STEP",
+      stepId: "purpose",
+    });
+    expect(state.currentStepId).toBe("purpose");
   });
 
   it("compares the working draft with the last successful baseline", () => {
     let state = createWorkflowState({ purpose: "Hearing" });
     expect(hasUnsavedChanges(state)).toBe(false);
 
-    state = newTravelApplicationReducer(state, {
+    state = workflowReducer(state, {
       type: "UPDATE_DRAFT",
       draft: { purpose: "Forum" },
     });
     expect(hasUnsavedChanges(state)).toBe(true);
 
-    state = newTravelApplicationReducer(state, {
+    state = workflowReducer(state, {
       type: "RESET_BASELINE",
       draft: { purpose: "Forum" },
     });
@@ -44,9 +73,13 @@ describe("new travel application reducer", () => {
 
   it("requires sequential navigation after editing a completed purpose step", () => {
     let state = createWorkflowState({ traveler: {}, amendment: {} });
-    state = { ...state, currentStep: 0, furthestCompletedStep: 3 };
+    state = {
+      ...state,
+      currentStepId: "purpose",
+      completedStepIds: ["purpose", "outbound", "return", "expenses"],
+    };
 
-    state = newTravelApplicationReducer(state, {
+    state = workflowReducer(state, {
       type: "UPDATE_DRAFT",
       draft: {
         traveler: {},
@@ -54,8 +87,8 @@ describe("new travel application reducer", () => {
       },
     });
 
-    expect(state.furthestCompletedStep).toBe(-1);
-    expect(canNavigateToStep(state, 1)).toBe(false);
+    expect(state.completedStepIds).toEqual([]);
+    expect(canNavigateToStep(state, "outbound")).toBe(false);
   });
 
   it("invalidates derived calculations after editing a completed route step", () => {
@@ -72,11 +105,17 @@ describe("new travel application reducer", () => {
     };
     let state = {
       ...createWorkflowState(draft),
-      currentStep: 1,
-      furthestCompletedStep: 4,
+      currentStepId: "outbound",
+      completedStepIds: [
+        "purpose",
+        "outbound",
+        "return",
+        "expenses",
+        "review",
+      ],
     };
 
-    state = newTravelApplicationReducer(state, {
+    state = workflowReducer(state, {
       type: "UPDATE_DIRTY_ROUTE",
       route: {
         ...state.dirtyRoute,
@@ -84,7 +123,7 @@ describe("new travel application reducer", () => {
       },
     });
 
-    expect(state.furthestCompletedStep).toBe(0);
+    expect(state.completedStepIds).toEqual(["purpose"]);
     expect(needsRouteRecalculation(state)).toBe(true);
     expect(state.dirtyRoute.origin).toBeUndefined();
     expect(state.dirtyRoute.destinations).toBeUndefined();
@@ -104,22 +143,26 @@ describe("new travel application reducer", () => {
     const draft = { amendment: { route: calculatedRoute } };
     let state = {
       ...createWorkflowState(draft),
-      currentStep: 1,
-      furthestCompletedStep: 2,
+      currentStepId: "outbound",
+      completedStepIds: ["purpose", "outbound", "return"],
     };
 
-    const afterValidation = newTravelApplicationReducer(state, {
+    const afterValidation = workflowReducer(state, {
       type: "UPDATE_DIRTY_ROUTE",
       route: structuredClone(state.dirtyRoute),
     });
     expect(afterValidation).toBe(state);
     expect(needsRouteRecalculation(afterValidation)).toBe(false);
-    expect(afterValidation.furthestCompletedStep).toBe(2);
+    expect(afterValidation.completedStepIds).toEqual([
+      "purpose",
+      "outbound",
+      "return",
+    ]);
 
-    state = newTravelApplicationReducer(afterValidation, {
+    state = workflowReducer(afterValidation, {
       type: "COMPLETE_CURRENT_STEP",
     });
-    expect(state.currentStep).toBe(2);
+    expect(state.currentStepId).toBe("return");
     expect(needsRouteRecalculation(state)).toBe(false);
   });
 
@@ -138,11 +181,14 @@ describe("new travel application reducer", () => {
         },
       },
     };
-    let state = { ...createWorkflowState(draft), currentStep: 1 };
-    state = newTravelApplicationReducer(state, {
+    let state = {
+      ...createWorkflowState(draft),
+      currentStepId: "outbound",
+    };
+    state = workflowReducer(state, {
       type: "COMPLETE_CURRENT_STEP",
     });
-    expect(state.currentStep).toBe(2);
+    expect(state.currentStepId).toBe("return");
     expect(state.dirtyRoute.returnLegs[0]).toMatchObject({
       from: { addressText: "Buffalo" },
       to: { addressText: "Albany" },
@@ -156,7 +202,7 @@ describe("new travel application reducer", () => {
         route: { ...state.dirtyRoute, origin: { city: "Albany" } },
       },
     };
-    state = newTravelApplicationReducer(state, {
+    state = workflowReducer(state, {
       type: "APPLY_CALCULATED_DRAFT",
       draft: calculated,
     });
@@ -180,7 +226,7 @@ describe("new travel application reducer", () => {
     let state = createWorkflowState(draft);
     const calculatedRoute = structuredClone(state.dirtyRoute);
 
-    state = newTravelApplicationReducer(state, {
+    state = workflowReducer(state, {
       type: "UPDATE_DIRTY_ROUTE",
       route: {
         ...state.dirtyRoute,
@@ -189,7 +235,7 @@ describe("new travel application reducer", () => {
     });
     expect(needsRouteRecalculation(state)).toBe(true);
 
-    state = newTravelApplicationReducer(state, {
+    state = workflowReducer(state, {
       type: "UPDATE_DIRTY_ROUTE",
       route: calculatedRoute,
     });
@@ -208,7 +254,7 @@ describe("new travel application reducer", () => {
       },
     };
     let state = createWorkflowState(draft);
-    state = newTravelApplicationReducer(state, {
+    state = workflowReducer(state, {
       type: "UPDATE_EXPENSE_ROW",
       group: "lodgingPerDiems",
       index: 0,
@@ -216,7 +262,7 @@ describe("new travel application reducer", () => {
     });
     expect(needsExpenseRecalculation(state)).toBe(true);
 
-    state = newTravelApplicationReducer(state, {
+    state = workflowReducer(state, {
       type: "APPLY_LODGING_CALCULATION",
       index: 0,
       calculation: { rate: 175, isReimbursementRequested: true },
@@ -225,7 +271,7 @@ describe("new travel application reducer", () => {
       state.workingDraft.amendment.lodgingPerDiems.allLodgingPerDiems[0],
     ).toMatchObject({ rate: 175, isReimbursementRequested: false });
 
-    state = newTravelApplicationReducer(state, {
+    state = workflowReducer(state, {
       type: "APPLY_CALCULATED_EXPENSES",
       draft: state.workingDraft,
     });

@@ -61,7 +61,9 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
      */
     @Override
     @Transactional(value = "localTxManager")
-    public synchronized void saveTravelApplication(TravelApplication app) {
+    public void saveTravelApplication(TravelApplication app) {
+        // The transaction's row lock serializes saves. A Java monitor here can deadlock
+        // with resubmission, which locks the application row before calling this method.
         saveApplication(app);
         routeDao.saveRoute(app.getRoute(), app.getAppId());
         allowancesDao.saveAllowances(app.getAllowances(), app.getAppId());
@@ -110,6 +112,13 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
         String sql = SqlTravelApplicationQuery.SELECT_APP_BY_ID.getSql(schemaMap());
         TravelAppRepositoryView appRepView = localNamedJdbc.queryForObject(sql, params, new TravelApplicationRowMapper());
         return populateApplicationDetails(appRepView);
+    }
+
+    @Override
+    public void lockTravelApplication(int appId) {
+        localNamedJdbc.queryForObject(
+                SqlTravelApplicationQuery.LOCK_APP.getSql(schemaMap()),
+                new MapSqlParameterSource("appId", appId), Integer.class);
     }
 
     @Override

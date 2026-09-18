@@ -121,6 +121,9 @@ describe("new travel application workflow shell", () => {
     const purpose = screen.getByRole("button", { name: "Purpose" });
     expect(purpose).toHaveAttribute("aria-current", "step");
     expect(screen.getByRole("button", { name: "Outbound" })).toBeDisabled();
+    expect(
+      screen.queryByRole("button", { name: "Cancel edits" }),
+    ).not.toBeInTheDocument();
 
     await screen.findByRole("option", { name: "Forum" });
     fireEvent.change(await screen.findByLabelText("Purpose"), {

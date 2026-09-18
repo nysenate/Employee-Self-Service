@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 import {
   readDateRangeSearchParams,
   writeDateRangeSearchParams,
@@ -41,6 +41,7 @@ export function useTravelHistorySearchParams({
   filters = DEFAULT_FILTERS,
 }) {
   const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
   const state = useMemo(() => {
     const filterState = Object.fromEntries(
       Object.entries(filters).map(([key, config]) => [
@@ -80,9 +81,12 @@ export function useTravelHistorySearchParams({
     });
 
     if (canonicalParams.toString() !== searchParams.toString()) {
-      setSearchParams(canonicalParams, { replace: true });
+      setSearchParams(canonicalParams, {
+        replace: true,
+        state: location.state,
+      });
     }
-  }, [filters, searchParams, setSearchParams, state]);
+  }, [filters, location.state, searchParams, setSearchParams, state]);
 
   const updateSearchParams = useCallback(
     (updates, { replace = true } = {}) => {

@@ -1,28 +1,38 @@
 import React from "react";
 import Button from "app/components/Button";
-
-export const WORKFLOW_ACTIONS = Object.freeze([
-  { back: false, save: true, primary: "Next" },
-  { back: true, save: false, primary: "Next" },
-  { back: true, save: true, primary: "Next" },
-  { back: true, save: true, primary: "Next" },
-  { back: true, save: true, primary: "Submit application" },
-]);
+import { STANDARD_STEPS } from "../../workflow/workflowSteps";
 
 export default function WorkflowActions({
-  step,
+  stepId,
   onBack,
   onSave,
+  onCancel,
   onPrimary,
   isSaving = false,
   isPrimaryPending = false,
+  isPrimaryDisabled = false,
+  isCancelDisabled = false,
   isDisabled = false,
+  finalActionLabel = "Submit application",
 }) {
-  const actions = WORKFLOW_ACTIONS[step];
+  const stepIndex = STANDARD_STEPS.findIndex((step) => step.id === stepId);
+  if (stepIndex < 0) throw new Error(`Unknown workflow step: ${stepId}`);
+  const step = STANDARD_STEPS[stepIndex];
+  const isReview = stepId === "review";
+  const primaryLabel = isReview ? finalActionLabel : "Next";
 
   return (
     <div className="flex flex-wrap items-center justify-end gap-3">
-      {actions.back && (
+      {onCancel && (
+        <Button
+          variant="secondary"
+          onPress={onCancel}
+          isDisabled={isDisabled || isCancelDisabled}
+        >
+          Cancel edits
+        </Button>
+      )}
+      {stepIndex > 0 && (
         <Button
           variant="secondary"
           onPress={onBack}
@@ -31,11 +41,11 @@ export default function WorkflowActions({
           Back
         </Button>
       )}
-      {actions.save && (
+      {step.allowsDraftSave && onSave && (
         <Button
           variant="secondary"
           onPress={onSave}
-          isDisabled={isDisabled || !onSave || isPrimaryPending}
+          isDisabled={isDisabled || isPrimaryPending}
           isPending={isSaving}
         >
           Save
@@ -43,10 +53,10 @@ export default function WorkflowActions({
       )}
       <Button
         onPress={onPrimary}
-        isDisabled={isDisabled || isPrimaryPending}
+        isDisabled={isDisabled || isPrimaryDisabled || isPrimaryPending}
         isPending={isPrimaryPending}
       >
-        {actions.primary}
+        {primaryLabel}
       </Button>
     </div>
   );

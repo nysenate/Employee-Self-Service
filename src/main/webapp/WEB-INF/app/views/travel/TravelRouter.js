@@ -3,7 +3,7 @@ import { ThemeContext, themes } from "app/ThemeContext";
 import Navigation from "app/components/Navigation";
 import AppLayout from "app/components/AppLayout";
 import Travel from "app/views/travel/Travel";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useParams } from "react-router-dom";
 import NotFound from "app/views/NotFound";
 import ApplicationHistory from "app/views/travel/application/history";
 import SubmitApplication from "app/views/travel/application/submit";
@@ -12,6 +12,11 @@ import ReviewHistory from "app/views/travel/reviewer/history";
 import ReviewQueue from "app/views/travel/reviewer/queue/ReviewQueuePage";
 import { AsyncBadge } from "app/components/Badge";
 import { useReviewQueue } from "app/views/travel/reviewer/queue/useReviewQueue";
+import ResubmitTravelApplicationPage from "app/views/travel/application/resubmit";
+import {
+  historyDetailsUrl,
+  parseApplicationId,
+} from "app/views/travel/application/workflow/applicationRoutes";
 
 export default function TravelRouter() {
   return (
@@ -25,9 +30,22 @@ export default function TravelRouter() {
           />
           <Route path="/applications/drafts" element={<Drafts />} />
           <Route path="/applications" element={<ApplicationHistory />} />
+          <Route
+            path="/applications/:appId/resubmit"
+            element={<ResubmitTravelApplicationPage />}
+          />
+
+          <Route
+            path="/application/:appId"
+            element={<ApplicationNotificationRedirect />}
+          />
 
           <Route path="/manage/review-history" element={<ReviewHistory />} />
           <Route path="/manage/queue" element={<ReviewQueue />} />
+          <Route
+            path="/manage/review"
+            element={<Navigate to="/travel/manage/queue" replace />}
+          />
 
           <Route path="" element={<Navigate to="applications" replace />} />
           <Route path="*" element={<NotFound />} />
@@ -35,6 +53,17 @@ export default function TravelRouter() {
       </Routes>
     </ThemeContext.Provider>
   );
+}
+
+function ApplicationNotificationRedirect() {
+  const { appId: routeAppId } = useParams();
+  const appId = parseApplicationId(routeAppId);
+
+  if (appId === null) {
+    return <NotFound />;
+  }
+
+  return <Navigate to={historyDetailsUrl(appId)} replace />;
 }
 
 function TravelLayout() {

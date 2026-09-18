@@ -30,6 +30,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -191,16 +194,43 @@ public class TravelAppUpdateService {
         return app;
     }
 
+    @Transactional(value = "localTxManager")
     public TravelApplication resubmitApp(int appId, TravelApplication app, Employee user) {
-        saveAppEdits(app, user);
-        ApplicationReview applicationReview = appReviewService.getApplicationReviewByAppId(app.getAppId());
+        travelApplicationService.lockApplication(appId);
+        ApplicationReview applicationReview = appReviewService.getApplicationReviewByAppId(appId);
+        TravelApplication original = applicationReview.application();
+        if (original.getStatus() == null || !original.getStatus().isDisapproved()) {
+            throw new TravelResubmissionConflictException(appId);
+        }
+        copyResubmissionEdits(app, original);
         applicationReview.restart();
-        app.setStatus(new TravelApplicationStatus(statusForPendingReviewer(applicationReview.pendingReviewerRole())));
-        travelApplicationService.saveApplication(app);
-        applicationReview.application().setStatus(app.getStatus());
+        original.setStatus(new TravelApplicationStatus(statusForPendingReviewer(applicationReview.pendingReviewerRole())));
+        original.setModifiedBy(user);
+        original.setModifiedDateTime(LocalDateTime.now());
+        travelApplicationService.saveApplication(original);
         appReviewService.saveApplicationReview(applicationReview);
-        eventBus.post(new TravelPendingReviewEmailEvent(applicationReview));
-        return app;
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                try {
+                    eventBus.post(new TravelPendingReviewEmailEvent(applicationReview));
+                } catch (RuntimeException ex) {
+                    logger.error("Could not dispatch pending-review notification after resubmitting application {}",
+                            appId, ex);
+                }
+            }
+        });
+        return original;
+    }
+
+    private void copyResubmissionEdits(TravelApplication proposed, TravelApplication original) {
+        original.setPurposeOfTravel(proposed.getPurposeOfTravel());
+        original.setRoute(proposed.getRoute());
+        original.setAllowances(proposed.getAllowances());
+        original.setMealPerDiems(proposed.getMealPerDiems());
+        original.setLodgingPerDiems(proposed.getLodgingPerDiems());
+        original.setMileagePerDiems(proposed.getMileagePerDiems());
+        original.setAttachments(proposed.getAttachments());
     }
 
     /**

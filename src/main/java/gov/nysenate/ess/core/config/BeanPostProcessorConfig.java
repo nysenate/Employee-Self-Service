@@ -1,11 +1,9 @@
 package gov.nysenate.ess.core.config;
 
 import org.apache.shiro.spring.LifecycleBeanPostProcessor;
-import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
 
 /**
  * Beans that implement {@link BeanPostProcessor} are configured here.
@@ -16,17 +14,6 @@ import org.springframework.context.annotation.DependsOn;
  */
 @Configuration
 public class BeanPostProcessorConfig {
-
-    /**
-     * Enables proxy creation for use in annotation based AOP
-     * This is needed for Shiro annotations to work.
-     * @return DefaultAdvisorAutoProxyCreator
-     */
-    @Bean(name = "defaultAdvisorAutoProxyCreator")
-    @DependsOn("lifecycleBeanPostProcessor")
-    public DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator() {
-        return new DefaultAdvisorAutoProxyCreator();
-    }
 
     /**
      * Integrates Apache Shiro with Spring

@@ -4,6 +4,10 @@ import gov.nysenate.ess.core.dao.base.BasicSqlQuery;
 import gov.nysenate.ess.core.dao.base.DbVendor;
 
 enum SqlTravelApplicationQuery implements BasicSqlQuery {
+    LOCK_APP("""
+            SELECT app_id FROM ${travelSchema}.app WHERE app_id = :appId FOR UPDATE
+            """
+    ),
     INSERT_APP("""
             INSERT INTO ${travelSchema}.app(traveler_id, submitted_by_id, status, status_note, traveler_dept_head_emp_id,
               event_type, event_name, additional_purpose, modified_by)
