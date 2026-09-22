@@ -51,14 +51,22 @@ public class DatabaseConfig {
         return new NamedParameterJdbcTemplate(localDataSource);
     }
 
+    /**
+     * The Oracle driver fetches 10 rows per round trip by default, which makes bulk reads from the
+     * remote database spend most of their time on network latency.
+     */
+    private static final int REMOTE_FETCH_SIZE = 500;
+
     @Bean(name = "remoteJdbcTemplate")
     public JdbcTemplate remoteJdbcTemplate() {
-        return new JdbcTemplate(remoteDataSource);
+        var jdbcTemplate = new JdbcTemplate(remoteDataSource);
+        jdbcTemplate.setFetchSize(REMOTE_FETCH_SIZE);
+        return jdbcTemplate;
     }
 
     @Bean(name = "remoteNamedJdbcTemplate")
     public NamedParameterJdbcTemplate remoteNamedJdbcTemplate() {
-        return new NamedParameterJdbcTemplate(remoteDataSource);
+        return new NamedParameterJdbcTemplate(remoteJdbcTemplate());
     }
 
     @Bean(name = localTxManager)
