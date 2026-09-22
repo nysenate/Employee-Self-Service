@@ -29,16 +29,19 @@ mvn clean package -DskipTests
 ```
 
 ### Run Specific Test
-Tests are split by JUnit 4 category (`@UnitTest` and `@IntegrationTest`):
+Tests are split by JUnit 4 category (`@UnitTest` and `@IntegrationTest`). Each plugin's `<groups>` is fixed in `pom.xml`, so passing `-Dgroups` on the command line has no effect.
 ```bash
 # Run only unit tests
 mvn test
 
-# Run only integration tests
-mvn verify -Dgroups=gov.nysenate.ess.core.annotation.IntegrationTest
+# Run unit tests, then integration tests
+mvn verify
 
-# Run a single test class
+# Run a single unit test class (it must be categorized @UnitTest)
 mvn test -Dtest=YourTestClass
+
+# Run a single integration test class (the unit tests still run first)
+mvn verify -Dit.test=YourTestClassIT
 ```
 
 ### Frontend Only
@@ -58,7 +61,7 @@ mvn flyway:migrate
 ```
 Uses Flyway for the PostgreSQL schema, across the `ess`, `supply`, and `travel` schemas. Migration files live in `src/main/resources/sql/migrations/`; config in `src/main/resources/flyway.conf` (create from `flyway.conf.example`).
 
-Migrations after the initial four use a timestamp version convention: `V<YYYYMMDD>.<HHmm>__description.sql`. `flyway.outOfOrder` is enabled, so a migration dated earlier than one already applied will still run.
+Migrations after the initial four use a timestamp version convention: `V<YYYYMMDD>.<HHmm>__description.sql` (one older file uses `_` in place of the `.`). `flyway.outOfOrder` is enabled, so a migration dated earlier than one already applied will still run.
 
 ## Project Structure
 
@@ -72,7 +75,7 @@ Migrations after the initial four use a timestamp version convention: `V<YYYYMMD
 
 ### Architecture Pattern: Layered MVC
 
-Each module splits into the usual `model/`, `service/`, `dao/`, and `controller/` packages, plus two worth calling out:
+`core` and `time` split directly into the usual `model/`, `service/`, `dao/`, and `controller/` packages. `supply` and `travel` are organized by feature first (`supply/requisition`, `travel/request`, `travel/review`, …), with those layers inside each feature package. Two layer packages are worth calling out:
 
 - **`client/`**: External service integration (LDAP, Google Maps, SFMS Oracle)
 - **`view/`**: `*View` classes are the JSON-serialized shape of a domain object; REST responses wrap views, not domain models directly.
@@ -95,22 +98,23 @@ Within `controller/`, REST controllers extend `BaseRestApiCtrl` and page control
   - `ListViewResponse<T>` for paginated lists
   - `ErrorResponse` / `ViewObjectErrorResponse` for failures
 - **Authentication**: Shiro-based (LDAP in prod, configurable in dev)
-- **Authorization**: Permission checks via `@RequiresPermissions` or explicit permission objects
+- **Authorization**: Controllers build a Shiro `Permission` object (e.g. `EssTimePermission`, `CorePermission`, `TravelPermissionBuilder`) and pass it to `BaseRestApiCtrl.checkPermission(...)`. Annotation-based checks (`@RequiresPermissions`) are not used.
 - **Pagination**: `LimitOffset` and `PaginatedList` utilities; `BaseRestApiCtrl` (in `core.controller.api`) rejects a `limit` query param above 1000
 
 ### Configuration
 
 **Config Files** — `app.properties` and `flyway.conf` are gitignored; create them from the `.example` files in `src/main/resources/`:
-- `app.properties`: Runtime level, data directories, LDAP, DB credentials, mail, auth, frontend framework toggles
+- `app.properties`: Runtime level, data directories, LDAP, DB credentials, mail, auth. The frontend framework toggles (see [Frontend](#frontend)) are not in the example file and have to be added by hand.
 - `flyway.conf`: Database migration settings
 
 `shiro.ini` is checked in, not generated. Its `[urls]` section maps Ant-style paths to filter beans declared in `web/config/SecurityConfig` (`essAuthc`, `essApiAuthc`, `essRedmineAuthc`) and `web/security/filter/` (`verifyAuthz`, `deptAuthz`). Anything not matched by an earlier rule falls through to `/** = essAuthc, verifyAuthz, sessionTimeoutFilter, deptAuthz`.
 
 **Spring Profiles**: `dev`, `test`, `prod` (`spring.profiles.active` context-param in `web.xml`; checked-in value is `dev`)
 
-**Key Config Classes** (`core/config/`, plus `web/config/`):
+**Key Config Classes** (in `core/config/`, except `WebApplicationConfig`, `WebInitializer`, and `SecurityConfig`, which are in `web/config/`):
 - `PropertyConfig`: Loads environment-specific properties
-- `WebApplicationConfig`: MVC setup, Jackson converters, `StandardServletMultipartResolver` (no size limits configured in the app — the container's limits apply)
+- `WebApplicationConfig`: MVC setup, Jackson converters, `StandardServletMultipartResolver`
+- `WebInitializer`: Registers the dispatcher servlet and Shiro filter, and sets the multipart upload limits (10 MB per request, 5 MB per file)
 - `DatabaseConfig`: Dual datasources, schema map bean
 - `DbConnectionPoolConfig`: c3p0 pools
 - `SecurityConfig`: Apache Shiro with custom LDAP + API authentication filters
@@ -137,7 +141,7 @@ Each page controller (`TimePageCtrl`, `SupplyPageCtrl`, `TravelPageCtrl`, `MyInf
 - `npm run dev` serves on :3000 and proxies `/api`, `/assets`, `/logout`, and POST `/login` to `localhost:8080`
 
 **Legacy AngularJS** (`src/main/webapp/assets/js/src/`, with the JSPs under `WEB-INF/`):
-- Built by Grunt (LESS → `assets/css/dist`, uglify → `assets/js/dest`), Bower for vendor deps
+- Built by Grunt (LESS → `assets/css/dest`, uglify → `assets/js/dest`), Bower for vendor deps
 - JSPs in `WEB-INF/view/` use custom tag files in `WEB-INF/tags/` and Shiro JSP tags
 
 ### Testing Framework
@@ -146,16 +150,16 @@ Each page controller (`TimePageCtrl`, `SupplyPageCtrl`, `TravelPageCtrl`, `MyInf
 - **Integration Tests**: Spring Test with `@ContextConfiguration`
 - **Test Categories** (`core.annotation`, applied via `@Category(UnitTest.class)` on the class or method):
   - `@UnitTest`: reproducible unit tests — run by Surefire
-  - `@IntegrationTest`: DB-dependent tests — run by Failsafe
+  - `@IntegrationTest`: DB-dependent tests — run by Failsafe, which only picks up classes named `*IT` (its default includes). An `@IntegrationTest` class named `*Test` is run by neither plugin.
   - `@TestDependsOnDatabase`: additional marker, usually combined with `@IntegrationTest`
   - `@SillyTest`, `@WorkInProgress`: scratch/non-reproducible tests, not intended to pass. Neither Surefire nor Failsafe runs them, so a test in these categories never executes in CI.
-- **Test Config**: `TestConfig` (Spring profile `test`) loads `app.properties`, `test.default.properties`, `test.app.properties`, `test.data.properties`, and `shiro.ini`. None is declared `ignoreResourceNotFound`, so a missing file fails the context — and `test.app.properties` is gitignored with no `.example`, so it has to be written by hand. Logging via `test.log4j2.xml`.
+- **Test Config**: `TestConfig` (Spring profile `test`) loads `app.properties`, `test.default.properties`, `test.app.properties`, `test.data.properties`, and `shiro.ini`. `test.app.properties` is optional (gitignored, no `.example`) and holds local overrides; a missing copy of any of the others fails the context. Logging via `test.log4j2.xml`.
 
 ### Dependencies
 
 Versions live in the `<properties>` block of `pom.xml`. The ones that change how you write code:
 
-- **Lombok** — configured as an annotation processor, but used sparsely (only `@Builder`, in 4 classes). Match the surrounding code rather than introducing Lombok into plain classes.
+- **Lombok** — configured as an annotation processor, but used sparsely (a handful of `@Builder`s and one `@Getter`). Match the surrounding code rather than introducing Lombok into plain classes.
 - **EhCache** — reached through the `javax.cache` (JSR-107) API, not EhCache's own.
 - **Guava** — collections, plus the EventBus used for async messaging.
 
@@ -168,7 +172,7 @@ Versions live in the `<properties>` block of `pom.xml`. The ones that change how
 3. Use `@RequestMapping` on methods; responses auto-serialized to JSON via Jackson
 4. Return `ViewObjectResponse<>` or `ListViewResponse<>` for success, `ErrorResponse` for errors
 5. Use `LimitOffset` from query params for pagination
-6. Check permissions via `@RequiresPermissions` or explicit Shiro `SecurityUtils.getSubject().checkPermission()`
+6. Check permissions by building a `Permission` object and calling the inherited `checkPermission(...)`
 
 ### Accessing Dual Databases
 
