@@ -132,6 +132,9 @@ describe("history to resubmission completion", () => {
     };
     let committed = false;
     const fetchMock = vi.fn((url, options = {}) => {
+      if (url === "/api/v1/permissions/check?permission=travel%3Asubmit-app") {
+        return response({ result: { isPermitted: true } });
+      }
       if (url === "/api/v1/travel/applications/42") {
         return response({ result: application(!committed) });
       }

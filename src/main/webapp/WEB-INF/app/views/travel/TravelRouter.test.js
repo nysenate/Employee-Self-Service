@@ -1,22 +1,44 @@
 import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import TravelRouter from "./TravelRouter";
+import { AsyncBadge } from "app/components/Badge";
+import useCheckPermission from "app/hooks/useCheckPermission";
+import { travelPermissions } from "./shared/travelPermissions";
+
+vi.mock("app/hooks/useCheckPermission");
+const permissionResult = vi.fn();
+beforeEach(() => {
+  vi.mocked(useCheckPermission).mockImplementation((permission) => {
+    const result = permissionResult(permission);
+    return {
+      ...result,
+      isChecking: result.isPending,
+      isAllowed: result.isSuccess && result.data?.isPermitted === true,
+    };
+  });
+  vi.mocked(AsyncBadge).mockClear();
+  permissionResult.mockReturnValue({
+    data: { isPermitted: true },
+    isPending: false,
+    isSuccess: true,
+  });
+});
 
 vi.mock("app/components/AppLayout", async () => {
   const { Outlet } = await import("react-router-dom");
-  return { default: () => <Outlet /> };
+  return {
+    default: ({ children }) => (
+      <>
+        {children}
+        <Outlet />
+      </>
+    ),
+  };
 });
-vi.mock("app/components/Navigation", () => ({
-  default: Object.assign(({ children }) => <nav>{children}</nav>, {
-    Title: ({ children }) => <div>{children}</div>,
-    Section: ({ children }) => <div>{children}</div>,
-    Link: ({ children }) => <div>{children}</div>,
-  }),
-}));
-vi.mock("app/components/Badge", () => ({ AsyncBadge: () => null }));
+vi.mock("app/components/Badge", () => ({ AsyncBadge: vi.fn(() => null) }));
 vi.mock("app/views/travel/application/history", () => ({
   default: () => <RouteProbe label="history" />,
 }));
@@ -110,5 +132,111 @@ describe("TravelRouter compatibility routes", () => {
     expect(await screen.findByTestId("route")).toHaveTextContent(
       "resubmit:/travel/applications/42/resubmit",
     );
+  });
+});
+
+vi.mock("app/views/travel/application/submit", () => ({
+  default: () => <RouteProbe label="new" />,
+}));
+
+vi.mock("app/views/travel/application/drafts", () => ({
+  default: () => <RouteProbe label="drafts" />,
+}));
+
+vi.mock("app/views/travel/application/edit/EditTravelApplication", () => ({
+  default: () => <RouteProbe label="edit" />,
+}));
+
+vi.mock("app/views/travel/reviewer/history", () => ({
+  default: () => <RouteProbe label="review-history" />,
+}));
+
+const protectedRoutes = [
+  ["/travel/applications/new", "submit"],
+  ["/travel/applications/new/12", "submit"],
+  ["/travel/applications/drafts", "submit"],
+  ["/travel/applications", "submit"],
+  ["/travel/applications/42/resubmit", "submit"],
+  ["/travel/application/42", "submit"],
+  ["/travel/applications/42/edit", "edit"],
+  ["/travel/manage/queue", "review"],
+  ["/travel/manage/review", "review"],
+  ["/travel/manage/review-history", "reviewHistory"],
+];
+
+describe("Travel page authorization", () => {
+  it.each(protectedRoutes)(
+    "blocks direct access to %s without its permission",
+    (path, permission) => {
+      permissionResult.mockImplementation((requested) => ({
+        data: { isPermitted: requested !== travelPermissions[permission] },
+        isPending: false,
+        isSuccess: true,
+      }));
+      renderRouter(path);
+      expect(screen.getByRole("alert")).toHaveTextContent(
+        "You do not have permission",
+      );
+      expect(screen.queryByTestId("route")).not.toBeInTheDocument();
+    },
+  );
+
+  it.each(protectedRoutes)(
+    "allows direct access to %s with its permission",
+    (path) => {
+      renderRouter(path);
+      expect(screen.getByTestId("route")).toBeVisible();
+    },
+  );
+
+  it.each([
+    ["pending", { isPending: true, isSuccess: false }],
+    ["failed", { isPending: false, isSuccess: false }],
+    ["missing result", { isPending: false, isSuccess: true }],
+    [
+      "malformed result",
+      { isPending: false, isSuccess: true, data: { isPermitted: "true" } },
+    ],
+    [
+      "failed refresh",
+      { isPending: false, isSuccess: false, data: { isPermitted: true } },
+    ],
+  ])(
+    "does not mount pages or show restricted links for a %s check",
+    (_, state) => {
+      permissionResult.mockReturnValue(state);
+      renderRouter("/travel/applications/new");
+      expect(screen.queryByTestId("route")).not.toBeInTheDocument();
+      expect(screen.queryByRole("link")).not.toBeInTheDocument();
+    },
+  );
+
+  it("hides management and its badge for regular employees", () => {
+    permissionResult.mockImplementation((permission) => ({
+      data: { isPermitted: permission === travelPermissions.submit },
+      isPending: false,
+      isSuccess: true,
+    }));
+    renderRouter("/travel/applications");
+    expect(screen.getAllByRole("link")).toHaveLength(3);
+    expect(screen.queryByText("Manage Travel")).not.toBeInTheDocument();
+    expect(AsyncBadge).not.toHaveBeenCalled();
+  });
+
+  it("checks review and history links separately within management", () => {
+    permissionResult.mockImplementation((permission) => ({
+      data: {
+        isPermitted: [
+          travelPermissions.manage,
+          travelPermissions.reviewHistory,
+        ].includes(permission),
+      },
+      isPending: false,
+      isSuccess: true,
+    }));
+    renderRouter("/travel/manage/review-history");
+    expect(screen.getAllByRole("link")).toHaveLength(1);
+    expect(screen.getByRole("link", { name: "Review History" })).toBeVisible();
+    expect(screen.queryByText("My Travel")).not.toBeInTheDocument();
   });
 });

@@ -10,7 +10,7 @@ import TaskAssignmentsListIndex from "app/views/myinfo/personnel/pec/task-assign
 import TaskAssignmentIndex from "app/views/myinfo/personnel/pec/task-assignments/assignment-item/TaskAssignmentIndex";
 import ToDoAssignment from "./personnel/pec/to-do-assignment/ToDoAssignment";
 import ToDoReporting from "./personnel/pec/to-do-reporting/ToDoReporting";
-import AssertPermission from "app/components/AssertPermission";
+import RequirePermission from "app/components/RequirePermission";
 import NotFound from "app/views/NotFound";
 import { AsyncBadge } from "app/components/Badge";
 import useRequireAuthedUser from "app/hooks/useRequireAuthedUser";
@@ -37,17 +37,17 @@ export default function MyInfoRouter() {
           <Route
             path="personnel/todo/report"
             element={
-              <AssertPermission permission="core:pec-report-generation">
+              <RequirePermission permission="core:pec-report-generation">
                 <ToDoReporting />
-              </AssertPermission>
+              </RequirePermission>
             }
           />
           <Route
             path="personnel/todo/assignment"
             element={
-              <AssertPermission permission="core:pec-report-generation">
+              <RequirePermission permission="core:pec-report-generation">
                 <ToDoAssignment />
-              </AssertPermission>
+              </RequirePermission>
             }
           />
           <Route path="payroll/checkhistory" element={<CheckHistoryIndex />} />

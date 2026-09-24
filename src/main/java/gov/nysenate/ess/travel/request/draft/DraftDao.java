@@ -118,7 +118,8 @@ public class DraftDao extends SqlBaseDao {
                 traveler_emp_id = :travelerEmpId,
                 app_json = :appJson,
                 updated_date_time = :updatedDateTime
-                WHERE draft_id = :draftId;
+                WHERE draft_id = :draftId
+                  AND user_emp_id = :userEmpId;
                 """
         ),
         INSERT("""
