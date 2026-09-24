@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Button from "app/components/Button";
 import ErrorAlert from "app/components/ErrorAlert";
 import LoadingIndicator from "app/components/LoadingIndicator";
@@ -6,13 +6,13 @@ import Modal from "app/components/Modal";
 import TravelAppForm from "app/views/travel/shared/components/TravelAppForm";
 import { useTravelApp } from "app/views/travel/shared/hooks/useTravelApp";
 import { parseApplicationId } from "app/views/travel/application/workflow/applicationRoutes";
+import CancelApplicationDialog from "./CancelApplicationDialog";
+import { useCancelTravelApplication } from "./useCancelTravelApplication";
 
-export default function TravelApplicationModal({
-  appId,
-  onClose,
-  onResubmit,
-}) {
+export default function TravelApplicationModal({ appId, onClose, onResubmit }) {
   const appQuery = useTravelApp(appId, { throwOnError: false });
+  const cancellation = useCancelTravelApplication(appId);
+  const [confirmCancel, setConfirmCancel] = useState(false);
   const application = appQuery.isSuccess ? appQuery.data?.result : null;
   const hasLoadError = appQuery.isError || (appQuery.isSuccess && !application);
   const canResubmit =
@@ -20,12 +20,18 @@ export default function TravelApplicationModal({
     !appQuery.isFetching &&
     parseApplicationId(application?.id) === appId &&
     application?.status?.isDisapproved === true;
+  const canCancel =
+    !appQuery.isFetching &&
+    parseApplicationId(application?.id) === appId &&
+    (application?.status?.isPending === true ||
+      application?.status?.isDisapproved === true);
   const pdfHref = `${window.location.origin}/api/v1/travel/applications/${appId}.pdf`;
 
   return (
     <Modal
       isOpen={Boolean(appId)}
-      onOpenChange={(open) => !open && onClose()}
+      isDismissable={!cancellation.isPending}
+      onOpenChange={(open) => !open && !cancellation.isPending && onClose()}
       ariaLabel="Travel application details"
     >
       <Modal.Body>
@@ -45,18 +51,49 @@ export default function TravelApplicationModal({
       <Modal.Controls>
         <div className="flex items-center gap-6 px-3 py-1.5">
           {canResubmit && (
-            <Button variant="theme" onPress={() => onResubmit(appId)}>Edit and Resubmit</Button>
+            <Button
+              variant="theme"
+              isDisabled={cancellation.isPending || cancellation.isError}
+              onPress={() => onResubmit(appId)}
+            >
+              Edit and Resubmit
+            </Button>
           )}
           {application && (
             <a href={pdfHref} target="_blank" rel="noopener noreferrer">
               Print
             </a>
           )}
-          <Button variant="secondary" className="w-20" onPress={onClose}>
+          <Button
+            variant="secondary"
+            className="w-20"
+            isDisabled={cancellation.isPending}
+            onPress={onClose}
+          >
             Close
           </Button>
+          {canCancel && (
+            <Button
+              variant="destructive"
+              onPress={() => setConfirmCancel(true)}
+            >
+              Cancel
+            </Button>
+          )}
         </div>
       </Modal.Controls>
+      {confirmCancel && (
+        <CancelApplicationDialog
+          canCancel={canCancel}
+          mutation={cancellation}
+          onClose={() => setConfirmCancel(false)}
+          onConfirm={() => {
+            if (canCancel && !cancellation.isPending && !cancellation.isError) {
+              cancellation.mutate(undefined, { onSuccess: onClose });
+            }
+          }}
+        />
+      )}
     </Modal>
   );
 }

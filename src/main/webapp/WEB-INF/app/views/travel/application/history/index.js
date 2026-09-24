@@ -158,6 +158,7 @@ export default function ApplicationHistory() {
         onSelectApp={selectApplication}
       />
       <TravelApplicationModal
+        key={selectedAppId}
         appId={selectedAppId}
         onClose={closeApplication}
         onResubmit={resubmitApplication}

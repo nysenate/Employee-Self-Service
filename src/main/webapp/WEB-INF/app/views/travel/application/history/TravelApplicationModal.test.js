@@ -296,3 +296,147 @@ describe("TravelApplicationModal", () => {
     ).not.toBeInTheDocument();
   });
 });
+
+describe("application cancellation", () => {
+  it.each([
+    ["DEPARTMENT_HEAD", true],
+    ["TRAVEL_UNIT", true],
+    ["DISAPPROVED", true],
+    ["APPROVED", false],
+    ["CANCELED", false],
+    ["DRAFT", false],
+    ["NOT_APPLICABLE", false],
+  ])("matches the legacy cancellation rule for %s", async (name, eligible) => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(() =>
+        response({
+          result: {
+            ...fullApplication(),
+            status: {
+              name,
+              label: name,
+              isPending: ["DEPARTMENT_HEAD", "TRAVEL_UNIT"].includes(name),
+              isDisapproved: name === "DISAPPROVED",
+            },
+          },
+        }),
+      ),
+    );
+    renderModal();
+    await screen.findByText("Full detail purpose");
+    expect(Boolean(screen.queryByRole("button", { name: "Cancel" }))).toBe(
+      eligible,
+    );
+  });
+
+  it("requires confirmation, blocks duplicate requests, and refreshes cached data", async () => {
+    let finishCancellation;
+    const pendingCancellation = new Promise((resolve) => {
+      finishCancellation = resolve;
+    });
+    let canceled = false;
+    const fetchMock = vi.fn((url, options) => {
+      if (options.method === "POST") return pendingCancellation;
+      return response({
+        result: url.endsWith("/travel/applications/42")
+          ? {
+              ...fullApplication(),
+              ...(canceled
+                ? {
+                    status: {
+                      name: "CANCELED",
+                      label: "Canceled",
+                      isCanceled: true,
+                    },
+                  }
+                : {}),
+            }
+          : [],
+      });
+    });
+    vi.stubGlobal("fetch", fetchMock);
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+    const historyKey = [
+      ...travelQueryKeys.applications(),
+      "status=DEPARTMENT_HEAD",
+    ];
+    const reviewKey = [...travelQueryKeys.reviews(), "queue"];
+    queryClient.setQueryData(historyKey, { result: [fullApplication()] });
+    queryClient.setQueryData(reviewKey, { result: [] });
+    const { onClose } = renderModal({ queryClient });
+    fireEvent.click(await screen.findByRole("button", { name: "Cancel" }));
+    expect(
+      screen.getByText("Are you sure you want to cancel this application?"),
+    ).toBeVisible();
+    fireEvent.click(screen.getByRole("button", { name: "No" }));
+    expect(
+      fetchMock.mock.calls.filter(([, options]) => options.method === "POST"),
+    ).toHaveLength(0);
+    expect(onClose).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+    fireEvent.click(screen.getByRole("button", { name: "Yes" }));
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: "Yes" })).toBeDisabled(),
+    );
+    expect(screen.getByRole("button", { name: "No" })).toBeDisabled();
+    fireEvent.click(screen.getByRole("button", { name: "Yes" }));
+    expect(
+      fetchMock.mock.calls.filter(([, options]) => options.method === "POST"),
+    ).toEqual([
+      [
+        "/api/v1/travel/application/edit/42/cancel",
+        expect.objectContaining({ method: "POST" }),
+      ],
+    ]);
+    expect(onClose).not.toHaveBeenCalled();
+    canceled = true;
+    // The endpoint returns the application as loaded before cancellation.
+    finishCancellation(
+      await response({ success: true, result: fullApplication() }),
+    );
+    await waitFor(() => expect(onClose).toHaveBeenCalledOnce());
+    expect(
+      queryClient.getQueryData(travelQueryKeys.application(42)).result.status
+        .name,
+    ).toBe("CANCELED");
+    expect(queryClient.getQueryState(historyKey).isInvalidated).toBe(true);
+    expect(queryClient.getQueryState(reviewKey).isInvalidated).toBe(true);
+  });
+
+  it.each([403, 500, 200])(
+    "keeps details open and blocks resubmission when cancellation is not confirmed (%s)",
+    async (status) => {
+      vi.stubGlobal(
+        "fetch",
+        vi.fn((url, options) =>
+          options.method === "POST"
+            ? response({ success: false }, { ok: status === 200, status })
+            : response({
+                result: url.endsWith("/travel/applications/42")
+                  ? fullApplication()
+                  : [],
+              }),
+        ),
+      );
+      const { onClose, onResubmit } = renderModal();
+      fireEvent.click(await screen.findByRole("button", { name: "Cancel" }));
+      fireEvent.click(screen.getByRole("button", { name: "Yes" }));
+      expect(await screen.findByRole("alert")).toHaveTextContent(
+        "We couldn’t confirm cancellation",
+      );
+      expect(onClose).not.toHaveBeenCalled();
+      expect(screen.getByRole("button", { name: "Yes" })).toBeDisabled();
+      fireEvent.click(screen.getByRole("button", { name: "No" }));
+      expect(screen.getByText("Full detail purpose")).toBeVisible();
+      const resubmit = screen.getByRole("button", {
+        name: "Edit and Resubmit",
+      });
+      expect(resubmit).toBeDisabled();
+      fireEvent.click(resubmit);
+      expect(onResubmit).not.toHaveBeenCalled();
+    },
+  );
+});

@@ -315,14 +315,22 @@ describe("ApplicationHistory details selection", () => {
     expect(screen.getByTestId("location")).toHaveTextContent("appId=42");
   });
 
-  it.each([16, 0])("resets the second-page offset when only %i results remain", async (total) => {
-    vi.stubGlobal("fetch", vi.fn(() => response({ result: [], total })));
-    renderHistory("/travel/applications?limit=16&offset=17");
+  it.each([16, 0])(
+    "resets the second-page offset when only %i results remain",
+    async (total) => {
+      vi.stubGlobal(
+        "fetch",
+        vi.fn(() => response({ result: [], total })),
+      );
+      renderHistory("/travel/applications?limit=16&offset=17");
 
-    await waitFor(() =>
-      expect(screen.getByTestId("location").textContent).toMatch(/offset=1(?:&|\|)/),
-    );
-  });
+      await waitFor(() =>
+        expect(screen.getByTestId("location").textContent).toMatch(
+          /offset=1(?:&|\|)/,
+        ),
+      );
+    },
+  );
 
   it("waits for a non-placeholder list response before repairing an invalid offset", async () => {
     let resolveList;
@@ -355,4 +363,69 @@ describe("ApplicationHistory details selection", () => {
       ).toHaveLength(2),
     );
   });
+});
+
+it("cancels from history, refreshes filtered results, and closes both dialogs", async () => {
+  let canceled = false;
+  const summary = {
+    id: 42,
+    startDate: "2025-06-01",
+    travelerName: "Summary Traveler",
+    destinationSummary: "Albany",
+    totalAllowance: 10,
+    status: detailApplication().status,
+  };
+  const fetchMock = vi.fn((url, options) => {
+    if (options.method === "POST") {
+      canceled = true;
+      return response({ success: true, result: detailApplication() });
+    }
+    if (url === "/api/v1/travel/applications/42") {
+      return response({
+        result: {
+          ...detailApplication(),
+          ...(canceled
+            ? {
+                status: {
+                  name: "CANCELED",
+                  label: "Canceled",
+                  isCanceled: true,
+                },
+              }
+            : {}),
+        },
+      });
+    }
+    if (url.startsWith("/api/v1/travel/applications?")) {
+      return response({
+        result: canceled ? [] : [summary],
+        total: canceled ? 0 : 1,
+      });
+    }
+    return response({ result: [] });
+  });
+  vi.stubGlobal("fetch", fetchMock);
+  renderHistory(
+    "/travel/applications?status=DISAPPROVED&sort=startDate%3Adesc&appId=42",
+  );
+  fireEvent.click(await screen.findByRole("button", { name: "Cancel" }));
+  fireEvent.click(screen.getByRole("button", { name: "Yes" }));
+  await waitFor(() =>
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
+  );
+  expect(
+    await screen.findByText("No travel applications match these filters"),
+  ).toBeVisible();
+  expect(screen.getByTestId("location")).toHaveTextContent(
+    "status=DISAPPROVED",
+  );
+  expect(screen.getByTestId("location")).toHaveTextContent(
+    "sort=startDate%3Adesc",
+  );
+  expect(screen.getByTestId("location")).not.toHaveTextContent("appId");
+  expect(
+    fetchMock.mock.calls.filter(([url]) =>
+      url.startsWith("/api/v1/travel/applications?"),
+    ),
+  ).toHaveLength(2);
 });
