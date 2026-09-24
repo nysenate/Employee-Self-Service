@@ -6,7 +6,6 @@ import gov.nysenate.ess.travel.authorization.role.TravelRole;
 import gov.nysenate.ess.travel.authorization.role.TravelRoleFactory;
 import gov.nysenate.ess.travel.authorization.role.TravelRoles;
 import gov.nysenate.ess.travel.employee.TravelEmployee;
-import gov.nysenate.ess.travel.notifications.email.events.TravelAppEditedEmailEvent;
 import gov.nysenate.ess.travel.notifications.email.events.TravelPendingReviewEmailEvent;
 import gov.nysenate.ess.travel.provider.gsa.GsaAllowanceService;
 import gov.nysenate.ess.travel.provider.miles.MileageAllowanceService;
@@ -174,24 +173,19 @@ public class TravelAppUpdateService {
 //    }
 
     /**
-     * Persists the edits in {@code amd} to the application.
-     *
-     * @param appId The id of the TravelApplication to modify.
-     * @param app   The edited travel application.
-     * @param user  The logged in user who is making these changes.
-     * @return
+     * Applies administrative corrections while preserving identity, status, and review history.
+     * The application lock keeps status changes made by reviewers from being overwritten.
      */
-    public TravelApplication editTravelApp(int appId, TravelApplication app, Employee user) {
-        saveAppEdits(app, user);
-        eventBus.post(new TravelAppEditedEmailEvent(app));
-        return app;
-    }
-
-    private TravelApplication saveAppEdits(TravelApplication app, Employee user) {
-        app.setModifiedBy(user);
-        app.setModifiedDateTime(LocalDateTime.now());
-        travelApplicationService.saveApplication(app);
-        return app;
+    @Transactional(value = "localTxManager")
+    public TravelApplication editTravelApp(int appId, TravelApplication proposed, Employee user) {
+        travelApplicationService.lockApplication(appId);
+        TravelApplication original = travelApplicationService.getTravelApplication(appId);
+        copyEditableFields(proposed, original);
+        original.setModifiedBy(user);
+        original.setModifiedDateTime(LocalDateTime.now());
+        travelApplicationService.saveApplication(original);
+        // Administrative corrections preserve review state and do not send notifications.
+        return original;
     }
 
     @Transactional(value = "localTxManager")
@@ -202,7 +196,7 @@ public class TravelAppUpdateService {
         if (original.getStatus() == null || !original.getStatus().isDisapproved()) {
             throw new TravelResubmissionConflictException(appId);
         }
-        copyResubmissionEdits(app, original);
+        copyEditableFields(app, original);
         applicationReview.restart();
         original.setStatus(new TravelApplicationStatus(statusForPendingReviewer(applicationReview.pendingReviewerRole())));
         original.setModifiedBy(user);
@@ -223,7 +217,7 @@ public class TravelAppUpdateService {
         return original;
     }
 
-    private void copyResubmissionEdits(TravelApplication proposed, TravelApplication original) {
+    private void copyEditableFields(TravelApplication proposed, TravelApplication original) {
         original.setPurposeOfTravel(proposed.getPurposeOfTravel());
         original.setRoute(proposed.getRoute());
         original.setAllowances(proposed.getAllowances());

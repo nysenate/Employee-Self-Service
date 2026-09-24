@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useAdminEditAction } from "app/views/travel/application/edit/useAdminEditAction";
 import { useTravelReview } from "app/views/travel/shared/hooks/useTravelReview";
 import Modal from "app/components/Modal";
 import TravelAppReviewForm from "app/views/travel/shared/components/TravelAppReviewForm";
@@ -14,6 +15,7 @@ export default function ReviewerActionModal({
 }) {
   const { data, isPending } = useTravelReview(reviewSummary?.appReviewId);
   const review = data?.result;
+  const { canEdit, onEdit } = useAdminEditAction(reviewSummary, review);
   const [approveDialogOpen, setApproveDialogOpen] = useState(false);
   const [disapproveDialogOpen, setDisapproveDialogOpen] = useState(false);
 
@@ -63,7 +65,11 @@ export default function ReviewerActionModal({
             >
               Disapprove Application
             </Button>
-            <Button variant="secondary">Edit Application</Button>
+            {canEdit && (
+              <Button variant="secondary" onPress={onEdit}>
+                Edit Application
+              </Button>
+            )}
           </div>
           <div className="flex items-center gap-3">
             <a href={pdfHref} target="_blank" rel="noopener noreferrer">

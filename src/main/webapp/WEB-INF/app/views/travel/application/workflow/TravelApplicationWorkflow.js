@@ -55,6 +55,9 @@ import {
 } from "./workflowReducer";
 import { STANDARD_STEPS } from "./workflowSteps";
 
+import OverridesStep from "../edit/OverridesStep";
+import { useExpenseOverrides } from "../edit/useExpenseOverrides";
+
 const DEFAULT_PRESENTATION = Object.freeze({
   finalActionLabel: "Submit application",
   confirmationTitle: "Submit travel application?",
@@ -70,6 +73,7 @@ const DEFAULT_PRESENTATION = Object.freeze({
  *
  * @param {object} props
  * @param {object} props.initialDraft
+ * @param {Array<{id: string, label: string, allowsDraftSave: boolean}>} [props.steps]
  * @param {object|null} [props.application]
  * @param {{execute: function(object): Promise<object>, isPending: boolean}|null} [props.saveDraft]
  * @param {{execute: function(object): Promise<unknown>, isPending: boolean, isDisabled: boolean, renderError: function(*): React.ReactNode}} props.commit
@@ -79,6 +83,7 @@ const DEFAULT_PRESENTATION = Object.freeze({
  */
 export default function TravelApplicationWorkflow({
   initialDraft,
+  steps = STANDARD_STEPS,
   application = null,
   saveDraft = null,
   commit,
@@ -87,11 +92,10 @@ export default function TravelApplicationWorkflow({
   renderCompletion,
 }) {
   const draft = initialDraft;
-  const [state, dispatch] = useReducer(
-    workflowReducer,
-    draft,
-    createWorkflowState,
+  const [state, dispatch] = useReducer(workflowReducer, draft, (initial) =>
+    createWorkflowState(initial, steps),
   );
+  const expenseOverrides = useExpenseOverrides(draft);
   const [purposeErrors, setPurposeErrors] = useState({});
   const [routeErrors, setRouteErrors] = useState({});
   const [pendingCounty, setPendingCounty] = useState(null);
@@ -121,7 +125,8 @@ export default function TravelApplicationWorkflow({
   const submissionLocked =
     submissionState === "submitting" || submissionState === "success";
   const guard = useUnsavedChangesGuard(
-    submissionState !== "success" && hasUnsavedChanges(state),
+    submissionState !== "success" &&
+      (hasUnsavedChanges(state) || expenseOverrides.isDirty(state.workingDraft)),
     submissionState === "submitting",
   );
   const routeNeedsRecalculation = needsRouteRecalculation(state);
@@ -161,6 +166,9 @@ export default function TravelApplicationWorkflow({
         return;
       case "expenses":
         await completeExpenseAction("next");
+        return;
+      case "overrides":
+        await completeOverrides();
         return;
       case "review":
         setSubmissionError(null);
@@ -407,6 +415,17 @@ export default function TravelApplicationWorkflow({
     }
   }
 
+  async function completeOverrides() {
+    const calculated = await expenseOverrides.complete({
+      state,
+      calculate: calculateExpenses.mutateAsync,
+      reportValidationResult,
+    });
+    if (!calculated) return;
+    dispatch({ type: "APPLY_CALCULATED_EXPENSES", draft: calculated });
+    dispatch({ type: "COMPLETE_CURRENT_STEP" });
+  }
+
   async function handleLodgingSelect(row, index, address) {
     const requestId = (lodgingRequestRef.current[index] ?? 0) + 1;
     lodgingRequestRef.current[index] = requestId;
@@ -506,6 +525,7 @@ export default function TravelApplicationWorkflow({
 
   const workflowActions = (
     <WorkflowActions
+      steps={state.steps}
       stepId={state.currentStepId}
       onBack={() => dispatch({ type: "GO_BACK" })}
       onSave={saveDraft ? handleSave : null}
@@ -523,9 +543,7 @@ export default function TravelApplicationWorkflow({
         isLodgingPending ||
         submissionState === "submitting"
       }
-      isPrimaryDisabled={
-        state.currentStepId === "review" && commit.isDisabled
-      }
+      isPrimaryDisabled={state.currentStepId === "review" && commit.isDisabled}
       isCancelDisabled={submissionLocked || commit.isPending}
       isDisabled={submissionLocked}
     />
@@ -534,11 +552,16 @@ export default function TravelApplicationWorkflow({
   return (
     <div className="mx-auto max-w-5xl space-y-5">
       <WorkflowProgress
-        steps={STANDARD_STEPS}
+        steps={state.steps}
         currentStepId={state.currentStepId}
         completedStepIds={state.completedStepIds}
         onSelect={(stepId) => dispatch({ type: "GO_TO_STEP", stepId })}
-        isDisabled={submissionLocked}
+        isDisabled={
+          submissionLocked ||
+          isAdvancingRoute ||
+          calculateExpenses.isPending ||
+          isLodgingPending
+        }
       />
 
       {renderCurrentStep()}
@@ -727,6 +750,21 @@ export default function TravelApplicationWorkflow({
             actions={workflowActions}
           />
         );
+      case "overrides":
+        return (
+          <OverridesStep
+            draft={expenseOverrides.preview(state.workingDraft)}
+            errors={expenseOverrides.errors}
+            errorSummaryRef={errorSummaryRef}
+            calculationError={expenseOverrides.calculationError}
+            isDisabled={calculateExpenses.isPending || submissionLocked}
+            onChange={(next) => {
+              expenseOverrides.update(next);
+              dispatch({ type: "INVALIDATE_CURRENT_STEP" });
+            }}
+            actions={workflowActions}
+          />
+        );
       case "review":
         return (
           <ReviewStep
@@ -746,6 +784,7 @@ export default function TravelApplicationWorkflow({
   }
 
   function resetExpensesAfterRouteCalculation(calculatedDraft) {
+    expenseOverrides.resetFromDraft(calculatedDraft);
     setExpenses(createEditableExpenses(calculatedDraft));
     setExpenseErrors({});
     setLodgingErrors({});

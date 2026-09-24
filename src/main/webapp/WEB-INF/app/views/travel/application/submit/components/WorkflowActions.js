@@ -4,6 +4,7 @@ import { STANDARD_STEPS } from "../../workflow/workflowSteps";
 
 export default function WorkflowActions({
   stepId,
+  steps = STANDARD_STEPS,
   onBack,
   onSave,
   onCancel,
@@ -15,9 +16,9 @@ export default function WorkflowActions({
   isDisabled = false,
   finalActionLabel = "Submit application",
 }) {
-  const stepIndex = STANDARD_STEPS.findIndex((step) => step.id === stepId);
+  const stepIndex = steps.findIndex((step) => step.id === stepId);
   if (stepIndex < 0) throw new Error(`Unknown workflow step: ${stepId}`);
-  const step = STANDARD_STEPS[stepIndex];
+  const step = steps[stepIndex];
   const isReview = stepId === "review";
   const primaryLabel = isReview ? finalActionLabel : "Next";
 

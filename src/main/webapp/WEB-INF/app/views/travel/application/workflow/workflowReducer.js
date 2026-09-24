@@ -12,14 +12,15 @@ import {
 } from "../submit/expenseModel";
 import { STANDARD_STEPS } from "./workflowSteps";
 
-export function createWorkflowState(draft) {
+export function createWorkflowState(draft, steps = STANDARD_STEPS) {
   const dirtyRoute = toEditableRoute(
     draft.amendment?.route ?? createEmptyRoute(),
   );
   return {
+    steps,
     serverDraft: draft,
     workingDraft: draft,
-    currentStepId: STANDARD_STEPS[0].id,
+    currentStepId: steps[0].id,
     completedStepIds: [],
     dirtyRoute,
     calculatedRouteBaseline: toRouteDto(dirtyRoute),
@@ -33,6 +34,7 @@ export function workflowReducer(state, action) {
 }
 
 const ACTION_REDUCERS = {
+  INVALIDATE_CURRENT_STEP: (state) => invalidateFollowingSteps(state),
   UPDATE_DRAFT: (state, action) =>
     invalidateFollowingSteps({
       ...state,
@@ -105,8 +107,8 @@ const ACTION_REDUCERS = {
       ),
     }),
   COMPLETE_CURRENT_STEP: (state) => {
-    const currentIndex = stepIndex(state.currentStepId);
-    if (currentIndex < 0 || currentIndex >= STANDARD_STEPS.length - 1)
+    const currentIndex = stepIndex(state, state.currentStepId);
+    if (currentIndex < 0 || currentIndex >= state.steps.length - 1)
       return state;
     const dirtyRoute =
       state.currentStepId === "purpose"
@@ -117,25 +119,22 @@ const ACTION_REDUCERS = {
         : state.currentStepId === "outbound"
           ? initializeReturnRoute(state.dirtyRoute)
           : state.dirtyRoute;
-    const completed = new Set([
-      ...state.completedStepIds,
-      state.currentStepId,
-    ]);
+    const completed = new Set([...state.completedStepIds, state.currentStepId]);
     return {
       ...state,
       dirtyRoute,
-      completedStepIds: STANDARD_STEPS.filter((step) => completed.has(step.id)).map(
-        (step) => step.id,
-      ),
-      currentStepId: STANDARD_STEPS[currentIndex + 1].id,
+      completedStepIds: state.steps
+        .filter((step) => completed.has(step.id))
+        .map((step) => step.id),
+      currentStepId: state.steps[currentIndex + 1].id,
     };
   },
   GO_BACK: (state) => {
-    const currentIndex = stepIndex(state.currentStepId);
+    const currentIndex = stepIndex(state, state.currentStepId);
     if (currentIndex <= 0) return state;
     return {
       ...state,
-      currentStepId: STANDARD_STEPS[currentIndex - 1].id,
+      currentStepId: state.steps[currentIndex - 1].id,
     };
   },
   GO_TO_STEP: (state, action) =>
@@ -145,11 +144,11 @@ const ACTION_REDUCERS = {
 };
 
 function invalidateFollowingSteps(state) {
-  const currentIndex = stepIndex(state.currentStepId);
+  const currentIndex = stepIndex(state, state.currentStepId);
   return {
     ...state,
     completedStepIds: state.completedStepIds.filter(
-      (stepId) => stepIndex(stepId) < currentIndex,
+      (stepId) => stepIndex(state, stepId) < currentIndex,
     ),
   };
 }
@@ -167,13 +166,13 @@ function routesEqual(first, second) {
 
 export function canNavigateToStep(state, stepId) {
   return (
-    stepIndex(stepId) >= 0 &&
+    stepIndex(state, stepId) >= 0 &&
     (stepId === state.currentStepId || state.completedStepIds.includes(stepId))
   );
 }
 
-function stepIndex(stepId) {
-  return STANDARD_STEPS.findIndex((step) => step.id === stepId);
+function stepIndex(state, stepId) {
+  return state.steps.findIndex((step) => step.id === stepId);
 }
 
 export function hasUnsavedChanges(state) {

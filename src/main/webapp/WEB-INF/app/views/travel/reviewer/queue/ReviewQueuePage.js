@@ -1,3 +1,4 @@
+import { useLocation } from "react-router-dom";
 import React, { useEffect, useMemo, useState } from "react";
 import { Users } from "lucide-react";
 import Hero from "app/components/Hero";
@@ -18,6 +19,7 @@ const REVIEW_ROLE_PRIORITY = [
 ];
 
 export default function ReviewQueuePage() {
+  const location = useLocation();
   const { data: userRoles, isPending: isUserRolesPending } =
     useUserTravelRoles();
   const { data: reviewQueue, isPending: isReviewQueuePending } =
@@ -41,8 +43,11 @@ export default function ReviewQueuePage() {
   // Set a default selectedRole once data is loaded.
   useEffect(() => {
     if (selectedRole || dedupedRoles.length === 0) return;
-    setSelectedRole(dedupedRoles[0]);
-  }, [dedupedRoles, selectedRole]);
+    setSelectedRole(
+      dedupedRoles.find((role) => role.name === location.state?.reviewRole) ??
+        dedupedRoles[0],
+    );
+  }, [dedupedRoles, selectedRole, location.state?.reviewRole]);
 
   const isLoading = isUserRolesPending || isReviewQueuePending || !selectedRole;
 

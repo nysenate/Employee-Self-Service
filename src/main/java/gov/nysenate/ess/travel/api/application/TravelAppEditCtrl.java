@@ -8,6 +8,7 @@ import gov.nysenate.ess.core.client.response.error.ErrorResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
+import gov.nysenate.ess.travel.authorization.permission.SimpleTravelPermission;
 import gov.nysenate.ess.travel.department.DepartmentNotFoundEx;
 import gov.nysenate.ess.travel.employee.TravelEmployeeService;
 import gov.nysenate.ess.travel.request.app.*;
@@ -56,13 +57,8 @@ public class TravelAppEditCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/edit/{appId}", method = RequestMethod.POST)
     public BaseResponse saveEditedApplication(@PathVariable int appId,
                                               @RequestBody DraftView draftView) {
-        // Check the logged in user is allowed to modify this app
-        TravelApplication originalApp = appService.getTravelApplication(appId);
-        checkTravelAppPermission(originalApp, RequestMethod.POST);
-
+        checkPermission(SimpleTravelPermission.TRAVEL_UI_EDIT_APP.getPermission());
         TravelApplication editedApp = draftView.toDraft().getTravelApplication();
-        editedApp.setAppId(appId); // TODO hacky way around messed up views for now.
-        editedApp.setStatus(originalApp.getStatus());
         Employee user = employeeInfoService.getEmployee(getSubjectEmployeeId());
         appUpdateService.editTravelApp(appId, editedApp, user);
         return new SimpleResponse(true, "Edits saved", "");

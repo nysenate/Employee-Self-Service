@@ -1,3 +1,4 @@
+import { useLocation } from "react-router-dom";
 import React from "react";
 import Badge from "app/components/Badge";
 import Card from "app/components/Card";
@@ -7,7 +8,10 @@ import { travelRoleDisplayName } from "app/views/travel/shared/travelRoles";
 import ReviewerActionModal from "./ReviewerActionModal";
 
 export default function ReviewQueueResults({ queue, roleName }) {
-  const [selectedReview, setSelectedReview] = React.useState(null);
+  const location = useLocation();
+  const [selectedReview, setSelectedReview] = React.useState(
+    location.state?.reviewSummary ?? null,
+  );
   const [successMessage, setSuccessMessage] = React.useState(null);
 
   React.useEffect(() => {

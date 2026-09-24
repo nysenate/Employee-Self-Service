@@ -18,6 +18,8 @@ import {
   parseApplicationId,
 } from "app/views/travel/application/workflow/applicationRoutes";
 
+import EditTravelApplication from "./application/edit/EditTravelApplication";
+
 export default function TravelRouter() {
   return (
     <ThemeContext.Provider value={themes.travel}>
@@ -30,6 +32,10 @@ export default function TravelRouter() {
           />
           <Route path="/applications/drafts" element={<Drafts />} />
           <Route path="/applications" element={<ApplicationHistory />} />
+          <Route
+            path="/applications/:appId/edit"
+            element={<EditTravelApplication />}
+          />
           <Route
             path="/applications/:appId/resubmit"
             element={<ResubmitTravelApplicationPage />}

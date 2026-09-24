@@ -22,3 +22,7 @@ export function travelRoleDisplayName(roleName) {
   }
   return ROLE_DISPLAY_NAMES[roleName] ?? roleName;
 }
+
+export function canAdminEditTravel(roles) {
+  return roles?.allRoles?.some((role) => role.name === "TRAVEL_ADMIN") ?? false;
+}

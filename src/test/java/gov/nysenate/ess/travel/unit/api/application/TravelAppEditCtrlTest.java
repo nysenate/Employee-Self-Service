@@ -8,6 +8,11 @@ import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.util.OutputUtils;
 import gov.nysenate.ess.travel.api.application.TravelAppEditCtrl;
+import gov.nysenate.ess.travel.authorization.permission.SimpleTravelPermission;
+import gov.nysenate.ess.travel.authorization.permission.TravelAdminPermissionFactory;
+import gov.nysenate.ess.travel.authorization.permission.TravelSosPermissionFactory;
+import gov.nysenate.ess.travel.authorization.role.TravelRole;
+import com.google.common.collect.ImmutableSet;
 import gov.nysenate.ess.travel.employee.TravelEmployeeService;
 import gov.nysenate.ess.travel.request.app.*;
 import gov.nysenate.ess.travel.request.draft.DraftView;
@@ -101,6 +106,44 @@ public class TravelAppEditCtrlTest {
         ErrorResponse response = controller.handleResubmissionConflict(
                 new TravelResubmissionConflictException(EditDraftFixture.APP_ID));
         assertEquals(ErrorCode.TRAVEL_RESUBMISSION_CONFLICT, response.getErrorCode());
+    }
+
+    @Test
+    public void administrativeSaveRequiresAdminPermissionEvenForOriginalSubmitter() {
+        allowEmployee(EditDraftFixture.CREATOR_ID);
+        doThrow(new AuthorizationException("Admin required")).when(subject)
+                .checkPermission(SimpleTravelPermission.TRAVEL_UI_EDIT_APP.getPermission());
+        try {
+            controller.saveEditedApplication(EditDraftFixture.APP_ID, new DraftView());
+            fail("Expected authorization failure");
+        } catch (AuthorizationException expected) {
+            verifyNoInteractions(updateService, employeeService);
+        }
+    }
+
+    @Test
+    public void adminCanSaveWithoutResubmitting() throws Exception {
+        allowEmployee(EditDraftFixture.CREATOR_ID);
+        DraftView draft = (DraftView) ((ViewObjectResponse<?>) controller
+                .editApplication(EditDraftFixture.APP_ID)).result;
+        controller.saveEditedApplication(EditDraftFixture.APP_ID, draft);
+        verify(subject).checkPermission(SimpleTravelPermission.TRAVEL_UI_EDIT_APP.getPermission());
+        verify(updateService).editTravelApp(eq(EditDraftFixture.APP_ID), any(), any());
+        verify(updateService, never()).resubmitApp(anyInt(), any(), any());
+    }
+
+    @Test
+    public void adminAndDelegatedAdminButNotSecretaryReceiveEditPermission() {
+        Permission edit = SimpleTravelPermission.TRAVEL_UI_EDIT_APP.getPermission();
+        var admin = new TravelAdminPermissionFactory();
+        var secretary = new TravelSosPermissionFactory();
+        Employee employee = new Employee();
+        assertTrue(admin.getPermissions(employee, ImmutableSet.of(TravelRole.TRAVEL_ADMIN))
+                .stream().anyMatch(permission -> permission.implies(edit)));
+        assertTrue(admin.getPermissions(employee, ImmutableSet.of(TravelRole.TRAVEL_ADMIN, TravelRole.DELEGATE))
+                .stream().anyMatch(permission -> permission.implies(edit)));
+        assertFalse(secretary.getPermissions(employee, ImmutableSet.of(TravelRole.SECRETARY_OF_THE_SENATE))
+                .stream().anyMatch(permission -> permission.implies(edit)));
     }
 
     private void assertPostAllowedFor(int employeeId) throws Exception {

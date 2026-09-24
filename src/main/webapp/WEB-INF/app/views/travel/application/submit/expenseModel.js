@@ -56,6 +56,8 @@ export function expenseSignature(draft) {
   const amendment = draft.amendment ?? {};
   return JSON.stringify({
     allowances: amendment.allowances ?? {},
+    mealOverride: amendment.mealPerDiems?.overrideRate ?? 0,
+    lodgingOverride: amendment.lodgingPerDiems?.overrideRate ?? 0,
     meals: (amendment.mealPerDiems?.allMealPerDiems ?? []).map((row) => ({
       id: row.id,
       breakfast: row.isBreakfastRequested,

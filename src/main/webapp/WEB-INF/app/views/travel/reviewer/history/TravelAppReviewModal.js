@@ -2,12 +2,14 @@ import React from "react";
 import Button from "app/components/Button";
 import LoadingIndicator from "app/components/LoadingIndicator";
 import Modal from "app/components/Modal";
+import { useAdminEditAction } from "app/views/travel/application/edit/useAdminEditAction";
 import TravelAppReviewForm from "app/views/travel/shared/components/TravelAppReviewForm";
 import { useTravelReview } from "app/views/travel/shared/hooks/useTravelReview";
 
 export default function TravelAppReviewModal({ reviewSummary, onOpenChange }) {
   const { data, isPending } = useTravelReview(reviewSummary?.appReviewId);
   const review = data?.result;
+  const { canEdit, onEdit } = useAdminEditAction(reviewSummary, review);
 
   if (isPending || !review) {
     return (
@@ -36,6 +38,11 @@ export default function TravelAppReviewModal({ reviewSummary, onOpenChange }) {
       </Modal.Body>
       <Modal.Controls>
         <div className="flex items-center gap-6 px-3 py-1.5">
+          {canEdit && (
+            <Button variant="secondary" onPress={onEdit}>
+              Edit Application
+            </Button>
+          )}
           <a href={pdfHref} target="_blank" rel="noopener noreferrer">
             Print
           </a>

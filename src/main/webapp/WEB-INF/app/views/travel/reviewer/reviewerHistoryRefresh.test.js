@@ -1,4 +1,5 @@
 import React from "react";
+import { MemoryRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -47,17 +48,19 @@ function renderModal(kind, queryClient) {
   const reviewSummary = { appReviewId: 99 };
   render(
     <QueryClientProvider client={queryClient}>
-      {kind === "queue" ? (
-        <ReviewerActionModal
-          reviewSummary={reviewSummary}
-          setIsOpen={vi.fn()}
-        />
-      ) : (
-        <TravelAppReviewModal
-          reviewSummary={reviewSummary}
-          onOpenChange={vi.fn()}
-        />
-      )}
+      <MemoryRouter>
+        {kind === "queue" ? (
+          <ReviewerActionModal
+            reviewSummary={reviewSummary}
+            setIsOpen={vi.fn()}
+          />
+        ) : (
+          <TravelAppReviewModal
+            reviewSummary={reviewSummary}
+            onOpenChange={vi.fn()}
+          />
+        )}
+      </MemoryRouter>
     </QueryClientProvider>,
   );
 }

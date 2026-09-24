@@ -11,14 +11,23 @@ export default function WorkflowProgress({
   return (
     <nav
       aria-label="Travel application progress"
-      className="border border-gray-200 bg-white px-8 py-5"
+      className="overflow-x-auto border border-gray-200 bg-white px-8 py-5"
     >
-      <div className="relative">
+      <div className="relative" style={{ minWidth: steps.length * 80 }}>
         <div
           aria-hidden="true"
-          className="absolute top-4 right-[10%] left-[10%] h-0.5 bg-gray-200"
+          className="absolute top-4 h-0.5 bg-gray-200"
+          style={{
+            left: `${50 / steps.length}%`,
+            right: `${50 / steps.length}%`,
+          }}
         />
-        <ol className="relative grid grid-cols-5">
+        <ol
+          className="relative grid"
+          style={{
+            gridTemplateColumns: `repeat(${steps.length}, minmax(0, 1fr))`,
+          }}
+        >
           {steps.map((step, index) => (
             <ProgressStep
               key={step.id}

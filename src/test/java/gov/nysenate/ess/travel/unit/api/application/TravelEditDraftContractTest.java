@@ -1,6 +1,7 @@
 package gov.nysenate.ess.travel.unit.api.application;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import gov.nysenate.ess.core.annotation.UnitTest;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.util.OutputUtils;
@@ -78,4 +79,36 @@ public class TravelEditDraftContractTest {
         assertEquals(restored.getCreatedBy().getEmployeeId(), patched.getCreatedBy().getEmployeeId());
         assertEquals(restored.getCreatedDateTime(), patched.getCreatedDateTime());
     }
+    @Test
+    public void expensePatchUsesOverrideTotalsAndZeroRestoresCalculatedAmounts() throws Exception {
+        Draft draft = new Draft(EditDraftFixture.CREATOR_ID, EditDraftFixture.traveler());
+        draft.setTravelApplication(EditDraftFixture.application());
+        ObjectNode wire = OutputUtils.jsonMapper.valueToTree(new DraftView(draft));
+        ObjectNode meals = (ObjectNode) wire.path("amendment").path("mealPerDiems");
+        ObjectNode lodging = (ObjectNode) wire.path("amendment").path("lodgingPerDiems");
+        meals.put("overrideRate", 123.45);
+        lodging.put("overrideRate", 678.90);
+        TravelApplication overridden = patch(wire);
+        assertEquals("123.45", overridden.getMealPerDiems().total().toString());
+        assertEquals("678.90", overridden.getLodgingPerDiems().totalPerDiem().toString());
+
+        meals.put("overrideRate", 0);
+        meals.put("isOverridden", true); // The amount, not this display flag, controls the override.
+        lodging.put("overrideRate", 0);
+        lodging.put("isOverridden", true);
+        TravelApplication restored = patch(wire);
+        assertEquals(draft.getTravelApplication().getMealPerDiems().total(), restored.getMealPerDiems().total());
+        assertEquals(draft.getTravelApplication().getLodgingPerDiems().totalPerDiem(),
+                restored.getLodgingPerDiems().totalPerDiem());
+        assertFalse(restored.getLodgingPerDiems().isOverridden());
+    }
+
+    private TravelApplication patch(ObjectNode wire) throws Exception {
+        DraftViewPatches patches = new DraftViewPatches();
+        patches.setDraft(OutputUtils.jsonMapper.treeToValue(wire, DraftView.class));
+        patches.setOptions(EnumSet.of(DraftViewPatchOption.MEAL_PER_DIEMS, DraftViewPatchOption.LODGING_PER_DIEMS));
+        DraftView result = (DraftView) ((ViewObjectResponse<?>) new DraftCtrl().patchDraftApp(patches)).result;
+        return result.toDraft().getTravelApplication();
+    }
+
 }

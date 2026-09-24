@@ -4,6 +4,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import TravelApplicationWorkflow from "./TravelApplicationWorkflow";
+import { ADMIN_EDIT_STEPS } from "./workflowSteps";
 
 const presentation = {
   finalActionLabel: "Finish editing",
@@ -66,6 +67,8 @@ function completeDraft() {
 
 function renderWorkflow({
   commit,
+  steps,
+  initialDraft = completeDraft(),
   application = null,
   onCancel = null,
   renderCompletion = () => null,
@@ -80,7 +83,8 @@ function renderWorkflow({
     <QueryClientProvider client={queryClient}>
       <MemoryRouter>
         <TravelApplicationWorkflow
-          initialDraft={completeDraft()}
+          steps={steps}
+          initialDraft={initialDraft}
           application={application}
           saveDraft={null}
           commit={commit}
@@ -93,9 +97,11 @@ function renderWorkflow({
   );
 }
 
-async function advanceToReview() {
+async function advanceToReview(overrides = false) {
   await screen.findByRole("option", { name: "Forum" });
-  expect(screen.queryByRole("button", { name: "Save" })).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole("button", { name: "Save" }),
+  ).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: "Next" }));
   fireEvent.click(screen.getByRole("button", { name: "Next" }));
   await waitFor(() =>
@@ -104,7 +110,9 @@ async function advanceToReview() {
       "step",
     ),
   );
-  expect(screen.queryByRole("button", { name: "Save" })).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole("button", { name: "Save" }),
+  ).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: "Next" }));
   await waitFor(() =>
     expect(screen.getByRole("button", { name: "Expenses" })).toHaveAttribute(
@@ -112,10 +120,15 @@ async function advanceToReview() {
       "step",
     ),
   );
-  expect(screen.queryByRole("button", { name: "Save" })).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole("button", { name: "Save" }),
+  ).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: "Next" }));
+  if (overrides) return;
   await screen.findByRole("heading", { name: "Review" });
-  expect(screen.queryByRole("button", { name: "Save" })).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole("button", { name: "Save" }),
+  ).not.toBeInTheDocument();
 }
 
 describe("TravelApplicationWorkflow ports", () => {
@@ -129,9 +142,7 @@ describe("TravelApplicationWorkflow ports", () => {
         if (String(url).endsWith("/travel/event-types"))
           return response([{ name: "Forum", displayName: "Forum" }]);
         if (String(url).endsWith("/travel/mode-of-transportation"))
-          return response([
-            { methodOfTravel: "TRAIN", displayName: "Train" },
-          ]);
+          return response([{ methodOfTravel: "TRAIN", displayName: "Train" }]);
         return response([]);
       }),
     );
@@ -147,9 +158,7 @@ describe("TravelApplicationWorkflow ports", () => {
         isDisabled: false,
         renderError: vi.fn(),
       },
-      renderCompletion: (result) => (
-        <p>Completed {String(result.success)}</p>
-      ),
+      renderCompletion: (result) => <p>Completed {String(result.success)}</p>,
       onCancel,
       application: {
         id: 82,
@@ -169,9 +178,7 @@ describe("TravelApplicationWorkflow ports", () => {
     fireEvent.click(confirm);
 
     expect(await screen.findByText("Completed true")).toBeVisible();
-    expect(
-      screen.getByRole("button", { name: "Cancel edits" }),
-    ).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Cancel edits" })).toBeDisabled();
     expect(onCancel).not.toHaveBeenCalled();
     expect(execute).toHaveBeenCalledOnce();
     expect(execute).toHaveBeenCalledWith(completeDraft());
@@ -207,6 +214,140 @@ describe("TravelApplicationWorkflow ports", () => {
     );
     expect(renderError).toHaveBeenCalledWith(error);
     expect(screen.queryByText("Unexpected completion")).not.toBeInTheDocument();
+  });
+
+  it("validates admin overrides, retains failed calculations, and commits recalculated totals", async () => {
+    const execute = vi.fn().mockRejectedValue(new Error("save failed"));
+    const originalFetch = fetch.getMockImplementation();
+    let failCalculation = true;
+    fetch.mockImplementation(async (url, options) => {
+      if (options?.method === "PATCH") {
+        if (failCalculation) throw new Error("calculation failed");
+        const { draft } = JSON.parse(options.body);
+        return response({
+          ...draft,
+          amendment: {
+            ...draft.amendment,
+            lodgingAllowance: draft.amendment.lodgingPerDiems.overrideRate,
+          },
+        });
+      }
+      return originalFetch(url, options);
+    });
+    renderWorkflow({
+      steps: ADMIN_EDIT_STEPS,
+      commit: {
+        execute,
+        isPending: false,
+        isDisabled: false,
+        renderError: (error) => <p role="alert">{error.message}</p>,
+      },
+    });
+    await advanceToReview(true);
+    expect(
+      screen.getByRole("heading", { name: "Expense Overrides" }),
+    ).toBeVisible();
+    fireEvent.click(screen.getByRole("checkbox", { name: "Override Lodging" }));
+    let input = screen.getByLabelText("Lodging total ($)");
+    fireEvent.change(input, { target: { value: "-1" } });
+    fireEvent.click(screen.getByRole("button", { name: "Next" }));
+    expect(input).toHaveAttribute("aria-invalid", "true");
+    fireEvent.click(screen.getByRole("button", { name: "Back" }));
+    fireEvent.click(screen.getByRole("button", { name: "Next" }));
+    input = screen.getByLabelText("Lodging total ($)");
+    expect(input).toHaveValue("-1");
+
+    fireEvent.change(input, { target: { value: "250.25" } });
+    fireEvent.click(screen.getByRole("button", { name: "Next" }));
+    expect(
+      await screen.findByText(/override totals could not be calculated/),
+    ).toBeVisible();
+    expect(input).toHaveValue("250.25");
+    failCalculation = false;
+    fireEvent.click(screen.getByRole("button", { name: "Next" }));
+    await screen.findByRole("heading", { name: "Review" });
+    fireEvent.click(screen.getByRole("button", { name: "Finish editing" }));
+    fireEvent.click(screen.getByRole("button", { name: "Confirm changes" }));
+    expect(await screen.findByText("save failed")).toBeVisible();
+    expect(execute).toHaveBeenCalledWith(
+      expect.objectContaining({
+        amendment: expect.objectContaining({
+          lodgingPerDiems: expect.objectContaining({
+            overrideRate: 250.25,
+            isOverridden: true,
+          }),
+          lodgingAllowance: 250.25,
+        }),
+      }),
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Back" }));
+    expect(screen.getByLabelText("Lodging total ($)")).toHaveValue("250.25");
+    fireEvent.click(screen.getByRole("checkbox", { name: "Override Lodging" }));
+    expect(screen.getByLabelText("Lodging total ($)")).toBeDisabled();
+    fireEvent.click(screen.getByRole("button", { name: "Next" }));
+    await screen.findByRole("heading", { name: "Review" });
+    const patches = fetch.mock.calls.filter(
+      ([, options]) => options?.method === "PATCH",
+    );
+    expect(
+      JSON.parse(patches.at(-1)[1].body).draft.amendment.lodgingPerDiems
+        .overrideRate,
+    ).toBe(0);
+  });
+
+  it("preserves an existing override for an unchanged route and resets it after route calculation", async () => {
+    const draft = completeDraft();
+    draft.amendment.lodgingPerDiems = {
+      ...draft.amendment.lodgingPerDiems,
+      isOverridden: true,
+      overrideRate: 200,
+    };
+    const originalFetch = fetch.getMockImplementation();
+    fetch.mockImplementation(async (url, options) => {
+      if (options?.method === "PATCH") {
+        const { draft: requested, options: patches } = JSON.parse(options.body);
+        expect(patches).toEqual(["ROUTE"]);
+        return response({
+          ...requested,
+          amendment: {
+            ...requested.amendment,
+            lodgingPerDiems: {
+              allLodgingPerDiems: [],
+              isOverridden: false,
+              overrideRate: 0,
+            },
+          },
+        });
+      }
+      return originalFetch(url, options);
+    });
+    renderWorkflow({
+      initialDraft: draft,
+      steps: ADMIN_EDIT_STEPS,
+      commit: { execute: vi.fn(), isPending: false, renderError: vi.fn() },
+    });
+    await advanceToReview(true);
+    expect(
+      screen.getByRole("checkbox", { name: "Override Lodging" }),
+    ).toBeChecked();
+    expect(screen.getByLabelText("Lodging total ($)")).toHaveValue("200");
+    expect(
+      fetch.mock.calls.some(([, options]) => options?.method === "PATCH"),
+    ).toBe(false);
+    fireEvent.click(screen.getByRole("button", { name: "Return (completed)" }));
+    fireEvent.change(screen.getByLabelText("Travel date"), {
+      target: { value: "2026-08-12" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Next" }));
+    await screen.findByRole("heading", { name: "Expenses" });
+    fireEvent.click(screen.getByRole("button", { name: "Next" }));
+    expect(
+      screen.getByRole("checkbox", { name: "Override Lodging" }),
+    ).not.toBeChecked();
+    expect(screen.getByLabelText("Lodging total ($)")).toHaveValue("0");
+    expect(
+      fetch.mock.calls.filter(([, options]) => options?.method === "PATCH"),
+    ).toHaveLength(1);
   });
 
   it("keeps edits or explicitly discards without making a request", async () => {
