@@ -3,7 +3,6 @@ import { Plus, Trash2 } from "lucide-react";
 import Button from "app/components/Button";
 import Card from "app/components/Card";
 import { useModesOfTransportation } from "app/views/travel/shared/hooks/useModesOfTransportation";
-import CountyPromptModal from "./CountyPromptModal";
 import FormErrorSummary from "./FormErrorSummary";
 import RouteSegmentFields from "./RouteSegmentFields";
 
@@ -23,9 +22,6 @@ export default function RouteStep({
   onDestinationSelect,
   firstLegQualifier,
   lastLegQualifier,
-  onCountySubmit,
-  pendingCounty,
-  onCountyCancel,
   actions,
   isDisabled = false,
 }) {
@@ -129,11 +125,6 @@ export default function RouteStep({
       <Card.Footer className="mt-0 justify-end bg-gray-50 px-5 py-4 sm:px-6">
         {actions}
       </Card.Footer>
-      <CountyPromptModal
-        pending={pendingCounty}
-        onSubmit={onCountySubmit}
-        onCancel={onCountyCancel}
-      />
     </Card>
   );
 }

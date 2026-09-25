@@ -194,6 +194,85 @@ describe("new travel application workflow shell", () => {
     ).toBeVisible();
   });
 
+  it("resumes Save after a manual county prompt and retains Return when saving fails", async () => {
+    const draft = returnReadyDraft();
+    const fetchMock = vi.fn(async (url, options = {}) => {
+      if (String(url).includes("/config"))
+        return successfulResponse({ config: { googleApiKey: "test-key" } });
+      if (String(url).endsWith("/travel/event-types"))
+        return successfulResponse([{ name: "Forum", displayName: "Forum" }]);
+      if (String(url).endsWith("/travel/mode-of-transportation"))
+        return successfulResponse([
+          { methodOfTravel: "TRAIN", displayName: "Train" },
+        ]);
+      if (String(url).includes("/travel/geocode"))
+        return jsonResponse({ results: [] });
+      if (options.method === "PATCH")
+        return successfulResponse(
+          calculatedExpenseDraft(JSON.parse(options.body).draft),
+        );
+      if (options.method === "POST")
+        return failedResponse(500, { message: "failed" });
+      return successfulResponse(draft);
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    renderWorkflow(draft);
+    await screen.findByRole("option", { name: "Forum" });
+    fireEvent.click(screen.getByRole("button", { name: "Next" }));
+    fireEvent.click(screen.getByRole("button", { name: "Next" }));
+    expect(
+      await screen.findByRole("dialog", { name: "Enter county" }),
+    ).toBeVisible();
+    fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+    expect(screen.getByRole("button", { name: "Outbound" })).toHaveAttribute(
+      "aria-current",
+      "step",
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Next" }));
+    fireEvent.change(await screen.findByLabelText("County"), {
+      target: { value: "Erie" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Save county" }));
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: "Return" })).toHaveAttribute(
+        "aria-current",
+        "step",
+      ),
+    );
+
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: "Save" })).toBeEnabled(),
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+    fireEvent.change(await screen.findByLabelText("County"), {
+      target: { value: "Erie" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Save county" }));
+    fireEvent.click(
+      await screen.findByRole("button", { name: "Dates are correct" }),
+    );
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "could not be saved",
+    );
+    expect(screen.getByRole("button", { name: "Return" })).toHaveAttribute(
+      "aria-current",
+      "step",
+    );
+    expect(screen.getByLabelText("Return date")).toHaveValue("2026-08-18");
+    const saveRequest = fetchMock.mock.calls.find(
+      ([, options]) => options.method === "POST",
+    );
+    expect(saveRequest).toBeDefined();
+    expect(
+      JSON.parse(saveRequest[1].body).amendment.route.returnLegs[0].from.address
+        .county,
+    ).toBe("Erie");
+    expect(
+      screen.queryByText(/route could not be calculated/i),
+    ).not.toBeInTheDocument();
+  });
+
   it("resolves counties, confirms a long trip, and advances with calculated values", async () => {
     const draft = returnReadyDraft();
     const fetchMock = vi.fn(async (url, options = {}) => {
@@ -388,6 +467,66 @@ describe("new travel application workflow shell", () => {
     window.dispatchEvent(unload);
     expect(unload.defaultPrevented).toBe(false);
   });
+
+  it.each([true, false])(
+    "saves from Expenses and handles save success=%s",
+    async (succeeds) => {
+      const draft = calculatedExpenseDraft(returnReadyDraft());
+      draft.amendment.route.outboundLegs[0].to.address.county = "Erie";
+      draft.amendment.route.returnLegs[0].from.address.county = "Erie";
+      const fetchMock = vi.fn(async (url, options = {}) => {
+        if (String(url).includes("/config"))
+          return successfulResponse({ config: { googleApiKey: "test-key" } });
+        if (String(url).endsWith("/travel/event-types"))
+          return successfulResponse([{ name: "Forum", displayName: "Forum" }]);
+        if (String(url).endsWith("/travel/mode-of-transportation"))
+          return successfulResponse([
+            { methodOfTravel: "TRAIN", displayName: "Train" },
+          ]);
+        if (options.method === "PATCH")
+          return successfulResponse(JSON.parse(options.body).draft);
+        if (options.method === "POST") {
+          const saved = JSON.parse(options.body);
+          saved.id = 123;
+          saved.amendment.allowances.tolls = 30;
+          return succeeds ? successfulResponse(saved) : failedResponse(500, {});
+        }
+        return successfulResponse(draft);
+      });
+      vi.stubGlobal("fetch", fetchMock);
+      renderWorkflow(draft);
+      await advanceToReturn();
+      fireEvent.click(screen.getByRole("button", { name: "Next" }));
+      await screen.findByLabelText(/^Tolls/);
+      fireEvent.change(screen.getByLabelText(/^Tolls/), {
+        target: { value: "25" },
+      });
+      await waitFor(() =>
+        expect(screen.getByRole("button", { name: "Save" })).toBeEnabled(),
+      );
+      fireEvent.click(screen.getByRole("button", { name: "Save" }));
+      expect(
+        await screen.findByText(
+          succeeds ? /was saved as a draft/ : /could not be saved/,
+        ),
+      ).toBeVisible();
+      expect(screen.getByRole("button", { name: "Expenses" })).toHaveAttribute(
+        "aria-current",
+        "step",
+      );
+      expect(screen.getByLabelText(/^Tolls/)).toHaveValue(
+        succeeds ? "30" : "25",
+      );
+      expect(
+        screen.queryByText(/expense totals could not be calculated/),
+      ).not.toBeInTheDocument();
+      expect(
+        fetchMock.mock.calls.filter(
+          ([, options]) => options?.method === "POST",
+        ),
+      ).toHaveLength(1);
+    },
+  );
 
   it("does not recalculate unchanged expenses returned by route calculation", async () => {
     const draft = calculatedExpenseDraft(returnReadyDraft());

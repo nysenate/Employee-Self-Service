@@ -55,9 +55,6 @@ function renderStep(route, onRouteChange = vi.fn(), props = {}) {
               firstLegQualifiesForBreakfast: checked,
             }),
         }}
-        pendingCounty={null}
-        onCountySubmit={vi.fn()}
-        onCountyCancel={vi.fn()}
         actions={<button>Next</button>}
         {...props}
       />
