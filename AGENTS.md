@@ -165,6 +165,10 @@ Versions live in the `<properties>` block of `pom.xml`. The ones that change how
 
 ## Common Development Patterns
 
+### React Code Reuse
+
+Before adding React components, hooks, or utilities, search the entire React app for existing implementations and similar behavior, including other app sections. Prefer extending or refactoring shared code over creating a parallel implementation. When changing a shared abstraction, inspect and update every consumer and test its existing behavior. Create an app-specific implementation only when the requirements materially differ, and explain why.
+
 ### Adding a New REST Endpoint
 
 1. Create a controller extending `BaseRestApiCtrl`
