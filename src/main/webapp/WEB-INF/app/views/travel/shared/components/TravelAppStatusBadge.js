@@ -2,8 +2,8 @@ import React from "react";
 import { cn } from "app/utils/cn";
 
 const STATUS_VARIANTS = {
-  pending: "bg-orange-100/60 text-orange-800 border-orange-200",
-  approved: "bg-green-100/60 text-green-800 border-green-200",
+  pending: "bg-orange-100 text-orange-800 border-orange-200",
+  approved: "bg-green-200 text-green-800 border-green-300",
   disapproved: "bg-red-100 text-red-800 border-red-200",
   draft: "bg-teal-100 text-teal-800 border-teal-200",
   canceled: "bg-gray-100 text-gray-800 border-gray-200",
