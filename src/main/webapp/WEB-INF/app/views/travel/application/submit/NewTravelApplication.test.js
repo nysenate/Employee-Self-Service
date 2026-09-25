@@ -302,7 +302,7 @@ describe("new travel application workflow shell", () => {
 
     renderWorkflow(draft);
     await advanceToReturn();
-    fireEvent.change(screen.getByLabelText("Travel date"), {
+    fireEvent.change(screen.getByLabelText("Return date"), {
       target: { value: "2026-08-19" },
     });
     fireEvent.click(screen.getByRole("button", { name: "Next" }));
@@ -317,7 +317,7 @@ describe("new travel application workflow shell", () => {
       "aria-current",
       "step",
     );
-    expect(screen.getByLabelText("Travel date")).toHaveValue("2026-08-19");
+    expect(screen.getByLabelText("Return date")).toHaveValue("2026-08-19");
     expect(screen.getByRole("button", { name: "Expenses" })).toBeDisabled();
   });
 

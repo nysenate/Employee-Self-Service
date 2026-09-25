@@ -335,7 +335,14 @@ describe("TravelApplicationWorkflow ports", () => {
       fetch.mock.calls.some(([, options]) => options?.method === "PATCH"),
     ).toBe(false);
     fireEvent.click(screen.getByRole("button", { name: "Return (completed)" }));
-    fireEvent.change(screen.getByLabelText("Travel date"), {
+    expect(screen.getByLabelText("Return date")).toHaveAccessibleDescription(
+      "Your trip begins Aug 10, 2026.",
+    );
+    expect(screen.getByLabelText("Return date")).toHaveAttribute(
+      "min",
+      "2026-08-10",
+    );
+    fireEvent.change(screen.getByLabelText("Return date"), {
       target: { value: "2026-08-12" },
     });
     fireEvent.click(screen.getByRole("button", { name: "Next" }));
@@ -376,7 +383,7 @@ describe("TravelApplicationWorkflow ports", () => {
       "step",
     );
 
-    fireEvent.change(screen.getByLabelText("Travel date"), {
+    fireEvent.change(screen.getByLabelText("Outbound date"), {
       target: { value: "2026-08-12" },
     });
     fireEvent.click(screen.getByRole("button", { name: "Cancel edits" }));
@@ -387,7 +394,7 @@ describe("TravelApplicationWorkflow ports", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Keep editing" }));
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    expect(screen.getByLabelText("Travel date")).toHaveValue("2026-08-12");
+    expect(screen.getByLabelText("Outbound date")).toHaveValue("2026-08-12");
     expect(onCancel).not.toHaveBeenCalled();
 
     fireEvent.click(screen.getByRole("button", { name: "Cancel edits" }));

@@ -11,6 +11,8 @@ export default function RouteStep({
   title,
   description,
   legs,
+  travelStartDate,
+  precedingTravelDate,
   errors,
   errorSummaryRef,
   segmentIdPrefix,
@@ -74,6 +76,11 @@ export default function RouteStep({
               <RouteSegmentFields
                 index={index}
                 leg={leg}
+                dateLabel={`${title} date`}
+                travelStartDate={index === 0 ? travelStartDate : undefined}
+                minTravelDate={
+                  index === 0 ? precedingTravelDate : legs[index - 1].travelDate
+                }
                 errors={errors}
                 modes={modes}
                 onChange={(changes) => onUpdateSegment(index, changes)}

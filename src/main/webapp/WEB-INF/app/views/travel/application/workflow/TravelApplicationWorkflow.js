@@ -672,6 +672,8 @@ export default function TravelApplicationWorkflow({
               title="Return"
               description="Enter the route from your final destination back to your original departure point."
               legs={state.dirtyRoute.returnLegs}
+              travelStartDate={state.dirtyRoute.outboundLegs[0]?.travelDate}
+              precedingTravelDate={state.dirtyRoute.outboundLegs.at(-1)?.travelDate}
               errors={routeErrors}
               errorSummaryRef={errorSummaryRef}
               segmentIdPrefix="return"

@@ -558,7 +558,7 @@ describe("ResubmitTravelApplication", () => {
     expect(await screen.findByText("updated-agenda.pdf")).toBeVisible();
     fireEvent.click(screen.getByRole("button", { name: "Next" }));
 
-    fireEvent.change(screen.getByLabelText("Travel date"), {
+    fireEvent.change(screen.getByLabelText("Outbound date"), {
       target: { value: "2026-08-12" },
     });
     fireEvent.click(screen.getByRole("button", { name: "Next" }));
@@ -568,7 +568,7 @@ describe("ResubmitTravelApplication", () => {
         "step",
       ),
     );
-    fireEvent.change(screen.getByLabelText("Travel date"), {
+    fireEvent.change(screen.getByLabelText("Return date"), {
       target: { value: "2026-08-13" },
     });
     fireEvent.click(screen.getByRole("button", { name: "Next" }));
