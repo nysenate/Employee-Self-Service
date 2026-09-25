@@ -53,7 +53,7 @@ public class EverfiUserClientTest {
     @Test
     public void findByUuidHydratesLabelsFromCategoryCache() throws IOException {
         StubEverfiApiClient everfiApiClient = new StubEverfiApiClient(Map.of(
-                "/v1/admin/users/user-1?fields[users]=email,first_name,last_name,sso_id,employee_id,student_id,active,user_rule_set_roles,category_labels",
+                "/v1/admin/users/user-1?fields[users]=email,first_name,last_name,sso_id,employee_id,student_id,active,created_at,user_rule_set_roles,category_labels",
                 singleUserResponse("user-1", 200)
         ));
         EverfiCategoryService categoryService = new EverfiCategoryService(null);

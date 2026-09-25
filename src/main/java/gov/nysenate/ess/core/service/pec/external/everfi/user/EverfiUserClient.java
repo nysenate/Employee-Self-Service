@@ -20,7 +20,7 @@ public class EverfiUserClient {
 
     private static final String USER_ENDPOINT = "/v1/admin/users";
     private static final String SINGLE_USER_FIELDS =
-            "email,first_name,last_name,sso_id,employee_id,student_id,active,user_rule_set_roles,category_labels";
+            "email,first_name,last_name,sso_id,employee_id,student_id,active,created_at,user_rule_set_roles,category_labels";
     private static final String REGISTRATION_SETS_ENDPOINT = "/v1/admin/registration_sets";
 
     private final EverfiApiClient everfiApiClient;
