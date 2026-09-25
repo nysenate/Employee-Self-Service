@@ -325,9 +325,9 @@ describe("application cancellation", () => {
     );
     renderModal();
     await screen.findByText("Full detail purpose");
-    expect(Boolean(screen.queryByRole("button", { name: "Cancel" }))).toBe(
-      eligible,
-    );
+    expect(
+      Boolean(screen.queryByRole("button", { name: "Cancel Application" })),
+    ).toBe(eligible);
   });
 
   it("requires confirmation, blocks duplicate requests, and refreshes cached data", async () => {
@@ -367,7 +367,9 @@ describe("application cancellation", () => {
     queryClient.setQueryData(historyKey, { result: [fullApplication()] });
     queryClient.setQueryData(reviewKey, { result: [] });
     const { onClose } = renderModal({ queryClient });
-    fireEvent.click(await screen.findByRole("button", { name: "Cancel" }));
+    fireEvent.click(
+      await screen.findByRole("button", { name: "Cancel Application" }),
+    );
     expect(
       screen.getByText("Are you sure you want to cancel this application?"),
     ).toBeVisible();
@@ -376,7 +378,7 @@ describe("application cancellation", () => {
       fetchMock.mock.calls.filter(([, options]) => options.method === "POST"),
     ).toHaveLength(0);
     expect(onClose).not.toHaveBeenCalled();
-    fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+    fireEvent.click(screen.getByRole("button", { name: "Cancel Application" }));
     fireEvent.click(screen.getByRole("button", { name: "Yes" }));
     await waitFor(() =>
       expect(screen.getByRole("button", { name: "Yes" })).toBeDisabled(),
@@ -422,7 +424,9 @@ describe("application cancellation", () => {
         ),
       );
       const { onClose, onResubmit } = renderModal();
-      fireEvent.click(await screen.findByRole("button", { name: "Cancel" }));
+      fireEvent.click(
+        await screen.findByRole("button", { name: "Cancel Application" }),
+      );
       fireEvent.click(screen.getByRole("button", { name: "Yes" }));
       expect(await screen.findByRole("alert")).toHaveTextContent(
         "We couldn’t confirm cancellation",

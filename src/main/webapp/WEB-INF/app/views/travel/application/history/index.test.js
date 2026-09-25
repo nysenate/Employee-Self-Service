@@ -408,7 +408,9 @@ it("cancels from history, refreshes filtered results, and closes both dialogs", 
   renderHistory(
     "/travel/applications?status=DISAPPROVED&sort=startDate%3Adesc&appId=42",
   );
-  fireEvent.click(await screen.findByRole("button", { name: "Cancel" }));
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Cancel Application" }),
+  );
   fireEvent.click(screen.getByRole("button", { name: "Yes" }));
   await waitFor(() =>
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),

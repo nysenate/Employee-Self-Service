@@ -49,37 +49,41 @@ export default function TravelApplicationModal({ appId, onClose, onResubmit }) {
         )}
       </Modal.Body>
       <Modal.Controls>
-        <div className="flex items-center gap-6 px-3 py-1.5">
-          {canResubmit && (
+        <div className="grid w-full grid-cols-[1fr_auto] items-center gap-6 px-3 py-1.5 sm:justify-center">
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            {canResubmit && (
+              <Button
+                variant="theme"
+                isDisabled={cancellation.isPending || cancellation.isError}
+                onPress={() => onResubmit(appId)}
+              >
+                Edit and Resubmit
+              </Button>
+            )}
+            {canCancel && (
+              <Button
+                variant="destructive"
+                onPress={() => setConfirmCancel(true)}
+              >
+                Cancel Application
+              </Button>
+            )}
+          </div>
+          <div className="flex items-center justify-end gap-3">
+            {application && (
+              <a href={pdfHref} target="_blank" rel="noopener noreferrer">
+                Print
+              </a>
+            )}
             <Button
-              variant="theme"
-              isDisabled={cancellation.isPending || cancellation.isError}
-              onPress={() => onResubmit(appId)}
+              variant="secondary"
+              className="w-20"
+              isDisabled={cancellation.isPending}
+              onPress={onClose}
             >
-              Edit and Resubmit
+              Close
             </Button>
-          )}
-          {application && (
-            <a href={pdfHref} target="_blank" rel="noopener noreferrer">
-              Print
-            </a>
-          )}
-          <Button
-            variant="secondary"
-            className="w-20"
-            isDisabled={cancellation.isPending}
-            onPress={onClose}
-          >
-            Close
-          </Button>
-          {canCancel && (
-            <Button
-              variant="destructive"
-              onPress={() => setConfirmCancel(true)}
-            >
-              Cancel
-            </Button>
-          )}
+          </div>
         </div>
       </Modal.Controls>
       {confirmCancel && (

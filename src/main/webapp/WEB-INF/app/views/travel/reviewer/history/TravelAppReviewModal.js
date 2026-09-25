@@ -37,22 +37,26 @@ export default function TravelAppReviewModal({ reviewSummary, onOpenChange }) {
         <TravelAppReviewForm appReview={review} />
       </Modal.Body>
       <Modal.Controls>
-        <div className="flex items-center gap-6 px-3 py-1.5">
-          {canEdit && (
-            <Button variant="secondary" onPress={onEdit}>
-              Edit Application
+        <div className="grid w-full grid-cols-[1fr_auto] items-center gap-6 px-3 py-1.5 sm:justify-center">
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            {canEdit && (
+              <Button variant="secondary" onPress={onEdit}>
+                Edit Application
+              </Button>
+            )}
+          </div>
+          <div className="flex items-center justify-end gap-3">
+            <a href={pdfHref} target="_blank" rel="noopener noreferrer">
+              Print
+            </a>
+            <Button
+              variant="secondary"
+              className="w-20"
+              onPress={() => onOpenChange(false)}
+            >
+              Close
             </Button>
-          )}
-          <a href={pdfHref} target="_blank" rel="noopener noreferrer">
-            Print
-          </a>
-          <Button
-            variant="secondary"
-            className="w-20"
-            onPress={() => onOpenChange(false)}
-          >
-            Close
-          </Button>
+          </div>
         </div>
       </Modal.Controls>
     </Modal>
