@@ -3,7 +3,7 @@ import { endOfDay, formatISO, isValid, startOfDay, subMonths } from "date-fns";
 import Hero from "app/components/Hero";
 import Controls from "app/components/Controls";
 import { useRequisitionSearch } from "app/views/supply/shared/hooks/useRequisitionSearch";
-import LoadingIndicator from "app/components/LoadingIndicator";
+import LoadingStatus from "app/components/LoadingStatus";
 import RequisitionHistoryResults from "app/views/supply/requisition-history/RequisitionHistoryResults";
 import { isValidDateString } from "app/utils/dateUtils";
 import { UTCDate } from "@date-fns/utc";
@@ -112,7 +112,12 @@ export default function RequisitionHistoryIndex() {
         </div>
       </Controls>
       {requisitionQuery.isPending ? (
-        <LoadingIndicator />
+        <LoadingStatus
+          message="Loading requisition history…"
+          layout="centered"
+          size="lg"
+          className="min-h-48 p-6"
+        />
       ) : (
         <div className="mt-6">
           <RequisitionHistoryResults

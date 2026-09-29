@@ -1,3 +1,4 @@
+import NotificationProvider from "app/components/NotificationProvider";
 import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
@@ -180,13 +181,15 @@ describe("history to resubmission completion", () => {
       defaultOptions: { queries: { retry: false } },
     });
     render(
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={["/travel/application/42"]}>
-          <Routes>
-            <Route path="/travel/*" element={<TravelRouter />} />
-          </Routes>
-        </MemoryRouter>
-      </QueryClientProvider>,
+      <NotificationProvider>
+        <QueryClientProvider client={queryClient}>
+          <MemoryRouter initialEntries={["/travel/application/42"]}>
+            <Routes>
+              <Route path="/travel/*" element={<TravelRouter />} />
+            </Routes>
+          </MemoryRouter>
+        </QueryClientProvider>
+      </NotificationProvider>,
     );
 
     expect(await screen.findByText("Clarify this trip")).toBeVisible();

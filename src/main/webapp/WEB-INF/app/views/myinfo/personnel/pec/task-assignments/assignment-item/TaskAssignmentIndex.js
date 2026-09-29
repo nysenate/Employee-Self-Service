@@ -1,6 +1,6 @@
 import React from "react";
 import { useParams } from "react-router-dom";
-import LoadingIndicator from "app/components/LoadingIndicator";
+import LoadingStatus from "app/components/LoadingStatus";
 import DocumentAcknowledgeAssignment from "app/views/myinfo/personnel/pec/task-assignments/assignment-item/document-assignment/DocumentAcknowledgeAssignment";
 import VideoAssignment from "app/views/myinfo/personnel/pec/task-assignments/assignment-item/video-assignment/VideoAssignment";
 import MoodleAssignment from "app/views/myinfo/personnel/pec/task-assignments/assignment-item/moodle-assignment/MoodleAssignment";
@@ -14,10 +14,17 @@ export default function TaskAssignmentIndex() {
   const { taskId: taskIdParam } = useParams();
   const taskId = Number(taskIdParam);
   const { data: assignment, isPending: isAssignmentPending } =
-    useTaskAssignment(user?.employeeId, taskId,);
+    useTaskAssignment(user?.employeeId, taskId);
 
   if (isUserPending || isAssignmentPending || !assignment) {
-    return <LoadingIndicator />;
+    return (
+      <LoadingStatus
+        message="Loading assignment…"
+        layout="centered"
+        size="lg"
+        className="min-h-48 p-6"
+      />
+    );
   }
 
   switch (assignment.task.taskType) {

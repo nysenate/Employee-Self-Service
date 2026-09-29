@@ -1,3 +1,4 @@
+import NotificationProvider from "app/components/NotificationProvider";
 import React, { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
@@ -51,31 +52,33 @@ function renderEditor(role = "TRAVEL_ADMIN", status = "APPROVED", id = "42") {
   }));
   vi.stubGlobal("fetch", fetchMock);
   render(
-    <QueryClientProvider
-      client={
-        new QueryClient({ defaultOptions: { queries: { retry: false } } })
-      }
-    >
-      <MemoryRouter
-        initialEntries={[
-          {
-            pathname: `/travel/applications/${id}/edit`,
-            state: { returnTo: "/travel/manage/review-history?offset=12" },
-          },
-        ]}
+    <NotificationProvider>
+      <QueryClientProvider
+        client={
+          new QueryClient({ defaultOptions: { queries: { retry: false } } })
+        }
       >
-        <Routes>
-          <Route
-            path="/travel/applications/:appId/edit"
-            element={<EditTravelApplication />}
-          />
-          <Route
-            path="/travel/manage/review-history"
-            element={<Destination />}
-          />
-        </Routes>
-      </MemoryRouter>
-    </QueryClientProvider>,
+        <MemoryRouter
+          initialEntries={[
+            {
+              pathname: `/travel/applications/${id}/edit`,
+              state: { returnTo: "/travel/manage/review-history?offset=12" },
+            },
+          ]}
+        >
+          <Routes>
+            <Route
+              path="/travel/applications/:appId/edit"
+              element={<EditTravelApplication />}
+            />
+            <Route
+              path="/travel/manage/review-history"
+              element={<Destination />}
+            />
+          </Routes>
+        </MemoryRouter>
+      </QueryClientProvider>
+    </NotificationProvider>,
   );
   return fetchMock;
 }
@@ -116,10 +119,11 @@ it("returns to filtered history after an acknowledged edit save", async () => {
   const fetchMock = renderEditor();
   fireEvent.click(await screen.findByRole("button", { name: "Save" }));
   expect(
-    await screen.findByText(
-      "Returned /travel/manage/review-history?offset=12",
-    ),
+    await screen.findByText("Returned /travel/manage/review-history?offset=12"),
   ).toBeVisible();
+  expect(screen.getByRole("status")).toHaveTextContent(
+    "Changes saved to application #42",
+  );
   expect(
     fetchMock.mock.calls.filter(([, options]) => options?.method === "POST"),
   ).toEqual([

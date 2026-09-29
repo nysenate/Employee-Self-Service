@@ -1,4 +1,7 @@
-import React, { useReducer, useRef, useState } from "react";
+import React, { useEffect, useReducer, useRef, useState } from "react";
+import BusyRegion from "app/components/BusyRegion";
+import ErrorAlert from "app/components/ErrorAlert";
+import { useNotifySuccess } from "app/components/NotificationProvider";
 import PurposeStep from "../submit/components/PurposeStep";
 import ExpensesStep from "../submit/components/ExpensesStep";
 import RouteStep from "../submit/components/RouteStep";
@@ -10,7 +13,7 @@ import LongTripModal from "../submit/components/LongTripModal";
 import WorkflowActions from "../submit/components/WorkflowActions";
 import WorkflowProgress from "../submit/components/WorkflowProgress";
 import CancelEditsModal from "./components/CancelEditsModal";
-import { SubmissionConfirmationModal } from "../submit/components/SubmissionModals";
+import { ApplicationSubmissionDialog } from "../submit/components/SubmissionModals";
 import { useUnsavedChangesGuard } from "../submit/hooks/useUnsavedChangesGuard";
 import { useUploadSupportingDocuments } from "../submit/hooks/usePurposeMutations";
 import { validatePurpose } from "../submit/purposeValidation";
@@ -74,16 +77,20 @@ export default function TravelApplicationWorkflow({
   renderCompletion,
 }) {
   const draft = initialDraft;
+  const notifySuccess = useNotifySuccess();
   const [state, dispatch] = useReducer(workflowReducer, draft, (initial) =>
     createWorkflowState(initial, steps),
   );
   const expenseOverrides = useExpenseOverrides(draft);
   const [purposeErrors, setPurposeErrors] = useState({});
   const [showConusWarning, setShowConusWarning] = useState(false);
-  const [saveMessage, setSaveMessage] = useState(null);
+  const [saveError, setSaveError] = useState(null);
+  const [pendingAction, setPendingAction] = useState(null);
   const [uploadError, setUploadError] = useState(false);
   const [showCancelEdits, setShowCancelEdits] = useState(false);
   const errorSummaryRef = useRef(null);
+  const saveErrorRef = useRef(null);
+  const routeErrorRef = useRef(null);
   const calculateExpenses = useCalculateTravelExpenses();
   const uploadDocuments = useUploadSupportingDocuments();
   const submission = useApplicationSubmission({
@@ -123,6 +130,13 @@ export default function TravelApplicationWorkflow({
     return reportValidationResult(errors);
   }
 
+  useEffect(() => {
+    if (saveError) saveErrorRef.current?.focus();
+  }, [saveError]);
+  useEffect(() => {
+    if (routeAdvancement.calculationError) routeErrorRef.current?.focus();
+  }, [routeAdvancement.calculationError]);
+
   function reportValidationResult(errors) {
     if (Object.keys(errors).length === 0) return true;
     requestAnimationFrame(() => errorSummaryRef.current?.focus());
@@ -130,7 +144,8 @@ export default function TravelApplicationWorkflow({
   }
 
   async function handleNext() {
-    setSaveMessage(null);
+    setSaveError(null);
+    setPendingAction("next");
     switch (state.currentStepId) {
       case "purpose":
         if (!validateCurrentPurpose()) return;
@@ -158,7 +173,8 @@ export default function TravelApplicationWorkflow({
 
   async function handleSave() {
     if (!saveDraft) return;
-    setSaveMessage(null);
+    setSaveError(null);
+    setPendingAction("save");
     switch (state.currentStepId) {
       case "purpose":
         if (!validateCurrentPurpose()) return;
@@ -189,16 +205,12 @@ export default function TravelApplicationWorkflow({
     try {
       const savedDraft = await saveDraft.execute(draftToSave);
       dispatch({ type: "RESET_BASELINE", draft: savedDraft });
-      setSaveMessage({
-        type: "success",
-        text: "Your travel application was saved as a draft.",
-      });
+      notifySuccess("Draft saved");
       return savedDraft;
     } catch {
-      setSaveMessage({
-        type: "error",
-        text: "Your travel application could not be saved. Your entered information is still available.",
-      });
+      setSaveError(
+        "Your travel application could not be saved. Your entered information is still available.",
+      );
     }
   }
 
@@ -237,6 +249,17 @@ export default function TravelApplicationWorkflow({
     onCancel();
   }
 
+  const busyMessage = saveDraft?.isPending
+    ? "Saving your draft…"
+    : routeAdvancement.isPending
+      ? routeAdvancement.pendingMessage
+      : calculateExpenses.isPending || expenseEditing.isPending
+        ? "Updating expense totals…"
+        : null;
+  const isWorking = Boolean(busyMessage);
+  const isNavigationDisabled =
+    isWorking || expenseEditing.isLodgingPending || uploadDocuments.isPending;
+
   const workflowActions = (
     <WorkflowActions
       steps={state.steps}
@@ -245,23 +268,15 @@ export default function TravelApplicationWorkflow({
       onSave={saveDraft ? handleSave : null}
       onCancel={onCancel ? () => setShowCancelEdits(true) : null}
       finalActionLabel={presentation.finalActionLabel}
-      isSaving={
-        Boolean(saveDraft?.isPending) ||
-        calculateExpenses.isPending ||
-        expenseEditing.isPending ||
-        expenseEditing.isLodgingPending
-      }
+      isSaving={isWorking && pendingAction === "save"}
       onPrimary={handleNext}
       isPrimaryPending={
-        routeAdvancement.isPending ||
-        calculateExpenses.isPending ||
-        expenseEditing.isPending ||
-        expenseEditing.isLodgingPending ||
+        (isWorking && pendingAction !== "save") ||
         submission.status === "submitting"
       }
       isPrimaryDisabled={state.currentStepId === "review" && commit.isDisabled}
       isCancelDisabled={submission.isLocked || commit.isPending}
-      isDisabled={submission.isLocked}
+      isDisabled={submission.isLocked || isNavigationDisabled}
     />
   );
 
@@ -272,18 +287,22 @@ export default function TravelApplicationWorkflow({
         currentStepId={state.currentStepId}
         completedStepIds={state.completedStepIds}
         onSelect={(stepId) => dispatch({ type: "GO_TO_STEP", stepId })}
-        isDisabled={
-          submission.isLocked ||
-          routeAdvancement.isPending ||
-          calculateExpenses.isPending ||
-          expenseEditing.isPending ||
-          expenseEditing.isLodgingPending
-        }
+        isDisabled={submission.isLocked || isNavigationDisabled}
       />
 
-      {renderCurrentStep()}
-
-      <SaveMessage message={saveMessage} />
+      {saveError && (
+        <ErrorAlert
+          ref={saveErrorRef}
+          tabIndex={-1}
+          title="Draft was not saved"
+        >
+          {saveError}
+        </ErrorAlert>
+      )}
+      {submission.status === "idle" &&
+        submission.error &&
+        commit.renderError(submission.error)}
+      <BusyRegion message={busyMessage}>{renderCurrentStep()}</BusyRegion>
 
       <CountyPromptModal
         pending={routeAdvancement.pendingCounty}
@@ -291,15 +310,17 @@ export default function TravelApplicationWorkflow({
         onCancel={routeAdvancement.cancelCounty}
       />
 
-      {submission.status === "submitting" && (
-        <p role="status" className="font-medium">
-          {presentation.pendingText}
-        </p>
-      )}
-      {submission.error && commit.renderError(submission.error)}
-
-      <SubmissionConfirmationModal
-        isOpen={submission.status === "confirming"}
+      <ApplicationSubmissionDialog
+        isOpen={["confirming", "submitting", "failed"].includes(
+          submission.status,
+        )}
+        isPending={submission.status === "submitting"}
+        pendingText={presentation.pendingText}
+        error={
+          submission.status === "failed"
+            ? commit.renderError(submission.error)
+            : null
+        }
         onCancel={submission.cancelConfirmation}
         onConfirm={submission.confirm}
         title={presentation.confirmationTitle}
@@ -429,9 +450,14 @@ export default function TravelApplicationWorkflow({
               isDisabled={routeAdvancement.isPending}
             />
             {routeAdvancement.calculationError && (
-              <p role="alert" className="font-medium text-red-700">
+              <ErrorAlert
+                ref={routeErrorRef}
+                tabIndex={-1}
+                title="Route could not be calculated"
+                className="mt-4"
+              >
                 {routeAdvancement.calculationError}
-              </p>
+              </ErrorAlert>
             )}
             <LongTripModal
               isOpen={routeAdvancement.showLongTripWarning}
@@ -495,19 +521,4 @@ export default function TravelApplicationWorkflow({
     expenseOverrides.resetFromDraft(calculatedDraft);
     expenseEditing.resetFromDraft(calculatedDraft);
   }
-}
-
-function SaveMessage({ message }) {
-  if (!message) return null;
-  const isError = message.type === "error";
-  return (
-    <p
-      role={isError ? "alert" : "status"}
-      className={
-        isError ? "font-medium text-red-700" : "font-medium text-green-700"
-      }
-    >
-      {message.text}
-    </p>
-  );
 }

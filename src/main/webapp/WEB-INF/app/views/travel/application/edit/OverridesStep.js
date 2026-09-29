@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
+import ErrorAlert from "app/components/ErrorAlert";
 import Card from "app/components/Card";
 import FormErrorSummary from "../submit/components/FormErrorSummary";
 import { OVERRIDE_FIELDS, updateOverride } from "./overrideModel";
@@ -12,6 +13,10 @@ export default function OverridesStep({
   onChange,
   actions,
 }) {
+  const calculationErrorRef = useRef(null);
+  useEffect(() => {
+    if (calculationError) calculationErrorRef.current?.focus();
+  }, [calculationError]);
   return (
     <Card>
       <Card.Content className="space-y-6 p-5 sm:p-6">
@@ -30,9 +35,13 @@ export default function OverridesStep({
           fieldIdPrefix="override-"
         />
         {calculationError && (
-          <p role="alert" className="text-red-700">
+          <ErrorAlert
+            ref={calculationErrorRef}
+            tabIndex={-1}
+            title="Expenses could not be calculated"
+          >
             {calculationError}
-          </p>
+          </ErrorAlert>
         )}
         <fieldset disabled={isDisabled} className="space-y-5">
           {OVERRIDE_FIELDS.map(([field, label]) => {

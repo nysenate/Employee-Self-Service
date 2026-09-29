@@ -1,3 +1,4 @@
+import NotificationProvider from "app/components/NotificationProvider";
 import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
@@ -194,20 +195,22 @@ function renderPage(
   }),
 ) {
   return render(
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={[initialEntry]}>
-        <SwitchApplication />
-        <Routes>
-          <Route
-            path="/travel/applications/:appId/resubmit"
-            element={<ResubmitTravelApplicationPage />}
-          />
-          <Route path="/travel/applications" element={<LocationProbe />} />
-          <Route path="/travel" element={<LocationProbe />} />
-          <Route path="/logout" element={<LocationProbe />} />
-        </Routes>
-      </MemoryRouter>
-    </QueryClientProvider>,
+    <NotificationProvider>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[initialEntry]}>
+          <SwitchApplication />
+          <Routes>
+            <Route
+              path="/travel/applications/:appId/resubmit"
+              element={<ResubmitTravelApplicationPage />}
+            />
+            <Route path="/travel/applications" element={<LocationProbe />} />
+            <Route path="/travel" element={<LocationProbe />} />
+            <Route path="/logout" element={<LocationProbe />} />
+          </Routes>
+        </MemoryRouter>
+      </QueryClientProvider>
+    </NotificationProvider>,
   );
 }
 
@@ -465,6 +468,9 @@ describe("ResubmitTravelApplication", () => {
         "This application is no longer available for resubmission.",
       ),
     ).toBeVisible();
+    fireEvent.click(
+      screen.getByRole("button", { name: "Return to application" }),
+    );
     expect(
       screen.getByRole("button", { name: "Save and Resubmit" }),
     ).toBeDisabled();
@@ -503,6 +509,9 @@ describe("ResubmitTravelApplication", () => {
         /could not confirm whether your application was resubmitted/i,
       ),
     ).toBeVisible();
+    fireEvent.click(
+      screen.getByRole("button", { name: "Return to application" }),
+    );
     expect(
       screen.getByRole("button", { name: "Save and Resubmit" }),
     ).toBeDisabled();

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Button from "app/components/Button";
 import ErrorAlert from "app/components/ErrorAlert";
-import LoadingIndicator from "app/components/LoadingIndicator";
+import LoadingStatus from "app/components/LoadingStatus";
 import Modal from "app/components/Modal";
 import TravelAppForm from "app/views/travel/shared/components/TravelAppForm";
 import { useTravelApp } from "app/views/travel/shared/hooks/useTravelApp";
@@ -35,7 +35,14 @@ export default function TravelApplicationModal({ appId, onClose, onResubmit }) {
       ariaLabel="Travel application details"
     >
       <Modal.Body>
-        {appQuery.isPending && <LoadingIndicator />}
+        {appQuery.isPending && (
+          <LoadingStatus
+            message="Loading application details…"
+            layout="centered"
+            size="lg"
+            className="min-h-48 p-6"
+          />
+        )}
         {hasLoadError && (
           <ErrorAlert title="We couldn’t load this travel application">
             <p>The application details are currently unavailable.</p>

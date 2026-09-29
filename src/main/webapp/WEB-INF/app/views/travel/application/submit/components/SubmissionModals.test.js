@@ -2,7 +2,7 @@ import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import {
-  SubmissionConfirmationModal,
+  ApplicationSubmissionDialog,
   SubmissionSuccessModal,
 } from "./SubmissionModals";
 
@@ -11,7 +11,7 @@ describe("submission modals", () => {
     const onCancel = vi.fn();
     const onConfirm = vi.fn();
     render(
-      <SubmissionConfirmationModal
+      <ApplicationSubmissionDialog
         isOpen
         onCancel={onCancel}
         onConfirm={onConfirm}
@@ -47,7 +47,7 @@ describe("submission modals", () => {
 
   it("renders operation-specific confirmation copy", () => {
     render(
-      <SubmissionConfirmationModal
+      <ApplicationSubmissionDialog
         isOpen
         onCancel={vi.fn()}
         onConfirm={vi.fn()}

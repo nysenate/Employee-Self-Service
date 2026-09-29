@@ -1,3 +1,4 @@
+import NotificationProvider from "app/components/NotificationProvider";
 import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
@@ -73,25 +74,27 @@ function renderHistory(initialEntry) {
     defaultOptions: { queries: { retry: false } },
   });
   return render(
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={[initialEntry]}>
-        <Routes>
-          <Route
-            path="/travel/applications"
-            element={
-              <>
-                <ApplicationHistory />
-                <LocationProbe />
-              </>
-            }
-          />
-          <Route
-            path="/travel/applications/:appId/resubmit"
-            element={<EditorProbe />}
-          />
-        </Routes>
-      </MemoryRouter>
-    </QueryClientProvider>,
+    <NotificationProvider>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[initialEntry]}>
+          <Routes>
+            <Route
+              path="/travel/applications"
+              element={
+                <>
+                  <ApplicationHistory />
+                  <LocationProbe />
+                </>
+              }
+            />
+            <Route
+              path="/travel/applications/:appId/resubmit"
+              element={<EditorProbe />}
+            />
+          </Routes>
+        </MemoryRouter>
+      </QueryClientProvider>
+    </NotificationProvider>,
   );
 }
 

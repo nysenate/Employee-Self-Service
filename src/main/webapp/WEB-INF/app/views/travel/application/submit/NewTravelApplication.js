@@ -1,4 +1,5 @@
 import React from "react";
+import ErrorAlert from "app/components/ErrorAlert";
 import { useNavigate } from "react-router-dom";
 import TravelApplicationWorkflow from "../workflow/TravelApplicationWorkflow";
 import { SubmissionSuccessModal } from "./components/SubmissionModals";
@@ -32,10 +33,10 @@ export default function NewTravelApplication({ draft }) {
         isPending: submitApplication.isPending,
         isDisabled: false,
         renderError: () => (
-          <p role="alert" className="font-medium">
-            Your travel application could not be submitted. Your application
-            and any saved draft remain available; you can edit it or try again.
-          </p>
+          <ErrorAlert title="Application was not submitted">
+            Your travel application could not be submitted. Your application and
+            any saved draft remain available; you can edit it or try again.
+          </ErrorAlert>
         ),
       }}
       presentation={NEW_APPLICATION_PRESENTATION}

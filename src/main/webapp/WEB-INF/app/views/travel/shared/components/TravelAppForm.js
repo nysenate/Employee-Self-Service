@@ -1,10 +1,9 @@
 import React, { useMemo } from "react";
-import LoadingCircle from "app/components/LoadingCircle";
+import LoadingStatus from "app/components/LoadingStatus";
 import { isoToShortDate } from "app/utils/dateUtils";
 import { toCurrency } from "app/utils/textUtils";
 import { cn } from "app/utils/cn";
 import { Info, Paperclip } from "lucide-react";
-import LoadingIndicator from "app/components/LoadingIndicator";
 import TransportationDetailsPopover from "app/views/travel/shared/components/TransportationDetailsPopover";
 import MealDetailsPopover from "app/views/travel/shared/components/MealDetailsPopover";
 import LodgingDetailsPopover from "app/views/travel/shared/components/LodgingDetailsPopover";
@@ -212,7 +211,10 @@ function ModeOfTransportationBox({ amendment }) {
       </div>
       {isMotLoading ? (
         <div className="mx-auto my-3">
-          <LoadingCircle textColor="text-teal-600" />
+          <LoadingStatus
+            message="Loading transportation options…"
+            className="text-teal-600"
+          />
         </div>
       ) : (
         <div className="mt-3 grid grid-cols-2 gap-0.5">

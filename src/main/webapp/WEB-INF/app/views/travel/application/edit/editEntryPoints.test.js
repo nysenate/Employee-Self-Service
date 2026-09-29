@@ -1,3 +1,4 @@
+import NotificationProvider from "app/components/NotificationProvider";
 import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter, useLocation } from "react-router-dom";
@@ -42,22 +43,24 @@ function modal(kind, role) {
     })),
   );
   render(
-    <QueryClientProvider client={new QueryClient()}>
-      <MemoryRouter initialEntries={[`/travel/manage/${kind}?offset=12`]}>
-        <Location />
-        {kind === "queue" ? (
-          <ReviewerActionModal
-            reviewSummary={{ appReviewId: 99 }}
-            setIsOpen={vi.fn()}
-          />
-        ) : (
-          <TravelAppReviewModal
-            reviewSummary={{ appReviewId: 99 }}
-            onOpenChange={vi.fn()}
-          />
-        )}
-      </MemoryRouter>
-    </QueryClientProvider>,
+    <NotificationProvider>
+      <QueryClientProvider client={new QueryClient()}>
+        <MemoryRouter initialEntries={[`/travel/manage/${kind}?offset=12`]}>
+          <Location />
+          {kind === "queue" ? (
+            <ReviewerActionModal
+              reviewSummary={{ appReviewId: 99 }}
+              setIsOpen={vi.fn()}
+            />
+          ) : (
+            <TravelAppReviewModal
+              reviewSummary={{ appReviewId: 99 }}
+              onOpenChange={vi.fn()}
+            />
+          )}
+        </MemoryRouter>
+      </QueryClientProvider>
+    </NotificationProvider>,
   );
 }
 it.each(["queue", "review-history"])(

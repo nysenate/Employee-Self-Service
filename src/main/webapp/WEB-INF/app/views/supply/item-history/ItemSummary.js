@@ -3,7 +3,7 @@ import { endOfDay, formatISO, startOfDay, subMonths } from "date-fns";
 import { useItemSummary } from "app/views/supply/item-history/useItemSummary";
 import Hero from "app/components/Hero";
 import Controls from "app/components/Controls";
-import LoadingIndicator from "app/components/LoadingIndicator";
+import LoadingStatus from "app/components/LoadingStatus";
 import {
   RESET_FILTERS,
   SET_DATE_RANGE,
@@ -112,7 +112,12 @@ export default function ItemSummary() {
         </div>
       </Controls>
       {itemSummaryQuery.isPending ? (
-        <LoadingIndicator />
+        <LoadingStatus
+          message="Loading item history…"
+          layout="centered"
+          size="lg"
+          className="min-h-48 p-6"
+        />
       ) : (
         <div className="mt-6">
           <ItemSummaryResults

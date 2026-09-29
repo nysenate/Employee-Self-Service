@@ -1,8 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchApiJson } from "app/api/fetchJson";
 import { travelQueryKeys } from "app/views/travel/shared/hooks/travelQueryKeys";
+import { useNotifySuccess } from "app/components/NotificationProvider";
 
 export function useCancelTravelApplication(appId) {
+  const notifySuccess = useNotifySuccess();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -26,6 +28,7 @@ export function useCancelTravelApplication(appId) {
         }),
         queryClient.invalidateQueries({ queryKey: travelQueryKeys.reviews() }),
       ]);
+      notifySuccess(`Application #${appId} canceled`);
     },
   });
 }

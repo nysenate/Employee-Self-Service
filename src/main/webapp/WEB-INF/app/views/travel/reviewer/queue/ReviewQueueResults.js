@@ -6,20 +6,14 @@ import TravelAppSummaryTable from "app/views/travel/shared/components/TravelAppS
 import TravelEmptyResults from "app/views/travel/shared/components/TravelEmptyResults";
 import { travelRoleDisplayName } from "app/views/travel/shared/travelRoles";
 import ReviewerActionModal from "./ReviewerActionModal";
+import { useNotifySuccess } from "app/components/NotificationProvider";
 
 export default function ReviewQueueResults({ queue, roleName }) {
   const location = useLocation();
+  const notifySuccess = useNotifySuccess();
   const [selectedReview, setSelectedReview] = React.useState(
     location.state?.reviewSummary ?? null,
   );
-  const [successMessage, setSuccessMessage] = React.useState(null);
-
-  React.useEffect(() => {
-    if (!successMessage) return undefined;
-
-    const timeoutId = window.setTimeout(() => setSuccessMessage(null), 6000);
-    return () => window.clearTimeout(timeoutId);
-  }, [successMessage]);
 
   const appIdToReview = new Map();
   queue?.forEach((review) => appIdToReview.set(review.application.id, review));
@@ -27,7 +21,6 @@ export default function ReviewQueueResults({ queue, roleName }) {
   const apps = queue?.map((review) => review.application) ?? [];
 
   const selectApp = (app) => {
-    setSuccessMessage(null);
     setSelectedReview(appIdToReview.get(app.id));
   };
 
@@ -42,20 +35,11 @@ export default function ReviewQueueResults({ queue, roleName }) {
     const reviewingAs = travelRoleDisplayName(review?.pendingReviewerRole);
     const subject = travelerName ? ` for ${travelerName}` : "";
     const role = reviewingAs ? ` as ${reviewingAs}` : "";
-    setSuccessMessage(`Application${subject} ${action}${role}.`);
+    notifySuccess(`Application${subject} ${action}${role}.`);
   };
 
   return (
     <>
-      {successMessage && (
-        <div
-          role="status"
-          className="mt-6 border border-green-300 bg-green-100 px-4 py-3 font-medium text-green-900"
-        >
-          {successMessage}
-        </div>
-      )}
-
       {apps.length === 0 ? (
         <TravelEmptyResults
           title={

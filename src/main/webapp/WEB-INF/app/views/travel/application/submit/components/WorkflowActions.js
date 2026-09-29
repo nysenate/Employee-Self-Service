@@ -28,7 +28,9 @@ export default function WorkflowActions({
         <Button
           variant="secondary"
           onPress={onCancel}
-          isDisabled={isDisabled || isCancelDisabled}
+          isDisabled={
+            isDisabled || isCancelDisabled || isSaving || isPrimaryPending
+          }
         >
           Cancel edits
         </Button>
@@ -37,7 +39,7 @@ export default function WorkflowActions({
         <Button
           variant="secondary"
           onPress={onBack}
-          isDisabled={isDisabled || isPrimaryPending}
+          isDisabled={isDisabled || isPrimaryPending || isSaving}
         >
           Back
         </Button>
@@ -54,7 +56,9 @@ export default function WorkflowActions({
       )}
       <Button
         onPress={onPrimary}
-        isDisabled={isDisabled || isPrimaryDisabled || isPrimaryPending}
+        isDisabled={
+          isDisabled || isPrimaryDisabled || isPrimaryPending || isSaving
+        }
         isPending={isPrimaryPending}
       >
         {primaryLabel}

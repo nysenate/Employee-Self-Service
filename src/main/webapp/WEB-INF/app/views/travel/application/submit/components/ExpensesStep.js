@@ -1,4 +1,5 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import ErrorAlert from "app/components/ErrorAlert";
 import Card from "app/components/Card";
 import AddressAutocomplete from "app/views/travel/shared/components/AddressAutocomplete";
 import { isoToMediumDate } from "app/utils/dateUtils";
@@ -27,6 +28,10 @@ export default function ExpensesStep({
   onLodgingSelect,
   actions,
 }) {
+  const calculationErrorRef = useRef(null);
+  useEffect(() => {
+    if (calculationError) calculationErrorRef.current?.focus();
+  }, [calculationError]);
   return (
     <Card>
       <Card.Content className="space-y-6 p-5 sm:p-6">
@@ -42,9 +47,13 @@ export default function ExpensesStep({
           fieldIdPrefix="expense-"
         />
         {calculationError && (
-          <p role="alert" className="font-medium text-red-700">
+          <ErrorAlert
+            ref={calculationErrorRef}
+            tabIndex={-1}
+            title="Expenses could not be calculated"
+          >
             {calculationError}
-          </p>
+          </ErrorAlert>
         )}
         <fieldset disabled={isDisabled} className="space-y-6">
           <section aria-labelledby="miscellaneous-expenses-heading">
@@ -148,8 +157,8 @@ function Meals({ draft, onDraftChange }) {
       </h2>
       <div className="mt-3 grid grid-cols-2 items-start gap-10">
         <p className="text-gray-600">
-          You may qualify for the following meal reimbursements.
-          Select each eligible meal you expect to claim.
+          You may qualify for the following meal reimbursements. Select each
+          eligible meal you expect to claim.
         </p>
         <aside className="border-l-4 border-orange-400 bg-orange-50 p-4 text-orange-800">
           Meal reimbursement eligibility depends on your arrival and departure
@@ -175,11 +184,15 @@ function Meals({ draft, onDraftChange }) {
           prior year's rates.
         </aside>
       )}
-      <table className="table mt-4" aria-label="Eligible meal reimbursements">
+      <table className="mt-4 table" aria-label="Eligible meal reimbursements">
         <thead>
           <tr className="table__head__row">
-            <th className="table__head__cell" scope="col">Address</th>
-            <th className="table__head__cell w-40" scope="col">Date</th>
+            <th className="table__head__cell" scope="col">
+              Address
+            </th>
+            <th className="table__head__cell w-40" scope="col">
+              Date
+            </th>
             <th className="table__head__cell w-32 text-center" scope="col">
               Breakfast
             </th>
@@ -254,11 +267,18 @@ function Lodging({ draft, errors, pendingRows = {}, onDraftChange, onSelect }) {
         Confirm each lodging night and select a hotel address to calculate its
         rate.
       </p>
-      <table className="table mt-4" aria-label="Eligible lodging reimbursements">
+      <table
+        className="mt-4 table"
+        aria-label="Eligible lodging reimbursements"
+      >
         <thead>
           <tr className="table__head__row">
-            <th className="table__head__cell" scope="col">Hotel address</th>
-            <th className="table__head__cell w-40" scope="col">Date</th>
+            <th className="table__head__cell" scope="col">
+              Hotel address
+            </th>
+            <th className="table__head__cell w-40" scope="col">
+              Date
+            </th>
             <th className="table__head__cell w-28 text-center" scope="col">
               Claim
             </th>
@@ -344,12 +364,21 @@ function Mileage({ draft, onDraftChange }) {
       <p className="mt-1 text-sm text-gray-600">
         Select each qualifying route you expect to claim.
       </p>
-      <table className="table mt-4" aria-label="Eligible mileage reimbursements">
+      <table
+        className="mt-4 table"
+        aria-label="Eligible mileage reimbursements"
+      >
         <thead>
           <tr className="table__head__row">
-            <th className="table__head__cell" scope="col">From</th>
-            <th className="table__head__cell" scope="col">To</th>
-            <th className="table__head__cell w-40" scope="col">Date</th>
+            <th className="table__head__cell" scope="col">
+              From
+            </th>
+            <th className="table__head__cell" scope="col">
+              To
+            </th>
+            <th className="table__head__cell w-40" scope="col">
+              Date
+            </th>
             <th className="table__head__cell w-28 text-center" scope="col">
               Claim
             </th>
@@ -398,7 +427,9 @@ function Check({ label, visuallyHiddenLabel = false, checked, onChange }) {
         checked={Boolean(checked)}
         onChange={(e) => onChange(e.target.checked)}
       />
-      <span className={visuallyHiddenLabel ? "sr-only" : undefined}>{label}</span>
+      <span className={visuallyHiddenLabel ? "sr-only" : undefined}>
+        {label}
+      </span>
     </label>
   );
 }

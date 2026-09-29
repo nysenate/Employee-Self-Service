@@ -4,7 +4,7 @@ import { useTravelReview } from "app/views/travel/shared/hooks/useTravelReview";
 import Modal from "app/components/Modal";
 import TravelAppReviewForm from "app/views/travel/shared/components/TravelAppReviewForm";
 import Button from "app/components/Button";
-import LoadingIndicator from "app/components/LoadingIndicator";
+import LoadingStatus from "app/components/LoadingStatus";
 import ApproveConfirmDialog from "./ApproveConfirmDialog";
 import DisapproveConfirmDialog from "./DisapproveConfirmDialog";
 
@@ -34,7 +34,12 @@ export default function ReviewerActionModal({
         ariaLabel="Travel review details"
       >
         <Modal.Body>
-          <LoadingIndicator />
+          <LoadingStatus
+            message="Loading review details…"
+            layout="centered"
+            size="lg"
+            className="min-h-48 p-6"
+          />
         </Modal.Body>
       </Modal>
     );

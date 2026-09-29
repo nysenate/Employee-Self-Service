@@ -1,5 +1,5 @@
 import React from "react";
-import LoadingIndicator from "app/components/LoadingIndicator";
+import LoadingStatus from "app/components/LoadingStatus";
 import { useQueryClient } from "@tanstack/react-query";
 import logoutUser from "app/views/logout/logoutUser";
 import { AUTHED_USER_QUERY_KEY } from "app/hooks/useRequireAuthedUser";
@@ -15,5 +15,12 @@ export default function Logout() {
     });
   }, [queryClient]);
 
-  return <LoadingIndicator />;
+  return (
+    <LoadingStatus
+      message="Signing out…"
+      layout="centered"
+      size="lg"
+      className="min-h-48 p-6"
+    />
+  );
 }

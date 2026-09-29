@@ -1,3 +1,4 @@
+import NotificationProvider from "app/components/NotificationProvider";
 import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
@@ -10,24 +11,26 @@ function renderPage(initialEntry = "/travel/applications/new") {
     defaultOptions: { queries: { retry: false } },
   });
   return render(
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={[initialEntry]}>
-        <Routes>
-          <Route
-            path="/travel/applications/new"
-            element={<SubmitApplication />}
-          />
-          <Route
-            path="/travel/applications/new/:draftId"
-            element={<SubmitApplication />}
-          />
-          <Route
-            path="/travel/applications/drafts"
-            element={<h1>Travel Application Drafts</h1>}
-          />
-        </Routes>
-      </MemoryRouter>
-    </QueryClientProvider>,
+    <NotificationProvider>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[initialEntry]}>
+          <Routes>
+            <Route
+              path="/travel/applications/new"
+              element={<SubmitApplication />}
+            />
+            <Route
+              path="/travel/applications/new/:draftId"
+              element={<SubmitApplication />}
+            />
+            <Route
+              path="/travel/applications/drafts"
+              element={<h1>Travel Application Drafts</h1>}
+            />
+          </Routes>
+        </MemoryRouter>
+      </QueryClientProvider>
+    </NotificationProvider>,
   );
 }
 
@@ -147,7 +150,7 @@ describe("new travel application initialization", () => {
     expect(unload.defaultPrevented).toBe(false);
 
     fireEvent.click(screen.getByRole("button", { name: "Save" }));
-    expect(await screen.findByText(/saved as a draft/i)).toBeVisible();
+    expect(await screen.findByText(/Draft saved/i)).toBeVisible();
     const saveRequest = fetchMock.mock.calls.find(
       ([url, options]) =>
         url.endsWith("/travel/drafts") && options.method === "POST",

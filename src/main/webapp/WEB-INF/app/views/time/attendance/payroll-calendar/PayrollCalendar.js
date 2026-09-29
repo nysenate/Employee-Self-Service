@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import Hero from "app/components/Hero";
-import LoadingIndicator from "app/components/LoadingIndicator";
 import Controls from "app/components/Controls";
 import Card from "app/components/Card";
 import Calendar from "react-calendar";

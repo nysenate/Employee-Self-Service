@@ -2,7 +2,7 @@ import React from "react";
 import Hero from "app/components/Hero";
 import { useRequisitionSocket } from "app/views/supply/fulfillment/hooks/useRequisitionSocket";
 import { endOfDay, formatISO, startOfDay } from "date-fns";
-import LoadingIndicator from "app/components/LoadingIndicator";
+import LoadingStatus from "app/components/LoadingStatus";
 import { useRequisitionSearch } from "app/views/supply/shared/hooks/useRequisitionSearch";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
@@ -78,7 +78,14 @@ export default function FulfillmentIndex() {
   };
 
   if (requisitionQuery.isPending) {
-    return <LoadingIndicator />;
+    return (
+      <LoadingStatus
+        message="Loading fulfillment queue…"
+        layout="centered"
+        size="lg"
+        className="min-h-48 p-6"
+      />
+    );
   }
 
   return (

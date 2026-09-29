@@ -1,3 +1,4 @@
+import NotificationProvider from "app/components/NotificationProvider";
 import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
@@ -10,23 +11,25 @@ function renderWorkflow(draft = { traveler: {} }) {
     defaultOptions: { queries: { retry: false } },
   });
   return render(
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={["/travel/applications/new"]}>
-        <Routes>
-          <Route
-            path="/travel/applications/new"
-            element={<NewTravelApplication draft={draft} />}
-          />
-          <Route
-            path="/travel/applications"
-            element={<h1>Travel history</h1>}
-          />
-          <Route path="/travel" element={<h1>Travel home</h1>} />
-          <Route path="/logout" element={<h1>Logging out</h1>} />
-        </Routes>
-        <Link to="/travel/applications">Travel history link</Link>
-      </MemoryRouter>
-    </QueryClientProvider>,
+    <NotificationProvider>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={["/travel/applications/new"]}>
+          <Routes>
+            <Route
+              path="/travel/applications/new"
+              element={<NewTravelApplication draft={draft} />}
+            />
+            <Route
+              path="/travel/applications"
+              element={<h1>Travel history</h1>}
+            />
+            <Route path="/travel" element={<h1>Travel home</h1>} />
+            <Route path="/logout" element={<h1>Logging out</h1>} />
+          </Routes>
+          <Link to="/travel/applications">Travel history link</Link>
+        </MemoryRouter>
+      </QueryClientProvider>
+    </NotificationProvider>,
   );
 }
 
@@ -193,6 +196,81 @@ describe("new travel application workflow shell", () => {
       await screen.findByRole("heading", { name: "Travel history" }),
     ).toBeVisible();
   });
+
+  it.each(["Save", "Next"])(
+    "shows route progress for %s and prevents competing actions",
+    async (action) => {
+      const draft = returnReadyDraft();
+      draft.amendment.route.outboundLegs[0].to.address.county = "Erie";
+      draft.amendment.route.returnLegs[0].from.address.county = "Erie";
+      const calculation = deferredPromise();
+      const saving = deferredPromise();
+      let submittedDraft;
+      const fetchMock = vi.fn(async (url, options = {}) => {
+        if (String(url).includes("/config"))
+          return successfulResponse({ config: { googleApiKey: "test-key" } });
+        if (String(url).endsWith("/travel/event-types"))
+          return successfulResponse([{ name: "Forum", displayName: "Forum" }]);
+        if (String(url).endsWith("/travel/mode-of-transportation"))
+          return successfulResponse([
+            { methodOfTravel: "TRAIN", displayName: "Train" },
+          ]);
+        if (options.method === "PATCH") {
+          submittedDraft = JSON.parse(options.body).draft;
+          return calculation.promise;
+        }
+        if (options.method === "POST") return saving.promise;
+        return successfulResponse(draft);
+      });
+      vi.stubGlobal("fetch", fetchMock);
+      renderWorkflow(draft);
+      await advanceToReturn();
+      fireEvent.change(screen.getByLabelText("Return date"), {
+        target: { value: "2026-08-12" },
+      });
+      fireEvent.click(screen.getByRole("button", { name: action }));
+      expect(await screen.findByRole("status")).toHaveTextContent(
+        "Calculating your route…",
+      );
+      expect(screen.getByLabelText("Return date")).toBeDisabled();
+      for (const name of ["Back", "Save", "Next", /Purpose.*completed/]) {
+        expect(screen.getByRole("button", { name })).toBeDisabled();
+      }
+      expect(screen.getByRole("button", { name: action })).toHaveAttribute(
+        "data-pending",
+        "true",
+      );
+      expect(
+        screen.getByRole("button", {
+          name: action === "Save" ? "Next" : "Save",
+        }),
+      ).not.toHaveAttribute("data-pending");
+      fireEvent.click(screen.getByRole("button", { name: action }));
+      expect(
+        fetchMock.mock.calls.filter(
+          ([, options]) => options.method === "PATCH",
+        ),
+      ).toHaveLength(1);
+      calculation.resolve(
+        successfulResponse(calculatedExpenseDraft(submittedDraft)),
+      );
+      if (action === "Save") {
+        expect(await screen.findByText("Saving your draft…")).toBeVisible();
+        expect(screen.getByLabelText("Return date")).toBeDisabled();
+        saving.resolve(
+          successfulResponse(calculatedExpenseDraft(submittedDraft)),
+        );
+        expect(await screen.findByText("Draft saved")).toBeVisible();
+        expect(screen.getByLabelText("Return date")).toBeEnabled();
+        expect(screen.getByLabelText("Return date")).toHaveValue("2026-08-12");
+      } else {
+        expect(
+          await screen.findByRole("heading", { name: "Expenses" }),
+        ).toBeVisible();
+        expect(screen.queryByRole("status")).not.toBeInTheDocument();
+      }
+    },
+  );
 
   it("resumes Save after a manual county prompt and retains Return when saving fails", async () => {
     const draft = returnReadyDraft();
@@ -455,7 +533,7 @@ describe("new travel application workflow shell", () => {
     expect(patchBodies[0].draft.amendment.allowances.tolls).toBe(25);
 
     fireEvent.click(screen.getByRole("button", { name: "Save" }));
-    expect(await screen.findByText(/saved as a draft/i)).toBeVisible();
+    expect(await screen.findByText(/Draft saved/i)).toBeVisible();
     expect(screen.getByRole("heading", { name: "Review" })).toBeVisible();
     expect(
       fetchMock.mock.calls.some(
@@ -507,7 +585,7 @@ describe("new travel application workflow shell", () => {
       fireEvent.click(screen.getByRole("button", { name: "Save" }));
       expect(
         await screen.findByText(
-          succeeds ? /was saved as a draft/ : /could not be saved/,
+          succeeds ? /Draft saved/ : /could not be saved/,
         ),
       ).toBeVisible();
       expect(screen.getByRole("button", { name: "Expenses" })).toHaveAttribute(
@@ -613,15 +691,36 @@ describe("new travel application workflow shell", () => {
     expect(
       await screen.findByText(/Submitting your travel application/),
     ).toBeVisible();
-    expect(screen.getByRole("button", { name: "Back" })).toBeDisabled();
-    expect(screen.getByRole("button", { name: "Save" })).toBeDisabled();
     expect(
-      screen.getByRole("button", { name: /Purpose.*completed/ }),
+      screen.getByRole("button", { name: "Back", hidden: true }),
     ).toBeDisabled();
-    fireEvent.click(screen.getByRole("link", { name: "Travel history link" }));
-    expect(screen.getByRole("heading", { name: "Review" })).toBeVisible();
+    expect(
+      screen.getByRole("button", { name: "Save", hidden: true }),
+    ).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: /Purpose.*completed/, hidden: true }),
+    ).toBeDisabled();
+    fireEvent.click(
+      screen.getByRole("link", { name: "Travel history link", hidden: true }),
+    );
+    expect(
+      screen.getByRole("heading", { name: "Review", hidden: true }),
+    ).toBeVisible();
     expect(
       screen.queryByRole("dialog", { name: "Leave this application?" }),
+    ).not.toBeInTheDocument();
+
+    fireEvent.keyDown(document.activeElement, {
+      key: "Escape",
+      code: "Escape",
+    });
+    expect(
+      screen.getByRole("dialog", {
+        name: "Submitting your travel application…",
+      }),
+    ).toBeVisible();
+    expect(
+      screen.queryByRole("button", { name: "Submit application" }),
     ).not.toBeInTheDocument();
 
     submission.resolve(successfulResponse({ id: 42 }));
@@ -674,6 +773,12 @@ describe("new travel application workflow shell", () => {
 
     expect(await screen.findByRole("alert")).toHaveTextContent(
       "could not be submitted",
+    );
+    expect(
+      screen.getByRole("dialog", { name: "Action was not confirmed" }),
+    ).toBeVisible();
+    fireEvent.click(
+      screen.getByRole("button", { name: "Return to application" }),
     );
     expect(screen.getByRole("heading", { name: "Review" })).toBeVisible();
     fireEvent.click(screen.getByRole("button", { name: "Submit application" }));

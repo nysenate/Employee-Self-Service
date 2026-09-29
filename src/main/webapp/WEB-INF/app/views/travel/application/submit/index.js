@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import Hero from "app/components/Hero";
 import Button from "app/components/Button";
 import ErrorAlert from "app/components/ErrorAlert";
-import LoadingIndicator from "app/components/LoadingIndicator";
+import LoadingStatus from "app/components/LoadingStatus";
 import NewTravelApplication from "./NewTravelApplication";
 import { useTravelDraft } from "./hooks/useTravelDraft";
 
@@ -34,17 +34,16 @@ export default function SubmitApplication() {
 
 function InitializationLoading({ isResuming }) {
   return (
-    <div
-      className="flex min-h-48 flex-col items-center justify-center gap-3"
-      role="status"
-    >
-      <LoadingIndicator />
-      <span>
-        {isResuming
+    <LoadingStatus
+      layout="centered"
+      size="lg"
+      className="min-h-48 p-6"
+      message={
+        isResuming
           ? "Loading your travel application…"
-          : "Preparing your travel application…"}
-      </span>
-    </div>
+          : "Preparing your travel application…"
+      }
+    />
   );
 }
 

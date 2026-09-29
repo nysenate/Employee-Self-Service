@@ -1,3 +1,4 @@
+import NotificationProvider from "app/components/NotificationProvider";
 import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
@@ -80,20 +81,22 @@ function renderWorkflow({
     },
   });
   return render(
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter>
-        <TravelApplicationWorkflow
-          steps={steps}
-          initialDraft={initialDraft}
-          application={application}
-          saveDraft={null}
-          commit={commit}
-          presentation={presentation}
-          onCancel={onCancel}
-          renderCompletion={renderCompletion}
-        />
-      </MemoryRouter>
-    </QueryClientProvider>,
+    <NotificationProvider>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter>
+          <TravelApplicationWorkflow
+            steps={steps}
+            initialDraft={initialDraft}
+            application={application}
+            saveDraft={null}
+            commit={commit}
+            presentation={presentation}
+            onCancel={onCancel}
+            renderCompletion={renderCompletion}
+          />
+        </MemoryRouter>
+      </QueryClientProvider>
+    </NotificationProvider>,
   );
 }
 
@@ -269,6 +272,9 @@ describe("TravelApplicationWorkflow ports", () => {
     fireEvent.click(screen.getByRole("button", { name: "Finish editing" }));
     fireEvent.click(screen.getByRole("button", { name: "Confirm changes" }));
     expect(await screen.findByText("save failed")).toBeVisible();
+    fireEvent.click(
+      screen.getByRole("button", { name: "Return to application" }),
+    );
     expect(execute).toHaveBeenCalledWith(
       expect.objectContaining({
         amendment: expect.objectContaining({

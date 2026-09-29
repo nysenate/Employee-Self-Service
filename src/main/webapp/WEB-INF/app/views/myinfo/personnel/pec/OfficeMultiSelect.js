@@ -9,7 +9,7 @@ import {
   ComboboxOptions,
 } from "@headlessui/react";
 import { useResponsibilityCenterHeadSearch } from "./respctrHeadQueries";
-import LoadingCircle from "../../../../components/LoadingCircle";
+import LoadingStatus from "app/components/LoadingStatus";
 
 export default function OfficeMultiSelect({ onChange }) {
   const [selectedOffices, setSelectedOffices] = useState([]);
@@ -41,10 +41,9 @@ export default function OfficeMultiSelect({ onChange }) {
     filteredOffices.length === 0 &&
     respctrHeadSearchQuery.isPending
   ) {
-    // Display loading circle while waiting for initial load.
     return (
       <div className="my-3">
-        <LoadingCircle />
+        <LoadingStatus message="Loading offices…" />
       </div>
     );
   }

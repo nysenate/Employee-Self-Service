@@ -1,7 +1,7 @@
 import React from "react";
 import Pagination from "app/components/Pagination";
 import { useSupplyContext } from "app/views/supply/store/useSupplyContext";
-import LoadingIndicator from "app/components/LoadingIndicator";
+import LoadingStatus from "app/components/LoadingStatus";
 import { useItemSearch } from "app/views/supply/store/shop/hooks/useItemSearch";
 import Card from "app/components/Card";
 import { setOffset } from "app/views/supply/store/shop/utils/itemFilterActions";
@@ -16,7 +16,14 @@ export default function ItemListing({ filterState, dispatch }) {
   };
 
   if (itemsQuery.isPending) {
-    return <LoadingIndicator />;
+    return (
+      <LoadingStatus
+        message="Loading items…"
+        layout="centered"
+        size="lg"
+        className="min-h-48 p-6"
+      />
+    );
   }
 
   return (

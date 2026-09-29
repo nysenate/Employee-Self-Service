@@ -1,3 +1,4 @@
+import NotificationProvider from "app/components/NotificationProvider";
 import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
@@ -76,13 +77,15 @@ function renderModal({
   }),
 } = {}) {
   render(
-    <QueryClientProvider client={queryClient}>
-      <TravelApplicationModal
-        appId={appId}
-        onClose={onClose}
-        onResubmit={onResubmit}
-      />
-    </QueryClientProvider>,
+    <NotificationProvider>
+      <QueryClientProvider client={queryClient}>
+        <TravelApplicationModal
+          appId={appId}
+          onClose={onClose}
+          onResubmit={onResubmit}
+        />
+      </QueryClientProvider>
+    </NotificationProvider>,
   );
   return { onClose, onResubmit };
 }
@@ -400,6 +403,8 @@ describe("application cancellation", () => {
       await response({ success: true, result: fullApplication() }),
     );
     await waitFor(() => expect(onClose).toHaveBeenCalledOnce());
+    // The harness leaves the dialog mounted; the page closes it via onClose.
+    expect(screen.getByText("Application #42 canceled")).toBeInTheDocument();
     expect(
       queryClient.getQueryData(travelQueryKeys.application(42)).result.status
         .name,

@@ -1,3 +1,4 @@
+import NotificationProvider from "app/components/NotificationProvider";
 import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
@@ -50,11 +51,13 @@ function renderWorkflow() {
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
   });
   return render(
-    <QueryClientProvider client={client}>
-      <MemoryRouter>
-        <NewTravelApplication draft={initialDraft} />
-      </MemoryRouter>
-    </QueryClientProvider>,
+    <NotificationProvider>
+      <QueryClientProvider client={client}>
+        <MemoryRouter>
+          <NewTravelApplication draft={initialDraft} />
+        </MemoryRouter>
+      </QueryClientProvider>
+    </NotificationProvider>,
   );
 }
 
@@ -147,9 +150,7 @@ describe("Purpose step", () => {
     });
     fireEvent.click(screen.getByRole("button", { name: "Save" }));
 
-    expect(await screen.findByRole("status")).toHaveTextContent(
-      "saved as a draft",
-    );
+    expect(await screen.findByRole("status")).toHaveTextContent("Draft saved");
     expect(fetch).toHaveBeenCalledWith(
       "/api/v1/travel/drafts",
       expect.objectContaining({

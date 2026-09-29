@@ -14,7 +14,7 @@ import {
   setOffset,
 } from "app/views/supply/shared/lib/supplyFilterActions";
 import { isValidDateString } from "app/utils/dateUtils";
-import LoadingIndicator from "app/components/LoadingIndicator";
+import LoadingStatus from "app/components/LoadingStatus";
 import Card from "app/components/Card";
 import OrderHistoryTable from "app/views/supply/orders/order-list/OrderHistoryTable";
 import Pagination from "app/components/Pagination";
@@ -84,7 +84,12 @@ export default function OrderHistoryIndex() {
         </div>
       </Controls>
       {orderHistoryQuery.isPending ? (
-        <LoadingIndicator />
+        <LoadingStatus
+          message="Loading order history…"
+          layout="centered"
+          size="lg"
+          className="min-h-48 p-6"
+        />
       ) : (
         OrderHistoryResults(orderHistoryQuery, filters, dispatch)
       )}

@@ -1,6 +1,6 @@
 import { useLocation } from "react-router-dom";
 import React from "react";
-import LoadingIndicator from "app/components/LoadingIndicator";
+import LoadingStatus from "app/components/LoadingStatus";
 import TravelAppSummaryTable from "app/views/travel/shared/components/TravelAppSummaryTable";
 import TravelEmptyResults from "app/views/travel/shared/components/TravelEmptyResults";
 import TravelResultsCard from "app/views/travel/shared/components/TravelResultsCard";
@@ -50,7 +50,12 @@ export default function ReviewHistoryResults({
       {isLoading ||
       (status === TRAVEL_RESULTS_STATUS.transitioning && !appReviews.length) ? (
         <div className="mt-6">
-          <LoadingIndicator />
+          <LoadingStatus
+            message="Loading review history…"
+            layout="centered"
+            size="lg"
+            className="min-h-48 p-6"
+          />
         </div>
       ) : appReviews.length === 0 ? (
         <TravelEmptyResults

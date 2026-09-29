@@ -1,5 +1,5 @@
 import React from "react";
-import LoadingIndicator from "../../../../../components/LoadingIndicator";
+import LoadingStatus from "app/components/LoadingStatus";
 import PotentialAssignmentsTable from "./PotentialAssignmentsTable";
 import { setOffset } from "./todoAssignmentActions";
 import Pagination from "app/components/Pagination";
@@ -14,7 +14,14 @@ export default function PotentialAssignmentsSummary({
   };
 
   if (query.isPending) {
-    return <LoadingIndicator />;
+    return (
+      <LoadingStatus
+        message="Loading available assignments…"
+        layout="centered"
+        size="lg"
+        className="min-h-48 p-6"
+      />
+    );
   }
 
   return (

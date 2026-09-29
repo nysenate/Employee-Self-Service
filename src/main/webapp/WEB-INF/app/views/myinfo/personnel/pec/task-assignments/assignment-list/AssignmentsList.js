@@ -6,7 +6,7 @@ import {
   VideoCameraIcon,
 } from "@heroicons/react/16/solid";
 import { Link } from "react-router-dom";
-import LoadingIndicator from "app/components/LoadingIndicator";
+import LoadingStatus from "app/components/LoadingStatus";
 import { isoToMediumDate } from "app/utils/dateUtils";
 import { useTaskAssignments } from "app/views/myinfo/personnel/pec/useTaskAssignment";
 import useRequireAuthedUser from "app/hooks/useRequireAuthedUser";
@@ -67,7 +67,14 @@ export default function AssignmentsList() {
   const completedAssignments = assignmentData.filter((a) => a.completed);
 
   if (assignments.isPending) {
-    return <LoadingIndicator />;
+    return (
+      <LoadingStatus
+        message="Loading assignments…"
+        layout="centered"
+        size="lg"
+        className="min-h-48 p-6"
+      />
+    );
   }
 
   return (

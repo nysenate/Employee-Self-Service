@@ -8,7 +8,8 @@ import {
 import Button from "app/components/Button";
 import ErrorAlert from "app/components/ErrorAlert";
 import Hero from "app/components/Hero";
-import LoadingIndicator from "app/components/LoadingIndicator";
+import LoadingStatus from "app/components/LoadingStatus";
+import { useNotifySuccess } from "app/components/NotificationProvider";
 import { useUserTravelRoles } from "app/views/travel/shared/hooks/useUserTravelRoles";
 import { canAdminEditTravel } from "app/views/travel/shared/travelRoles";
 import { useApplicationEditSession } from "../workflow/hooks/useApplicationEditSession";
@@ -35,7 +36,12 @@ export default function EditTravelApplication() {
     <div className="space-y-5">
       <Hero>Edit Travel Application</Hero>
       {isPending ? (
-        <LoadingIndicator />
+        <LoadingStatus
+          message="Loading your travel application…"
+          layout="centered"
+          size="lg"
+          className="min-h-48 p-6"
+        />
       ) : !canAdminEditTravel(roles) ? (
         <ErrorAlert title="Access is unavailable">
           Only Travel Admins can edit travel applications.
@@ -52,6 +58,7 @@ export default function EditTravelApplication() {
 }
 
 function Editor({ appId }) {
+  const notifySuccess = useNotifySuccess();
   const location = useLocation();
   const navigate = useNavigate();
   const returnTo = normalizeReviewReturnTo(location.state?.returnTo);
@@ -59,7 +66,15 @@ function Editor({ appId }) {
   const session = useApplicationEditSession({ appId, operation: "edit" });
   const edit = useEditTravelApplication(appId);
   const leave = () => navigate(returnTo, { replace: true, state: returnState });
-  if (session.isPending) return <LoadingIndicator />;
+  if (session.isPending)
+    return (
+      <LoadingStatus
+        message="Loading your travel application…"
+        layout="centered"
+        size="lg"
+        className="min-h-48 p-6"
+      />
+    );
   if (session.isError || !session.data?.draft || !session.data?.application) {
     const status = session.error?.response?.status;
     const message =
@@ -90,7 +105,11 @@ function Editor({ appId }) {
       presentation={PRESENTATION}
       onCancel={leave}
       commit={{
-        execute: edit.mutateAsync,
+        execute: async (draft) => {
+          const result = await edit.mutateAsync(draft);
+          notifySuccess(`Changes saved to application #${appId}`);
+          return result;
+        },
         isPending: edit.isPending,
         isDisabled: [401, 403].includes(edit.error?.response?.status),
         renderError: (error) => (
@@ -102,11 +121,7 @@ function Editor({ appId }) {
         ),
       }}
       renderCompletion={() => (
-        <Navigate
-          to={returnTo}
-          replace
-          state={returnState}
-        />
+        <Navigate to={returnTo} replace state={returnState} />
       )}
     />
   );

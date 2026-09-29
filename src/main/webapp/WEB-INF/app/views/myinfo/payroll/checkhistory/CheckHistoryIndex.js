@@ -1,5 +1,5 @@
 import React from "react";
-import LoadingIndicator from "app/components/LoadingIndicator";
+import LoadingStatus from "app/components/LoadingStatus";
 import CheckHistoryForm from "app/views/myinfo/payroll/checkhistory/CheckHistoryForm";
 import { useEmployeeActiveYears } from "app/views/myinfo/payroll/checkhistory/useEmployeeActiveYears";
 import useRequireAuthedUser from "app/hooks/useRequireAuthedUser";
@@ -13,7 +13,14 @@ export default function CheckHistoryIndex() {
   );
 
   if (employeeActiveYears.isPending || employeeActiveFiscalYears.isPending) {
-    return <LoadingIndicator />;
+    return (
+      <LoadingStatus
+        message="Loading paycheck history…"
+        layout="centered"
+        size="lg"
+        className="min-h-48 p-6"
+      />
+    );
   }
 
   return (

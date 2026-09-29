@@ -7,7 +7,7 @@ import SingleSelectFilter from "app/components/SingleSelectFilter";
 import { cn } from "app/utils/cn";
 import { useUserTravelRoles } from "app/views/travel/shared/hooks/useUserTravelRoles";
 import { useReviewQueue } from "app/views/travel/reviewer/queue/useReviewQueue";
-import LoadingIndicator from "app/components/LoadingIndicator";
+import LoadingStatus from "app/components/LoadingStatus";
 import ReviewQueueResults from "./ReviewQueueResults";
 
 const REVIEW_ROLE_PRIORITY = [
@@ -52,7 +52,14 @@ export default function ReviewQueuePage() {
   const isLoading = isUserRolesPending || isReviewQueuePending || !selectedRole;
 
   if (isLoading) {
-    return <LoadingIndicator />;
+    return (
+      <LoadingStatus
+        message="Loading review queue…"
+        layout="centered"
+        size="lg"
+        className="min-h-48 p-6"
+      />
+    );
   }
 
   const canChangeRole = dedupedRoles.length > 1;

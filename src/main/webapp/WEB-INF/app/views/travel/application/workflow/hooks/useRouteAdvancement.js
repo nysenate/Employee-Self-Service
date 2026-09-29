@@ -32,6 +32,7 @@ export function useRouteAdvancement({
   const [routeErrors, setRouteErrors] = useState({});
   const [pendingCounty, setPendingCounty] = useState(null);
   const [isAdvancingRoute, setIsAdvancingRoute] = useState(false);
+  const [pendingMessage, setPendingMessage] = useState(null);
   const [pendingReturnAction, setPendingReturnAction] = useState(null);
   const [routeCalculationError, setRouteCalculationError] = useState(null);
   const routeAdvancePendingRef = useRef(false);
@@ -50,11 +51,13 @@ export function useRouteAdvancement({
     if (routeAdvancePendingRef.current) return;
     routeAdvancePendingRef.current = true;
     setIsAdvancingRoute(true);
+    setPendingMessage("Preparing your route…");
     try {
       await action();
     } finally {
       routeAdvancePendingRef.current = false;
       setIsAdvancingRoute(false);
+      setPendingMessage(null);
     }
   }
 
@@ -81,6 +84,7 @@ export function useRouteAdvancement({
   }
 
   async function lookupCounty(address) {
+    setPendingMessage("Checking route locations…");
     try {
       return await addressCounty.mutateAsync(address);
     } catch {
@@ -164,6 +168,7 @@ export function useRouteAdvancement({
             route: toRouteDto(route),
           },
         };
+        setPendingMessage("Calculating your route…");
         draftToUse = await calculateRoute.mutateAsync(draftWithRoute);
         onCalculated(draftToUse);
       }
@@ -188,6 +193,7 @@ export function useRouteAdvancement({
     errors: routeErrors,
     pendingCounty,
     isPending: isAdvancingRoute,
+    pendingMessage,
     calculationError: routeCalculationError,
     showLongTripWarning: Boolean(pendingReturnAction),
     advanceOutbound: () => runPending(advanceOutboundStep),

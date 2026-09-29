@@ -1,3 +1,4 @@
+import NotificationProvider from "app/components/NotificationProvider";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -47,21 +48,23 @@ function review(isResubmitted) {
 function renderModal(kind, queryClient) {
   const reviewSummary = { appReviewId: 99 };
   render(
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter>
-        {kind === "queue" ? (
-          <ReviewerActionModal
-            reviewSummary={reviewSummary}
-            setIsOpen={vi.fn()}
-          />
-        ) : (
-          <TravelAppReviewModal
-            reviewSummary={reviewSummary}
-            onOpenChange={vi.fn()}
-          />
-        )}
-      </MemoryRouter>
-    </QueryClientProvider>,
+    <NotificationProvider>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter>
+          {kind === "queue" ? (
+            <ReviewerActionModal
+              reviewSummary={reviewSummary}
+              setIsOpen={vi.fn()}
+            />
+          ) : (
+            <TravelAppReviewModal
+              reviewSummary={reviewSummary}
+              onOpenChange={vi.fn()}
+            />
+          )}
+        </MemoryRouter>
+      </QueryClientProvider>
+    </NotificationProvider>,
   );
 }
 

@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import LoadingStatus from "app/components/LoadingStatus";
 import Card from "app/components/Card";
 import TravelAppForm from "app/views/travel/shared/components/TravelAppForm";
 import { loadGooglePlaces } from "app/views/travel/shared/hooks/useGooglePlaces";
@@ -111,12 +112,11 @@ export default function ReviewStep({
               className={mapState === "ready" ? "absolute inset-0" : "hidden"}
             />
             {mapState === "loading" && (
-              <p
-                role="status"
-                className="absolute inset-0 flex items-center justify-center font-medium text-gray-600"
-              >
-                Loading route map…
-              </p>
+              <LoadingStatus
+                message="Loading route map…"
+                layout="centered"
+                className="absolute inset-0 text-gray-600"
+              />
             )}
             {mapState === "error" && (
               <p

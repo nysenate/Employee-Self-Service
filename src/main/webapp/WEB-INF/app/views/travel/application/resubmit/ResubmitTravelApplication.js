@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Button from "app/components/Button";
 import ErrorAlert from "app/components/ErrorAlert";
 import Hero from "app/components/Hero";
-import LoadingIndicator from "app/components/LoadingIndicator";
+import LoadingStatus from "app/components/LoadingStatus";
 import TravelApplicationWorkflow from "app/views/travel/application/workflow/TravelApplicationWorkflow";
 import { normalizeHistoryReturnTo } from "app/views/travel/application/workflow/applicationRoutes";
 import { SubmissionSuccessModal } from "app/views/travel/application/submit/components/SubmissionModals";
@@ -96,13 +96,12 @@ export default function ResubmitTravelApplication({ appId }) {
 
 function LoadingState() {
   return (
-    <div
-      className="flex min-h-48 flex-col items-center justify-center gap-3"
-      role="status"
-    >
-      <LoadingIndicator />
-      <span>Loading your travel application…</span>
-    </div>
+    <LoadingStatus
+      message="Loading your travel application…"
+      layout="centered"
+      size="lg"
+      className="min-h-48 p-6"
+    />
   );
 }
 

@@ -18,13 +18,19 @@ export function useApplicationSubmission({ draft, commit }) {
   }
 
   function requestConfirmation() {
-    if (statusRef.current !== "idle" || commit.isPending || commit.isDisabled)
+    if (
+      !["idle", "failed"].includes(statusRef.current) ||
+      commit.isPending ||
+      commit.isDisabled
+    )
       return;
     transition("confirming");
   }
 
   function cancelConfirmation() {
     if (statusRef.current === "confirming") transition("idle");
+    if (statusRef.current === "failed")
+      transition("idle", { error: submission.error });
   }
 
   async function confirm() {
@@ -39,7 +45,7 @@ export function useApplicationSubmission({ draft, commit }) {
       const result = await commit.execute(draft);
       transition("success", { result });
     } catch (error) {
-      transition("idle", { error });
+      transition("failed", { error });
     }
   }
 

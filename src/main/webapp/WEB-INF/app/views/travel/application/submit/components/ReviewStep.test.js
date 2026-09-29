@@ -1,6 +1,12 @@
 import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import ReviewStep, {
   buildDirectionsRequest,
@@ -145,7 +151,11 @@ describe("ReviewStep", () => {
       "_blank",
     );
     expect(screen.getByRole("button", { name: "Back" })).toBeEnabled();
-    expect(screen.getByRole("status")).toHaveTextContent("Loading route map");
+    expect(
+      within(screen.getByRole("region", { name: "Driving Route" })).getByRole(
+        "status",
+      ),
+    ).toHaveTextContent("Loading route map");
 
     mapLoad.resolve();
     await waitFor(() =>

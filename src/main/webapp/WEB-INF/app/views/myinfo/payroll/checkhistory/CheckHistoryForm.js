@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Hero from "app/components/Hero";
 import Controls from "app/components/Controls";
-import LoadingIndicator from "app/components/LoadingIndicator";
+import LoadingStatus from "app/components/LoadingStatus";
 import Card from "app/components/Card";
 import Paycheck from "app/views/myinfo/payroll/checkhistory/Paycheck";
 import { useEmployeePaychecks } from "app/views/myinfo/payroll/checkhistory/useEmployeePaychecks";
@@ -82,7 +82,14 @@ function CheckResults({ empId, year, useFiscalYears }) {
   const paycheckSummary = useEmployeePaychecks(empId, year, useFiscalYears);
 
   if (paycheckSummary.isPending) {
-    return <LoadingIndicator />;
+    return (
+      <LoadingStatus
+        message="Loading paychecks…"
+        layout="centered"
+        size="lg"
+        className="min-h-48 p-6"
+      />
+    );
   }
 
   return (

@@ -1,5 +1,5 @@
 import React from "react";
-import LoadingIndicator from "app/components/LoadingIndicator";
+import LoadingStatus from "app/components/LoadingStatus";
 import AssignmentsTable from "app/views/myinfo/personnel/pec/to-do-reporting/AssignmentsTable";
 import { setOffset } from "app/views/myinfo/personnel/pec/to-do-reporting/todoReportingActions";
 import { searchTaskAssignmentsQueryParams } from "app/views/myinfo/personnel/pec/useTaskAssignment";
@@ -15,7 +15,14 @@ export default function AssignmentsSummary({
   };
 
   if (taskAssignmentQuery.isPending) {
-    return <LoadingIndicator />;
+    return (
+      <LoadingStatus
+        message="Loading assignment summary…"
+        layout="centered"
+        size="lg"
+        className="min-h-48 p-6"
+      />
+    );
   }
 
   return (

@@ -1,6 +1,6 @@
 import React from "react";
 import Button from "app/components/Button";
-import LoadingIndicator from "app/components/LoadingIndicator";
+import LoadingStatus from "app/components/LoadingStatus";
 import Modal from "app/components/Modal";
 import { useAdminEditAction } from "app/views/travel/application/edit/useAdminEditAction";
 import TravelAppReviewForm from "app/views/travel/shared/components/TravelAppReviewForm";
@@ -19,7 +19,12 @@ export default function TravelAppReviewModal({ reviewSummary, onOpenChange }) {
         ariaLabel="Travel review details"
       >
         <Modal.Body>
-          <LoadingIndicator />
+          <LoadingStatus
+            message="Loading review details…"
+            layout="centered"
+            size="lg"
+            className="min-h-48 p-6"
+          />
         </Modal.Body>
       </Modal>
     );

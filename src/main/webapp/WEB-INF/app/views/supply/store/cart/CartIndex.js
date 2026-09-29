@@ -10,7 +10,7 @@ import EmptyCartConfirmation from "app/views/supply/store/cart/EmptyCartConfirma
 import { Link } from "react-router-dom";
 import DeliveryMethodModal from "app/views/supply/store/cart/DeliveryMethodModal";
 import { useCheckout } from "app/views/supply/store/cart/useCheckout";
-import LoadingIndicator from "app/components/LoadingIndicator";
+import LoadingStatus from "app/components/LoadingStatus";
 import CheckoutSummaryModal from "app/views/supply/store/cart/CheckoutSummaryModal";
 import { useItemsMap } from "app/views/supply/shared/hooks/useItems";
 import useRequireAuthedUser from "app/hooks/useRequireAuthedUser";
@@ -60,7 +60,14 @@ export default function CartIndex() {
   }
 
   if (itemsQuery.isPending) {
-    return <LoadingIndicator />;
+    return (
+      <LoadingStatus
+        message="Loading your cart…"
+        layout="centered"
+        size="lg"
+        className="min-h-48 p-6"
+      />
+    );
   }
 
   return (

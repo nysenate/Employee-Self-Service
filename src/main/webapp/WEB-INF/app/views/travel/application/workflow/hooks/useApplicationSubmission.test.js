@@ -68,6 +68,10 @@ it("exposes errors, unlocks, and requires fresh confirmation before retry", asyn
   act(() => result.current.requestConfirmation());
   await act(() => result.current.confirm());
   expect(result.current.error).toBe(error);
+  expect(result.current.status).toBe("failed");
+  act(() => result.current.cancelConfirmation());
+  expect(result.current.status).toBe("idle");
+  expect(result.current.error).toBe(error);
   expect(result.current.isLocked).toBe(false);
   expect(result.current.result).toBeNull();
   await act(() => result.current.confirm());
