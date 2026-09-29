@@ -1,5 +1,12 @@
 import React from "react";
-import { act, fireEvent, render, screen, within } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { afterEach, expect, it, vi } from "vitest";
 import NotificationProvider from "app/components/NotificationProvider";
@@ -7,7 +14,10 @@ import AssignmentsTable from "./personnel/pec/to-do-reporting/AssignmentsTable";
 import PotentialAssignmentsTable from "./personnel/pec/to-do-assignment/PotentialAssignmentsTable";
 import PotentialAssignmentsSummary from "./personnel/pec/to-do-assignment/PotentialAssignmentsSummary";
 import AssignmentsSummary from "./personnel/pec/to-do-reporting/AssignmentsSummary";
-import { useSearchTaskAssignments } from "./personnel/pec/useTaskAssignment";
+import {
+  useSearchTaskAssignments,
+  useSearchPotentialAssignments,
+} from "./personnel/pec/useTaskAssignment";
 vi.mock("app/hooks/useRequireAuthedUser", () => ({
   default: () => ({ data: { employeeId: 1 } }),
 }));
@@ -180,5 +190,67 @@ it.each(["reporting", "assignment"])(
     expect(
       screen.queryByText("Refreshing assignments…"),
     ).not.toBeInTheDocument();
+  },
+);
+
+it.each([
+  ["reporting", useSearchTaskAssignments],
+  ["assignment", useSearchPotentialAssignments],
+])(
+  "cancels obsolete %s searches when filters change or the page closes",
+  async (_page, useSearch) => {
+    const requests = [];
+    vi.stubGlobal(
+      "fetch",
+      vi.fn((url, { signal }) => {
+        if (url.includes("empActive=true")) {
+          return Promise.resolve(response({ result: [], total: 1 }));
+        }
+        return new Promise((resolve, reject) => {
+          requests.push({ signal, resolve });
+          signal.addEventListener(
+            "abort",
+            () => reject(new DOMException("Aborted", "AbortError")),
+            { once: true },
+          );
+        });
+      }),
+    );
+    function Results({ empActive, name = "" }) {
+      const query = useSearch({
+        empActive,
+        name,
+        respCtrHead: [],
+        limit: 10,
+        offset: 1,
+      });
+      return (
+        <div>
+          <span>{query.isFetching ? "Searching" : "Ready"}</span>
+          <span>{query.data?.total ?? "No results"}</span>
+          {query.isError && <span role="alert">Search failed</span>}
+        </div>
+      );
+    }
+    const { rerender, unmount, client } = setup(<Results empActive={true} />);
+    expect(await screen.findByText("Ready")).toBeVisible();
+    rerender(<Results empActive={null} />);
+    await waitFor(() => expect(requests).toHaveLength(1));
+    expect(screen.getByText("1")).toBeVisible();
+    rerender(<Results empActive={null} name="Jamie" />);
+    await waitFor(() => expect(requests).toHaveLength(2));
+    expect(requests[0].signal.aborted).toBe(true);
+    rerender(<Results empActive={true} />);
+    expect(requests[1].signal.aborted).toBe(true);
+    expect(await screen.findByText("Ready")).toBeVisible();
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+
+    // Returning to a cancelled search starts a new request.
+    rerender(<Results empActive={null} />);
+    await waitFor(() => expect(requests).toHaveLength(3));
+    expect(requests[2].signal.aborted).toBe(false);
+    unmount();
+    expect(requests[2].signal.aborted).toBe(true);
+    expect(client.isFetching()).toBe(0);
   },
 );

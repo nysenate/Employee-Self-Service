@@ -138,10 +138,10 @@ export function useSearchTaskAssignments(state) {
   const queryParams = searchTaskAssignmentsQueryParams(state);
   return useQuery({
     queryKey: taskAssignmentKeys.search(queryParams),
-    queryFn: () => {
-      return fetchApiJson(`/personnel/task/assignments?${queryParams}`).then(
-        (data) => ({ ...data, filters: state }),
-      );
+    queryFn: ({ signal }) => {
+      return fetchApiJson(`/personnel/task/assignments?${queryParams}`, {
+        signal,
+      }).then((data) => ({ ...data, filters: state }));
     },
     placeholderData: keepPreviousData,
   });
@@ -151,10 +151,10 @@ export function useSearchPotentialAssignments(state) {
   const queryParams = searchTaskAssignmentsQueryParams(state);
   return useQuery({
     queryKey: taskAssignmentKeys.potential(queryParams),
-    queryFn: () => {
-      return fetchApiJson(
-        `/personnel/task/emp/assignSearch?${queryParams}`,
-      ).then((data) => ({ ...data, filters: state }));
+    queryFn: ({ signal }) => {
+      return fetchApiJson(`/personnel/task/emp/assignSearch?${queryParams}`, {
+        signal,
+      }).then((data) => ({ ...data, filters: state }));
     },
     placeholderData: keepPreviousData,
   });
