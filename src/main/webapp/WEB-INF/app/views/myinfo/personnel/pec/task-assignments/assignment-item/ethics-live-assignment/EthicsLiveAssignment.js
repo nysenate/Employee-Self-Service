@@ -4,18 +4,15 @@ import Card from "app/components/Card";
 import { isoToLongDate } from "app/utils/dateUtils";
 import { Link, useNavigate } from "react-router-dom";
 import EthicsLiveCodeEntryForm from "app/views/myinfo/personnel/pec/task-assignments/assignment-item/ethics-live-assignment/EthicsLiveCodeEntryForm";
-import ModalNotice from "app/components/ModalNotice";
+import { useNotifySuccess } from "app/components/NotificationProvider";
 
 export default function EthicsLiveAssignment({ assignment }) {
-  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const notifySuccess = useNotifySuccess();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
   const onCodeEntrySuccess = () => {
-    setIsSuccessModalOpen(true);
-  };
-
-  const onSuccessModalResolved = () => {
-    setIsSuccessModalOpen(false);
+    notifySuccess("Training codes submitted.");
     navigate("/myinfo/personnel/tasks/assignments");
   };
 
@@ -40,7 +37,14 @@ export default function EthicsLiveAssignment({ assignment }) {
         )}
 
         <div className="m-5 mb-8">
-          <Link to="/myinfo/personnel/tasks/assignments">
+          <Link
+            to="/myinfo/personnel/tasks/assignments"
+            aria-disabled={isSubmitting}
+            tabIndex={isSubmitting ? -1 : undefined}
+            onClick={(event) => {
+              if (isSubmitting) event.preventDefault();
+            }}
+          >
             Return to Personnel To-Do List
           </Link>
         </div>
@@ -88,18 +92,12 @@ export default function EthicsLiveAssignment({ assignment }) {
               <EthicsLiveCodeEntryForm
                 taskId={assignment.taskId}
                 onSuccess={onCodeEntrySuccess}
+                onPendingChange={setIsSubmitting}
               />
             </div>
           </div>
         )}
       </Card>
-
-      <ModalNotice
-        isOpen={isSuccessModalOpen}
-        onClose={onSuccessModalResolved}
-        title="Code Submission Complete"
-        body="Course codes were successfully submitted"
-      />
     </>
   );
 }

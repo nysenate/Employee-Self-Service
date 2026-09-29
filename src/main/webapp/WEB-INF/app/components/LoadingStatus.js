@@ -4,7 +4,12 @@ import { cn } from "app/utils/cn";
 
 /**
  * Shared loading presentation. The containing page/card owns spacing and blocking.
- * Use layout="centered" for initial content loads; inline for local operations.
+ * Use layout="centered" when content is unavailable. Keep existing content mounted
+ * during refreshes; show inline progress only when it helps explain the wait.
+ * For filter transitions, put progress in the existing card header with a stable
+ * height and fade the old results. Do not insert a temporary row above content.
+ * A quick save normally needs only its pending button and confirmed result;
+ * its follow-up refetch does not need a second loading message.
  * Set announce={false} inside an existing live region (for example BusyRegion).
  * Supply a descriptive message; use Spinner alone only when a control owns its label.
  */

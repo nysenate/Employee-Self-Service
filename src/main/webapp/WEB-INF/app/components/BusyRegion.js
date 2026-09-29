@@ -9,7 +9,13 @@ const spinnerColors = {
   travel: "text-orange-700",
 };
 
-/** Blocks only the affected content, with the announcement outside the busy region. */
+/**
+ * Use when a blocking operation needs prominent progress feedback while retaining
+ * visible content. Disabling edits alone does not require an overlay: quick saves
+ * can use a pending button and disable conflicting inputs without changing their
+ * appearance. Blocks only its children; disable conflicting actions outside it.
+ * The announcement stays outside the busy region.
+ */
 export default function BusyRegion({ message, children }) {
   const theme = useContext(ThemeContext);
   const isBusy = Boolean(message);
@@ -57,7 +63,9 @@ export default function BusyRegion({ message, children }) {
                   description="This may take a moment."
                   size="lg"
                   announce={false}
-                  indicatorClassName={spinnerColors[theme] ?? spinnerColors.time}
+                  indicatorClassName={
+                    spinnerColors[theme] ?? spinnerColors.time
+                  }
                 />
               </div>
             </div>

@@ -1,4 +1,6 @@
 import React from "react";
+import ErrorAlert from "app/components/ErrorAlert";
+import { useNotifySuccess } from "app/components/NotificationProvider";
 import { useForm } from "react-hook-form";
 import PhoneInputs from "app/views/myinfo/personnel/emergency-alert-info/PhoneInputs";
 import EmailInputs from "app/views/myinfo/personnel/emergency-alert-info/EmailInputs";
@@ -6,6 +8,7 @@ import Button from "app/components/Button";
 import { useMutateEmployeeAlertInfo } from "app/views/myinfo/personnel/emergency-alert-info/useEmployeeAlertInfo";
 
 export default function AlertInfoForm({ alertInfo }) {
+  const notifySuccess = useNotifySuccess();
   const mutateAlertInfo = useMutateEmployeeAlertInfo();
   const useFormDefaultProps = {
     mode: "onBlur",
@@ -31,7 +34,7 @@ export default function AlertInfoForm({ alertInfo }) {
   } = useForm(useFormDefaultProps);
 
   React.useEffect(() => {
-    reset(useFormDefaultProps.defaultValues);
+    reset(useFormDefaultProps.defaultValues, { keepDirtyValues: true });
   }, [alertInfo]);
 
   const onSubmit = (data) => {
@@ -64,36 +67,49 @@ export default function AlertInfoForm({ alertInfo }) {
       return;
     }
 
-    mutateAlertInfo.mutate(data, { empId: data.empId });
+    mutateAlertInfo.mutate(data, {
+      onSuccess: () => {
+        reset(data);
+        notifySuccess("Emergency contact information saved.");
+      },
+    });
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <div className="grid grid-cols-4 gap-3 p-3">
-        <PhoneInputs register={register} errors={errors} />
-        {/*Spacer*/}
-        <div className="col-span-4 my-3"></div>
+    <fieldset
+      disabled={mutateAlertInfo.isPending}
+      className="m-0 min-w-0 border-0 p-0"
+    >
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div className="grid grid-cols-4 gap-3 p-3">
+          <PhoneInputs register={register} errors={errors} />
+          {/*Spacer*/}
+          <div className="col-span-4 my-3"></div>
 
-        <EmailInputs register={register} errors={errors} />
+          <EmailInputs register={register} errors={errors} />
 
-        {/*Submit Button*/}
-        <div className="py-3 text-center">
-          <Button
-            type="submit"
-            variant="primary"
-            isPending={mutateAlertInfo.isPending}
-            isDisabled={Object.keys(dirtyFields).length <= 0 || !isValid}
-          >
-            Save
-          </Button>
-          {mutateAlertInfo.isError && (
-            <p className="mt-3 text-red-600">
-              Error saving data, please try again later.
-            </p>
-          )}
+          {/*Submit Button*/}
+          <div className="py-3 text-center">
+            <Button
+              type="submit"
+              variant="primary"
+              isPending={mutateAlertInfo.isPending}
+              isDisabled={Object.keys(dirtyFields).length <= 0 || !isValid}
+            >
+              Save
+            </Button>
+            {mutateAlertInfo.isError && (
+              <ErrorAlert
+                title="Unable to save emergency contact information"
+                className="mt-3"
+              >
+                Please try again. Your changes have been preserved.
+              </ErrorAlert>
+            )}
+          </div>
         </div>
-      </div>
-    </form>
+      </form>
+    </fieldset>
   );
 }
 

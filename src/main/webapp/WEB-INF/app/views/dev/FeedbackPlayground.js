@@ -213,7 +213,7 @@ function ButtonExample({ options }) {
   return (
     <Example
       title="Button pending state"
-      description="Use for a small action that does not make the surrounding content unavailable."
+      description="Use for quick saves, followed by success or error feedback. Disable conflicting inputs when needed; preserve their appearance without an overlay."
     >
       <label className="flex flex-col gap-1 font-medium">
         Example note
@@ -236,7 +236,7 @@ function RefreshExample({ options }) {
   return (
     <Example
       title="Background results refresh"
-      description="Keep existing results visible. A filter transition fades the old results while waiting for the replacement."
+      description="Keep existing results visible. Put progress in the existing header without changing its height. Fade old results during filter transitions; show background refresh progress only when it helps explain the wait."
     >
       <TravelResultsHeader
         count={2}
@@ -297,8 +297,9 @@ function RegionExample({ options, segments }) {
             <div>
               <h2 className="text-xl font-semibold">Card loading overlay</h2>
               <p className="mt-1 text-gray-600">
-                The affected form stays visible but cannot be edited while
-                processing.
+                Use for blocking operations where a prominent explanation of the
+                wait helps. The affected form stays visible. Quick saves can
+                disable edits without this overlay.
               </p>
             </div>
             {Array.from({ length: segments }, (_, index) => (
@@ -402,15 +403,15 @@ function DeveloperReference() {
     ],
     [
       "LoadingStatus",
-      "Spinner and descriptive text. Use centered layout for initial loads, inline for local work. The containing component owns spacing.",
+      "Use centered loading when content is unavailable. Keep refresh progress inside the existing header with a stable height; avoid temporary rows that shift content.",
     ],
     [
       "Button isPending",
-      "Prevents repeat actions. The button owns its accessible label; its Spinner is decorative.",
+      "Use for quick saves and prevent repeat actions. Conflicting controls may also be disabled without changing appearance. The button owns its accessible label; its Spinner is decorative.",
     ],
     [
       "BusyRegion",
-      "Blocks only the wrapped content. Owns aria-busy, inert content, the overlay, and its live announcement.",
+      "Use when a blocking operation needs prominent progress feedback. Disabling edits alone does not require an overlay. Blocks only the wrapped content and owns its live announcement.",
     ],
     [
       "Modal + LoadingStatus",
@@ -435,6 +436,14 @@ function DeveloperReference() {
         components present it; there is no global loading counter. Use one live
         announcement per operation. Set LoadingStatus announce={"{false}"}{" "}
         inside an existing live region.
+      </p>
+      <p className="my-4 text-gray-600">
+        A save-triggered background refresh usually needs no second loading
+        message. Keep the form and edits visible, and confirm the successful
+        save. Avoid reserving empty space for feedback that adds little value. A
+        filter transition means the user selected different results, such as
+        another paycheck year; retain and fade the previous results while
+        loading.
       </p>
       <table className="w-full text-left">
         <thead>

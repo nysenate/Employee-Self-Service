@@ -1,3 +1,4 @@
+import ErrorAlert from "app/components/ErrorAlert";
 import React from "react";
 import LoadingStatus from "app/components/LoadingStatus";
 import AssignmentsTable from "app/views/myinfo/personnel/pec/to-do-reporting/AssignmentsTable";
@@ -25,29 +26,68 @@ export default function AssignmentsSummary({
     );
   }
 
+  if (!taskAssignmentQuery.data) {
+    return (
+      <ErrorAlert title="Unable to load assignments">
+        Please try again.
+      </ErrorAlert>
+    );
+  }
+
+  const displayedState = taskAssignmentQuery.data.filters ?? state;
+
   return (
     <div>
-      <div className="my-3 flex items-center justify-between">
-        <TotalResults total={taskAssignmentQuery.data.total} />
-        <CsvDownload state={state} />
-      </div>
-      {taskAssignmentQuery.data.result.length > 0 && (
-        <>
-          <Pagination
-            limit={state.limit}
-            offset={state.offset}
-            total={taskAssignmentQuery.data.total}
-            onPageChange={onPageChange}
-          />
-          <AssignmentsTable taskAssignments={taskAssignmentQuery.data.result} />
-          <Pagination
-            limit={state.limit}
-            offset={state.offset}
-            total={taskAssignmentQuery.data.total}
-            onPageChange={onPageChange}
-          />
-        </>
+      {taskAssignmentQuery.isError && (
+        <ErrorAlert title="Unable to refresh assignments">
+          Please try again.
+        </ErrorAlert>
       )}
+      <div className="my-3 flex min-h-7 items-center justify-between">
+        <div aria-live="polite" className="flex items-center">
+          {taskAssignmentQuery.isFetching ? (
+            <LoadingStatus
+              message={
+                taskAssignmentQuery.isPlaceholderData
+                  ? "Updating results…"
+                  : "Refreshing assignments…"
+              }
+              announce={false}
+            />
+          ) : (
+            <TotalResults total={taskAssignmentQuery.data.total} />
+          )}
+        </div>
+        <CsvDownload state={displayedState} />
+      </div>
+      <div
+        aria-busy={taskAssignmentQuery.isFetching}
+        className={
+          taskAssignmentQuery.isPlaceholderData
+            ? "opacity-60 transition-opacity"
+            : "transition-opacity"
+        }
+      >
+        {taskAssignmentQuery.data.result.length > 0 && (
+          <>
+            <Pagination
+              limit={displayedState.limit}
+              offset={displayedState.offset}
+              total={taskAssignmentQuery.data.total}
+              onPageChange={onPageChange}
+            />
+            <AssignmentsTable
+              taskAssignments={taskAssignmentQuery.data.result}
+            />
+            <Pagination
+              limit={displayedState.limit}
+              offset={displayedState.offset}
+              total={taskAssignmentQuery.data.total}
+              onPageChange={onPageChange}
+            />
+          </>
+        )}
+      </div>
     </div>
   );
 }

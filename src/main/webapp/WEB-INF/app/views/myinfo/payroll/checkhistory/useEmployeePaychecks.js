@@ -11,10 +11,12 @@ export function useEmployeePaychecks(empId, year, useFiscalYear) {
     queryFn: () => {
       return fetchApiJson(
         `/paychecks?empId=${empId}&year=${year}&fiscalYear=${useFiscalYear}`,
-      ).then((body) => body.result);
+      ).then((body) => ({ ...body.result, year, useFiscalYear }));
     },
     enabled: !!empId && Number.isFinite(year),
     staleTime: 1000 * 60 * 1,
-    throwOnError: true,
+    placeholderData: (previousData, previousQuery) =>
+      previousQuery?.queryKey[2] === empId ? previousData : undefined,
+    throwOnError: false,
   });
 }

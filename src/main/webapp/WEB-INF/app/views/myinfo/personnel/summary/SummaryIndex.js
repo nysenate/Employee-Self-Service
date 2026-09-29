@@ -33,6 +33,9 @@ export default function SummaryIndex() {
 
   return (
     <div>
+      {(empDetails.isFetching || transactions.isFetching) && (
+        <LoadingStatus message="Refreshing employee summary…" />
+      )}
       <SummaryTitle emp={empDetails.data} />
       <Card className="mt-0.5 p-4">
         <div className="grid grid-cols-2 gap-4">

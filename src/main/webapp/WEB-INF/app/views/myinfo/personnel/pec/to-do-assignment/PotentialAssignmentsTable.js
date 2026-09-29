@@ -1,3 +1,6 @@
+import ErrorAlert from "app/components/ErrorAlert";
+import LoadingStatus from "app/components/LoadingStatus";
+import { useNotifySuccess } from "app/components/NotificationProvider";
 import React, { useState } from "react";
 import { MinusIcon } from "@heroicons/react/16/solid";
 import { useTasks } from "../to-do-reporting/useTasks";
@@ -16,18 +19,26 @@ export default function PotentialAssignmentsTable({
   const [selectedEmpId, setSelectedEmpId] = useState(null);
   // Load all tasks so we can look up full info on assignments.
   const tasksApi = useTasks(false);
-  // Store all tasks in a map of taskId to task obj.
-  const [tasksMap, setTasksMap] = useState(new Map());
+  const tasksMap = new Map(
+    (tasksApi.data ?? []).map((task) => [task.taskId, task]),
+  );
 
-  React.useEffect(() => {
-    if (tasksApi.isSuccess) {
-      let map = new Map();
-      for (const item of tasksApi.data) {
-        map.set(item.taskId, item);
-      }
-      setTasksMap(map);
-    }
-  }, [tasksApi.data]);
+  if (tasksApi.isPending) {
+    return (
+      <LoadingStatus
+        message="Loading training details…"
+        layout="centered"
+        className="min-h-48 p-6"
+      />
+    );
+  }
+
+  if (!tasksApi.data)
+    return (
+      <ErrorAlert title="Unable to load training details">
+        Please try again.
+      </ErrorAlert>
+    );
 
   const onRowClick = (empId) => {
     if (empId === selectedEmpId) {
@@ -39,6 +50,14 @@ export default function PotentialAssignmentsTable({
 
   return (
     <div className="py-3">
+      {tasksApi.isFetching && (
+        <LoadingStatus message="Refreshing training details…" />
+      )}
+      {tasksApi.isError && (
+        <ErrorAlert title="Unable to refresh training details">
+          Please try again.
+        </ErrorAlert>
+      )}
       <table className="table">
         <thead>
           <tr className="table__head__row">
@@ -182,6 +201,7 @@ function UnassignedDetails({ emp, assignment, tasksMap }) {
 
 function AssignTaskModal({ isOpen, setIsOpen, emp, task }) {
   const { data: user } = useRequireAuthedUser();
+  const notifySuccess = useNotifySuccess();
   const manuallyAssignApi = useManuallyAssignTask();
 
   const onProceed = () => {
@@ -191,9 +211,12 @@ function AssignTaskModal({ isOpen, setIsOpen, emp, task }) {
         taskId: task.taskId,
         assignedEmpId: emp.employeeId,
       })
-      .then(() => setIsOpen(false))
-      .catch((error) => {
-        throw error;
+      .then(() => {
+        notifySuccess("Task assigned.");
+        setIsOpen(false);
+      })
+      .catch(() => {
+        /* The mutation error is displayed in the dialog. */
       });
   };
 
@@ -201,6 +224,14 @@ function AssignTaskModal({ isOpen, setIsOpen, emp, task }) {
     <Modal isOpen={isOpen}>
       <Modal.Title>Personnel Task Assignment</Modal.Title>
       <Modal.Body>
+        {manuallyAssignApi.isPending && (
+          <LoadingStatus message="Updating assignment…" />
+        )}
+        {manuallyAssignApi.isError && (
+          <ErrorAlert title="Unable to update assignment">
+            Please try again.
+          </ErrorAlert>
+        )}
         <div className="text-center">
           <p className="mb-1 font-semibold">
             Tasks that rely on external services (Everfi & KnowBe4) must be
@@ -218,10 +249,21 @@ function AssignTaskModal({ isOpen, setIsOpen, emp, task }) {
         </div>
       </Modal.Body>
       <Modal.Buttons>
-        <Button variant="primary" onPress={onProceed}>
+        <Button
+          variant="primary"
+          onPress={onProceed}
+          isPending={manuallyAssignApi.isPending}
+        >
           Proceed
         </Button>
-        <Button variant="destructive" onPress={() => setIsOpen(false)}>
+        <Button
+          variant="destructive"
+          isDisabled={manuallyAssignApi.isPending}
+          onPress={() => {
+            manuallyAssignApi.reset();
+            setIsOpen(false);
+          }}
+        >
           Cancel
         </Button>
       </Modal.Buttons>

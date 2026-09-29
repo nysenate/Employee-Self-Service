@@ -15,6 +15,6 @@ export function useEmployeeActiveYears(empId, useFiscalYears) {
     },
     enabled: !!empId,
     staleTime: 1000 * 60 * 1,
-    throwOnError: true,
+    throwOnError: false,
   });
 }

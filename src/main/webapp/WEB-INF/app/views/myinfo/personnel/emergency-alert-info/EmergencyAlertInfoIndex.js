@@ -1,3 +1,4 @@
+import ErrorAlert from "app/components/ErrorAlert";
 import React from "react";
 import Hero from "app/components/Hero";
 import Card from "app/components/Card";
@@ -19,6 +20,11 @@ export default function EmergencyAlertInfoIndex() {
           event of a Senate-wide emergency.
         </Card.Header>
 
+        {alertInfo.isError && (
+          <ErrorAlert title="Unable to load emergency contact information">
+            Please try again.
+          </ErrorAlert>
+        )}
         {alertInfo.isPending && (
           <LoadingStatus
             message="Loading emergency contact information…"
@@ -27,7 +33,9 @@ export default function EmergencyAlertInfoIndex() {
             className="min-h-48 p-6"
           />
         )}
-        {alertInfo.isSuccess && <AlertInfoForm alertInfo={alertInfo.data} />}
+        {alertInfo.data && (
+          <AlertInfoForm key={user.employeeId} alertInfo={alertInfo.data} />
+        )}
       </Card>
     </div>
   );

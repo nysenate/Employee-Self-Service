@@ -1,3 +1,6 @@
+import ErrorAlert from "app/components/ErrorAlert";
+import LoadingStatus from "app/components/LoadingStatus";
+import { useNotifySuccess } from "app/components/NotificationProvider";
 import {
   CheckIcon,
   ChevronDownIcon,
@@ -250,7 +253,8 @@ function TrainingAssignmentsAccordionItem({
 
 function IncompleteAssignmentDetails({ emp, assignment }) {
   const task = assignment.task;
-  const [isCompleteManuallyModalOpen, setIsCompleteManuallyModalOpen] = useState(false);
+  const [isCompleteManuallyModalOpen, setIsCompleteManuallyModalOpen] =
+    useState(false);
   const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState(false);
 
   return (
@@ -292,6 +296,7 @@ function IncompleteAssignmentDetails({ emp, assignment }) {
 
 function CompleteManuallyModal({ isOpen, emp, setIsOpen, assignment }) {
   const { data: user } = useRequireAuthedUser();
+  const notifySuccess = useNotifySuccess();
   const manuallyOverrideApi = useManuallyOverrideCompletionStatus();
 
   const onProceed = () => {
@@ -302,9 +307,12 @@ function CompleteManuallyModal({ isOpen, emp, setIsOpen, assignment }) {
         isCompleted: true,
         assignedEmpId: assignment.empId,
       })
-      .then(() => setIsOpen(false))
-      .catch((error) => {
-        throw error;
+      .then(() => {
+        notifySuccess("Task marked complete.");
+        setIsOpen(false);
+      })
+      .catch(() => {
+        /* The mutation error is displayed in the dialog. */
       });
   };
 
@@ -312,6 +320,14 @@ function CompleteManuallyModal({ isOpen, emp, setIsOpen, assignment }) {
     <Modal isOpen={isOpen} className="w-full max-w-lg">
       <Modal.Title>Complete Task Manually</Modal.Title>
       <Modal.Body>
+        {manuallyOverrideApi.isPending && (
+          <LoadingStatus message="Updating assignment…" />
+        )}
+        {manuallyOverrideApi.isError && (
+          <ErrorAlert title="Unable to update assignment">
+            Please try again.
+          </ErrorAlert>
+        )}
         <div className="space-y-3">
           <p>
             This will mark the following task as complete for this employee. Use
@@ -331,10 +347,21 @@ function CompleteManuallyModal({ isOpen, emp, setIsOpen, assignment }) {
         </div>
       </Modal.Body>
       <Modal.Buttons>
-        <Button variant="primary" onPress={onProceed}>
+        <Button
+          variant="primary"
+          onPress={onProceed}
+          isPending={manuallyOverrideApi.isPending}
+        >
           Confirm Completion
         </Button>
-        <Button variant="secondary" onPress={() => setIsOpen(false)}>
+        <Button
+          variant="secondary"
+          isDisabled={manuallyOverrideApi.isPending}
+          onPress={() => {
+            manuallyOverrideApi.reset();
+            setIsOpen(false);
+          }}
+        >
           Cancel
         </Button>
       </Modal.Buttons>
@@ -344,6 +371,7 @@ function CompleteManuallyModal({ isOpen, emp, setIsOpen, assignment }) {
 
 function ManuallyDeactivateModal({ isOpen, setIsOpen, emp, assignment }) {
   const { data: user } = useRequireAuthedUser();
+  const notifySuccess = useNotifySuccess();
   const deactivateTaskAssignmentApi = useManuallyDeactivateTaskAssignment();
 
   const onProceed = () => {
@@ -354,9 +382,12 @@ function ManuallyDeactivateModal({ isOpen, setIsOpen, emp, assignment }) {
         isActive: false,
         assignedEmpId: assignment.empId,
       })
-      .then(() => setIsOpen(false))
-      .catch((error) => {
-        throw error;
+      .then(() => {
+        notifySuccess("Assignment deactivated.");
+        setIsOpen(false);
+      })
+      .catch(() => {
+        /* The mutation error is displayed in the dialog. */
       });
   };
 
@@ -364,6 +395,14 @@ function ManuallyDeactivateModal({ isOpen, setIsOpen, emp, assignment }) {
     <Modal isOpen={isOpen} className="w-full max-w-lg">
       <Modal.Title>Deactivate Assignment</Modal.Title>
       <Modal.Body>
+        {deactivateTaskAssignmentApi.isPending && (
+          <LoadingStatus message="Updating assignment…" />
+        )}
+        {deactivateTaskAssignmentApi.isError && (
+          <ErrorAlert title="Unable to update assignment">
+            Please try again.
+          </ErrorAlert>
+        )}
         <div className="space-y-3">
           <p>
             This will deactivate the following assignment for this employee. The
@@ -383,10 +422,21 @@ function ManuallyDeactivateModal({ isOpen, setIsOpen, emp, assignment }) {
         </div>
       </Modal.Body>
       <Modal.Buttons>
-        <Button variant="destructive" onPress={onProceed}>
+        <Button
+          variant="destructive"
+          onPress={onProceed}
+          isPending={deactivateTaskAssignmentApi.isPending}
+        >
           Deactivate Assignment
         </Button>
-        <Button variant="secondary" onPress={() => setIsOpen(false)}>
+        <Button
+          variant="secondary"
+          isDisabled={deactivateTaskAssignmentApi.isPending}
+          onPress={() => {
+            deactivateTaskAssignmentApi.reset();
+            setIsOpen(false);
+          }}
+        >
           Cancel
         </Button>
       </Modal.Buttons>

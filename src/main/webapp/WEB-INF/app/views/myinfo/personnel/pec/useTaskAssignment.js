@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { buildQueryString } from "app/utils/apiUtils";
 import { fetchApiJson } from "app/api/fetchJson";
 
@@ -19,7 +24,7 @@ export function useTaskAssignments(empId, detail = true, activeOnly = true) {
       ).then((body) => body.assignments);
     },
     enabled: !!empId,
-    throwOnError: true,
+    throwOnError: (_error, query) => query.state.data === undefined,
   });
 }
 
@@ -32,7 +37,7 @@ export function useTaskAssignment(empId, taskId) {
       );
     },
     enabled: !!empId && Number.isFinite(taskId),
-    throwOnError: true,
+    throwOnError: (_error, query) => query.state.data === undefined,
   });
 }
 
@@ -134,9 +139,11 @@ export function useSearchTaskAssignments(state) {
   return useQuery({
     queryKey: taskAssignmentKeys.search(queryParams),
     queryFn: () => {
-      return fetchApiJson(`/personnel/task/assignments?${queryParams}`);
+      return fetchApiJson(`/personnel/task/assignments?${queryParams}`).then(
+        (data) => ({ ...data, filters: state }),
+      );
     },
-    cacheTime: 0, // Disable caching for this query.
+    placeholderData: keepPreviousData,
   });
 }
 
@@ -145,9 +152,11 @@ export function useSearchPotentialAssignments(state) {
   return useQuery({
     queryKey: taskAssignmentKeys.potential(queryParams),
     queryFn: () => {
-      return fetchApiJson(`/personnel/task/emp/assignSearch?${queryParams}`);
+      return fetchApiJson(
+        `/personnel/task/emp/assignSearch?${queryParams}`,
+      ).then((data) => ({ ...data, filters: state }));
     },
-    cacheTime: 0, // Disable caching for this query.
+    placeholderData: keepPreviousData,
   });
 }
 

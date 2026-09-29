@@ -1,3 +1,4 @@
+import ErrorAlert from "app/components/ErrorAlert";
 import React, { useState } from "react";
 import { useDebounce } from "use-debounce";
 import { ChevronDownIcon, XMarkIcon } from "@heroicons/react/16/solid";
@@ -43,13 +44,18 @@ export default function OfficeMultiSelect({ onChange }) {
   ) {
     return (
       <div className="my-3">
-        <LoadingStatus message="Loading offices…" />
+        <LoadingStatus message="Loading offices…" layout="centered" />
       </div>
     );
   }
 
   return (
     <div className="mt-2">
+      {respctrHeadSearchQuery.isError && (
+        <ErrorAlert title="Unable to load offices">
+          Please try again.
+        </ErrorAlert>
+      )}
       <div className="font-light">Offices</div>
       <div>
         {selectedOffices.length > 0 && (
@@ -67,6 +73,9 @@ export default function OfficeMultiSelect({ onChange }) {
           </ul>
         )}
       </div>
+      {respctrHeadSearchQuery.isFetching && (
+        <LoadingStatus message="Updating offices…" />
+      )}
       <Combobox
         multiple
         immediate
@@ -90,21 +99,23 @@ export default function OfficeMultiSelect({ onChange }) {
           anchor="top"
           className="w-[var(--input-width)] overflow-y-auto bg-white shadow-lg transition duration-100 ease-in [--anchor-max-height:300px] empty:invisible"
         >
-          {!respctrHeadSearchQuery.isLoading &&
-            respctrHeadSearchQuery.data
-              .filter((o) => !selectedOffices.includes(o))
-              .map((office) => (
-                <div key={office.code}>
-                  <hr />
-                  <ComboboxOption
-                    value={office}
-                    className="cursor-pointer px-3 py-2 data-[focus]:bg-gray-100"
-                  >
-                    <div className="">{office.name}</div>
-                    <div className="text-xs font-light">{office.code}</div>
-                  </ComboboxOption>
-                </div>
-              ))}
+          {filteredOffices
+            .filter(
+              (o) =>
+                !selectedOffices.some((selected) => selected.code === o.code),
+            )
+            .map((office) => (
+              <div key={office.code}>
+                <hr />
+                <ComboboxOption
+                  value={office}
+                  className={`cursor-pointer px-3 py-2 data-[focus]:bg-gray-100 ${respctrHeadSearchQuery.isFetching ? "opacity-60" : ""}`}
+                >
+                  <div className="">{office.name}</div>
+                  <div className="text-xs font-light">{office.code}</div>
+                </ComboboxOption>
+              </div>
+            ))}
         </ComboboxOptions>
       </Combobox>
     </div>

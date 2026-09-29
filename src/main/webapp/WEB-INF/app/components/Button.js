@@ -9,6 +9,9 @@ import {
 
 /**
  * A common button component for ESS.
+ * For quick saves, use isPending followed by confirmed success or error feedback.
+ * Conflicting inputs may also be disabled while preserving their appearance;
+ * this does not require a busy overlay or a separate save-refetch message.
  * React Aria-first component.
  *
  * @param variant The button style. Supported options:

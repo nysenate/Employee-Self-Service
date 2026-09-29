@@ -10,6 +10,6 @@ export function useResponsibilityCenterHeadSearch(term) {
       ).then((body) => body.result);
     },
     staleTime: 1000 * 60 * 1,
-    throwOnError: true,
+    throwOnError: false,
   });
 }

@@ -1,3 +1,4 @@
+import ErrorAlert from "app/components/ErrorAlert";
 import React from "react";
 import {
   AcademicCapIcon,
@@ -79,6 +80,14 @@ export default function AssignmentsList() {
 
   return (
     <div className={"mx-[9em] mt-5 mb-2 pb-5"}>
+      {assignments.isError && (
+        <ErrorAlert title="Unable to refresh assignments">
+          Please try again.
+        </ErrorAlert>
+      )}
+      {assignments.isFetching && (
+        <LoadingStatus message="Refreshing assignments…" />
+      )}
       <span className={"text-2xl"}>Incomplete Assignments</span>
       <ul className={"my-2"}>
         {incompleteAssignments.length === 0 ? (

@@ -1,3 +1,4 @@
+import ErrorAlert from "app/components/ErrorAlert";
 import React from "react";
 import LoadingStatus from "app/components/LoadingStatus";
 import CheckHistoryForm from "app/views/myinfo/payroll/checkhistory/CheckHistoryForm";
@@ -23,11 +24,30 @@ export default function CheckHistoryIndex() {
     );
   }
 
+  if (!employeeActiveYears.data || !employeeActiveFiscalYears.data) {
+    return (
+      <ErrorAlert title="Unable to load paycheck years">
+        Please try again.
+      </ErrorAlert>
+    );
+  }
+
   return (
-    <CheckHistoryForm
-      empId={user.employeeId}
-      calendarYears={employeeActiveYears.data}
-      fiscalYears={employeeActiveFiscalYears.data}
-    />
+    <>
+      {(employeeActiveYears.isError || employeeActiveFiscalYears.isError) && (
+        <ErrorAlert title="Unable to refresh paycheck years">
+          Please try again.
+        </ErrorAlert>
+      )}
+      {(employeeActiveYears.isFetching ||
+        employeeActiveFiscalYears.isFetching) && (
+        <LoadingStatus message="Refreshing paycheck years…" />
+      )}
+      <CheckHistoryForm
+        empId={user.employeeId}
+        calendarYears={employeeActiveYears.data}
+        fiscalYears={employeeActiveFiscalYears.data}
+      />
+    </>
   );
 }
