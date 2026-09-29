@@ -27,6 +27,7 @@ export default function WorkflowActions({
       {onCancel && (
         <Button
           variant="secondary"
+          className="px-5"
           onPress={onCancel}
           isDisabled={
             isDisabled || isCancelDisabled || isSaving || isPrimaryPending
@@ -37,7 +38,8 @@ export default function WorkflowActions({
       )}
       {stepIndex > 0 && (
         <Button
-          variant="secondary"
+          variant="quiet"
+          className="border border-transparent px-5"
           onPress={onBack}
           isDisabled={isDisabled || isPrimaryPending || isSaving}
         >
@@ -47,6 +49,7 @@ export default function WorkflowActions({
       {step.allowsDraftSave && onSave && (
         <Button
           variant="secondary"
+          className="px-5"
           onPress={onSave}
           isDisabled={isDisabled || isPrimaryPending}
           isPending={isSaving}
@@ -55,6 +58,7 @@ export default function WorkflowActions({
         </Button>
       )}
       <Button
+        className="px-5"
         onPress={onPrimary}
         isDisabled={
           isDisabled || isPrimaryDisabled || isPrimaryPending || isSaving

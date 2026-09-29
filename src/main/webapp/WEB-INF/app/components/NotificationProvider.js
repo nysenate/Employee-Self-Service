@@ -109,7 +109,7 @@ function SuccessNotification({ notification, onDismiss }) {
         }
       >
         {notification && (
-          <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-green-100 text-green-800">
+          <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-green-700 text-white">
             <Check aria-hidden="true" className="size-4" />
           </span>
         )}
