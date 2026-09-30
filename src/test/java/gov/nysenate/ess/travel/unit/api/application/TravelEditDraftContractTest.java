@@ -8,15 +8,22 @@ import gov.nysenate.ess.core.util.OutputUtils;
 import gov.nysenate.ess.travel.api.DraftCtrl;
 import gov.nysenate.ess.travel.request.app.TravelApplication;
 import gov.nysenate.ess.travel.request.draft.*;
+import org.apache.shiro.subject.Subject;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 
 @Category(UnitTest.class)
 public class TravelEditDraftContractTest {
+    private final Subject subject = mock(Subject.class);
+    private final DraftCtrl controller = new DraftCtrl() {
+        @Override protected Subject getSubject() { return subject; }
+    };
+
     @Test
     public void editDraftRoundTripsThroughActualJsonContractAndUnchangedExpensePatch() throws Exception {
         TravelApplication original = EditDraftFixture.application();
@@ -61,7 +68,7 @@ public class TravelEditDraftContractTest {
                 DraftViewPatchOption.MILEAGE_PER_DIEMS));
         DraftViewPatches wirePatches = OutputUtils.jsonMapper.readValue(
                 OutputUtils.jsonMapper.writeValueAsString(patches), DraftViewPatches.class);
-        DraftView patchResult = (DraftView) ((ViewObjectResponse<?>) new DraftCtrl()
+        DraftView patchResult = (DraftView) ((ViewObjectResponse<?>) controller
                 .patchDraftApp(wirePatches)).result;
         DraftView decodedResult = OutputUtils.jsonMapper.readValue(
                 OutputUtils.jsonMapper.writeValueAsString(patchResult), DraftView.class);
@@ -107,7 +114,7 @@ public class TravelEditDraftContractTest {
         DraftViewPatches patches = new DraftViewPatches();
         patches.setDraft(OutputUtils.jsonMapper.treeToValue(wire, DraftView.class));
         patches.setOptions(EnumSet.of(DraftViewPatchOption.MEAL_PER_DIEMS, DraftViewPatchOption.LODGING_PER_DIEMS));
-        DraftView result = (DraftView) ((ViewObjectResponse<?>) new DraftCtrl().patchDraftApp(patches)).result;
+        DraftView result = (DraftView) ((ViewObjectResponse<?>) controller.patchDraftApp(patches)).result;
         return result.toDraft().getTravelApplication();
     }
 

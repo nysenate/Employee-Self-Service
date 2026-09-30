@@ -25,6 +25,7 @@ import gov.nysenate.ess.travel.request.draft.DraftViewPatchOption;
 import gov.nysenate.ess.travel.request.draft.DraftViewPatches;
 import gov.nysenate.ess.travel.request.route.ModeOfTransportation;
 import gov.nysenate.ess.travel.utils.Dollars;
+import org.apache.shiro.subject.Subject;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -36,11 +37,17 @@ import java.util.EnumSet;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 @Category(UnitTest.class)
 public class DraftCtrlExpensePatchTest {
 
     private static final LocalDate TRAVEL_DATE = LocalDate.of(2026, 8, 19);
+
+    private final Subject subject = mock(Subject.class);
+    private final DraftCtrl controller = new DraftCtrl() {
+        @Override protected Subject getSubject() { return subject; }
+    };
 
     @Test
     public void expensePatchRetainsSelectionsRecalculatesTotalsAndDoesNotPersist() throws Exception {
@@ -60,8 +67,6 @@ public class DraftCtrlExpensePatchTest {
                 DraftViewPatchOption.LODGING_PER_DIEMS,
                 DraftViewPatchOption.MILEAGE_PER_DIEMS
         ));
-
-        DraftCtrl controller = new DraftCtrl();
 
         BaseResponse response = controller.patchDraftApp(patches);
         DraftView result = (DraftView) ((ViewObjectResponse<?>) response).result;
