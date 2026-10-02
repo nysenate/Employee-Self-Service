@@ -1,14 +1,25 @@
 import React from "react";
 import EssNavBar from "app/components/EssNavBar";
 import { Outlet } from "react-router-dom";
-import useRequireAuthedUser from "app/hooks/useRequireAuthedUser";
+import useRequireAuthedUser, {
+  isTransientAuthError,
+} from "app/hooks/useRequireAuthedUser";
 import TimeoutChecker from "app/TimeoutChecker";
 import LoadingStatus from "app/components/LoadingStatus";
 import ErrorPage from "app/views/ErrorPage";
 import NotificationProvider from "app/components/NotificationProvider";
+import ErrorAlert from "app/components/ErrorAlert";
+import Button from "app/components/Button";
 
 export default function EssLayout() {
-  const { error, isPending, isError } = useRequireAuthedUser();
+  const {
+    data: user,
+    error,
+    isPending,
+    isError,
+    isFetching,
+    refetch,
+  } = useRequireAuthedUser();
 
   // Do not mount protected routes until the user's session is initially verified.
   // Background verification must leave them mounted so local form state survives.
@@ -23,7 +34,7 @@ export default function EssLayout() {
     );
   }
 
-  if (isError) {
+  if (isError && (!user || !isTransientAuthError(error))) {
     return <ErrorPage error={error} />;
   }
 
@@ -33,6 +44,23 @@ export default function EssLayout() {
         <TimeoutChecker>
           <EssNavBar />
           <div className="mx-auto w-[1150px] pt-[70px]">
+            {isError && (
+              <ErrorAlert
+                title="Trouble connecting to ESS"
+                className="mb-5"
+              >
+                <p>
+                  Keep this page open to avoid losing unsaved changes.
+                </p>
+                <Button
+                  className="mt-3"
+                  onPress={() => refetch()}
+                  isPending={isFetching}
+                >
+                  Reconnect to ESS
+                </Button>
+              </ErrorAlert>
+            )}
             <Outlet />
           </div>
         </TimeoutChecker>

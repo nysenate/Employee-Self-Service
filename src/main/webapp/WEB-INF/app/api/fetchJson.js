@@ -44,7 +44,9 @@ export async function fetchJson(input, init) {
   }
 
   // Unsuccessful response, throw error.
-  const data = await response.json();
+  // Preserve the HTTP status even if an error page is HTML, empty, or truncated.
+  // Session handling must still recognize a confirmed 401 in that case.
+  const data = await response.json().catch(() => undefined);
   throw new FetchError({
     message: response.statusText,
     response,
