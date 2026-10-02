@@ -8,6 +8,8 @@ import { cn } from "app/utils/cn";
 import { useUserTravelRoles } from "app/views/travel/shared/hooks/useUserTravelRoles";
 import { useReviewQueue } from "app/views/travel/reviewer/queue/useReviewQueue";
 import LoadingStatus from "app/components/LoadingStatus";
+import ErrorAlert from "app/components/ErrorAlert";
+import Button from "app/components/Button";
 import ReviewQueueResults from "./ReviewQueueResults";
 
 const REVIEW_ROLE_PRIORITY = [
@@ -22,8 +24,13 @@ export default function ReviewQueuePage() {
   const location = useLocation();
   const { data: userRoles, isPending: isUserRolesPending } =
     useUserTravelRoles();
-  const { data: reviewQueue, isPending: isReviewQueuePending } =
-    useReviewQueue();
+  const {
+    data: reviewQueue,
+    isPending: isReviewQueuePending,
+    isError: isReviewQueueError,
+    isFetching: isReviewQueueFetching,
+    refetch: refetchReviewQueue,
+  } = useReviewQueue();
 
   const [selectedRole, setSelectedRole] = useState(null);
 
@@ -49,7 +56,11 @@ export default function ReviewQueuePage() {
     );
   }, [dedupedRoles, selectedRole, location.state?.reviewRole]);
 
-  const isLoading = isUserRolesPending || isReviewQueuePending || !selectedRole;
+  const hasReviewQueue = reviewQueue !== undefined;
+  const isLoading =
+    isUserRolesPending ||
+    isReviewQueuePending ||
+    (hasReviewQueue && !selectedRole);
 
   if (isLoading) {
     return (
@@ -63,33 +74,60 @@ export default function ReviewQueuePage() {
   }
 
   const canChangeRole = dedupedRoles.length > 1;
-  const queue = reviewQueue?.[selectedRole.name] ?? [];
+  const queue = reviewQueue?.[selectedRole?.name] ?? [];
 
   return (
     <div>
       <Hero>Review Travel Applications</Hero>
-      <Controls>
-        <div
-          className={cn("text-center text-gray-600", canChangeRole && "mb-3")}
+      {isReviewQueueError && (
+        <ErrorAlert
+          className="mt-5"
+          title={
+            hasReviewQueue
+              ? "Unable to refresh review queue"
+              : "Unable to load review queue"
+          }
         >
-          The following travel applications require your review.
-        </div>
-        {canChangeRole && (
-          <div className="my-3 flex justify-center">
-            <RoleSelect
-              selectedRole={selectedRole}
-              setSelectedRole={setSelectedRole}
-              roles={dedupedRoles}
-              reviewQueue={reviewQueue}
-            />
+          <p>
+            {hasReviewQueue
+              ? "The previously loaded applications are still shown. Please try again to get the latest queue."
+              : "Please try again to load applications awaiting your review."}
+          </p>
+          <Button
+            className="mt-3"
+            onPress={() => refetchReviewQueue()}
+            isPending={isReviewQueueFetching}
+          >
+            Try again
+          </Button>
+        </ErrorAlert>
+      )}
+      {hasReviewQueue && (
+        <Controls>
+          <div
+            className={cn("text-center text-gray-600", canChangeRole && "mb-3")}
+          >
+            The following travel applications require your review.
           </div>
-        )}
-      </Controls>
+          {canChangeRole && (
+            <div className="my-3 flex justify-center">
+              <RoleSelect
+                selectedRole={selectedRole}
+                setSelectedRole={setSelectedRole}
+                roles={dedupedRoles}
+                reviewQueue={reviewQueue}
+              />
+            </div>
+          )}
+        </Controls>
+      )}
 
-      <ReviewQueueResults
-        queue={queue}
-        roleName={canChangeRole ? selectedRole?.displayName : null}
-      />
+      {hasReviewQueue && (
+        <ReviewQueueResults
+          queue={queue}
+          roleName={canChangeRole ? selectedRole?.displayName : null}
+        />
+      )}
     </div>
   );
 }
