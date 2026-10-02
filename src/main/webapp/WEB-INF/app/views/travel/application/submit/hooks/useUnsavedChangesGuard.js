@@ -1,15 +1,20 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 export function useUnsavedChangesGuard(isDirty, isLocked = false) {
   const location = useLocation();
   const navigate = useNavigate();
   const [pendingDestination, setPendingDestination] = useState(null);
+  const allowNextUnload = useRef(false);
 
   useEffect(() => {
     if (!isDirty && !isLocked) return undefined;
 
     const warnBeforeUnload = (event) => {
+      if (allowNextUnload.current) {
+        allowNextUnload.current = false;
+        return;
+      }
       event.preventDefault();
       event.returnValue = "";
     };
@@ -37,9 +42,18 @@ export function useUnsavedChangesGuard(isDirty, isLocked = false) {
     isOpen: pendingDestination !== null,
     stay: () => setPendingDestination(null),
     leave: () => {
+      if (isLocked) return;
       const destination = pendingDestination;
       setPendingDestination(null);
-      if (destination) navigate(destination);
+      if (!destination) return;
+      if (destination.reloadDocument) {
+        // The server chooses the destination app's frontend. The dialog has
+        // already confirmed this exit, so skip its beforeunload prompt once.
+        allowNextUnload.current = true;
+        window.location.assign(destination.href);
+      } else {
+        navigate(destination.href);
+      }
     },
   };
 }
@@ -65,5 +79,10 @@ function navigableDestination(anchor, location) {
   ) {
     return null;
   }
-  return `${destination.pathname}${destination.search}${destination.hash}`;
+  return {
+    href: `${destination.pathname}${destination.search}${destination.hash}`,
+    reloadDocument:
+      anchor.hasAttribute("data-reload-document") ||
+      destination.pathname.split("/")[1] !== location.pathname.split("/")[1],
+  };
 }
