@@ -1,19 +1,31 @@
 import NotificationProvider from "app/components/NotificationProvider";
 import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { Link, MemoryRouter, Route, Routes } from "react-router-dom";
+import { travelQueryKeys } from "app/views/travel/shared/hooks/travelQueryKeys";
 import SubmitApplication from "./index";
 
-function renderPage(initialEntry = "/travel/applications/new") {
-  const queryClient = new QueryClient({
+function renderPage(
+  initialEntry = "/travel/applications/new",
+  queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
-  });
+  }),
+) {
   return render(
     <NotificationProvider>
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={[initialEntry]}>
+          <Link to="/travel/applications/new">Submit Travel Application</Link>
+          <Link to="/travel/applications/new/42">Open draft 42</Link>
+          <Link to="/travel/applications/new/43">Open draft 43</Link>
           <Routes>
             <Route
               path="/travel/applications/new"
@@ -156,6 +168,158 @@ describe("new travel application initialization", () => {
         url.endsWith("/travel/drafts") && options.method === "POST",
     );
     expect(JSON.parse(saveRequest[1].body).id).toBe(42);
+  });
+
+  it.each([
+    ["Submit Travel Application", undefined, ""],
+    ["Open draft 43", 43, "Second draft"],
+  ])(
+    "resets the cached editor when navigating to %s",
+    async (link, id, contents) => {
+      const queryClient = new QueryClient();
+      const makeDraft = (draftId, additionalPurpose) => ({
+        id: draftId,
+        traveler: {},
+        amendment: {
+          purposeOfTravel: {
+            eventType: { name: "Forum", displayName: "Forum" },
+            additionalPurpose,
+          },
+        },
+      });
+      queryClient.setQueryData(travelQueryKeys.newDraft(), { traveler: {} });
+      queryClient.setQueryData(
+        travelQueryKeys.draft(42),
+        makeDraft(42, "First draft"),
+      );
+      queryClient.setQueryData(
+        travelQueryKeys.draft(43),
+        makeDraft(43, "Second draft"),
+      );
+      const postedDrafts = [];
+      vi.stubGlobal(
+        "fetch",
+        vi.fn((url, options = {}) => {
+          if (url.endsWith("/config")) {
+            return response({
+              result: { config: { googleApiKey: "test-key" } },
+            });
+          }
+          if (url.endsWith("/travel/drafts") && options.method === "POST") {
+            const draft = JSON.parse(options.body);
+            postedDrafts.push(draft);
+            return response({ result: { ...draft, id: draft.id ?? 99 } });
+          }
+          return response({
+            result: [{ name: "Forum", displayName: "Forum" }],
+          });
+        }),
+      );
+
+      renderPage("/travel/applications/new", queryClient);
+      await screen.findByRole("option", { name: "Forum" });
+      fireEvent.click(screen.getByRole("link", { name: "Open draft 42" }));
+      expect(
+        screen.getByLabelText("Additional information (optional)"),
+      ).toHaveValue("First draft");
+      fireEvent.click(screen.getByRole("button", { name: "Next" }));
+      expect(screen.getByRole("button", { name: "Outbound" })).toHaveAttribute(
+        "aria-current",
+        "step",
+      );
+
+      fireEvent.click(screen.getByRole("link", { name: link }));
+      fireEvent.click(
+        await screen.findByRole("button", { name: "Leave application" }),
+      );
+      expect(
+        await screen.findByRole("button", { name: "Purpose" }),
+      ).toHaveAttribute("aria-current", "step");
+      expect(screen.getByRole("button", { name: "Outbound" })).toBeDisabled();
+      expect(screen.getByLabelText("Purpose")).toHaveValue(
+        id === undefined ? "" : "Forum",
+      );
+
+      if (id === undefined) {
+        fireEvent.change(screen.getByLabelText("Purpose"), {
+          target: { value: "Forum" },
+        });
+      }
+      expect(
+        screen.getByLabelText("Additional information (optional)"),
+      ).toHaveValue(contents);
+      fireEvent.change(
+        screen.getByLabelText("Additional information (optional)"),
+        {
+          target: { value: "Separate application" },
+        },
+      );
+      fireEvent.click(screen.getByRole("button", { name: "Save" }));
+      await screen.findByText("Draft saved");
+      expect(postedDrafts).toHaveLength(1);
+      expect(postedDrafts[0].id).toBe(id);
+      expect(postedDrafts[0].amendment.purposeOfTravel.additionalPurpose).toBe(
+        "Separate application",
+      );
+
+      // Saving a new draft assigns an ID without changing the editing session.
+      fireEvent.click(screen.getByRole("button", { name: "Save" }));
+      await waitFor(() => expect(postedDrafts).toHaveLength(2));
+      expect(postedDrafts[1].id).toBe(id ?? 99);
+      expect(
+        screen.getByLabelText("Additional information (optional)"),
+      ).toHaveValue("Separate application");
+    },
+  );
+
+  it("preserves progress and local edits when the same draft's cache is refreshed", async () => {
+    const queryClient = new QueryClient();
+    const draft = {
+      id: 42,
+      traveler: {},
+      amendment: {
+        purposeOfTravel: {
+          eventType: { name: "Forum", displayName: "Forum" },
+          additionalPurpose: "Original purpose",
+        },
+      },
+    };
+    queryClient.setQueryData(travelQueryKeys.draft(42), draft);
+    vi.stubGlobal(
+      "fetch",
+      vi.fn((url) =>
+        response({
+          result: url.endsWith("/config")
+            ? { config: { googleApiKey: "test-key" } }
+            : [{ name: "Forum", displayName: "Forum" }],
+        }),
+      ),
+    );
+    renderPage("/travel/applications/new/42", queryClient);
+    await screen.findByRole("option", { name: "Forum" });
+    fireEvent.change(
+      screen.getByLabelText("Additional information (optional)"),
+      {
+        target: { value: "Unsaved purpose" },
+      },
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Next" }));
+
+    await act(async () => {
+      queryClient.setQueryData(travelQueryKeys.draft(42), {
+        ...draft,
+        traveler: { fullName: "Updated traveler" },
+      });
+    });
+
+    expect(screen.getByRole("button", { name: "Outbound" })).toHaveAttribute(
+      "aria-current",
+      "step",
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Back" }));
+    expect(
+      screen.getByLabelText("Additional information (optional)"),
+    ).toHaveValue("Unsaved purpose");
   });
 
   it("shows resume recovery actions without creating a draft when loading fails", async () => {

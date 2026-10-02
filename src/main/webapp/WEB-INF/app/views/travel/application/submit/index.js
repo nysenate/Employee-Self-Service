@@ -27,7 +27,12 @@ export default function SubmitApplication() {
           isResuming={isResuming}
         />
       )}
-      {draftQuery.isSuccess && <NewTravelApplication draft={draftQuery.data} />}
+      {draftQuery.isSuccess && (
+        <NewTravelApplication
+          key={draftId ?? "new"}
+          draft={draftQuery.data}
+        />
+      )}
     </div>
   );
 }
