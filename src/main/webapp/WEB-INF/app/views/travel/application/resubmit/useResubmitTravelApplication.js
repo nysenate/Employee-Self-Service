@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchApiJson } from "app/api/fetchJson";
+import { classifyApplicationSubmissionError } from "../workflow/submissionErrors";
 import { refreshTravelAfterResubmission } from "./resubmissionCache";
 
 export function useResubmitTravelApplication(appId) {
@@ -75,13 +76,7 @@ export function classifyResubmissionError(error) {
   if (status === 409 || errorCode === "TRAVEL_RESUBMISSION_CONFLICT") {
     return "conflict";
   }
-  if (status === 401 || status === 403) {
-    return "access";
-  }
-  if (status === 400 || status === 422) {
-    return "correction";
-  }
-  return "unknown-outcome";
+  return classifyApplicationSubmissionError(error);
 }
 
 function isCommitBlocked(recoveryType) {

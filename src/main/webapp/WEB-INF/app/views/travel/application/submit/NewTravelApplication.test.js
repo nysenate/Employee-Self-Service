@@ -733,60 +733,174 @@ describe("new travel application workflow shell", () => {
     ).toBeVisible();
   });
 
-  it("retains review data after failure and requires confirmation before retry", async () => {
-    const draft = calculatedExpenseDraft(returnReadyDraft());
-    draft.amendment.route.outboundLegs[0].to.address.county = "Erie";
-    draft.amendment.route.returnLegs[0].from.address.county = "Erie";
-    let submitAttempts = 0;
-    vi.stubGlobal(
-      "fetch",
-      vi.fn(async (url) => {
-        if (String(url).includes("/config"))
-          return successfulResponse({ config: { googleApiKey: "test-key" } });
-        if (String(url).endsWith("/travel/event-types"))
-          return successfulResponse([{ name: "Forum", displayName: "Forum" }]);
-        if (String(url).endsWith("/travel/mode-of-transportation"))
-          return successfulResponse([
-            { methodOfTravel: "TRAIN", displayName: "Train" },
-          ]);
-        if (String(url).endsWith("/travel/drafts/submit")) {
-          submitAttempts += 1;
-          return failedResponse(500, { message: "failed" });
-        }
-        return successfulResponse(draft);
-      }),
-    );
+  it.each([400, 422])(
+    "retains review data after HTTP %s and requires confirmation before retry",
+    async (status) => {
+      const draft = calculatedExpenseDraft(returnReadyDraft());
+      draft.amendment.route.outboundLegs[0].to.address.county = "Erie";
+      draft.amendment.route.returnLegs[0].from.address.county = "Erie";
+      let submitAttempts = 0;
+      vi.stubGlobal(
+        "fetch",
+        vi.fn(async (url) => {
+          if (String(url).includes("/config"))
+            return successfulResponse({ config: { googleApiKey: "test-key" } });
+          if (String(url).endsWith("/travel/event-types"))
+            return successfulResponse([
+              { name: "Forum", displayName: "Forum" },
+            ]);
+          if (String(url).endsWith("/travel/mode-of-transportation"))
+            return successfulResponse([
+              { methodOfTravel: "TRAIN", displayName: "Train" },
+            ]);
+          if (String(url).endsWith("/travel/drafts/submit")) {
+            submitAttempts += 1;
+            return submitAttempts === 1
+              ? failedResponse(status, { message: "failed" })
+              : successfulResponse({ id: 42 });
+          }
+          return successfulResponse(draft);
+        }),
+      );
 
-    renderWorkflow(draft);
-    await advanceToReturn();
-    fireEvent.click(screen.getByRole("button", { name: "Next" }));
-    await waitFor(() =>
-      expect(screen.getByRole("button", { name: "Expenses" })).toHaveAttribute(
-        "aria-current",
-        "step",
-      ),
-    );
-    fireEvent.click(screen.getByRole("button", { name: "Next" }));
-    await screen.findByRole("heading", { name: "Review" });
-    fireEvent.click(screen.getByRole("button", { name: "Submit application" }));
-    fireEvent.click(screen.getByRole("button", { name: "Submit application" }));
+      renderWorkflow(draft);
+      await advanceToReturn();
+      fireEvent.click(screen.getByRole("button", { name: "Next" }));
+      await waitFor(() =>
+        expect(
+          screen.getByRole("button", { name: "Expenses" }),
+        ).toHaveAttribute("aria-current", "step"),
+      );
+      fireEvent.click(screen.getByRole("button", { name: "Next" }));
+      await screen.findByRole("heading", { name: "Review" });
+      fireEvent.click(
+        screen.getByRole("button", { name: "Submit application" }),
+      );
+      fireEvent.click(
+        screen.getByRole("button", { name: "Submit application" }),
+      );
 
-    expect(await screen.findByRole("alert")).toHaveTextContent(
-      "could not be submitted",
-    );
-    expect(
-      screen.getByRole("dialog", { name: "Action was not confirmed" }),
-    ).toBeVisible();
-    fireEvent.click(
-      screen.getByRole("button", { name: "Return to application" }),
-    );
-    expect(screen.getByRole("heading", { name: "Review" })).toBeVisible();
-    fireEvent.click(screen.getByRole("button", { name: "Submit application" }));
-    expect(
-      screen.getByRole("dialog", { name: "Submit travel application?" }),
-    ).toBeVisible();
-    expect(submitAttempts).toBe(1);
-  });
+      expect(await screen.findByRole("alert")).toHaveTextContent(
+        "Review your entered information and try again",
+      );
+      expect(
+        screen.getByRole("dialog", { name: "Action was not confirmed" }),
+      ).toBeVisible();
+      fireEvent.click(
+        screen.getByRole("button", { name: "Return to application" }),
+      );
+      expect(screen.getByRole("heading", { name: "Review" })).toBeVisible();
+      fireEvent.click(
+        screen.getByRole("button", { name: "Submit application" }),
+      );
+      expect(
+        screen.getByRole("dialog", { name: "Submit travel application?" }),
+      ).toBeVisible();
+      expect(submitAttempts).toBe(1);
+      fireEvent.click(
+        screen.getByRole("button", { name: "Submit application" }),
+      );
+      expect(
+        await screen.findByRole("dialog", { name: "Application submitted" }),
+      ).toBeVisible();
+      expect(submitAttempts).toBe(2);
+    },
+  );
+
+  it.each(["network", "server", "acknowledgement", "access"])(
+    "blocks submission after an unconfirmed or denied %s response while retaining entered data",
+    async (failure) => {
+      const draft = calculatedExpenseDraft(returnReadyDraft());
+      draft.amendment.route.outboundLegs[0].to.address.county = "Erie";
+      draft.amendment.route.returnLegs[0].from.address.county = "Erie";
+      let submitAttempts = 0;
+      vi.stubGlobal(
+        "fetch",
+        vi.fn(async (url, options = {}) => {
+          if (String(url).includes("/config"))
+            return successfulResponse({ config: { googleApiKey: "test-key" } });
+          if (String(url).endsWith("/travel/event-types"))
+            return successfulResponse([
+              { name: "Forum", displayName: "Forum" },
+            ]);
+          if (String(url).endsWith("/travel/mode-of-transportation"))
+            return successfulResponse([
+              { methodOfTravel: "TRAIN", displayName: "Train" },
+            ]);
+          if (String(url).endsWith("/travel/drafts/submit")) {
+            submitAttempts += 1;
+            if (failure === "network") throw new TypeError("response lost");
+            if (failure === "acknowledgement")
+              return jsonResponse({ success: true });
+            return failedResponse(failure === "access" ? 403 : 503, {});
+          }
+          if (options.method === "PATCH")
+            return successfulResponse(JSON.parse(options.body).draft);
+          return successfulResponse(draft);
+        }),
+      );
+
+      renderWorkflow(draft);
+      await advanceToReturn();
+      fireEvent.click(screen.getByRole("button", { name: "Next" }));
+      await screen.findByRole("heading", { name: "Expenses" });
+      fireEvent.change(screen.getByLabelText(/^Tolls/), {
+        target: { value: "25" },
+      });
+      fireEvent.click(screen.getByRole("button", { name: "Next" }));
+      await screen.findByRole("heading", { name: "Review" });
+      fireEvent.click(
+        screen.getByRole("button", { name: "Submit application" }),
+      );
+      fireEvent.click(
+        screen.getByRole("button", { name: "Submit application" }),
+      );
+
+      expect(await screen.findByRole("alert")).toHaveTextContent(
+        failure === "access"
+          ? "Access is no longer available"
+          : "The submission outcome is unknown",
+      );
+      expect(
+        screen.queryByText("Application was not submitted"),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("dialog", { name: "Application submitted" }),
+      ).not.toBeInTheDocument();
+      if (failure !== "access") {
+        const history = screen.getByRole("link", {
+          name: "Open Travel History in a new tab",
+        });
+        expect(history).toHaveAttribute("href", "/travel/applications");
+        expect(history).toHaveAttribute("target", "_blank");
+        fireEvent.click(history);
+        expect(
+          screen.queryByRole("dialog", { name: "Leave this application?" }),
+        ).not.toBeInTheDocument();
+      }
+      fireEvent.click(
+        screen.getByRole("button", { name: "Return to application" }),
+      );
+      expect(screen.getByRole("heading", { name: "Review" })).toBeVisible();
+      const submit = screen.getByRole("button", { name: "Submit application" });
+      expect(submit).toBeDisabled();
+      fireEvent.click(submit);
+      expect(submitAttempts).toBe(1);
+
+      // Editing and step navigation must neither discard data nor remove the block.
+      fireEvent.click(screen.getByRole("button", { name: "Back" }));
+      expect(screen.getByLabelText(/^Tolls/)).toHaveValue("25");
+      fireEvent.click(screen.getByRole("button", { name: "Next" }));
+      await screen.findByRole("heading", { name: "Review" });
+      expect(
+        screen.getByRole("button", { name: "Submit application" }),
+      ).toBeDisabled();
+      expect(screen.getByRole("alert")).toHaveTextContent(
+        "Your entered information remains on this page",
+      );
+      expect(submitAttempts).toBe(1);
+    },
+  );
 });
 
 function deferredPromise() {
@@ -798,7 +912,7 @@ function deferredPromise() {
 }
 
 function successfulResponse(result) {
-  return jsonResponse({ result });
+  return jsonResponse({ success: true, result });
 }
 
 function jsonResponse(body) {

@@ -5,6 +5,7 @@ import TravelApplicationWorkflow from "../workflow/TravelApplicationWorkflow";
 import { SubmissionSuccessModal } from "./components/SubmissionModals";
 import { useSaveTravelDraft } from "./hooks/usePurposeMutations";
 import { useSubmitTravelApplication } from "./hooks/useSubmitTravelApplication";
+import { classifyApplicationSubmissionError } from "../workflow/submissionErrors";
 
 const NEW_APPLICATION_PRESENTATION = Object.freeze({
   finalActionLabel: "Submit application",
@@ -31,13 +32,8 @@ export default function NewTravelApplication({ draft }) {
       commit={{
         execute: submitApplication.mutateAsync,
         isPending: submitApplication.isPending,
-        isDisabled: false,
-        renderError: () => (
-          <ErrorAlert title="Application was not submitted">
-            Your travel application could not be submitted. Your application and
-            any saved draft remain available; you can edit it or try again.
-          </ErrorAlert>
-        ),
+        isDisabled: submitApplication.isCommitBlocked,
+        renderError: (error) => <SubmissionError error={error} />,
       }}
       presentation={NEW_APPLICATION_PRESENTATION}
       onCancel={null}
@@ -49,5 +45,47 @@ export default function NewTravelApplication({ draft }) {
         />
       )}
     />
+  );
+}
+
+function SubmissionError({ error }) {
+  const type = classifyApplicationSubmissionError(error);
+  if (type === "correction") {
+    return (
+      <ErrorAlert title="Application was not submitted">
+        Review your entered information and try again.
+      </ErrorAlert>
+    );
+  }
+  if (type === "access") {
+    return (
+      <ErrorAlert title="Access is no longer available">
+        You no longer have access to submit this travel application. Your
+        entered information remains on this page.
+      </ErrorAlert>
+    );
+  }
+  return (
+    <ErrorAlert title="The submission outcome is unknown">
+      <p>
+        We could not confirm whether your application was submitted. Submitting
+        again could create a duplicate application. Your entered information
+        remains on this page.
+      </p>
+      <p className="mt-3">
+        Check Travel History for this application. If you cannot confirm the
+        outcome, contact the STS helpline before submitting it again. An
+        application missing from history does not confirm that submission
+        failed.
+      </p>
+      <a
+        className="mt-3 inline-block underline"
+        href="/travel/applications"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Open Travel History in a new tab
+      </a>
+    </ErrorAlert>
   );
 }
