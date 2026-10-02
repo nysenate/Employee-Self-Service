@@ -7,6 +7,7 @@ import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.personnel.EmployeeNotFoundEx;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
+import gov.nysenate.ess.web.controller.page.FrontendFramework;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,15 +30,20 @@ class PecEmailUtils {
     private final EmployeeDao employeeDao;
     private final EmployeeInfoService employeeInfoService;
 
-    @Value("${domain.url}")
-    private String domainUrl;
+    private final String toDoUrl;
 
     @Autowired
     public PecEmailUtils(PersonnelTaskAssignmentDao assignmentDao, EmployeeDao employeeDao,
-                         EmployeeInfoService employeeInfoService) {
+                         EmployeeInfoService employeeInfoService,
+                         @Value("${domain.url}") String domainUrl,
+                         @Value("${frontend.myinfo.framework:}") String frontendFramework) {
         this.assignmentDao = assignmentDao;
         this.employeeDao = employeeDao;
         this.employeeInfoService = employeeInfoService;
+        var framework = FrontendFramework.fromProperty("frontend.myinfo.framework", frontendFramework);
+        String toDoPath = framework == FrontendFramework.REACT
+                ? "/myinfo/personnel/tasks/assignments" : "/myinfo/personnel/todo";
+        this.toDoUrl = domainUrl.replaceAll("/+$", "") + toDoPath;
     }
 
     /**
@@ -49,7 +55,7 @@ class PecEmailUtils {
     }
 
     public EmployeeEmail getEmail(PecEmailType type, Employee employee, List<TaskAssignmentDetails> dataList) {
-        return new EmployeeEmail(employee, type, dataList, List.of(domainUrl));
+        return new EmployeeEmail(employee, type, dataList, List.of(toDoUrl));
     }
 
     public List<EmployeeEmail> getEmails(List<String> addresses, PecEmailType type,
