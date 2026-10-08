@@ -7,6 +7,7 @@ import gov.nysenate.ess.core.client.response.error.ViewObjectErrorResponse;
 import gov.nysenate.ess.core.client.view.base.DateRangeView;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.time.client.view.expectedhrs.ExpectedHoursView;
+import gov.nysenate.ess.time.model.auth.EssTimePermission;
 import gov.nysenate.ess.time.model.expectedhrs.ExpectedHours;
 import gov.nysenate.ess.time.model.expectedhrs.InvalidExpectedHourDatesEx;
 import gov.nysenate.ess.time.service.expectedhrs.ExpectedHoursService;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 
+import static gov.nysenate.ess.time.model.auth.TimePermissionObject.TIME_RECORDS;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.HEAD;
 
@@ -52,6 +54,7 @@ public class ExpectedHoursRestApiCtrl extends BaseRestApiCtrl {
         LocalDate parsedEndDate = parseISODate(endDate, "endDate");
         Range<LocalDate> dateRange = getClosedRange(parsedBeginDate, parsedEndDate,
                 "beginDate", "endDate");
+        checkPermission(new EssTimePermission(empId, TIME_RECORDS, GET, dateRange));
 
         ExpectedHours expectedHours = expectedHoursService.getExpectedHours(empId, dateRange);
 

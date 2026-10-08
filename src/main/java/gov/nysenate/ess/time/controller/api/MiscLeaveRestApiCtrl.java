@@ -50,6 +50,7 @@ public class MiscLeaveRestApiCtrl extends BaseRestApiCtrl {
     @RequestMapping("/grantsWithRemainingHours")
     public BaseResponse getMiscLeaveGrantWithRemainingHours(@RequestParam int empId, @RequestParam String endDateStr) {
         LocalDate endDate = LocalDate.parse(endDateStr);
+        checkPermission(new EssTimePermission(empId, MISC_LEAVE_GRANT, GET, endDate));
         Map<MiscLeaveGrant, BigDecimal> grantHourMap = setRemainingHours(empId, endDate);
         return ListViewResponse.of(grantHourMap.entrySet().stream()
                 .map(entry -> new MiscLeaveGrantWithHoursRemaining(new MiscLeaveGrantView(entry.getKey()), entry.getValue()))

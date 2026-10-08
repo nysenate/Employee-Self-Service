@@ -8,6 +8,7 @@ import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
 import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentNotFoundEx;
 import gov.nysenate.ess.core.model.auth.CorePermission;
 import gov.nysenate.ess.core.model.auth.CorePermissionObject;
+import gov.nysenate.ess.core.model.auth.SimpleEssPermission;
 import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
@@ -130,6 +131,10 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping(value = "/download", method = GET)
     public ResponseEntity<Resource> downloadAcknowledgedDocument(HttpServletRequest request, @RequestParam int empId, @RequestParam int taskId) throws IOException {
+        // Only the employee themselves or personnel (compliance report access) may download.
+        checkHasPermission(new CorePermission(empId, CorePermissionObject.PERSONNEL_TASK, GET),
+                SimpleEssPermission.COMPLIANCE_REPORT_GENERATION.getPermission());
+
         File signatureFile =  signatureService.createEmployeeSignatureForTask(empId,taskId);
         // Try to determine file's content type
 
