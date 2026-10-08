@@ -15,7 +15,11 @@ import {
   HourSquareColumn,
 } from "app/views/time/attendance/record-entry/HourSquare";
 import { useSaveTimeOffRequest } from "app/views/time/accrual/timeoff/useTimeOffRequests";
-import { validateTimeOffRequest } from "app/views/time/accrual/timeoff/timeOffRequestValidation";
+import {
+  exceedsPersonalCapacity,
+  PERSONAL_CAPACITY_ERROR,
+  validateTimeOffRequest,
+} from "app/views/time/accrual/timeoff/timeOffRequestValidation";
 import {
   accrualsUsed,
   dayTotal,
@@ -103,6 +107,15 @@ export default function TimeOffRequestForm({ request, initialMode }) {
   }, [isOwnRequest, accrualQuery.data]);
 
   const used = useMemo(() => accrualsUsed(days), [days]);
+  /*
+   * Unlike the other checks, this one is evaluated as the request is edited: the employee
+   * cannot earn their way out of it before the requested day arrives, so there is no reason to
+   * wait until they press a button to say so, and SUBMIT is disabled while it holds.
+   */
+  const personalExceeded = useMemo(
+    () => exceedsPersonalCapacity(days, accruals, today),
+    [days, accruals, today],
+  );
   const accrualsAfter = {
     personal: accruals.personal - used.personal,
     vacation: accruals.vacation - used.vacation,
@@ -172,8 +185,21 @@ export default function TimeOffRequestForm({ request, initialMode }) {
     };
   };
 
+  /*
+   * The personal message has a banner of its own that is always up to date, so showing it in
+   * this list too would say the same thing twice.
+   */
+  const otherErrors = errors.filter(
+    (message) => message !== PERSONAL_CAPACITY_ERROR,
+  );
+
   const validate = () => {
-    const messages = validateTimeOffRequest(days, accruals, holidays.data);
+    const messages = validateTimeOffRequest(
+      days,
+      accruals,
+      holidays.data,
+      today,
+    );
     setErrors(messages);
     return messages.length === 0;
   };
@@ -211,12 +237,18 @@ export default function TimeOffRequestForm({ request, initialMode }) {
 
   return (
     <div>
-      {errors.length > 0 && (
+      {personalExceeded && (
+        <Notification level="warn" title="Not enough personal hours">
+          <p>{PERSONAL_CAPACITY_ERROR}</p>
+        </Notification>
+      )}
+
+      {otherErrors.length > 0 && (
         <Notification
           level="error"
           title="Please fix the following errors in your request:"
         >
-          {errors.map((message) => (
+          {otherErrors.map((message) => (
             <p key={message}>{message}</p>
           ))}
         </Notification>
@@ -294,7 +326,7 @@ export default function TimeOffRequestForm({ request, initialMode }) {
                 SAVE
               </Button>
               <Button
-                isDisabled={days.length === 0}
+                isDisabled={days.length === 0 || personalExceeded}
                 isPending={save.isPending}
                 onPress={handleSubmit}
               >

@@ -195,6 +195,26 @@ export function accrualsUsed(days) {
   );
 }
 
+/**
+ * The personal hours a request draws on or before the end of the given date's calendar year.
+ *
+ * Personal time is not accrued over the year the way vacation and sick time are: the whole
+ * allotment is granted at the year rollover (AccrualState.applyYearRollover) and only reset
+ * there. So the balance an employee holds today is all the personal time they will have for the
+ * rest of this year, and only days falling in a later calendar year draw on a fresh allotment.
+ *
+ * Dates are compared as ISO strings, which order correctly without parsing into local time.
+ *
+ * @param days The days on the request.
+ * @param referenceDate ISO date whose calendar year is the current one, i.e. "2026-08-26".
+ */
+export function personalHoursThroughYear(days, referenceDate) {
+  const endOfYear = `${referenceDate.slice(0, 4)}-12-31`;
+  return (days || [])
+    .filter((day) => day.date && day.date <= endOfYear)
+    .reduce((total, day) => total + hours(day.personalHours), 0);
+}
+
 /** A request can only be edited before it goes to the supervisor. */
 export function isEditable(request) {
   return request?.status !== "APPROVED" && request?.status !== "SUBMITTED";
