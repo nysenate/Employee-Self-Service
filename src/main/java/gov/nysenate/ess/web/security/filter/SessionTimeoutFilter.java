@@ -23,7 +23,11 @@ public class SessionTimeoutFilter extends AccessControlFilter {
     @Override
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws IOException {
         getSubject(request, response).logout();
-        saveRequestAndRedirectToLogin(request, response);
+        if (LoginRedirectRequest.isPageNavigation(request)) {
+            saveRequestAndRedirectToLogin(request, response);
+        } else {
+            redirectToLogin(request, response);
+        }
         return false;
     }
 }

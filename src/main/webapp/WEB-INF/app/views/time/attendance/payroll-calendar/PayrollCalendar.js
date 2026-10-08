@@ -5,7 +5,7 @@ import { format } from "date-fns";
 import Hero from "app/components/Hero";
 import Card from "app/components/Card";
 import Controls from "app/components/Controls";
-import LoadingIndicator from "app/components/LoadingIndicator";
+import LoadingStatus from "app/components/LoadingStatus";
 import { useHoliday } from "app/views/time/useHoliday";
 import { usePayPeriods } from "app/views/time/usePayPeriod";
 import styles from "./calendar.module.css";
@@ -52,7 +52,12 @@ export default function PayrollCalendar() {
       </Card>
 
       {holidays.isPending || payPeriods.isPending ? (
-        <LoadingIndicator />
+        <LoadingStatus
+          message="Loading payroll calendar…"
+          layout="centered"
+          size="lg"
+          className="min-h-48 p-6"
+        />
       ) : (
         <Card className="mt-3 p-3">
           <YearCalendar

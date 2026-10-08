@@ -1,3 +1,5 @@
+import ErrorAlert from "app/components/ErrorAlert";
+import LoadingStatus from "app/components/LoadingStatus";
 import React, { useEffect, useState } from "react";
 import {
   updateCompletionStatus,
@@ -30,12 +32,33 @@ export default function TrainingFilters({ state, dispatch }) {
   }, [trainingsQuery.data]);
 
   if (trainingsQuery.isPending) {
-    return <></>;
+    return (
+      <LoadingStatus
+        message="Loading trainings…"
+        layout="centered"
+        className="p-6"
+      />
+    );
   }
+
+  if (!trainingsQuery.data)
+    return (
+      <ErrorAlert title="Unable to load trainings">
+        Please try again.
+      </ErrorAlert>
+    );
 
   return (
     <div>
+      {trainingsQuery.isError && (
+        <ErrorAlert title="Unable to refresh trainings">
+          Please try again.
+        </ErrorAlert>
+      )}
       <span className="text-lg font-semibold">Training Filters</span>
+      {trainingsQuery.isFetching && (
+        <LoadingStatus message="Refreshing trainings…" />
+      )}
       <div className="mt-1">
         <div>
           <IncludeInactiveTrainingsInput
@@ -45,10 +68,7 @@ export default function TrainingFilters({ state, dispatch }) {
           />
         </div>
         <div>
-          <Button
-            variant="link"
-            onPress={() => dispatch(clearTrainings())}
-          >
+          <Button variant="link" onPress={() => dispatch(clearTrainings())}>
             Clear selected trainings
           </Button>
         </div>

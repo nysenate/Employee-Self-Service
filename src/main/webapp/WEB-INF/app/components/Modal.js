@@ -8,7 +8,7 @@ import {
 } from "react-aria-components";
 
 /**
- * Displays a modal dialog.
+ * Displays a content-sized modal dialog, scrolling when taller than the viewport.
  *
  * @param {boolean} isOpen - The modal is displayed when this is true. To close the modal, set to false.
  * @param {(isOpen: boolean) => void} [onOpenChange] - Preferred open-state callback. Called with false when user requests close.
@@ -56,7 +56,7 @@ function Modal({
       <AriaModal
         className={({ isEntering, isExiting }) =>
           cn(
-            "w-auto max-w-screen-xl rounded-none bg-white shadow-xl outline-none transition duration-200 ease-out motion-reduce:transition-none",
+            "max-h-[calc(100dvh-2rem)] w-auto max-w-screen-xl overflow-y-auto rounded-none bg-white shadow-xl outline-none transition duration-200 ease-out motion-reduce:transition-none",
             isEntering && "translate-y-2 scale-95 opacity-0",
             isExiting && "translate-y-2 scale-95 opacity-0",
             className,

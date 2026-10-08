@@ -2,7 +2,7 @@ import React, { useMemo, useState } from "react";
 import Hero from "app/components/Hero";
 import Controls from "app/components/Controls";
 import Notification from "app/components/Notification";
-import LoadingIndicator from "app/components/LoadingIndicator";
+import LoadingStatus from "app/components/LoadingStatus";
 import useRequireAuthedUser from "app/hooks/useRequireAuthedUser";
 import {
   useAccrualActiveYears,
@@ -36,7 +36,14 @@ export function AccrualHistorySection({ empId }) {
   const activeYears = useAccrualActiveYears(empId);
 
   if (activeYears.isPending) {
-    return <LoadingIndicator />;
+    return (
+      <LoadingStatus
+        message="Loading accrual history…"
+        layout="centered"
+        size="lg"
+        className="min-h-48 p-6"
+      />
+    );
   }
 
   if (activeYears.data.length === 0) {
@@ -96,7 +103,11 @@ function AccrualHistory({ empId, activeYears }) {
       )}
 
       {accruals.isPending ? (
-        <LoadingIndicator variant="sm" />
+        <LoadingStatus
+          message="Loading accruals…"
+          layout="centered"
+          className="min-h-28"
+        />
       ) : records.length === 0 ? (
         <p className="bg-white p-3 text-center">
           No historical accrual records exist for this year. If it is early in

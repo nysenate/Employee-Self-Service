@@ -53,7 +53,7 @@ public class EverfiUserClientTest {
     @Test
     public void findByUuidHydratesLabelsFromCategoryCache() throws IOException {
         StubEverfiApiClient everfiApiClient = new StubEverfiApiClient(Map.of(
-                "/v1/admin/users/user-1?fields[users]=email,first_name,last_name,sso_id,employee_id,student_id,active,user_rule_set_roles,category_labels",
+                "/v1/admin/users/user-1?fields[users]=email,first_name,last_name,sso_id,employee_id,student_id,active,created_at,user_rule_set_roles,category_labels",
                 singleUserResponse("user-1", 200)
         ));
         EverfiCategoryService categoryService = new EverfiCategoryService(null);
@@ -127,7 +127,7 @@ public class EverfiUserClientTest {
         private final Map<String, String> responses = new HashMap<>();
 
         private StubEverfiApiClient(Map<String, String> responses) {
-            super("https://example.com", null, null);
+            super("https://example.com", null, null, 0);
             this.responses.putAll(responses);
         }
 
@@ -140,7 +140,7 @@ public class EverfiUserClientTest {
     private static class NotFoundEverfiApiClient extends EverfiApiClient {
 
         private NotFoundEverfiApiClient() {
-            super("https://example.com", null, null);
+            super("https://example.com", null, null, 0);
         }
 
         @Override
@@ -152,7 +152,7 @@ public class EverfiUserClientTest {
     private static class ErrorEverfiApiClient extends EverfiApiClient {
 
         private ErrorEverfiApiClient() {
-            super("https://example.com", null, null);
+            super("https://example.com", null, null, 0);
         }
 
         @Override

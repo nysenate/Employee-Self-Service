@@ -30,12 +30,13 @@ export default function Badge({
       {...props}
       className={cn(
         "inline-flex h-5 min-w-5 shrink-0 items-center justify-center",
-        "rounded px-1.5 text-sm leading-none font-semibold text-white tabular-nums",
+        "rounded px-1.5 text-sm leading-none font-semibold text-white lining-nums tabular-nums",
         themeClasses[theme] ?? "bg-gray-700",
         className,
       )}
     >
-      <span className="translate-y-px">{count}</span>
+      {/* Center the digit height instead of compensating for font leading with a pixel offset. */}
+      <span className="[text-box:trim-both_cap_alphabetic]">{count}</span>
     </span>
   );
 }

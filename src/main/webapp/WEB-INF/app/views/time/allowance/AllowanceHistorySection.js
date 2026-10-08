@@ -4,7 +4,7 @@ import { Printer } from "lucide-react";
 import Button from "app/components/Button";
 import Controls from "app/components/Controls";
 import Notification from "app/components/Notification";
-import LoadingIndicator from "app/components/LoadingIndicator";
+import LoadingStatus from "app/components/LoadingStatus";
 import { EssPopover } from "app/components/EssPopover";
 import {
   useAllowanceActiveYears,
@@ -25,7 +25,14 @@ export default function AllowanceHistorySection({ empId }) {
   const activeYears = useAllowanceActiveYears(empId);
 
   if (activeYears.isPending) {
-    return <LoadingIndicator />;
+    return (
+      <LoadingStatus
+        message="Loading allowance history…"
+        layout="centered"
+        size="lg"
+        className="min-h-48 p-6"
+      />
+    );
   }
 
   if (activeYears.data.length === 0) {
@@ -78,7 +85,11 @@ function AllowanceHistory({ empId, activeYears }) {
       </Controls>
 
       {periodUsage.isPending ? (
-        <LoadingIndicator variant="sm" />
+        <LoadingStatus
+          message="Loading allowance usage…"
+          layout="centered"
+          className="min-h-28"
+        />
       ) : usages.length === 0 ? (
         <p className="bg-white p-3 text-center">
           No allowance usage records exist for this year. If it is early in the

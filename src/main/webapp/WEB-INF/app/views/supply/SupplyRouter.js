@@ -13,7 +13,7 @@ import Card from "app/components/Card";
 import { SupplyContextProvider } from "app/views/supply/store/useSupplyContext";
 import ReconciliationIndex from "app/views/supply/reconciliation/ReconciliationIndex";
 import ItemSummary from "app/views/supply/item-history/ItemSummary";
-import AssertPermission from "app/components/AssertPermission";
+import RequirePermission from "app/components/RequirePermission";
 import NotFound from "app/views/NotFound";
 
 export default function SupplyRouter() {
@@ -29,33 +29,33 @@ export default function SupplyRouter() {
             <Route
               path="fulfillment"
               element={
-                <AssertPermission permission="supply:ui:manage:fulfillment">
+                <RequirePermission permission="supply:ui:manage:fulfillment">
                   <FulfillmentIndex />
-                </AssertPermission>
+                </RequirePermission>
               }
             />
             <Route
               path="reconciliation"
               element={
-                <AssertPermission permission="supply:ui:manage:reconciliation">
+                <RequirePermission permission="supply:ui:manage:reconciliation">
                   <ReconciliationIndex />
-                </AssertPermission>
+                </RequirePermission>
               }
             />
             <Route
               path="requisition-history"
               element={
-                <AssertPermission permission="supply:ui:manage:requisition-history">
+                <RequirePermission permission="supply:ui:manage:requisition-history">
                   <RequisitionHistoryIndex />
-                </AssertPermission>
+                </RequirePermission>
               }
             />
             <Route
               path="item-history"
               element={
-                <AssertPermission permission="supply:ui:manage:item-history">
+                <RequirePermission permission="supply:ui:manage:item-history">
                   <ItemSummary />
-                </AssertPermission>
+                </RequirePermission>
               }
             />
             <Route path="" element={<Navigate to="shop" replace />} />

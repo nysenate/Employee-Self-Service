@@ -10,6 +10,6 @@ export function useTrainings(activeOnly) {
       );
     },
     staleTime: 1000 * 60 * 1,
-    throwOnError: true,
+    throwOnError: false,
   });
 }

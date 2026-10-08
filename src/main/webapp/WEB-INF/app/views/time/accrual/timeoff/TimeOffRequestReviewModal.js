@@ -2,7 +2,7 @@ import React, { useMemo, useState } from "react";
 import { format, parseISO } from "date-fns";
 import Modal from "app/components/Modal";
 import Button from "app/components/Button";
-import LoadingIndicator from "app/components/LoadingIndicator";
+import LoadingStatus from "app/components/LoadingStatus";
 import { cn } from "app/utils/cn";
 import { useAccruals } from "app/views/time/useAccrual";
 import {
@@ -280,7 +280,11 @@ function RequestDetails({ request }) {
   return (
     <div>
       {accrualQuery.isPending ? (
-        <LoadingIndicator variant="sm" />
+        <LoadingStatus
+          message="Loading accruals…"
+          layout="centered"
+          className="min-h-28"
+        />
       ) : (
         <AccrualLine label="Available Hours" accruals={accruals} />
       )}

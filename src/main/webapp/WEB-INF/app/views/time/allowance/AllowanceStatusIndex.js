@@ -1,8 +1,8 @@
 import React, { useMemo } from "react";
 import { format } from "date-fns";
 import Hero from "app/components/Hero";
-import LoadingIndicator from "app/components/LoadingIndicator";
-import AssertPermission from "app/components/AssertPermission";
+import LoadingStatus from "app/components/LoadingStatus";
+import RequirePermission from "app/components/RequirePermission";
 import useRequireAuthedUser from "app/hooks/useRequireAuthedUser";
 import { useAllowance } from "app/views/time/useAllowance";
 import { computeRemaining } from "app/views/time/allowanceUtils";
@@ -17,12 +17,12 @@ export default function AllowanceStatusIndex() {
   const { data: user } = useRequireAuthedUser();
 
   return (
-    <AssertPermission permission="time:allowance-page">
+    <RequirePermission permission="time:allowance-page">
       <div>
         <Hero>Allowed Hours</Hero>
         <AllowanceStatusSection empId={user?.employeeId} />
       </div>
-    </AssertPermission>
+    </RequirePermission>
   );
 }
 
@@ -47,7 +47,14 @@ export function AllowanceStatusSection({ empId, title }) {
   }, [allowance.data]);
 
   if (allowance.isPending) {
-    return <LoadingIndicator />;
+    return (
+      <LoadingStatus
+        message="Loading allowance…"
+        layout="centered"
+        size="lg"
+        className="min-h-48 p-6"
+      />
+    );
   }
 
   const payType = currentPayType(allowance.data);

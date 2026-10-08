@@ -6,10 +6,11 @@ This is the master repository for all Senate Employee Self Service (ESS) applica
 
 ### Software Dependencies
 
-- Java JDK 17
+- Java JDK 21
 - Git
 - IntelliJ IDEA
-- Tomcat 9
+- Tomcat 11
+  - ESS targets Jakarta EE (Servlet 6.1), so Tomcat 10.1+ is required. Tomcat 9 will not run this WAR.
 - Postgresql
   - also libs (`postgresql-contrib` on ubuntu)
 - Maven
@@ -17,6 +18,7 @@ This is the master repository for all Senate Employee Self Service (ESS) applica
   - Use nvm or Volta for versioning
 - Bower + Grunt
   - `sudo npm install -g bower grunt`
+  - Needed to build the legacy AngularJS assets; the React frontend builds through webpack via `npm`.
 
 ### Database Setup
 
@@ -72,6 +74,10 @@ This just covers essential properties required to run the app + tests.
 - 🧑‍💻 Fill out `master`, `ts`, and `base.sfms` schema values. Get these from a dev.
 - 🧑‍💻 Fill out `mail.smtp` fields, obtain from a dev
 - Set `mail.test.address` to your personal email address
+- Each app chooses its frontend at runtime via `frontend.myinfo.framework`, `frontend.time.framework`,
+  `frontend.supply.framework`, and `frontend.travel.framework`. Valid values are `angularjs` and `react`;
+  anything else logs a warning and falls back to `angularjs`. Set the app you're working on to `react`
+  if you want the React frontend rather than the legacy JSP/AngularJS one.
 
 #### flyway.conf
 
@@ -86,14 +92,41 @@ For the `dn` field, just use the `cn` portion of `ldap.user.dn` from `app.proper
 
 This command does the following:
 - builds the Java backend
-- builds the frontend
+- builds the frontend (runs `npm ci` in `src/main/webapp`, whose `postinstall` runs the webpack build,
+  `bower install`, and `grunt compile`)
 - packages the whole application
 - runs unit tests
+- applies Flyway migrations to your local postgres database, at the `pre-integration-test` phase
 - runs integration tests
 
 ```shell
 mvn verify
 ```
+
+Because migrations run as part of `verify`, `flyway.conf` must be filled out before this will succeed.
+To apply migrations on their own:
+
+```shell
+mvn flyway:migrate
+```
+
+### Frontend Development
+
+The frontend lives in `src/main/webapp`. Two stacks coexist: the React app in `WEB-INF/app`, and the
+legacy AngularJS app in `assets/js/src` with its JSPs in `WEB-INF/view`.
+
+```shell
+cd src/main/webapp
+
+npm run dev      # webpack dev server on :3000, proxying /api and /assets to :8080
+npm run build    # production React bundle into assets/dist
+npm test         # vitest
+npm run lint     # eslint over WEB-INF/app
+grunt compile    # legacy AngularJS/LESS assets only
+```
+
+`npm run dev` expects the Java backend to already be running on `localhost:8080` (see the run
+configuration below), since it proxies API requests there.
 
 ### Intellij Run Configuration
 
@@ -104,8 +137,9 @@ Recommended for development.
 2. Above the list of configurations on the left, click "+" to create a new config.
 3. Scroll down until you find Tomcat Server. Select the Local option.
 4. In the Server tab, check the Application Server setting to ensure it's referencing your tomcat install.
-   - If not, click "Configure" and enter your install dir as Tomcat Home, quite possibly `/usr/share/tomcat9`. 
-5. Ensure that the JRE is set to Java 17.
+   - If not, click "Configure" and enter your install dir as Tomcat Home. Tomcat 11 usually isn't
+     available as a distro package, so this is wherever you unpacked the Apache tarball (e.g. `/opt/tomcat`).
+5. Ensure that the JRE is set to Java 21.
 6. In the Deployment tab, click "+" to add a new deployment artifact. Select `ess:war exploded`
 7. Scroll down to Application Context and make sure that is set to "/"
 8. Click "OK" to save the configuration

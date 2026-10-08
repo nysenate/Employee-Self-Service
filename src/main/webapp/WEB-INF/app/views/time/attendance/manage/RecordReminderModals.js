@@ -1,7 +1,7 @@
 import React from "react";
 import Modal from "app/components/Modal";
 import Button from "app/components/Button";
-import LoadingIndicator from "app/components/LoadingIndicator";
+import LoadingStatus from "app/components/LoadingStatus";
 import { formatShortDate } from "app/views/time/attendance/manage/RecordReviewModal";
 
 /**
@@ -41,7 +41,11 @@ export function RecordReminderSendingModal({ isOpen }) {
     <Modal isOpen={isOpen} ariaLabel="Sending Email Reminders">
       <Modal.Title>Sending Email Reminders</Modal.Title>
       <Modal.Body>
-        <LoadingIndicator />
+        <LoadingStatus
+          message="Sending reminders…"
+          layout="centered"
+          className="min-h-28"
+        />
       </Modal.Body>
     </Modal>
   );

@@ -1,5 +1,5 @@
 import React from "react";
-import LoadingIndicator from "app/components/LoadingIndicator";
+import LoadingStatus from "app/components/LoadingStatus";
 import {
   HourSquare,
   HourSquareColumn,
@@ -13,10 +13,11 @@ import {
 export default function AccrualBar({ accruals, isLoading }) {
   if (isLoading) {
     return (
-      <div className="py-2">
-        <h3 className="text-center">Loading Accruals...</h3>
-        <LoadingIndicator variant="sm" />
-      </div>
+      <LoadingStatus
+        message="Loading accruals…"
+        layout="centered"
+        className="py-2"
+      />
     );
   }
 

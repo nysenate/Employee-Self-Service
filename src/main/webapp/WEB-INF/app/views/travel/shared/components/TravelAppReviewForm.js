@@ -81,13 +81,10 @@ function ReviewerActionRow({ action }) {
       <div>
         <ActionText action={action} />
       </div>
-      {!isEmptyOrWhitespace(action.note) && (
-        <>
-          <div>&nbsp;</div>
-          <div className="text-muted-foreground col-span-2 text-sm">
-            {action.note}
-          </div>
-        </>
+      {!isEmptyOrWhitespace(action.notes) && (
+        <div className="col-span-2 col-start-2 mt-1 min-w-0 whitespace-pre-wrap break-words text-sm font-normal leading-relaxed text-gray-500">
+          {action.notes}
+        </div>
       )}
     </>
   );

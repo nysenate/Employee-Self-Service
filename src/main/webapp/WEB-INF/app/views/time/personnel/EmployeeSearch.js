@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 import { cn } from "app/utils/cn";
 import Button from "app/components/Button";
-import LoadingIndicator from "app/components/LoadingIndicator";
+import LoadingStatus from "app/components/LoadingStatus";
 import InputDebounced from "app/components/InputDebounced";
 import { useEmployee } from "app/views/useEmployee";
 import { useEmployeeSearch } from "app/views/time/personnel/useEmployeeSearch";
@@ -93,7 +93,7 @@ function SearchForm({
 
       <div className="mt-3 h-6">
         {search.isFetching && !search.isFetchingNextPage && (
-          <LoadingIndicator variant="sm" />
+          <LoadingStatus message="Searching…" />
         )}
       </div>
 
@@ -128,7 +128,7 @@ function SelectedEmployee({ empId, onClear }) {
   const { data: employee, isPending } = useEmployee(empId);
 
   if (isPending) {
-    return <LoadingIndicator variant="sm" />;
+    return <LoadingStatus message="Loading employee…" />;
   }
 
   const status = employee.personnelStatus;

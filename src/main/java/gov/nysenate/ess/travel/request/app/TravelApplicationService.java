@@ -48,6 +48,10 @@ public class TravelApplicationService {
         travelApplicationDao.saveTravelApplication(app);
     }
 
+    public void lockApplication(int appId) {
+        travelApplicationDao.lockTravelApplication(appId);
+    }
+
     public void updateApplicationStatus(int appId, TravelApplicationStatus status) {
         travelApplicationDao.updateTravelApplicationStatus(appId, status);
     }

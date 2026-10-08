@@ -126,8 +126,9 @@
 
 /*  Custom css classes */
 @layer components {
+    /* Preserve field geometry and appearance when temporarily disabled. */
     .input {
-        @apply border border-gray-300 bg-gray-50 p-1.5 focus-visible:border-gray-600 disabled:border-none disabled:bg-white [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none;
+        @apply border border-gray-300 bg-gray-50 p-1.5 focus-visible:border-gray-600 disabled:cursor-not-allowed [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none;
     }
 
     .input--invalid {

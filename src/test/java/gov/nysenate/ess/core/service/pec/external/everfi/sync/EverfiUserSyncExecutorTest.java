@@ -6,28 +6,42 @@ import gov.nysenate.ess.core.model.pec.everfi.EverfiEmployeeMapping;
 import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategoryLabel;
 import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiAddUserCommand;
 import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUpdateUserCommand;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.springframework.dao.DataAccessResourceFailureException;
 
 import java.util.List;
-import static org.assertj.core.api.Assertions.assertThat;
+
 import static gov.nysenate.ess.core.service.pec.external.everfi.sync.EverfiUserSyncExecutorTestSupport.createAction;
 import static gov.nysenate.ess.core.service.pec.external.everfi.sync.EverfiUserSyncExecutorTestSupport.desiredUser;
 import static gov.nysenate.ess.core.service.pec.external.everfi.sync.EverfiUserSyncExecutorTestSupport.label;
 import static gov.nysenate.ess.core.service.pec.external.everfi.sync.EverfiUserSyncExecutorTestSupport.remoteUser;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(HierarchicalContextRunner.class)
 @Category(UnitTest.class)
 public class EverfiUserSyncExecutorTest {
 
     private static final EverfiCategoryLabel UPLOAD_LIST_LABEL = label(200, "Upload List", "May 19 2026");
+    private static TestLoggerControl logControl;
 
     private EverfiUserSyncExecutorTestSupport.RecordingEverfiUserClient userClient;
     private EverfiUserSyncExecutorTestSupport.RecordingEverfiEmployeeMappingDao mappingDao;
     private EverfiUserSyncExecutor executor;
+
+    @BeforeClass
+    public static void suppressExpectedErrorLogs() {
+        logControl = TestLoggerControl.suppress(EverfiUserSyncExecutor.class);
+    }
+
+    @AfterClass
+    public static void restoreLoggerLevel() {
+        logControl.restore();
+    }
 
     @Before
     public void setup() {

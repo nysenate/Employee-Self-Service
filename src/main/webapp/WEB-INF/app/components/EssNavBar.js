@@ -112,7 +112,7 @@ function AppLink({ to, name, theme }) {
 
   return (
     <div className={`flex items-center ${containerClasses}`}>
-      <a href={to} className={textClasses}>
+      <a href={to} className={textClasses} data-reload-document>
         {name}
       </a>
     </div>

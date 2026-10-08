@@ -3,15 +3,19 @@ package gov.nysenate.ess.travel.api.application;
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
+import gov.nysenate.ess.core.client.response.error.ErrorCode;
+import gov.nysenate.ess.core.client.response.error.ErrorResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
+import gov.nysenate.ess.travel.authorization.permission.SimpleTravelPermission;
 import gov.nysenate.ess.travel.department.DepartmentNotFoundEx;
 import gov.nysenate.ess.travel.employee.TravelEmployeeService;
 import gov.nysenate.ess.travel.request.app.*;
 import gov.nysenate.ess.travel.request.draft.Draft;
 import gov.nysenate.ess.travel.request.draft.DraftView;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -53,13 +57,8 @@ public class TravelAppEditCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/edit/{appId}", method = RequestMethod.POST)
     public BaseResponse saveEditedApplication(@PathVariable int appId,
                                               @RequestBody DraftView draftView) {
-        // Check the logged in user is allowed to modify this app
-        TravelApplication originalApp = appService.getTravelApplication(appId);
-        checkTravelAppPermission(originalApp, RequestMethod.POST);
-
+        checkPermission(SimpleTravelPermission.TRAVEL_UI_EDIT_APP.getPermission());
         TravelApplication editedApp = draftView.toDraft().getTravelApplication();
-        editedApp.setAppId(appId); // TODO hacky way around messed up views for now.
-        editedApp.setStatus(originalApp.getStatus());
         Employee user = employeeInfoService.getEmployee(getSubjectEmployeeId());
         appUpdateService.editTravelApp(appId, editedApp, user);
         return new SimpleResponse(true, "Edits saved", "");
@@ -69,7 +68,7 @@ public class TravelAppEditCtrl extends BaseRestApiCtrl {
      * Save edits and resubmit a Travel Application.
      * -----------------------------
      * <p>
-     * Usage:   (POST) /api/v1/travel/application/resubmit/{appId}
+     * Usage:   (POST) /api/v1/travel/application/edit/resubmit/{appId}
      * </p>
      */
     @RequestMapping(value = "/edit/resubmit/{appId}", method = RequestMethod.POST)
@@ -79,15 +78,16 @@ public class TravelAppEditCtrl extends BaseRestApiCtrl {
         TravelApplication originalApp = appService.getTravelApplication(appId);
         checkTravelAppPermission(originalApp, RequestMethod.POST);
 
-        TravelApplication app = draftView.toDraft().getTravelApplication();
-        // TODO hacky fix around messed up views. Ideally, these fields would be correct on the views.
-        app.setAppId(originalApp.getAppId());
-        app.setStatus(originalApp.getStatus());
-
         Employee user = employeeInfoService.getEmployee(getSubjectEmployeeId());
-        appUpdateService.resubmitApp(appId, app, user);
+        appUpdateService.resubmitApp(appId, draftView.toDraft().getTravelApplication(), user);
 
         return new SimpleResponse(true, "Edits saved", "");
+    }
+
+    @ExceptionHandler(TravelResubmissionConflictException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleResubmissionConflict(TravelResubmissionConflictException ex) {
+        return new ErrorResponse(ErrorCode.TRAVEL_RESUBMISSION_CONFLICT);
     }
 
     @RequestMapping(value = "/edit/{appId}/cancel", method = RequestMethod.POST)

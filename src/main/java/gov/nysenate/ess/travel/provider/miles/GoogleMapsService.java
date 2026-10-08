@@ -32,8 +32,8 @@ public class GoogleMapsService implements MapService {
      */
     @Override
     public double drivingDistance(TravelAddress from, TravelAddress to) throws InterruptedException, ApiException, IOException {
-        String[] origins = new String[] {getGoolgeAddressParam(from)};
-        String[] destinations = new String[] {getGoolgeAddressParam(to)};
+        String[] origins = new String[] {getGoogleAddressParam(from)};
+        String[] destinations = new String[] {getGoogleAddressParam(to)};
         DistanceMatrix request = DistanceMatrixApi.getDistanceMatrix(context, origins, destinations)
                 .mode(TravelMode.DRIVING)
                 .departureTime(java.time.Instant.ofEpochMilli(DateTime.now().toInstant().getMillis()))
@@ -53,7 +53,7 @@ public class GoogleMapsService implements MapService {
      * @param address
      * @return
      */
-    private String getGoolgeAddressParam(TravelAddress address) {
+    private String getGoogleAddressParam(TravelAddress address) {
         if (address.getPlaceId().isEmpty()) {
             return address.toString();
         }

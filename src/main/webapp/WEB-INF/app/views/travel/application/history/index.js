@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { ArrowUpDown, ListFilter } from "lucide-react";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import Hero from "app/components/Hero";
 import Controls from "app/components/Controls";
 import SingleSelectFilter from "app/components/SingleSelectFilter";
@@ -12,8 +13,17 @@ import {
   STATUS_FILTER_OPTIONS,
 } from "app/views/travel/application/history/historyFilterOptions";
 import { resolveTravelResultsStatus } from "app/views/travel/shared/travelResultsStatus";
+import TravelApplicationModal from "app/views/travel/application/history/TravelApplicationModal";
+import {
+  parseApplicationId,
+  resubmitUrl,
+} from "app/views/travel/application/workflow/applicationRoutes";
 
 export default function ApplicationHistory() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const selectedAppId = parseApplicationId(searchParams.get("appId"));
   const {
     state,
     hasActiveFilters,
@@ -37,6 +47,65 @@ export default function ApplicationHistory() {
     isPlaceholderData: appQuery.isPlaceholderData,
   });
 
+  useEffect(() => {
+    const total = appQuery.data?.total;
+    if (
+      !appQuery.isSuccess ||
+      appQuery.isPlaceholderData ||
+      appQuery.isFetching ||
+      !Number.isFinite(total) ||
+      total < 0 ||
+      state.offset <= 1 ||
+      state.offset - 1 < total
+    ) {
+      return;
+    }
+    const nextSearch = new URLSearchParams(location.search);
+    nextSearch.set("offset", "1");
+    navigate(`${location.pathname}?${nextSearch}`, {
+      replace: true,
+      state: location.state,
+    });
+  }, [
+    appQuery.data,
+    appQuery.isFetching,
+    appQuery.isPlaceholderData,
+    appQuery.isSuccess,
+    location.pathname,
+    location.search,
+    location.state,
+    navigate,
+    state.offset,
+  ]);
+
+  const selectApplication = (appId) => {
+    setSearchParams(
+      (current) => {
+        const next = new URLSearchParams(current);
+        next.set("appId", String(appId));
+        return next;
+      },
+      { replace: false },
+    );
+  };
+
+  const closeApplication = () => {
+    setSearchParams(
+      (current) => {
+        const next = new URLSearchParams(current);
+        next.delete("appId");
+        return next;
+      },
+      { replace: true },
+    );
+  };
+
+  const resubmitApplication = (appId) => {
+    navigate(resubmitUrl(appId), {
+      state: { returnTo: `${location.pathname}${location.search}` },
+    });
+  };
+
   return (
     <div>
       <Hero>Travel Application History</Hero>
@@ -44,8 +113,9 @@ export default function ApplicationHistory() {
         <div className="mb-3 text-center text-gray-600">
           View your previously submitted travel applications.
         </div>
-        <div className="flex flex-wrap items-start gap-3 px-4 my-3">
+        <div className="my-3 flex flex-wrap items-start gap-3 px-4">
           <DateRangeFilter
+            label="Travel dates"
             value={state.dateRange}
             onChange={(dateRange) =>
               updateDateRange(dateRange, { replace: false })
@@ -85,6 +155,13 @@ export default function ApplicationHistory() {
         onPageChange={(offset) =>
           updateSearchParams({ offset }, { replace: false })
         }
+        onSelectApp={selectApplication}
+      />
+      <TravelApplicationModal
+        key={selectedAppId}
+        appId={selectedAppId}
+        onClose={closeApplication}
+        onResubmit={resubmitApplication}
       />
     </div>
   );

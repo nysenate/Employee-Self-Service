@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Hero from "app/components/Hero";
 import Card from "app/components/Card";
 import Controls from "app/components/Controls";
-import LoadingIndicator from "app/components/LoadingIndicator";
+import LoadingStatus from "app/components/LoadingStatus";
 import useRequireAuthedUser from "app/hooks/useRequireAuthedUser";
 import RecordTable from "app/views/time/attendance/history/RecordTable";
 import RecordDetailsModal from "app/views/time/attendance/history/RecordDetailsModal";
@@ -45,7 +45,14 @@ export function AttendanceHistorySection({
   const recordYears = useActiveTimeRecordYears(empId);
 
   if (recordYears.isPending) {
-    return <LoadingIndicator />;
+    return (
+      <LoadingStatus
+        message="Loading attendance history…"
+        layout="centered"
+        size="lg"
+        className="min-h-48 p-6"
+      />
+    );
   }
 
   if (recordYears.data.length === 0) {
@@ -103,7 +110,12 @@ function AttendanceHistory({ empId, recordYears, linkActiveToEntry = true }) {
       </Controls>
 
       {isLoading ? (
-        <LoadingIndicator />
+        <LoadingStatus
+          message="Loading attendance records…"
+          layout="centered"
+          size="lg"
+          className="min-h-48 p-6"
+        />
       ) : (
         <>
           {active.length === 0 && submitted.length === 0 && (

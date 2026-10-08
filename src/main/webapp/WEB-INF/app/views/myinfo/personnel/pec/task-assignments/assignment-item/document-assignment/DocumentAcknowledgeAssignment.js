@@ -1,3 +1,5 @@
+import LoadingStatus from "app/components/LoadingStatus";
+import ErrorAlert from "app/components/ErrorAlert";
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Hero from "app/components/Hero";
@@ -15,6 +17,7 @@ export default function DocumentAcknowledgeAssignment({ assignment }) {
   const navigate = useNavigate();
   const acknowledgeDocumentApi = useAcknowledgeDocument();
   const isScrolledToBottom = useScrollDetection();
+  const [isDocumentReady, setIsDocumentReady] = useState(false);
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
@@ -89,12 +92,15 @@ export default function DocumentAcknowledgeAssignment({ assignment }) {
         </div>
 
         <div className="pb-5">
-          <RenderPdf pdfPath={assignment.task.path} />
+          <RenderPdf
+            pdfPath={assignment.task.path}
+            onReadyChange={setIsDocumentReady}
+          />
         </div>
 
         {!assignment.completed && (
           <AcknowledgeBanner
-            isScrolledToBottom={isScrolledToBottom}
+            isScrolledToBottom={isDocumentReady && isScrolledToBottom}
             onAcknowledged={onAcknowledge}
             isAcknowledgmentInProgress={isAcknowledgmentInProgress}
           />
@@ -137,6 +143,9 @@ function ConfirmationModal({
     <Modal isOpen={isOpen}>
       <Modal.Title>Acknowledge Policy/Document</Modal.Title>
       <Modal.Body>
+        {isAcknowledgmentInProgress && (
+          <LoadingStatus message="Recording acknowledgement…" />
+        )}
         <div className="max-w-lg">
           <p>
             I hereby acknowledge receipt of the New York State Senate
@@ -235,21 +244,36 @@ function loadPdfjs() {
   return pdfjsPromise;
 }
 
-function RenderPdf({ pdfPath }) {
+function RenderPdf({ pdfPath, onReadyChange }) {
   const [doc, setDoc] = useState(null);
   const [pages, setPages] = useState([]);
   const [hasError, setHasError] = useState(false);
+  const [renderedPages, setRenderedPages] = useState(() => new Set());
+  const onPageRendered = React.useCallback((pageNum) => {
+    setRenderedPages((current) => new Set([...current, pageNum]));
+  }, []);
+  const isReady =
+    Boolean(doc) && renderedPages.size === pages.length && !hasError;
+
+  useEffect(() => {
+    onReadyChange(isReady);
+    return () => onReadyChange(false);
+  }, [isReady, onReadyChange]);
 
   useEffect(() => {
     let isDisposed = false;
     let loadingTask;
 
+    setRenderedPages(new Set());
     setDoc(null);
     setPages([]);
     setHasError(false);
 
     (async () => {
-      if (!pdfPath) return;
+      if (!pdfPath) {
+        setHasError(true);
+        return;
+      }
 
       try {
         const pdfjsLib = await loadPdfjs();
@@ -279,28 +303,36 @@ function RenderPdf({ pdfPath }) {
 
   if (hasError) {
     return (
-      <p className="m-5 font-semibold text-red-600" role="alert">
+      <ErrorAlert className="m-5" title="Unable to display document">
         The document could not be displayed. Please try opening the printable
         view.
-      </p>
+      </ErrorAlert>
     );
   }
 
   return (
     <div>
+      {!isReady && (
+        <LoadingStatus
+          message="Loading document…"
+          layout="centered"
+          className="min-h-48 p-6"
+        />
+      )}
       {pages.map((pageNum) => (
         <PdfPage
           key={pageNum}
           doc={doc}
           pageNum={pageNum}
           onError={setHasError}
+          onRendered={onPageRendered}
         />
       ))}
     </div>
   );
 }
 
-function PdfPage({ doc, pageNum, onError }) {
+function PdfPage({ doc, pageNum, onError, onRendered }) {
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -326,6 +358,7 @@ function PdfPage({ doc, pageNum, onError }) {
 
         renderTask = page.render({ canvasContext: ctx, viewport });
         await renderTask.promise;
+        if (!isDisposed) onRendered(pageNum);
       } catch (error) {
         if (!isDisposed && error?.name !== "RenderingCancelledException") {
           console.error(`Unable to render PDF page ${pageNum}`, error);
@@ -338,7 +371,7 @@ function PdfPage({ doc, pageNum, onError }) {
       isDisposed = true;
       renderTask?.cancel();
     };
-  }, [doc, pageNum, onError]);
+  }, [doc, pageNum, onError, onRendered]);
 
   return <canvas ref={canvasRef} className="w-full" />;
 }

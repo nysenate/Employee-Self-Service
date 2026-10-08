@@ -3,7 +3,7 @@ import { addDays, format, parseISO } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import Button from "app/components/Button";
 import Notification from "app/components/Notification";
-import LoadingIndicator from "app/components/LoadingIndicator";
+import LoadingStatus from "app/components/LoadingStatus";
 import { cn } from "app/utils/cn";
 import useRequireAuthedUser from "app/hooks/useRequireAuthedUser";
 import { useEmployee } from "app/views/useEmployee";
@@ -232,7 +232,14 @@ export default function TimeOffRequestForm({ request, initialMode }) {
   };
 
   if (isLoading) {
-    return <LoadingIndicator />;
+    return (
+      <LoadingStatus
+        message="Loading time off request…"
+        layout="centered"
+        size="lg"
+        className="min-h-48 p-6"
+      />
+    );
   }
 
   return (

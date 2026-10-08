@@ -1,21 +1,20 @@
+import LoadingStatus from "app/components/LoadingStatus";
+import ErrorAlert from "app/components/ErrorAlert";
 import React, { useEffect, useRef, useState } from "react";
 import Hero from "app/components/Hero";
 import Card from "app/components/Card";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { isoToLongDate } from "app/utils/dateUtils";
 import VideoCodeEntryForm from "app/views/myinfo/personnel/pec/task-assignments/assignment-item/video-assignment/VideoCodeEntryForm";
-import ModalNotice from "app/components/ModalNotice";
+import { useNotifySuccess } from "app/components/NotificationProvider";
 
 export default function VideoAssignment({ assignment }) {
-  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const notifySuccess = useNotifySuccess();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
   const onCodeEntrySuccess = () => {
-    setIsSuccessModalOpen(true);
-  };
-
-  const onSuccessModalResolved = () => {
-    setIsSuccessModalOpen(false);
+    notifySuccess("Training codes submitted.");
     navigate("/myinfo/personnel/tasks/assignments");
   };
 
@@ -54,7 +53,14 @@ export default function VideoAssignment({ assignment }) {
         )}
 
         <div className="mx-2 text-left">
-          <Link to="/myinfo/personnel/tasks/assignments">
+          <Link
+            to="/myinfo/personnel/tasks/assignments"
+            aria-disabled={isSubmitting}
+            tabIndex={isSubmitting ? -1 : undefined}
+            onClick={(event) => {
+              if (isSubmitting) event.preventDefault();
+            }}
+          >
             Return to Personnel To-Do List
           </Link>
         </div>
@@ -78,17 +84,11 @@ export default function VideoAssignment({ assignment }) {
             <VideoCodeEntryForm
               taskId={assignment.taskId}
               onSuccess={onCodeEntrySuccess}
+              onPendingChange={setIsSubmitting}
             />
           </>
         )}
       </Card>
-
-      <ModalNotice
-        isOpen={isSuccessModalOpen}
-        onClose={onSuccessModalResolved}
-        title="Code Submission Complete"
-        body="Video codes were successfully submitted"
-      />
     </>
   );
 }
@@ -97,6 +97,7 @@ function RenderVideo({ src, allowSeeking }) {
   const videoRef = useRef(null);
   const [supposedCurrentTime, setSupposedCurrentTime] = useState(0);
   const [videoLoaded, setVideoLoaded] = useState(false);
+  const [videoError, setVideoError] = useState(false);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -139,11 +140,27 @@ function RenderVideo({ src, allowSeeking }) {
   }, [videoLoaded, supposedCurrentTime]);
 
   return (
-    <video
-      src={src}
-      ref={videoRef}
-      controlsList={"nodownload"}
-      controls
-    ></video>
+    <>
+      {videoError ? (
+        <ErrorAlert title="Unable to load video">
+          Please reload the page to try again.
+        </ErrorAlert>
+      ) : (
+        !videoLoaded && (
+          <LoadingStatus
+            message="Loading video…"
+            layout="centered"
+            className="min-h-48 p-6"
+          />
+        )
+      )}
+      <video
+        onError={() => setVideoError(true)}
+        src={src}
+        ref={videoRef}
+        controlsList={"nodownload"}
+        controls
+      ></video>
+    </>
   );
 }

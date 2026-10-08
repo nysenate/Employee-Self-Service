@@ -56,135 +56,17 @@ const PurposeStep = forwardRef(function PurposeStep(
 
         <FormErrorSummary ref={errorSummaryRef} errors={errors} />
 
-        <section
-          aria-labelledby="traveler-heading"
-          className="bg-teal-50 p-4 sm:p-5"
-        >
-          <h2 id="traveler-heading" className="mb-3 text-lg font-semibold">
-            Traveler Information
-          </h2>
-          <dl className="grid gap-x-8 gap-y-4 sm:grid-cols-2">
-            <ReadOnlyValue label="Traveler" value={traveler?.fullName} />
-            <ReadOnlyValue label="Job title" value={traveler?.jobTitle} />
-            <ReadOnlyValue
-              label="Work address"
-              value={
-                traveler?.empWorkLocation?.address?.formattedAddressWithCounty
-              }
-            />
-            {!traveler?.isDepartmentHead && departmentHead && (
-              <ReadOnlyValue
-                label="Department head"
-                value={departmentHead.fullName}
-              />
-            )}
-          </dl>
-        </section>
-
-        <section
-          aria-labelledby="purpose-heading"
-          className="border-t border-gray-200 pt-6"
-        >
-          <h2 id="purpose-heading" className="mb-3 text-lg font-semibold">
-            Purpose of Travel
-          </h2>
-          {eventTypesFailed && (
-            <p role="alert" className="mb-3 text-sm font-medium text-red-700">
-              Purposes of travel could not be loaded. Please try again.
-            </p>
-          )}
-          <label htmlFor="purpose-eventType" className="mb-1 block font-medium">
-            Purpose
-          </label>
-          <select
-            id="purpose-eventType"
-            className={`select max-w-lg ${errors.eventType ? "input--invalid" : ""}`}
-            aria-invalid={Boolean(errors.eventType)}
-            aria-describedby={
-              errors.eventType ? "purpose-eventType-error" : undefined
-            }
-            value={purpose.eventType?.name ?? ""}
-            onChange={(event) => {
-              const eventType = eventTypes.find(
-                ({ name }) => name === event.target.value,
-              );
-              updatePurpose({
-                eventType,
-                eventName: "",
-                additionalPurpose: "",
-              });
-            }}
-          >
-            <option value="" disabled hidden>
-              Select a purpose
-            </option>
-            {eventTypes.map((eventType) => (
-              <option key={eventType.name} value={eventType.name}>
-                {eventType.displayName}
-              </option>
-            ))}
-          </select>
-          <FieldError id="purpose-eventType-error" message={errors.eventType} />
-
-          {purpose.eventType?.requiresName && (
-            <div className="mt-4">
-              <label
-                htmlFor="purpose-eventName"
-                className="mb-1 block font-medium"
-              >
-                Name of the {purpose.eventType.displayName}
-              </label>
-              <input
-                id="purpose-eventName"
-                className={`input w-full max-w-sm ${errors.eventName ? "input--invalid" : ""}`}
-                aria-invalid={Boolean(errors.eventName)}
-                aria-describedby={
-                  errors.eventName ? "purpose-eventName-error" : undefined
-                }
-                value={purpose.eventName ?? ""}
-                onChange={(event) =>
-                  updatePurpose({ eventName: event.target.value })
-                }
-              />
-              <FieldError
-                id="purpose-eventName-error"
-                message={errors.eventName}
-              />
-            </div>
-          )}
-
-          {purpose.eventType && (
-            <div className="mt-4">
-              <label
-                htmlFor="purpose-additionalPurpose"
-                className="mb-1 block font-medium"
-              >
-                {purpose.eventType.requiresAdditionalPurpose
-                  ? "Description of purpose"
-                  : "Additional information (optional)"}
-              </label>
-              <textarea
-                id="purpose-additionalPurpose"
-                rows="3"
-                className={`input w-full max-w-sm resize-y ${errors.additionalPurpose ? "input--invalid" : ""}`}
-                aria-invalid={Boolean(errors.additionalPurpose)}
-                aria-describedby={
-                  errors.additionalPurpose
-                    ? "purpose-additionalPurpose-error"
-                    : undefined
-                }
-                value={purpose.additionalPurpose ?? ""}
-                onChange={(event) =>
-                  updatePurpose({ additionalPurpose: event.target.value })
-                }
-              />
-              <FieldError
-                id="purpose-additionalPurpose-error"
-                message={errors.additionalPurpose}
-              />
-            </div>
-          )}
-        </section>
+        <TravelerInformation
+          traveler={traveler}
+          departmentHead={departmentHead}
+        />
+        <PurposeFields
+          purpose={purpose}
+          errors={errors}
+          eventTypes={eventTypes}
+          eventTypesFailed={eventTypesFailed}
+          onChange={updatePurpose}
+        />
 
         <section
           aria-labelledby="documents-heading"
@@ -262,6 +144,144 @@ const PurposeStep = forwardRef(function PurposeStep(
 });
 
 export default PurposeStep;
+
+function TravelerInformation({ traveler, departmentHead }) {
+  return (
+    <section
+      aria-labelledby="traveler-heading"
+      className="bg-teal-50 p-4 sm:p-5"
+    >
+      <h2 id="traveler-heading" className="mb-3 text-lg font-semibold">
+        Traveler Information
+      </h2>
+      <dl className="grid gap-x-8 gap-y-4 sm:grid-cols-2">
+        <ReadOnlyValue label="Traveler" value={traveler?.fullName} />
+        <ReadOnlyValue label="Job title" value={traveler?.jobTitle} />
+        <ReadOnlyValue
+          label="Work address"
+          value={traveler?.empWorkLocation?.address?.formattedAddressWithCounty}
+        />
+        {!traveler?.isDepartmentHead && departmentHead && (
+          <ReadOnlyValue
+            label="Department head"
+            value={departmentHead.fullName}
+          />
+        )}
+      </dl>
+    </section>
+  );
+}
+
+function PurposeFields({
+  purpose,
+  errors,
+  eventTypes,
+  eventTypesFailed,
+  onChange,
+}) {
+  const eventTypeError = errors.eventType;
+  return (
+    <section
+      aria-labelledby="purpose-heading"
+      className="border-t border-gray-200 pt-6"
+    >
+      <h2 id="purpose-heading" className="mb-3 text-lg font-semibold">
+        Purpose of Travel
+      </h2>
+      {eventTypesFailed && (
+        <p role="alert" className="mb-3 text-sm font-medium text-red-700">
+          Purposes of travel could not be loaded. Please try again.
+        </p>
+      )}
+      <label htmlFor="purpose-eventType" className="mb-1 block font-medium">
+        Purpose
+      </label>
+      <select
+        id="purpose-eventType"
+        className={`select max-w-lg ${eventTypeError ? "input--invalid" : ""}`}
+        aria-invalid={Boolean(eventTypeError)}
+        aria-describedby={
+          eventTypeError ? "purpose-eventType-error" : undefined
+        }
+        value={purpose.eventType?.name ?? ""}
+        onChange={(event) => {
+          const eventType = eventTypes.find(
+            ({ name }) => name === event.target.value,
+          );
+          onChange({ eventType, eventName: "", additionalPurpose: "" });
+        }}
+      >
+        <option value="" disabled hidden>
+          Select a purpose
+        </option>
+        {eventTypes.map((eventType) => (
+          <option key={eventType.name} value={eventType.name}>
+            {eventType.displayName}
+          </option>
+        ))}
+      </select>
+      <FieldError id="purpose-eventType-error" message={eventTypeError} />
+      <EventNameField
+        purpose={purpose}
+        error={errors.eventName}
+        onChange={onChange}
+      />
+      <AdditionalPurposeField
+        purpose={purpose}
+        error={errors.additionalPurpose}
+        onChange={onChange}
+      />
+    </section>
+  );
+}
+
+function EventNameField({ purpose, error, onChange }) {
+  if (!purpose.eventType?.requiresName) return null;
+  return (
+    <div className="mt-4">
+      <label htmlFor="purpose-eventName" className="mb-1 block font-medium">
+        Name of the {purpose.eventType.displayName}
+      </label>
+      <input
+        id="purpose-eventName"
+        className={`input w-full max-w-sm ${error ? "input--invalid" : ""}`}
+        aria-invalid={Boolean(error)}
+        aria-describedby={error ? "purpose-eventName-error" : undefined}
+        value={purpose.eventName ?? ""}
+        onChange={(event) => onChange({ eventName: event.target.value })}
+      />
+      <FieldError id="purpose-eventName-error" message={error} />
+    </div>
+  );
+}
+
+function AdditionalPurposeField({ purpose, error, onChange }) {
+  if (!purpose.eventType) return null;
+  return (
+    <div className="mt-4">
+      <label
+        htmlFor="purpose-additionalPurpose"
+        className="mb-1 block font-medium"
+      >
+        {purpose.eventType.requiresAdditionalPurpose
+          ? "Description of purpose"
+          : "Additional information (optional)"}
+      </label>
+      <textarea
+        id="purpose-additionalPurpose"
+        rows="3"
+        className={`input w-full max-w-sm resize-y ${error ? "input--invalid" : ""}`}
+        aria-invalid={Boolean(error)}
+        aria-describedby={error ? "purpose-additionalPurpose-error" : undefined}
+        value={purpose.additionalPurpose ?? ""}
+        onChange={(event) =>
+          onChange({ additionalPurpose: event.target.value })
+        }
+      />
+      <FieldError id="purpose-additionalPurpose-error" message={error} />
+    </div>
+  );
+}
 
 function ReadOnlyValue({ label, value }) {
   return (

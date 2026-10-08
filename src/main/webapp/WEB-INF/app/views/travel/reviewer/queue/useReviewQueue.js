@@ -8,6 +8,6 @@ export function useReviewQueue() {
     queryFn: () =>
       fetchApiJson("/travel/review/pending").then((body) => body.result.items),
     staleTime: 0,
-    throwOnError: true,
+    throwOnError: false,
   });
 }

@@ -1,6 +1,7 @@
 import React, { forwardRef, useContext } from "react";
 import { ThemeContext } from "app/ThemeContext";
 import { cn } from "app/utils/cn";
+import Spinner from "app/components/Spinner";
 import {
   Button as AriaButton,
   composeRenderProps,
@@ -8,6 +9,9 @@ import {
 
 /**
  * A common button component for ESS.
+ * For quick saves, use isPending followed by confirmed success or error feedback.
+ * Conflicting inputs may also be disabled while preserving their appearance;
+ * this does not require a busy overlay or a separate save-refetch message.
  * React Aria-first component.
  *
  * @param variant The button style. Supported options:
@@ -83,7 +87,7 @@ const Button = forwardRef(function (
               aria-hidden="true"
               className="pointer-events-none absolute inset-0 flex items-center justify-center"
             >
-              <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent align-middle" />
+              <Spinner />
             </span>
           )}
         </>

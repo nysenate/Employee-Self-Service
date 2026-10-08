@@ -1,6 +1,5 @@
 package gov.nysenate.ess.core.service.mail;
 
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -23,15 +22,22 @@ public class MailUtils
     @Value("${mail.smtp.password:}") private String smtpPass;
     @Value("${mail.debug:false}") private boolean debug;
     @Value("${mail.smtp.from:noreply@nysenate.gov}") private String smtpFrom;
-    @Value("${mail.smtp.starttls.enable:false}") private boolean stlsEnable;
-    @Value("${mail.smtp.ssl.enable:false}") private boolean sslEnable;
-    @Value("${mail.smtp.ssl.protocols}") private String sslProtocol;
+    @Value("${mail.smtp.starttls.enable:false}") private boolean startTlsEnabled;
+    @Value("${mail.smtp.ssl.enable:false}") private boolean sslEnabled;
+    @Value("${mail.smtp.ssl.protocols}") private String sslProtocols;
+    @Value("${mail.smtp.connectiontimeout:10000}") private int connectionTimeoutMs;
+    @Value("${mail.smtp.timeout:60000}") private int readTimeoutMs;
+    @Value("${mail.smtp.writetimeout:60000}") private int writeTimeoutMs;
 
     private Properties mailProperties;
     private Authenticator authenticator;
 
     @PostConstruct
     public void init() {
+        requirePositiveTimeout("mail.smtp.connectiontimeout", connectionTimeoutMs);
+        requirePositiveTimeout("mail.smtp.timeout", readTimeoutMs);
+        requirePositiveTimeout("mail.smtp.writetimeout", writeTimeoutMs);
+
         authenticator = new EssPasswordAuthenticator(
                 new PasswordAuthentication(smtpUser, smtpPass));
 
@@ -39,13 +45,22 @@ public class MailUtils
         mailProperties.put("mail.smtp.host", host);
         mailProperties.put("mail.smtp.port", port);
         mailProperties.put("mail.smtp.auth", auth);
-        mailProperties.put("mail.smtp.starttls.enable", stlsEnable);
-        mailProperties.put("mail.smtp.ssl.enable", sslEnable);
-        mailProperties.put("mail.smtp.ssl.protocols", sslProtocol);
+        mailProperties.put("mail.smtp.starttls.enable", startTlsEnabled);
+        mailProperties.put("mail.smtp.ssl.enable", sslEnabled);
+        mailProperties.put("mail.smtp.ssl.protocols", sslProtocols);
         mailProperties.put("mail.smtp.user", smtpUser);
         mailProperties.put("mail.smtp.pass", smtpPass);
         mailProperties.put("mail.smtp.from", smtpFrom);
+        mailProperties.put("mail.smtp.connectiontimeout", connectionTimeoutMs);
+        mailProperties.put("mail.smtp.timeout", readTimeoutMs);
+        mailProperties.put("mail.smtp.writetimeout", writeTimeoutMs);
         mailProperties.put("mail.debug", debug);
+    }
+
+    private static void requirePositiveTimeout(String propertyName, int timeoutMs) {
+        if (timeoutMs <= 0) {
+            throw new IllegalArgumentException(propertyName + " must be positive.");
+        }
     }
 
     /**

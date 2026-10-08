@@ -5,8 +5,8 @@ import Button from "app/components/Button";
 import Accordion from "app/components/Accordion";
 import Controls from "app/components/Controls";
 import Notification from "app/components/Notification";
-import LoadingIndicator from "app/components/LoadingIndicator";
-import AssertPermission from "app/components/AssertPermission";
+import LoadingStatus from "app/components/LoadingStatus";
+import RequirePermission from "app/components/RequirePermission";
 import useRequireAuthedUser from "app/hooks/useRequireAuthedUser";
 import { useSupEmpGroup } from "app/views/time/personnel/useSupEmpGroup";
 import RecordDetailsModal from "app/views/time/attendance/history/RecordDetailsModal";
@@ -54,16 +54,21 @@ export default function RecordManageIndex() {
   );
 
   return (
-    <AssertPermission permission="time:management-pages">
+    <RequirePermission permission="time:management-pages">
       <div>
         <Hero>Review Time Records</Hero>
         {supEmpGroup.isPending ? (
-          <LoadingIndicator />
+          <LoadingStatus
+            message="Loading employees…"
+            layout="centered"
+            size="lg"
+            className="min-h-48 p-6"
+          />
         ) : (
           <RecordManage entries={entries} userEmpId={user.employeeId} />
         )}
       </div>
-    </AssertPermission>
+    </RequirePermission>
   );
 }
 
@@ -131,7 +136,12 @@ function RecordManage({ entries, userEmpId }) {
       </Controls>
 
       {selectedRecords.isPending ? (
-        <LoadingIndicator />
+        <LoadingStatus
+          message="Loading time records…"
+          layout="centered"
+          size="lg"
+          className="min-h-48 p-6"
+        />
       ) : (
         <RecordSections
           key={iSelSup}

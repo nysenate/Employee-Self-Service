@@ -15,7 +15,7 @@ export function useEmployeeAlertInfo(empId) {
     },
     enabled: !!empId,
     staleTime: 1000 * 60 * 1,
-    throwOnError: true,
+    throwOnError: false,
   });
 }
 

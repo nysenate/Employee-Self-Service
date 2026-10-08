@@ -6,10 +6,10 @@ import {
   useDrafts,
   useMutateDraft,
 } from "app/views/travel/application/drafts/useDrafts";
-import LoadingIndicator from "app/components/LoadingIndicator";
+import LoadingStatus from "app/components/LoadingStatus";
 import Modal from "app/components/Modal";
 import { isoToShortDate, isoToShortDateTime } from "app/utils/dateUtils";
-import { FilePenLine, LoaderCircle, Trash2 } from "lucide-react";
+import { FilePenLine, Trash2 } from "lucide-react";
 import { toCurrency } from "app/utils/textUtils";
 import Card from "app/components/Card";
 import Button from "app/components/Button";
@@ -34,7 +34,12 @@ export default function Drafts() {
 
       {isPending ? (
         <div className="mt-6">
-          <LoadingIndicator />
+          <LoadingStatus
+            message="Loading saved drafts…"
+            layout="centered"
+            size="lg"
+            className="min-h-48 p-6"
+          />
         </div>
       ) : (
         <DraftResults drafts={data?.result} status={resultsStatus} />
@@ -252,10 +257,11 @@ function DraftResultsHeader({ count, status }) {
           {count} saved {count === 1 ? "draft" : "drafts"}
         </span>
         {isRefreshing && (
-          <span className="inline-flex items-center gap-1.5 text-sm text-gray-500">
-            <LoaderCircle aria-hidden="true" className="h-4 w-4 animate-spin" />
-            Refreshing
-          </span>
+          <LoadingStatus
+            message="Refreshing"
+            announce={false}
+            className="gap-1.5 text-sm text-gray-500"
+          />
         )}
       </div>
     </div>

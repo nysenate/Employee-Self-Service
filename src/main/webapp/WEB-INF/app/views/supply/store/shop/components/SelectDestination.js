@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import Hero from "app/components/Hero";
 import Controls from "app/components/Controls";
 import { useSupplyDestinations } from "app/views/supply/store/shop/hooks/useSupplyDestinations";
-import LoadingIndicator from "app/components/LoadingIndicator";
+import LoadingStatus from "app/components/LoadingStatus";
 import { useEmployee } from "app/views/useEmployee";
 import { useSupplyContext } from "app/views/supply/store/useSupplyContext";
 import {
@@ -39,7 +39,14 @@ export default function SelectDestination() {
   }, [validDestinationsQuery.data, employeeQuery.data]);
 
   if (validDestinationsQuery.isPending || employeeQuery.isPending) {
-    return <LoadingIndicator />;
+    return (
+      <LoadingStatus
+        message="Loading destinations…"
+        layout="centered"
+        size="lg"
+        className="min-h-48 p-6"
+      />
+    );
   }
 
   return (

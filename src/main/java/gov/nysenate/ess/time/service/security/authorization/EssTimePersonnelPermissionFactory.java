@@ -49,7 +49,8 @@ public class EssTimePersonnelPermissionFactory implements PermissionFactory {
                 new EssTimePermission(ACCRUAL, GET),
                 new EssTimePermission(ACCRUAL_ACTIVE_YEARS, GET),
                 new EssTimePermission(ALLOWANCE, GET),
-                new EssTimePermission(ALLOWANCE_ACTIVE_YEARS, GET)
+                new EssTimePermission(ALLOWANCE_ACTIVE_YEARS, GET),
+                new EssTimePermission(MISC_LEAVE_GRANT, GET)
 
         );
     }

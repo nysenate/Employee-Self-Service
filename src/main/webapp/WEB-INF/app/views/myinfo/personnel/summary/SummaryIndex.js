@@ -10,7 +10,7 @@ import {
   StateTax,
   YonkersTax,
 } from "app/views/myinfo/personnel/summary/TaxInfo";
-import LoadingIndicator from "app/components/LoadingIndicator";
+import LoadingStatus from "app/components/LoadingStatus";
 import { useEmployee } from "app/views/useEmployee";
 import { useEmployeeTransactions } from "app/views/myinfo/personnel/summary/useEmployeeTransactions";
 import useRequireAuthedUser from "app/hooks/useRequireAuthedUser";
@@ -21,11 +21,21 @@ export default function SummaryIndex() {
   const transactions = useEmployeeTransactions(user?.employeeId);
 
   if (isUserPending || empDetails.isPending || transactions.isPending) {
-    return <LoadingIndicator />;
+    return (
+      <LoadingStatus
+        message="Loading employee summary…"
+        layout="centered"
+        size="lg"
+        className="min-h-48 p-6"
+      />
+    );
   }
 
   return (
     <div>
+      {(empDetails.isFetching || transactions.isFetching) && (
+        <LoadingStatus message="Refreshing employee summary…" />
+      )}
       <SummaryTitle emp={empDetails.data} />
       <Card className="mt-0.5 p-4">
         <div className="grid grid-cols-2 gap-4">

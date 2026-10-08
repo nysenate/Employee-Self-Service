@@ -1,6 +1,6 @@
 import React, { useEffect, useReducer, useState } from "react";
 import Hero from "app/components/Hero";
-import LoadingIndicator from "app/components/LoadingIndicator";
+import LoadingStatus from "app/components/LoadingStatus";
 import SelectDestination from "app/views/supply/store/shop/components/SelectDestination";
 import CartSummary from "app/views/supply/store/shop/components/CartSummary";
 import { useSupplyContext } from "app/views/supply/store/useSupplyContext";
@@ -95,7 +95,12 @@ export default function ShopIndex() {
     return (
       <div>
         <Hero>Requisition Form</Hero>
-        <LoadingIndicator />
+        <LoadingStatus
+          message="Loading requisition form…"
+          layout="centered"
+          size="lg"
+          className="min-h-48 p-6"
+        />
       </div>
     );
   }

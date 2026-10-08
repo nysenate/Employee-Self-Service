@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.function.Supplier;
 
 /**
  * Orchestrates a single end-to-end sync run: preflight → plan → execute.
@@ -49,15 +50,41 @@ public class EverfiUserSyncService {
      * raised during the load and plan stages.
      */
     SyncRun syncUsers(boolean dryRun) {
-        initializeCategoryCache();
-        var desiredUsers      = loader.loadDesiredUsers();
-        var remoteLoadResult  = loader.loadRemoteUsers();
-        var actions           = planner.plan(desiredUsers, RemoteUserIndex.from(remoteLoadResult));
+        runStage("initialize category cache", this::initializeCategoryCache);
+        var desiredUsers = runStage("load desired users", loader::loadDesiredUsers);
+        var remoteLoadResult = runStage("load remote users", loader::loadRemoteUsers);
+        var actions = runStage("plan actions",
+                () -> planner.plan(desiredUsers, RemoteUserIndex.from(remoteLoadResult)));
         var labelRequirements = LabelRequirements.from(actions);
-        var labels            = labelProvisioner.resolve(labelRequirements, dryRun);
-        var executableActions = actionResolver.resolve(actions, labels);
-        var results           = executor.executeAll(executableActions, dryRun);
-        return SyncRun.of(results, dryRun);
+        var labels = runStage("resolve labels",
+                () -> labelProvisioner.resolve(labelRequirements, dryRun));
+        var executableActions = runStage("resolve executable actions",
+                () -> actionResolver.resolve(actions, labels));
+        var results = runStage("execute actions",
+                () -> executor.executeAll(executableActions, dryRun));
+        return runStage("build sync report", () -> SyncRun.of(results, dryRun));
+    }
+
+    private <T> T runStage(String stageName, Supplier<T> stage) {
+        long startNanos = System.nanoTime();
+        logger.info("Starting Everfi user sync stage: {}.", stageName);
+        try {
+            T result = stage.get();
+            long durationMs = (System.nanoTime() - startNanos) / 1_000_000;
+            logger.info("Finished Everfi user sync stage: {} ({} ms).", stageName, durationMs);
+            return result;
+        } catch (RuntimeException ex) {
+            long durationMs = (System.nanoTime() - startNanos) / 1_000_000;
+            logger.error("Failed Everfi user sync stage: {} ({} ms).", stageName, durationMs, ex);
+            throw ex;
+        }
+    }
+
+    private void runStage(String stageName, Runnable stage) {
+        runStage(stageName, () -> {
+            stage.run();
+            return null;
+        });
     }
 
     void initializeCategoryCache() {

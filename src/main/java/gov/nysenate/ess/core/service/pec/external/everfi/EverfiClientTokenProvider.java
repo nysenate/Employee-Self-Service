@@ -12,8 +12,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.Clock;
+import java.time.DateTimeException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Base64;
@@ -28,6 +30,7 @@ public class EverfiClientTokenProvider {
 
     private final String clientId;
     private final String clientSecret;
+    private final URI tokenUri;
 
     private final Clock clock;
     private final Duration refreshSkew;
@@ -40,6 +43,7 @@ public class EverfiClientTokenProvider {
             ObjectMapper objectMapper,
             String clientId,
             String clientSecret,
+            String tokenUrl,
             Clock clock,
             Duration refreshSkew
     ) {
@@ -47,8 +51,12 @@ public class EverfiClientTokenProvider {
         this.objectMapper = Objects.requireNonNull(objectMapper);
         this.clientId = Objects.requireNonNull(clientId);
         this.clientSecret = Objects.requireNonNull(clientSecret);
+        this.tokenUri = requireHttpsUri(tokenUrl);
         this.clock = Objects.requireNonNull(clock);
         this.refreshSkew = Objects.requireNonNull(refreshSkew);
+        if (refreshSkew.isNegative()) {
+            throw new IllegalArgumentException("Everfi token refresh skew must not be negative.");
+        }
     }
 
     public String getAccessToken() throws IOException {
@@ -78,8 +86,7 @@ public class EverfiClientTokenProvider {
     }
 
     private CachedToken fetchNewToken() throws IOException {
-        String tokenUrl = "https://api.fifoundry.net/oauth/token";
-        HttpPost post = new HttpPost(tokenUrl);
+        HttpPost post = new HttpPost(tokenUri);
 
         post.setEntity(new StringEntity("grant_type=client_credentials", ContentType.APPLICATION_FORM_URLENCODED));
         post.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
@@ -90,11 +97,14 @@ public class EverfiClientTokenProvider {
         );
         post.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + basic);
 
+        long startNanos = System.nanoTime();
+        logger.debug("Starting Everfi OAuth token request.");
         try (CloseableHttpResponse resp = http.execute(post)) {
             int statusCode = resp.getStatusLine().getStatusCode();
             String body = resp.getEntity() == null ? "" : EntityUtils.toString(resp.getEntity(), StandardCharsets.UTF_8);
 
-            logger.info("AUTHENTICATING with Everfi, statusCode: " + statusCode);
+            logger.debug("Finished Everfi OAuth token request with HTTP {} in {} ms.",
+                    statusCode, (System.nanoTime() - startNanos) / 1_000_000);
 
             if (statusCode < 200 || statusCode >= 300) {
                 logger.error("Error authenticating with Everfi.");
@@ -107,9 +117,39 @@ public class EverfiClientTokenProvider {
                 throw new IOException("Token endpoint returned no access_token. body=" + body);
             }
 
-            Instant expiresAt = Instant.ofEpochSecond(tr.expiresAt);
+            Instant expiresAt = tokenExpiration(tr);
             return new CachedToken(tr.accessToken, expiresAt);
+        } catch (IOException | RuntimeException ex) {
+            logger.error("Everfi OAuth token request failed after {} ms.",
+                    (System.nanoTime() - startNanos) / 1_000_000, ex);
+            throw ex;
         }
+    }
+
+    private Instant tokenExpiration(OAuthTokenResponse response) throws IOException {
+        try {
+            if (response.expiresAt > 0) {
+                return Instant.ofEpochSecond(response.expiresAt);
+            }
+            if (response.expiresIn <= 0) {
+                throw new IOException("Token endpoint returned no valid expiration.");
+            }
+
+            Instant issuedAt = response.createdAt > 0
+                    ? Instant.ofEpochSecond(response.createdAt)
+                    : clock.instant();
+            return issuedAt.plusSeconds(response.expiresIn);
+        } catch (DateTimeException | ArithmeticException ex) {
+            throw new IOException("Token endpoint returned an invalid expiration.", ex);
+        }
+    }
+
+    private static URI requireHttpsUri(String tokenUrl) {
+        URI uri = URI.create(Objects.requireNonNull(tokenUrl));
+        if (!"https".equalsIgnoreCase(uri.getScheme()) || uri.getHost() == null) {
+            throw new IllegalArgumentException("Everfi OAuth token URL must be an absolute HTTPS URL.");
+        }
+        return uri;
     }
 
     private static final class CachedToken {

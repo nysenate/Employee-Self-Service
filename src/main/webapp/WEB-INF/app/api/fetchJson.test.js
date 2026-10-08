@@ -1,13 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { fetchApiJson } from "./fetchJson";
+import { fetchApiJson, FetchError } from "./fetchJson";
 
 describe("fetchApiJson", () => {
   beforeEach(() => {
     vi.stubGlobal(
       "fetch",
-      vi
-        .fn()
-        .mockResolvedValue({ ok: true, text: () => Promise.resolve("{}") }),
+      vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve({}) }),
     );
   });
 
@@ -33,6 +31,19 @@ describe("fetchApiJson", () => {
     },
   );
 
+  it.each([
+    [200, new Headers({ "Content-Length": "0" })],
+    [204, new Headers()],
+  ])("returns null for an empty %s response", async (status, headers) => {
+    const json = vi.fn();
+    fetch.mockResolvedValue({ ok: true, status, headers, json });
+
+    await expect(
+      fetchApiJson("/timerecords", { method: "POST", payload: {} }),
+    ).resolves.toBeNull();
+    expect(json).not.toHaveBeenCalled();
+  });
+
   it("passes FormData through without setting a content type", async () => {
     const payload = new FormData();
     payload.append("file", new Blob(["document"]), "document.txt");
@@ -46,5 +57,49 @@ describe("fetchApiJson", () => {
     expect(init.body).toBe(payload);
     expect(init.headers).toEqual({ Accept: "application/json" });
     expect(init).not.toHaveProperty("payload");
+  });
+
+  it("preserves the status and API body on an HTTP error", async () => {
+    const data = {
+      status: { authorized: false },
+      message: "Authentication required",
+    };
+    const response = {
+      ok: false,
+      status: 401,
+      statusText: "Unauthorized",
+      json: async () => data,
+    };
+    vi.mocked(fetch).mockResolvedValue(response);
+    await expect(fetchApiJson("/employees/me")).rejects.toMatchObject({
+      name: "FetchError",
+      response,
+      data,
+    });
+  });
+
+  it.each([401, 403, 503])(
+    "preserves HTTP %s even when the error body cannot be parsed",
+    async (status) => {
+      const response = {
+        ok: false,
+        status,
+        statusText: "HTTP error",
+        json: async () => {
+          throw new SyntaxError("Invalid JSON");
+        },
+      };
+      vi.mocked(fetch).mockResolvedValue(response);
+      const error = await fetchApiJson("/employees/me").catch((error) => error);
+      expect(error).toBeInstanceOf(FetchError);
+      expect(error.response).toBe(response);
+      expect(error.data).toEqual({ message: "HTTP error" });
+    },
+  );
+
+  it("preserves a network rejection", async () => {
+    const error = new TypeError("Failed to fetch");
+    vi.mocked(fetch).mockRejectedValue(error);
+    await expect(fetchApiJson("/employees/me")).rejects.toBe(error);
   });
 });

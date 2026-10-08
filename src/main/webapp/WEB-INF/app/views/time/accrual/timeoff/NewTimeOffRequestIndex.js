@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import Hero from "app/components/Hero";
 import Button from "app/components/Button";
-import AssertPermission from "app/components/AssertPermission";
+import RequirePermission from "app/components/RequirePermission";
 import TimeOffRequestForm from "app/views/time/accrual/timeoff/TimeOffRequestForm";
 
 /** A request that has not been started yet. */
@@ -17,7 +17,7 @@ export default function NewTimeOffRequestIndex() {
   const navigate = useNavigate();
 
   return (
-    <AssertPermission permission="time:time-off-request-page">
+    <RequirePermission permission="time:time-off-request-page">
       <div>
         <Hero>New Time Off Request</Hero>
         <div className="p-3">
@@ -30,6 +30,6 @@ export default function NewTimeOffRequestIndex() {
         </div>
         <TimeOffRequestForm request={BLANK_REQUEST} initialMode="input" />
       </div>
-    </AssertPermission>
+    </RequirePermission>
   );
 }

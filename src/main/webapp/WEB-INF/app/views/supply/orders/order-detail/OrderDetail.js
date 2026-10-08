@@ -3,7 +3,7 @@ import { useParams, useSearchParams } from "react-router-dom";
 import Hero from "app/components/Hero";
 import Controls from "app/components/Controls";
 import Card from "app/components/Card";
-import LoadingIndicator from "app/components/LoadingIndicator";
+import LoadingStatus from "app/components/LoadingStatus";
 import { useRequisitionHistory } from "app/views/supply/orders/order-detail/useRequisitionHistory";
 import { isoToShortDateTime } from "app/utils/dateUtils";
 import Button from "app/components/Button";
@@ -35,7 +35,14 @@ export default function OrderDetail() {
   }, [searchParams, selectedVersion]);
 
   if (isPending || !selectedVersion) {
-    return <LoadingIndicator />;
+    return (
+      <LoadingStatus
+        message="Loading order details…"
+        layout="centered"
+        size="lg"
+        className="min-h-48 p-6"
+      />
+    );
   }
 
   return (

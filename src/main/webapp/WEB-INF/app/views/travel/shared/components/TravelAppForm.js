@@ -1,10 +1,9 @@
 import React, { useMemo } from "react";
-import LoadingCircle from "app/components/LoadingCircle";
+import LoadingStatus from "app/components/LoadingStatus";
 import { isoToShortDate } from "app/utils/dateUtils";
 import { toCurrency } from "app/utils/textUtils";
 import { cn } from "app/utils/cn";
 import { Info, Paperclip } from "lucide-react";
-import LoadingIndicator from "app/components/LoadingIndicator";
 import TransportationDetailsPopover from "app/views/travel/shared/components/TransportationDetailsPopover";
 import MealDetailsPopover from "app/views/travel/shared/components/MealDetailsPopover";
 import LodgingDetailsPopover from "app/views/travel/shared/components/LodgingDetailsPopover";
@@ -13,7 +12,12 @@ import { useModesOfTransportation } from "app/views/travel/shared/hooks/useModes
 
 const NOT_AVAILABLE = "N/A";
 
-export default function TravelAppForm({ app, showStatus = false, className }) {
+export default function TravelAppForm({
+  app,
+  showStatus = false,
+  className,
+  onAttachmentOpen,
+}) {
   const amendment = app?.activeAmendment ?? {};
   return (
     <div className={cn("mx-auto p-3", className)}>
@@ -27,7 +31,10 @@ export default function TravelAppForm({ app, showStatus = false, className }) {
           <AllowancesBox amendment={amendment} />
         </div>
         <div className="my-3 h-1 bg-gray-500" />
-        <Attachments amendment={amendment} />
+        <Attachments
+          amendment={amendment}
+          onAttachmentOpen={onAttachmentOpen}
+        />
         {showStatus && <Status status={app.status} />}
       </div>
     </div>
@@ -67,13 +74,13 @@ function EmployeeInfo({ app }) {
       <LabelText>Phone:</LabelText>
       <div>{formatValue(traveler.workPhone)}</div>
       <LabelText>Office:</LabelText>
-      <div>{formatValue(traveler.respCtr.respCenterHead.name)}</div>
+      <div>{formatValue(traveler.respCtr?.respCenterHead?.name)}</div>
       <LabelText>Agency Code:</LabelText>
-      <div>{formatValue(traveler.respCtr.agencyCode)}</div>
+      <div>{formatValue(traveler.respCtr?.agencyCode)}</div>
       <LabelText>Office Address:</LabelText>
       <div className="col-span-3">
         {formatValue(
-          traveler.empWorkLocation.address.formattedAddressWithCounty,
+          traveler.empWorkLocation?.address?.formattedAddressWithCounty,
         )}
       </div>
     </div>
@@ -81,20 +88,24 @@ function EmployeeInfo({ app }) {
 }
 
 function AppInfo({ amendment }) {
+  const outboundLegs = amendment.route?.outboundLegs ?? [];
+  const origin =
+    amendment.route?.origin ?? outboundLegs[0]?.from?.address ?? {};
+  const destinations =
+    amendment.route?.destinations ??
+    outboundLegs.map((leg, id) => ({ id, address: leg.to?.address ?? {} }));
   return (
     <div className="grid grid-cols-[125px_1fr] gap-x-3 gap-y-1">
       <LabelText>Departure:</LabelText>
-      <div>
-        {formatValue(amendment.route.origin.formattedAddressWithCounty)}
-      </div>
-      {amendment.route.destinations.map((dest, index) => (
+      <div>{formatAddress(origin)}</div>
+      {destinations.map((dest, index) => (
         <React.Fragment key={dest.id}>
           {index === 0 ? (
             <LabelText>Destination:</LabelText>
           ) : (
             <LabelText>&nbsp;</LabelText>
           )}
-          <div>{formatValue(dest.address.formattedAddressWithCounty)}</div>
+          <div>{formatAddress(dest.address)}</div>
         </React.Fragment>
       ))}
       <LabelText>Dates of Travel:</LabelText>
@@ -103,8 +114,8 @@ function AppInfo({ amendment }) {
       </div>
       <LabelText>Purpose:</LabelText>
       <div>
-        {formatValue(amendment.purposeOfTravel.summary)}
-        {amendment.purposeOfTravel.additionalPurpose && (
+        {formatValue(amendment.purposeOfTravel?.summary)}
+        {amendment.purposeOfTravel?.additionalPurpose && (
           <>
             <br /> {amendment.purposeOfTravel.additionalPurpose}
           </>
@@ -114,7 +125,7 @@ function AppInfo({ amendment }) {
   );
 }
 
-function Attachments({ amendment }) {
+function Attachments({ amendment, onAttachmentOpen }) {
   const attachments = amendment.attachments ?? [];
   if (attachments.length === 0) {
     return null;
@@ -134,6 +145,14 @@ function Attachments({ amendment }) {
               href={`/api/v1/travel/applications/attachment/${attachment.filename}`}
               target="_blank"
               rel="noreferrer"
+              onClick={
+                onAttachmentOpen
+                  ? (event) => {
+                      event.preventDefault();
+                      onAttachmentOpen(attachment);
+                    }
+                  : undefined
+              }
               className="inline-flex items-center gap-2 text-teal-700 underline-offset-2 hover:underline"
             >
               <Paperclip className="h-4 w-4" />
@@ -192,7 +211,10 @@ function ModeOfTransportationBox({ amendment }) {
       </div>
       {isMotLoading ? (
         <div className="mx-auto my-3">
-          <LoadingCircle textColor="text-teal-600" />
+          <LoadingStatus
+            message="Loading transportation options…"
+            className="text-teal-600"
+          />
         </div>
       ) : (
         <div className="mt-3 grid grid-cols-2 gap-0.5">
@@ -226,7 +248,7 @@ function AllowancesBox({ amendment }) {
       </div>
       <div className="mt-3 grid grid-cols-[1fr_78px_16px] items-center gap-0.5">
         <div className={labelClasses}>
-          Transportation ({amendment.mileagePerDiems.totalMileage}) Miles
+          Transportation ({amendment.mileagePerDiems?.totalMileage ?? 0}) Miles
         </div>
         <div className={valueClasses}>
           {formatCurrency(amendment.transportationAllowance)}
@@ -287,4 +309,10 @@ function formatValue(value) {
   if (value === null || value === undefined) return NOT_AVAILABLE;
   if (typeof value === "string" && value.trim() === "") return NOT_AVAILABLE;
   return value;
+}
+
+function formatAddress(address) {
+  return formatValue(
+    address?.formattedAddressWithCounty ?? address?.formattedAddress,
+  );
 }

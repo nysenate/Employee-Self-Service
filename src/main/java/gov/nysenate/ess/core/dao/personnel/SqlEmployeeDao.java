@@ -132,11 +132,11 @@ public class SqlEmployeeDao extends SqlBaseDao implements EmployeeDao {
      */
     private PaginatedList<Employee> freeTextSearchEmployees(EmployeeSearchBuilder searchBuilder, LimitOffset limitOffset) {
         List<String> tokens = EmployeeSearchBuilder.tokenizeSearchTerm(searchBuilder.getName());
-        String fullTerm = String.join(" ", tokens);
+        // Spaces removed, matching how match_score compacts the columns it compares against.
+        String compactTerm = String.join("", tokens);
 
         MapSqlParameterSource params = getEmpSearchParams(searchBuilder);
-        params.addValue("fullTerm", fullTerm.isEmpty() ? null : fullTerm);
-        params.addValue("term", fullTerm.isEmpty() ? null : fullTerm);
+        params.addValue("compactTerm", compactTerm.isEmpty() ? null : compactTerm);
         for (int i = 0; i < tokens.size(); i++) {
             params.addValue("tok" + i, tokens.get(i));
         }
@@ -158,13 +158,15 @@ public class SqlEmployeeDao extends SqlBaseDao implements EmployeeDao {
     /**
      * Builds the dynamic WHERE fragment requiring every token to be a substring of the employee's
      * full name or uid/email. Returns an empty string for an empty term (matching all employees).
+     * The columns are normalized the same way as the tokens, so punctuated names still match.
      */
     private static String buildNameTokenClause(List<String> tokens) {
         StringBuilder clause = new StringBuilder();
         for (int i = 0; i < tokens.size(); i++) {
-            clause.append("  AND (UPPER(TRIM(per.FFNAFIRST) || ' ' || TRIM(per.FFNAMIDINIT) || ' ' || TRIM(per.FFNALAST) || ' ' || TRIM(per.FFNASUFFIX))")
+            clause.append("  AND (").append(SqlEmployeeQuery.strippedFullNameSql())
                     .append(" LIKE '%' || :tok").append(i).append(" || '%'\n")
-                    .append("       OR UPPER(per.NAEMAIL) LIKE '%' || :tok").append(i).append(" || '%')\n");
+                    .append("       OR ").append(SqlEmployeeQuery.strippedEmailSql())
+                    .append(" LIKE '%' || :tok").append(i).append(" || '%')\n");
         }
         return clause.toString();
     }

@@ -32,6 +32,10 @@ public class SqlSenateMieDao extends SqlBaseDao {
         }
     }
 
+    /**
+     * Get the senate breakdown for a meal total, using the most recent fiscal year
+     * at or before {@code fiscalYear} that the senate has published that total for.
+     */
     public SenateMie selectSenateMie(int fiscalYear, Dollars total) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("fiscalYear", fiscalYear)
@@ -76,7 +80,9 @@ public class SqlSenateMieDao extends SqlBaseDao {
         ),
         SELECT_SENATE_MIE(
                 "SELECT * FROM ${travelSchema}.senate_mie\n" +
-                        "WHERE fiscal_year = :fiscalYear AND total = :total"
+                        "WHERE total = :total AND fiscal_year <= :fiscalYear\n" +
+                        "ORDER BY fiscal_year DESC\n" +
+                        "LIMIT 1"
         );
 
         private final String sql;
@@ -97,7 +103,6 @@ public class SqlSenateMieDao extends SqlBaseDao {
     }
 
     private static class SenateMieRowMapper implements RowMapper<SenateMie> {
-
         @Override
         public SenateMie mapRow(ResultSet rs, int i) throws SQLException {
             return new SenateMie(

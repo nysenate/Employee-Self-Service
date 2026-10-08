@@ -41,12 +41,19 @@ export async function fetchJson(input, init) {
   // https://developer.mozilla.org/en-US/docs/Web/API/Response/ok
   if (response.ok) {
     // Some endpoints, i.e. POST /timerecords, return an empty body on success.
-    const body = await response.text();
-    return body ? JSON.parse(body) : null;
+    if (
+      response.status === 204 ||
+      response.headers?.get("Content-Length") === "0"
+    ) {
+      return null;
+    }
+    return response.json();
   }
 
   // Unsuccessful response, throw error.
-  const data = await response.json();
+  // Preserve the HTTP status even if an error page is HTML, empty, or truncated.
+  // Session handling must still recognize a confirmed 401 in that case.
+  const data = await response.json().catch(() => undefined);
   throw new FetchError({
     message: response.statusText,
     response,

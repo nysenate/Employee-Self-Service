@@ -1,10 +1,13 @@
 import { describe, expect, it } from "vitest";
 import {
   isOutsideConus,
+  isLongTrip,
+  normalizeCompleteRoute,
   normalizeOutboundRoute,
   normalizeTravelDate,
   validateOutboundRoute,
   validateOutboundDestinations,
+  validateReturnRoute,
 } from "./routeValidation";
 
 const address = { zip5: "12207", country: "United States", state: "NY" };
@@ -109,5 +112,57 @@ describe("outbound route validation", () => {
     expect(
       validateOutboundDestinations({ ...route, unrelatedEdit: true }),
     ).toHaveProperty("segment-0-to");
+  });
+});
+
+describe("complete return route validation", () => {
+  const completeRoute = (outboundDate, returnDate) => ({
+    ...validRoute,
+    outboundLegs: [{ ...validRoute.outboundLegs[0], travelDate: outboundDate }],
+    returnLegs: [
+      {
+        ...validRoute.outboundLegs[0],
+        travelDate: returnDate,
+      },
+    ],
+  });
+
+  it("accepts same-day and later return dates", () => {
+    expect(
+      validateReturnRoute(completeRoute("08/10/2026", "08/10/2026")),
+    ).toEqual({});
+    expect(
+      validateReturnRoute(completeRoute("08/10/2026", "08/14/2026")),
+    ).toEqual({});
+  });
+
+  it("explains when a return date is before the final outbound date", () => {
+    expect(
+      validateReturnRoute(completeRoute("08/10/2026", "08/09/2026")),
+    ).toHaveProperty(
+      "segment-0-date",
+      "Return segment 1 date (08/09/2026) cannot be before the final outbound date (08/10/2026).",
+    );
+  });
+
+  it("identifies an earlier out-of-order outbound segment", () => {
+    const route = completeRoute("08/10/2026", "08/10/2026");
+    route.outboundLegs.push({
+      ...route.outboundLegs[0],
+      travelDate: "08/09/2026",
+    });
+    expect(validateReturnRoute(route)).toHaveProperty(
+      "routeDates",
+      "Outbound segment 2 date (08/09/2026) cannot be before outbound segment 1 date (08/10/2026). Return to Outbound to correct the dates.",
+    );
+  });
+
+  it("warns only after seven full calendar days and normalizes all dates", () => {
+    expect(isLongTrip(completeRoute("08/10/2026", "08/17/2026"))).toBe(false);
+    expect(isLongTrip(completeRoute("08/10/2026", "08/18/2026"))).toBe(true);
+    expect(
+      normalizeCompleteRoute(completeRoute("08/10/2026", "08/18/2026"))
+        .returnLegs[0].travelDate,
+    ).toBe("08/18/2026");
   });
 });

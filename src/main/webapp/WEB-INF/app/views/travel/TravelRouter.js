@@ -2,8 +2,9 @@ import React from "react";
 import { ThemeContext, themes } from "app/ThemeContext";
 import Navigation from "app/components/Navigation";
 import AppLayout from "app/components/AppLayout";
-import Travel from "app/views/travel/Travel";
-import { Navigate, Route, Routes } from "react-router-dom";
+import RequirePermission from "app/components/RequirePermission";
+import { travelPermissions } from "./shared/travelPermissions";
+import { Navigate, Route, Routes, useParams } from "react-router-dom";
 import NotFound from "app/views/NotFound";
 import ApplicationHistory from "app/views/travel/application/history";
 import SubmitApplication from "app/views/travel/application/submit";
@@ -12,18 +13,101 @@ import ReviewHistory from "app/views/travel/reviewer/history";
 import ReviewQueue from "app/views/travel/reviewer/queue/ReviewQueuePage";
 import { AsyncBadge } from "app/components/Badge";
 import { useReviewQueue } from "app/views/travel/reviewer/queue/useReviewQueue";
+import ResubmitTravelApplicationPage from "app/views/travel/application/resubmit";
+import {
+  historyDetailsUrl,
+  parseApplicationId,
+} from "app/views/travel/application/workflow/applicationRoutes";
+
+import EditTravelApplication from "./application/edit/EditTravelApplication";
 
 export default function TravelRouter() {
   return (
     <ThemeContext.Provider value={themes.travel}>
       <Routes>
         <Route path="" element={<TravelLayout />}>
-          <Route path="/applications/new" element={<SubmitApplication />} />
-          <Route path="/applications/drafts" element={<Drafts />} />
-          <Route path="/applications" element={<ApplicationHistory />} />
+          <Route
+            path="/applications/new"
+            element={
+              <RequirePermission permission={travelPermissions.submit}>
+                <SubmitApplication />
+              </RequirePermission>
+            }
+          />
+          <Route
+            path="/applications/new/:draftId"
+            element={
+              <RequirePermission permission={travelPermissions.submit}>
+                <SubmitApplication />
+              </RequirePermission>
+            }
+          />
+          <Route
+            path="/applications/drafts"
+            element={
+              <RequirePermission permission={travelPermissions.submit}>
+                <Drafts />
+              </RequirePermission>
+            }
+          />
+          <Route
+            path="/applications"
+            element={
+              <RequirePermission permission={travelPermissions.submit}>
+                <ApplicationHistory />
+              </RequirePermission>
+            }
+          />
+          <Route
+            path="/applications/:appId/edit"
+            element={
+              <RequirePermission permission={travelPermissions.edit}>
+                <EditTravelApplication />
+              </RequirePermission>
+            }
+          />
+          <Route
+            path="/applications/:appId/resubmit"
+            element={
+              <RequirePermission permission={travelPermissions.submit}>
+                <ResubmitTravelApplicationPage />
+              </RequirePermission>
+            }
+          />
 
-          <Route path="/manage/review-history" element={<ReviewHistory />} />
-          <Route path="/manage/queue" element={<ReviewQueue />} />
+          <Route
+            path="/application/:appId"
+            element={
+              <RequirePermission permission={travelPermissions.submit}>
+                <ApplicationNotificationRedirect />
+              </RequirePermission>
+            }
+          />
+
+          <Route
+            path="/manage/review-history"
+            element={
+              <RequirePermission permission={travelPermissions.reviewHistory}>
+                <ReviewHistory />
+              </RequirePermission>
+            }
+          />
+          <Route
+            path="/manage/queue"
+            element={
+              <RequirePermission permission={travelPermissions.review}>
+                <ReviewQueue />
+              </RequirePermission>
+            }
+          />
+          <Route
+            path="/manage/review"
+            element={
+              <RequirePermission permission={travelPermissions.review}>
+                <Navigate to="/travel/manage/queue" replace />
+              </RequirePermission>
+            }
+          />
 
           <Route path="" element={<Navigate to="applications" replace />} />
           <Route path="*" element={<NotFound />} />
@@ -33,12 +117,26 @@ export default function TravelRouter() {
   );
 }
 
+function ApplicationNotificationRedirect() {
+  const { appId: routeAppId } = useParams();
+  const appId = parseApplicationId(routeAppId);
+
+  if (appId === null) {
+    return <NotFound />;
+  }
+
+  return <Navigate to={historyDetailsUrl(appId)} replace />;
+}
+
 function TravelLayout() {
   return (
     <AppLayout>
       <Navigation>
         <Navigation.Title>Travel Menu</Navigation.Title>
-        <Navigation.Section name="My Travel">
+        <Navigation.Section
+          name="My Travel"
+          permission={travelPermissions.submit}
+        >
           <Navigation.Link to="/travel/applications/new">
             Submit Travel Application
           </Navigation.Link>
@@ -49,8 +147,14 @@ function TravelLayout() {
             Drafts
           </Navigation.Link>
         </Navigation.Section>
-        <Navigation.Section name="Manage Travel">
-          <Navigation.Link to="/travel/manage/queue">
+        <Navigation.Section
+          name="Manage Travel"
+          permission={travelPermissions.manage}
+        >
+          <Navigation.Link
+            to="/travel/manage/queue"
+            permission={travelPermissions.review}
+          >
             <span className="mr-auto">Review Travel</span>
             <AsyncBadge
               useData={useReviewQueue}
@@ -59,7 +163,10 @@ function TravelLayout() {
               title="Travel applications awaiting review"
             />
           </Navigation.Link>
-          <Navigation.Link to="/travel/manage/review-history">
+          <Navigation.Link
+            to="/travel/manage/review-history"
+            permission={travelPermissions.reviewHistory}
+          >
             Review History
           </Navigation.Link>
         </Navigation.Section>

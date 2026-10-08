@@ -4,7 +4,7 @@ import Hero from "app/components/Hero";
 import Button from "app/components/Button";
 import Controls from "app/components/Controls";
 import Notification from "app/components/Notification";
-import LoadingIndicator from "app/components/LoadingIndicator";
+import LoadingStatus from "app/components/LoadingStatus";
 import { cn } from "app/utils/cn";
 import useRequireAuthedUser from "app/hooks/useRequireAuthedUser";
 import {
@@ -36,7 +36,12 @@ export default function GrantSupervisorAccessIndex() {
       <Hero>Grant Supervisor Access</Hero>
 
       {isLoading ? (
-        <LoadingIndicator />
+        <LoadingStatus
+          message="Loading supervisor access…"
+          layout="centered"
+          size="lg"
+          className="min-h-48 p-6"
+        />
       ) : (
         <GrantSupervisorAccess
           empId={empId}

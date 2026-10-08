@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { ThemeContext, themes } from "app/ThemeContext";
 import { NavLink } from "react-router-dom";
 import Card from "app/components/Card";
-import useCheckPermission from "app/hooks/useCheckPermission";
+import PermissionGate from "app/components/PermissionGate";
 
 const Navigation = ({ children }) => {
   return (
@@ -49,19 +49,13 @@ const Title = ({ children }) => {
  * @constructor
  */
 const Section = ({ name, permission, children }) => {
-  const { data, isLoading } = useCheckPermission(permission);
-
-  if (isLoading || data?.isPermitted === false) {
-    return null;
-  }
-
   return (
-    <>
+    <OptionalPermission permission={permission}>
       <h2 className="mx-5 my-2 border-b-1 border-gray-300 py-1 text-lg font-semibold">
         {name}
       </h2>
       <ul>{children}</ul>
-    </>
+    </OptionalPermission>
   );
 };
 
@@ -74,7 +68,6 @@ const Section = ({ name, permission, children }) => {
  */
 const Link = ({ to, permission, children, ...rest }) => {
   const theme = useContext(ThemeContext);
-  const { data, isLoading } = useCheckPermission(permission);
 
   let borderColor;
   switch (theme) {
@@ -99,22 +92,20 @@ const Link = ({ to, permission, children, ...rest }) => {
   const activeClasses = `flex items-center gap-2 py-1 pr-5 pl-4 font-semibold border-l-4 ${borderColor} bg-gray-50`;
   const inactiveClasses = `flex items-center gap-2 px-5 py-1`;
 
-  if (isLoading || data?.isPermitted === false) {
-    return null;
-  }
-
   return (
-    <li>
-      <NavLink
-        to={to}
-        {...rest}
-        className={({ isActive }) =>
-          isActive ? activeClasses : inactiveClasses
-        }
-      >
-        {children}
-      </NavLink>
-    </li>
+    <OptionalPermission permission={permission}>
+      <li>
+        <NavLink
+          to={to}
+          {...rest}
+          className={({ isActive }) =>
+            isActive ? activeClasses : inactiveClasses
+          }
+        >
+          {children}
+        </NavLink>
+      </li>
+    </OptionalPermission>
   );
 };
 
@@ -147,6 +138,15 @@ const badgeStyles = {
   green: "bg-green-700",
   orange: "bg-orange-600",
 };
+
+// Omitting the prop marks public navigation. Empty or null permissions do not.
+function OptionalPermission({ permission, children }) {
+  return permission === undefined ? (
+    children
+  ) : (
+    <PermissionGate permission={permission}>{children}</PermissionGate>
+  );
+}
 
 Navigation.Title = Title;
 Navigation.Section = Section;

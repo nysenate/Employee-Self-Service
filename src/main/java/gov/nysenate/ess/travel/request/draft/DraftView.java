@@ -18,6 +18,7 @@ public class DraftView implements ViewObject {
     private TravelApplicationView travelApplication;
     private AmendmentView amendment;
     private String updatedDateTime;
+    private boolean usesPriorYearMealRates;
 
     public DraftView() {
     }
@@ -29,6 +30,7 @@ public class DraftView implements ViewObject {
         this.travelApplication = new TravelApplicationView(draft.getTravelApplication());
         this.amendment = new AmendmentView(draft.getTravelApplication());
         this.updatedDateTime = draft.getUpdatedDateTime() == null ? null : draft.getUpdatedDateTime().format(ISO_DATE_TIME);
+        this.usesPriorYearMealRates = draft.getTravelApplication().getMealPerDiems().usesPriorYearRates();
     }
 
     public Draft toDraft() {
@@ -83,6 +85,10 @@ public class DraftView implements ViewObject {
 
     public void setUpdatedDateTime(String updatedDateTime) {
         this.updatedDateTime = updatedDateTime;
+    }
+
+    public boolean isUsesPriorYearMealRates() {
+        return usesPriorYearMealRates;
     }
 
     @Override

@@ -6,7 +6,6 @@ import gov.nysenate.ess.travel.authorization.role.TravelRole;
 import gov.nysenate.ess.travel.authorization.role.TravelRoleFactory;
 import gov.nysenate.ess.travel.authorization.role.TravelRoles;
 import gov.nysenate.ess.travel.employee.TravelEmployee;
-import gov.nysenate.ess.travel.notifications.email.events.TravelAppEditedEmailEvent;
 import gov.nysenate.ess.travel.notifications.email.events.TravelPendingReviewEmailEvent;
 import gov.nysenate.ess.travel.provider.gsa.GsaAllowanceService;
 import gov.nysenate.ess.travel.provider.miles.MileageAllowanceService;
@@ -30,6 +29,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -171,36 +173,58 @@ public class TravelAppUpdateService {
 //    }
 
     /**
-     * Persists the edits in {@code amd} to the application.
-     *
-     * @param appId The id of the TravelApplication to modify.
-     * @param app   The edited travel application.
-     * @param user  The logged in user who is making these changes.
-     * @return
+     * Applies administrative corrections while preserving identity, status, and review history.
+     * The application lock keeps status changes made by reviewers from being overwritten.
      */
-    public TravelApplication editTravelApp(int appId, TravelApplication app, Employee user) {
-        saveAppEdits(app, user);
-        eventBus.post(new TravelAppEditedEmailEvent(app));
-        return app;
+    @Transactional(value = "localTxManager")
+    public TravelApplication editTravelApp(int appId, TravelApplication proposed, Employee user) {
+        travelApplicationService.lockApplication(appId);
+        TravelApplication original = travelApplicationService.getTravelApplication(appId);
+        copyEditableFields(proposed, original);
+        original.setModifiedBy(user);
+        original.setModifiedDateTime(LocalDateTime.now());
+        travelApplicationService.saveApplication(original);
+        // Administrative corrections preserve review state and do not send notifications.
+        return original;
     }
 
-    private TravelApplication saveAppEdits(TravelApplication app, Employee user) {
-        app.setModifiedBy(user);
-        app.setModifiedDateTime(LocalDateTime.now());
-        travelApplicationService.saveApplication(app);
-        return app;
-    }
-
+    @Transactional(value = "localTxManager")
     public TravelApplication resubmitApp(int appId, TravelApplication app, Employee user) {
-        saveAppEdits(app, user);
-        ApplicationReview applicationReview = appReviewService.getApplicationReviewByAppId(app.getAppId());
+        travelApplicationService.lockApplication(appId);
+        ApplicationReview applicationReview = appReviewService.getApplicationReviewByAppId(appId);
+        TravelApplication original = applicationReview.application();
+        if (original.getStatus() == null || !original.getStatus().isDisapproved()) {
+            throw new TravelResubmissionConflictException(appId);
+        }
+        copyEditableFields(app, original);
         applicationReview.restart();
-        app.setStatus(new TravelApplicationStatus(statusForPendingReviewer(applicationReview.pendingReviewerRole())));
-        travelApplicationService.saveApplication(app);
-        applicationReview.application().setStatus(app.getStatus());
+        original.setStatus(new TravelApplicationStatus(statusForPendingReviewer(applicationReview.pendingReviewerRole())));
+        original.setModifiedBy(user);
+        original.setModifiedDateTime(LocalDateTime.now());
+        travelApplicationService.saveApplication(original);
         appReviewService.saveApplicationReview(applicationReview);
-        eventBus.post(new TravelPendingReviewEmailEvent(applicationReview));
-        return app;
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                try {
+                    eventBus.post(new TravelPendingReviewEmailEvent(applicationReview));
+                } catch (RuntimeException ex) {
+                    logger.error("Could not dispatch pending-review notification after resubmitting application {}",
+                            appId, ex);
+                }
+            }
+        });
+        return original;
+    }
+
+    private void copyEditableFields(TravelApplication proposed, TravelApplication original) {
+        original.setPurposeOfTravel(proposed.getPurposeOfTravel());
+        original.setRoute(proposed.getRoute());
+        original.setAllowances(proposed.getAllowances());
+        original.setMealPerDiems(proposed.getMealPerDiems());
+        original.setLodgingPerDiems(proposed.getLodgingPerDiems());
+        original.setMileagePerDiems(proposed.getMileagePerDiems());
+        original.setAttachments(proposed.getAttachments());
     }
 
     /**

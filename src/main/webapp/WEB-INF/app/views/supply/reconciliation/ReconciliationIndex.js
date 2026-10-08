@@ -5,7 +5,7 @@ import {
   useReconciliation,
   useSubmitReconciliation,
 } from "app/views/supply/reconciliation/useReconciliation";
-import LoadingIndicator from "app/components/LoadingIndicator";
+import LoadingStatus from "app/components/LoadingStatus";
 import Button from "app/components/Button";
 import ErrorAlert from "app/components/ErrorAlert";
 import ReconciliationTabs from "app/views/supply/reconciliation/ReconciliationTabs";
@@ -64,7 +64,16 @@ export default function ReconciliationIndex() {
     <div>
       <Hero>Reconciliation</Hero>
       {isPending || submitReconciliationApi.isPending ? (
-        <LoadingIndicator />
+        <LoadingStatus
+          message={
+            submitReconciliationApi.isPending
+              ? "Reconciling inventory…"
+              : "Loading reconciliation…"
+          }
+          layout="centered"
+          size="lg"
+          className="min-h-48 p-6"
+        />
       ) : (
         <Card className="mt-5">
           <FormErrorMsg status={status} />

@@ -2,8 +2,8 @@ import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Hero from "app/components/Hero";
 import Button from "app/components/Button";
-import LoadingIndicator from "app/components/LoadingIndicator";
-import AssertPermission from "app/components/AssertPermission";
+import LoadingStatus from "app/components/LoadingStatus";
+import RequirePermission from "app/components/RequirePermission";
 import TimeOffRequestForm from "app/views/time/accrual/timeoff/TimeOffRequestForm";
 import { RequestLoadError } from "app/views/time/accrual/timeoff/TimeOffRequestIndex";
 import { useTimeOffRequest } from "app/views/time/accrual/timeoff/useTimeOffRequests";
@@ -20,7 +20,7 @@ export default function SingleTimeOffRequestIndex() {
   const request = useTimeOffRequest(requestId);
 
   return (
-    <AssertPermission permission="time:time-off-request-page">
+    <RequirePermission permission="time:time-off-request-page">
       <div>
         <Hero>Time Off Requests</Hero>
 
@@ -34,7 +34,12 @@ export default function SingleTimeOffRequestIndex() {
         </div>
 
         {request.isPending ? (
-          <LoadingIndicator />
+          <LoadingStatus
+            message="Loading time off request…"
+            layout="centered"
+            size="lg"
+            className="min-h-48 p-6"
+          />
         ) : request.isError ? (
           <RequestLoadError requestId={requestId} />
         ) : (
@@ -54,6 +59,6 @@ export default function SingleTimeOffRequestIndex() {
           </div>
         )}
       </div>
-    </AssertPermission>
+    </RequirePermission>
   );
 }

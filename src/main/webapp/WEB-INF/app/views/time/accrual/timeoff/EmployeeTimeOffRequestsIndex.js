@@ -3,8 +3,8 @@ import Hero from "app/components/Hero";
 import Card from "app/components/Card";
 import Button from "app/components/Button";
 import Notification from "app/components/Notification";
-import LoadingIndicator from "app/components/LoadingIndicator";
-import AssertPermission from "app/components/AssertPermission";
+import LoadingStatus from "app/components/LoadingStatus";
+import RequirePermission from "app/components/RequirePermission";
 import useRequireAuthedUser from "app/hooks/useRequireAuthedUser";
 import { useSupEmpGroup } from "app/views/time/personnel/useSupEmpGroup";
 import TimeOffRequestApprovalTable from "app/views/time/accrual/timeoff/TimeOffRequestApprovalTable";
@@ -76,7 +76,7 @@ export default function EmployeeTimeOffRequestsIndex() {
   };
 
   return (
-    <AssertPermission permission="time:management-pages">
+    <RequirePermission permission="time:management-pages">
       <div>
         <Hero>Employee Time Off Requests</Hero>
 
@@ -89,7 +89,12 @@ export default function EmployeeTimeOffRequestsIndex() {
         )}
 
         {isLoading ? (
-          <LoadingIndicator />
+          <LoadingStatus
+            message="Loading time off requests…"
+            layout="centered"
+            size="lg"
+            className="min-h-48 p-6"
+          />
         ) : (
           <div>
             <RequestSection
@@ -119,7 +124,7 @@ export default function EmployeeTimeOffRequestsIndex() {
           onClose={() => setReviewing(null)}
         />
       </div>
-    </AssertPermission>
+    </RequirePermission>
   );
 }
 

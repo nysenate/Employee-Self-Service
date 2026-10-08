@@ -7,27 +7,36 @@ import LoginIndex from "app/views/login/LoginIndex";
 import Logout from "app/views/logout/Logout";
 import EssIndex from "app/views/EssIndex";
 import NotFound from "app/views/NotFound";
-import LoadingIndicator from "app/components/LoadingIndicator";
+import LoadingStatus from "app/components/LoadingStatus";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { ErrorBoundary } from "react-error-boundary";
 import ErrorPage from "app/views/ErrorPage";
 import { useConfig } from "app/hooks/useConfig";
 
+// Keep the playground and its imports out of production bundles entirely.
+const FeedbackPlaygroundRoute =
+  process.env.NODE_ENV !== "production"
+    ? lazy(() => import("app/views/dev/FeedbackPlaygroundRoute"))
+    : null;
+
 // Each module is a separate chunk so that, for example, a user on Time does not
 // download Supply, Travel and MyInfo up front. ApplicationLoader provides the
 // Suspense boundary these resolve into.
-const MyInfoRouter = lazy(() =>
-  import(/* webpackChunkName: "myinfo" */ "app/views/myinfo/MyInfoRouter"),
+const MyInfoRouter = lazy(
+  () =>
+    import(/* webpackChunkName: "myinfo" */ "app/views/myinfo/MyInfoRouter"),
 );
-const TimeRouter = lazy(() =>
-  import(/* webpackChunkName: "time" */ "app/views/time/TimeRouter"),
+const TimeRouter = lazy(
+  () => import(/* webpackChunkName: "time" */ "app/views/time/TimeRouter"),
 );
-const SupplyRouter = lazy(() =>
-  import(/* webpackChunkName: "supply" */ "app/views/supply/SupplyRouter"),
+const SupplyRouter = lazy(
+  () =>
+    import(/* webpackChunkName: "supply" */ "app/views/supply/SupplyRouter"),
 );
-const TravelRouter = lazy(() =>
-  import(/* webpackChunkName: "travel" */ "app/views/travel/TravelRouter"),
+const TravelRouter = lazy(
+  () =>
+    import(/* webpackChunkName: "travel" */ "app/views/travel/TravelRouter"),
 );
 
 function App() {
@@ -37,6 +46,16 @@ function App() {
         <Routes>
           <Route path="/" element={<EssIndex />} />
           <Route path="/" element={<EssLayout />}>
+            {process.env.NODE_ENV !== "production" && (
+              <Route
+                path="/travel/dev/feedback"
+                element={
+                  <ApplicationLoader>
+                    <FeedbackPlaygroundRoute />
+                  </ApplicationLoader>
+                }
+              />
+            )}
             <Route
               path="/myinfo/*"
               element={
@@ -82,14 +101,34 @@ function App() {
 }
 
 function ApplicationLoader({ children }) {
-  return <Suspense fallback={<LoadingIndicator />}>{children}</Suspense>;
+  return (
+    <Suspense
+      fallback={
+        <LoadingStatus
+          message="Loading application…"
+          layout="centered"
+          size="lg"
+          className="min-h-48 p-6"
+        />
+      }
+    >
+      {children}
+    </Suspense>
+  );
 }
 
 function ErrorPagePreview() {
   const { data: config, isPending } = useConfig();
 
   if (isPending) {
-    return <LoadingIndicator />;
+    return (
+      <LoadingStatus
+        message="Loading application…"
+        layout="centered"
+        size="lg"
+        className="min-h-48 p-6"
+      />
+    );
   }
 
   if (config?.runtimeLevel !== "dev") {

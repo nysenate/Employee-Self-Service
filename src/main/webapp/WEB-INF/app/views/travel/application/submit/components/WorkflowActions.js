@@ -1,51 +1,71 @@
 import React from "react";
 import Button from "app/components/Button";
-
-export const WORKFLOW_ACTIONS = Object.freeze([
-  { back: false, save: true, primary: "Next" },
-  { back: true, save: false, primary: "Next" },
-  { back: true, save: true, primary: "Next" },
-  { back: true, save: true, primary: "Next" },
-  { back: true, save: true, primary: "Submit Application" },
-]);
+import { STANDARD_STEPS } from "../../workflow/workflowSteps";
 
 export default function WorkflowActions({
-  step,
+  stepId,
+  steps = STANDARD_STEPS,
   onBack,
   onSave,
+  onCancel,
   onPrimary,
   isSaving = false,
   isPrimaryPending = false,
+  isPrimaryDisabled = false,
+  isCancelDisabled = false,
+  isDisabled = false,
+  finalActionLabel = "Submit application",
 }) {
-  const actions = WORKFLOW_ACTIONS[step];
+  const stepIndex = steps.findIndex((step) => step.id === stepId);
+  if (stepIndex < 0) throw new Error(`Unknown workflow step: ${stepId}`);
+  const step = steps[stepIndex];
+  const isReview = stepId === "review";
+  const primaryLabel = isReview ? finalActionLabel : "Next";
 
   return (
     <div className="flex flex-wrap items-center justify-end gap-3">
-      {actions.back && (
+      {onCancel && (
         <Button
           variant="secondary"
+          className="px-5"
+          onPress={onCancel}
+          isDisabled={
+            isDisabled || isCancelDisabled || isSaving || isPrimaryPending
+          }
+        >
+          Cancel edits
+        </Button>
+      )}
+      {stepIndex > 0 && (
+        <Button
+          variant="quiet"
+          className="border border-transparent px-5"
           onPress={onBack}
-          isDisabled={isPrimaryPending}
+          isDisabled={isDisabled || isPrimaryPending || isSaving}
         >
           Back
         </Button>
       )}
-      {actions.save && (
+      {step.allowsDraftSave && onSave && (
         <Button
           variant="secondary"
+          className="px-5"
           onPress={onSave}
-          isDisabled={!onSave || isPrimaryPending}
+          isDisabled={isDisabled || isPrimaryPending}
           isPending={isSaving}
         >
           Save
         </Button>
       )}
       <Button
+        className="px-5"
         onPress={onPrimary}
-        isDisabled={isPrimaryPending}
+        isDisabled={
+          isDisabled || isPrimaryDisabled || isPrimaryPending || isSaving
+        }
         isPending={isPrimaryPending}
       >
-        {actions.primary}
+        {primaryLabel}
       </Button>
     </div>
   );

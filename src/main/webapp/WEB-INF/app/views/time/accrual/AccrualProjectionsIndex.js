@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Hero from "app/components/Hero";
 import Notification from "app/components/Notification";
-import LoadingIndicator from "app/components/LoadingIndicator";
+import LoadingStatus from "app/components/LoadingStatus";
 import useRequireAuthedUser from "app/hooks/useRequireAuthedUser";
 import { useEmployee } from "app/views/useEmployee";
 import { useAccrualHistory } from "app/views/time/useAccrual";
@@ -68,7 +68,12 @@ export function AccrualProjectionsSection({ empId }) {
       {employee.data?.payType === "TE" && <TemporaryEmployeeNotice />}
 
       {isLoading ? (
-        <LoadingIndicator />
+        <LoadingStatus
+          message="Loading accrual projections…"
+          layout="centered"
+          size="lg"
+          className="min-h-48 p-6"
+        />
       ) : (
         <AccrualProjections key={empId} accruals={accruals.data || []} />
       )}

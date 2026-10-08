@@ -40,6 +40,8 @@ function EmailInput({ id, register, errors, readOnly = false }) {
     <input
       id={id}
       name={id}
+      aria-invalid={Boolean(errors[id])}
+      aria-describedby={errors[id] ? `${id}-error` : undefined}
       className={`${!readOnly && "input"} mx-3 ${errors[id] ? "input--invalid" : ""}`}
       type="email"
       {...register(id, {

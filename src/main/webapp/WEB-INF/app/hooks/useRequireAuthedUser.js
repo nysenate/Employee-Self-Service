@@ -13,7 +13,7 @@ const AUTHED_USER_STALE_TIME_MS = 30 * 1000;
  * - isPending: true while the /employees/me request is loading
  * - isError/error: set when there is no authenticated user or when there is an error.
  *
- * Redirects to /login when the user is confirmed unauthenticated.
+ * Clears cached user data and redirects to /logout on confirmed HTTP 401.
  */
 export default function useRequireAuthedUser() {
   const queryClient = useQueryClient();
@@ -40,14 +40,23 @@ export function useAuthedUserNoRedirect() {
       return fetchApiJson("/employees/me").then((body) => body.result);
     },
     staleTime: AUTHED_USER_STALE_TIME_MS,
+    // EssLayout handles verification failures without unmounting cached forms
+    // for transient errors. A global query default must not bypass that gate.
+    throwOnError: false,
     retry: (failureCount, error) => {
-      if (
-        error?.response?.status === 401 ||
-        error?.data?.status?.authorized === false
-      ) {
-        return false;
-      }
-      return failureCount < 2;
+      return isTransientAuthError(error) && failureCount < 2;
     },
   });
+}
+
+/** A failed request is not evidence of session expiry unless the server says so. */
+export function isTransientAuthError(error) {
+  if (!error || error.data?.status?.authorized === false) return false;
+  const status = error.response?.status;
+  return (
+    status == null ||
+    status === 408 ||
+    status === 429 ||
+    (status >= 500 && status < 600)
+  );
 }

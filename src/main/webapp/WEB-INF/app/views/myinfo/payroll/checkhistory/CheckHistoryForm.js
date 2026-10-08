@@ -1,7 +1,8 @@
+import ErrorAlert from "app/components/ErrorAlert";
 import React, { useState } from "react";
 import Hero from "app/components/Hero";
 import Controls from "app/components/Controls";
-import LoadingIndicator from "app/components/LoadingIndicator";
+import LoadingStatus from "app/components/LoadingStatus";
 import Card from "app/components/Card";
 import Paycheck from "app/views/myinfo/payroll/checkhistory/Paycheck";
 import { useEmployeePaychecks } from "app/views/myinfo/payroll/checkhistory/useEmployeePaychecks";
@@ -82,23 +83,74 @@ function CheckResults({ empId, year, useFiscalYears }) {
   const paycheckSummary = useEmployeePaychecks(empId, year, useFiscalYears);
 
   if (paycheckSummary.isPending) {
-    return <LoadingIndicator />;
+    return (
+      <LoadingStatus
+        message="Loading paychecks…"
+        layout="centered"
+        size="lg"
+        className="min-h-48 p-6"
+      />
+    );
+  }
+
+  if (!paycheckSummary.data) {
+    return (
+      <ErrorAlert title="Unable to load paychecks">
+        Please try again.
+      </ErrorAlert>
+    );
   }
 
   return (
     <>
-      {paycheckSummary.data.paychecks.length === 0 ? (
-        <NoPaychecksFound year={year} />
-      ) : (
-        <Card className="mt-3">
-          <Card.Header>
-            <span className="text-lg font-semibold">
-              {paycheckHeader(year, useFiscalYears)}
-            </span>
-          </Card.Header>
-          <Paycheck summary={paycheckSummary.data} />
-        </Card>
+      {paycheckSummary.isError && (
+        <ErrorAlert title="Unable to refresh paychecks">
+          Please try again.
+        </ErrorAlert>
       )}
+      <Card className="mt-3">
+        <Card.Header>
+          <div aria-live="polite" className="flex min-h-7 items-center gap-3">
+            {paycheckSummary.isPlaceholderData ? (
+              <LoadingStatus
+                message="Updating paychecks…"
+                announce={false}
+                className="gap-1.5 font-semibold"
+              />
+            ) : (
+              <>
+                <span className="text-lg font-semibold">
+                  {paycheckSummary.data.paychecks.length === 0
+                    ? `No paychecks found for ${paycheckSummary.data.year}`
+                    : paycheckHeader(
+                        paycheckSummary.data.year,
+                        paycheckSummary.data.useFiscalYear,
+                      )}
+                </span>
+                {paycheckSummary.isFetching && (
+                  <LoadingStatus
+                    message="Refreshing paychecks…"
+                    announce={false}
+                    className="gap-1.5 text-sm text-gray-500"
+                  />
+                )}
+              </>
+            )}
+          </div>
+        </Card.Header>
+        <div
+          aria-busy={paycheckSummary.isFetching}
+          className={
+            paycheckSummary.isPlaceholderData
+              ? "opacity-60 transition-opacity"
+              : "transition-opacity"
+          }
+        >
+          {paycheckSummary.data.paychecks.length > 0 && (
+            <Paycheck summary={paycheckSummary.data} />
+          )}
+        </div>
+      </Card>
     </>
   );
 }

@@ -5,8 +5,8 @@ import Hero from "app/components/Hero";
 import Card from "app/components/Card";
 import Button from "app/components/Button";
 import Notification from "app/components/Notification";
-import LoadingIndicator from "app/components/LoadingIndicator";
-import AssertPermission from "app/components/AssertPermission";
+import LoadingStatus from "app/components/LoadingStatus";
+import RequirePermission from "app/components/RequirePermission";
 import useRequireAuthedUser from "app/hooks/useRequireAuthedUser";
 import { useEmployeeTimeOffRequests } from "app/views/time/accrual/timeoff/useTimeOffRequests";
 import TimeOffRequestList from "app/views/time/accrual/timeoff/TimeOffRequestList";
@@ -25,12 +25,12 @@ export default function TimeOffRequestIndex() {
   const { data: user } = useRequireAuthedUser();
 
   return (
-    <AssertPermission permission="time:time-off-request-page">
+    <RequirePermission permission="time:time-off-request-page">
       <div>
         <Hero>Time Off Requests</Hero>
         {user && <TimeOffRequests empId={user.employeeId} />}
       </div>
-    </AssertPermission>
+    </RequirePermission>
   );
 }
 
@@ -60,7 +60,14 @@ function TimeOffRequests({ empId }) {
   );
 
   if (active.isPending || history.isPending) {
-    return <LoadingIndicator />;
+    return (
+      <LoadingStatus
+        message="Loading time off requests…"
+        layout="centered"
+        size="lg"
+        className="min-h-48 p-6"
+      />
+    );
   }
 
   return (

@@ -1,5 +1,5 @@
 import React from "react";
-import LoadingIndicator from "app/components/LoadingIndicator";
+import LoadingStatus from "app/components/LoadingStatus";
 import { getAvailableHours } from "app/views/time/allowanceUtils";
 import {
   HourSquare,
@@ -19,10 +19,11 @@ import {
 export default function AllowanceBar({ allowance, tempWorkHours, isLoading }) {
   if (isLoading) {
     return (
-      <div className="py-2">
-        <h3 className="text-center">Loading Allowance...</h3>
-        <LoadingIndicator variant="sm" />
-      </div>
+      <LoadingStatus
+        message="Loading allowance…"
+        layout="centered"
+        className="py-2"
+      />
     );
   }
 

@@ -73,7 +73,11 @@ public class EssAuthenticationFilter extends AuthenticationFilter {
                     : handleLoginPageRequest(request, response);
         }
         /* User should be redirected to the login page since they do not have access. */
-        saveRequestAndRedirectToLogin(request, response);
+        if (LoginRedirectRequest.isPageNavigation(request)) {
+            saveRequestAndRedirectToLogin(request, response);
+        } else {
+            redirectToLogin(request, response);
+        }
         return false;
     }
 

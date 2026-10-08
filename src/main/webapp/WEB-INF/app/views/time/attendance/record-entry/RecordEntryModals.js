@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import Modal from "app/components/Modal";
 import Button from "app/components/Button";
-import LoadingIndicator from "app/components/LoadingIndicator";
+import LoadingStatus from "app/components/LoadingStatus";
 import { formatRecordDate } from "app/views/time/attendance/history/RecordTable";
 
 /**
@@ -179,7 +179,11 @@ export function SavingModal({ isOpen, submit }) {
       </Modal.Title>
       <Modal.Body>
         <div className="px-20 py-4">
-          <LoadingIndicator />
+          <LoadingStatus
+            message="Saving…"
+            layout="centered"
+            className="min-h-28"
+          />
         </div>
       </Modal.Body>
     </Modal>

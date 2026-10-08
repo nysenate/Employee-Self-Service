@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import LoginTitle from "app/views/login/LoginTitle";
-import LoginLoadingCircle from "app/views/login/LoginLoadingCircle";
+import LoadingStatus from "app/components/LoadingStatus";
 import {
   LOGIN_BUTTON_CLASSES,
   LOGIN_STATES,
@@ -65,10 +65,7 @@ export default function LoginForm({ setState }) {
             </LoginTextLink>
           </p>
           {isLoading ? (
-            <span className="text-teal-600">
-              <LoginLoadingCircle textColor="text-teal-600" />
-              Logging in...
-            </span>
+            <LoadingStatus message="Logging in…" className="text-teal-600" />
           ) : (
             <button type="submit" className={`${LOGIN_BUTTON_CLASSES} grow`}>
               Login

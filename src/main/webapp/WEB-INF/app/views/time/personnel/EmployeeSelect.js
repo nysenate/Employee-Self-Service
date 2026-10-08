@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import Controls from "app/components/Controls";
 import Notification from "app/components/Notification";
-import LoadingIndicator from "app/components/LoadingIndicator";
+import LoadingStatus from "app/components/LoadingStatus";
 import useRequireAuthedUser from "app/hooks/useRequireAuthedUser";
 import {
   isCurrentlySupervised,
@@ -74,7 +74,14 @@ export default function EmployeeSelect({
   }, [selectedEmp]);
 
   if (supEmpGroup.isPending) {
-    return <LoadingIndicator />;
+    return (
+      <LoadingStatus
+        message="Loading employees…"
+        layout="centered"
+        size="lg"
+        className="min-h-48 p-6"
+      />
+    );
   }
 
   return (

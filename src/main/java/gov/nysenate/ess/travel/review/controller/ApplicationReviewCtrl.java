@@ -11,6 +11,7 @@ import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.travel.authorization.permission.TravelPermissionBuilder;
+import gov.nysenate.ess.travel.authorization.permission.SimpleTravelPermission;
 import gov.nysenate.ess.travel.authorization.permission.TravelPermissionObject;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
 import gov.nysenate.ess.travel.authorization.role.TravelRoleView;
@@ -114,6 +115,7 @@ public class ApplicationReviewCtrl extends BaseRestApiCtrl {
     public BaseResponse reviewHistory(@RequestParam(required = false) String from,
                                       @RequestParam(required = false) String to,
                                       WebRequest request) {
+        checkPermission(SimpleTravelPermission.TRAVEL_UI_REVIEW_HISTORY.getPermission());
         LocalDate fromDate = from == null ? null : parseISODate(from, "from");
         LocalDate toDate = to == null ? null : parseISODate(to, "to");
         LimitOffset limitOffset = getLimitOffset(request, 12);

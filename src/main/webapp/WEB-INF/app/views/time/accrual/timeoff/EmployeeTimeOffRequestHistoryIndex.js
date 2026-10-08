@@ -2,8 +2,8 @@ import React, { useMemo, useState } from "react";
 import { format } from "date-fns";
 import Controls from "app/components/Controls";
 import Notification from "app/components/Notification";
-import LoadingIndicator from "app/components/LoadingIndicator";
-import AssertPermission from "app/components/AssertPermission";
+import LoadingStatus from "app/components/LoadingStatus";
+import RequirePermission from "app/components/RequirePermission";
 import EmployeeSelectPage from "app/views/time/personnel/EmployeeSelectPage";
 import TimeOffRequestList from "app/views/time/accrual/timeoff/TimeOffRequestList";
 import { useActiveTimeRecordYears } from "app/views/time/attendance/useTimeRecords";
@@ -21,14 +21,14 @@ import {
  */
 export default function EmployeeTimeOffRequestHistoryIndex() {
   return (
-    <AssertPermission permission="time:management-pages">
+    <RequirePermission permission="time:management-pages">
       <EmployeeSelectPage
         heading="Employee Time Off Request History"
         subject="Time Off Requests"
       >
         {(empId) => <TimeOffRequestHistorySection empId={empId} />}
       </EmployeeSelectPage>
-    </AssertPermission>
+    </RequirePermission>
   );
 }
 
@@ -42,7 +42,14 @@ export function TimeOffRequestHistorySection({ empId }) {
   const recordYears = useActiveTimeRecordYears(empId);
 
   if (recordYears.isPending) {
-    return <LoadingIndicator />;
+    return (
+      <LoadingStatus
+        message="Loading time off history…"
+        layout="centered"
+        size="lg"
+        className="min-h-48 p-6"
+      />
+    );
   }
 
   if (recordYears.data.length === 0) {
@@ -109,7 +116,11 @@ function RequestHistory({ empId, recordYears }) {
       </Controls>
 
       {requests.isPending ? (
-        <LoadingIndicator variant="sm" />
+        <LoadingStatus
+          message="Loading time off requests…"
+          layout="centered"
+          className="min-h-28"
+        />
       ) : (
         <div className="bg-white">
           <TimeOffRequestList

@@ -5,7 +5,7 @@ import Hero from "app/components/Hero";
 import Button from "app/components/Button";
 import Notification from "app/components/Notification";
 import ErrorAlert from "app/components/ErrorAlert";
-import LoadingIndicator from "app/components/LoadingIndicator";
+import LoadingStatus from "app/components/LoadingStatus";
 import useRequireAuthedUser from "app/hooks/useRequireAuthedUser";
 import {
   reloadTimeRecordData,
@@ -49,7 +49,12 @@ export default function RecordEntryIndex() {
     return (
       <div>
         <Hero>Attendance Record Entry</Hero>
-        <LoadingIndicator />
+        <LoadingStatus
+          message="Loading attendance records…"
+          layout="centered"
+          size="lg"
+          className="min-h-48 p-6"
+        />
       </div>
     );
   }

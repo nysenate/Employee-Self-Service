@@ -1,5 +1,6 @@
+import { useLocation } from "react-router-dom";
 import React from "react";
-import LoadingIndicator from "app/components/LoadingIndicator";
+import LoadingStatus from "app/components/LoadingStatus";
 import TravelAppSummaryTable from "app/views/travel/shared/components/TravelAppSummaryTable";
 import TravelEmptyResults from "app/views/travel/shared/components/TravelEmptyResults";
 import TravelResultsCard from "app/views/travel/shared/components/TravelResultsCard";
@@ -20,7 +21,10 @@ export default function ReviewHistoryResults({
   onResetFilters,
   onPageChange,
 }) {
-  const [selectedReview, setSelectedReview] = React.useState(null);
+  const location = useLocation();
+  const [selectedReview, setSelectedReview] = React.useState(
+    location.state?.reviewSummary ?? null,
+  );
   const appReviews = data?.result ?? [];
   const total = data?.total ?? 0;
 
@@ -41,40 +45,37 @@ export default function ReviewHistoryResults({
     }
   };
 
-  if (
-    isLoading ||
-    (status === TRAVEL_RESULTS_STATUS.transitioning && !appReviews.length)
-  ) {
-    return (
-      <div className="mt-6">
-        <LoadingIndicator />
-      </div>
-    );
-  }
-
-  if (appReviews.length === 0) {
-    return (
-      <TravelEmptyResults
-        itemLabel="travel reviews"
-        onResetFilters={onResetFilters}
-      />
-    );
-  }
-
   return (
     <>
-      <TravelResultsCard
-        count={appReviews.length}
-        status={status}
-        limit={limit}
-        offset={offset}
-        total={total}
-        itemLabel={REVIEW_ITEM_LABEL}
-        onResetFilters={onResetFilters}
-        onPageChange={onPageChange}
-      >
-        <TravelAppSummaryTable apps={apps} onSelectApp={selectApp} />
-      </TravelResultsCard>
+      {isLoading ||
+      (status === TRAVEL_RESULTS_STATUS.transitioning && !appReviews.length) ? (
+        <div className="mt-6">
+          <LoadingStatus
+            message="Loading review history…"
+            layout="centered"
+            size="lg"
+            className="min-h-48 p-6"
+          />
+        </div>
+      ) : appReviews.length === 0 ? (
+        <TravelEmptyResults
+          itemLabel="travel reviews"
+          onResetFilters={onResetFilters}
+        />
+      ) : (
+        <TravelResultsCard
+          count={appReviews.length}
+          status={status}
+          limit={limit}
+          offset={offset}
+          total={total}
+          itemLabel={REVIEW_ITEM_LABEL}
+          onResetFilters={onResetFilters}
+          onPageChange={onPageChange}
+        >
+          <TravelAppSummaryTable apps={apps} onSelectApp={selectApp} />
+        </TravelResultsCard>
+      )}
 
       {selectedReview && (
         <TravelAppReviewModal

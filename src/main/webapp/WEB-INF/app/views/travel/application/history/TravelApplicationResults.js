@@ -1,8 +1,5 @@
 import React from "react";
-import LoadingIndicator from "app/components/LoadingIndicator";
-import Modal from "app/components/Modal";
-import TravelAppForm from "app/views/travel/shared/components/TravelAppForm";
-import { useTravelApp } from "app/views/travel/shared/hooks/useTravelApp";
+import LoadingStatus from "app/components/LoadingStatus";
 import TravelAppSummaryTable from "app/views/travel/shared/components/TravelAppSummaryTable";
 import TravelEmptyResults from "app/views/travel/shared/components/TravelEmptyResults";
 import TravelResultsCard from "app/views/travel/shared/components/TravelResultsCard";
@@ -22,19 +19,9 @@ export default function TravelApplicationResults({
   total,
   onResetFilters,
   onPageChange,
+  onSelectApp,
 }) {
-  const [selectedApp, setSelectedApp] = React.useState(null);
   const rows = Array.isArray(apps) ? apps : [];
-
-  const selectApp = (app) => {
-    setSelectedApp(app);
-  };
-
-  const handleDialogChange = (open) => {
-    if (!open) {
-      setSelectedApp(null);
-    }
-  };
 
   if (
     isLoading ||
@@ -42,7 +29,12 @@ export default function TravelApplicationResults({
   ) {
     return (
       <div className="mt-6">
-        <LoadingIndicator />
+        <LoadingStatus
+          message="Loading travel applications…"
+          layout="centered"
+          size="lg"
+          className="min-h-48 p-6"
+        />
       </div>
     );
   }
@@ -57,41 +49,20 @@ export default function TravelApplicationResults({
   }
 
   return (
-    <>
-      <TravelResultsCard
-        count={rows.length}
-        status={status}
-        limit={limit}
-        offset={offset}
-        total={total}
-        itemLabel={APPLICATION_ITEM_LABEL}
-        onResetFilters={onResetFilters}
-        onPageChange={onPageChange}
-      >
-        <TravelAppSummaryTable apps={rows} onSelectApp={selectApp} />
-      </TravelResultsCard>
-
-      <TravelAppFormModal app={selectedApp} onOpenChange={handleDialogChange} />
-    </>
-  );
-}
-
-function TravelAppFormModal({ app, onOpenChange }) {
-  const { data, isPending } = useTravelApp(app?.id);
-
-  return (
-    <Modal
-      isOpen={Boolean(app)}
-      onOpenChange={onOpenChange}
-      ariaLabel="Travel application details"
+    <TravelResultsCard
+      count={rows.length}
+      status={status}
+      limit={limit}
+      offset={offset}
+      total={total}
+      itemLabel={APPLICATION_ITEM_LABEL}
+      onResetFilters={onResetFilters}
+      onPageChange={onPageChange}
     >
-      <Modal.Body>
-        {isPending ? (
-          <LoadingIndicator />
-        ) : (
-          <TravelAppForm app={data.result} showStatus className="p-5" />
-        )}
-      </Modal.Body>
-    </Modal>
+      <TravelAppSummaryTable
+        apps={rows}
+        onSelectApp={(app) => onSelectApp(app.id)}
+      />
+    </TravelResultsCard>
   );
 }

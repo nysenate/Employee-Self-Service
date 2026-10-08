@@ -42,6 +42,9 @@ public class EmployeeEmail {
     private final List<TaskAssignmentDetails> dataList;
     private final String html;
 
+    /**
+     * For invitations and reminders, extraData contains the complete To-Do list URL.
+     */
     public EmployeeEmail(Employee to, PecEmailType type,
                          List<TaskAssignmentDetails> dataList, List<String> extraData) {
         if (dataList.size() == 1 && type == PecEmailType.REMINDER) {
@@ -114,9 +117,9 @@ public class EmployeeEmail {
             case ADMIN_CODES -> "Dear " + employee.getFullName() + ", the new codes are <br>" +
                     "CODE 1: " + extraData.get(0) + "<br>" + "CODE 2: " + extraData.get(1);
             case INVITE, SINGLE_REMINDER -> singleTaskHtml.formatted(employee.getFullName(),
-                    extraData.get(0) + "/myinfo/personnel/todo") + getTaskMapHtml(dataList);
+                    extraData.get(0)) + getTaskMapHtml(dataList);
             case REMINDER -> multiTaskHtml.formatted(employee.getFullName(),
-                    extraData.get(0) + "/myinfo/personnel/todo") + getTaskMapHtml(dataList);
+                    extraData.get(0)) + getTaskMapHtml(dataList);
             case COMPLETION -> completionHtml.formatted(first().getTitle());
         };
     }

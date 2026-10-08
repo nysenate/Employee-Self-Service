@@ -16,6 +16,7 @@ export default function DateRangeFilter({
   value,
   onChange,
   presets = DATE_RANGE_PRESETS,
+  label = "Date Range",
   className,
 }) {
   const id = useId();
@@ -63,9 +64,9 @@ export default function DateRangeFilter({
   };
 
   return (
-    <div className={cn("grid w-44 flex-none gap-1", className)}>
+    <div className={cn("grid w-48 flex-none gap-1", className)}>
       <label id={labelId} className="text-sm font-semibold">
-        Date Range
+        {label}
       </label>
       <EssPopover
         isOpen={isOpen}
@@ -83,7 +84,10 @@ export default function DateRangeFilter({
           />
         }
       >
-        <Dialog aria-label="Choose a date range" className="outline-none">
+        <Dialog
+          aria-label={`Choose ${label.toLowerCase()}`}
+          className="outline-none"
+        >
           <div className="flex gap-3">
             <DateInput
               id={fromDateId}

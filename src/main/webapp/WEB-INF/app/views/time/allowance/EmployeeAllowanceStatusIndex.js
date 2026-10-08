@@ -1,5 +1,5 @@
 import React from "react";
-import AssertPermission from "app/components/AssertPermission";
+import RequirePermission from "app/components/RequirePermission";
 import EmployeeSelectPage from "app/views/time/personnel/EmployeeSelectPage";
 import { AllowanceStatusSection } from "app/views/time/allowance/AllowanceStatusIndex";
 
@@ -9,7 +9,7 @@ import { AllowanceStatusSection } from "app/views/time/allowance/AllowanceStatus
  */
 export default function EmployeeAllowanceStatusIndex() {
   return (
-    <AssertPermission permission="time:emp-allowance-page">
+    <RequirePermission permission="time:emp-allowance-page">
       <EmployeeSelectPage
         heading="Employee Allowed Hours"
         subject="Current Allowed Hours"
@@ -18,6 +18,6 @@ export default function EmployeeAllowanceStatusIndex() {
       >
         {(empId) => <AllowanceStatusSection empId={empId} />}
       </EmployeeSelectPage>
-    </AssertPermission>
+    </RequirePermission>
   );
 }
