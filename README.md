@@ -118,7 +118,7 @@ legacy AngularJS app in `assets/js/src` with its JSPs in `WEB-INF/view`.
 ```shell
 cd src/main/webapp
 
-npm run dev      # webpack dev server on :3000, proxying /api and /assets to :8080
+npm run dev      # webpack dev server on :3000, proxying /api and /assets to :8080 (set ESS_IP to use another address)
 npm run build    # production React bundle into assets/dist
 npm test         # vitest
 npm run lint     # eslint over WEB-INF/app

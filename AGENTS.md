@@ -49,7 +49,7 @@ mvn verify -Dit.test=YourTestClassIT
 cd src/main/webapp
 npm ci                # also triggers the full frontend build via postinstall
 npm run build         # React bundle only (webpack, production mode)
-npm run dev           # webpack dev server on :3000, proxying /api to :8080
+npm run dev           # webpack dev server on :3000, proxying /api to :8080 (set ESS_IP to use another address)
 npm test              # vitest
 npm run lint          # eslint over WEB-INF/app
 grunt compile         # legacy AngularJS/LESS assets only
@@ -138,7 +138,7 @@ Each page controller (`TimePageCtrl`, `SupplyPageCtrl`, `TravelPageCtrl`, `MyInf
 - React 18, react-router-dom 6, TanStack Query 5, react-hook-form + zod, Tailwind CSS 4 (via PostCSS), Headless UI, `@stomp/stompjs`
 - Built by webpack to `assets/dist/`; `app` is an alias for `WEB-INF/app`
 - Tested with vitest + Testing Library (`WEB-INF/app/test`)
-- `npm run dev` serves on :3000 and proxies `/api`, `/assets`, `/logout`, and POST `/login` to `localhost:8080`
+- `npm run dev` serves on :3000 and proxies `/api`, `/assets`, `/logout`, and POST `/login` to `localhost:8080`; set `ESS_IP` to serve on and proxy to another loopback address instead
 
 **Legacy AngularJS** (`src/main/webapp/assets/js/src/`, with the JSPs under `WEB-INF/`):
 - Built by Grunt (LESS → `assets/css/dest`, uglify → `assets/js/dest`), Bower for vendor deps
