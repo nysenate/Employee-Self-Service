@@ -37,6 +37,7 @@ public enum SqlEmpTransactionQuery implements BasicSqlQuery
         String.format(GET_TRANS_HISTORY_TEMPLATE.sql,
                 """
                 WHERE PTX.DTTXNPOST BETWEEN :startDate AND :endDate
+                  AND PTX.CDSTATUS = 'A' AND AUD.CDSTATUS = 'A'
                   AND PTX.CDTRANS IN (:transCodes)
                 """)
     ),
