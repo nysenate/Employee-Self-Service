@@ -28,6 +28,12 @@ import {
 } from "app/views/time/accrual/timeoff/useTimeOffRequestBadges";
 import NotFound from "app/views/NotFound";
 
+/**
+ * Time off requests are built but switched off for now. Set this to true to restore the
+ * routes and navigation links; with it false the URLs fall through to NotFound.
+ */
+const TIME_OFF_REQUESTS_ENABLED = false;
+
 export default function TimeRouter() {
   return (
     <ThemeContext.Provider value={themes.time}>
@@ -44,27 +50,31 @@ export default function TimeRouter() {
           />
           <Route path="accrual/donation" element={<SickLeaveDonationIndex />} />
 
-          {/* The "new" path has to be matched before the request id it would otherwise look like. */}
-          <Route
-            path="accrual/time-off-request"
-            element={<TimeOffRequestIndex />}
-          />
-          <Route
-            path="accrual/time-off-request/new"
-            element={<NewTimeOffRequestIndex />}
-          />
-          <Route
-            path="accrual/time-off-request/:requestId"
-            element={<SingleTimeOffRequestIndex />}
-          />
-          <Route
-            path="accrual/emp-time-off-requests"
-            element={<EmployeeTimeOffRequestsIndex />}
-          />
-          <Route
-            path="accrual/emp-time-off-request-history"
-            element={<EmployeeTimeOffRequestHistoryIndex />}
-          />
+          {TIME_OFF_REQUESTS_ENABLED && (
+            <>
+              {/* The "new" path has to be matched before the request id it would otherwise look like. */}
+              <Route
+                path="accrual/time-off-request"
+                element={<TimeOffRequestIndex />}
+              />
+              <Route
+                path="accrual/time-off-request/new"
+                element={<NewTimeOffRequestIndex />}
+              />
+              <Route
+                path="accrual/time-off-request/:requestId"
+                element={<SingleTimeOffRequestIndex />}
+              />
+              <Route
+                path="accrual/emp-time-off-requests"
+                element={<EmployeeTimeOffRequestsIndex />}
+              />
+              <Route
+                path="accrual/emp-time-off-request-history"
+                element={<EmployeeTimeOffRequestHistoryIndex />}
+              />
+            </>
+          )}
 
           <Route path="record/manage" element={<RecordManageIndex />} />
           <Route
@@ -178,13 +188,15 @@ function TimeLayout() {
           <Navigation.Link to="/time/accrual/donation">
             Sick Leave Donation
           </Navigation.Link>
-          <Navigation.Link
-            to="/time/accrual/time-off-request"
-            permission="time:time-off-request-page"
-          >
-            Time Off Requests
-            <TimeOffRequestBadges />
-          </Navigation.Link>
+          {TIME_OFF_REQUESTS_ENABLED && (
+            <Navigation.Link
+              to="/time/accrual/time-off-request"
+              permission="time:time-off-request-page"
+            >
+              Time Off Requests
+              <TimeOffRequestBadges />
+            </Navigation.Link>
+          )}
         </Navigation.Section>
         <Navigation.Section
           name="Manage Employees"
@@ -211,13 +223,17 @@ function TimeLayout() {
           <Navigation.Link to="/time/record/grant">
             Grant Supervisor Access
           </Navigation.Link>
-          <Navigation.Link to="/time/accrual/emp-time-off-requests">
-            Review Time Off Requests
-            <SupervisorRequestBadge />
-          </Navigation.Link>
-          <Navigation.Link to="/time/accrual/emp-time-off-request-history">
-            Employee Time Off Request History
-          </Navigation.Link>
+          {TIME_OFF_REQUESTS_ENABLED && (
+            <>
+              <Navigation.Link to="/time/accrual/emp-time-off-requests">
+                Review Time Off Requests
+                <SupervisorRequestBadge />
+              </Navigation.Link>
+              <Navigation.Link to="/time/accrual/emp-time-off-request-history">
+                Employee Time Off Request History
+              </Navigation.Link>
+            </>
+          )}
         </Navigation.Section>
         <Navigation.Section name="Personnel" permission="time:personnel-pages">
           <Navigation.Link to="/time/personnel/search">
